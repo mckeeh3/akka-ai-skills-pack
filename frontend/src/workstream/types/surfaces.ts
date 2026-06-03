@@ -332,6 +332,9 @@ export type NotificationCenterSurfaceData = {
   preferencesSummary?: Array<{ preferenceId: string; channel: 'in_app' | string; category: string; enabled: boolean; minimumPriority: string; muteUntil?: string; includeReadInCenter: boolean; updatedAt?: string; updatedBy?: string; correlationId?: string }>;
   emailPreferencesSummary?: Array<{ preferenceId: string; channel: 'email' | string; category: string; enabled: boolean; minimumPriority: string; muteUntil?: string; digestMode?: string; provider?: string; deliveryBoundary?: string; updatedAt?: string; updatedBy?: string; correlationId?: string }>;
   emailChannel?: { channel: 'email' | string; status: string; provider: string; localTestDelivery: string; listCapabilityId: string; updateCapabilityId: string; redaction: string };
+  channelRegistry?: Array<{ channel: string; status: string; providerKind: string; productionConfigured: boolean; localTestOutboxAvailable: boolean; deliveryCapabilityId: string; preferenceCapabilityId: string; statusReason: string }>;
+  deliveryAttempts?: Array<{ attemptId: string; channel: string; category?: string; sourceNotificationId?: string; destinationSummary?: string; providerKind: string; status: string; safeErrorSummary?: string; outboxId?: string; traceRefs?: string[]; correlationId?: string; createdAt?: string; updatedAt?: string }>;
+  externalOutbox?: Array<{ outboxId: string; channel: string; destinationSummary?: string; title?: string; previewText?: string; metadata?: Record<string, string>; correlationId?: string; createdAt?: string }>;
   sourceSummary?: Record<string, number>;
   redaction?: string;
   traceRefs?: string[];

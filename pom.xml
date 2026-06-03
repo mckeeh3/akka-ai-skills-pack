@@ -7,14 +7,32 @@
     <version>3.6.0</version>
   </parent>
   
-  <groupId>com.example</groupId>
-  <artifactId>empty-service</artifactId>
+  <groupId>ai.first</groupId>
+  <artifactId>ai-first-saas-core</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>empty-service</name>
+  <name>AI First SaaS Core</name>
 
   <dependencies>
-    <!-- Your dependencies go here -->
+    <!-- Core app implementation tasks add only slice-required dependencies here. -->
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <!-- Focused com.example reference examples remain in the tree until the example-relocation task. -->
+            <exclude>com/example/**</exclude>
+          </excludes>
+          <testExcludes>
+            <testExclude>com/example/**</testExclude>
+          </testExcludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

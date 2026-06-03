@@ -9,6 +9,7 @@ const layout = readFileSync(new URL('./styles/layout.css', import.meta.url), 'ut
 const components = readFileSync(new URL('./styles/components.css', import.meta.url), 'utf8');
 const surfaceRenderer = readFileSync(new URL('./workstream/surfaces/SurfaceRenderer.tsx', import.meta.url), 'utf8');
 const detailEditSurface = readFileSync(new URL('./workstream/surfaces/DetailEditSurface.tsx', import.meta.url), 'utf8');
+const shell = readFileSync(new URL('./workstream/shell/WorkstreamShell.tsx', import.meta.url), 'utf8');
 
 test('frontend entry composes the canonical workstream shell instead of route pages', () => {
   assert.match(main, /<WorkstreamShell/);
@@ -65,7 +66,13 @@ test('named theme selection uses root data-theme, live detail-edit preview, and 
   assert.match(surfaceRenderer, /onFieldValueChange=\{onFieldValueChange\}/);
   assert.match(detailEditSurface, /onFieldValueChange\?: \(fieldId: string, value: string, surfaceId: string\) => void;/);
   assert.match(detailEditSurface, /onChange=\{\(event\) => updateFieldValue\(field\.fieldId, event\.currentTarget\.value\)\}/);
+  assert.match(detailEditSurface, /fields\.filter\(\(field\) => field\.editable\)/);
+  assert.match(detailEditSurface, /actionInput=\{editableActionInput\}/);
   assert.match(main, /const selectedThemeId = input && typeof input === 'object' && 'preferredThemeId' in input/);
+  assert.match(main, /const actionCorrelationId = `corr-\$\{action\.actionId\}-\$\{Date\.now\(\)\.toString\(36\)\}`;/);
+  assert.match(main, /current\.surfaces\.map\(\(surface\) => surface\.surfaceId === result\.value\.resultSurface\?\.surfaceId \? result\.value\.resultSurface : surface\)/);
+  assert.match(main, /settings: \{ \.\.\.current\.me\.settings, preferredThemeId: selectedThemeId \}/);
+  assert.doesNotMatch(main, /surfaceCorrelationId: `corr-\$\{action\.actionId\}`/);
   assert.doesNotMatch(main, /prefers-color-scheme: dark/);
 });
 
@@ -87,11 +94,19 @@ test('AI-first workstream enterprise tokens include named themes and semantic al
 test('focus, skip link, reduced motion, and responsive shell rules are present', () => {
   assert.match(base, /:focus-visible/);
   assert.match(base, /\.skip-link/);
+  assert.match(shell, /<a className="skip-link" href="#main-content">Skip to main workstream<\/a>\s*<button[\s\S]*?className=\{`mobile-menu-button/);
+  assert.match(shell, /<div className="app-shell workstream-shell"/);
+  assert.doesNotMatch(shell, /<div className="app-shell workstream-shell"[\s\S]*?<a className="skip-link"/);
+  assert.doesNotMatch(shell, /<div className="app-shell workstream-shell"[\s\S]*?className=\{`mobile-menu-button/);
+  assert.match(layout, /\.sidebar \{[\s\S]*?grid-column: 1;/);
+  assert.match(layout, /\.main-column \{[\s\S]*?grid-column: 2;/);
+  assert.match(layout, /@media \(max-width: 960px\) \{[\s\S]*?\.sidebar,\s*\.main-column \{ grid-column: 1; \}/);
   assert.match(base, /prefers-reduced-motion/);
   assert.match(layout, /@media \(max-width: 960px\)/);
   assert.match(layout, /@media \(max-width: 640px\)/);
   assert.match(layout, /\.sidebar\.open/);
-  assert.match(layout, /\.mobile-menu-button/);
+  assert.match(layout, /\.mobile-menu-button\.mobile-menu-button,[\s\S]*?\.nav-backdrop\.nav-backdrop \{ display: none; \}/);
+  assert.match(layout, /\.mobile-menu-button\.mobile-menu-button \{[\s\S]*?display: inline-flex;/);
   assert.match(tokens, /--workstream-composer-scroll-clearance: 22rem/);
   assert.match(layout, /padding-bottom: calc\(var\(--workstream-composer-scroll-clearance\)/);
   assert.match(layout, /scroll-padding-bottom: calc\(var\(--workstream-composer-scroll-clearance\)/);

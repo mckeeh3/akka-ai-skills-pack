@@ -9,7 +9,7 @@ const readBackend = (path) => {
   if (existsSync(resolve(scaffoldRootPath))) return read(scaffoldRootPath);
   const sourceRepoTemplatePath = `../../templates/ai-first-saas-starter/backend/${path}`;
   if (existsSync(resolve(sourceRepoTemplatePath))) return read(sourceRepoTemplatePath);
-  return read(`../../backend/${path}`);
+  return read(`../../${path}`);
 };
 
 const main = read('./main.tsx');
@@ -18,8 +18,8 @@ const httpClient = read('./api/HttpWorkstreamApiClient.ts');
 const railAttentionState = read('./workstream/rail/railAttentionState.ts');
 const railItem = read('./workstream/rail/FunctionalAgentRailItem.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
-const backendWorkstreamService = readBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java');
-const backendMyAccountService = readBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/MyAccountService.java');
+const backendWorkstreamService = readBackend('src/main/java/ai/first/application/security/WorkstreamService.java');
+const backendMyAccountService = readBackend('src/main/java/ai/first/application/security/MyAccountService.java');
 
 test('bootstrap and refresh use backend-derived rail summaries instead of frontend-only attention authority', () => {
   assert.match(main, /me: \{ \.\.\.result\.value\.me, functionalAgents: result\.value\.functionalAgents \}/);

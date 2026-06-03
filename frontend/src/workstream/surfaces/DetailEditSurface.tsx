@@ -24,6 +24,10 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
 
   const initialFieldValues = useMemo(() => Object.fromEntries(fields.map((field) => [field.fieldId, field.value])), [fields]);
   const [fieldValues, setFieldValues] = useState<Record<string, string>>(initialFieldValues);
+  const editableActionInput = useMemo(
+    () => Object.fromEntries(fields.filter((field) => field.editable).map((field) => [field.fieldId, fieldValues[field.fieldId] ?? field.value])),
+    [fields, fieldValues]
+  );
 
   useEffect(() => {
     setFieldValues(initialFieldValues);
@@ -149,7 +153,7 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
           {envelope.data.audit.traceIds.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-timeline#${traceId}`}>{traceId}</a>)}
         </section>
       )}
-      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={fieldValues} onAction={onAction} />
+      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={editableActionInput} onAction={onAction} />
     </SurfaceStateFrame>
   );
 }

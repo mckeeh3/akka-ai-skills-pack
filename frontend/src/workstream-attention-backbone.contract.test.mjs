@@ -9,7 +9,7 @@ const readBackend = (path) => {
   if (existsSync(resolve(scaffoldRootPath))) return read(scaffoldRootPath);
   const sourceRepoTemplatePath = `../../templates/ai-first-saas-starter/backend/${path}`;
   if (existsSync(resolve(sourceRepoTemplatePath))) return read(sourceRepoTemplatePath);
-  return read(`../../backend/${path}`);
+  return read(`../../${path}`);
 };
 
 const agentTypes = read('./workstream/types/agents.ts');
@@ -19,8 +19,8 @@ const railAttentionState = read('./workstream/rail/railAttentionState.ts');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const fixtureAgents = read('./__tests__/fixtures/workstream/agents.ts');
 const fixtureSurfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
-const backendWorkstreamService = readBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java');
-const backendMeResponse = readBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/MeResponse.java');
+const backendWorkstreamService = readBackend('src/main/java/ai/first/application/security/WorkstreamService.java');
+const backendMeResponse = readBackend('src/main/java/ai/first/application/security/MeResponse.java');
 
 
 test('left rail actionable badges are backend-derived and distinct from transient unseen-response state', () => {

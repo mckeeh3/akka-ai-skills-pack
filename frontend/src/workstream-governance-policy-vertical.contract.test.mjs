@@ -17,8 +17,11 @@ test('Governance/Policy v0 exposes contract capabilities, structured surfaces, a
     'governance.policy.simulate',
     'governance.policy.propose',
     'governance.policy.approve',
+    'governance.proposals.review',
     'governance.policy.activate',
+    'governance.proposals.activate',
     'governance.policy.rollback',
+    'governance.outcomes.record',
     'governance.policy.impact_analysis.start',
     'governance.policy.impact_analysis.read',
     'governance.policy.impact_analysis.cancel',
@@ -58,7 +61,11 @@ test('Governance/Policy UI states preserve backend authority, denials, approval 
     'trace-govpol-simulation',
     'trace-govpol-impact-analysis-blocked',
     'workflow.governance_policy.impact_analysis.* and worker.task.*',
-    'surface-governance-policy-impact-analysis-result'
+    'surface-governance-policy-impact-analysis-result',
+    'surface.governance.proposal_queue.v1',
+    'surface.governance.decision_card.v1',
+    'surface.governance.activation_status.v1',
+    'action-govpol-add-outcome-note'
   ]) {
     assert.match(fixtures, new RegExp(marker.replace(/[()]/g, '\\$&')));
   }
@@ -83,7 +90,7 @@ test('Governance/Policy fixture client returns structured results for dashboard,
   assert.match(apiClient, /displayGovernancePolicySimulationActionResult/);
   assert.match(apiClient, /displayGovernancePolicyImpactTaskActionResult/);
   assert.match(apiClient, /displayGovernancePolicyImpactResultActionResult/);
-  for (const actionId of ['action-govpol-show-dashboard', 'action-govpol-show-policy-inventory', 'action-govpol-simulate-proposal', 'action-govpol-start-impact-analysis', 'action-govpol-accept-impact-result', 'action-govpol-request-impact-changes']) {
+  for (const actionId of ['action-govpol-show-dashboard', 'action-govpol-show-policy-inventory', 'action-govpol-simulate-proposal', 'action-govpol-start-impact-analysis', 'action-govpol-accept-impact-result', 'action-govpol-request-impact-changes', 'action-govpol-add-outcome-note']) {
     assert.match(fixtures, new RegExp(actionId));
   }
   for (const routedActionId of ['action-govpol-show-dashboard', 'action-govpol-show-policy-inventory', 'action-govpol-simulate-proposal', 'action-govpol-start-impact-analysis']) {

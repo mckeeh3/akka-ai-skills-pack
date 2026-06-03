@@ -20,7 +20,6 @@ const deepLinks = read('./workstream/shell/WorkstreamDeepLinks.ts');
 const agentTypes = read('./workstream/types/agents.ts');
 const agentFixtures = read('./__tests__/fixtures/workstream/agents.ts');
 const componentsCss = read('./styles/components.css');
-const layoutCss = read('./styles/layout.css');
 
 function loadTypeScriptExports(source) {
   const transpiled = ts.transpileModule(source, {
@@ -53,6 +52,9 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(toggle, /collapsed \? 'Expand sidebar' : 'Collapse sidebar'/);
   assert.match(toggle, /workstream-rail-toggle-tooltip/);
   assert.doesNotMatch(toggle, /title=/);
+  assert.match(rail, /id="workstream-functional-agent-rail"/);
+  assert.match(rail, /mobileOpen = false/);
+  assert.match(rail, /\$\{mobileOpen \? 'open' : ''\}/);
   assert.match(rail, /aria-label="Functional agents"/);
   assert.match(rail, /const myAccountFunctionalAgentId = 'agent-my-account'/);
   assert.match(rail, /entry\.functionalAgentId !== myAccountFunctionalAgentId/);
@@ -190,19 +192,21 @@ test('persistent composer is selected-agent aware and exposes disabled states', 
 });
 
 test('workstream shell composes left rail, continuous flow, and floating persistent composer regions', () => {
+  assert.match(shell, /mobileRailOpen/);
+  assert.match(shell, /aria-controls="workstream-functional-agent-rail"/);
+  assert.match(shell, /aria-expanded=\{mobileRailOpen\}/);
+  assert.match(shell, /aria-label="Close workstream navigation"/);
+  assert.match(shell, /event\.key === 'Escape'/);
+  assert.match(shell, /setMobileRailOpen\(false\)/);
   assert.match(shell, /<FunctionalAgentRail/);
+  assert.match(shell, /mobileOpen=\{mobileRailOpen\}/);
   assert.doesNotMatch(shell, /<ContextAuthorityBar/);
   assert.match(shell, /<WorkstreamPanel/);
   assert.match(shell, /<WorkstreamComposer/);
   assert.match(shell, /submittingFunctionalAgentId === selectedFunctionalAgentId/);
   assert.match(shell, /useEffect\(\(\) => \{/);
   assert.match(shell, /setSelectedFunctionalAgentId\(initialFunctionalAgentId \?\? initialAgentId\)/);
-  assert.match(shell, /<a className="skip-link" href="#main-content">Skip to main workstream<\/a>\s*<div className="app-shell workstream-shell"/);
-  assert.doesNotMatch(shell, /<div className="app-shell workstream-shell"[\s\S]*?<a className="skip-link"/);
   assert.match(shell, /aria-label="Persistent composer region"/);
-  assert.match(layoutCss, /\.sidebar \{[\s\S]*?grid-column: 1;/);
-  assert.match(layoutCss, /\.main-column \{[\s\S]*?grid-column: 2;/);
-  assert.match(layoutCss, /@media \(max-width: 960px\) \{[\s\S]*?\.sidebar,\s*\.main-column \{ grid-column: 1; \}/);
   assert.match(panel, /<main id="main-content" className="content workstream-panel"/);
   assert.match(panel, /workstream-flow/);
   assert.match(panel, /aria-labelledby="workstream-panel-title"/);

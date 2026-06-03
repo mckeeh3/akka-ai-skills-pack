@@ -4,22 +4,22 @@ import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const readTemplateOrRenderedBackend = (path) => {
-  for (const root of ['../../backend', '../../templates/ai-first-saas-starter/backend', '../..']) {
+  for (const root of ['../..', '../../backend', '../../templates/ai-first-saas-starter/backend']) {
     try {
       return read(`${root}/${path}`);
     } catch (error) {
       if (error.code !== 'ENOENT') throw error;
     }
   }
-  return read(`../../backend/${path}`);
+  return read(`../../${path}`);
 };
 
-const backendWorkstreamService = readTemplateOrRenderedBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamService.java');
-const backendMyAccountService = readTemplateOrRenderedBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/MyAccountService.java');
-const backendWorkstreamEndpoint = readTemplateOrRenderedBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/api/workstream/WorkstreamEndpoint.java');
-const backendWorkstreamTest = readTemplateOrRenderedBackend('src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/WorkstreamServiceTest.java');
-const backendPersonalAttentionDigestService = readTemplateOrRenderedBackend('src/main/java/{{JAVA_PACKAGE_PATH}}/application/security/MyAccountPersonalAttentionDigestService.java');
-const backendPersonalAttentionDigestTest = readTemplateOrRenderedBackend('src/test/java/{{JAVA_PACKAGE_PATH}}/application/security/MyAccountPersonalAttentionDigestServiceTest.java');
+const backendWorkstreamService = readTemplateOrRenderedBackend('src/main/java/ai/first/application/security/WorkstreamService.java');
+const backendMyAccountService = readTemplateOrRenderedBackend('src/main/java/ai/first/application/security/MyAccountService.java');
+const backendWorkstreamEndpoint = readTemplateOrRenderedBackend('src/main/java/ai/first/api/workstream/WorkstreamEndpoint.java');
+const backendWorkstreamTest = readTemplateOrRenderedBackend('src/test/java/ai/first/application/security/WorkstreamServiceTest.java');
+const backendPersonalAttentionDigestService = readTemplateOrRenderedBackend('src/main/java/ai/first/application/security/MyAccountPersonalAttentionDigestService.java');
+const backendPersonalAttentionDigestTest = readTemplateOrRenderedBackend('src/test/java/ai/first/application/security/MyAccountPersonalAttentionDigestServiceTest.java');
 const surfaceRenderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const notificationCenterSurface = read('./workstream/surfaces/NotificationCenterSurface.tsx');
@@ -34,6 +34,7 @@ const expectedMyAccountMarkers = [
   'surface-my-profile',
   'surface-my-settings',
   'surface-my-context',
+  'surface.access.profile.context.v1',
   'surface-my-account-open-denied',
   'surface-my-account-notification-center',
   'surface-my-account-personal-attention-digest-progress',
@@ -43,6 +44,7 @@ const expectedMyAccountMarkers = [
   'action-show-my-profile',
   'action-show-my-settings',
   'action-show-my-context',
+  'action-select-my-context',
   'action-show-my-account-notification-center',
   'action-notification-mark-read',
   'action-notification-dismiss',
@@ -64,7 +66,7 @@ const expectedMyAccountMarkers = [
 
 test('My Account full-core backend exposes dashboard, profile, settings, context, attention, and safe navigation surfaces', () => {
   for (const marker of expectedMyAccountMarkers) assert.match(backendWorkstreamService, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  for (const capabilityId of ['my_account.view_summary', 'my_account.view_context', 'my_account.list_personal_attention', 'my_account.update_profile_settings', 'my_account.open_authorized_workstream', 'my_account.view_own_trace_refs']) {
+  for (const capabilityId of ['my_account.view_summary', 'my_account.view_context', 'my_account.list_personal_attention', 'my_account.update_profile_settings', 'my_account.open_authorized_workstream', 'my_account.view_own_trace_refs', 'core.access.me', 'core.profile.update', 'core.access.context.select']) {
     const matcher = new RegExp(capabilityId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     assert.match(backendMyAccountService, matcher);
     assert.match(backendWorkstreamService, matcher);
@@ -119,7 +121,8 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.doesNotMatch(notificationCenterSurface, /pushEnabled|emailEnabled|RESEND_API_KEY|RESEND_FROM_EMAIL/);
   assert.match(detailEditSurface, /surface-detail-edit-form/);
   assert.match(detailEditSurface, /fieldValues/);
-  assert.match(detailEditSurface, /actionInput=\{fieldValues\}/);
+  assert.match(detailEditSurface, /fields\.filter\(\(field\) => field\.editable\)/);
+  assert.match(detailEditSurface, /actionInput=\{editableActionInput\}/);
   assert.match(detailEditSurface, /onChange=\{\(event\) => updateFieldValue/);
   assert.match(detailEditSurface, /permissionState/);
   assert.match(systemMessageSurface, /Recovery steps/);

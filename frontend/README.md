@@ -1,15 +1,45 @@
-# Workstream UI frontend quality and packaging handoff
+# AI-first SaaS starter frontend
 
-This localized React/Vite frontend is the implementation reference for the canonical AI-first SaaS agent workstream UI. In the source repository it lives under `frontend/**`; in an installed pack it is exported under `resources/examples/frontend/**` and scaffolded into starter apps under `frontend/**`. The source of record is this directory's `src/**`, with reusable contracts and components under `src/workstream/**`.
+This React/Vite frontend is the scaffolded browser app for the AI-first SaaS starter. It runs in production-first mode by default: WorkOS/AuthKit signs in the browser user, the app calls same-origin `/api/me` and `/api/workstream/...` routes through `HttpWorkstreamApiClient`, and backend authorization remains authoritative for tenant isolation, capability checks, audit, policy commits, trace export, and durable Akka state.
+
+Fixture data is still included for deterministic frontend inspection and contract tests, but it is opt-in only. Append `?fixtureWorkstream=1` to run the shell with `FixtureWorkstreamApiClient` and fixture realtime events when a backend or AuthKit tenant is not available.
+
+## Local production-mode checks
+
+Configure the WorkOS/AuthKit browser values before building or serving the production path:
+
+```bash
+cp .env.example .env.local
+# set VITE_WORKOS_CLIENT_ID=client_...
+# set VITE_WORKOS_REDIRECT_URI=http://localhost:5173/callback or your local callback
+npm install
+npm run typecheck
+npm test -- --run
+npm run build
+npm run analyze:bundle
+```
+
+The built app expects backend routes to enforce identity, selected AuthContext, membership, role/capability, and tenant/customer boundaries. Frontend visibility and disabled controls are UX hints only.
+
+## Explicit fixture mode
+
+Use fixture mode only for frontend-only inspection, story-like review, and contract tests:
+
+```text
+http://localhost:5173/?fixtureWorkstream=1
+```
+
+Fixture mode exercises the same shell, structured surfaces, capability action request shapes, stale/reconnect states, and trace affordances without issuing real backend commands. User-visible production copy should not describe default behavior as fixture-backed.
 
 ## Checks
 
-Run from `frontend/`:
+Run from this directory:
 
 ```bash
+npm test -- --run
 npm run typecheck
-npm test
 npm run build
+npm run analyze:bundle
 ```
 
 ## Akka static hosting output
@@ -20,11 +50,13 @@ npm run build
 src/main/resources/static-resources/
 ```
 
-The Akka endpoint serves `index.html`, `/favicon.ico`, and `/assets/**` from that directory. The generated `index.html` references the active hashed CSS/JS assets. Other static reference examples under `src/main/resources/static-resources/**` are intentionally preserved by the build command as endpoint mechanics or legacy references; do not promote them as canonical generated-app UI structure.
+The Akka endpoint serves `index.html`, `/favicon.ico`, and `/assets/**` from that directory. Do not hand-edit generated build output; rebuild from frontend source.
+
+After a production build, run `npm run analyze:bundle` to print the rendered JS/CSS/HTML bundle-size summary. The starter accepts the current Vite chunk-size residual as non-blocking unless it becomes operationally relevant; this command makes future regressions visible during release polish.
 
 ## Canonical contract scope
 
-Frontend contract tests cover the workstream-first reference:
+Frontend contract tests cover:
 
 - `/api/me` bootstrap, selected `AuthContext`, visible capabilities, and forbidden/disabled variants.
 - Role-authorized functional-agent rail with denied/hidden/collapsed states.
@@ -33,10 +65,7 @@ Frontend contract tests cover the workstream-first reference:
 - Structured surfaces for dashboard, list/search, detail/edit, decision, audit timeline, workflow status, governance diff, and outcome patterns.
 - Capability-backed action controls with disabled/denied reasons, idempotency, confirmation, audit/trace affordances, and result-surface handling.
 - Deep links for selected functional agents, stream items, and surfaces without making pages/routes the primary UI model.
-- User Admin dashboard → list/search → detail/edit reference vertical through structured surfaces.
+- User Admin dashboard → list/search → detail/edit starter vertical through structured surfaces.
+- My Account notification center rendering from backend-derived in-app notification data, including governed notification action descriptors, redacted/empty/error states, backend-owned counts, and explicit absence of implemented email/push controls.
 
-Legacy `frontend/src/screens/**` files are retained only as quarantined drift/mechanics references. In the source repository, new generated SaaS frontend work should start from `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, `frontend/src/main.tsx`, and `frontend/src/workstream-user-admin-vertical.contract.test.mjs`. In an installed pack, the same frontend reference is under `resources/examples/frontend/**` and the architecture doc is under `docs/workstream-ui-reference-architecture.md`.
-
-## Backend integration stance
-
-The production path uses `HttpWorkstreamApiClient` against same-origin `/api/workstream/...` and `/api/me` routes. Use `?fixtureWorkstream=1` only for frontend-only inspection and contract tests. Backend authorization, tenant isolation, audit, policy commit execution, trace export, and durable Akka state remain backend-authoritative; frontend controls are UX hints, not authorization.
+Legacy `src/screens/**` files are retained only as quarantined mechanics references for older slice tests. New generated SaaS frontend work should extend `src/workstream/**`, `src/api/**`, and `src/main.tsx`.

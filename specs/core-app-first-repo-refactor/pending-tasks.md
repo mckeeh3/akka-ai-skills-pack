@@ -103,7 +103,7 @@
 
 ### TASK-LAYOUT-02-001: Promote core app source to repository root
 
-- status: pending
+- status: done
 - source: specs/core-app-first-repo-refactor/backlog/01-core-app-first-refactor-build-backlog.md
 - task brief: specs/core-app-first-repo-refactor/tasks/02-core-root/01-promote-core-app-root.md
 - depends on: [TASK-LAYOUT-01-002]
@@ -127,6 +127,12 @@
   - queue is updated and committed
 - notes:
   - commit message: `layout: promote core app root source`
+  - promoted starter backend into root `src/main/java/ai/first/**`, `src/test/java/ai/first/**`, root resources, and canonical root `pom.xml` with fixed `ai.first` coordinates
+  - promoted starter `app-description/**` because root frontend contract tests now treat it as the canonical app description source
+  - reconciled root `frontend/**` with the starter frontend, added frontend build scripts, and regenerated root Akka static resources with `npm run build`
+  - retained existing `com.example` focused examples in place for the later example-relocation task, but excluded them from the root app Maven compile/test path to avoid duplicate Akka setup/component registration
+  - parity note: rendered starter backend and app-description match the promoted root copies; remaining root/template frontend diffs are root-path contract-test adjustments plus local `frontend/.env.local`
+  - checks passed: `git diff --check`; `mvn test`; `cd frontend && npm test -- --run && npm run typecheck && npm run build`
 
 ### TASK-LAYOUT-02-002: Dissolve the full-app starter template
 

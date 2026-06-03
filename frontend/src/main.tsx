@@ -302,11 +302,12 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
 
   async function handleSurfaceAction(action: SurfaceAction, surfaceId: string, input: unknown = {}) {
     if (!ready || !me) return;
+    const actionCorrelationId = `corr-${action.actionId}-${Date.now().toString(36)}`;
     const request = buildCapabilityActionRequest(action, {
       selectedContextId: me.selectedAuthContext.selectedContextId,
       surfaceId,
       input,
-      surfaceCorrelationId: `corr-${action.actionId}`
+      surfaceCorrelationId: actionCorrelationId
     });
     const result = await workstreamClient.runCapabilityAction(request);
     const targetSurface = result.ok ? result.value.resultSurface ?? ready.surfaces.find((candidate) => candidate.surfaceId === surfaceId) : undefined;
@@ -336,10 +337,14 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     rememberVisualSession(sessionForAgent(actionRequestItem.functionalAgentId), { anchorSurfaceId: actionRequestItem.itemId, userHasManualScroll: false });
     setBootstrap((current) => {
       if (current.status !== 'ready') return current;
-      const nextSurfaces = result.ok && result.value.resultSurface && !current.surfaces.some((surface) => surface.surfaceId === result.value.resultSurface?.surfaceId)
-        ? [...current.surfaces, result.value.resultSurface]
+      const nextSurfaces = result.ok && result.value.resultSurface
+        ? current.surfaces.some((surface) => surface.surfaceId === result.value.resultSurface?.surfaceId)
+          ? current.surfaces.map((surface) => surface.surfaceId === result.value.resultSurface?.surfaceId ? result.value.resultSurface : surface)
+          : [...current.surfaces, result.value.resultSurface]
         : current.surfaces;
-      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
+      const selectedThemeId = input && typeof input === 'object' && 'preferredThemeId' in input ? normalizeThemeId((input as { preferredThemeId?: unknown }).preferredThemeId) : undefined;
+      const nextMe = result.ok && selectedThemeId ? { ...current.me, settings: { ...current.me.settings, preferredThemeId: selectedThemeId } } : current.me;
+      return { ...current, me: nextMe, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
     });
     const selectedThemeId = input && typeof input === 'object' && 'preferredThemeId' in input ? normalizeThemeId((input as { preferredThemeId?: unknown }).preferredThemeId) : undefined;
     if (result.ok && selectedThemeId) setThemeId(selectedThemeId);

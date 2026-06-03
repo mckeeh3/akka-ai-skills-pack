@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "typecheck": "tsc --noEmit",
+    "prebuild": "node scripts/clean-static-assets.mjs",
     "build": "vite build --outDir ../src/main/resources/static-resources --emptyOutDir false",
+    "analyze:bundle": "node scripts/report-bundle-size.mjs",
     "test": "node --test src/*.test.mjs"
   },
   "dependencies": {

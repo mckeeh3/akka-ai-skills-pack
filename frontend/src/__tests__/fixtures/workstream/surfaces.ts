@@ -542,6 +542,7 @@ export const userAdminSurfaceActions = {
 } satisfies Record<string, SurfaceAction>;
 
 const agentDefinitionsCapability = 'agent_admin.list_definitions';
+const agentDefinitionsManageCapability = 'agent.definitions.manage';
 const agentDefinitionReadCapability = 'agent_admin.get_definition';
 const agentPromptReadCapability = 'agent_admin.get_prompt_version';
 const agentSkillReadCapability = 'agent_admin.get_skill_version';
@@ -558,6 +559,7 @@ const agentToolBoundariesCapability = 'agent_admin.simulate_tool_boundary';
 const agentModelsReadCapability = 'agent_admin.get_model_ref';
 const agentModelsManageCapability = 'agent_admin.activate_behavior_change';
 const agentSeedReadCapability = 'agent_admin.list_seed_material';
+const agentSeedImportCapability = 'agent_admin.reseed_missing_defaults';
 const agentRuntimeTestCapability = 'agent_admin.draft_behavior_change';
 const agentPromptRiskStartCapability = 'agent_admin.prompt_risk_review.start';
 const agentPromptRiskReadCapability = 'agent_admin.prompt_risk_review.read';
@@ -588,6 +590,34 @@ export const agentAdminSurfaceActions = {
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
     audit: { eventType: 'AgentDefinitionDetailDisplayed', traceRequired: true }
+  },
+  activateAgentDefinition: {
+    actionId: 'action-activate-agent-definition',
+    label: 'Activate AgentDefinition',
+    intent: 'command',
+    capabilityId: agentDefinitionsManageCapability,
+    governedToolId: agentDefinitionsManageCapability,
+    browserToolId: 'action-activate-agent-definition',
+    inputSchemaRef: 'schema.agent-definition.lifecycle.activate.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
+    audit: { eventType: 'AgentDefinitionActivated', traceRequired: true }
+  },
+  deactivateAgentDefinition: {
+    actionId: 'action-deactivate-agent-definition',
+    label: 'Deactivate AgentDefinition',
+    intent: 'command',
+    capabilityId: agentDefinitionsManageCapability,
+    governedToolId: agentDefinitionsManageCapability,
+    browserToolId: 'action-deactivate-agent-definition',
+    inputSchemaRef: 'schema.agent-definition.lifecycle.deactivate.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
+    audit: { eventType: 'AgentDefinitionDeactivated', traceRequired: true }
   },
   proposePromptDiff: {
     actionId: 'action-propose-prompt-diff',
@@ -728,6 +758,20 @@ export const agentAdminSurfaceActions = {
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-agent-seed-material', openPlacement: 'inline' },
     audit: { eventType: 'AgentSeedMaterialListed', traceRequired: true }
+  },
+  importSeedDefaults: {
+    actionId: 'action-import-agent-seed-defaults',
+    label: 'Import missing seed defaults',
+    intent: 'workflow',
+    capabilityId: agentSeedImportCapability,
+    governedToolId: agentSeedImportCapability,
+    browserToolId: 'action-import-agent-seed-defaults',
+    inputSchemaRef: 'schema.agent-seed.import-defaults.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-seed-material', openPlacement: 'inline' },
+    audit: { eventType: 'AgentSeedDefaultsImported', traceRequired: true }
   },
   startPromptRiskReview: {
     actionId: 'action-agentadmin-start-prompt-risk-review',
@@ -1213,6 +1257,18 @@ export const auditTraceSurfaceActions = {
     resultSurface: { updateSurfaceId: 'surface-audit-trace-investigation-guide', openPlacement: 'inline' },
     audit: { eventType: 'AuditTraceInvestigationGuideRequested', traceRequired: true }
   },
+  appendInvestigationNote: {
+    actionId: 'action-audit-trace-append-investigation-note',
+    label: 'Append investigation note',
+    intent: 'command',
+    capabilityId: 'audit.trace.investigation_note.append',
+    governedToolId: 'audit.trace.investigation_note.append',
+    browserToolId: 'action-audit-trace-append-investigation-note',
+    inputSchemaRef: 'schema.audit-trace.investigation-note.v1',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-investigation-note', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceInvestigationNoteAppended', traceRequired: true }
+  },
   startSummaryTask: {
     actionId: 'action-audit-trace-summary-task-start',
     label: 'Start audit summary task',
@@ -1399,7 +1455,23 @@ export const auditTraceInvestigationGuideSurface = envelope(
     risk: 'low',
     traceLinks: ['corr-provider-blocked-002']
   },
-  [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence]
+  [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence, auditTraceSurfaceActions.appendInvestigationNote]
+);
+
+export const auditTraceInvestigationNoteSurface = envelope(
+  'surface-audit-trace-investigation-note',
+  'system-message',
+  'Investigation note recorded',
+  'agent-audit-trace',
+  {
+    surfaceContract: 'audit.trace.investigationNote.v1',
+    status: 'recorded',
+    traceId: 'trace-provider-blocked-002',
+    noteSummary: 'Human reviewer noted that provider failure evidence is redacted and tenant-scoped.',
+    retainedAuthority: 'Human-authored investigation notes annotate traces only; they do not mutate source traces, policy, authorization, or retained evidence.',
+    redactionMetadata: { omittedFieldKeys: ['rawJwt', 'rawProviderCredential', 'hiddenPromptText', 'rawToolPayload'], nonEnumerating: false }
+  },
+  [auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.showInvestigationGuide]
 );
 
 export const auditTraceSummaryProgressSurface = envelope(
@@ -1453,7 +1525,7 @@ export const auditTraceSummaryReviewSurface = envelope(
   [auditTraceSurfaceActions.acceptSummaryResult, auditTraceSurfaceActions.rejectSummaryResult, auditTraceSurfaceActions.openSummaryEvidence]
 );
 
-export const auditTraceStructuredSurfaces = [auditTraceDashboardSurface, auditTraceSearchSurface, auditTraceDetailSurface, auditTraceTimelineSurface, auditTraceFailureEvidenceSurface, auditTraceInvestigationGuideSurface, auditTraceSummaryProgressSurface, auditTraceSummaryReviewSurface];
+export const auditTraceStructuredSurfaces = [auditTraceDashboardSurface, auditTraceSearchSurface, auditTraceDetailSurface, auditTraceTimelineSurface, auditTraceFailureEvidenceSurface, auditTraceInvestigationGuideSurface, auditTraceInvestigationNoteSurface, auditTraceSummaryProgressSurface, auditTraceSummaryReviewSurface];
 
 export const userAdminDashboardSurface = envelope(
   'surface-user-admin-dashboard',
@@ -1826,7 +1898,7 @@ export const agentAdminCatalogSurface = envelope(
       traceLinked: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, and protected-read traces are linked.'
     }
   },
-  [agentAdminSurfaceActions.displayCatalog, agentAdminSurfaceActions.openAgentDetail, agentAdminSurfaceActions.listSeedMaterial, agentAdminSurfaceActions.openAgentTrace]
+  [agentAdminSurfaceActions.displayCatalog, agentAdminSurfaceActions.openAgentDetail, agentAdminSurfaceActions.activateAgentDefinition, agentAdminSurfaceActions.deactivateAgentDefinition, agentAdminSurfaceActions.listSeedMaterial, agentAdminSurfaceActions.importSeedDefaults, agentAdminSurfaceActions.openAgentTrace]
 );
 
 export const agentAdminDetailSurface = envelope(
@@ -1871,7 +1943,7 @@ export const agentAdminDetailSurface = envelope(
     redaction: { browserSafe: true, omittedFieldKeys: ['rawPromptBody', 'rawSkillBody', 'rawReferenceBody', 'rawProviderCredential', 'providerCredentialValue', 'rawJwt'], previewLimitChars: 220 },
     noDirectMutation: true
   },
-  [agentAdminSurfaceActions.proposePromptDiff, agentAdminSurfaceActions.simulateToolBoundary, agentAdminSurfaceActions.manageModelRef, agentAdminSurfaceActions.openAgentTrace]
+  [agentAdminSurfaceActions.activateAgentDefinition, agentAdminSurfaceActions.deactivateAgentDefinition, agentAdminSurfaceActions.proposePromptDiff, agentAdminSurfaceActions.simulateToolBoundary, agentAdminSurfaceActions.manageModelRef, agentAdminSurfaceActions.openAgentTrace]
 );
 
 export const agentPromptGovernanceSurface = envelope(
@@ -1998,7 +2070,7 @@ export const agentSeedMaterialSurface = envelope(
     mobileFallback: 'table-to-card',
     systemStates: ['loading', 'empty', 'forbidden', 'stale']
   },
-  [agentAdminSurfaceActions.listSeedMaterial, agentAdminSurfaceActions.openAgentTrace]
+  [agentAdminSurfaceActions.listSeedMaterial, agentAdminSurfaceActions.importSeedDefaults, agentAdminSurfaceActions.openAgentTrace]
 );
 
 export const agentTestConsoleSurface = envelope(
@@ -2157,9 +2229,12 @@ const governancePolicyCapabilities = {
   readDashboard: 'governance.policy.read',
   simulateProposal: 'governance.policy.simulate',
   draftProposal: 'governance.policy.propose',
+  reviewProposal: 'governance.proposals.review',
   approveProposal: 'governance.policy.approve',
+  activateProposal: 'governance.proposals.activate',
   activatePolicyChange: 'governance.policy.activate',
   rollbackPolicyChange: 'governance.policy.rollback',
+  recordOutcome: 'governance.outcomes.record',
   startImpactAnalysis: 'governance.policy.impact_analysis.start',
   readImpactAnalysis: 'governance.policy.impact_analysis.read',
   cancelImpactAnalysis: 'governance.policy.impact_analysis.cancel',
@@ -2218,10 +2293,10 @@ export const governancePolicySurfaceActions = {
   },
   decideProposal: {
     actionId: 'action-govpol-decide-proposal',
-    label: 'Approve proposal',
+    label: 'Approve / reject / request changes',
     intent: 'approval',
     capabilityId: governancePolicyCapabilities.approveProposal,
-    governedToolId: governancePolicyCapabilities.approveProposal,
+    governedToolId: governancePolicyCapabilities.reviewProposal,
     browserToolId: 'action-govpol-decide-proposal',
     inputSchemaRef: 'schema.governance-policy.decision.v1',
     requiresConfirmation: true,
@@ -2235,7 +2310,7 @@ export const governancePolicySurfaceActions = {
     label: 'Activate approved change',
     intent: 'command',
     capabilityId: governancePolicyCapabilities.activatePolicyChange,
-    governedToolId: governancePolicyCapabilities.activatePolicyChange,
+    governedToolId: governancePolicyCapabilities.activateProposal,
     browserToolId: 'action-govpol-activate-policy-change',
     inputSchemaRef: 'schema.governance-policy.activation.v1',
     requiresConfirmation: true,
@@ -2244,12 +2319,24 @@ export const governancePolicySurfaceActions = {
     resultSurface: { updateSurfaceId: 'surface-governance-policy-decision', openPlacement: 'inline' },
     audit: { eventType: 'GovernancePolicyChangeActivated', traceRequired: true }
   },
+  outcomeNote: {
+    actionId: 'action-govpol-add-outcome-note',
+    label: 'Add outcome note',
+    intent: 'command',
+    capabilityId: governancePolicyCapabilities.recordOutcome,
+    governedToolId: governancePolicyCapabilities.recordOutcome,
+    browserToolId: 'action-govpol-add-outcome-note',
+    inputSchemaRef: 'schema.governance-policy.outcome-note.v1',
+    idempotency: { required: true, keySource: 'surface-item' },
+    resultSurface: { updateSurfaceId: 'surface-governance-policy-decision', openPlacement: 'inline' },
+    audit: { eventType: 'GovernancePolicyOutcomeNoteRecorded', traceRequired: true }
+  },
   rollbackProposal: {
     actionId: 'action-govpol-rollback-policy-change',
     label: 'Roll back change',
     intent: 'command',
     capabilityId: governancePolicyCapabilities.rollbackPolicyChange,
-    governedToolId: governancePolicyCapabilities.rollbackPolicyChange,
+    governedToolId: governancePolicyCapabilities.activateProposal,
     browserToolId: 'action-govpol-rollback-policy-change',
     inputSchemaRef: 'schema.governance-policy.rollback.v1',
     requiresConfirmation: true,
@@ -2352,6 +2439,8 @@ export const governancePolicyDashboardSurface = envelope(
   'Governance/Policy dashboard',
   'agent-governance-policy',
   {
+    canonicalSurfaceId: 'surface.governance.proposal_queue.v1',
+    governedCapabilityIds: ['governance.proposals.review', 'governance.proposals.activate', 'governance.outcomes.record'],
     cards: [
       { cardId: 'card-pending-proposals', label: 'Pending proposals', value: 1, severity: 'warning' },
       { cardId: 'card-active-policies', label: 'Active policy concepts', value: 4, severity: 'info' },
@@ -2399,6 +2488,7 @@ export const governancePolicyProposalSurface = envelope(
   'Policy proposal review',
   'agent-governance-policy',
   {
+    canonicalSurfaceId: 'surface.governance.proposal_queue.v1',
     proposalId: 'proposal-govpol-001',
     lifecycleState: 'in_review',
     source: 'Governance/Policy Agent drafted text; human submitted for review',
@@ -2454,6 +2544,8 @@ export const governancePolicyDecisionSurface = envelope(
   'Governance decision',
   'agent-governance-policy',
   {
+    canonicalSurfaceId: 'surface.governance.decision_card.v1',
+    activationStatusSurfaceId: 'surface.governance.activation_status.v1',
     decisionId: 'decision-govpol-001',
     recommendation: 'Approve the stricter threshold only after reviewing simulation evidence; keep activation as a separate human action.',
     riskScore: 82,
@@ -2464,7 +2556,8 @@ export const governancePolicyDecisionSurface = envelope(
       { evidenceId: 'evidence-redaction', label: 'Redaction', summary: 'Prompt text, backend secrets, and cross-tenant evidence remain omitted.' }
     ],
     allowedActions: [
-      { actionId: 'action-govpol-decide-proposal', label: 'Approve proposal', browserToolId: 'action-govpol-decide-proposal', governedToolId: governancePolicyCapabilities.approveProposal, capabilityId: governancePolicyCapabilities.approveProposal },
+      { actionId: 'action-govpol-decide-proposal', label: 'Approve / reject / request changes', browserToolId: 'action-govpol-decide-proposal', governedToolId: governancePolicyCapabilities.reviewProposal, capabilityId: governancePolicyCapabilities.approveProposal },
+      { actionId: 'action-govpol-add-outcome-note', label: 'Add outcome note', browserToolId: 'action-govpol-add-outcome-note', governedToolId: governancePolicyCapabilities.recordOutcome, capabilityId: governancePolicyCapabilities.recordOutcome },
       { actionId: 'action-govpol-open-trace', label: 'Open decision trace', browserToolId: 'action-govpol-open-trace', governedToolId: governancePolicyCapabilities.openTrace, capabilityId: governancePolicyCapabilities.openTrace }
     ],
     disabledActions: [
@@ -2474,7 +2567,7 @@ export const governancePolicyDecisionSurface = envelope(
     risk: 'Authority-changing approval',
     traceLinks: ['trace-govpol-decision', 'trace-govpol-approval-basis']
   },
-  [governancePolicySurfaceActions.decideProposal, governancePolicySurfaceActions.activateProposal, governancePolicySurfaceActions.rollbackProposal, governancePolicySurfaceActions.openTrace]
+  [governancePolicySurfaceActions.decideProposal, governancePolicySurfaceActions.activateProposal, governancePolicySurfaceActions.rollbackProposal, governancePolicySurfaceActions.outcomeNote, governancePolicySurfaceActions.openTrace]
 );
 
 export const governancePolicyImpactAnalysisTaskSurface = envelope(

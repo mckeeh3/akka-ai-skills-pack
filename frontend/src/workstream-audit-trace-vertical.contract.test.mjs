@@ -15,10 +15,10 @@ const traceLinks = read('./workstream/stream/TraceLinkList.tsx');
 const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 
 test('Audit/Trace v0 fixture exposes contract capabilities, surfaces, and backend-authoritative actions', () => {
-  for (const capability of ['audit.trace.dashboard.read', 'audit.trace.search', 'audit.trace.detail.read', 'audit.trace.timeline.read', 'audit.trace.failureEvidence.read', 'audit.trace.investigationGuide.read', 'audit.trace.summary_task.start', 'audit.trace.summary_task.read', 'audit.trace.summary_task.accept_result', 'audit.trace.summary_task.reject_result', 'audit.trace.summary_task.open_evidence']) {
+  for (const capability of ['audit.trace.dashboard.read', 'audit.trace.search', 'audit.trace.detail.read', 'audit.trace.timeline.read', 'audit.trace.failureEvidence.read', 'audit.trace.investigationGuide.read', 'audit.trace.investigation_note.append', 'audit.trace.summary_task.start', 'audit.trace.summary_task.read', 'audit.trace.summary_task.accept_result', 'audit.trace.summary_task.reject_result', 'audit.trace.summary_task.open_evidence']) {
     assert.match(fixtures, new RegExp(capability.replace('.', '\\.')));
   }
-  for (const surface of ['auditTraceDashboardSurface', 'auditTraceSearchSurface', 'auditTraceDetailSurface', 'auditTraceTimelineSurface', 'auditTraceFailureEvidenceSurface', 'auditTraceInvestigationGuideSurface', 'auditTraceSummaryProgressSurface', 'auditTraceSummaryReviewSurface']) {
+  for (const surface of ['auditTraceDashboardSurface', 'auditTraceSearchSurface', 'auditTraceDetailSurface', 'auditTraceTimelineSurface', 'auditTraceFailureEvidenceSurface', 'auditTraceInvestigationGuideSurface', 'auditTraceInvestigationNoteSurface', 'auditTraceSummaryProgressSurface', 'auditTraceSummaryReviewSurface']) {
     assert.match(fixtures, new RegExp(`export const ${surface}`));
   }
   assert.match(fixtures, /auditTraceStructuredSurfaces/);
@@ -52,6 +52,9 @@ test('Audit/Trace surfaces preserve trace links, denial/provider evidence, redac
 test('Audit/Trace initial workstream remains trace-linked and does not claim frontend authorization', () => {
   assert.match(workstream, /agent-audit-trace/);
   assert.match(workstream, /traceLinks/);
+  assert.match(fixtures, /audit\.trace\.investigationNote\.v1/);
+  assert.match(fixtures, /action-audit-trace-append-investigation-note/);
+  assert.match(fixtures, /do not mutate source traces, policy, authorization, or retained evidence/);
   assert.match(fixtures, /audit\.trace\.summaryProgress\.v1/);
   assert.match(fixtures, /audit\.trace\.summaryReview\.v1/);
   assert.match(fixtures, /blocked_provider_or_runtime/);

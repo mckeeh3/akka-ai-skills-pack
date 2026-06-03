@@ -61,6 +61,13 @@ test('workstream accessibility and quality checklist markers have source evidenc
   assert.match(base, /:focus-visible/);
   assert.match(base, /prefers-reduced-motion/);
   assert.match(layout + components, /@media \(max-width: 640px\)/);
+  assert.match(shell, /data-mobile-rail-open=\{mobileRailOpen \? 'true' : 'false'\}/);
+  assert.match(shell, /className=\{`mobile-menu-button/);
+  assert.match(shell, /className="nav-backdrop"/);
+  assert.match(layout, /\.mobile-menu-button\.mobile-menu-button,[\s\S]*?\.nav-backdrop\.nav-backdrop \{ display: none; \}/);
+  assert.match(layout, /\.mobile-menu-button\.mobile-menu-button \{[\s\S]*?display: inline-flex;/);
+  assert.match(layout, /\.mobile-menu-button\.mobile-menu-button\.hidden/);
+  assert.match(layout, /env\(safe-area-inset-top/);
 });
 
 test('workstream composer send tooltip can escape the composer frame and left accent remains on the field edge', () => {
@@ -107,7 +114,11 @@ test('frontend source avoids unsafe dynamic HTML insertion', () => {
 test('frontend scripts document the quality and Akka static handoff commands', () => {
   assert.equal(packageJson.scripts.typecheck, 'tsc --noEmit');
   assert.equal(packageJson.scripts.test, 'node --test src/*.test.mjs');
+  assert.equal(packageJson.scripts.prebuild, 'node scripts/clean-static-assets.mjs');
   assert.match(packageJson.scripts.build, /vite build --outDir \.\.\/src\/main\/resources\/static-resources/);
+  assert.equal(packageJson.scripts['analyze:bundle'], 'node scripts/report-bundle-size.mjs');
+  assert.ok(existsSync(new URL('../scripts/clean-static-assets.mjs', import.meta.url)));
+  assert.ok(existsSync(new URL('../scripts/report-bundle-size.mjs', import.meta.url)));
   assert.ok(existsSync(new URL('../README.md', import.meta.url)));
 });
 
