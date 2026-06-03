@@ -16,6 +16,8 @@ import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.InvitationActionApiRequest;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.InvitationApiResponse;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.InvitationsApiResponse;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.MembershipActionApiResponse;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.UserAdminDashboardPayload;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.UserAdminUserAccountPayload;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,49 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
     assertTrue(audit.status().isSuccess());
     assertTrue(audit.body().events().stream().anyMatch(event -> event.actionType().equals("USER_DIRECTORY_SEARCH") && event.correlationId().equals("corr-admin-users")));
     assertTrue(audit.body().events().stream().allMatch(event -> event.tenantId() == null || event.tenantId().equals("tenant-starter")));
+  }
+
+  @Test
+  void userAdminDashboardAndAccountPayloadsExposeInvitationLifecycleWithoutRawTokens() throws Exception {
+    var created = httpClient
+        .POST("/api/admin/invitations")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-admin-dashboard-invite")
+        .withRequestBody(new CreateInvitationApiRequest("dashboard-invite@example.test", "Dashboard Invite", List.of("TENANT_EMPLOYEE"), "idem-dashboard-invite"))
+        .responseBodyAs(InvitationApiResponse.class)
+        .invoke();
+    assertTrue(created.status().isSuccess());
+
+    var dashboard = httpClient
+        .GET("/api/admin/users/dashboard")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-admin-dashboard")
+        .responseBodyAs(UserAdminDashboardPayload.class)
+        .invoke();
+    assertTrue(dashboard.status().isSuccess());
+    assertEquals("corr-admin-dashboard", dashboard.body().correlationId());
+    assertEquals("tenant", dashboard.body().selectedScope().scopeType());
+    assertTrue(dashboard.body().counts().visibleUsers() >= 1);
+    assertTrue(dashboard.body().counts().pendingInvitations() >= 1);
+    assertTrue(dashboard.body().invitationQueue().stream().anyMatch(invitation -> invitation.invitationId().equals(created.body().invitationId())));
+    assertTrue(dashboard.body().visibleActions().contains("action-invite-user"));
+    assertTrue(dashboard.body().traceIds().contains("trace-user-admin-dashboard"));
+    assertTrue(dashboard.body().toString().contains("dashboard-invite@example.test"));
+    assertTrue(!dashboard.body().toString().contains("invite-token-"));
+    assertTrue(!dashboard.body().toString().contains("tokenHash"));
+
+    var account = httpClient
+        .GET("/api/admin/users/dashboard-invite@example.test")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-admin-account")
+        .responseBodyAs(UserAdminUserAccountPayload.class)
+        .invoke();
+    assertTrue(account.status().isSuccess());
+    assertEquals("dashboard-invite@example.test", account.body().account().accountId());
+    assertTrue(account.body().invitationHistory().stream().anyMatch(invitation -> invitation.invitationId().equals(created.body().invitationId())));
+    assertTrue(account.body().redactions().contains("raw-token-redacted"));
+    assertTrue(account.body().visibleActions().contains("action-useradmin-preview-role-change"));
+    assertTrue(!account.body().toString().contains("invite-token-"));
   }
 
   @Test

@@ -44,6 +44,40 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     StarterSecurityComponents.bindAkkaRuntime(componentClient);
   }
 
+  @Get("/users/dashboard")
+  public HttpResponse usersDashboard() {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var scopeType = actor.selectedContext().scopeType();
+      var tenantId = actor.selectedContext().tenantId();
+      var customerId = actor.selectedContext().customerId();
+      var users = StarterSecurityComponents.userAdminService().searchUsers(actor, null, correlationId).stream()
+          .map(AdminUserResponse::from)
+          .toList();
+      var invitations = StarterSecurityComponents.invitationView()
+          .list(actor, scopeType, tenantId, customerId)
+          .stream()
+          .map(InvitationApiResponse::from)
+          .toList();
+      var audit = new AdminAuditView(StarterSecurityComponents.userAdminService())
+          .list(actor, 10, correlationId)
+          .stream()
+          .map(AdminAuditEventResponse::from)
+          .toList();
+      var pendingInvitations = invitations.stream().filter(invitation -> !List.of("accepted", "revoked", "expired").contains(invitation.status())).count();
+      var deliveryFailures = invitations.stream().filter(invitation -> "failed".equals(invitation.deliveryStatus())).count();
+      return HttpResponses.ok(new UserAdminDashboardPayload(
+          new SelectedAdminScope(scopeType.name().toLowerCase(), tenantId, customerId, actor.selectedContext().membershipId()),
+          new UserAdminDashboardCounts(users.size(), pendingInvitations, deliveryFailures, audit.size()),
+          invitations,
+          users.stream().limit(10).toList(),
+          audit,
+          List.of("action-invite-user", "action-display-user-list", "action-useradmin-start-access-review"),
+          List.of("trace-user-admin-dashboard", correlationId),
+          correlationId));
+    });
+  }
+
   @Get("/users")
   public HttpResponse users() {
     var query = requestContext().queryParams().getString("query").orElse(null);
@@ -53,6 +87,39 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
           .map(AdminUserResponse::from)
           .toList();
       return HttpResponses.ok(new AdminUsersResponse(rows, correlationId));
+    });
+  }
+
+  @Get("/users/{accountId}")
+  public HttpResponse userAccount(String accountId) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var users = StarterSecurityComponents.userAdminService().searchUsers(actor, accountId, correlationId).stream()
+          .filter(user -> user.accountId().equals(accountId))
+          .map(AdminUserResponse::from)
+          .toList();
+      if (users.isEmpty()) throw notFound();
+      var user = users.get(0);
+      var invitations = StarterSecurityComponents.invitationView()
+          .list(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId())
+          .stream()
+          .filter(invitation -> invitation.targetEmail().equals(accountId))
+          .map(InvitationApiResponse::from)
+          .toList();
+      var audit = new AdminAuditView(StarterSecurityComponents.userAdminService())
+          .list(actor, 25, correlationId)
+          .stream()
+          .filter(event -> accountId.equals(event.targetAccountId()))
+          .map(AdminAuditEventResponse::from)
+          .toList();
+      return HttpResponses.ok(new UserAdminUserAccountPayload(
+          user,
+          invitations,
+          audit,
+          List.of("action-useradmin-disable-member", "action-useradmin-reactivate-member", "action-useradmin-preview-role-change", "action-useradmin-change-member-roles"),
+          List.of("raw-token-redacted", "token-hash-redacted", "provider-secret-redacted"),
+          List.of("trace-user-admin-detail", correlationId),
+          correlationId));
     });
   }
 
@@ -78,6 +145,11 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
           .toList();
       return HttpResponses.ok(new InvitationHistoryApiResponses(history, correlationId));
     });
+  }
+
+  @Post("/users/invitations")
+  public HttpResponse createUserInvitation(CreateInvitationApiRequest request) {
+    return createInvitation(request);
   }
 
   @Post("/invitations")
@@ -339,6 +411,10 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     HttpResponse invoke(WorkosIdentity identity, String selectedContextId, String correlationId);
   }
 
+  public record SelectedAdminScope(String scopeType, String tenantId, String customerId, String selectedContextId) {}
+  public record UserAdminDashboardCounts(int visibleUsers, long pendingInvitations, long deliveryFailures, int recentAuditEvents) {}
+  public record UserAdminDashboardPayload(SelectedAdminScope selectedScope, UserAdminDashboardCounts counts, List<InvitationApiResponse> invitationQueue, List<AdminUserResponse> recentUsers, List<AdminAuditEventResponse> recentAuditEvents, List<String> visibleActions, List<String> traceIds, String correlationId) {}
+  public record UserAdminUserAccountPayload(AdminUserResponse account, List<InvitationApiResponse> invitationHistory, List<AdminAuditEventResponse> auditEvents, List<String> visibleActions, List<String> redactions, List<String> traceIds, String correlationId) {}
   public record AdminUsersResponse(List<AdminUserResponse> users, String correlationId) {}
   public record AdminUserResponse(String accountId, String displayName, String membershipId, List<String> roles, String status, String scopeType, String tenantId, String customerId) {
     static AdminUserResponse from(UserDirectoryRow row) {

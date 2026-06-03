@@ -132,6 +132,16 @@ test('workstream and API clients support five core markdown plus demo dashboard-
   assert.match(apiClient, /action-useradmin-disable-member/);
   assert.match(apiClient, /userAdminMemberStatusActionSurface/);
   assert.match(apiClient, /userAdminRoleChangePreviewSurface/);
+  const frontendApiContracts = read('../../app-description/55-ui/frontend-api-contracts.md');
+  assert.match(frontendApiContracts, /\/api\/admin\/users\/dashboard/);
+  assert.match(frontendApiContracts, /\/api\/admin\/users/);
+  assert.match(frontendApiContracts, /\/api\/admin\/users\/\{accountId\}/);
+  assert.match(frontendApiContracts, /\/api\/admin\/invitations/);
+  assert.match(frontendApiContracts, /\/api\/admin\/invitations\/\{invitationId\}\/resend/);
+  assert.match(frontendApiContracts, /\/api\/admin\/invitations\/\{invitationId\}\/revoke/);
+  assert.match(frontendApiContracts, /UserAdminDashboardPayload/);
+  assert.match(frontendApiContracts, /UserAdminUserAccountPayload/);
+  assert.match(frontendApiContracts, /raw invitation tokens\/token hashes/);
   assert.match(httpApiClient, /\/api\/workstream\/bootstrap/);
   assert.match(httpApiClient, /\/api\/workstream\/actions/);
   assert.match(httpApiClient, /X-Selected-Context-Id/);

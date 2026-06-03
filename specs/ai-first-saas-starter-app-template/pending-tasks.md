@@ -928,7 +928,7 @@
 
 ### TASK-STARTER-08-002: User Admin invitation lifecycle surfaces and actions
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-02-003, TASK-STARTER-07-005, TASK-STARTER-07-006, and part of TASK-STARTER-07-007
 - task brief: none
 - depends on: [TASK-STARTER-08-001]
@@ -979,6 +979,9 @@
   - Akka substrate/exposure: ESE invitation lifecycle or durable seam; InvitationWorkflow; TimedAction expiry/reminder; Consumer email/outbox; InvitationView; HTTP/workstream APIs; frontend structured surfaces
   - audit/trace/tests: idempotency, delivery failure status, tenant isolation, raw token redaction, outbox/no-secret checks, rendering states, API/realtime parity
   - supersedes future task shape for: TASK-STARTER-02-003, TASK-STARTER-07-005, TASK-STARTER-07-006, TASK-STARTER-07-007
+  - commit message: `Add starter user admin invitation surfaces`
+  - check passed: `git diff --check`
+  - validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh` (rendered backend tests, frontend npm install/test/typecheck/build/analyze, static asset scan, and real provider smoke when provider env was available).
 
 ### TASK-STARTER-08-003: User Admin membership, role, support access, and access-review vertical
 
