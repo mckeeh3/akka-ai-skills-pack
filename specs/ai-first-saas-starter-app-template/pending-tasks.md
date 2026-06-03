@@ -985,7 +985,7 @@
 
 ### TASK-STARTER-08-003: User Admin membership, role, support access, and access-review vertical
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-02-003, TASK-STARTER-03-002, TASK-STARTER-07-007, and TASK-STARTER-07-009
 - task brief: none
 - depends on: [TASK-STARTER-08-002]
@@ -1042,6 +1042,9 @@
   - Akka substrate/exposure: Account/Profile/Settings KVE; Membership/Role ESE or durable seam; Invitation integration; SupportAccessGrant; AdminAuditEvent; UserDirectoryView/MembershipView/InvitationView/AdminAuditView/AccessReviewQueueView; HTTP/workstream action APIs; frontend structured surfaces/forms/tables
   - audit/trace/tests: AdminAuditEvent for every mutation/denial/no-op, PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace for UserAdminAgent tool allow/deny and surface/action outcomes, tenant isolation, support boundary, idempotent updates, rendering/forms/accessibility checks
   - supersedes future task shape for: TASK-STARTER-02-003, TASK-STARTER-03-002, TASK-STARTER-07-007, TASK-STARTER-07-009
+  - commit message: `Add starter user admin membership vertical`
+  - check passed: `git diff --check`
+  - validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh` (rendered backend tests, frontend npm install/test/typecheck/build/analyze, static asset scan, and real provider smoke when provider env was available).
 
 ### TASK-STARTER-08-004: Agent Admin catalog, definition lifecycle, and seed governance vertical
 

@@ -7,15 +7,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import akka.javasdk.JsonSupport;
 import akka.javasdk.testkit.TestKitSupport;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.AccessReviewApiRequest;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.AccessReviewApiResponse;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.AccountActionApiRequest;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.AccountActionApiResponse;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.AdminAuditEventsResponse;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.AdminUsersResponse;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.ChangeMembershipStatusApiRequest;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.ChangeRolesApiRequest;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.CreateInvitationApiRequest;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.InvitationActionApiRequest;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.IdentityRelinkApiRequest;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.IdentityRelinkApiResponse;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.InvitationApiResponse;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.InvitationsApiResponse;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.MembershipActionApiResponse;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.RoleChangePreviewApiResponse;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.SupportAccessApiRequest;
+import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.SupportAccessApiResponse;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.UserAdminDashboardPayload;
 import {{JAVA_BASE_PACKAGE}}.api.admin.AdminEndpoint.UserAdminUserAccountPayload;
 import java.util.Base64;
@@ -176,6 +185,84 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
     assertTrue(disabled.status().isSuccess());
     assertEquals("accepted", disabled.body().status());
     assertEquals("suspended", disabled.body().membershipStatus());
+  }
+
+  @Test
+  void adminCanPreviewRolesManageSupportAccessIdentityRelinkAndAccessReviewThroughProtectedApis() throws Exception {
+    var preview = httpClient
+        .POST("/api/admin/memberships/membership-member@example.test/roles/preview")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-admin-role-preview")
+        .withRequestBody(new ChangeRolesApiRequest(List.of("TENANT_EMPLOYEE"), "least privilege preview", null))
+        .responseBodyAs(RoleChangePreviewApiResponse.class)
+        .invoke();
+    assertTrue(preview.status().isSuccess());
+    assertTrue(preview.body().allowed());
+    assertTrue(preview.body().traceId().contains("trace-useradmin-preview-role-change"));
+
+    var support = httpClient
+        .POST("/api/admin/support-access/membership-member@example.test/grant")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-support-grant")
+        .withRequestBody(new SupportAccessApiRequest("break glass support", "2026-06-03T12:00:00Z", "idem-support-grant"))
+        .responseBodyAs(SupportAccessApiResponse.class)
+        .invoke();
+    assertTrue(support.status().isSuccess());
+    assertTrue(support.body().supportAccess());
+    assertEquals("membership-member@example.test", support.body().membershipId());
+
+    var relink = httpClient
+        .POST("/api/admin/users/member@example.test/identity-relink/request")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-identity-relink")
+        .withRequestBody(new IdentityRelinkApiRequest("provider subject mismatch", null, "idem-relink-request"))
+        .responseBodyAs(IdentityRelinkApiResponse.class)
+        .invoke();
+    assertTrue(relink.status().isSuccess());
+    assertEquals("approval-required", relink.body().status());
+
+    var accessReview = httpClient
+        .POST("/api/admin/access-review")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-access-review-api")
+        .withRequestBody(new AccessReviewApiRequest("quarterly user admin review", "idem-access-review-api"))
+        .responseBodyAs(AccessReviewApiResponse.class)
+        .invoke();
+    assertTrue(accessReview.status().isSuccess());
+    assertTrue(List.of("queued", "running", "blocked_provider_or_runtime").contains(accessReview.body().status()));
+    assertTrue(accessReview.body().traceIds().stream().anyMatch(trace -> trace.contains("trace-useradmin-access-review")));
+
+    var readAccessReview = httpClient
+        .GET("/api/admin/access-review/" + accessReview.body().taskId())
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-access-review-read")
+        .responseBodyAs(AccessReviewApiResponse.class)
+        .invoke();
+    assertTrue(readAccessReview.status().isSuccess());
+    assertEquals(accessReview.body().taskId(), readAccessReview.body().taskId());
+  }
+
+  @Test
+  void adminAccountLifecycleApiIsBackendAuthorizedAndIdempotent() throws Exception {
+    var disabled = httpClient
+        .POST("/api/admin/users/member@example.test/disable")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-account-disable")
+        .withRequestBody(new AccountActionApiRequest("offboarding", "idem-account-disable"))
+        .responseBodyAs(AccountActionApiResponse.class)
+        .invoke();
+    assertTrue(disabled.status().isSuccess());
+    assertEquals("disabled", disabled.body().accountStatus());
+
+    var reactivated = httpClient
+        .POST("/api/admin/users/member@example.test/reactivate")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-account-reactivate")
+        .withRequestBody(new AccountActionApiRequest("returned", "idem-account-reactivate"))
+        .responseBodyAs(AccountActionApiResponse.class)
+        .invoke();
+    assertTrue(reactivated.status().isSuccess());
+    assertEquals("active", reactivated.body().accountStatus());
   }
 
   @Test

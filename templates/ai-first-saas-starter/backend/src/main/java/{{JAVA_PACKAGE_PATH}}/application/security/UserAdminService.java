@@ -139,16 +139,80 @@ public final class UserAdminService {
     var memberships = repository.membershipsByAccount(accountId);
     for (var membership : memberships) {
       requireManage(actor, membership.scopeType(), membership.tenantId(), membership.customerId());
+      if (actor.account().accountId().equals(membership.accountId())) {
+        audit(actor, membership, "ACCOUNT_DISABLE", AdminAuditEvent.Result.DENIED, "self-disable-denied", correlationId);
+        throw new AuthorizationException(403, "self-disable-denied");
+      }
       if (wouldRemoveLastAdmin(membership, membership.roles(), MembershipStatus.SUSPENDED)) {
         audit(actor, membership, "ACCOUNT_DISABLE", AdminAuditEvent.Result.DENIED, "last-admin-denied", correlationId);
         throw new AuthorizationException(403, "last-admin-denied");
       }
     }
-    var account = repository.findAccountByEmail(accountId).orElseThrow(() -> new AuthorizationException(404, "target-not-found-or-forbidden"));
+    var account = account(accountId);
+    if (account.status() == AccountStatus.DISABLED) {
+      audit(actor, memberships.isEmpty() ? null : memberships.get(0), "ACCOUNT_DISABLE", AdminAuditEvent.Result.NO_OP, "already-disabled", correlationId);
+      return account;
+    }
     var disabled = new Account(account.accountId(), account.workosUserId(), account.normalizedEmail(), account.displayEmail(), AccountStatus.DISABLED, account.identityLinkState());
     repository.saveAccount(disabled);
     audit(actor, memberships.isEmpty() ? null : memberships.get(0), "ACCOUNT_DISABLE", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
     return disabled;
+  }
+
+  public Account reactivateAccount(AuthContextResolver.ResolvedMe actor, String accountId, String reason, String correlationId) {
+    var memberships = repository.membershipsByAccount(accountId);
+    for (var membership : memberships) {
+      requireManage(actor, membership.scopeType(), membership.tenantId(), membership.customerId());
+    }
+    var account = account(accountId);
+    if (account.status() == AccountStatus.ACTIVE) {
+      audit(actor, memberships.isEmpty() ? null : memberships.get(0), "ACCOUNT_REACTIVATE", AdminAuditEvent.Result.NO_OP, "already-active", correlationId);
+      return account;
+    }
+    var active = new Account(account.accountId(), account.workosUserId(), account.normalizedEmail(), account.displayEmail(), AccountStatus.ACTIVE, account.identityLinkState());
+    repository.saveAccount(active);
+    audit(actor, memberships.isEmpty() ? null : memberships.get(0), "ACCOUNT_REACTIVATE", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
+    return active;
+  }
+
+  public Membership updateSupportAccess(AuthContextResolver.ResolvedMe actor, String membershipId, boolean enabled, Instant expiresAt, String reason, String idempotencyKey, String correlationId) {
+    if (idempotencyKey == null || idempotencyKey.isBlank()) {
+      throw new AuthorizationException(400, "idempotency-key-required");
+    }
+    var existing = membership(membershipId);
+    requireManage(actor, existing.scopeType(), existing.tenantId(), existing.customerId());
+    var capability = existing.scopeType() == ScopeType.CUSTOMER ? "customer.user.manage" : existing.scopeType() == ScopeType.SAAS_OWNER ? "saas_owner.user.manage" : "tenant.support_access.manage";
+    if (!actor.selectedContext().hasCapability(capability)) {
+      audit(actor, existing, enabled ? "SUPPORT_ACCESS_GRANT" : "SUPPORT_ACCESS_REVOKE", AdminAuditEvent.Result.DENIED, "missing-capability:" + capability, correlationId);
+      throw new AuthorizationException(403, "missing-capability:" + capability);
+    }
+    if (existing.supportAccess() == enabled && java.util.Objects.equals(existing.expiresAt(), expiresAt)) {
+      audit(actor, existing, enabled ? "SUPPORT_ACCESS_GRANT" : "SUPPORT_ACCESS_REVOKE", AdminAuditEvent.Result.NO_OP, "no-op idempotency", correlationId);
+      return existing;
+    }
+    var updated = new Membership(existing.membershipId(), existing.accountId(), existing.scopeType(), existing.tenantId(), existing.customerId(), existing.roles(), existing.status(), enabled, enabled ? expiresAt : null);
+    put(updated);
+    audit(actor, updated, enabled ? "SUPPORT_ACCESS_GRANT" : "SUPPORT_ACCESS_REVOKE", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
+    return updated;
+  }
+
+  public IdentityRelinkResult requestIdentityRelink(AuthContextResolver.ResolvedMe actor, String accountId, String reason, String idempotencyKey, String correlationId) {
+    if (idempotencyKey == null || idempotencyKey.isBlank()) throw new AuthorizationException(400, "idempotency-key-required");
+    var memberships = repository.membershipsByAccount(accountId);
+    for (var membership : memberships) requireManage(actor, membership.scopeType(), membership.tenantId(), membership.customerId());
+    var target = account(accountId);
+    audit(actor, memberships.isEmpty() ? null : memberships.get(0), "IDENTITY_RELINK_REQUEST", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
+    return new IdentityRelinkResult("approval-required", "Identity relink requested; completion requires backend policy approval evidence.", target.accountId(), "trace-useradmin-identity-relink-request-" + stableSuffix(idempotencyKey));
+  }
+
+  public IdentityRelinkResult completeIdentityRelink(AuthContextResolver.ResolvedMe actor, String accountId, String approvalRef, String idempotencyKey, String correlationId) {
+    if (idempotencyKey == null || idempotencyKey.isBlank()) throw new AuthorizationException(400, "idempotency-key-required");
+    if (approvalRef == null || approvalRef.isBlank()) throw new AuthorizationException(400, "approval-ref-required");
+    var memberships = repository.membershipsByAccount(accountId);
+    for (var membership : memberships) requireManage(actor, membership.scopeType(), membership.tenantId(), membership.customerId());
+    var target = account(accountId);
+    audit(actor, memberships.isEmpty() ? null : memberships.get(0), "IDENTITY_RELINK_COMPLETE", AdminAuditEvent.Result.ALLOWED, "approval:" + approvalRef, correlationId);
+    return new IdentityRelinkResult("accepted", "Identity relink completion recorded with approval evidence; WorkOS subject mutation remains provider-boundary controlled.", target.accountId(), "trace-useradmin-identity-relink-complete-" + stableSuffix(idempotencyKey));
   }
 
   void requireAccessReviewRead(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
@@ -260,6 +324,10 @@ public final class UserAdminService {
     return capabilities;
   }
 
+  private Account account(String accountId) {
+    return repository.findAccountByEmail(accountId).orElseThrow(() -> new AuthorizationException(404, "target-not-found-or-forbidden"));
+  }
+
   private Membership membership(String membershipId) {
     return repository.membership(membershipId).orElseThrow(() -> new AuthorizationException(404, "target-not-found-or-forbidden"));
   }
@@ -280,4 +348,5 @@ public final class UserAdminService {
   public record RoleChangePreview(boolean allowed, boolean noOp, String message, String traceId, List<String> capabilityDelta, List<String> affectedWorkstreams, List<String> policyHints, String lastAdminImpact) {}
   public record RoleChangeResult(String status, String message, Membership membership, String traceId) {}
   public record StatusTransitionResult(String status, String message, Membership membership, String traceId) {}
+  public record IdentityRelinkResult(String status, String message, String accountId, String traceId) {}
 }

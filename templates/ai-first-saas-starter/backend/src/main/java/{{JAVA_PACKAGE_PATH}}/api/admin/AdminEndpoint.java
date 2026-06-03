@@ -15,12 +15,14 @@ import static akka.javasdk.http.HttpException.unauthorized;
 import {{JAVA_BASE_PACKAGE}}.application.security.AdminAuditView;
 import {{JAVA_BASE_PACKAGE}}.application.security.AdminAuditView.AdminAuditRow;
 import {{JAVA_BASE_PACKAGE}}.application.security.AuthorizationException;
+import {{JAVA_BASE_PACKAGE}}.application.security.UserAdminService.RoleChangePreview;
 import {{JAVA_BASE_PACKAGE}}.application.security.DigestExportService;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationService;
 import {{JAVA_BASE_PACKAGE}}.application.security.InvitationView.InvitationRow;
 import {{JAVA_BASE_PACKAGE}}.application.security.StarterSecurityComponents;
 import {{JAVA_BASE_PACKAGE}}.application.security.UserAdminService.UserDirectoryRow;
 import {{JAVA_BASE_PACKAGE}}.application.security.WorkosIdentityResolver;
+import {{JAVA_BASE_PACKAGE}}.domain.security.AccessReviewTask;
 import {{JAVA_BASE_PACKAGE}}.domain.security.DigestExportRequest;
 import {{JAVA_BASE_PACKAGE}}.domain.security.EnterpriseIdentityProviderStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
@@ -72,7 +74,7 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
           invitations,
           users.stream().limit(10).toList(),
           audit,
-          List.of("action-invite-user", "action-display-user-list", "action-useradmin-start-access-review"),
+          List.of("action-invite-user", "action-display-user-list", "action-useradmin-start-access-review", "action-read-support-access", "action-grant-support-access"),
           List.of("trace-user-admin-dashboard", correlationId),
           correlationId));
     });
@@ -116,7 +118,7 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
           user,
           invitations,
           audit,
-          List.of("action-useradmin-disable-member", "action-useradmin-reactivate-member", "action-useradmin-preview-role-change", "action-useradmin-change-member-roles"),
+          List.of("action-useradmin-disable-member", "action-useradmin-reactivate-member", "action-useradmin-preview-role-change", "action-useradmin-change-member-roles", "action-disable-account", "action-reactivate-account", "action-request-identity-relink", "action-read-support-access", "action-grant-support-access", "action-revoke-support-access", "action-useradmin-read-access-review"),
           List.of("raw-token-redacted", "token-hash-redacted", "provider-secret-redacted"),
           List.of("trace-user-admin-detail", correlationId),
           correlationId));
@@ -195,6 +197,15 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     });
   }
 
+  @Post("/memberships/{membershipId}/roles/preview")
+  public HttpResponse previewMembershipRoleChange(String membershipId, ChangeRolesApiRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var preview = StarterSecurityComponents.userAdminService().previewRoleChange(actor, membershipId, rolesOrDefault(request == null ? null : request.roles()), textOr(request == null ? null : request.reason(), "admin-api-role-preview"), correlationId);
+      return HttpResponses.ok(RoleChangePreviewApiResponse.from(preview, correlationId));
+    });
+  }
+
   @Post("/memberships/{membershipId}/roles")
   public HttpResponse changeMembershipRoles(String membershipId, ChangeRolesApiRequest request) {
     var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
@@ -215,6 +226,114 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
       var targetStatus = MembershipStatus.valueOf(requireText(request == null ? null : request.status(), "status").toUpperCase());
       var result = StarterSecurityComponents.userAdminService().updateMemberStatus(actor, membershipId, targetStatus, textOr(request == null ? null : request.reason(), "admin-api-status-change"), stableIdempotencyKey, correlationId);
       return HttpResponses.ok(new MembershipActionApiResponse(result.status(), result.message(), result.membership().membershipId(), result.membership().accountId(), result.membership().roles().stream().map(Enum::name).toList(), result.membership().status().name().toLowerCase(), result.traceId(), correlationId));
+    });
+  }
+
+  @Post("/users/{accountId}/disable")
+  public HttpResponse disableAccount(String accountId, AccountActionApiRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var account = StarterSecurityComponents.userAdminService().disableAccount(actor, accountId, textOr(request == null ? null : request.reason(), "admin-api-disable-account"), correlationId);
+      return HttpResponses.ok(new AccountActionApiResponse("accepted", account.accountId(), account.status().name().toLowerCase(), List.of("trace-useradmin-account-disable-" + correlationId.hashCode()), correlationId));
+    });
+  }
+
+  @Post("/users/{accountId}/reactivate")
+  public HttpResponse reactivateAccount(String accountId, AccountActionApiRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var account = StarterSecurityComponents.userAdminService().reactivateAccount(actor, accountId, textOr(request == null ? null : request.reason(), "admin-api-reactivate-account"), correlationId);
+      return HttpResponses.ok(new AccountActionApiResponse("accepted", account.accountId(), account.status().name().toLowerCase(), List.of("trace-useradmin-account-reactivate-" + correlationId.hashCode()), correlationId));
+    });
+  }
+
+  @Post("/users/{accountId}/identity-relink/request")
+  public HttpResponse requestIdentityRelink(String accountId, IdentityRelinkApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.userAdminService().requestIdentityRelink(actor, accountId, textOr(request == null ? null : request.reason(), "admin-api-identity-relink"), stableIdempotencyKey, correlationId);
+      return HttpResponses.ok(new IdentityRelinkApiResponse(result.status(), result.message(), result.accountId(), result.traceId(), correlationId));
+    });
+  }
+
+  @Post("/users/{accountId}/identity-relink/complete")
+  public HttpResponse completeIdentityRelink(String accountId, IdentityRelinkApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.userAdminService().completeIdentityRelink(actor, accountId, request == null ? null : request.approvalRef(), stableIdempotencyKey, correlationId);
+      return HttpResponses.ok(new IdentityRelinkApiResponse(result.status(), result.message(), result.accountId(), result.traceId(), correlationId));
+    });
+  }
+
+  @Post("/support-access/{membershipId}/grant")
+  public HttpResponse grantSupportAccess(String membershipId, SupportAccessApiRequest request) {
+    return updateSupportAccess(membershipId, true, request);
+  }
+
+  @Post("/support-access/{membershipId}/revoke")
+  public HttpResponse revokeSupportAccess(String membershipId, SupportAccessApiRequest request) {
+    return updateSupportAccess(membershipId, false, request);
+  }
+
+  @Post("/support-access/{membershipId}/extend")
+  public HttpResponse extendSupportAccess(String membershipId, SupportAccessApiRequest request) {
+    return updateSupportAccess(membershipId, true, request);
+  }
+
+  private HttpResponse updateSupportAccess(String membershipId, boolean enabled, SupportAccessApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var expiresAt = request == null || request.expiresAt() == null || request.expiresAt().isBlank() ? null : Instant.parse(request.expiresAt());
+      var membership = StarterSecurityComponents.userAdminService().updateSupportAccess(actor, membershipId, enabled, expiresAt, textOr(request == null ? null : request.reason(), enabled ? "admin-api-support-access-grant" : "admin-api-support-access-revoke"), stableIdempotencyKey, correlationId);
+      return HttpResponses.ok(new SupportAccessApiResponse("accepted", membership.membershipId(), membership.accountId(), membership.supportAccess(), membership.expiresAt() == null ? null : membership.expiresAt().toString(), List.of("trace-useradmin-support-access-" + correlationId.hashCode()), correlationId));
+    });
+  }
+
+  @Post("/access-review")
+  public HttpResponse startAccessReview(AccessReviewApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      return HttpResponses.ok(AccessReviewApiResponse.from(StarterSecurityComponents.userAdminAccessReviewService().start(actor, stableIdempotencyKey, correlationId), correlationId));
+    });
+  }
+
+  @Get("/access-review/{taskId}")
+  public HttpResponse readAccessReview(String taskId) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      return HttpResponses.ok(AccessReviewApiResponse.from(StarterSecurityComponents.userAdminAccessReviewService().read(actor, taskId, correlationId), correlationId));
+    });
+  }
+
+  @Post("/access-review/{taskId}/cancel")
+  public HttpResponse cancelAccessReview(String taskId, AccessReviewApiRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      return HttpResponses.ok(AccessReviewApiResponse.from(StarterSecurityComponents.userAdminAccessReviewService().cancel(actor, taskId, textOr(request == null ? null : request.reason(), "admin-api-access-review-cancel"), correlationId), correlationId));
+    });
+  }
+
+  @Post("/access-review/{taskId}/accept")
+  public HttpResponse acceptAccessReviewResult(String taskId, AccessReviewApiRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      return HttpResponses.ok(AccessReviewApiResponse.from(StarterSecurityComponents.userAdminAccessReviewService().acceptResult(actor, taskId, textOr(request == null ? null : request.reason(), "admin-api-access-review-accept"), correlationId), correlationId));
+    });
+  }
+
+  @Post("/access-review/{taskId}/reject")
+  public HttpResponse rejectAccessReviewResult(String taskId, AccessReviewApiRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      return HttpResponses.ok(AccessReviewApiResponse.from(StarterSecurityComponents.userAdminAccessReviewService().rejectResult(actor, taskId, textOr(request == null ? null : request.reason(), "admin-api-access-review-reject"), correlationId), correlationId));
     });
   }
 
@@ -425,6 +544,10 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public record InvitationActionApiRequest(String reason, String idempotencyKey) {}
   public record ChangeRolesApiRequest(List<String> roles, String reason, String idempotencyKey) {}
   public record ChangeMembershipStatusApiRequest(String status, String reason, String idempotencyKey) {}
+  public record AccountActionApiRequest(String reason, String idempotencyKey) {}
+  public record SupportAccessApiRequest(String reason, String expiresAt, String idempotencyKey) {}
+  public record IdentityRelinkApiRequest(String reason, String approvalRef, String idempotencyKey) {}
+  public record AccessReviewApiRequest(String reason, String idempotencyKey) {}
   public record ScimProvisioningApiRequest(String operation, String externalId, String email, String displayName, String scopeType, String tenantId, String customerId, List<String> roles, String reason, String idempotencyKey) {}
   public record SsoValidationApiRequest(String domain, String issuer, String metadataUrl, boolean productionRequested) {}
   public record EnterpriseIdentityStatusApiResponse(String tenantId, String customerId, boolean workosAuthKitBoundaryPreserved, boolean scimFoundationEnabled, boolean productionScimConfigured, boolean productionSsoConfigured, String productionReadiness, List<String> providerLimits, List<String> requiredSecretNames, String traceId, String correlationId) {
@@ -471,6 +594,19 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     }
   }
   public record MembershipActionApiResponse(String status, String message, String membershipId, String accountId, List<String> roles, String membershipStatus, String traceId, String correlationId) {}
+  public record RoleChangePreviewApiResponse(boolean allowed, boolean noOp, String message, String traceId, List<String> capabilityDelta, List<String> affectedWorkstreams, List<String> policyHints, String lastAdminImpact, String correlationId) {
+    static RoleChangePreviewApiResponse from(RoleChangePreview preview, String correlationId) {
+      return new RoleChangePreviewApiResponse(preview.allowed(), preview.noOp(), preview.message(), preview.traceId(), preview.capabilityDelta(), preview.affectedWorkstreams(), preview.policyHints(), preview.lastAdminImpact(), correlationId);
+    }
+  }
+  public record AccountActionApiResponse(String status, String accountId, String accountStatus, List<String> traceIds, String correlationId) {}
+  public record SupportAccessApiResponse(String status, String membershipId, String accountId, boolean supportAccess, String expiresAt, List<String> traceIds, String correlationId) {}
+  public record IdentityRelinkApiResponse(String status, String message, String accountId, String traceId, String correlationId) {}
+  public record AccessReviewApiResponse(String taskId, String status, int progressPercent, String summary, String blockerCode, List<String> evidenceRefs, List<String> recommendationRefs, List<String> traceIds, String correlationId) {
+    static AccessReviewApiResponse from(AccessReviewTask task, String correlationId) {
+      return new AccessReviewApiResponse(task.taskId(), task.status().name().toLowerCase(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.recommendationRefs(), task.traceIds(), correlationId);
+    }
+  }
   public record AdminAuditEventsResponse(List<AdminAuditEventResponse> events, String correlationId) {}
   public record AdminAuditEventResponse(String eventId, String occurredAt, String correlationId, String actorAccountId, String actionType, String result, String reasonCode, String tenantId, String customerId, String targetAccountId, String targetMembershipId, String evidenceSummary, String dataClassification, String redactionSummary) {
     static AdminAuditEventResponse from(AdminAuditRow row) {

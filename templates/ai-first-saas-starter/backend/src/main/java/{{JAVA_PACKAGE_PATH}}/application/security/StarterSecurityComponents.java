@@ -179,6 +179,10 @@ public final class StarterSecurityComponents {
     return userAdminService;
   }
 
+  public static UserAdminAccessReviewService userAdminAccessReviewService() {
+    return new UserAdminAccessReviewService(accessReviewTaskRepository(), userAdminService, CLOCK, attentionProducerService, workstreamEventPublisher, new FailClosedAccessReviewAutonomousAgentRuntime());
+  }
+
   public static EnterpriseIdentityAdminService enterpriseIdentityAdminService() {
     return enterpriseIdentityAdminService;
   }
