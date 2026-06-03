@@ -22,7 +22,6 @@ LOCAL_PREFIXES = (
     "docs/",
     "src/",
     "skills/",
-    "templates/",
     "pom.xml",
     "AGENTS.md",
     "install.sh",
@@ -50,7 +49,7 @@ def is_candidate(ref: str) -> bool:
 
 def resolve_ref(skill_file: Path, ref: str, repo_root: Path) -> Path:
     path = ref.split("#", 1)[0]
-    if path.startswith(("docs/", "src/", "skills/", "templates/")) or path in {
+    if path.startswith(("docs/", "src/", "skills/")) or path in {
         "pom.xml",
         "AGENTS.md",
         "install.sh",

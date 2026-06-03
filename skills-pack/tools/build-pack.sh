@@ -87,7 +87,7 @@ This is a build artifact for the Akka AI skills pack.
 ## Excluded
 - akka-context/
 
-The bundle no longer includes a duplicate full-app starter template; downstream core app work should use the repository root fork-and-extend model.
+The bundle no longer includes a duplicate full-app source copy; downstream core app work should use the repository root fork-and-extend model.
 
 The akka-context directory is intentionally excluded from this bundle. Installed skills are rewritten
 at install time so they point to installed examples and generic official Akka SDK documentation

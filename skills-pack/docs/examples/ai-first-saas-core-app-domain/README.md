@@ -2,7 +2,7 @@
 
 ## PRD role
 
-This is the machine-consumable domain PRD for the reusable AI-first SaaS core app domain. It is source input for skills-pack consumption, app-description generation, scaffold/starter realization, backlog planning, and implementation review.
+This is the machine-consumable domain PRD for the reusable AI-first SaaS core app domain. It is source input for skills-pack consumption, app-description generation, core app realization, backlog planning, and implementation review.
 
 The document intentionally prioritizes deterministic decomposition over human narrative.
 

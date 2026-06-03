@@ -36,12 +36,12 @@ Read these first if present:
 - `../../docs/app-description-maintenance-flow.md`
 - `../app-descriptions/SKILL.md`
 - `../ai-first-saas/SKILL.md` when the initial app idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
-- `../../templates/ai-first-saas-starter/app-description/README.md` for the preferred starter core app-description shape
+- the target project `app-description/README.md` plus `../../docs/core-ai-first-saas-foundation.md` for the preferred starter core app-description shape
 - `../../docs/examples/purchase-request-app-description/README.md` for description-layer mechanics only, not target architecture doctrine
 
 Prefer these example references for generated SaaS foundation bootstraps:
-- `../../templates/ai-first-saas-starter/app-description/00-system/app-manifest.md`
-- `../../templates/ai-first-saas-starter/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
+- target project `app-description/00-system/app-manifest.md`
+- target project `app-description/10-capabilities/01-secure-tenant-user-foundation.md`
 
 Use purchase-request mechanics references only when the task is specifically about cross-linked description mechanics:
 - `../../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`

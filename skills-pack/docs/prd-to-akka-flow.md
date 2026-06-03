@@ -62,7 +62,7 @@ Use it with:
 - `requirements-to-workstream-development-process.md`
 - `ai-first-saas-application-architecture.md`
 - `capability-first-backend-architecture.md`
-- `../templates/ai-first-saas-starter/app-description/README.md`
+- the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md`
 
 ## Conventional mechanics references
 

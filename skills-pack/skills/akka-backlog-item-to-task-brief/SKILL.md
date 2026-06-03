@@ -102,7 +102,7 @@ Each task brief must include:
 10. Local/runtime validation path when the task implements app behavior
 11. Done criteria
 
-The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, local/runtime validation path when applicable, and done criteria from the brief. It must also preserve relevant workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, source governed-tool ids, source capability ids, internal-agent delegation/result context, actor/caller, `AuthContext`, required scope/permission checks, approval gates, selected Akka substrate/exposure channel, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace obligations, UI surfaces, style-guide status when UI is in scope, Java base package for generated source work, scaffold-extension assumptions, and test/check expectations from the backlog item.
+The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, local/runtime validation path when applicable, and done criteria from the brief. It must also preserve relevant workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, source governed-tool ids, source capability ids, internal-agent delegation/result context, actor/caller, `AuthContext`, required scope/permission checks, approval gates, selected Akka substrate/exposure channel, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace obligations, UI surfaces, style-guide status when UI is in scope, Java base package for generated source work, core-app-extension assumptions, and test/check expectations from the backlog item.
 
 ## AI-first context preservation
 
@@ -131,7 +131,7 @@ Examples:
 - `specs/tasks/03-consumables-ordering/03-order-workflow-core.md`
 
 ### Scope preservation
-The task brief must not silently widen the backlog item or create a fresh parallel app/spec track. For scaffolded or existing apps, preserve scaffold-extension assumptions, existing app-description/spec locations, queue IDs/statuses, Java base package, and style decisions unless the source backlog explicitly replaces them.
+The task brief must not silently widen the backlog item or create a fresh parallel app/spec track. For existing apps, preserve core-app-extension assumptions, existing app-description/spec locations, queue IDs/statuses, Java base package, and style decisions unless the source backlog explicitly replaces them.
 
 Allowed:
 - narrowing one backlog item into a smaller implementation contract

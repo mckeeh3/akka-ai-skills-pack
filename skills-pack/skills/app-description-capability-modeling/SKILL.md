@@ -41,11 +41,11 @@ Read these first if present:
 - `../app-description-behavior-specification/SKILL.md`
 
 Prefer these AI-first SaaS seed capability references when present:
-- `../../templates/ai-first-saas-starter/app-description/10-capabilities/capabilities-index.md`
-- `../../templates/ai-first-saas-starter/app-description/10-capabilities/01-secure-tenant-user-foundation.md`
-- `../../templates/ai-first-saas-starter/app-description/10-capabilities/02-ai-first-work-management.md`
-- `../../templates/ai-first-saas-starter/app-description/10-capabilities/03-governance-decisions-and-audit.md`
-- `../../templates/ai-first-saas-starter/app-description/10-capabilities/05-managed-agent-foundation.md`
+- target project `app-description/10-capabilities/capabilities-index.md`
+- target project `app-description/10-capabilities/01-secure-tenant-user-foundation.md`
+- target project `app-description/10-capabilities/02-ai-first-work-management.md`
+- target project `app-description/10-capabilities/03-governance-decisions-and-audit.md`
+- target project `app-description/10-capabilities/05-managed-agent-foundation.md`
 
 Conventional mechanics-only references, not canonical generated AI-first SaaS target architecture:
 - `../../docs/examples/purchase-request-app-description/app-description/10-capabilities/capabilities-index.md`

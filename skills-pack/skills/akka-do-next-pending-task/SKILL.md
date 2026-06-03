@@ -50,7 +50,7 @@ Read these first if present:
 - `../../docs/intent-driven-usage-flow.md`
 - `../../docs/solution-plan-to-implementation-queue.md`
 - `../../docs/web-ui-style-guide.md` when selected task includes browser UI work
-- the target project's `specs/scaffold-report.md` if it exists, to detect starter-scaffold extension mode and preserve rendered package/path decisions
+- the target project's implementation artifacts or legacy `specs/scaffold-report.md` if present, to detect existing-app extension mode and preserve selected package/path decisions
 - the target project's `specs/pending-questions.md` if it exists
 - the target project's `specs/pending-tasks.md`
 
@@ -144,11 +144,11 @@ If a task is `superseded`, do not execute it unless the user explicitly asks to 
 
 If `specs/pending-questions.md` exists, verify that the selected task is not blocked by unresolved `blocking` questions referenced in task notes, dependencies, source specs, or affected component areas. Treat unresolved AI-first authority, approval-gate, policy, evidence, risk-threshold, supervision UI, trace-obligation, evaluation, or outcome-metric questions as blockers for affected work. If it is blocked, mark or keep the task `blocked`, cite the question IDs, and recommend `akka-do-next-pending-question` instead of coding.
 
-If the target contains `specs/scaffold-report.md`, execute tasks as extensions of the scaffolded starter unless the task explicitly says otherwise. Preserve the scaffold report, rendered package paths, starter foundation components, workstream UI baseline, and existing queue history; do not replace the starter with a parallel generated app.
+If the target already contains implementation artifacts or a legacy `specs/scaffold-report.md`, execute tasks as extensions of that existing core app baseline unless the task explicitly says otherwise. Preserve the selected Java package, foundation components, workstream UI baseline, and existing queue history; do not replace the app with a parallel generated app.
 
 If the selected task lacks or fails to inherit its vertical workstream contract, block it for queue/task-brief repair before coding. The repair target must name the affected workstream or internal/foundation scope, attention category or non-attention reason, role-specific dashboard purpose, human surface graph node/action edge or non-UI trigger, governed-tool id and qualified exposure (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP-tool), capability id/class, selected Akka substrate, internal workstream agent graph delegation/result surface when relevant, AuthContext, audit/work trace, and local validation path.
 
-If the selected task writes Java source and no selected Java base package is present in required reads, `specs/scaffold-report.md`, app-description, specs, Maven/Gradle configuration, or existing source package roots, block the task and add/update the base-package pending question instead of defaulting to `com.example`. The question is: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`.
+If the selected task writes Java source and no selected Java base package is present in required reads, app-description, specs, Maven/Gradle configuration, legacy `specs/scaffold-report.md`, or existing source package roots, block the task and add/update the base-package pending question instead of defaulting to `com.example`. The question is: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`.
 
 If the selected task includes browser UI implementation and no selected style guide is present in required reads, app-description, or specs, block the task and add/update the style-selection pending question from `../../docs/web-ui-style-guide.md` instead of inventing visual styling.
 

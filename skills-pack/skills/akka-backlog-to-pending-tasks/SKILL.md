@@ -15,7 +15,7 @@ This is a queue repair/materialization skill. It does not redo PRD decomposition
 
 ## Goal
 
-Create or repair `specs/pending-tasks.md` so future harness runs can execute one focused task at a time with `akka-do-next-pending-task`. Each generated or repaired queue entry must be an execution handoff, not a planning placeholder: it should include the source backlog/task brief, dependencies, smallest required reads, exact skills, expected outputs, checks, done criteria, and the inherited workstream id, dashboard/attention, surface graph node/action, internal-agent graph context, governed-tool id, capability id, AuthContext/scope, role/capability rules, approval, audit/trace, UI/style, scaffold, and Java base-package context needed to implement safely without rereading the PRD.
+Create or repair `specs/pending-tasks.md` so future harness runs can execute one focused task at a time with `akka-do-next-pending-task`. Each generated or repaired queue entry must be an execution handoff, not a planning placeholder: it should include the source backlog/task brief, dependencies, smallest required reads, exact skills, expected outputs, checks, done criteria, and the inherited workstream id, dashboard/attention, surface graph node/action, internal-agent graph context, governed-tool id, capability id, AuthContext/scope, role/capability rules, approval, audit/trace, UI/style, existing-app, and Java base-package context needed to implement safely without rereading the PRD.
 
 The skill must:
 - read existing solution, slice, backlog, and task-brief artifacts

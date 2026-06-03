@@ -7,7 +7,7 @@ This document defines the default harness operating flow for maintaining the int
 It complements `docs/internal-app-description-architecture.md` by defining **how** the layers should be updated over time.
 
 Reference examples:
-- canonical starter core app-description template: `templates/ai-first-saas-starter/app-description/README.md`
+- canonical core app-description baseline: the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md`
 - mechanics-only cross-linking example: `docs/examples/purchase-request-app-description/app-description/`
 
 ## Core interaction model

@@ -54,9 +54,9 @@ Read these first if present:
 Canonical frontend project integration reference:
 - `../../docs/frontend-with-akka-backend.md` (use web UI integration sections together with mandatory JWT/request-context and `/api/me` security boundaries for generated SaaS apps)
 
-Canonical full-core starter implementation reference:
-- source repository: `../../templates/ai-first-saas-starter/**`
-- installed pack: `../../resources/templates/ai-first-saas-starter/**`
+Canonical full-core implementation reference:
+- source repository: the upstream runnable core app repository root
+- installed pack: use `../../resources/examples/frontend/**` as reusable frontend reference only; application source belongs in the target project
 
 Canonical source-repository workstream UI reference:
 - reusable implementation modules: `../../frontend/src/workstream/**`
@@ -64,7 +64,7 @@ Canonical source-repository workstream UI reference:
 - integrated shell example: `../../frontend/src/main.tsx`
 - User Admin dashboard/list/detail-edit vertical pattern: test-only workstream fixtures and `../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 
-Use the starter template as the end-to-end generated-app baseline and these frontend files as reusable UI implementation examples. Test fixtures are contract references only and must not be importable as generated-app normal runtime. Do not use legacy `frontend/src/screens/**` or standalone static examples as the canonical app structure; keep them as mechanics or migration-drift references unless a task explicitly asks for legacy compatibility.
+Use the core app baseline as the end-to-end generated-app baseline and these frontend files as reusable UI implementation examples. Test fixtures are contract references only and must not be importable as generated-app normal runtime. Do not use legacy `frontend/src/screens/**` or standalone static examples as the canonical app structure; keep them as mechanics or migration-drift references unless a task explicitly asks for legacy compatibility.
 
 ## Use this skill when
 

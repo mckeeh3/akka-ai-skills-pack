@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This gap list records remaining reference implementation and test gaps after the AI-first migration and later cleanup. It distinguishes the canonical starter scaffold from mechanics-only examples and executable examples that still need future planning and code.
+This gap list records remaining reference implementation and test gaps after the AI-first migration and later cleanup. It distinguishes the canonical core app baseline from mechanics-only examples and executable examples that still need future planning and code.
 
 Use it to avoid hiding coverage gaps behind broad doctrine or retrofitting domain-specific or static UI examples into canonical generated-app guidance without explicit intent.
 
@@ -10,14 +10,14 @@ Use it to avoid hiding coverage gaps behind broad doctrine or retrofitting domai
 
 The repository already has strong focused examples for individual Akka substrate families:
 
-- canonical full-core starter scaffold source under `templates/ai-first-saas-starter/**` for new generated secure AI-first SaaS apps;
+- canonical full-core core app baseline source under the upstream runnable core app repository root for new generated secure AI-first SaaS apps;
 - reusable workstream UI reference modules under `frontend/src/workstream/**` and installed frontend examples for shell/surface mechanics;
 - agents, structured responses, tools, guardrails, evaluation, orchestration, memory/runtime state, and streaming;
 - workflows with approval, pause/resume, compensation-style flow, notifications, deadlines, and endpoint integration;
 - Event Sourced Entities, Key Value Entities, Views, Consumers, Timed Actions, HTTP/gRPC/MCP endpoints, and Akka-hosted web UI delivery patterns;
 - a low-agentic purchase-request app-description reference under `docs/examples/purchase-request-app-description/` for description/planning mechanics only.
 
-The starter scaffold is the canonical end-to-end implementation baseline. Former DCA/supplies domain-specific assets were removed because the starter, starter core app-description, workstream UI reference, governed-agent examples, and focused Akka substrate examples now cover the reusable skills-pack value without carrying a domain-specific vertical app.
+The core app baseline is the canonical end-to-end implementation baseline. Former DCA/supplies domain-specific assets were removed because the core app, root app-description, workstream UI reference, governed-agent examples, and focused Akka substrate examples now cover the reusable skills-pack value without carrying a domain-specific vertical app.
 
 ## Priority key
 
@@ -25,40 +25,38 @@ The starter scaffold is the canonical end-to-end implementation baseline. Former
 - **P1 important**: closes recurring implementation/test gaps once the starter path exists.
 - **P2 breadth**: useful breadth examples, but not required before the first complete AI-first reference path.
 
-## Completed canonical starter coverage
+## Completed canonical core app coverage
 
-### Full-core secure AI-first SaaS starter scaffold
+### Full-core secure AI-first SaaS core app baseline
 
-Status: **canonical starter implementation baseline, not full-core complete by itself until the target project renders/adapts the frontend and validates the local runtime path**.
+Status: **canonical implementation baseline, extended by downstream forks and validated through the local runtime path**.
 
 Reference:
-- source repository: `templates/ai-first-saas-starter/**`
-- installed pack: `resources/templates/ai-first-saas-starter/**`
-- scaffold command: `.agents/bin/scaffold-ai-first-saas-starter.sh`
-- final acceptance: `specs/ai-first-saas-starter-app-template/final-acceptance-review.md`
+- source repository: the upstream runnable core app repository root
+- installed pack: skills, docs, Java examples, and frontend reference examples only; no duplicate full-app source is bundled
 
-Qualification: the scaffold currently renders the backend starter foundation plus `app-description/` and `specs/` seeds. The validated React/Vite workstream UI remains under `frontend/**` as the repository/installed-pack frontend reference and must be copied/adapted during extension until a rendered `templates/ai-first-saas-starter/frontend/**` template is added. A generated target project is not full-core complete until the adapted UI is wired to real backend APIs/workstream endpoints, provider/security gaps fail closed, tests pass, and the local Akka/API/UI smoke path is recorded.
+Qualification: generated target projects are not complete until backend APIs, workstream endpoints, provider/security failure modes, tests, and the local Akka/API/UI smoke path are recorded for the selected scope.
 
-Covered starter scope:
+Covered core app scope:
 
-- selected Java base package rendering, Maven skeleton, and starter scaffold rules;
+- fixed `ai.first` root package and Maven skeleton;
 - secure SaaS foundation records and `/api/me` AuthContext bootstrap;
 - invitation/user-admin backend services, views/seams, captured outbox/Resend boundary, and tests;
 - governed agent records, seed import, prompt assembly, authorized `readSkill`, behavior-editing flow, and tests;
 - workstream backend API foundation for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces;
-- validated frontend workstream reference tests/typecheck/build under `frontend/**`, not yet embedded directly in scaffold output.
+- React/Vite workstream frontend under root `frontend/**`, exported in installed packs as `resources/examples/frontend/**`.
 
-Canonical routing rule: for new full-core generated apps, scaffold and extend this starter, then materialize/adapt the validated workstream frontend as part of the first frontend extension step. Use purchase-request, shopping-cart, and standalone static UI examples only for explicitly labeled mechanics after the starter/foundation architecture is clear.
+Canonical routing rule: for new full-core generated apps that need an implementation baseline, fork or copy the upstream runnable core app, then extend the target workspace. Use purchase-request, shopping-cart, and standalone static UI examples only for explicitly labeled mechanics after the core-app architecture is clear.
 
 ## Completed app-description coverage
 
-### Secure AI-first SaaS starter core app-description
+### Secure AI-first SaaS core app-description
 
-Status: **canonical app-description starter core template**.
+Status: **canonical app-description baseline in the target/core app workspace**.
 
-Reference: `templates/ai-first-saas-starter/app-description/`.
+Reference: target project `app-description/`.
 
-Distinction: this seed is a description/reference contract for generated-app meaning, structure, UI style, readiness, and review. The canonical runnable implementation baseline is the scaffold template under `templates/ai-first-saas-starter/` after placeholders are rendered.
+Distinction: this tree is a description/reference contract for generated-app meaning, structure, UI style, readiness, and review. The canonical runnable implementation baseline is the root core app itself.
 
 Covered coverage:
 
@@ -126,7 +124,7 @@ Status: **covered by the workstream UI reference and starter routing; standalone
 References:
 - canonical UI architecture: `docs/workstream-ui-reference-architecture.md`
 - reusable frontend modules: `frontend/src/workstream/**`
-- starter scaffold baseline: `templates/ai-first-saas-starter/**`
+- core app baseline baseline: the upstream runnable core app repository root
 
 Future breadth may add more vertical React/Vite workstream examples, but static resource examples are not canonical generated SaaS UI structure.
 

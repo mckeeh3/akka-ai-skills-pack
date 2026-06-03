@@ -1,57 +1,40 @@
 # Java validation guide for skills-pack reference code
 
-This repository contains executable Java reference code for the skills pack. Treat it as examples and fixtures, not as the product being generated.
+This directory contains executable Java reference code for the skills pack. Treat it as examples and fixtures, not as downstream product source.
 
 ## Source sets
 
-Validate source-controlled Java only:
+Validate source-controlled Java where it lives now:
 
-- `src/main/java`, `src/test/java` — executable reference app and tests.
-- `templates/ai-first-saas-starter/backend/src/**` — rendered starter template source.
+- root `src/main/java`, `src/test/java` — canonical runnable core app source and tests
+- `skills-pack/examples/akka-components/src/main`, `skills-pack/examples/akka-components/src/test` — focused Java reference examples exported by the pack
 
 Do not validate generated or packaged output as source:
 
 - `target/`
-- `dist/`
+- `skills-pack/dist/`
 
 ## Default fast gate
 
-Use this before and after focused Java edits:
+Use this before and after focused root Java edits:
 
 ```bash
 mvn -q -DskipTests compile
 ```
 
-For changes that affect tests or test-only helpers, also run focused test compilation:
-
-```bash
-mvn -q -DskipTests test-compile
-```
+For skills-pack Java examples, run from `skills-pack/examples/akka-components` when that example project is independently buildable, or use the pack install/build checks that export the examples.
 
 ## Focused test gate
 
-Prefer focused tests for the slice you changed. Examples:
+Prefer focused tests for the slice you changed. Examples from the root app:
 
 ```bash
-# Domain / pure logic
 mvn -q -Dtest='*ValidatorTest,*CommandHandlerTest,*BusinessLogicTest' test
-
-# Entity unit tests
 mvn -q -Dtest='*EntityTest' test
-
-# Workflow slice
 mvn -q -Dtest='*Workflow*Test' test
-
-# Views / consumers
 mvn -q -Dtest='*View*Test,*Consumer*Test' test
-
-# HTTP endpoint slice
 mvn -q -Dtest='*EndpointIntegrationTest' test
-
-# Agent slice
 mvn -q -Dtest='*AgentTest,*AgentEndpointIntegrationTest' test
-
-# Security/admin slice
 mvn -q -Dtest='*security*Test,*Security*Test,*Admin*Test,*Me*Test' test
 ```
 
@@ -59,9 +42,7 @@ Adjust patterns to the files actually changed.
 
 ## Long-running confidence gate
 
-The root project intentionally includes many Akka runtime-backed `TestKitSupport` and `*IntegrationTest` classes in the normal Maven test phase. A full test run is useful, but it is not the right first command for every harness session.
-
-Run this only with a generous timeout:
+A full root app test run is useful for runtime-backed changes:
 
 ```bash
 mvn -q test
@@ -71,7 +52,7 @@ Use a timeout above 120 seconds when running in an agent harness.
 
 ## Stream and realtime tests
 
-SSE, WebSocket, topic, and polling tests can be slower or noisier because they start runtime infrastructure and wait for asynchronous delivery. Run them separately when the changed code affects streams:
+SSE, WebSocket, topic, and polling tests can be slower or noisier because they start runtime infrastructure and wait for asynchronous delivery. Run them separately when changed code affects streams:
 
 ```bash
 mvn -q -Dtest='*Stream*Test,*WebSocket*Test,*Sse*Test,*Topic*Test' test
@@ -79,26 +60,25 @@ mvn -q -Dtest='*Stream*Test,*WebSocket*Test,*Sse*Test,*Topic*Test' test
 
 When editing stream tests, prefer deterministic Awaitility-style conditions over fixed `Thread.sleep(...)` calls.
 
-## Starter template validation
+## Core app validation
 
-The starter template contains placeholders and must be rendered before Maven can compile it. For template Java changes:
+The core app is source-controlled at the repository root and uses the fixed default package `ai.first`. It is directly buildable; do not treat it as an unrendered template.
 
-1. render `templates/ai-first-saas-starter/backend` into a temporary directory with concrete values for package, group id, app slug, and app name;
-2. run:
+Typical checks:
 
 ```bash
-mvn -q -DskipTests test-compile
-mvn -q test
+mvn test
+npm --prefix frontend test -- --run
+npm --prefix frontend run typecheck
+npm --prefix frontend run build
 ```
-
-Do not treat unrendered template Java as directly buildable project source.
 
 ## Removal validation checklist
 
 Before deleting Java reference code:
 
-1. Search for class/file references in `skills/`, `docs/`, `specs/`, `src/test/`, `templates/`, and `.agents/` if the installed pack mirror is in scope.
-2. Check for Akka annotation discovery: endpoints/components may be used by route tests without direct Java imports.
+1. Search for class/file references in `skills-pack/skills/`, `skills-pack/docs/`, active `specs/`, root tests, and installed `.agents/` mirrors when in scope.
+2. Check Akka annotation discovery: endpoints/components may be used by route tests without direct Java imports.
 3. Remove or update matching tests, resources, protobuf files, static assets, and docs in the same change.
-4. Run the focused gate for the owning slice plus `mvn -q -DskipTests compile`.
-5. If deleting a public reference example, update the inventory and cleanup plan.
+4. Run the focused gate for the owning slice plus `git diff --check`.
+5. If deleting a public reference example, update the relevant inventory and pack docs.

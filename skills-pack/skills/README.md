@@ -15,15 +15,15 @@ This file serves both:
 - the **source repository**, where app-description trees under `docs/examples/` are reference assets for the pack itself
 - the **installed pack** in a real development project, where the project's maintained `app-description/` tree belongs in the project workspace rather than under `.agents/`, unless that project explicitly chooses another internal location
 
-Starter scaffold routing for installed packs:
+Core-app-first routing for installed packs:
 - skills-only install remains the default: `.agents/` is a guidance/resource library and application artifacts live in the target workspace
-- for new secure AI-first SaaS apps where the user wants an implementation baseline, prefer explicit scaffold-then-extend: run `.agents/bin/scaffold-ai-first-saas-starter.sh` in an empty or bootstrap-only project, then extend the scaffolded `app-description/`, `specs/`, backend, and frontend
-- natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS must route to `../docs/minimum-ai-first-saas-app.md`: a bootstrap-authorized five core workstream v0 starter with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, not a generic public chatbot or page-first CRUD shell
-- the starter template is the canonical generated-app implementation baseline for the five core v0 shell; the minimum starter is a narrower readiness state than full-core SaaS and must record follow-up work to reach full-core readiness; purchase-request, shopping-cart, and standalone static UI examples are mechanics references only
-- when extending the starter or generated-app foundation with durable internal/background agent work such as access-review investigations, admin-risk batches, audit summaries, evaluation/replay loops, monitoring/remediation, specialist follow-up, task dependencies, notifications, handoff, or team coordination, route to Akka `AutonomousAgent` and apply `../docs/autonomous-agent-worker-runtime-pattern.md` for worker-style generated-app tasks; keep request-based Akka `Agent` as the default for the five core user-facing workstream request/response turns and other bounded `markdown_response` workstream interactions
+- for new secure AI-first SaaS apps where the user wants an implementation baseline, prefer fork-and-extend from the upstream runnable core app repository root; do not expect this installed pack to contain or render a duplicate full-app core app baseline
+- natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS must route to `../docs/minimum-ai-first-saas-app.md`: a bootstrap-authorized five core workstream v0 readiness target with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, not a generic public chatbot or page-first CRUD shell
+- the runnable core app repository root is the canonical generated-app implementation baseline; the minimum starter is a narrower readiness state than full-core SaaS and must record follow-up work to reach full-core readiness; purchase-request, shopping-cart, and standalone static UI examples are mechanics references only
+- when extending the core app or generated-app foundation with durable internal/background agent work such as access-review investigations, admin-risk batches, audit summaries, evaluation/replay loops, monitoring/remediation, specialist follow-up, task dependencies, notifications, handoff, or team coordination, route to Akka `AutonomousAgent` and apply `../docs/autonomous-agent-worker-runtime-pattern.md` for worker-style generated-app tasks; keep request-based Akka `Agent` as the default for the five core user-facing workstream request/response turns and other bounded `markdown_response` workstream interactions
 - when the user asks what comes next after the app runs, recommend the next milestone from actual readiness gaps, app-description state, or pending tasks; say `domain-specific` or use the user's actual domain name for later product features, and never say `DCA-specific` unless DCA is explicitly the user's domain
-- if `specs/scaffold-report.md` exists, treat the project as scaffolded from the starter; preserve the recorded Java base package, starter foundation, workstream UI, and queue history; update app-description/specs before adding implementation tasks
-- do not regenerate a parallel fresh app, replace scaffolded foundation files, or use `.agents/resources/templates/ai-first-saas-starter/` as a writable project source unless the user explicitly asks for destructive reset or template maintenance
+- if a project has existing implementation artifacts, preserve its selected Java base package, foundation, workstream UI, and queue history; update app-description/specs before adding implementation tasks
+- do not regenerate a parallel fresh app, replace the existing foundation files, or use `.agents/` resources as writable project source unless the user explicitly asks for destructive reset or pack maintenance
 
 ## AI-first SaaS entry routing
 
@@ -143,7 +143,7 @@ Default description-first flow:
 15. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
 
 Reference docs:
-- `../templates/ai-first-saas-starter/app-description/README.md` — preferred starter core app-description template
+- the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md` — preferred core app-description shape
 - `../docs/description-first-application-doctrine.md`
 - `../docs/internal-app-description-architecture.md`
 - `../docs/app-description-maintenance-flow.md`
@@ -415,7 +415,7 @@ Stage 3 family orchestrators are the capability handoff point. Focused companion
 For durable multi-session execution, materialize the work as `specs/pending-tasks.md` and use `akka-do-next-pending-task` to execute one task per fresh context.
 
 Decomposition is complete only when it enables focused implementation work with low ambiguity.
-Use `../templates/ai-first-saas-starter/app-description/README.md` and `../docs/core-ai-first-saas-foundation.md` as the first references for generated SaaS foundation shape. Purchase-request examples are conventional planning/queue mechanics references only.
+Use the target project `app-description/README.md` and `../docs/core-ai-first-saas-foundation.md` as the first references for generated SaaS foundation shape. Purchase-request examples are conventional planning/queue mechanics references only.
 For a lightweight template, see `../docs/solution-plan-to-implementation-queue.md`.
 For the durable queue contract, see `../docs/pending-task-queue.md`.
 

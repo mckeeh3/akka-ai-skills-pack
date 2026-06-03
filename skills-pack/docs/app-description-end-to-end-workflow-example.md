@@ -17,7 +17,7 @@ Use this together with:
 - `docs/description-first-application-doctrine.md`
 - `docs/internal-app-description-architecture.md`
 - `docs/app-description-maintenance-flow.md`
-- `templates/ai-first-saas-starter/app-description/README.md`
+- the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md`
 - `docs/requirements-to-workstream-development-process.md`
 
 Purchase-request app-description files are mechanics-only references for older cross-linking patterns; they are not the target architecture for this workflow.

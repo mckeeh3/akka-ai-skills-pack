@@ -30,7 +30,7 @@ Read these first if present:
 - `../akka-agent-mcp-tools/SKILL.md`
 - `../akka-agent-skill-governance/SKILL.md`
 - `../akka-agent-work-trace/SKILL.md`
-- `../../templates/ai-first-saas-starter/app-description/55-ui/skill-manifests-and-tool-permissions.md`
+- target project `app-description/55-ui/skill-manifests-and-tool-permissions.md`
 
 ## Use when the request mentions
 

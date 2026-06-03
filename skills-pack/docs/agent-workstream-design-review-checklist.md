@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Use this checklist when reviewing generated full-stack AI-first SaaS doctrine, skills, app descriptions, specs, examples, starter templates, and generation guidance. It is a compact guardrail for keeping design content aligned with the canonical workstream graph and governed-tool model.
+Use this checklist when reviewing generated full-stack AI-first SaaS doctrine, skills, app descriptions, specs, examples, core app baselines, and generation guidance. It is a compact guardrail for keeping design content aligned with the canonical workstream graph and governed-tool model.
 
 Canonical model:
 

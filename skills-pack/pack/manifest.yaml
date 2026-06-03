@@ -20,16 +20,12 @@ install:
       manifestsDir: '{projectRoot}/.agents/manifests'
       examplesDir: '{projectRoot}/.agents/resources/examples/java'
       frontendExamplesDir: '{projectRoot}/.agents/resources/examples/frontend'
-      templatesDir: '{projectRoot}/.agents/resources/templates'
-      binDir: '{projectRoot}/.agents/bin'
     global:
       rootDir: ~/.agents
       skillsDir: ~/.agents/skills
       manifestsDir: ~/.agents/manifests
       examplesDir: ~/.agents/resources/examples/java
       frontendExamplesDir: ~/.agents/resources/examples/frontend
-      templatesDir: ~/.agents/resources/templates
-      binDir: ~/.agents/bin
 
 content:
   skills:
@@ -516,9 +512,7 @@ content:
     - docs/examples/requirements-to-workstream-mini-example.md
     - docs/examples/core-ai-first-saas-input/README.md
     - docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md
-    - app-description/README.md
     - docs/workstream-ui-reference-architecture.md
-    - app-description/00-system/app-manifest.md
     - skills/references/akka-entity-comparison.md
     - skills/references/akka-grpc-jwt-patterns.md
   examples:

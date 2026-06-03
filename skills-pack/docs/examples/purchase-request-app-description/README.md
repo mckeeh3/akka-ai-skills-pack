@@ -8,7 +8,7 @@ This directory is a concrete example of the internal app-description architectur
 
 It shows a small but cross-linked **harness-maintained application description** for a purchase-request workflow.
 
-AI-first SaaS / agent workstream reset note: this remains a low-agentic/conventional approval-workflow reference for app-description mechanics only. It is **not** target architecture doctrine and must not be used as the first reference for generated SaaS planning. It intentionally does not teach the mandatory generated-app structure of functional agents, workstreams, structured surfaces, secure SaaS foundation, and horizontal Akka maps. Start new SaaS work from `../../templates/ai-first-saas-starter/app-description/README.md`, `../../agent-workstream-design-review-checklist.md`, and the core foundation docs instead. Do not force-fit this example into a full AI-first SaaS operating model without explicit product intent.
+AI-first SaaS / agent workstream reset note: this remains a low-agentic/conventional approval-workflow reference for app-description mechanics only. It is **not** target architecture doctrine and must not be used as the first reference for generated SaaS planning. It intentionally does not teach the mandatory generated-app structure of functional agents, workstreams, structured surfaces, secure SaaS foundation, and horizontal Akka maps. Start new SaaS work from the target project `app-description/README.md` plus `../../docs/core-ai-first-saas-foundation.md`, `../../agent-workstream-design-review-checklist.md`, and the core foundation docs instead. Do not force-fit this example into a full AI-first SaaS operating model without explicit product intent.
 
 Purpose of this example:
 - validate the layer structure in practice

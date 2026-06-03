@@ -148,8 +148,6 @@ log "checking packaged docs and core app-description assets"
 require_rg "docs/core-ai-first-saas-foundation.md" pack/manifest.yaml tools/build-pack.sh install.sh
 require_rg "docs/core-saas-identity-tenancy-admin.md" pack/manifest.yaml tools/build-pack.sh install.sh
 require_rg "docs/core-saas-owner-tenant-billing.md" pack/manifest.yaml tools/build-pack.sh install.sh
-require_rg "app-description/README.md" pack/manifest.yaml
-require_rg "app-description/00-system/app-manifest.md" pack/manifest.yaml
 require_rg "docs/workstream-ui-reference-architecture.md" pack/manifest.yaml tools/build-pack.sh
 require_rg "docs/agent-workstream-design-review-checklist.md" pack/manifest.yaml tools/build-pack.sh
 require_rg "docs/examples/README.md" pack/manifest.yaml tools/build-pack.sh

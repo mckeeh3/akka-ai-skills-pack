@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-This is the target implementation architecture for reusable generated-app **agent workstream shell** UI modules. The full-core starter app template under `templates/ai-first-saas-starter/**` is now the canonical end-to-end implementation baseline; this document remains the canonical UI architecture contract and reusable frontend reference.
+This is the target implementation architecture for reusable generated-app **agent workstream shell** UI modules. The upstream runnable core app repository root is the canonical end-to-end implementation baseline; this document remains the canonical UI architecture contract and reusable frontend reference.
 
 It is a source-repository reference asset. It defines how future tasks should build reusable React/Vite/TypeScript modules under `frontend/src/workstream/**`, while preserving useful generic seams from the current frontend (`api/**`, `design-system/**`, `styles/**`) and replacing `screens/**` as the canonical UI taxonomy.
 
@@ -14,7 +14,7 @@ Canonical doctrine:
 - `specs/workstream-ui-implementation-migration/frontend-stale-code-inventory.md`
 
 Current implementation references:
-- full-core starter scaffold source: `templates/ai-first-saas-starter/**`
+- full-core core app baseline source: the upstream runnable core app repository root
 - reusable React/Vite/TypeScript modules: `frontend/src/workstream/**`
 - fixture API and realtime seams: `frontend/src/api/WorkstreamApiClient.ts`, `frontend/src/api/WorkstreamRealtimeClient.ts`
 - integrated shell example: `frontend/src/main.tsx`

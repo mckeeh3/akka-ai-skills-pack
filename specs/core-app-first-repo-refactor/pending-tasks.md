@@ -265,7 +265,7 @@
 
 ### TASK-LAYOUT-04-002: Update skills-pack guidance, install, and validation tooling
 
-- status: pending
+- status: done
 - source: specs/core-app-first-repo-refactor/backlog/01-core-app-first-refactor-build-backlog.md
 - task brief: specs/core-app-first-repo-refactor/tasks/04-guidance-tooling/02-update-skills-pack-guidance-and-tooling.md
 - depends on: [TASK-LAYOUT-04-001]
@@ -288,6 +288,12 @@
   - queue is updated and committed
 - notes:
   - commit message: `layout: update skills pack tooling`
+  - updated skills-pack maintainer/user/developer/pack guidance for the isolated `skills-pack/` source area and core-app-first fork-and-extend model
+  - removed installed-pack template/bin path claims from `pack/manifest.yaml` and pack docs; the pack now documents skills/docs/manifests plus Java/frontend reference examples only
+  - updated stale full-app template/scaffold references across pack docs and routing skills to target project app-description/core app baseline guidance, while preserving legacy `specs/scaffold-report.md` compatibility where downstream projects may already have it
+  - updated validation/audit tooling expectations for the new layout and removed obsolete manifest app-description assertions
+  - checks passed: `git diff --check`; `./install.sh --location project --project /tmp/akka-install-dry-run --dry-run`; `bash skills-pack/tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive`; `bash skills-pack/tools/verify-opinionated-ai-first-saas-pack.sh`
+  - stale reference proof: ripgrep for removed starter-template/scaffold path patterns (`templates/ai-first-saas-starter`, `scaffold-ai-first-saas-starter`, `resources/templates/ai-first-saas-starter`, `core-app-report`, malformed `resources/the upstream`/`root core app`, `starter template`, and `full-app template`) returned no matches
 
 ### TASK-LAYOUT-99-001: Verify core app first refactor completion
 
