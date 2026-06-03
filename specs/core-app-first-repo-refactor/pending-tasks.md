@@ -409,7 +409,7 @@
 
 ### TASK-LAYOUT-99-002: Verify core app first refactor completion after follow-ups
 
-- status: pending
+- status: done
 - source: mini-project verification loop after TASK-LAYOUT-99-001 follow-ups
 - task brief: specs/core-app-first-repo-refactor/tasks/05-validation/04-verify-refactor-completion-after-followups.md
 - depends on:
@@ -448,3 +448,7 @@
   - queue is updated and committed
 - notes:
   - commit message: `layout: verify core app first refactor followups`
+  - verification notes: `specs/core-app-first-repo-refactor/verification-notes-2026-06-03-followups.md`
+  - checks passed: `mvn test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `npm --prefix frontend run build`; `./install.sh --location project --project /tmp/akka-install-dry-run --dry-run`; `bash skills-pack/tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive`; `bash skills-pack/tools/verify-opinionated-ai-first-saas-pack.sh`; `test ! -d templates/ai-first-saas-starter`; `git diff --check`
+  - stale-reference proof: current root/skills-pack guidance and scripts search returned no stale full-app-template/scaffold-first matches outside specs/provenance paths; broad remaining matches are classified as historical/provenance in `stale-template-reference-classification.md`
+  - terminal verification found no material unqueued gaps and appended no new tasks
