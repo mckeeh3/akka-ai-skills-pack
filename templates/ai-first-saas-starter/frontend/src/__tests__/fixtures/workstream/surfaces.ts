@@ -542,6 +542,7 @@ export const userAdminSurfaceActions = {
 } satisfies Record<string, SurfaceAction>;
 
 const agentDefinitionsCapability = 'agent_admin.list_definitions';
+const agentDefinitionsManageCapability = 'agent.definitions.manage';
 const agentDefinitionReadCapability = 'agent_admin.get_definition';
 const agentPromptReadCapability = 'agent_admin.get_prompt_version';
 const agentSkillReadCapability = 'agent_admin.get_skill_version';
@@ -558,6 +559,7 @@ const agentToolBoundariesCapability = 'agent_admin.simulate_tool_boundary';
 const agentModelsReadCapability = 'agent_admin.get_model_ref';
 const agentModelsManageCapability = 'agent_admin.activate_behavior_change';
 const agentSeedReadCapability = 'agent_admin.list_seed_material';
+const agentSeedImportCapability = 'agent_admin.reseed_missing_defaults';
 const agentRuntimeTestCapability = 'agent_admin.draft_behavior_change';
 const agentPromptRiskStartCapability = 'agent_admin.prompt_risk_review.start';
 const agentPromptRiskReadCapability = 'agent_admin.prompt_risk_review.read';
@@ -588,6 +590,34 @@ export const agentAdminSurfaceActions = {
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
     audit: { eventType: 'AgentDefinitionDetailDisplayed', traceRequired: true }
+  },
+  activateAgentDefinition: {
+    actionId: 'action-activate-agent-definition',
+    label: 'Activate AgentDefinition',
+    intent: 'command',
+    capabilityId: agentDefinitionsManageCapability,
+    governedToolId: agentDefinitionsManageCapability,
+    browserToolId: 'action-activate-agent-definition',
+    inputSchemaRef: 'schema.agent-definition.lifecycle.activate.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
+    audit: { eventType: 'AgentDefinitionActivated', traceRequired: true }
+  },
+  deactivateAgentDefinition: {
+    actionId: 'action-deactivate-agent-definition',
+    label: 'Deactivate AgentDefinition',
+    intent: 'command',
+    capabilityId: agentDefinitionsManageCapability,
+    governedToolId: agentDefinitionsManageCapability,
+    browserToolId: 'action-deactivate-agent-definition',
+    inputSchemaRef: 'schema.agent-definition.lifecycle.deactivate.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
+    audit: { eventType: 'AgentDefinitionDeactivated', traceRequired: true }
   },
   proposePromptDiff: {
     actionId: 'action-propose-prompt-diff',
@@ -728,6 +758,20 @@ export const agentAdminSurfaceActions = {
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-agent-seed-material', openPlacement: 'inline' },
     audit: { eventType: 'AgentSeedMaterialListed', traceRequired: true }
+  },
+  importSeedDefaults: {
+    actionId: 'action-import-agent-seed-defaults',
+    label: 'Import missing seed defaults',
+    intent: 'workflow',
+    capabilityId: agentSeedImportCapability,
+    governedToolId: agentSeedImportCapability,
+    browserToolId: 'action-import-agent-seed-defaults',
+    inputSchemaRef: 'schema.agent-seed.import-defaults.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-seed-material', openPlacement: 'inline' },
+    audit: { eventType: 'AgentSeedDefaultsImported', traceRequired: true }
   },
   startPromptRiskReview: {
     actionId: 'action-agentadmin-start-prompt-risk-review',
@@ -1826,7 +1870,7 @@ export const agentAdminCatalogSurface = envelope(
       traceLinked: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, and protected-read traces are linked.'
     }
   },
-  [agentAdminSurfaceActions.displayCatalog, agentAdminSurfaceActions.openAgentDetail, agentAdminSurfaceActions.listSeedMaterial, agentAdminSurfaceActions.openAgentTrace]
+  [agentAdminSurfaceActions.displayCatalog, agentAdminSurfaceActions.openAgentDetail, agentAdminSurfaceActions.activateAgentDefinition, agentAdminSurfaceActions.deactivateAgentDefinition, agentAdminSurfaceActions.listSeedMaterial, agentAdminSurfaceActions.importSeedDefaults, agentAdminSurfaceActions.openAgentTrace]
 );
 
 export const agentAdminDetailSurface = envelope(
@@ -1871,7 +1915,7 @@ export const agentAdminDetailSurface = envelope(
     redaction: { browserSafe: true, omittedFieldKeys: ['rawPromptBody', 'rawSkillBody', 'rawReferenceBody', 'rawProviderCredential', 'providerCredentialValue', 'rawJwt'], previewLimitChars: 220 },
     noDirectMutation: true
   },
-  [agentAdminSurfaceActions.proposePromptDiff, agentAdminSurfaceActions.simulateToolBoundary, agentAdminSurfaceActions.manageModelRef, agentAdminSurfaceActions.openAgentTrace]
+  [agentAdminSurfaceActions.activateAgentDefinition, agentAdminSurfaceActions.deactivateAgentDefinition, agentAdminSurfaceActions.proposePromptDiff, agentAdminSurfaceActions.simulateToolBoundary, agentAdminSurfaceActions.manageModelRef, agentAdminSurfaceActions.openAgentTrace]
 );
 
 export const agentPromptGovernanceSurface = envelope(
@@ -1998,7 +2042,7 @@ export const agentSeedMaterialSurface = envelope(
     mobileFallback: 'table-to-card',
     systemStates: ['loading', 'empty', 'forbidden', 'stale']
   },
-  [agentAdminSurfaceActions.listSeedMaterial, agentAdminSurfaceActions.openAgentTrace]
+  [agentAdminSurfaceActions.listSeedMaterial, agentAdminSurfaceActions.importSeedDefaults, agentAdminSurfaceActions.openAgentTrace]
 );
 
 export const agentTestConsoleSurface = envelope(

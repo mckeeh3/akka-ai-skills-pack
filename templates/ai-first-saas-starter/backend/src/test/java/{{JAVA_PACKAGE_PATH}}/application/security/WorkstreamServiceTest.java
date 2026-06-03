@@ -13,6 +13,7 @@ import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.LocalDemoAgentBehaviorR
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.LocalDemoAgentRuntimeTraceSink;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.ModelProviderClient;
 import {{JAVA_BASE_PACKAGE}}.application.agentfoundation.WorkstreamAgentRuntimeInvoker;
+import {{JAVA_BASE_PACKAGE}}.domain.agentfoundation.AgentLifecycleStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.Account;
 import {{JAVA_BASE_PACKAGE}}.domain.security.AccountStatus;
 import {{JAVA_BASE_PACKAGE}}.domain.security.FoundationRole;
@@ -283,12 +284,41 @@ class WorkstreamServiceTest {
     assertEquals("agent_admin.model_ref.v1", model.data().get("surfaceContract"));
     assertTrue(model.toString().contains("[REDACTED]"));
     assertEquals("agent_admin.seed_material.v1", seed.data().get("surfaceContract"));
+    assertTrue(catalog.toString().contains("action-activate-agent-definition"));
+    assertTrue(catalog.toString().contains("action-deactivate-agent-definition"));
+    assertTrue(catalog.toString().contains("action-import-agent-seed-defaults"));
+    assertTrue(catalog.toString().contains("agent.definitions.manage"));
     for (var surface : List.of(catalog, detail, prompt, manifest, boundary, model, seed)) {
       assertTrue(surface.traceIds().stream().anyMatch(trace -> trace.contains("trace-surface-agent")));
       assertFalse(surface.toString().toLowerCase().contains("api_key="));
       assertFalse(surface.toString().contains("sk-secret"));
       assertFalse(surface.toString().contains("rawProviderCredential="));
     }
+  }
+
+  @Test
+  void agentAdminDefinitionLifecycleAndSeedImportActionsAreGovernedAndIdempotent() {
+    var deactivate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-deactivate-agent-definition", "action-deactivate-agent-definition", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-deactivate", "membership-admin", "surface-agent-admin-detail", "corr-agent-deactivate"));
+
+    assertEquals("accepted", deactivate.status());
+    assertEquals("surface-agent-admin-detail", deactivate.resultSurface().surfaceId());
+    assertEquals(AgentLifecycleStatus.DISABLED, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+
+    var duplicateDeactivate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-deactivate-agent-definition", "action-deactivate-agent-definition", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-deactivate-2", "membership-admin", "surface-agent-admin-detail", "corr-agent-deactivate-again"));
+    assertEquals("no-op", duplicateDeactivate.status());
+
+    var activate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-activate-agent-definition", "action-activate-agent-definition", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-activate", "membership-admin", "surface-agent-admin-detail", "corr-agent-activate"));
+    assertEquals("accepted", activate.status());
+    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+
+    var seedImport = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-import-agent-seed-defaults", "action-import-agent-seed-defaults", "agent_admin.reseed_missing_defaults", "agent_admin.reseed_missing_defaults", null, "idem-seed-import", "membership-admin", "surface-agent-seed-material", "corr-agent-seed-import"));
+    assertEquals("no-op", seedImport.status());
+    assertTrue(seedImport.message().contains("skipped governed records"));
+    assertEquals("surface-agent-seed-material", seedImport.resultSurface().surfaceId());
   }
 
   @Test

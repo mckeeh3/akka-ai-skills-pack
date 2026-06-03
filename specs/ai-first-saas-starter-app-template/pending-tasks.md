@@ -1048,7 +1048,7 @@
 
 ### TASK-STARTER-08-004: Agent Admin catalog, definition lifecycle, and seed governance vertical
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-04-001 and part of TASK-STARTER-07-008
 - task brief: none
 - depends on: [TASK-STARTER-08-003]
@@ -1091,6 +1091,9 @@
   - Akka substrate/exposure: ESE/KVE durable agent definition state as accepted; seed import workflow/service; AgentCatalogView; HTTP/workstream APIs; frontend catalog/detail surfaces
   - audit/trace/tests: provenance/checksum audit, disabled-agent denial, tenant isolation, no provider secret exposure, rendering states
   - supersedes future task shape for: TASK-STARTER-04-001, TASK-STARTER-07-008
+  - commit message: `Add starter agent admin definition lifecycle`
+  - check passed: `git diff --check`
+  - validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh` (rendered backend tests including Agent Admin lifecycle/seed import action coverage, frontend npm install/test/typecheck/build/analyze, static asset scan, and real provider smoke when provider env was available).
 
 ### TASK-STARTER-08-005: Agent Admin prompt, skill, manifest, readSkill, and tool-boundary governance vertical
 
