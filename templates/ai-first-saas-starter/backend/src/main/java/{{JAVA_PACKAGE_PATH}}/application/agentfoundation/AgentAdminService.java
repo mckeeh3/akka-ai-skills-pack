@@ -57,6 +57,7 @@ public final class AgentAdminService {
         .toList();
     return mapOf(
         "surfaceContract", "agent_admin.catalog.v1",
+        "surfaceContractAliases", List.of("surface.agent_admin.catalog.v1"),
         "query", "tenant:" + actor.selectedContext().tenantId(),
         "rows", rows,
         "pageInfo", mapOf("totalKnownCount", rows.size()),
@@ -78,6 +79,7 @@ public final class AgentAdminService {
     var model = repository.modelConfigRef(actor.selectedContext().tenantId(), agent.modelConfigRefId()).orElse(null);
     return mapOf(
         "surfaceContract", "agent_admin.definition.v1",
+        "surfaceContractAliases", List.of("surface.agent_admin.definition_detail.v1"),
         "recordId", agent.agentDefinitionId(),
         "recordLabel", agent.displayName(),
         "recordKind", "AgentDefinition",
@@ -110,6 +112,8 @@ public final class AgentAdminService {
     var prompt = repository.promptDocument(actor.selectedContext().tenantId(), agent.promptDocumentId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
     return mapOf(
         "surfaceContract", "agent_admin.prompt_version.v1",
+        "surfaceContractAliases", List.of("surface.agent_admin.prompt_versions.v1"),
+        "capabilityAliases", List.of("agent.prompts.govern"),
         "recordId", prompt.promptDocumentId(),
         "recordLabel", prompt.title() + "@" + prompt.activeVersion(),
         "recordKind", "PromptDocument",
@@ -125,6 +129,37 @@ public final class AgentAdminService {
         "noDirectMutation", true);
   }
 
+  public Map<String, Object> skillDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String stableSkillId, String correlationId) {
+    require(actor, GET_SKILL_VERSION, correlationId, "agent_admin.skill_version.v1");
+    var agent = agent(actor, firstNonBlank(agentDefinitionId, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID));
+    var manifest = repository.skillManifest(actor.selectedContext().tenantId(), agent.skillManifestId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    var entry = manifest.entries().stream()
+        .filter(candidate -> stableSkillId == null || stableSkillId.isBlank() || candidate.stableSkillId().equals(stableSkillId))
+        .findFirst()
+        .orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    var skill = repository.skillDocument(actor.selectedContext().tenantId(), entry.skillDocumentId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    return mapOf(
+        "surfaceContract", "agent_admin.skill_version.v1",
+        "surfaceContractAliases", List.of("surface.agent_admin.skill_versions.v1"),
+        "capabilityAliases", List.of("agent.skills.govern", "agent.read_skill"),
+        "recordId", skill.skillDocumentId(),
+        "stableSkillId", skill.stableSkillId(),
+        "recordLabel", skill.title() + "@" + skill.activeVersion(),
+        "recordKind", "SkillDocument",
+        "status", skill.status().name().toLowerCase(),
+        "pinnedManifestVersion", entry.pinnedVersion(),
+        "purpose", skill.purpose(),
+        "whenToUse", skill.whenToUse(),
+        "redactedPreview", preview(skill.contentBody()),
+        "fullContentAvailableInBrowser", false,
+        "checksum", skill.contentChecksum(),
+        "seedStatus", seedStatus(skill.seedProvenance()),
+        "readSkillRuntime", mapOf("toolId", "readSkill", "requiredManifestId", manifest.manifestId(), "assignedOnly", true, "traceType", "SkillLoadTrace"),
+        "traceLinks", List.of(traceId("skill-version", skill.stableSkillId(), correlationId)),
+        "redaction", redactionMetadata(),
+        "noDirectMutation", true);
+  }
+
   public Map<String, Object> manifestDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String correlationId) {
     require(actor, GET_MANIFEST, correlationId, "agent_admin.manifest.v1");
     var agent = agent(actor, firstNonBlank(agentDefinitionId, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID));
@@ -132,6 +167,8 @@ public final class AgentAdminService {
     var references = repository.referenceManifest(actor.selectedContext().tenantId(), agent.referenceManifestId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
     return mapOf(
         "surfaceContract", "agent_admin.manifest.v1",
+        "surfaceContractAliases", List.of("surface.agent_admin.manifest_detail.v1"),
+        "capabilityAliases", List.of("agent.manifests.manage", "agent.skills.govern"),
         "recordId", skills.manifestId() + ":" + references.manifestId(),
         "recordKind", "AgentSkillManifest+AgentReferenceManifest",
         "skillManifest", mapOf("manifestId", skills.manifestId(), "status", skills.status().name().toLowerCase(), "version", skills.manifestVersion(), "checksum", skills.compactManifestChecksum(), "entries", skillEntries(actor, skills), "seedStatus", seedStatus(skills.seedProvenance())),
@@ -147,6 +184,8 @@ public final class AgentAdminService {
     var boundary = repository.toolBoundary(actor.selectedContext().tenantId(), agent.toolBoundaryId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
     return mapOf(
         "surfaceContract", "agent_admin.tool_boundary.v1",
+        "surfaceContractAliases", List.of("surface.agent_admin.tool_boundary.v1"),
+        "capabilityAliases", List.of("agent.tool_boundaries.manage"),
         "recordId", boundary.boundaryId(),
         "recordKind", "ToolPermissionBoundary",
         "status", boundary.status().name().toLowerCase(),
@@ -165,6 +204,7 @@ public final class AgentAdminService {
     var model = repository.modelConfigRef(actor.selectedContext().tenantId(), agent.modelConfigRefId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
     return mapOf(
         "surfaceContract", "agent_admin.model_ref.v1",
+        "surfaceContractAliases", List.of("surface.agent_admin.model_ref.v1"),
         "recordId", model.modelConfigRefId(),
         "recordKind", "ModelConfigRef",
         "displayName", model.displayName(),
@@ -185,6 +225,7 @@ public final class AgentAdminService {
     require(actor, LIST_SEED_MATERIAL, correlationId, "agent_admin.seed_material.v1");
     return mapOf(
         "surfaceContract", "agent_admin.seed_material.v1",
+        "surfaceContractAliases", List.of("surface.agent_admin.seed_import.v1"),
         "rows", seedMaterial(actor, correlationId),
         "traceLinks", List.of(traceId("seed", actor.selectedContext().tenantId(), correlationId)),
         "redaction", redactionMetadata(),

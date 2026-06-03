@@ -238,12 +238,21 @@ class WorkstreamServiceTest {
     var promptProposal = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-propose-prompt-diff", "action-propose-prompt-diff", "agent_admin.draft_behavior_change", "agent_admin.draft_behavior_change", null, "idem-prompt", "membership-admin", "surface-agent-prompt-governance", "corr-prompt-ui"));
     assertEquals("accepted", promptProposal.status());
-    assertEquals("surface-agent-prompt-governance", promptProposal.resultSurface().surfaceId());
+    assertEquals("surface-agent-behavior-proposal", promptProposal.resultSurface().surfaceId());
+    assertTrue(promptProposal.message().contains("prompt text cannot grant authority"));
 
     var testRun = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-test-agent-prompt", "action-test-agent-prompt", "agent_admin.draft_behavior_change", "agent_admin.draft_behavior_change", null, "idem-test", "membership-admin", "surface-agent-test-console", "corr-test-ui"));
     assertEquals("accepted", testRun.status());
     assertEquals("surface-agent-test-console", testRun.resultSurface().surfaceId());
+    assertTrue(testRun.resultSurface().toString().contains("assigned-skill-load"));
+    assertTrue(testRun.resultSurface().toString().contains("unassigned-skill-denial"));
+    assertTrue(testRun.resultSurface().toString().contains("agent.read_skill"));
+
+    var toolBoundary = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-simulate-tool-boundary", "action-simulate-tool-boundary", "agent_admin.simulate_tool_boundary", "agent_admin.simulate_tool_boundary", null, "idem-tool-boundary", "membership-admin", "surface-agent-tool-boundary-diff", "corr-tool-boundary-ui"));
+    assertEquals("denied", toolBoundary.status());
+    assertTrue(toolBoundary.message().contains("retained human approval"));
 
     var approval = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-approve-skill-manifest", "action-approve-skill-manifest", "agent_admin.approve_behavior_change", "agent_admin.approve_behavior_change", null, "idem-approval", "membership-admin", "surface-agent-skill-manifest-diff", "corr-approval-ui"));
@@ -262,6 +271,7 @@ class WorkstreamServiceTest {
     var catalog = service.surface(identity(), "membership-admin", "surface-agent-admin-catalog", "corr-agent-catalog");
     var detail = service.surface(identity(), "membership-admin", "surface-agent-admin-detail", "corr-agent-detail");
     var prompt = service.surface(identity(), "membership-admin", "surface-agent-prompt-governance", "corr-agent-prompt");
+    var skill = service.surface(identity(), "membership-admin", "surface-agent-skill-version", "corr-agent-skill");
     var manifest = service.surface(identity(), "membership-admin", "surface-agent-skill-manifest-diff", "corr-agent-manifest");
     var boundary = service.surface(identity(), "membership-admin", "surface-agent-tool-boundary-diff", "corr-agent-boundary");
     var model = service.surface(identity(), "membership-admin", "surface-agent-model-refs", "corr-agent-model");
@@ -275,10 +285,16 @@ class WorkstreamServiceTest {
     assertEquals("AgentDefinition", detail.data().get("recordKind"));
     assertEquals(true, detail.data().get("noDirectMutation"));
     assertEquals("agent_admin.prompt_version.v1", prompt.data().get("surfaceContract"));
+    assertTrue(prompt.toString().contains("surface.agent_admin.prompt_versions.v1"));
+    assertTrue(prompt.toString().contains("surface.agent_admin.behavior_diff.v1"));
     assertTrue(prompt.toString().contains("redactedPreview"));
     assertEquals(false, prompt.data().get("fullContentAvailableInBrowser"));
+    assertEquals("agent_admin.skill_version.v1", skill.data().get("surfaceContract"));
+    assertTrue(skill.toString().contains("surface.agent_admin.skill_versions.v1"));
+    assertTrue(skill.toString().contains("readSkillRuntime"));
     assertEquals("agent_admin.manifest.v1", manifest.data().get("surfaceContract"));
     assertTrue(manifest.toString().contains("AgentSkillManifest+AgentReferenceManifest"));
+    assertTrue(manifest.toString().contains("surface.agent_admin.manifest_detail.v1"));
     assertEquals("agent_admin.tool_boundary.v1", boundary.data().get("surfaceContract"));
     assertTrue(boundary.toString().contains("ToolPermissionBoundary"));
     assertEquals("agent_admin.model_ref.v1", model.data().get("surfaceContract"));
@@ -288,7 +304,9 @@ class WorkstreamServiceTest {
     assertTrue(catalog.toString().contains("action-deactivate-agent-definition"));
     assertTrue(catalog.toString().contains("action-import-agent-seed-defaults"));
     assertTrue(catalog.toString().contains("agent.definitions.manage"));
-    for (var surface : List.of(catalog, detail, prompt, manifest, boundary, model, seed)) {
+    assertTrue(boundary.toString().contains("surface.agent_admin.tool_boundary.v1"));
+    assertTrue(seed.toString().contains("surface.agent_admin.seed_import.v1"));
+    for (var surface : List.of(catalog, detail, prompt, skill, manifest, boundary, model, seed)) {
       assertTrue(surface.traceIds().stream().anyMatch(trace -> trace.contains("trace-surface-agent")));
       assertFalse(surface.toString().toLowerCase().contains("api_key="));
       assertFalse(surface.toString().contains("sk-secret"));

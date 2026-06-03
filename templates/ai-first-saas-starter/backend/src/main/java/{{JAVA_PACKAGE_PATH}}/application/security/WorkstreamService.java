@@ -365,12 +365,15 @@ public final class WorkstreamService {
       var task = accessReviewService.rejectResult(actor, stringInput(request.input(), "taskId", ""), stringInput(request.input(), "reason", "rejected by User Admin"), request.correlationId());
       result = accessReviewActionResult(task, "accepted", "Access-review result rejected as human review evidence; access state unchanged.", request.correlationId(), actor);
     } else if ("action-propose-prompt-diff".equals(request.actionId())) {
-      agentRuntimeService.proposeBehaviorChange(new AgentRuntimeService.BehaviorChangeRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), BehaviorChangeProposal.TargetArtifact.PROMPT, "Approved revised Agent Admin prompt. Continue to require backend authorization, approval, and trace links.", List.of(), "Agent Admin UI-proposed prompt clarification", request.correlationId()));
+      var proposal = agentRuntimeService.proposeBehaviorChange(new AgentRuntimeService.BehaviorChangeRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), BehaviorChangeProposal.TargetArtifact.PROMPT, "Approved revised Agent Admin prompt. Continue to require backend authorization, approval, and trace links.", List.of(), "Agent Admin UI-proposed prompt clarification", request.correlationId()));
+      result = new CapabilityActionResult(proposal.status() == BehaviorChangeProposal.Status.DENIED ? "denied" : "accepted", "Prompt behavior-change proposal " + proposal.proposalId() + " recorded with status " + proposal.status().name().toLowerCase(Locale.ROOT) + "; prompt text cannot grant authority without backend approval.", request.correlationId(), List.of(proposal.proposalId()), agentBehaviorProposalSurface(actor, request.correlationId()));
     } else if ("action-test-agent-prompt".equals(request.actionId())) {
-      agentRuntimeService.assemblePrompt(new AgentRuntimeService.PromptAssemblyRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), "test", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, request.correlationId(), stringInput(request.input(), "prompt", "Summarize current Agent Admin governed-agent readiness.")));
+      var prompt = agentRuntimeService.assemblePrompt(new AgentRuntimeService.PromptAssemblyRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), "test", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, request.correlationId(), stringInput(request.input(), "prompt", "Summarize current Agent Admin governed-agent readiness.")));
+      result = new CapabilityActionResult(prompt.decision() == AgentRuntimeTrace.Decision.ALLOWED ? "accepted" : "denied", prompt.decision() == AgentRuntimeTrace.Decision.ALLOWED ? "No-side-effect Agent Admin test assembled governed prompt and loader traces." : "No-side-effect Agent Admin test failed closed before model invocation.", request.correlationId(), List.of(prompt.traceId()), agentTestConsoleSurface(actor, request.correlationId()));
     } else if ("action-simulate-tool-boundary".equals(request.actionId())) {
       var unsafeGrant = new ToolPermissionBoundary.ToolGrant("email.send", ToolPermissionBoundary.Category.EXTERNAL_SIDE_EFFECT, "tenant.email.send", List.of("execute"), List.of("runtime"), "HIGH", "AUTONOMOUS", true, "full_work_trace");
-      agentRuntimeService.proposeBehaviorChange(new AgentRuntimeService.BehaviorChangeRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), BehaviorChangeProposal.TargetArtifact.TOOL_BOUNDARY, null, List.of(unsafeGrant), "Agent Admin simulation of policy-blocked side-effecting tool grant", request.correlationId()));
+      var proposal = agentRuntimeService.proposeBehaviorChange(new AgentRuntimeService.BehaviorChangeRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), BehaviorChangeProposal.TargetArtifact.TOOL_BOUNDARY, null, List.of(unsafeGrant), "Agent Admin simulation of policy-blocked side-effecting tool grant", request.correlationId()));
+      result = new CapabilityActionResult(proposal.status() == BehaviorChangeProposal.Status.DENIED ? "denied" : "approval-required", "Tool-boundary authority expansion simulation recorded as " + proposal.status().name().toLowerCase(Locale.ROOT) + "; side-effecting tools require retained human approval and backend ToolPermissionBoundary enforcement.", request.correlationId(), List.of(proposal.proposalId()), agentToolBoundarySurface(actor, request.correlationId()));
     } else if ("action-approve-skill-manifest".equals(request.actionId())) {
       result = new CapabilityActionResult("approval-required", "Skill manifest approval is recorded as a governed review gate; activation must use an approved backend governance command.", request.correlationId(), List.of("trace-skill-manifest-approval-required"), agentSkillManifestSurface(actor, request.correlationId()));
     } else if ("action-deactivate-agent-definition".equals(request.actionId())) {
@@ -932,7 +935,13 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope agentPromptGovernanceSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return envelope("surface-agent-prompt-governance", "governance-diff", "Prompt governance review", actor, correlationId, agentAdminService.promptDetail(actor, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, correlationId), List.of(proposePromptDiffAction(), openAgentTraceAction()));
+    var data = new LinkedHashMap<>(agentAdminService.promptDetail(actor, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, correlationId));
+    data.put("behaviorDiffSurfaceContract", "surface.agent_admin.behavior_diff.v1");
+    return envelope("surface-agent-prompt-governance", "governance-diff", "Prompt governance review", actor, correlationId, data, List.of(proposePromptDiffAction(), openAgentTraceAction()));
+  }
+
+  private SurfaceEnvelope agentSkillVersionSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    return envelope("surface-agent-skill-version", "governance-diff", "Skill version review", actor, correlationId, agentAdminService.skillDetail(actor, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, null, correlationId), List.of(approveSkillManifestAction(), openAgentTraceAction()));
   }
 
   private SurfaceEnvelope agentSkillManifestSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -953,7 +962,10 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope agentTestConsoleSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     var prompt = agentRuntimeService.assemblePrompt(new AgentRuntimeService.PromptAssemblyRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), "test", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, correlationId, "No-side-effect Agent Admin test console"));
-    return envelope("surface-agent-test-console", "workflow-status", "No-side-effect agent test console", actor, correlationId, mapOf("workflowId", "agent-runtime-test", "status", "completed", "steps", List.of(mapOf("stepId", "prompt-assembly", "label", "PromptAssemblyTrace", "status", prompt.decision().name()), mapOf("stepId", "skill-load", "label", "SkillLoadTrace", "status", "available-through-readSkill(skillId)"), mapOf("stepId", "agent-work", "label", "AgentWorkTrace", "status", "no production side effects")), "traceIds", List.of(prompt.traceId(), "trace-agent-work-88")), List.of(testPromptAction(), openAgentTraceAction()));
+    var allowedSkill = agentRuntimeService.readSkill(new AgentRuntimeService.SkillReadRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), "test", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, correlationId, "agent-admin.starter-guidance.v1"));
+    var deniedSkill = agentRuntimeService.readSkill(new AgentRuntimeService.SkillReadRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), "test", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, correlationId, "ua.role-recommendation.v1"));
+    var traceIds = List.of(prompt.traceId(), allowedSkill.traceId(), deniedSkill.traceId(), "trace-agent-work-88");
+    return envelope("surface-agent-test-console", "workflow-status", "No-side-effect agent test console", actor, correlationId, mapOf("surfaceContract", "agent_admin.no_side_effect_test.v1", "surfaceContractAliases", List.of("surface.agent_admin.test_console.v1"), "capabilityAliases", List.of("agent.runtime.test", "agent.read_skill"), "workflowId", "agent-runtime-test", "status", prompt.decision() == AgentRuntimeTrace.Decision.ALLOWED && allowedSkill.decision() == AgentRuntimeTrace.Decision.ALLOWED && deniedSkill.decision() == AgentRuntimeTrace.Decision.DENIED ? "completed" : "blocked", "steps", List.of(mapOf("stepId", "prompt-assembly", "label", "PromptAssemblyTrace", "status", prompt.decision().name(), "traceId", prompt.traceId()), mapOf("stepId", "assigned-skill-load", "label", "SkillLoadTrace allowed readSkill(skillId)", "status", allowedSkill.decision().name(), "traceId", allowedSkill.traceId()), mapOf("stepId", "unassigned-skill-denial", "label", "SkillLoadTrace denied unassigned skill", "status", deniedSkill.decision().name(), "traceId", deniedSkill.traceId()), mapOf("stepId", "agent-work", "label", "AgentWorkTrace", "status", "no production side effects")), "traceIds", traceIds, "noProductionSideEffects", true), List.of(testPromptAction(), openAgentTraceAction()));
   }
 
   private SurfaceEnvelope agentBehaviorProposalSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -1045,6 +1057,7 @@ public final class WorkstreamService {
       case "surface-agent-admin-catalog" -> agentAdminCatalogSurface(actor, correlationId);
       case "surface-agent-admin-detail" -> agentAdminDetailSurface(actor, correlationId);
       case "surface-agent-prompt-governance" -> agentPromptGovernanceSurface(actor, correlationId);
+      case "surface-agent-skill-version" -> agentSkillVersionSurface(actor, correlationId);
       case "surface-agent-skill-manifest-diff" -> agentSkillManifestSurface(actor, correlationId);
       case "surface-agent-tool-boundary-diff" -> agentToolBoundarySurface(actor, correlationId);
       case "surface-agent-model-refs" -> agentModelRefsSurface(actor, correlationId);

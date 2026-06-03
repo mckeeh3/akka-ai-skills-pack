@@ -1097,7 +1097,7 @@
 
 ### TASK-STARTER-08-005: Agent Admin prompt, skill, manifest, readSkill, and tool-boundary governance vertical
 
-- status: pending
+- status: done
 - source: specs/agent-workstream-skills-realignment/starter-queue-gap-matrix.md superseding future shape for TASK-STARTER-04-002, TASK-STARTER-04-003, and part of TASK-STARTER-07-008
 - task brief: none
 - depends on: [TASK-STARTER-08-004]
@@ -1142,6 +1142,9 @@
   - Akka substrate/exposure: ESE prompt/skill/tool-boundary lifecycle records; manifest current state; prompt assembly service; readSkill function tool; behavior proposal workflow; HTTP/workstream APIs; frontend governance surfaces
   - audit/trace/tests: PromptAssemblyTrace, SkillLoadTrace allow/deny, AgentWorkTrace test-console, audit for proposed/approved/denied/activated changes, redaction and secret-boundary checks
   - supersedes future task shape for: TASK-STARTER-04-002, TASK-STARTER-04-003, TASK-STARTER-07-008, TASK-STARTER-07-009
+  - commit message: `Add starter agent behavior governance vertical`
+  - check passed: `git diff --check`
+  - validation passed: `tools/validate-ai-first-saas-starter-fullstack.sh` (rendered backend tests, frontend npm install/test/typecheck/build/analyze, static asset scan, and real provider smoke when provider env was available).
 
 ### TASK-STARTER-08-006: Governance/Policy proposal review and retained-authority vertical
 
