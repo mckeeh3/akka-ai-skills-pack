@@ -1,269 +1,105 @@
-# Akka AI Skills Pack
+# AI-first SaaS Core App
 
-The **Akka AI Skills Pack** is an installable `.agents/` resource pack for AI coding harnesses such as Claude Code, Codex, and Pi. It helps the harness turn normal product and engineering intent into full-stack, secure, AI-first SaaS application plans, Akka Java SDK code, React/Vite/TypeScript web UI assets, tests, and delivery artifacts.
+This repository root is the canonical runnable **AI-first SaaS core app**. It provides the secure foundation and five core workstreams that downstream teams can fork, run, validate, and extend with their own domain-specific capabilities.
 
-This pack is intentionally **opinionated**. Its goal is to help agents design and build SaaS products where AI does bounded operational work, humans supervise and govern outcomes, security is present from the first planning step, AI-first managed agents are configuration-driven core runtime actors, backend behavior is modeled as governed capabilities before component/tool exposure, and the browser UI is a required supervision, administration, decision, audit, and outcome surface.
+The installable Akka AI skills pack that used to own the repository root now lives under [`skills-pack/`](skills-pack/). Use the root for core app runtime work; use `skills-pack/` for pack maintenance, installable skills, Akka reference examples, packaging, and release tooling.
 
-This pack is **not** intended as a general-purpose generator for traditional CRUD applications, backend-only services, or human-only workflow apps with no delegated AI work, governance model, audit trail, or outcome loop. Conventional forms, tables, and admin screens may exist, but they are subordinate to the secure AI-first SaaS operating model.
+## What is in the root app
 
-The pack is designed so users can speak naturally to the harness. You should not need to know the internal skill names, stages, or routing files.
-
-Generated-app features are considered complete only when the real local Akka runtime path works at the stated scope. Akka local execution is production-like validation for this pack: workstream agents, auth, durability, provider-backed model calls, protected capabilities, denials, traces, API responses, and frontend surfaces should be exercised through normal runtime paths before being called done. Model-backed workstream agents must use the configuration-driven managed-agent path: active runtime config resolution, compact prompt/skill/reference manifests, governed `readSkill`/`readReferenceDoc` tools, `ToolPermissionBoundary`, `effects().tools(runtimeTools)`, concrete Akka `Agent` invocation, and durable traces. Deterministic/demo/mock/simulated/model-less behavior belongs only in tests or explicitly named fixture modes; it must not be the user-facing substitute for implemented runtime features.
-
-A primary benefit of the pack is that it can maintain a durable **application description** in addition to generating code. For non-trivial apps, the harness can capture the app's intent, behavior, goals, objectives, security posture, UI expectations, tests, observability, governance rules, open questions, and realization readiness in structured project documents. Those documents become an authoritative source of truth that developers can interrogate through their AI harness: asking what the app is supposed to do, why a behavior exists, what a change impacts, which decisions remain open, and whether generated code is still aligned with product intent.
-
-## Who this is for
-
-### Skills pack users
-
-Use this pack when you are building or evolving an Akka application and want your AI harness to help with:
-
-- PRD/spec ingestion and implementation planning
-- secure AI-first SaaS foundation design
-- capability-first backend design: governed operations/queries with explicit authority, scope, schemas, side effects, audit, approval, exposure surfaces, and tests
-- WorkOS/AuthKit user authentication, WorkOS JWT validation, and tenant/customer/user administration
-- app-description, specs, question queues, and pending task queues
-- Akka components such as entities, workflows, views, consumers, timed actions, endpoints, and agents
-- mandatory Akka-hosted web UI delivery for full-stack AI-first SaaS
-- tests, reviews, and iterative change reconciliation
-
-Start here:
-
-- [Skills Pack User Guide](docs/skills-pack-user-guide.md) — install, getting started, usage workflow, prompt patterns, question queues, and task queues
-
-### Skills pack developers
-
-Use this repository when you are maintaining the pack itself: skills, docs, examples, installers, packaging metadata, and releases.
-
-Start here:
-
-- [Skills Pack Developer Guide](docs/skills-pack-developer-guide.md) — repository layout, development commands, packaging model, and release instructions
-- [Repository maintainer guidance](AGENTS.md) — required context for AI agents working in this source repository
-- [Skill routing map](skills/README.md) — internal skill map used by the harness
-
-## What gets installed
-
-The pack installs into one of these locations:
-
-- **Project install:** `<your-project>/.agents`
-- **Global install:** `~/.agents`
-
-The installed `.agents/` directory is a harness support library. Your app source, specs, `app-description/`, `specs/pending-questions.md`, and `specs/pending-tasks.md` normally stay in your application workspace, not inside `.agents/`.
-
-Installed layout, at a high level:
+The root app is a merge-friendly baseline with a fixed Java package and app-owned description/spec assets:
 
 ```text
-.agents/
-├── AGENTS.md
-├── bin/
-│   └── scaffold-ai-first-saas-starter.sh
-├── docs/
-├── manifests/
-├── resources/
-│   ├── examples/java/
-│   ├── examples/frontend/
-│   └── templates/ai-first-saas-starter/
-└── skills/
+pom.xml                         # canonical Akka Java SDK backend build
+src/main/java/ai/first/**       # core app runtime source
+src/test/java/ai/first/**       # core app tests
+src/main/resources/**           # backend resources and built frontend assets
+frontend/**                     # React/Vite workstream UI
+app-description/**              # authoritative core app description
+specs/**                        # core app planning, validation, and extension queues
+docs/**                         # root app extension and maintenance guidance
+skills-pack/**                  # installable skills-pack source and tooling
 ```
 
-Default installs are skills/resource-only. To start a new app from the packaged starter, explicitly run the scaffold command after installing into an empty or bootstrap-only project:
+The supported default Java base package is `ai.first`. Downstream forks may rename it as a deliberate product refactor, but the merge-friendly path is to keep `ai.first` and add domain-specific code under extension zones.
 
-```bash
-.agents/bin/scaffold-ai-first-saas-starter.sh \
-  --target /path/to/project \
-  --app-name "My App" \
-  --app-slug "my-app" \
-  --base-package ai.first \
-  --maven-group-id ai.first \
-  --force-empty \
-  --yes
-```
+## Core app scope
 
-The scaffold writes `specs/scaffold-report.md`, backend source, `frontend/` React/Vite workstream UI source, app-description/spec seed artifacts, and environment examples documenting local WorkOS/AuthKit, JWT, Resend, admin-bootstrap, frontend public AuthKit values, and model-provider variables when workstream agents are model-backed. The starter includes configuration-driven core managed agents with seeded `AgentDefinition`, prompt, skill, reference, manifest, `ToolPermissionBoundary`, governed loader tools, and runtime trace records; normal message submission must register the resolved tool bindings with `effects().tools(runtimeTools)`. The `ai.first` package in the command above is the accepted/deferred default example; generated apps should use the selected Java base package and must not silently inherit `com.example` from reference examples. Backend secrets such as `WORKOS_API_KEY`, `RESEND_API_KEY`, JWT configuration, and `OPENAI_API_KEY` belong only in backend environment/deployment configuration; only `VITE_` variables are browser-public. Missing provider configuration should fail closed with an actionable runtime error instead of a deterministic canned response.
+The baseline centers on the secure AI-first SaaS foundation and five core workstreams:
 
-## Quick install
+- **My Account**
+- **User Admin**
+- **Agent Admin**
+- **Audit/Trace**
+- **Governance/Policy**
 
-Current manifest version:
-- `0.2.12`
+Generated-app features are complete only when they work through the real local Akka/API/UI runtime path at the stated scope. Fixture, mock, deterministic, or model-less behavior is acceptable for tests and explicitly named local fixture modes only; it is not a normal runtime substitute.
 
-Install the current release into the current directory as `<current-directory>/.agents`:
+## Run and validate
 
-```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.12/install-akka-ai-skills-pack-0.2.12.sh | bash -s --
-```
-
-Install into a specific project directory:
-
-```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.12/install-akka-ai-skills-pack-0.2.12.sh | bash -s -- --target-dir /path/to/project
-```
-
-For global installs, dry runs, archive installs, and detailed usage, see the [Skills Pack User Guide](docs/skills-pack-user-guide.md).
-
-## Getting started: scaffold and validate the AI-first SaaS starter
-
-This section is for skills pack users who want to start a new application from the packaged secure AI-first SaaS starter. The recommended path is: install the pack into a fresh Akka project, scaffold the starter, configure local environment values, run the generated checks, smoke-test the five core workstreams, then add your domain-specific capabilities.
-
-For more background on the secure AI-first SMB SaaS starter and how to extend it for your own domain, see the [Skills Pack User Guide](docs/skills-pack-user-guide.md), [Minimum AI-First SaaS App](docs/minimum-ai-first-saas-app.md), and [Core AI-first SaaS foundation](docs/core-ai-first-saas-foundation.md). SMB means small-to-medium business SaaS: the starter assumes a SaaS Owner, Tenant, Customer, account/membership/role model, and governed AI workstreams that can be specialized for your product domain.
-
-The starter provides the secure application foundation before your product-specific work is added. It includes identity and authorization boundaries, tenant/customer scope, backend-owned attention/events, in-app notifications, Resend-backed email delivery, invitation/onboarding flows, admin audit traces, governed managed-agent configuration, durable Akka-backed workstream state, and a React/Vite workstream UI served by the Akka application.
-
-The first user-facing experience is organized around five mandatory core workstreams:
-
-- **My Account** — opened from the signed-in user tile/email at the bottom of the left nav; profile/settings, selected context, authority basis, personal attention, own trace refs, notifications, preferences, and MyAccountAgent guidance.
-- **User Admin** — left-nav workstream for invitations, members, roles/capabilities, access management, UserAdminAgent guidance, and access-review task surfaces.
-- **Agent Admin** — left-nav workstream for governed managed-agent definitions, prompts, skills, references, manifests, model refs, tool boundaries, seeds, behavior-change lifecycle, and AgentAdminAgent prompt-risk guidance.
-- **Audit/Trace** — left-nav workstream for trace dashboard/search/detail/timeline, redacted evidence cards, provider/tool/model/worker failure evidence, and AuditTraceAgent summaries/explanations.
-- **Governance/Policy** — left-nav workstream for policy posture, proposals, decisions, blocked analysis-task readiness, and GovernancePolicyAgent impact analysis.
-
-Domain-specific features grow from the same architecture rather than starting as isolated CRUD pages. Describe the product behavior in normal language, then let the harness map it through this pattern:
-
-```text
-intent → functional agent/workstream → structured surface → governed backend capability
-→ durable Akka/runtime component → tests → UI integration → audit/security review
-```
-
-### Step 1 — Create a target app project and install the pack
-
-Create a fresh empty project outside this skills-pack repository with the Akka CLI, then install the pack into that project as `.agents/`.
-
-```bash
-akka code init
-# Select: Empty project
-# Project directory name: my-ai-first-app
-# Which AI assistant: None
-cd my-ai-first-app
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.12/install-akka-ai-skills-pack-0.2.12.sh | bash -s --
-```
-
-If you are installing from a locally built release bundle instead of GitHub, run that bundle's `install.sh` with the same target-project location.
-
-### Step 2 — Scaffold the starter
-
-Use your AI coding harness from the target project directory. Start with a direct prompt like this:
-
-```text
-Read .agents/AGENTS.md and .agents/skills/README.md.
-
-I want to build the initial secure AI-first SaaS app from the installed skills pack.
-Use the packaged AI-first SaaS starter scaffold as the baseline.
-App name: <your app name>.
-App slug: <your-app-slug>.
-Java base package: <press Enter/use ai.first unless I provide another package>.
-
-Scaffold the starter into this project using .agents/bin/scaffold-ai-first-saas-starter.sh.
-Do not invent a different architecture. Preserve the skills-pack defaults: secure SaaS
-foundation, five core AI-first workstreams, backend-owned attention/events,
-in-app notifications, Resend-backed email delivery, AutonomousAgent worker verticals,
-governed backend capabilities, durable Akka-backed runtime state/traces, governed
-model-backed Agent runtime, provider fail-closed behavior, backend authorization,
-tenant/customer isolation, and frontend secret boundaries.
-
-After scaffolding, show the scaffold command used, summarize specs/scaffold-report.md,
-and tell me the local configuration and validation commands to run next.
-```
-
-The harness should run the installed scaffold command, roughly:
-
-```bash
-.agents/bin/scaffold-ai-first-saas-starter.sh \
-  --target . \
-  --app-name "<your app name>" \
-  --app-slug "<your-app-slug>" \
-  --base-package ai.first \
-  --maven-group-id ai.first \
-  --force-empty \
-  --yes
-```
-
-Use a different Java base package and Maven group id if you already have them. Do not use `com.example` unless you explicitly want that package.
-
-Commit the scaffolded baseline before making product-specific changes.
-
-### Step 3 — Configure local environment
-
-Copy the generated environment examples and fill only the values needed for local testing. Keep backend secrets out of frontend files.
-
-```text
-Help me configure the local environment for this scaffolded app.
-Read .env.example and frontend/.env.example.
-Explain which values are backend-only secrets, which VITE_ values are browser-public,
-and which values can remain as local/test placeholders for now.
-Do not commit real secrets.
-```
-
-Typical values include WorkOS/AuthKit, JWT configuration, Resend, explicit `ADMIN_USERS` bootstrap entries, and backend-only model-provider keys such as `OPENAI_API_KEY` when validating real model-backed workstream agents. Production email must use Resend; local/dev/test email capture must be clearly labelled captured, not sent. If provider or required production email variables are missing, normal runtime paths should be blocked with actionable recovery copy rather than deterministic placeholder success.
-
-### Step 4 — Run generated checks
-
-Ask the harness to run generated checks, then fix only scaffold/foundation issues:
-
-```text
-Run the generated backend and frontend checks for the scaffolded starter.
-If something fails, fix only scaffold-level or configuration-related issues needed for the
-five-core starter to build and run. Do not add domain-specific features yet.
-Report every command run and its result.
-```
-
-Expected local checks normally include:
+Backend checks from the repository root:
 
 ```bash
 mvn test
+```
+
+Frontend checks from the repository root:
+
+```bash
 npm --prefix frontend install
 npm --prefix frontend test -- --run
 npm --prefix frontend run typecheck
 npm --prefix frontend run build
 ```
 
-### Step 5 — Smoke the runtime baseline
+The frontend build writes Akka static assets to `src/main/resources/static-resources/`. Do not hand-edit generated static output; rebuild from `frontend/` source.
 
-Before adding product-specific features, validate the starter as an AI-first runtime:
+For production-like local runtime smoke testing, configure the backend-only secrets and browser-public `VITE_` values described in `.env.example` and `frontend/.env.example`, then validate the authenticated shell, `/api/me`, five workstreams, authorization denials, audit/work traces, notifications/email behavior, and provider fail-closed paths through normal runtime APIs and UI.
 
-1. Start the Akka app with backend-only WorkOS/AuthKit/JWT/admin, Resend/email mode, and model-provider variables loaded from `.env` as needed for the smoke scope.
-2. Sign in through AuthKit as an explicitly configured `ADMIN_USERS` account.
-3. Open My Account from the signed-in user tile at the bottom of the left nav.
-4. Open User Admin, Agent Admin, Audit/Trace, and Governance/Policy from the left nav.
-5. Check in-app notification center behavior and email/captured-outbox behavior for notification paths in scope.
-6. Submit a short prompt in each workstream and verify each normal response is generated through the governed Akka Agent runtime, not fixture copy or a service-only provider bypass.
-7. Inspect trace/correlation ids and verify provider metadata and unauthorized source details are redacted.
-8. Re-run once with provider variables absent and verify message submission is safely blocked with actionable recovery copy and no secret leakage.
+## Fork-and-extend workflow
 
-Prompt the harness:
+Use this repository as the upstream core baseline for a product fork:
 
-```text
-Validate the scaffolded five-core AI-first SaaS starter end to end.
-Use the normal authenticated shell and backend workstream APIs.
-Verify My Account from the signed-in user tile and the four left-nav workstreams:
-User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
-Also verify backend-owned attention/events, in-app notifications, Resend email or captured
-local/test outbox behavior, preferences/category allowlist behavior, redaction, idempotency,
-audit traces, provider fail-closed behavior, and frontend secret boundaries.
-Do not use frontend fixtures or model-less fallback text as normal runtime success.
-Record any blockers in specs/pending-tasks.md before fixing them one task at a time.
-```
+1. Fork or clone the repository.
+2. Keep the core app baseline on a branch that can receive upstream changes.
+3. Add product behavior as domain-specific extensions instead of rewriting core foundation code.
+4. Update `app-description/` and `specs/` before or alongside implementation changes.
+5. Validate backend, frontend, auth, authorization, audit/trace, and UI behavior through the root app runtime path.
+6. Merge upstream core changes regularly and resolve conflicts by keeping core hooks small and domain code isolated.
 
-### Step 6 — Add product-specific capabilities after the core baseline is healthy
+Recommended extension zones are documented in [`docs/domain-extension-guide.md`](docs/domain-extension-guide.md). Upstream merge practices are documented in [`docs/upstream-merge-guide.md`](docs/upstream-merge-guide.md).
 
-When the five-core baseline builds, runs, and smokes successfully at the starter scope, use natural product prompts to extend the app. New app-specific work should preserve the established pattern: functional agent/workstream, structured surfaces, governed backend capabilities, Akka component selection, tests, UI integration, authorization, audit/work traces, and readiness review.
+## Where to add domain-specific work
+
+Prefer additive extension paths:
 
 ```text
-Now extend this AI-first SaaS app with this domain feature:
-<describe the feature in normal product language>
-
-Use the established five-core starter pattern:
-functional agent/workstream, structured surfaces, governed backend capabilities,
-Akka component selection, tests, UI integration, authorization, audit/work traces,
-and readiness review. Make best-judgment decisions where safe, record assumptions,
-and ask only for blocking questions.
+src/main/java/ai/first/domain/extensions/<domain>/
+src/main/java/ai/first/application/extensions/<domain>/
+src/main/java/ai/first/api/extensions/<domain>/
+src/test/java/ai/first/extensions/<domain>/
+frontend/src/extensions/<domain>/
+app-description/extensions/<domain>/
+specs/extensions/<domain>/
+docs/extensions/<domain>/
 ```
 
-A good feature iteration keeps `app-description/`, `specs/`, pending questions, pending tasks, code, tests, and UI aligned.
+When domain behavior needs a core integration point, add the smallest stable registry or hook in core code and put domain logic in the extension path. Domain-specific extensions must preserve backend authorization, tenant/customer scoping, audit/work traces, governed capability boundaries, frontend secret boundaries, and provider fail-closed behavior.
 
-## Repository status
+## Skills-pack maintenance
 
-This repository is the source project for `akka-ai-skills-pack`. It is not primarily a generated Akka application. The Akka code under `src/` is executable reference material for the skills pack.
+The installable pack source is isolated under [`skills-pack/`](skills-pack/):
 
-For development, testing, packaging, and release instructions, see the [Skills Pack Developer Guide](docs/skills-pack-developer-guide.md).
+- `skills-pack/skills/` — skill routing and focused guidance
+- `skills-pack/docs/` — pack doctrine and references
+- `skills-pack/examples/` — focused Akka component examples
+- `skills-pack/pack/` — installed `.agents` guidance and manifest
+- `skills-pack/tools/` — package, install, validation, and release tooling
+
+The root [`install.sh`](install.sh) is a compatibility wrapper for skills-pack installation. Do not add pack-only docs, skills, examples, or packaging assets to root app source paths.
+
+## App description and task queues
+
+The root [`app-description/`](app-description/) tree is the authoritative description for the core app baseline and its domain-specific extensions. The root [`specs/`](specs/) tree contains active planning and pending-task queues for core app work. Execute pending-task queues one task per fresh harness context and commit each completed task with its queue-status update.
 
 ## License
 

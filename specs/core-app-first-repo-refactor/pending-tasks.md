@@ -236,7 +236,7 @@
 
 ### TASK-LAYOUT-04-001: Update root app docs and domain extension guidance
 
-- status: pending
+- status: done
 - source: specs/core-app-first-repo-refactor/backlog/01-core-app-first-refactor-build-backlog.md
 - task brief: specs/core-app-first-repo-refactor/tasks/04-guidance-tooling/01-update-root-app-docs.md
 - depends on: [TASK-LAYOUT-03-002]
@@ -257,6 +257,11 @@
   - queue is updated and committed
 - notes:
   - commit message: `layout: update core app extension docs`
+  - updated root README and AGENTS guidance for the core-app-first repository model, root runtime checks, fork-and-extend workflow, skills-pack boundary, and queue rules
+  - added root docs for domain extension zones and upstream merge practice
+  - updated app-description README to remove scaffold placeholders and document the root core app description growth model
+  - required read note: `skills/README.md` has moved and was unavailable at the old root path; read `skills-pack/skills/README.md` as the moved equivalent
+  - `git diff --check` passed
 
 ### TASK-LAYOUT-04-002: Update skills-pack guidance, install, and validation tooling
 

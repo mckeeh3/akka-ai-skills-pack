@@ -1,12 +1,10 @@
-# {{APP_NAME}} App Description
+# AI-first SaaS Core App Description
 
-This scaffolded `app-description/` tree is the project-owned source of truth for the core AI-first SaaS starter app created by the scaffold flow.
-
-It is created in the target project workspace, not inside `.agents/`, so future harness sessions can evolve the application by updating this tree before implementation changes.
+This `app-description/` tree is the root app-owned source of truth for the AI-first SaaS core app. It is maintained alongside the runnable backend and frontend, not inside `.agents/`.
 
 ## Current core scope
 
-The initial scaffold describes the five core v0 workstreams:
+The core app description covers the five baseline workstreams:
 
 1. My Account
 2. User Admin
@@ -14,28 +12,35 @@ The initial scaffold describes the five core v0 workstreams:
 4. Audit/Trace
 5. Governance/Policy
 
-The core app description captures:
+It captures:
 
 - secure SaaS identity, tenancy, membership, role, permission, and `/api/me` foundation;
-- governed runtime agent foundation with managed prompts, skills, references, manifests, tool permission boundaries, and traces;
+- governed runtime-agent foundation with managed prompts, skills, references, manifests, tool permission boundaries, and traces;
 - functional-agent workstreams, structured surfaces, dashboards, composer behavior, and workstream expertise;
-- capability-first backend contracts and governed-tools;
+- capability-first backend contracts and governed tools;
 - behavior, tests, auth/security, observability, UI, generation, and traceability maps;
-- explicit readiness distinction between the five-core starter, full-core SaaS readiness, and later domain-specific expansion.
+- readiness distinctions between the baseline core app, full-core SaaS readiness, and later domain-specific expansion.
 
 ## Growth model
 
-Domain-specific features are added as new slices under the same tree:
+Add domain-specific features as extension slices under this same tree:
 
 ```text
 new domain request
-→ affected functional agent/workstream or new domain functional agent
-→ surfaces and actions
-→ governed capabilities and governed-tools
+→ affected core workstream or new domain workstream
+→ functional agent responsibilities
+→ structured surfaces and actions
+→ governed capabilities and governed tools
 → behavior/rules/state
 → tests/security/observability/UI
 → traceability maps
-→ implementation/regeneration plan
+→ implementation plan
 ```
 
-Do not create a separate app-description root per domain. Use this root as the single authoritative application description.
+Recommended path:
+
+```text
+app-description/extensions/<domain>/
+```
+
+Do not create a separate app-description root per domain. Keep this tree as the single authoritative application description for the core app and product extensions.
