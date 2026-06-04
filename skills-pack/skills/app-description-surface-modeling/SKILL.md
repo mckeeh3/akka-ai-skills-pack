@@ -28,6 +28,9 @@ Read these first if present:
 - existing `app-description/12-workstreams/**`
 - existing `app-description/55-ui/**`
 - existing `app-description/70-traceability/surface-to-capability-map.md`
+- `../../templates/ai-first-saas-starter/app-description/README.md` and its `12-workstreams/**`, `55-ui/**`, and `70-traceability/**` files when bootstrapping or repairing starter surface contracts
+- `../../docs/examples/domain-workstream-surface-contract-example.md` when a domain-specific surface example is useful
+- `../../tools/validate-surface-contracts.sh` when validating a target app-description surface layer
 
 ## Use this skill when
 
@@ -63,6 +66,8 @@ app-description/70-traceability/
 ```
 
 Create or update only the smallest files needed. Keep `12-workstreams/surface-contracts/**` authoritative for what a surface means; keep `12-workstreams/functional-agents.md` authoritative for workstream icon assignment and meaning; keep `55-ui/**` focused on rendering, interaction, route/deep-link, style, and frontend API realization details.
+
+When the target app has no usable starter surface layer, copy and adapt the source-controlled starter files from `../../templates/ai-first-saas-starter/app-description/**` into the target project's `app-description/**`. Do not reference retired distribution output directories as template sources.
 
 ## Canonical surface types
 
@@ -234,4 +239,5 @@ Before finishing a surface update, verify:
 - [ ] backend authorization remains authoritative over UI visibility;
 - [ ] surfaces can be reused across functional agents when appropriate;
 - [ ] UI rendering details are linked without making page/screen hierarchy primary;
-- [ ] surface-to-capability traceability is updated.
+- [ ] surface-to-capability traceability is updated;
+- [ ] `tools/validate-surface-contracts.sh <app-description-dir>` passes when the target project includes a surface-contract layer and the tool is available.

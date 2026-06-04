@@ -7,6 +7,8 @@ It defines the mandatory default UI/application model for generated full-stack s
 
 Use this doctrine below `ai-first-saas-application-architecture.md` and above detailed app-description, web UI, agent, and Akka component guidance. For broad input, PRD, app-description, planning, backlog, and implementation-readiness work, apply `requirements-to-workstream-development-process.md` before component selection. This document does not replace `capability-first-backend-architecture.md`: workstream UI actions, agent tools, workflow steps, APIs, timers, consumers, and internal calls still map to governed backend capabilities before Akka implementation is selected.
 
+For starter app-description surface examples, use the source-controlled files under `templates/ai-first-saas-starter/app-description/**`; do not depend on generated distribution output directories as template sources.
+
 ## Default generated-app architecture
 
 Generated AI-first SaaS apps are **agent workstream applications by default**. The **workstream is the root application abstraction** for authenticated consequential work. First use: **functional/context-area agent** means a user-facing, role-authorized agent for one durable work area; this document shortens the term to **functional agent** after defining the alias.
@@ -365,6 +367,8 @@ For high-level product input, apply this sequence:
 8. Use Akka component skills to implement the horizontal substrate from accepted capability contracts.
 
 Use `workstream-expertise-model.md` with this doctrine when a functional agent needs governed skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests that make it an expert in its workstream. Use `agent-component-selection-guide.md` before choosing whether supporting agent work should be a request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`.
+
+When a target app-description already has or receives `12-workstreams/surface-contracts/**`, run `tools/validate-surface-contracts.sh <app-description-dir>` as a lightweight structural check before treating the surface layer as ready for implementation.
 
 Use `domain-workstream-prd-structure.md` when capturing domain-level and workstream-level PRDs for the core SaaS app domain or app-specific domains. It defines the directory structure for domains, workstreams, workstream-agent prompts/skills, surfaces, capabilities, and tests.
 

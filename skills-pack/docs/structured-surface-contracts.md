@@ -2,6 +2,8 @@
 
 Use this document when defining or implementing typed surfaces in an agent workstream application. It turns the surface guidance from `agent-workstream-application-architecture.md` and the requirements-to-workstream process in `requirements-to-workstream-development-process.md` into an implementation contract for app descriptions, frontend code, HTTP APIs, realtime events, capability modeling, and tests.
 
+Source-controlled starter assets live under `templates/ai-first-saas-starter/app-description/**`. Use them as copy/adapt examples for the five-core workstream starter surface layer when a target project lacks an app-description surface baseline. Validate adapted target-project contracts with `tools/validate-surface-contracts.sh <app-description-dir>` when available.
+
 A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear. All renderable system feedback in a workstream is also a surface, not an ad hoc UI string.
 
 ## Contract rule
@@ -302,6 +304,22 @@ A structured surface is not implementable until tests are named for:
 - accessibility and responsive behavior for the surface type, especially tables, forms, charts, decision cards, and timelines;
 - frontend secret boundary: no sensitive data or provider secrets in static assets, payloads, browser state, logs, or test fixtures.
 
+## Source template and validation support
+
+The source repository includes an app-description-only starter template:
+
+```text
+templates/ai-first-saas-starter/app-description/
+  12-workstreams/surfaces-index.md
+  12-workstreams/surface-contracts/*.md
+  55-ui/structured-surface-rendering.md
+  70-traceability/surface-to-capability-map.md
+```
+
+Use that template for starter surface shape and field density; copy only the files relevant to the target project and then adapt ids, roles, capabilities, tests, and domain-specific surfaces. The template is not a generated runtime baseline. For a compact non-core domain example, see `docs/examples/domain-workstream-surface-contract-example.md`.
+
+`tools/validate-surface-contracts.sh` performs lightweight structural checks for target app-description trees: index presence, referenced contract files, required contract fields, action/capability/governed-tool exposure details, auth/security, redaction, trace/correlation, tests, and traceability-map coverage. It is intentionally a guardrail, not a substitute for reviewing product semantics.
+
 ## Handoff checklist
 
 Before moving from surface design to code generation, verify:
@@ -313,3 +331,4 @@ Before moving from surface design to code generation, verify:
 - [ ] Events define ordering, dedupe, reconnect, stale, and cross-context handling.
 - [ ] UI states and accessibility/responsive expectations are explicit.
 - [ ] Rendering, capability/action, authorization, tenant-isolation, audit/trace, realtime, and frontend secret-boundary tests are defined.
+- [ ] Starter or repaired app-description surface layers pass `tools/validate-surface-contracts.sh <app-description-dir>` when the tool is available.

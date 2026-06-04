@@ -10,7 +10,7 @@ The current installer includes:
 - `skills/README.md` — skill routing map
 - `skills/references/**` — shared skill reference files
 
-The skills-only install does not copy docs, examples, application source, `akka-context/**`, repository-internal maintainer guidance, or duplicate full-app baselines.
+The source pack also contains docs, examples, templates, and validation tools referenced by `pack/manifest.yaml`, including `templates/ai-first-saas-starter/app-description/**` and `tools/validate-surface-contracts.sh`. When working from a source checkout, use those source-controlled files directly. The skills-only installer does not copy docs, examples, templates, application source, `akka-context/**`, repository-internal maintainer guidance, or duplicate full-app baselines.
 
 The installed pack is a harness support library. Application source, `app-description/`, `specs/`, backend, and frontend files belong in the target project workspace. Downstream projects that want an implementation baseline should fork or copy from the upstream runnable core app repository root, then extend domain-specific behavior in their own workspace.
 

@@ -148,6 +148,25 @@ require_rg "agent catalog" "$APP_ROOT/app-description"
 require_rg "agent detail" "$APP_ROOT/app-description"
 require_rg "unauthorized.*PromptDocument|unassigned skill denial|disabled-agent denial|authority expansion" "$APP_ROOT/app-description"
 
+log "checking source-controlled surface templates and validator"
+require_file "templates/ai-first-saas-starter/app-description/README.md"
+require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surfaces-index.md"
+require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/01-my-account-dashboard.md"
+require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md"
+require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md"
+require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md"
+require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/05-decision-card.md"
+require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/06-audit-trace-explorer.md"
+require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/07-agent-governance-center.md"
+require_file "templates/ai-first-saas-starter/app-description/55-ui/structured-surface-rendering.md"
+require_file "templates/ai-first-saas-starter/app-description/70-traceability/surface-to-capability-map.md"
+require_file "tools/validate-surface-contracts.sh"
+require_file "docs/examples/domain-workstream-surface-contract-example.md"
+require_rg "templates/ai-first-saas-starter/app-description/12-workstreams/surfaces-index.md" pack/manifest.yaml docs/structured-surface-contracts.md
+require_rg "docs/examples/domain-workstream-surface-contract-example.md" pack/manifest.yaml docs/structured-surface-contracts.md skills/app-description-surface-modeling/SKILL.md
+require_rg "validate-surface-contracts" pack/manifest.yaml docs/structured-surface-contracts.md skills/app-description-surface-modeling/SKILL.md
+"$PACK_ROOT/tools/validate-surface-contracts.sh" "$PACK_ROOT/templates/ai-first-saas-starter/app-description"
+
 log "checking pack docs, manifest, skills, and core app-description assets"
 require_rg "docs/core-ai-first-saas-foundation.md" pack/manifest.yaml
 require_rg "docs/core-saas-identity-tenancy-admin.md" pack/manifest.yaml
@@ -158,6 +177,17 @@ require_rg "docs/examples/README.md" pack/manifest.yaml
 require_rg "docs/frontend-with-akka-backend.md" pack/manifest.yaml skills/akka-web-ui-apps/SKILL.md skills/akka-web-ui-frontend-project/SKILL.md skills/akka-workos-user-auth/SKILL.md
 require_rg "frontend/src/workstream" docs/workstream-ui-reference-architecture.md "$APP_ROOT/frontend/README.md" skills/akka-web-ui-apps/SKILL.md
 require_rg "install-skills" install-skills.sh "$APP_ROOT/install-skills.sh" README.md
+
+log "checking retired distribution output is not used as guidance/template source"
+retired_output_pattern='skills-pack/'"dist"'|'"dist"'/akka-ai'
+forbid_rg "$retired_output_pattern" \
+  AGENTS.md \
+  pack/AGENTS.md \
+  skills/README.md \
+  docs/agent-workstream-application-architecture.md \
+  docs/structured-surface-contracts.md \
+  skills/app-description-surface-modeling/SKILL.md \
+  templates/ai-first-saas-starter/app-description
 
 log "checking forbidden optional-security phrasing in top-level routing files"
 forbid_rg "security.*optional|optional.*security|when security is in scope|only when security is in scope|JWT/internal security skills only when security is in scope|generic Akka app|ordinary Akka app|CRUD-first" \
@@ -185,7 +215,7 @@ forbid_rg "optional invite email|optionally sends invite|optionally send invite|
   skills/akka-saas-invitation-onboarding/SKILL.md
 
 log "checking shell syntax for pack scripts"
-for script in install-skills.sh "$APP_ROOT/install-skills.sh" tools/validate-pending-task-workstream-contract.sh; do
+for script in install-skills.sh "$APP_ROOT/install-skills.sh" tools/validate-pending-task-workstream-contract.sh tools/validate-surface-contracts.sh; do
   bash -n "$script"
 done
 

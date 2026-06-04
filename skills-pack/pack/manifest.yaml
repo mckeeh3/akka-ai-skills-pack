@@ -515,9 +515,22 @@ content:
     - docs/frontend-with-akka-backend.md
     - docs/examples/README.md
     - docs/examples/requirements-to-workstream-mini-example.md
+    - docs/examples/domain-workstream-surface-contract-example.md
     - docs/examples/core-ai-first-saas-input/README.md
     - docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md
     - docs/workstream-ui-reference-architecture.md
+    - templates/ai-first-saas-starter/app-description/README.md
+    - templates/ai-first-saas-starter/app-description/12-workstreams/surfaces-index.md
+    - templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/01-my-account-dashboard.md
+    - templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+    - templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+    - templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
+    - templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/05-decision-card.md
+    - templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/06-audit-trace-explorer.md
+    - templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/07-agent-governance-center.md
+    - templates/ai-first-saas-starter/app-description/55-ui/structured-surface-rendering.md
+    - templates/ai-first-saas-starter/app-description/70-traceability/surface-to-capability-map.md
+    - tools/validate-surface-contracts.sh
     - skills/references/akka-entity-comparison.md
     - skills/references/akka-grpc-jwt-patterns.md
   examples:
