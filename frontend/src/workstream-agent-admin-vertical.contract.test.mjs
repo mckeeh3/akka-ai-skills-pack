@@ -10,7 +10,7 @@ const surfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
 const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 
-test('Agent Admin functional agent is visible and capability backed for v0 governed runtime', () => {
+test('Agent Admin functional agent is visible and capability backed for governed runtime', () => {
   assert.match(agents, /label: 'Agent Admin'[\s\S]*defaultSurfaceType: 'markdown_response'/);
   for (const capability of [
     'agent_admin.submit_turn',
@@ -164,12 +164,10 @@ test('Agent Admin actions and fixture client return structured surfaces instead 
   assert.match(apiClient, /agent_admin\.list_seed_material/);
 });
 
-test('Agent Admin defaults to five core v0 markdown and keeps richer governance surfaces demo-scoped', () => {
-  assert.match(workstream, /item-v0-agent-admin-markdown/);
-  assert.match(workstream, /kind: 'markdown_response'/);
-  assert.match(workstream, /governed agent definitions, prompts, skills, tool boundaries, models, and traces/);
+test('Agent Admin starts without bootstrap markdown and keeps structured governance surfaces available', () => {
+  assert.match(workstream, /initialWorkstreamItems: WorkstreamItem\[\] = \[\]/);
   assert.match(surfaces, /Model-backed AgentAdminAgent guidance was blocked before a response was produced/);
-  assert.match(surfaces, /Guidance is read-only: no direct mutation, no approval, no activation, no rollback/);
+  assert.match(surfaces, /no direct mutation|ToolPermissionBoundary enforcement/);
   for (const surfaceId of [
     'surface-agent-admin-catalog',
     'surface-agent-admin-detail',

@@ -47,7 +47,7 @@ test('me fixtures cover active admin, member, auditor/support, disabled, and for
   assert.match(meFixtures, /visibleCapabilityIds: \[\]/);
 });
 
-test('functional agent fixtures expose the five core v0 workstreams while My Account is opened from the user tile', () => {
+test('functional agent fixtures expose the core workstreams while My Account is opened from the user tile', () => {
   for (const label of ['My Account', 'User Admin', 'Agent Admin', 'Audit/Trace', 'Governance/Policy']) {
     assert.match(agentFixtures, new RegExp(label.replace('/', '\\/')));
   }
@@ -55,7 +55,7 @@ test('functional agent fixtures expose the five core v0 workstreams while My Acc
     assert.match(agentFixtures, new RegExp(`functionalAgentId: '${agentId}'[\\s\\S]*?availability: 'visible'`));
   }
   assert.doesNotMatch(agentFixtures, /agent-access-profile/);
-  assert.match(agentFixtures, /not part of the default five core v0 rail/);
+  assert.match(agentFixtures, /not part of the default core workstream rail/);
   assert.match(agentFixtures, /availability: 'hidden'/);
   assert.match(agentFixtures, /availability: 'disabled'/);
   assert.match(agentFixtures, /attention: \{ count: 2, severity: 'warning', source: 'attention\.list_rail_summaries' \}/);
@@ -79,21 +79,16 @@ test('functional agent fixtures carry typed workstream icon descriptors for core
   assert.match(meFixtures, /functionalAgents: foundationFunctionalAgents/);
 });
 
-test('workstream fixtures default to five core v0 markdown_response items', () => {
-  for (const agentId of ['agent-my-account', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy']) {
-    assert.match(workstreamFixtures, new RegExp(`functionalAgentId: '${agentId}'[\\s\\S]*?kind: 'markdown_response'`));
-  }
+test('workstream fixtures start empty and runtime paths append typed items', () => {
   assert.match(workstreamTypes, /'user-request'/);
+  assert.match(workstreamTypes, /'surface-request'/);
   assert.match(workstreamTypes, /'action-feedback'/);
-  assert.match(workstreamFixtures, /five core v0 starter/);
-  assert.match(workstreamFixtures, /traceLinks/);
+  assert.match(workstreamFixtures, /initialWorkstreamItems: WorkstreamItem\[\] = \[\]/);
 });
 
-test('surface fixtures include five core markdown_response plus explicit full-core demo envelopes and all action intents', () => {
-  assert.match(surfaceFixtures, /fiveCoreV0MarkdownSurfaces/);
+test('surface fixtures include explicit structured envelopes and all action intents', () => {
   assert.match(surfaceFixtures, /fullCoreDemoSurfaceEnvelopes/);
-  assert.match(surfaceFixtures, /Full-core follow-up/);
-  for (const surfaceType of ['markdown_response', 'dashboard', 'list-search', 'detail-edit', 'decision', 'audit-timeline', 'workflow-status', 'governance-diff', 'outcome']) {
+  for (const surfaceType of ['dashboard', 'list-search', 'detail-edit', 'decision', 'audit-timeline', 'workflow-status', 'governance-diff', 'outcome']) {
     assert.match(surfaceFixtures, new RegExp(`'${surfaceType}'`));
   }
   for (const intent of ['read', 'command', 'proposal', 'approval', 'workflow', 'governance', 'trace']) {

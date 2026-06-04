@@ -40,13 +40,9 @@ test('workstream shell provides mission-control responsibilities through shell r
   assert.match(main, /realtimeStatusLabel/);
 });
 
-test('workstream fixtures cover the five core v0 shell while richer surfaces remain explicit demos', () => {
+test('workstream fixtures start empty while richer surfaces remain explicit demos', () => {
+  assert.match(workstreamFixtures, /initialWorkstreamItems: WorkstreamItem\[\] = \[\]/);
   assert.doesNotMatch(workstreamFixtures, /kind: 'system-status'/);
-  assert.match(workstreamFixtures, /kind: 'markdown_response'/);
-  for (const agentId of ['agent-my-account', 'agent-user-admin', 'agent-agent-admin', 'agent-audit-trace', 'agent-governance-policy']) {
-    assert.match(workstreamFixtures, new RegExp(agentId));
-  }
-  assert.match(workstreamFixtures, /traceLinks/);
   assert.match(surfaceFixtures, /fullCoreDemoSurfaceEnvelopes/);
   assert.match(surfaceFixtures, /userAdminDashboardSurface/);
 });

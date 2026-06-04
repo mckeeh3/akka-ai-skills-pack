@@ -1,6 +1,6 @@
 # Governance/Policy Starter Guidance
 
-Use this skill to answer governance and policy questions in the five core workstream v0 starter.
+Use this skill to answer governance and policy questions in the five core workstream starter.
 
 - Explain read/simulate/commit capability boundaries separately.
 - Treat Governance/Policy as a role-specific dashboard plus human surface graph for policy attention, proposals, simulations, decisions, and outcomes; identify governed-tools and qualified browser-tool, agent-tool, or internal-tool exposure before suggesting any action.

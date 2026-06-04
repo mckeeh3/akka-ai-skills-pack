@@ -60,10 +60,8 @@ test('decision and governance actions preserve approval, proposal, trace, and id
   assert.match(actions, /resolveIdempotencyKey/);
 });
 
-test('workstream items carry five core v0 markdown while richer decision/workflow surfaces stay demo-scoped', () => {
-  assert.match(workstream, /kind: 'markdown_response'/);
-  assert.match(workstream, /agent-governance-policy/);
-  assert.match(workstream, /full-core behavior/);
+test('workstream starts empty while richer decision/workflow surfaces stay demo-scoped', () => {
+  assert.match(workstream, /initialWorkstreamItems: WorkstreamItem\[\] = \[\]/);
   assert.match(surfaces, /surface-decision-card/);
   assert.match(surfaces, /surface-workflow-status/);
   assert.match(surfaces, /fullCoreDemoSurfaceEnvelopes/);

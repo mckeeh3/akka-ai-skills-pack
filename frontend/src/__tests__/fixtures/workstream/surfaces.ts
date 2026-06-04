@@ -871,46 +871,6 @@ function envelope<TData>(surfaceId: string, surfaceType: string, title: string, 
   };
 }
 
-function markdownResponseEnvelope(surfaceId: string, title: string, ownerFunctionalAgentId: string, markdown: string): SurfaceEnvelope<unknown> {
-  return envelope(
-    surfaceId,
-    'markdown_response',
-    title,
-    ownerFunctionalAgentId,
-    {
-      markdown,
-      title,
-      summary: 'Five core v0 starter markdown_response surface; richer full-core structured surfaces remain follow-up/demo surfaces.',
-      workstreamEntryId: `item-${surfaceId}`,
-      producingAgentId: ownerFunctionalAgentId,
-      sourceRefs: [
-        { refType: 'capability', refId: 'five-core-v0', label: 'Five core v0 starter scope' },
-        { refType: 'trace', refId: `trace-${surfaceId}`, label: 'Fixture workstream trace' }
-      ],
-      sections: [
-        { anchor: 'available-now', title: 'Available now' },
-        { anchor: 'full-core-follow-up', title: 'Full-core follow-up' }
-      ],
-      safety: {
-        sanitized: true,
-        blockedUnsafeLinks: 0,
-        blockedRawHtml: true,
-        redactionNote: 'Fixture markdown excludes provider secrets, raw JWTs, invitation tokens, and hidden capabilities.'
-      },
-      trace: { correlationId: `corr-${surfaceId}`, traceIds: [`trace-${surfaceId}`] }
-    },
-    [surfaceActionsByIntent.trace]
-  );
-}
-
-export const myAccountMarkdownSurface = markdownResponseEnvelope(
-  'surface-v0-my-account-markdown',
-  'My Account v0 response',
-  'agent-my-account',
-  '## My Account\n\n### Available now\n- Review signed-in profile, settings, selected context, and browser-safe capability basis.\n- Use backend-authorized profile/settings actions for changes.\n\n### Full-core follow-up\nRicher profile and settings edit surfaces remain explicit full-core follow-up/demo behavior.'
-);
-
-
 const myAccountCapabilities = {
   viewSummary: 'my_account.view_summary',
   viewContext: 'my_account.view_context',
@@ -1073,11 +1033,11 @@ export const myAccountProfileSurface = envelope(
     fields: [
       { fieldId: 'displayName', label: 'Display name', value: 'Tenant Admin', editable: true, inputType: 'text' },
       { fieldId: 'email', label: 'Email', value: 'admin@example.test', editable: false, inputType: 'email', disabledReason: 'Email is owned by WorkOS/AuthKit identity reconciliation.' },
-      { fieldId: 'locale', label: 'Locale', value: 'en-US', editable: false, inputType: 'select', disabledReason: 'Locale changes are deferred beyond My Account v0.' },
-      { fieldId: 'timeZone', label: 'Time zone', value: 'America/New_York', editable: false, inputType: 'text', disabledReason: 'Time zone changes are deferred beyond My Account v0.' }
+      { fieldId: 'locale', label: 'Locale', value: 'en-US', editable: false, inputType: 'select', disabledReason: 'Locale changes are deferred beyond My Account.' },
+      { fieldId: 'timeZone', label: 'Time zone', value: 'America/New_York', editable: false, inputType: 'text', disabledReason: 'Time zone changes are deferred beyond My Account.' }
     ],
     version: 1,
-    permissionState: { canEdit: true, reason: 'Only self-owned display name is mutable in My Account v0.', authoritativeCapabilityId: myAccountCapabilities.updateProfileSettings },
+    permissionState: { canEdit: true, reason: 'Only self-owned display name is mutable in My Account.', authoritativeCapabilityId: myAccountCapabilities.updateProfileSettings },
     audit: { lastEventType: 'UserProfileDisplayed', lastActor: 'Tenant Admin', traceIds: ['trace-my-profile', 'trace-my-account-profile-settings'] },
     denialExamples: ['unsupported self-service field', 'cross-user target', 'disabled account', 'inactive membership']
   },
@@ -1096,8 +1056,8 @@ export const myAccountSettingsSurface = envelope(
     summary: 'Personal settings for the workstream shell. Backend persistence, no-op, idempotency, and validation errors are reflected as capability action results.',
     fields: [
       { fieldId: 'preferredThemeId', label: 'Theme', value: 'aurora-light', editable: true, inputType: 'select', options: [{ value: 'aurora-light', label: 'Aurora Light' }, { value: 'cobalt-light', label: 'Cobalt Light' }, { value: 'obsidian-dark', label: 'Obsidian Dark' }, { value: 'midnight-dark', label: 'Midnight Dark' }, { value: 'dark-night', label: 'Dark Night' }] },
-      { fieldId: 'notificationDigest', label: 'Notification digest', value: 'daily', editable: false, inputType: 'select', disabledReason: 'Notification digest is deferred beyond My Account v0.' },
-      { fieldId: 'composerDensity', label: 'Composer density', value: 'comfortable', editable: false, inputType: 'select', disabledReason: 'Composer density is deferred beyond My Account v0.' }
+      { fieldId: 'notificationDigest', label: 'Notification digest', value: 'daily', editable: false, inputType: 'select', disabledReason: 'Notification digest is deferred beyond My Account.' },
+      { fieldId: 'composerDensity', label: 'Composer density', value: 'comfortable', editable: false, inputType: 'select', disabledReason: 'Composer density is deferred beyond My Account.' }
     ],
     version: 1,
     permissionState: { canEdit: true, reason: 'Only allowed preference fields are sent to the backend; role and capability fields are not browser-editable.', authoritativeCapabilityId: myAccountCapabilities.updateProfileSettings },
@@ -1116,7 +1076,7 @@ export const myAccountTraceSurface = envelope(
     events: [
       { eventId: 'trace-my-summary', occurredAt: generatedAt, actor: 'My Account Agent', action: 'Protected summary read emitted my_account.view_summary trace', traceId: 'trace-surface-my-account-dashboard' },
       { eventId: 'trace-my-settings-write', occurredAt: generatedAt, actor: 'Tenant Admin', action: 'Self-service settings update audited with idempotency key', traceId: 'trace-my-account-profile-settings' },
-      { eventId: 'trace-my-agent-turn', occurredAt: generatedAt, actor: 'WorkstreamRuntimeAgent', action: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, and AgentWorkTrace linked to Ask My Account', traceId: 'trace-surface-v0-my-account-markdown' }
+      { eventId: 'trace-my-agent-turn', occurredAt: generatedAt, actor: 'WorkstreamRuntimeAgent', action: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, and AgentWorkTrace linked to Ask My Account', traceId: 'trace-my-account-dashboard' }
     ]
   },
   [myAccountSurfaceActions.openAuditTrace]
@@ -1155,35 +1115,6 @@ export const updateMyAccountSettingsActionResult: CapabilityActionResult = {
   traceIds: ['trace-my-account-profile-settings'],
   resultSurface: myAccountSettingsSurface
 };
-
-export const userAdminMarkdownSurface = markdownResponseEnvelope(
-  'surface-v0-user-admin-markdown',
-  'User Admin v0 response',
-  'agent-user-admin',
-  '## User Admin\n\n### Available now\n- Ask UserAdminAgent for bounded guidance about invitations, memberships, role changes, last-admin protection, and access-risk summaries.\n- Successful message submission returns a backend-authorized `markdown_response` with scoped evidence from `userAdminEvidence.read`, `readSkill`, and `readReferenceDoc` through governed tool boundaries.\n- Guidance is read-only: no direct mutation of invitations, memberships, roles, capabilities, authorization state, or provider configuration. Open deterministic User Admin surfaces for actual changes.\n\n### Provider/runtime blocked\nMissing provider or runtime configuration returns a typed `system_message` with safe recovery steps and trace links, never provider secrets or deterministic canned success.'
-);
-
-export const agentAdminMarkdownSurface = markdownResponseEnvelope(
-  'surface-v0-agent-admin-markdown',
-  'Agent Admin v0 response',
-  'agent-agent-admin',
-  '## Agent Admin\n\n### Available now\n- Ask AgentAdminAgent for bounded guidance about seeded AgentDefinition records, prompts, skills, references, manifests, ToolPermissionBoundary records, model refs, seed/default material, and behavior-change proposals.\n- Successful guidance uses governed readSkill(skillId), readReferenceDoc(referenceId), and agentAdminEvidence.read tool evidence through the model-backed WorkstreamRuntimeAgent path.\n- Guidance is read-only: no direct mutation, no approval, no activation, no rollback, no reseed, and no provider/model configuration change. Open deterministic Agent Admin surfaces for lifecycle commands.\n\n### Provider/runtime blocked\nMissing provider or runtime configuration returns a typed system_message with safe recovery steps, blocked_provider_or_runtime status, and PromptAssemblyTrace/AgentWorkTrace links; it never returns provider secrets or deterministic canned success.'
-);
-
-export const auditTraceMarkdownSurface = markdownResponseEnvelope(
-  'surface-v0-audit-trace-markdown',
-  'Audit/Trace v0 response',
-  'agent-audit-trace',
-  '## Audit/Trace\n\n### Available now\n- Search scoped audit/work traces for the selected AuthContext.\n- Open trace detail/evidence, correlation timelines, denial/provider/tool evidence, and investigation guidance.\n- Ask bounded explanations only through backend-governed Audit/Trace capability paths.\n\n### Runtime guardrail\nFrontend affordances never grant authority; backend capabilities, tenant/customer scope, redaction, trace links, and provider fail-closed surfaces remain authoritative.'
-);
-
-export const governancePolicyMarkdownSurface = markdownResponseEnvelope(
-  'surface-v0-governance-policy-markdown',
-  'Governance/Policy v0 response',
-  'agent-governance-policy',
-  '## Governance/Policy\n\n### Available now\n- Ask about policy guardrails, approval boundaries, pending proposals, simulations, and safe next steps.\n- Open backend-authoritative dashboard, inventory, proposal, simulation, decision, and trace-linked blocked-task surfaces.\n\n### Authority guardrail\nFrontend actions only reflect backend capability state; approval, activation, rollback, and analysis remain denied or blocked safely when backend authority/runtime is missing.'
-);
-
 
 export const auditTraceSurfaceActions = {
   showDashboard: {
@@ -1326,15 +1257,6 @@ export const auditTraceSurfaceActions = {
     audit: { eventType: 'AuditTraceSummaryEvidenceOpened', traceRequired: true }
   }
 } satisfies Record<string, SurfaceAction>;
-
-export const fiveCoreV0MarkdownSurfaces = [
-  myAccountMarkdownSurface,
-  userAdminMarkdownSurface,
-  agentAdminMarkdownSurface,
-  auditTraceMarkdownSurface,
-  governancePolicyMarkdownSurface
-];
-
 
 export const auditTraceDashboardSurface = envelope(
   'surface-audit-trace-dashboard',
@@ -2740,7 +2662,6 @@ export const fullCoreDemoSurfaceEnvelopes = [
 ];
 
 export const canonicalSurfaceEnvelopes = [
-  ...fiveCoreV0MarkdownSurfaces,
   ...governancePolicyStructuredSurfaces
 ];
 export const allSurfaceActions: SurfaceAction[] = [...Object.values(surfaceActionsByIntent), ...Object.values(myAccountSurfaceActions), ...Object.values(userAdminSurfaceActions), ...Object.values(agentAdminSurfaceActions), ...Object.values(auditTraceSurfaceActions), ...Object.values(governancePolicySurfaceActions)];

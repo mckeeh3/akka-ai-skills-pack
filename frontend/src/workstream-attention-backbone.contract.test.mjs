@@ -13,8 +13,8 @@ const railAttentionState = read('./workstream/rail/railAttentionState.ts');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const fixtureAgents = read('./__tests__/fixtures/workstream/agents.ts');
 const fixtureSurfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
-const backendWorkstreamService = readBackend('src/main/java/ai/first/application/security/WorkstreamService.java');
-const backendMeResponse = readBackend('src/main/java/ai/first/application/security/MeResponse.java');
+const backendWorkstreamService = readBackend('src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
+const backendMeResponse = readBackend('src/main/java/ai/first/application/foundation/identity/MeResponse.java');
 
 
 test('left rail actionable badges are backend-derived and distinct from transient unseen-response state', () => {

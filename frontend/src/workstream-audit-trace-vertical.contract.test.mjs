@@ -14,7 +14,7 @@ const dashboard = read('./workstream/surfaces/DashboardSurface.tsx');
 const traceLinks = read('./workstream/stream/TraceLinkList.tsx');
 const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 
-test('Audit/Trace v0 fixture exposes contract capabilities, surfaces, and backend-authoritative actions', () => {
+test('Audit/Trace fixture exposes contract capabilities, surfaces, and backend-authoritative actions', () => {
   for (const capability of ['audit.trace.dashboard.read', 'audit.trace.search', 'audit.trace.detail.read', 'audit.trace.timeline.read', 'audit.trace.failureEvidence.read', 'audit.trace.investigationGuide.read', 'audit.trace.investigation_note.append', 'audit.trace.summary_task.start', 'audit.trace.summary_task.read', 'audit.trace.summary_task.accept_result', 'audit.trace.summary_task.reject_result', 'audit.trace.summary_task.open_evidence']) {
     assert.match(fixtures, new RegExp(capability.replace('.', '\\.')));
   }
@@ -22,7 +22,7 @@ test('Audit/Trace v0 fixture exposes contract capabilities, surfaces, and backen
     assert.match(fixtures, new RegExp(`export const ${surface}`));
   }
   assert.match(fixtures, /auditTraceStructuredSurfaces/);
-  assert.match(fixtures, /Frontend affordances never grant authority/);
+  assert.match(fixtures, /Backend capabilities|backend-scoped capabilities/);
 });
 
 test('Audit/Trace surfaces preserve trace links, denial/provider evidence, redaction, and safe rendering states', () => {
@@ -49,9 +49,8 @@ test('Audit/Trace surfaces preserve trace links, denial/provider evidence, redac
   assert.match(traceLinks, /surface-audit-trace-detail/);
 });
 
-test('Audit/Trace initial workstream remains trace-linked and does not claim frontend authorization', () => {
-  assert.match(workstream, /agent-audit-trace/);
-  assert.match(workstream, /traceLinks/);
+test('Audit/Trace bootstrap starts empty while trace surfaces do not claim frontend authorization', () => {
+  assert.match(workstream, /initialWorkstreamItems: WorkstreamItem\[\] = \[\]/);
   assert.match(fixtures, /audit\.trace\.investigationNote\.v1/);
   assert.match(fixtures, /action-audit-trace-append-investigation-note/);
   assert.match(fixtures, /do not mutate source traces, policy, authorization, or retained evidence/);

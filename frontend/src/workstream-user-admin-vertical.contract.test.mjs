@@ -118,9 +118,8 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /displayUserDetailActionResult/);
 });
 
-test('workstream and API clients support five core markdown plus demo dashboard-to-list-to-detail navigation feedback', () => {
-  assert.match(workstream, /item-v0-user-admin-markdown/);
-  assert.match(workstream, /kind: 'markdown_response'/);
+test('workstream and API clients support dashboard-to-list-to-detail navigation feedback', () => {
+  assert.match(workstream, /initialWorkstreamItems: WorkstreamItem\[\] = \[\]/);
   assert.match(surfaces, /surface-user-admin-list/);
   assert.match(surfaces, /Display user account detail/);
   assert.match(surfaces, /surface-user-admin-detail-admin/);

@@ -48,7 +48,7 @@ AutonomousAgent task progress/result surfaces are part of the workstream model w
 
 ## Minimum initial core workstream set
 
-The smallest generated AI-first SaaS starter is a bootstrap-authorized **five core workstream v0 set**, not a generic chatbot. Use this interpretation for prompts such as "minimum AI-first app," "starter app," "basic app," or "initial chatbot" unless the user explicitly asks for non-SaaS reference material.
+The smallest generated AI-first SaaS starter is a bootstrap-authorized **five core workstream starter set**, not a generic chatbot. Use this interpretation for prompts such as "minimum AI-first app," "starter app," "basic app," or "initial chatbot" unless the user explicitly asks for non-SaaS reference material.
 
 The minimum initial shell contains these role-authorized functional agents for the bootstrap operator:
 
@@ -58,18 +58,18 @@ The minimum initial shell contains these role-authorized functional agents for t
 4. **Audit/Trace Agent**
 5. **Governance/Policy Agent**
 
-Each core v0 workstream is intentionally narrow, but each must still use the same shell model:
+Each core starter workstream is intentionally narrow, but each must still use the same shell model:
 
 - **Left rail** — exposes role-authorized core functional agents for the bootstrap operator. User Admin, Agent Admin, Audit/Trace, and Governance/Policy appear in the top workstream rail when allowed. My Account is still one of the five core workstreams, but its only launcher is the signed-in user tile/email in the bottom rail user region. Unavailable richer full-core actions or surfaces are represented as explicit deferred/denied behavior, not hidden readiness claims.
 - **Main workstream panel** — renders a durable request/response timeline for the selected core workstream with capability results, denials, trace references, and the first structured surface type: `markdown_response`.
 - **Persistent composer** — accepts natural-language bootstrap requests for the selected core functional agent; it is an input channel, not an authorization boundary.
 - **Context and authority indicators** — show selected AuthContext, bootstrap role/capability basis, available capabilities, denied/deferred actions, and trace links.
 
-The first renderable surface for each core workstream is `markdown_response`: model-authored markdown in a versioned surface payload, rendered as sanitized HTML with trace/correlation ids and explicit loading, success, error, forbidden, and empty states. It is a real structured surface contract, not an informal chat blob; richer surfaces such as profile/settings cards, user tables, access-review queues, agent behavior diffs, audit timelines, and policy/approval cards can be added after the v0 slice.
+The first renderable surface for each core workstream is `markdown_response`: model-authored markdown in a versioned surface payload, rendered as sanitized HTML with trace/correlation ids and explicit loading, success, error, forbidden, and empty states. It is a real structured surface contract, not an informal chat blob; richer surfaces such as profile/settings cards, user tables, access-review queues, agent behavior diffs, audit timelines, and policy/approval cards can be added after the starter slice.
 
 Audit/work trace recording starts in this first slice for identity basis, AuthContext selection, capability checks, prompt/tool use, denials, and rendered responses. The Audit/Trace workstream is present from the first runnable starter, but it may initially explain and link to the trace substrate through `markdown_response` before richer search and investigation surfaces are implemented.
 
-Full-core generated SaaS readiness remains stricter than this minimum starter. The five core workstream v0 set is a valid first runnable slice only when follow-up work remains explicit for complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed runtime agent documents, tenant isolation, and full security coverage.
+Full-core generated SaaS readiness remains stricter than this minimum starter. The five core workstream starter set is a valid first runnable slice only when follow-up work remains explicit for complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed runtime agent documents, tenant isolation, and full security coverage.
 
 A workstream is not production-ready just because fixture items render, a deterministic placeholder response exists, or a service directly calls a provider without the workstream Akka Agent. Named model-backed workstream behavior must pass through the real local Akka runtime path: selected AuthContext, backend authorization, durable workstream entries, governed prompt/runtime assembly, active managed configuration resolution, governed `readSkill`/`readReferenceDoc` loader tools, `ToolPermissionBoundary` enforcement, invocation of a concrete Akka `Agent` component for the functional agent with resolved tools registered through `effects().tools(runtimeTools)`, configured model/provider invocation from that Agent path, trace emission, API response, and frontend rendering. Workstream/foundation state claimed as implemented must be backed by Akka components in normal runtime. Provider/configuration failures should become safe system-message surfaces and traces. Mocks, fixtures, deterministic fakes, service-only provider bypasses, and test doubles are allowed only in tests or explicitly test-only adapters; they are not normal runtime substitutes.
 
@@ -212,7 +212,7 @@ Surfaces are structured renderable results, not just text. They are associated w
 
 Canonical surface types:
 
-- `markdown_response` for sanitized model-authored markdown in the minimum five core workstream v0 set and other intentionally text-first responses;
+- `markdown_response` for sanitized model-authored markdown in the minimum five core workstream starter set and other intentionally text-first responses;
 - `system_message` for typed system feedback, denial, warning, success, validation, approval-required, deferred, stale, background-work, and recovery messages;
 - dashboard / attention surface;
 - form or guided intake;

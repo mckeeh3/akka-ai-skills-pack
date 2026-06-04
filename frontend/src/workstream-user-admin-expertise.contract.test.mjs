@@ -86,7 +86,7 @@ test('UserAdminAgent guidance fixtures cover read-only evidence and provider-blo
     'readReferenceDoc',
     'system_message',
     'blocked_provider_or_runtime',
-    'no direct mutation of invitations, memberships, roles, capabilities, authorization state, or provider configuration',
+    'use deterministic User Admin surfaces for invite, member status, and role changes',
     'Provider secrets, raw JWTs, hidden prompts, invitation tokens, and unauthorized tenant/customer evidence are omitted',
     'trace-useradmin-agent-provider-blocked',
     'USERADMIN_AGENT_TURN'
@@ -103,7 +103,7 @@ test('User Admin expertise traces are visible from seed and workstream fixtures'
     assert.match(seedResources, new RegExp(trace));
     assert.match(surfaces, new RegExp(trace));
   }
-  assert.match(workstream, /trace-surface-v0-user-admin-markdown/);
+  assert.match(workstream, /initialWorkstreamItems: WorkstreamItem\[\] = \[\]/);
   assert.match(surfaces, /trace-user-admin-dashboard/);
   assert.match(surfaces, /trace-user-admin-detail/);
 });

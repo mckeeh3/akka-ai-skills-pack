@@ -1,6 +1,6 @@
 # Audit/Trace Starter Scope Reference
 
-Available in v0/full-core starter baseline:
+Available in the starter/full-core baseline:
 - browser-safe audit dashboard, search, detail, timeline, failure evidence, and investigation guidance surfaces;
 - auditTraceEvidence.read as a read-only, scoped, redacted DATA_LOOKUP tool for AuditTraceAgent explanations;
 - prompt assembly traces;

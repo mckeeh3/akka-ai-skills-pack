@@ -12,8 +12,8 @@ const httpClient = read('./api/HttpWorkstreamApiClient.ts');
 const railAttentionState = read('./workstream/rail/railAttentionState.ts');
 const railItem = read('./workstream/rail/FunctionalAgentRailItem.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
-const backendWorkstreamService = readBackend('src/main/java/ai/first/application/security/WorkstreamService.java');
-const backendMyAccountService = readBackend('src/main/java/ai/first/application/security/MyAccountService.java');
+const backendWorkstreamService = readBackend('src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
+const backendMyAccountService = readBackend('src/main/java/ai/first/application/coreapp/myaccount/MyAccountService.java');
 
 test('bootstrap and refresh use backend-derived rail summaries instead of frontend-only attention authority', () => {
   assert.match(main, /me: \{ \.\.\.result\.value\.me, functionalAgents: result\.value\.functionalAgents \}/);

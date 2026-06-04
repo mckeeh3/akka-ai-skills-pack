@@ -10,7 +10,7 @@
 
 ## Current scaffold scope
 
-The scaffold starts with the five core v0 workstream set:
+The scaffold starts with the five core workstream set:
 
 | Workstream | Core responsibility |
 | --- | --- |

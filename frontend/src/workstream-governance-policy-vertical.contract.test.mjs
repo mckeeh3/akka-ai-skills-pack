@@ -11,7 +11,7 @@ const diff = read('./workstream/surfaces/GovernanceDiffSurface.tsx');
 const types = read('./workstream/types/surfaces.ts');
 const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 
-test('Governance/Policy v0 exposes contract capabilities, structured surfaces, and trace-linked actions', () => {
+test('Governance/Policy exposes contract capabilities, structured surfaces, and trace-linked actions', () => {
   for (const capability of [
     'governance.policy.read',
     'governance.policy.simulate',
@@ -50,7 +50,6 @@ test('Governance/Policy v0 exposes contract capabilities, structured surfaces, a
 
 test('Governance/Policy UI states preserve backend authority, denials, approval gates, traces, and no fake analysis', () => {
   for (const marker of [
-    'Frontend actions only reflect backend capability state',
     'Launcher visibility and action buttons are convenience signals only',
     'Backend capability checks decide every protected action',
     'Simulation is advisory and grants no authority',
@@ -69,8 +68,8 @@ test('Governance/Policy UI states preserve backend authority, denials, approval 
   ]) {
     assert.match(fixtures, new RegExp(marker.replace(/[()]/g, '\\$&')));
   }
-  assert.match(workstream, /item-v0-governance-policy-markdown/);
-  assert.match(workstream, /policy guardrails, approval boundaries/);
+  assert.match(workstream, /initialWorkstreamItems: WorkstreamItem\[\] = \[\]/);
+  assert.match(fixtures, /governance\.policy\.(read|simulate|propose)/);
 });
 
 test('Governance/Policy proposal and simulation rendering is accessible and browser-safe', () => {

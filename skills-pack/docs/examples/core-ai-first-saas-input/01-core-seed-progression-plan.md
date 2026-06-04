@@ -8,7 +8,7 @@ Use `10-canonical-core-app-prd.md` as the full-core PRD target. Full core scope 
 
 The starter core app is not implemented all at once. It is planned and delivered as a sequence of modules, each broken into sprints and harness-sized tasks. Each sprint should produce demonstrable behavior through the live app UI and/or APIs, with tests.
 
-For minimum/starter/basic/chatbot-like generated SaaS requests, the first implementation slice is not the full-core module sequence below. It is the `docs/minimum-ai-first-saas-app.md` minimum starter: **five core workstream v0** with My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents, bootstrap authorization, selected `AuthContext`, bounded governed agent behavior, durable request/response timelines, `markdown_response` surfaces, backend capability boundaries, and audit/work trace substrate. Full-core expansion remains explicit and non-optional for full readiness.
+For minimum/starter/basic/chatbot-like generated SaaS requests, the first implementation slice is not the full-core module sequence below. It is the `docs/minimum-ai-first-saas-app.md` minimum starter: **five core workstream starter** with My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents, bootstrap authorization, selected `AuthContext`, bounded governed agent behavior, durable request/response timelines, `markdown_response` surfaces, backend capability boundaries, and audit/work trace substrate. Full-core expansion remains explicit and non-optional for full readiness.
 
 Because the canonical UI is workstream-agent-backed, the minimum starter begins with the five core workstream runtime rather than a generic chatbot, single-workstream admin slice, page-first CRUD console, or hard-coded shell state. Full User Admin structured surfaces, complete Agent Admin governed prompt/skill documents, Audit/Trace UI, invitations/onboarding, support access, and security completeness arrive later as follow-up modules/gates.
 
@@ -25,7 +25,7 @@ module PRD
 
 The first sprint of each module should create user-visible value. Backend components, endpoints, frontend UI, tests, and audit/security behavior should be planned together.
 
-## Minimum starter prelude: five core workstream v0
+## Minimum starter prelude: five core workstream starter
 
 ### Goal
 

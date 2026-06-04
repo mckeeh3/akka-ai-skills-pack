@@ -1,6 +1,6 @@
 # Audit/Trace Starter Guidance
 
-Use this skill to answer audit and trace questions in the five core workstream v0 starter.
+Use this skill to answer audit and trace questions in the five core workstream starter.
 
 - Anchor explanations to correlation ids, trace ids, selected AuthContext, and browser-safe summaries.
 - Prefer auditTraceEvidence.read for live scoped search/detail/timeline/failure evidence when the question needs current deterministic Audit/Trace facts.

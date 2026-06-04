@@ -61,7 +61,7 @@ Do not make a conventional page tree, CRUD console, or chatbot-bolt-on design th
 
 For natural-language requests such as “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or an initial chatbot-like generated SaaS, apply `../../docs/minimum-ai-first-saas-app.md`.
 
-The correct first runnable target is the **five core workstream v0 set**:
+The correct first runnable target is the **five core workstream starter set**:
 - bootstrap-authorized user and selected AuthContext;
 - role-authorized functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with bounded bootstrap authority;
 - universal workstream icon metadata for visible shell workstreams, with My Account launched from the lower-left signed-in user tile rather than duplicated in the top rail;
@@ -77,7 +77,7 @@ Treat this as a narrower starter readiness state, not full-core SaaS readiness. 
 
 For generated SaaS apps, keep `core-saas-foundation` mandatory: identity, AuthContext, tenant/customer scope, memberships, roles/capabilities, `/api/me`, invitations, admin audit, backend authorization, tenant isolation, and security tests.
 
-Full core app scope also requires complete My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents unless the user explicitly chooses a narrower deferred scope. The minimum starter is the accepted narrower scope: the five core v0 workstream set first, each using `markdown_response`, with full-core foundation items kept as explicit follow-up/readiness gates.
+Full core app scope also requires complete My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents unless the user explicitly chooses a narrower deferred scope. The minimum starter is the accepted narrower scope: the five core workstream starter set first, each using `markdown_response`, with full-core foundation items kept as explicit follow-up/readiness gates.
 
 ### 2. Identify vertical functional agents
 

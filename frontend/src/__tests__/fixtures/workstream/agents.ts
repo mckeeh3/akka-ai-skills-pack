@@ -136,7 +136,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
 export const deniedFunctionalAgentExample: FunctionalAgentSummary = {
   functionalAgentId: 'agent-agent-admin-denied-example',
   label: 'Agent Admin denied example',
-  purpose: 'Demonstrate safe denied rail state for agent governance when capability scope is absent; not part of the default five core v0 rail.',
+  purpose: 'Demonstrate safe denied rail state for agent governance when capability scope is absent; not part of the default core workstream rail.',
   icon: 'bot-off',
   workstreamIcon: {
     workstreamId: 'workstream-agent-admin-denied-example',

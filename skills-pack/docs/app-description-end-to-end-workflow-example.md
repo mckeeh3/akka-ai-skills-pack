@@ -24,7 +24,7 @@ Purchase-request app-description files are mechanics-only references for older c
 
 ## Example context
 
-Assume the maintained `app-description/` already follows the starter core app-description shape and includes the five core workstream v0 starter:
+Assume the maintained `app-description/` already follows the starter core app-description shape and includes the five core workstream starter:
 
 - `my_account` — current user's profile, context, settings, and cross-workstream attention.
 - `user_admin` — users, memberships, invitations, access review, support access, and admin audit.

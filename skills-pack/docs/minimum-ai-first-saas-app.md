@@ -4,7 +4,7 @@
 
 This is the canonical doctrine for the smallest generated AI-first SaaS starter that this skills pack may treat as a valid first implementation slice.
 
-The minimum app is **not a generic chatbot**. It is a bootstrap-authorized **five core workstream v0 starter** inside the agent workstream application model. Each core workstream starts with the same first renderable response surface, `markdown_response`, usually model-authored markdown rendered as sanitized HTML.
+The minimum app is **not a generic chatbot**. It is a bootstrap-authorized **five core workstream starter** inside the agent workstream application model. Each core workstream starts with the same first renderable response surface, `markdown_response`, usually model-authored markdown rendered as sanitized HTML.
 
 Use this doctrine when routing prompts such as “minimum AI-first app,” “starter app,” “basic app,” “initial chatbot,” or “smallest useful generated SaaS app.” The correct interpretation is a minimal five-core workstream shell, not a casual chat application and not a full production-ready core SaaS foundation.
 
@@ -15,7 +15,7 @@ The minimum starter must include these parts together:
 ```text
 bootstrap-authorized human user
 + selected AuthContext
-+ role-authorized five core workstream v0 set
++ role-authorized five core workstream starter set
 + bounded AI-first managed functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy
 + configuration-driven runtime resolution, governed loader tools, ToolPermissionBoundary, and runtimeTools registration
 + request/response timeline for each visible core workstream
@@ -27,11 +27,11 @@ bootstrap-authorized human user
 
 The app shell may look chat-like: a left rail, main workstream timeline, and persistent composer. That visual shape does not make the app a chatbot. The left rail exposes role-authorized workstreams; the main panel renders durable requests, responses, capability results, traces, and structured surfaces; the composer is an input channel for the selected functional agent. My Account is one of the five required workstreams, but its launcher is the signed-in user tile/email at the bottom of the left rail; it must not be duplicated in the top workstream list.
 
-## First workstreams: five core v0 set
+## First workstreams: five core starter set
 
-The first functional agents are the **five core v0 workstream agents**, scoped to bootstrap operation of the generated SaaS foundation:
+The first functional agents are the **five core starter workstream agents**, scoped to bootstrap operation of the generated SaaS foundation:
 
-| Workstream | v0 responsibility |
+| Workstream | starter responsibility |
 |---|---|
 | My Account | Explain current account, selected AuthContext, profile/settings scope, sign-out path, and safe self-service next steps. |
 | User Admin | Explain bootstrap user administration, current access, roles/capabilities, invitation/readiness gaps, and safe next steps. |
@@ -39,9 +39,9 @@ The first functional agents are the **five core v0 workstream agents**, scoped t
 | Audit/Trace | Explain available audit/work trace substrate, trace links, correlation ids, denial traces, and deferred search/investigation surfaces. |
 | Governance/Policy | Explain policy/permission concepts, approval/governance boundaries, behavior-change controls, and deferred full-core governance surfaces. |
 
-In v0 each workstream may be intentionally narrow, but each must still be a real functional-agent workstream backed by an AI-first managed agent. If the workstream claims model-backed behavior, message submission must run through the governed prompt/runtime path, resolve active `AgentDefinition`/prompt/manifest/`ToolPermissionBoundary` configuration, expose governed `readSkill` and `readReferenceDoc` loader tools where assigned, register resolved tool objects with `effects().tools(runtimeTools)`, invoke a concrete Akka `Agent` component for the selected workstream, and use a configured provider boundary; service-only provider calls that bypass the Akka Agent component are not complete workstream-agent runtime. Missing provider configuration must produce a safe blocked/error surface and trace, not a deterministic canned reply. Deterministic/demo/mock/model-less workstream replies are acceptable only as explicitly named test doubles or fixture-mode development aids, never as the normal runtime path used to call the starter functional.
+In the starter each workstream may be intentionally narrow, but each must still be a real functional-agent workstream backed by an AI-first managed agent. If the workstream claims model-backed behavior, message submission must run through the governed prompt/runtime path, resolve active `AgentDefinition`/prompt/manifest/`ToolPermissionBoundary` configuration, expose governed `readSkill` and `readReferenceDoc` loader tools where assigned, register resolved tool objects with `effects().tools(runtimeTools)`, invoke a concrete Akka `Agent` component for the selected workstream, and use a configured provider boundary; service-only provider calls that bypass the Akka Agent component are not complete workstream-agent runtime. Missing provider configuration must produce a safe blocked/error surface and trace, not a deterministic canned reply. Deterministic/demo/mock/model-less workstream replies are acceptable only as explicitly named test doubles or fixture-mode development aids, never as the normal runtime path used to call the starter functional.
 
-Minimum responsibilities across the five core v0 agents:
+Minimum responsibilities across the five core starter agents:
 
 - answer bootstrap questions within the selected workstream's known scope;
 - explain current bootstrap access, selected AuthContext, roles, visible capabilities, and unavailable/deferred capabilities;
@@ -60,7 +60,7 @@ Minimum authority:
 
 ## `markdown_response` as the first surface
 
-The minimum starter's first structured surface is `markdown_response` for **each** of the five core v0 workstreams.
+The minimum starter's first structured surface is `markdown_response` for **each** of the five core starter workstreams.
 
 It is a real surface contract, not an informal chat blob. At minimum it needs:
 
@@ -99,7 +99,7 @@ Do not collapse these states.
 
 | Readiness state | Meaning | Required follow-up |
 |---|---|---|
-| Minimum starter ready | Five core workstream v0 set works for bootstrap-authorized users with `markdown_response`, selected AuthContext, backend capability boundary, durable workstream log, and audit/work trace substrate. | Complete richer User Admin, Agent Admin, Audit/Trace, Governance/Policy, and My Account surfaces; invitations/onboarding; governed agent documents; and security coverage. |
+| Minimum starter ready | Five core workstream starter set works for bootstrap-authorized users with `markdown_response`, selected AuthContext, backend capability boundary, durable workstream log, and audit/work trace substrate. | Complete richer User Admin, Agent Admin, Audit/Trace, Governance/Policy, and My Account surfaces; invitations/onboarding; governed agent documents; and security coverage. |
 | Full core SaaS ready | The secure generated-app foundation is complete: WorkOS/AuthKit, local authorization, tenant/customer boundaries, `/api/me`, invitations with Resend/outbox, complete User Admin, Agent Admin, Audit/Trace, Governance/Policy, My Account, governed runtime agent artifacts, audit/trace search, support access, billing boundary where needed, and full security tests. | Add app-specific domain workstreams, capabilities, surfaces, and outcomes. |
 | App-specific ready | Full core SaaS foundation plus product/domain functional agents, capabilities, components, UI surfaces, tests, and operational reviews. | Continue iterative feature delivery and governed improvement. |
 
@@ -110,7 +110,7 @@ Minimum starter readiness is intentionally useful but narrower than full-core Sa
 Use this sequence for iterative generation:
 
 ```text
-five core workstream v0 set
+five core workstream starter set
   bootstrap auth + markdown_response + workstream log + trace substrate
 → fuller My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy structured surfaces and capabilities
 → invitations/onboarding, support access, security completeness
@@ -123,7 +123,7 @@ A new app-specific workstream follows the same extension loop:
 
 ```text
 new PRD
-→ new functional agent/workstream v0
+→ new functional agent/workstream starter
 → markdown_response shell
 → prompt/skills/model refs
 → governed capabilities
@@ -139,7 +139,7 @@ When a user asks for the smallest useful AI-first SaaS app, route as follows:
 
 1. Apply secure AI-first SaaS interpretation.
 2. Apply this minimum app doctrine when the request is for a starter/minimum/basic app or an initial chatbot-like shell.
-3. Treat the first runnable starter as the five core v0 workstream set with `markdown_response`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
+3. Treat the first runnable starter as the five core workstream starter set with `markdown_response`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
 4. Model capabilities before selecting Akka components or exposing agent tools/browser actions.
 5. Record follow-up tasks for full-core SaaS readiness instead of pretending the minimum starter is complete production foundation.
 

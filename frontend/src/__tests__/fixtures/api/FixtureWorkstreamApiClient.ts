@@ -110,8 +110,8 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
       generatedAt: now,
       redaction: { profile: 'tenant-admin' },
       data: {
-        markdown: `## ${agent.label} v0 response\n\nYou asked: **${request.prompt.trim()}**\n\n- This fixture response uses the same \`markdown_response\` contract as \`/api/workstream/messages\`.\n- Richer surface actions remain explicit follow-up/full-core behavior.`,
-        title: `${agent.label} v0 response`,
+        markdown: `## ${agent.label} response\n\nYou asked: **${request.prompt.trim()}**\n\n- This fixture response uses the same \`markdown_response\` contract as \`/api/workstream/messages\`.\n- Richer surface actions remain explicit follow-up/full-core behavior.`,
+        title: `${agent.label} response`,
         summary: 'Fixture backend-equivalent markdown response for the selected functional agent.',
         workstreamEntryId: `agent-${suffix}`,
         producingAgentId: request.functionalAgentId,

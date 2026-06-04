@@ -1,6 +1,6 @@
 # Governance/Policy Starter Scope Reference
 
-Available in v0:
+Available in starter scope:
 - governance and policy workstream presence;
 - governed Akka Agent runtime responses with trace links;
 - read-only governancePolicyEvidence.read over deterministic policy dashboard, inventory, proposal lifecycle, simulation, decision, activation-blocker, and rollback-blocker evidence when ToolPermissionBoundary and governance.policy.read allow it;

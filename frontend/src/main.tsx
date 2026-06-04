@@ -125,13 +125,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     workstreamId: selectedFunctionalAgentId,
     items: ready?.items.filter((item) => item.functionalAgentId === selectedFunctionalAgentId) ?? []
   }) : undefined;
-  const selectedSurfaceId = selection.selectedSurfaceId ?? currentVisualSession?.selectedSurfaceId;
-  const selectedItems = buildVisibleWorkstreamItems(
-    ready?.items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId) ?? [],
-    ready?.surfaces ?? [],
-    selectedFunctionalAgentId,
-    selectedSurfaceId
-  );
+  const selectedItems = ready?.items.filter((item) => !selectedFunctionalAgentId || item.functionalAgentId === selectedFunctionalAgentId) ?? [];
 
   React.useEffect(() => {
     if (bootstrap.status !== 'ready') return;
@@ -659,23 +653,6 @@ function safeComposerErrorCopy(error: ApiError): { title: string; body: string; 
 
 function surfaceForAgent(surfaces: SurfaceEnvelope<unknown>[], functionalAgentId?: string) {
   return surfaces.find((surface) => surface.ownerFunctionalAgentId === functionalAgentId);
-}
-
-function buildVisibleWorkstreamItems(items: WorkstreamItem[], surfaces: SurfaceEnvelope<unknown>[], functionalAgentId?: string, selectedSurfaceId?: string): WorkstreamItem[] {
-  if (items.some((item) => item.kind === 'surface')) return items;
-  const surface = surfaces.find((candidate) => candidate.surfaceId === selectedSurfaceId && candidate.ownerFunctionalAgentId === functionalAgentId) ?? surfaceForAgent(surfaces, functionalAgentId);
-  if (!surface) return items;
-  return [{
-    itemId: `default-surface-${surface.surfaceId}`,
-    functionalAgentId: surface.ownerFunctionalAgentId,
-    kind: 'surface',
-    createdAt: surface.generatedAt,
-    correlationId: surface.correlationId,
-    traceIds: surface.traceIds,
-    surfaceId: surface.surfaceId,
-    title: surface.title,
-    status: 'ready'
-  }, ...items];
 }
 
 function withRuntimeNotification(items: WorkstreamItem[], connection: RealtimeConnectionState): WorkstreamItem[] {

@@ -5,12 +5,12 @@ import test from 'node:test';
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const readBackend = (path) => read(`../../${path}`);
 
-const backendWorkstreamService = readBackend('src/main/java/ai/first/application/security/WorkstreamService.java');
-const backendMyAccountService = readBackend('src/main/java/ai/first/application/security/MyAccountService.java');
-const backendWorkstreamEndpoint = readBackend('src/main/java/ai/first/api/workstream/WorkstreamEndpoint.java');
-const backendWorkstreamTest = readBackend('src/test/java/ai/first/application/security/WorkstreamServiceTest.java');
-const backendPersonalAttentionDigestService = readBackend('src/main/java/ai/first/application/security/MyAccountPersonalAttentionDigestService.java');
-const backendPersonalAttentionDigestTest = readBackend('src/test/java/ai/first/application/security/MyAccountPersonalAttentionDigestServiceTest.java');
+const backendWorkstreamService = readBackend('src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
+const backendMyAccountService = readBackend('src/main/java/ai/first/application/coreapp/myaccount/MyAccountService.java');
+const backendWorkstreamEndpoint = readBackend('src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java');
+const backendWorkstreamTest = readBackend('src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java');
+const backendPersonalAttentionDigestService = readBackend('src/main/java/ai/first/application/coreapp/myaccount/MyAccountPersonalAttentionDigestService.java');
+const backendPersonalAttentionDigestTest = readBackend('src/test/java/ai/first/application/coreapp/myaccount/MyAccountPersonalAttentionDigestServiceTest.java');
 const surfaceRenderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const notificationCenterSurface = read('./workstream/surfaces/NotificationCenterSurface.tsx');

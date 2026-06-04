@@ -136,19 +136,13 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void bootstrapReturnsFiveCoreV0MarkdownSurfacesWithoutSecrets() {
+  void bootstrapStartsWithNoSyntheticWorkstreamItemsOrSurfacesWithoutSecrets() {
     var bootstrap = service.bootstrap(identity(), null, "corr-bootstrap");
 
     assertEquals("membership-admin", bootstrap.me().selectedAuthContext().selectedContextId());
     assertTrue(bootstrap.functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-user-admin") && agent.availability().equals("visible")));
-    assertEquals(5, bootstrap.items().size());
-    assertEquals(5, bootstrap.surfaces().size());
-    for (var surfaceId : List.of("surface-v0-my-account-markdown", "surface-v0-user-admin-markdown", "surface-v0-agent-admin-markdown", "surface-v0-audit-trace-markdown", "surface-v0-governance-policy-markdown")) {
-      assertTrue(bootstrap.items().stream().anyMatch(item -> surfaceId.equals(item.surfaceId()) && item.kind().equals("markdown_response")));
-      assertTrue(bootstrap.surfaces().stream().anyMatch(surface -> surfaceId.equals(surface.surfaceId()) && surface.surfaceType().equals("markdown_response")));
-    }
-    assertFalse(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceId().equals("surface-user-admin-dashboard")));
-    assertFalse(bootstrap.surfaces().stream().anyMatch(surface -> surface.surfaceType().equals("dashboard") || surface.surfaceType().equals("list-search") || surface.surfaceType().equals("governance-diff") || surface.surfaceType().equals("workflow-status")));
+    assertTrue(bootstrap.items().isEmpty());
+    assertTrue(bootstrap.surfaces().isEmpty());
     assertFalse(bootstrap.toString().contains("invite-token"));
     assertFalse(bootstrap.toString().contains("tokenHash"));
     assertFalse(bootstrap.toString().contains("providerSecret"));
@@ -230,15 +224,13 @@ class WorkstreamServiceTest {
   void realtimeEventsAreScopedAndResumeWithStaleFallback() {
     var events = service.events(identity(), "membership-admin", null, null, "corr-events");
 
-    assertTrue(events.stream().anyMatch(event -> event.eventType().equals("surface.stale") && event.surfaceId().equals("surface-v0-user-admin-markdown") && event.surfaceType().equals("markdown_response")));
     assertTrue(events.stream().allMatch(event -> event.tenantId().equals("tenant-1")));
 
-    var resumed = service.events(identity(), "membership-admin", null, "evt-audit-appended-002", "corr-events");
-    assertTrue(resumed.stream().noneMatch(event -> event.eventId().equals("evt-audit-appended-002")));
-    assertTrue(resumed.stream().anyMatch(event -> event.eventId().equals("evt-user-admin-stale-003")));
-
-    var staleFallback = service.events(identity(), "membership-admin", null, "evt-missing", "corr-events");
-    assertEquals("surface.stale", staleFallback.get(0).eventType());
+    var resumed = service.events(identity(), "membership-admin", null, "evt-missing", "corr-events");
+    assertEquals(1, resumed.size());
+    assertEquals("surface.stale", resumed.get(0).eventType());
+    assertEquals("surface-user-admin-dashboard", resumed.get(0).surfaceId());
+    assertEquals("dashboard", resumed.get(0).surfaceType());
   }
 
   @Test
@@ -653,8 +645,8 @@ class WorkstreamServiceTest {
   @Test
   void shellRequestsResolveRichSurfacesThroughBackendAndPreserveBootstrapGuard() {
     var bootstrap = service.bootstrap(identity(), "membership-admin", "corr-shell-bootstrap");
-    assertEquals(5, bootstrap.surfaces().size());
-    assertTrue(bootstrap.surfaces().stream().allMatch(surface -> surface.surfaceType().equals("markdown_response")));
+    assertTrue(bootstrap.surfaces().isEmpty());
+    assertTrue(bootstrap.items().isEmpty());
 
     var show = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
         "show_surface", "user_prompt", "show user admin dashboard", null, "agent-user-admin", "surface-user-admin-dashboard", null, "agent-user-admin", null, null, "current_workstream", "corr-shell-show", "membership-admin"));

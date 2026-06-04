@@ -111,7 +111,7 @@ AutonomousAgent task progress/result surfaces are required when durable internal
 
 ## Base surface: `markdown_response`
 
-Use `markdown_response` as the smallest valid structured surface for the five core workstream v0 starter (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) and other low-ceremony explanatory replies. It is a structured surface, not a raw chat transcript or untyped assistant message.
+Use `markdown_response` as the smallest valid structured surface for the five core workstream starter (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) and other low-ceremony explanatory replies. It is a structured surface, not a raw chat transcript or untyped assistant message.
 
 Contract:
 
@@ -123,7 +123,7 @@ Contract:
 | Rendering | Render markdown only through an approved markdown parser and sanitizer pipeline; browser output is sanitized HTML, not raw model HTML. |
 | Sanitization | Strip or neutralize raw HTML that can execute code, `<script>`, event-handler attributes, dangerous URL schemes such as `javascript:`, unsafe iframes/embeds, inline styles unless explicitly allow-listed, and untrusted target behavior. External links must be transformed according to the UI security policy, usually with safe `rel` attributes and visible destination affordance. |
 | Redaction | Markdown content must already be scoped and redacted by the producing capability/agent; the renderer must not reveal hidden fields, secrets, prompt text, provider credentials, cross-tenant data, or support-only facts. |
-| Actions | Prefer no consequential inline actions in v0. Allowed actions, when present, use the normal `SurfaceAction` shape and link to governed capabilities such as `open_trace`, `copy_response`, `retry_request`, `request_clarification`, or `open_follow_up_task`; backend authorization remains authoritative. |
+| Actions | Prefer no consequential inline actions in starter scope. Allowed actions, when present, use the normal `SurfaceAction` shape and link to governed capabilities such as `open_trace`, `copy_response`, `retry_request`, `request_clarification`, or `open_follow_up_task`; backend authorization remains authoritative. |
 | UI states | Define loading/generating, ready, empty, error, forbidden, stale/reconnecting, and redacted states. Forbidden and redacted states must avoid leaking the original unsafe content. |
 | Accessibility | Preserve semantic headings, lists, tables, code blocks, blockquotes, and links; provide keyboard navigation, visible focus, readable code-block wrapping/copy affordance where allowed, screen-reader-friendly status changes, and heading hierarchy that does not skip the surrounding shell structure. |
 | Realtime | If streamed or updated incrementally, partial markdown must be rendered safely at every increment or shown as plain text until finalized; reconnect either resumes from a safe event id or marks the surface stale and requests refresh. |

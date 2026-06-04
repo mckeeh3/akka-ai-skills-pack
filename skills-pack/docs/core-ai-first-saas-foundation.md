@@ -115,7 +115,7 @@ Example AI-first core scenarios:
 
 ### Slice 0: minimum starter
 
-Use Slice 0 only when the requested target is the smallest valid generated AI-first SaaS app, starter app, or chatbot-like bootstrap shell. Slice 0 is the **five core workstream v0 starter** defined in `minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with `markdown_response` surfaces. It is not full-core readiness, a User-Admin-only slice, or a generic public chatbot.
+Use Slice 0 only when the requested target is the smallest valid generated AI-first SaaS app, starter app, or chatbot-like bootstrap shell. Slice 0 is the **five core workstream starter** defined in `minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with `markdown_response` surfaces. It is not full-core readiness, a User-Admin-only slice, or a generic public chatbot.
 
 Slice 0 must include all of these together:
 

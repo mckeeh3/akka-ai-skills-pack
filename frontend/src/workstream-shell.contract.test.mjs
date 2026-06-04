@@ -69,7 +69,7 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(rail, /onToggleCollapsed/);
 });
 
-test('left rail renders descriptor-backed workstream icons for core v0 workstreams', () => {
+test('left rail renders descriptor-backed workstream icons for core workstreams', () => {
   for (const [label, iconId, token, tooltip] of [
     ['User Admin', 'users-admin', 'accent-users', 'Open User Admin workstream'],
     ['Agent Admin', 'bot-spark', 'accent-agents', 'Open Agent Admin workstream'],

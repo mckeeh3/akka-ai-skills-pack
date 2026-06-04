@@ -19,7 +19,7 @@ Create a minimum viable internal app-description tree that:
 - records internal workstream agent graph candidates, internal worker delegations, autonomous task candidates, notification/projection implications, and trace expectations when durable internal/background agent work may be needed
 - records an initial readiness posture
 - defines a generation policy that labels scope as `minimum starter / not full core`, `full core`, `Module 1-only / not full core`, or another explicit narrower scope
-- for starter/basic/minimum/chatbot-like generated SaaS requests, represents the five core workstream v0 set — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — with `markdown_response`, bootstrap auth/security, durable workstream logs, trace substrate, backend capability boundaries, and explicit follow-up gaps to full core
+- for starter/basic/minimum/chatbot-like generated SaaS requests, represents the five core workstream starter set — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — with `markdown_response`, bootstrap auth/security, durable workstream logs, trace substrate, backend capability boundaries, and explicit follow-up gaps to full core
 - creates enough cross-linking that later changes can stay localized and traceable
 
 ## Required reading
@@ -30,7 +30,7 @@ Read these first if present:
 - `../../docs/description-first-application-doctrine.md`
 - `../../docs/ai-first-saas-application-architecture.md`
 - `../../docs/requirements-to-workstream-development-process.md` for the canonical input → workstreams → attention → dashboards → surfaces/actions → capabilities/APIs → Akka substrate → agent/autonomous task → notifications/projections/traces process
-- `../../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope: five core workstream v0 with `markdown_response`, not a single-workstream or generic chatbot slice
+- `../../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope: five core workstream starter with `markdown_response`, not a single-workstream or generic chatbot slice
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation every new app-description must seed
 - `../../docs/internal-app-description-architecture.md`
 - `../../docs/app-description-maintenance-flow.md`
@@ -105,7 +105,7 @@ app-description/
     internal-agents.md      # create when internal/background agent work or autonomous task candidates are in scope
     surfaces-index.md
     surface-contracts/
-      00-markdown-response.md      # required for each minimum-starter core workstream v0
+      00-markdown-response.md      # required for each minimum-starter core workstream starter
       01-access-profile.md
       02-user-admin.md
       03-agent-admin.md
@@ -178,9 +178,9 @@ This `55-ui/` file set is the canonical generated SaaS bootstrap set and matches
 ## Scope gates
 
 At bootstrap time, classify the requested generation scope before writing readiness or generation policy:
-- `minimum starter / not full core` means the app-description may be small but must describe the real five core workstream v0 set: bootstrap-authorized identity, selected `AuthContext`, role/capability-checked My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents, durable workstream request/response logs, `markdown_response` structured surface contracts for each core workstream, backend capability boundaries for actions/tools, audit/work trace substrate, bootstrap auth/security rules, and explicit follow-up gaps to full core. This is the canonical interpretation for “minimum app”, “starter app”, “basic app”, or initial chatbot-like generated SaaS requests.
+- `minimum starter / not full core` means the app-description may be small but must describe the real five core workstream starter set: bootstrap-authorized identity, selected `AuthContext`, role/capability-checked My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents, durable workstream request/response logs, `markdown_response` structured surface contracts for each core workstream, backend capability boundaries for actions/tools, audit/work trace substrate, bootstrap auth/security rules, and explicit follow-up gaps to full core. This is the canonical interpretation for “minimum app”, “starter app”, “basic app”, or initial chatbot-like generated SaaS requests.
 - `full core` means the app-description must include My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, reference documents, skill/reference manifests, tool boundaries, prompt/skill/reference/work traces, `readSkill`, and `readReferenceDoc`); workstream UI; managed-agent UI files (`agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, reference-governance surfaces, and `edit-agent-proposals-and-traces.md`); and full security/test coverage.
-- `Module 1-only / not full core` means only minimal authentication, `/api/me`, selected context, My Account, and an authenticated shell are in scope; it must explicitly defer User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitation lifecycle, governed prompts/skills/references/manifests/tool boundaries, managed-agent UI files, audit/work trace UI, and governance loops. Do not use this label for minimum starter requests that should be the five core workstream v0 set.
+- `Module 1-only / not full core` means only minimal authentication, `/api/me`, selected context, My Account, and an authenticated shell are in scope; it must explicitly defer User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitation lifecycle, governed prompts/skills/references/manifests/tool boundaries, managed-agent UI files, audit/work trace UI, and governance loops. Do not use this label for minimum starter requests that should be the five core workstream starter set.
 - any other narrower scope must be named in `00-system/app-manifest.md`, repeated in `00-system/readiness-status.md`, and enforced by `00-system/generation-policy.md`.
 
 Do not allow a bootstrap to imply full-core readiness while omitting full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, complete workstream UI, or required tests. Missing full-core elements are acceptable only when the generated app is explicitly labeled as `minimum starter / not full core`, Module 1-only, or another accepted narrower scope. Minimum starter readiness must not be reported as full-core readiness.
@@ -199,7 +199,7 @@ From the initial user input, derive as applicable:
 - role-specific dashboard contract for each workstream: actor-specific summary cards, attention items, blocked/overdue/risky/failed/paused states, participant/task visibility, pending decisions, recent changes, and authorized next actions
 - initial human surface graph for each workstream: dashboard trunk, surface nodes, surface actions/edges, system-message surfaces, action outcomes, and links to capability/governed-tool ids
 - governed-tool inventory inside capability files and surface/action maps, including qualified browser-tool, agent-tool, and internal-tool exposure candidates rather than ambiguous bare tools
-- first in-scope capability set, starting with the secure SaaS foundation capability and, for minimum starter scope, read/explain/deny capability boundaries for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy v0
+- first in-scope capability set, starting with the secure SaaS foundation capability and, for minimum starter scope, read/explain/deny capability boundaries for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy
 - internal workstream agent graph candidates: virtual dashboard agent responsibilities, internal worker delegations, escalation points, result/proposal surfaces, and required expertise skill/reference updates
 - autonomous task candidates for durable internal/background model-driven work, including start/result/progress/notification surfaces and why Akka `AutonomousAgent` may fit
 - event/notification/projection implications for dashboard updates, My Account attention aggregation, left-rail attention summaries, audit/work traces, and stale/reconnect UI states
@@ -237,7 +237,7 @@ For most fresh bootstraps, prefer:
 - or `ready-with-assumptions` only if the input is already unusually complete and remaining assumptions are non-runtime or explicitly outside the named scope
 
 ### 3. Establish generation policy
-Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, labels minimum-starter/full-core/narrower generation scope, blocks unlabeled omissions of full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, forbids using `com.example` for generated application code unless explicitly requested, and states that generated runtime features are complete only after real local Akka/API/UI validation with no mock/fixture/simulated normal-runtime substitute. For `minimum starter / not full core`, require the five core workstream v0 set and follow-up tasks for richer My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces/capabilities, invitations/onboarding, governed behavior/reference documents, and security coverage.
+Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, labels minimum-starter/full-core/narrower generation scope, blocks unlabeled omissions of full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, forbids using `com.example` for generated application code unless explicitly requested, and states that generated runtime features are complete only after real local Akka/API/UI validation with no mock/fixture/simulated normal-runtime substitute. For `minimum starter / not full core`, require the five core workstream starter set and follow-up tasks for richer My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces/capabilities, invitations/onboarding, governed behavior/reference documents, and security coverage.
 
 ### 4. Create the first capability layer
 Create a `10-capabilities/` index and a mandatory `01-secure-tenant-user-foundation.md` capability covering SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests.
