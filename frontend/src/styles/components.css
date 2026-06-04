@@ -1187,6 +1187,13 @@
 
 .surface-header h3 { margin: 0; font-size: 1rem; }
 .surface-header .eyebrow { margin-bottom: var(--space-2); color: var(--color-muted); }
+.surface-frame.dashboard {
+  display: grid;
+  gap: var(--space-4);
+}
+.surface-frame.dashboard .surface-header {
+  margin-bottom: 0;
+}
 
 .surface-footer {
   display: flex;
@@ -1228,13 +1235,53 @@
   gap: var(--space-3);
 }
 
+.my-account-context-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-soft);
+  padding: var(--space-4);
+}
+
+.my-account-context-strip p,
+.my-account-context-strip span { margin: 0; color: var(--color-muted); }
+.my-account-context-strip strong { display: block; margin-bottom: var(--space-1); }
+
+.my-account-workstream-grid {
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
 .dashboard-card.ds-card {
   box-shadow: none;
   padding: var(--space-4);
 }
 
-.dashboard-card p { margin-bottom: var(--space-2); font-size: 0.8rem; line-height: 1.35; }
+button.dashboard-card.ds-card {
+  width: 100%;
+  min-height: 9rem;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  cursor: pointer;
+  color: inherit;
+}
+
+.dashboard-card.clickable:hover,
+.dashboard-card.clickable:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+  transform: translateY(-1px);
+}
+
+.dashboard-card p { margin: 0; font-size: 0.95rem; line-height: 1.35; }
 .dashboard-card strong { font-size: 1.25rem; letter-spacing: -0.03em; }
+.my-account-workstream-grid .dashboard-card strong { display: block; font-size: clamp(2.75rem, 8vw, 4.5rem); line-height: 0.95; letter-spacing: -0.06em; }
+.dashboard-card-unit { display: block; margin-top: var(--space-1); color: var(--color-muted); font-size: 0.8rem; font-weight: 800; }
+.dashboard-card small { display: block; margin-top: var(--space-2); color: var(--color-muted); line-height: 1.35; }
 
 .decision-card {
   display: grid;

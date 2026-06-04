@@ -29,12 +29,12 @@ export function SurfaceStateFrame<T>({ state, envelope, children }: SurfaceState
   return (
     <section id={visibleEnvelope.surfaceId} className={`structured-surface surface-frame ${visibleEnvelope.surfaceType}${visibleEnvelope.stale?.isStale || state?.status === 'stale' ? ' stale' : ''}`} aria-labelledby={`${visibleEnvelope.surfaceId}-title`} data-surface-id={visibleEnvelope.surfaceId} data-surface-version={visibleEnvelope.surfaceVersion} tabIndex={-1}>
       <header className="surface-header">
-        <p className="eyebrow">{visibleEnvelope.surfaceType} · {visibleEnvelope.surfaceVersion}</p>
+        <p className="eyebrow sr-only">{visibleEnvelope.surfaceType} · {visibleEnvelope.surfaceVersion}</p>
         <h3 id={`${visibleEnvelope.surfaceId}-title`}>{visibleEnvelope.title}</h3>
         {(visibleEnvelope.stale?.isStale || state?.status === 'stale') && <p role="status">Stale: {visibleEnvelope.stale?.reason ?? (state?.status === 'stale' ? state.message : 'Refresh recommended.')}</p>}
       </header>
       {children}
-      <footer className="surface-footer">
+      <footer className="surface-footer sr-only">
         <p>Correlation: {visibleEnvelope.correlationId}</p>
         <p>Redaction profile: {visibleEnvelope.redaction.profile}</p>
       </footer>

@@ -132,11 +132,14 @@ export type BrowserSafeRedactionMetadata = string | {
 
 export type DashboardSurfaceData = {
   surfaceContract?: 'audit.trace.dashboard.v1' | string;
-  cards: Array<{ cardId: string; label: string; value: string | number; severity?: 'info' | 'warning' | 'urgent' | 'critical' | 'blocked' | 'blocked_provider_or_runtime' }>;
+  cards: Array<{ cardId: string; label: string; value: string | number; unit?: string; status?: string; description?: string; cardKind?: 'workstream-status' | string; workstreamId?: string; surfaceId?: string; actionId?: string; severity?: 'info' | 'warning' | 'urgent' | 'critical' | 'blocked' | 'blocked_provider_or_runtime' }>;
   attentionItems?: Array<AttentionItem>;
   attentionSource?: 'attention.list_workstream_items' | string;
+  accountContext?: { displayName?: string; email?: string; tenantId?: string; customerId?: string; selectedContextId?: string; roles?: string[]; authority?: string };
+  quickSurfaceActionIds?: string[];
+  utilityActionIds?: string[];
   sections?: Array<{ sectionId: string; label: string; summary: string }>;
-  nextSteps?: Array<{ workstreamId: string; label: string; allowed: boolean; blockedReason?: string; capabilityIds?: string[]; traceId?: string }>;
+  nextSteps?: Array<{ workstreamId: string; label: string; allowed: boolean; blockedReason?: string; capabilityIds?: string[]; traceId?: string; surfaceId?: string; actionId?: string }>;
   blockedState?: { reasonCode: string; message: string; recovery: string };
   readiness?: string;
   capabilityIds?: string[];

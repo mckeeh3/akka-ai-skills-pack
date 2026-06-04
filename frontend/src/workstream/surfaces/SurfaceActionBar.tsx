@@ -3,17 +3,18 @@ import type { SurfaceAction } from '../types';
 type SurfaceActionBarProps = {
   actions: SurfaceAction[];
   surfaceId: string;
+  label?: string;
   actionInput?: Record<string, string>;
   onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
-export function SurfaceActionBar({ actions, surfaceId, actionInput, onAction }: SurfaceActionBarProps) {
+export function SurfaceActionBar({ actions, surfaceId, label = 'Surface actions', actionInput, onAction }: SurfaceActionBarProps) {
   if (actions.length === 0) {
     return <p className="surface-action-bar empty">No actions are currently available.</p>;
   }
 
   return (
-    <div className="surface-action-bar" aria-label="Surface actions">
+    <div className="surface-action-bar" aria-label={label}>
       {actions.map((action) => (
         <button
           key={action.actionId}

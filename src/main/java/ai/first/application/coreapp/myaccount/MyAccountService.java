@@ -92,15 +92,9 @@ public final class MyAccountService {
     var summary = summary(actor, correlationId);
     return new DashboardData(
         "my_account.dashboard.v1",
-        List.of(
-            mapOf("cardId", "card-my-profile", "label", "Profile", "value", actor.profile().displayName(), "severity", "info"),
-            mapOf("cardId", "card-my-settings", "label", "Theme", "value", actor.settings().themeId().id(), "severity", "info"),
-            mapOf("cardId", "card-current-context", "label", "Selected context", "value", actor.selectedContext().tenantId(), "severity", "info"),
-            mapOf("cardId", "card-authority", "label", "Authority", "value", summary.authorityBasis().primaryRoleBasis(), "severity", "info")),
-        List.of(
-            mapOf("sectionId", "selected-context", "label", "Selected context", "summary", "selected context is resolved and authorized by the backend AuthContextResolver."),
-            mapOf("sectionId", "security-boundary", "label", "Security boundary", "summary", "My Account can explain and route; roles, memberships, policy, and agent behavior changes stay in governed admin workstreams.")),
-        personalAttention(actor, correlationId),
+        workstreamStatusCards(actor, correlationId),
+        List.of(),
+        List.of(), // personalAttention(actor, correlationId) is intentionally not rendered on the minimal daily dashboard.
         nextSteps(actor),
         summary.traceRefs(),
         summary.authorityBasis(),
@@ -151,13 +145,62 @@ public final class MyAccountService {
   public List<Map<String, Object>> nextSteps(AuthContextResolver.ResolvedMe actor) {
     return MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
         .filter(agent -> !"agent-my-account".equals(agent.functionalAgentId()))
+        .filter(agent -> "visible".equals(agent.availability()))
         .map(agent -> mapOf(
             "workstreamId", agent.functionalAgentId(),
             "label", agent.label(),
-            "allowed", "visible".equals(agent.availability()),
-            "blockedReason", agent.deniedReason() == null ? "" : agent.deniedReason(),
-            "capabilityIds", agent.requiredCapabilityIds()))
+            "allowed", true,
+            "blockedReason", "",
+            "capabilityIds", agent.requiredCapabilityIds(),
+            "surfaceId", surfaceIdForWorkstream(agent.functionalAgentId()),
+            "actionId", actionIdForWorkstream(agent.functionalAgentId())))
         .toList();
+  }
+
+  public List<Map<String, Object>> workstreamStatusCards(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    var summaryByWorkstream = attentionService.listMyAccountItems(actor, correlationId).workstreams().stream()
+        .collect(java.util.stream.Collectors.toMap(AttentionService.WorkstreamAttentionSummary::workstreamId, summary -> summary, (left, right) -> left, LinkedHashMap::new));
+    return MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
+        .filter(agent -> !"agent-my-account".equals(agent.functionalAgentId()))
+        .filter(agent -> "visible".equals(agent.availability()))
+        .map(agent -> {
+          var summary = summaryByWorkstream.get(agent.functionalAgentId());
+          var count = summary == null ? 0 : summary.attentionCount();
+          var severity = summary == null ? "info" : summary.highestSeverity().name().toLowerCase(Locale.ROOT);
+          return mapOf(
+              "cardId", "card-workstream-" + agent.functionalAgentId(),
+              "cardKind", "workstream-status",
+              "workstreamId", agent.functionalAgentId(),
+              "label", agent.label(),
+              "value", count,
+              "unit", "items need my attention",
+              "status", count == 0 ? "No items need attention" : count == 1 ? "1 item needs attention" : count + " items need attention",
+              "description", agent.purpose(),
+              "severity", severity,
+              "surfaceId", surfaceIdForWorkstream(agent.functionalAgentId()),
+              "actionId", actionIdForWorkstream(agent.functionalAgentId()));
+        })
+        .toList();
+  }
+
+  private String actionIdForWorkstream(String functionalAgentId) {
+    return switch (functionalAgentId) {
+      case "agent-user-admin" -> "action-open-user-admin";
+      case "agent-agent-admin" -> "action-open-agent-admin";
+      case "agent-audit-trace" -> "action-open-audit-trace";
+      case "agent-governance-policy" -> "action-open-governance-policy";
+      default -> "action-show-my-account-dashboard";
+    };
+  }
+
+  private String surfaceIdForWorkstream(String functionalAgentId) {
+    return switch (functionalAgentId) {
+      case "agent-agent-admin" -> "surface-agent-admin-catalog";
+      case "agent-audit-trace" -> "surface-audit-trace-dashboard";
+      case "agent-governance-policy" -> "surface-governance-policy-dashboard";
+      case "agent-user-admin" -> "surface-user-admin-dashboard";
+      default -> "surface-my-account-dashboard";
+    };
   }
 
   public List<TraceRef> traceRefs(AuthContextResolver.ResolvedMe actor, String correlationId) {

@@ -351,7 +351,9 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     });
     const selectedThemeId = input && typeof input === 'object' && 'preferredThemeId' in input ? normalizeThemeId((input as { preferredThemeId?: unknown }).preferredThemeId) : undefined;
     if (result.ok && selectedThemeId) setThemeId(selectedThemeId);
-    if (targetSurface && isCurrentlySelectedFunctionalAgent(targetSurface.ownerFunctionalAgentId)) {
+    const opensAnotherWorkstreamFromMyAccount = surfaceId === 'surface-my-account-dashboard' && targetSurface?.ownerFunctionalAgentId !== selectedFunctionalAgentId;
+    if (targetSurface && (action.intent === 'surface-request' || opensAnotherWorkstreamFromMyAccount || isCurrentlySelectedFunctionalAgent(targetSurface.ownerFunctionalAgentId))) {
+      clearRailAttention(targetSurface.ownerFunctionalAgentId);
       updateSelection({
         selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId,
         selectedSurfaceId: targetSurface.surfaceId,
@@ -405,11 +407,8 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
         : [...current.surfaces, targetSurface];
       return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, requestItem, surfaceResponseItem]) };
     });
-    if (isCurrentlySelectedFunctionalAgent(targetSurface.ownerFunctionalAgentId)) {
-      updateSelection({ selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId, selectedSurfaceId: targetSurface.surfaceId, surfacePlacement: 'inline' });
-    } else {
-      markUnseenResponse(targetSurface.ownerFunctionalAgentId, surfaceResponseItem.itemId, 'info');
-    }
+    clearRailAttention(targetSurface.ownerFunctionalAgentId);
+    updateSelection({ selectedFunctionalAgentId: targetSurface.ownerFunctionalAgentId, selectedSurfaceId: targetSurface.surfaceId, surfacePlacement: 'inline' });
     await refreshBackendDerivedAttentionDelivery({ functionalAgentId: targetSurface.ownerFunctionalAgentId, surfaceId: targetSurface.surfaceId, reason: 'shell-surface-refresh' });
     return true;
   }

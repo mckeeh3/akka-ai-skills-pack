@@ -46,7 +46,7 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
           <h3>{recordLabel}</h3>
           {envelope.data.summary && <p>{envelope.data.summary}</p>}
         </div>
-        {envelope.data.version !== undefined && <span className="version-chip">Version {envelope.data.version}</span>}
+        {envelope.data.version !== undefined && <span className="version-chip sr-only">Version {envelope.data.version}</span>}
       </section>
       {permissionState && (
         <p className={permissionState.canEdit ? 'form-status' : 'form-status conflict'}>
