@@ -75,6 +75,7 @@ test('production realtime client uses workstream SSE with stale, reconnect, malf
   assert.match(httpRealtime, /lastEventId/);
   assert.match(httpRealtime, /surface\.stale/);
   assert.match(httpRealtime, /surface\.reconnected/);
+  assert.match(httpRealtime, /projection\.refresh\.available/);
   assert.match(httpRealtime, /Malformed realtime event was ignored/);
-  assert.match(httpRealtime, /Realtime stream disconnected or could not authenticate/);
+  assert.match(httpRealtime, /Bounded workstream event replay ended/);
 });

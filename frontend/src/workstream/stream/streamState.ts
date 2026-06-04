@@ -65,6 +65,13 @@ export function mergeWorkstreamEvents(items: WorkstreamItem[], events: Workstrea
       continue;
     }
 
+    if (event.eventType === 'projection.refresh.available' && event.surfaceId) {
+      diagnostics.staleSurfaceIds.push(event.surfaceId);
+      diagnostics.diagnostics.push('Backend projection refresh is available; reload the backend-owned surface before treating it as current.');
+      merged = markSurfaceItemsStale(merged, event.surfaceId, 'Backend projection refresh is available; reload this surface.');
+      continue;
+    }
+
     if (event.eventType === 'workstream.item.appended' || event.eventType === 'workstream.item.updated') {
       const patch = event.patch as Partial<WorkstreamItem> | undefined;
       if (!patch?.itemId) {

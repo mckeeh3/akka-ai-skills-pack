@@ -20,9 +20,10 @@ export class HttpWorkstreamRealtimeClient implements WorkstreamRealtimeClient {
     source.onmessage = (message) => this.handleMessage(message);
     source.addEventListener('surface.stale', (message) => this.handleMessage(message as MessageEvent<string>));
     source.addEventListener('surface.reconnected', (message) => this.handleMessage(message as MessageEvent<string>));
+    source.addEventListener('projection.refresh.available', (message) => this.handleMessage(message as MessageEvent<string>));
     source.addEventListener('workstream.item.appended', (message) => this.handleMessage(message as MessageEvent<string>));
     source.addEventListener('workstream.item.updated', (message) => this.handleMessage(message as MessageEvent<string>));
-    source.onerror = () => this.setState({ status: 'stale', lastEventId: this.lastEventId(), reason: 'Realtime stream disconnected or could not authenticate; surfaces may be stale until refresh.' });
+    source.onerror = () => this.setState({ status: 'stale', lastEventId: this.lastEventId(), reason: 'Bounded workstream event replay ended, disconnected, or could not authenticate; refresh backend-owned surfaces before treating data as current.' });
     return { unsubscribe: () => this.disconnect() };
   }
 

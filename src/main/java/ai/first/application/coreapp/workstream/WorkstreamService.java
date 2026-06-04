@@ -610,6 +610,7 @@ public final class WorkstreamService {
     workstreamLogRepository.appendSystemEntry(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), item, null);
   }
 
+  /** Returns the bounded v1 workstream SSE replay/refresh batch for the selected authorized context. */
   public List<WorkstreamEvent> events(WorkosIdentity identity, String selectedContextId, String functionalAgentId, String lastEventId, String correlationId) {
     var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
     var allEvents = new ArrayList<WorkstreamEvent>();
@@ -618,7 +619,7 @@ public final class WorkstreamService {
     var events = allEvents.stream().filter(event -> functionalAgentId == null || functionalAgentId.isBlank() || functionalAgentId.equals(event.functionalAgentId())).toList();
     if (lastEventId == null || lastEventId.isBlank()) return events;
     for (var index = 0; index < events.size(); index++) if (lastEventId.equals(events.get(index).eventId()) && index + 1 < events.size()) return events.subList(index + 1, events.size());
-    return List.of(new WorkstreamEvent("evt-stale-replay-unavailable-999", "surface.stale", actor.selectedContext().tenantId(), actor.selectedContext().customerId(), USER_ADMIN_AGENT_ID, "surface-user-admin-dashboard", "dashboard", "v1", correlationId, List.of("trace-sse-replay-unavailable"), Instant.now().toString(), 999, mapOf("reason", "Replay from Last-Event-ID is unavailable; refresh backend-owned workstream surfaces.")));
+    return List.of(new WorkstreamEvent("evt-stale-replay-unavailable-999", "surface.stale", actor.selectedContext().tenantId(), actor.selectedContext().customerId(), USER_ADMIN_AGENT_ID, "surface-user-admin-dashboard", "dashboard", "v1", correlationId, List.of("trace-sse-replay-unavailable"), Instant.now().toString(), 999, mapOf("reason", "Replay from Last-Event-ID is unavailable for bounded SSE replay v1; refresh backend-owned workstream surfaces instead of treating the stream as continuously live.")));
   }
 
   private List<SurfaceEnvelope> initialSurfaces(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -1090,7 +1091,7 @@ public final class WorkstreamService {
             event.occurredAt().toString(),
             sequence.getAndIncrement(),
             mapOf(
-                "reason", "Backend event-backed projection refresh is available; reload backend-owned attention/dashboard surfaces instead of trusting frontend state.",
+                "reason", "Bounded SSE replay v1 found a backend event-backed projection refresh; reload backend-owned attention/dashboard surfaces instead of trusting frontend state or assuming a continuously live stream.",
                 "source", "workstream.event.delivery.refresh",
                 "eventType", event.eventType(),
                 "eventFamily", event.eventFamily(),

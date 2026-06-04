@@ -216,7 +216,7 @@
 
 ### TASK-WDA-03-001: Align realtime/SSE semantics
 
-- status: pending
+- status: done
 - source: audit finding that current events endpoint appears finite/replay-oriented rather than clearly continuous live SSE
 - task brief: specs/workstream-design-implementation-alignment/tasks/03-ui-realtime/01-align-realtime-semantics.md
 - depends on:
@@ -254,6 +254,8 @@
   - changes and queue update are committed
 - notes:
   - commit message: `workstream-align: align realtime semantics`
+  - completed by explicitly narrowing realtime v1 to bounded SSE replay/refresh semantics, documenting stale/refresh-backed behavior, updating backend replay copy, adding frontend `projection.refresh.available` handling, and testing scoped resume/stale behavior plus frontend realtime contracts
+  - checks: `mvn test -Dtest=WorkstreamServiceTest`; `npm --prefix frontend test -- --run --test-name-pattern="realtime|workstream event|projection refresh"`; `npm --prefix frontend run typecheck`; `git diff --check`; focused `rg "bounded SSE replay v1|projection\\.refresh\\.available|Bounded workstream event replay ended|not a long-lived true-live" ...`
   - vertical contract: five core workstream events/projections; SSE/API exposure; stale/reconnect surfaces; tenant/customer scoping and frontend replay safety
 
 ### TASK-WDA-04-001: Refresh readiness and legacy page notes

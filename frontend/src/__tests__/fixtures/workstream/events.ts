@@ -17,8 +17,9 @@ export const workstreamEvents: WorkstreamEvent[] = [
   { ...base, eventId: 'evt-action-accepted-5', eventType: 'surface.action.accepted', surfaceId: 'surface-user-list', surfaceType: 'list-search', surfaceVersion: 'v1', sequence: 5, patch: { actionId: 'action-invite-user' } },
   { ...base, eventId: 'evt-action-denied-6', eventType: 'surface.action.denied', surfaceId: 'surface-user-list', surfaceType: 'list-search', surfaceVersion: 'v1', sequence: 6, patch: { reasonCode: 'missing-capability' } },
   { ...base, eventId: 'evt-workflow-progressed-7', eventType: 'surface.workflow.progressed', surfaceId: 'surface-workflow-status', surfaceType: 'workflow-status', surfaceVersion: 'v1', sequence: 7, patch: { stepId: 'send-email', status: 'completed' } },
-  { ...base, eventId: 'evt-surface-stale-8', eventType: 'surface.stale', surfaceId: 'surface-user-list', surfaceType: 'list-search', surfaceVersion: 'v1', sequence: 8, patch: { reason: 'Missed event during reconnect.' } },
-  { ...base, eventId: 'evt-surface-reconnected-9', eventType: 'surface.reconnected', surfaceId: 'surface-user-list', surfaceType: 'list-search', surfaceVersion: 'v1', sequence: 9, patch: { lastEventId: 'evt-surface-stale-8' } }
+  { ...base, eventId: 'evt-projection-refresh-8', eventType: 'projection.refresh.available', surfaceId: 'surface-user-list', surfaceType: 'list-search', surfaceVersion: 'v1', sequence: 8, patch: { source: 'workstream.event.delivery.refresh', reason: 'Bounded SSE replay v1 found a backend-owned projection refresh.' } },
+  { ...base, eventId: 'evt-surface-stale-9', eventType: 'surface.stale', surfaceId: 'surface-user-list', surfaceType: 'list-search', surfaceVersion: 'v1', sequence: 9, patch: { reason: 'Missed event during reconnect.' } },
+  { ...base, eventId: 'evt-surface-reconnected-10', eventType: 'surface.reconnected', surfaceId: 'surface-user-list', surfaceType: 'list-search', surfaceVersion: 'v1', sequence: 10, patch: { lastEventId: 'evt-surface-stale-9' } }
 ];
 
 export const duplicateReplayEvent = { ...workstreamEvents[4] };
@@ -39,8 +40,9 @@ export const realtimeFixtureCases = {
   accepted: workstreamEvents[4],
   denied: workstreamEvents[5],
   workflowProgressed: workstreamEvents[6],
-  stale: workstreamEvents[7],
-  reconnected: workstreamEvents[8],
+  projectionRefreshAvailable: workstreamEvents[7],
+  stale: workstreamEvents[8],
+  reconnected: workstreamEvents[9],
   duplicateReplay: duplicateReplayEvent,
   outOfOrder: outOfOrderEvent,
   malformedSafe: malformedSafeEvent,

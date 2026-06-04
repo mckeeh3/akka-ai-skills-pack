@@ -227,7 +227,7 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void realtimeEventsAreScopedAndResumeWithStaleFallback() {
+  void boundedRealtimeReplayEventsAreScopedAndResumeWithStaleFallback() {
     var events = service.events(identity(), "membership-admin", null, null, "corr-events");
 
     assertTrue(events.stream().allMatch(event -> event.tenantId().equals("tenant-1")));
@@ -237,6 +237,7 @@ class WorkstreamServiceTest {
     assertEquals("surface.stale", resumed.get(0).eventType());
     assertEquals("surface-user-admin-dashboard", resumed.get(0).surfaceId());
     assertEquals("dashboard", resumed.get(0).surfaceType());
+    assertTrue(resumed.get(0).patch().toString().contains("bounded SSE replay v1"));
   }
 
   @Test
@@ -251,6 +252,7 @@ class WorkstreamServiceTest {
     assertTrue(events.stream().anyMatch(event -> event.eventType().equals("projection.refresh.available")
         && event.surfaceId().equals("surface-user-admin-access-review")
         && event.patch().toString().contains("workstream.event.delivery.refresh")
+        && event.patch().toString().contains("Bounded SSE replay v1")
         && event.patch().toString().contains("idempotencyKey")
         && event.patch().toString().contains("sourceRefs")));
     assertTrue(service.functionalAgents(identity(), "membership-admin", "corr-refresh-rail").stream()

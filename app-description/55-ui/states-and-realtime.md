@@ -59,6 +59,17 @@
 - resolved queue items may remain briefly with a resolved state before disappearing to avoid disorienting the user
 - reconnect keeps existing data visible and marks it stale until fresh data arrives
 
+## Workstream realtime v1 contract
+
+The current `/api/workstream/events` route is a **bounded SSE replay/refresh stream**, not a long-lived true-live notification channel. On connect or resume it returns the currently authorized tenant/customer workstream event refresh hints, then the browser must treat stream close, auth failure, network loss, or an unknown `Last-Event-ID` as a stale state and refresh backend-owned surfaces through normal API/shell requests.
+
+- event source: durable `WorkstreamEventRepository` records plus backend-derived refresh hints; no frontend-only badge or fixture event is authoritative
+- scope: selected membership/context, tenant, customer, functional-agent filter, and capability checks are enforced by the backend before events are serialized
+- reconnect/resume: `Last-Event-ID` or `lastEventId` returns events after the known id when available; an unavailable id returns a `surface.stale` event instead of silently pretending the stream is complete
+- refresh semantics: `projection.refresh.available` means reload/refresh the referenced backend-owned dashboard, attention, list, or workflow-status surface; it does not patch consequential state directly in the browser
+- browser freshness: the UI may keep existing cards visible while the replay stream closes/reconnects, but must label them stale or refresh-backed rather than continuously live
+- true continuous live SSE from component notification streams is a future enhancement and must preserve the same authorization, redaction, idempotency, trace, and stale-state rules
+
 ## Realtime security
 
 - stream subscriptions are tenant and permission scoped

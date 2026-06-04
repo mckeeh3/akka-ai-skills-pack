@@ -79,6 +79,13 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
     return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(StarterSecurityComponents.invitationService().acceptForBrowser(identity, request, correlationId)));
   }
 
+  /**
+   * Bounded v1 SSE replay stream for authorized workstream refresh hints.
+   *
+   * <p>This route intentionally emits the currently available replay batch and may close; it is not a
+   * long-lived true-live notification stream. Browser clients must treat close, failed auth, or unknown
+   * resume ids as stale/refresh states and reload backend-owned surfaces through normal API requests.
+   */
   @Get("/events")
   public HttpResponse events() {
     var functionalAgentId = requestContext().queryParams().getString("functionalAgentId").orElse(null);

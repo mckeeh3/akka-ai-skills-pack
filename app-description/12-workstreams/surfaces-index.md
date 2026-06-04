@@ -12,7 +12,7 @@ Structured surfaces are the browser/user-visible contract for workstream state. 
 | `audit-trace-explorer` | search/timeline/v1 | Audit/Trace, User Admin, Agent Admin, Governance/Policy | `surface-contracts/06-audit-trace-explorer.md` | search/inspect/export scoped traces → `governance-decisions-audit`, `managed-agent-foundation` | redaction, tenant filtering, export denial, correlation ids. |
 | `agent-governance-center` | governance workspace/v1 | Agent Admin, Governance/Policy | `surface-contracts/07-agent-governance-center.md` | inspect/edit/propose/review agent behavior records and policy changes → `managed-agent-foundation`, `governance-decisions-audit` | draft/active lifecycle, prompt-risk, skill/reference load traces, authority expansion denial. |
 | `markdown_response` | markdown_response/v1 | All five core workstreams | shared contract in UI/behavior docs | bounded agent answer, safe denial, blocked provider/system status → owning workstream capabilities | sanitization, redaction, forbidden/error/empty states, trace links. |
-| `system_message` | system_message/v1 | All five core workstreams | shared contract in UI/behavior docs | provider blocked, authorization denial, task status, projection refresh → owning workstream capabilities | safe copy, no secrets, actionable next step, trace link. |
+| `system_message` | system_message/v1 | All five core workstreams | shared contract in UI/behavior docs | provider blocked, authorization denial, task status, bounded SSE replay/projection refresh → owning workstream capabilities | safe copy, no secrets, actionable next step, trace link, stale/refresh-backed status. |
 
 ## Domain-specific surfaces
 

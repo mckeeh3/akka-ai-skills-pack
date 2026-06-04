@@ -109,7 +109,7 @@ test('action result fixtures cover all governed result statuses', () => {
 });
 
 test('realtime fixtures cover normal, duplicate, stale, malformed-safe, and cross-context-denied events', () => {
-  for (const eventType of ['surface.created', 'surface.updated', 'surface.action.accepted', 'surface.action.denied', 'surface.workflow.progressed', 'surface.stale', 'surface.reconnected']) {
+  for (const eventType of ['surface.created', 'surface.updated', 'surface.action.accepted', 'surface.action.denied', 'surface.workflow.progressed', 'projection.refresh.available', 'surface.stale', 'surface.reconnected']) {
     const escapedEventType = eventType.replace(/[.]/g, '\\.');
     assert.match(eventFixtures, new RegExp(`eventType: '${escapedEventType}'`));
   }
