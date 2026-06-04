@@ -601,11 +601,35 @@ public final class WorkstreamService {
   }
 
   private List<SurfaceEnvelope> initialSurfaces(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return List.of();
+    var dashboard = defaultDashboardSurface(actor, correlationId);
+    return dashboard == null ? List.of() : List.of(dashboard);
   }
 
   private List<WorkstreamItem> initialItems(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return List.of();
+    var dashboard = defaultDashboardSurface(actor, correlationId);
+    if (dashboard == null) return List.of();
+    return List.of(new WorkstreamItem(
+        "item-default-dashboard-" + stableSuffix(actor.selectedContext().membershipId() + ":" + dashboard.surfaceId()),
+        dashboard.ownerFunctionalAgentId(),
+        "surface",
+        Instant.now().toString(),
+        correlationId,
+        dashboard.traceIds(),
+        dashboard.surfaceId(),
+        dashboard.title(),
+        "Default dashboard loaded by backend bootstrap for the selected workstream context.",
+        "ready"));
+  }
+
+  private SurfaceEnvelope defaultDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    var targetAgentId = MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
+        .filter(agent -> "visible".equals(agent.availability()))
+        .filter(agent -> actor.selectedContext().capabilities().containsAll(agent.requiredCapabilityIds()))
+        .map(MeResponse.FunctionalAgentSummary::functionalAgentId)
+        .findFirst()
+        .orElse(null);
+    if (targetAgentId == null) return null;
+    return dynamicSurface(actor, shellTargetSurfaceId("open_workstream", targetAgentId, null), correlationId);
   }
 
   private SurfaceEnvelope myAccountDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -613,8 +637,10 @@ public final class WorkstreamService {
     var dashboard = myAccountService.dashboardData(actor, correlationId);
     var notificationCenter = myAccountNotificationCenterData(actor, correlationId);
     var cards = new ArrayList<>(dashboard.cards());
+    cards.add(mapOf("cardId", "card-my-account-notifications", "cardKind", "notification-center", "label", "In-app notifications", "value", notificationCenter.unreadCount(), "unit", "unread notifications", "status", notificationCenter.visibleCount() == 0 ? "No notifications in the authorized center" : notificationCenter.visibleCount() + " notifications visible", "description", "Backend-owned notification projection for selected-context attention and workstream events.", "severity", notificationCenter.unreadCount() > 0 ? "warning" : "info", "surfaceId", "surface-my-account-notification-center", "actionId", "action-show-my-account-notification-center"));
+    var personalAttention = myAccountService.personalAttention(actor, correlationId);
     return envelope("surface-my-account-dashboard", "dashboard", "My Account", actor, correlationId,
-        mapOf("surfaceContract", dashboard.surfaceContract(), "canonicalAccessProfileContextSurfaceId", ACCESS_PROFILE_CONTEXT_SURFACE_ID, "coreCapabilityAliases", List.of(CORE_ACCESS_ME_CAPABILITY, CORE_PROFILE_UPDATE_CAPABILITY, CORE_ACCESS_CONTEXT_SELECT_CAPABILITY), "cards", cards, "sections", dashboard.sections(), "attentionItems", dashboard.attentionItems(), "attentionSource", AttentionService.LIST_MY_ACCOUNT_ITEMS_TOOL, "accountContext", mapOf("displayName", actor.profile().displayName(), "email", actor.account().displayEmail(), "tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "roles", actor.selectedContext().roles().stream().map(role -> role.name().toLowerCase(Locale.ROOT).replace('_', '-')).sorted().toList(), "authority", dashboard.authorityBasis().primaryRoleBasis()), "quickSurfaceActionIds", dashboard.nextSteps().stream().map(step -> step.get("actionId")).filter(Objects::nonNull).toList(), "utilityActionIds", List.of("action-show-my-profile", "action-show-my-settings", "action-show-my-context", "action-show-my-account-notification-center", "action-sign-out"), "notificationCenter", mapOf("surfaceId", "surface-my-account-notification-center", "surfaceContract", notificationCenter.surfaceContract(), "channel", "in_app", "unreadCount", notificationCenter.unreadCount(), "visibleCount", notificationCenter.visibleCount(), "countSource", NotificationService.LIST_MY_ACCOUNT_CENTER_TOOL, "futureEmailPush", "not implemented"), "personalAttentionDigest", mapOf("surfaceIds", List.of("surface-my-account-personal-attention-digest-progress", "surface-my-account-personal-attention-digest-result", "surface-my-account-personal-attention-digest-blocked"), "statusSource", "backend-projected MyAccountPersonalAttentionDigestTask", "noDirectMutation", true, "capabilityIds", List.of(MY_ACCOUNT_DIGEST_START_CAPABILITY, MY_ACCOUNT_DIGEST_READ_CAPABILITY, MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY, MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY, MY_ACCOUNT_DIGEST_REJECT_CAPABILITY)), "nextSteps", dashboard.nextSteps(), "traceRefs", dashboard.traceRefs(), "authorityBasis", dashboard.authorityBasis(), "contextCapabilityGroups", dashboard.capabilityGroups(), "redaction", "Personal attention and notifications only include authorized sibling workstreams; hidden workstreams return not_found_or_redacted without names or counts.", "systemStates", List.of("system_message", "selected context", "authority", "tenant", "trace", "personal attention", "personal attention digest", "notification center", "trace refs", "not_found_or_redacted", "blocked_provider_or_runtime")),
+        mapOf("surfaceContract", dashboard.surfaceContract(), "canonicalAccessProfileContextSurfaceId", ACCESS_PROFILE_CONTEXT_SURFACE_ID, "coreCapabilityAliases", List.of(CORE_ACCESS_ME_CAPABILITY, CORE_PROFILE_UPDATE_CAPABILITY, CORE_ACCESS_CONTEXT_SELECT_CAPABILITY), "cards", cards, "sections", dashboard.sections(), "attentionItems", personalAttention, "attentionSource", AttentionService.LIST_MY_ACCOUNT_ITEMS_TOOL, "accountContext", mapOf("displayName", actor.profile().displayName(), "email", actor.account().displayEmail(), "tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "roles", actor.selectedContext().roles().stream().map(role -> role.name().toLowerCase(Locale.ROOT).replace('_', '-')).sorted().toList(), "authority", dashboard.authorityBasis().primaryRoleBasis()), "quickSurfaceActionIds", dashboard.nextSteps().stream().map(step -> step.get("actionId")).filter(Objects::nonNull).toList(), "utilityActionIds", List.of("action-show-my-profile", "action-show-my-settings", "action-show-my-context", "action-show-my-account-notification-center", "action-sign-out"), "notificationCenter", mapOf("surfaceId", "surface-my-account-notification-center", "surfaceContract", notificationCenter.surfaceContract(), "channel", "in_app", "unreadCount", notificationCenter.unreadCount(), "visibleCount", notificationCenter.visibleCount(), "countSource", NotificationService.LIST_MY_ACCOUNT_CENTER_TOOL, "futureEmailPush", "not implemented"), "personalAttentionDigest", mapOf("surfaceIds", List.of("surface-my-account-personal-attention-digest-progress", "surface-my-account-personal-attention-digest-result", "surface-my-account-personal-attention-digest-blocked"), "statusSource", "backend-projected MyAccountPersonalAttentionDigestTask", "noDirectMutation", true, "capabilityIds", List.of(MY_ACCOUNT_DIGEST_START_CAPABILITY, MY_ACCOUNT_DIGEST_READ_CAPABILITY, MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY, MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY, MY_ACCOUNT_DIGEST_REJECT_CAPABILITY)), "nextSteps", dashboard.nextSteps(), "traceRefs", dashboard.traceRefs(), "authorityBasis", dashboard.authorityBasis(), "contextCapabilityGroups", dashboard.capabilityGroups(), "redaction", "Personal attention and notifications only include authorized sibling workstreams; hidden workstreams return not_found_or_redacted without names or counts.", "systemStates", List.of("system_message", "selected context", "authority", "tenant", "trace", "personal attention", "personal attention digest", "notification center", "trace refs", "not_found_or_redacted", "blocked_provider_or_runtime")),
         List.of(showDashboardAction(), showNotificationCenterAction(), showProfileAction(), showSettingsAction(), showContextAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), signOutAction(), openUserAdminAction(), openAgentAdminAction(), openAuditAction(), openGovernancePolicyAction()));
   }
 

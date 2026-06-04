@@ -126,7 +126,7 @@
 
 ### TASK-WDA-02-001: Align default dashboard loading
 
-- status: pending
+- status: done
 - source: audit finding that backend bootstrap returns empty initial items/surfaces while doctrine expects dashboard/attention on workstream selection
 - task brief: specs/workstream-design-implementation-alignment/tasks/02-runtime-alignment/01-align-default-dashboard-loading.md
 - depends on:
@@ -166,6 +166,8 @@
   - changes and queue update are committed
 - notes:
   - commit message: `workstream-align: align dashboard loading`
+  - completed with backend bootstrap default dashboard surface/item selection, My Account dashboard attention/notification card payloads, and WorkstreamService tests for bootstrap plus safe shell denial coverage
+  - checks: `mvn test -Dtest=WorkstreamServiceTest`; `npm --prefix frontend test -- --test-name-pattern="dashboard|bootstrap|workstream open"`; `git diff --check`
   - vertical contract: five core workstreams; structured dashboard surfaces; browser/API shell request path; backend authorization, traces, and surface rendering tests
 
 ### TASK-WDA-02-002: Add shell surface alias resolver

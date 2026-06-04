@@ -136,13 +136,19 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void bootstrapStartsWithNoSyntheticWorkstreamItemsOrSurfacesWithoutSecrets() {
+  void bootstrapLoadsBackendAuthoritativeDefaultDashboardWithoutSecrets() {
     var bootstrap = service.bootstrap(identity(), null, "corr-bootstrap");
 
     assertEquals("membership-admin", bootstrap.me().selectedAuthContext().selectedContextId());
     assertTrue(bootstrap.functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-user-admin") && agent.availability().equals("visible")));
-    assertTrue(bootstrap.items().isEmpty());
-    assertTrue(bootstrap.surfaces().isEmpty());
+    assertEquals(1, bootstrap.items().size());
+    assertEquals(1, bootstrap.surfaces().size());
+    assertEquals("surface-my-account-dashboard", bootstrap.surfaces().get(0).surfaceId());
+    assertEquals("agent-my-account", bootstrap.surfaces().get(0).ownerFunctionalAgentId());
+    assertEquals("surface", bootstrap.items().get(0).kind());
+    assertEquals("surface-my-account-dashboard", bootstrap.items().get(0).surfaceId());
+    assertEquals("ready", bootstrap.items().get(0).status());
+    assertTrue(bootstrap.surfaces().get(0).toString().contains("my_account.view_context"));
     assertFalse(bootstrap.toString().contains("invite-token"));
     assertFalse(bootstrap.toString().contains("tokenHash"));
     assertFalse(bootstrap.toString().contains("providerSecret"));
@@ -645,8 +651,8 @@ class WorkstreamServiceTest {
   @Test
   void shellRequestsResolveRichSurfacesThroughBackendAndPreserveBootstrapGuard() {
     var bootstrap = service.bootstrap(identity(), "membership-admin", "corr-shell-bootstrap");
-    assertTrue(bootstrap.surfaces().isEmpty());
-    assertTrue(bootstrap.items().isEmpty());
+    assertEquals("surface-my-account-dashboard", bootstrap.surfaces().get(0).surfaceId());
+    assertEquals("surface-my-account-dashboard", bootstrap.items().get(0).surfaceId());
 
     var show = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
         "show_surface", "user_prompt", "show user admin dashboard", null, "agent-user-admin", "surface-user-admin-dashboard", null, "agent-user-admin", null, null, "current_workstream", "corr-shell-show", "membership-admin"));
