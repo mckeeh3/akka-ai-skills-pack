@@ -8,7 +8,8 @@
 - local scaffold inspection and extension through this `app-description/` tree;
 - local/test-scope evaluation of the full-core foundation across My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy;
 - implementation planning from the five core workstreams;
-- focused follow-up tasks that close production-provider, billing, timer-reminder, and validation-tool gaps;
+- focused follow-up tasks that close production-provider and validation-tool gaps;
+- future product-scope planning for billing implementation or timer-backed invitation reminders if a target product requires them;
 - adding domain-specific features only after the affected core/security/capability contracts are preserved.
 
 ## Five-core starter readiness target
@@ -30,8 +31,8 @@ The local/test-scope full-core foundation smoke is recorded in `specs/full-core-
 - live WorkOS/AuthKit provider smoke with backend-only issuer/audience/provider configuration and a real AuthKit app;
 - live Resend provider smoke with backend-only Resend API key and sender/domain configuration;
 - live model-provider smoke for model-backed workstream agents/workers with approved runtime tool-boundary configuration and provider credentials;
-- billing implementation where the target product requires subscription lifecycle, entitlements, payment-failure behavior, or billing UI; the current scope only preserves the billing-boundary invariant;
-- timer-backed invitation reminder scheduling if reminders are required for the target product;
+- billing implementation remains explicitly deferred for the current full-core target; the current scope only preserves the billing-boundary invariant that billing/subscription metadata must not grant Tenant application-data access;
+- timer-backed invitation reminder scheduling remains explicitly deferred for the current full-core target; invitation expiry/resend behavior is validated, but scheduled reminders require a future product-scope task;
 - optional repair of stale validation tooling such as `tools/prove-workstream-icons-v0.sh` if retained.
 
 ## Domain-specific expansion gate
@@ -55,8 +56,8 @@ Recent alignment work establishes starter-level contracts and runtime behavior f
 - explicit realtime v1 semantics as bounded SSE replay/refresh behavior, not long-lived true-live streaming;
 - Audit/Trace scoped search/detail/timeline/failure-evidence/investigation-note surfaces and Governance/Policy proposal/simulation/decision/activation/rollback/outcome-note surfaces through backend-authorized workstream actions, with model-backed summary/impact workers failing closed until real provider/runtime/tool-boundary configuration is supplied.
 
-This evidence, combined with `specs/full-core-saas-readiness/full-core-runtime-smoke.md`, supports local/test-scope full-core foundation evaluation for the implemented scope. It does not close production-provider readiness, billing implementation, or deferred timer-reminder gaps.
+This evidence, combined with `specs/full-core-saas-readiness/full-core-runtime-smoke.md`, supports local/test-scope full-core foundation evaluation for the implemented scope. It does not close production-provider readiness. Billing implementation and timer-backed invitation reminders are intentionally deferred for the current target and must be added through future product-scope tasks before any production billing-ready or scheduled-reminder-ready claim.
 
 ## Last update basis
 
-Updated during TASK-FCSR-07-001 runtime smoke to reflect passing backend tests, frontend tests, typecheck, production frontend build, static asset secret scan, and the remaining provider/billing/deferred-tooling blockers.
+Updated during TASK-FCSR-08-004 to record that billing implementation and timer-backed invitation reminders remain deferred for the current full-core target, while preserving the TASK-FCSR-07-001 local/test-scope runtime smoke evidence and remaining provider/deferred-tooling blockers.

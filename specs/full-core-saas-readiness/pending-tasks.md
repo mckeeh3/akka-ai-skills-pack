@@ -477,7 +477,7 @@
 
 ### TASK-FCSR-08-004: Decide billing and timer-reminder follow-up scope
 
-- status: pending
+- status: done
 - source: verification found billing implementation and timer-backed reminder scheduling deferred by current scope
 - task brief: specs/full-core-saas-readiness/tasks/08-follow-up/04-decide-billing-and-timer-reminder-scope.md
 - depends on:
@@ -503,7 +503,8 @@
   - billing lifecycle/entitlement/payment-failure/UI scope and invitation timer-reminder scope are explicitly accepted, deferred, or queued as implementation tasks
   - changes and queue update are committed
 - notes:
-  - next runnable follow-up after TASK-FCSR-99-001
+  - commit message: `full-core-ready: decide billing timer scope`
+  - evidence: `specs/full-core-saas-readiness/billing-timer-reminder-scope-decision.md`; billing implementation and timer-backed invitation reminders remain deferred for the current full-core target with accepted readiness impact; no implementation tasks appended until a future product scope requires them
 
 ### TASK-FCSR-08-005: Repair or retire stale workstream icon validation tool
 
