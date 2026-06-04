@@ -380,6 +380,9 @@ content:
     - id: akka-backlog-to-pending-tasks
       path: skills/akka-backlog-to-pending-tasks
       category: planning
+    - id: project-discussed-idea-to-pending-project
+      path: skills/project-discussed-idea-to-pending-project
+      category: planning
     - id: akka-basic-user-admin
       path: skills/akka-basic-user-admin
       category: focused

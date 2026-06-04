@@ -262,6 +262,13 @@ Start with:
 
 Use when the goal is to derive the Akka component set and implementation handoff, but not necessarily to materialize a full repository planning package.
 
+### Discussed idea to pending-project skill
+
+Start with:
+- `project-discussed-idea-to-pending-project`
+
+Use when an idea, feature, remediation, migration, review finding, or follow-up has already been discussed enough that the next useful step is a durable `specs/<initiative>/` mini-project with conversation capture, sprint/backlog context, task briefs, and a `pending-tasks.md` queue for one-task-per-fresh-context execution. This is lighter than a full PRD decomposition and should not implement the queued work in the same run unless the user explicitly asks.
+
 ### PRD to specs/backlog skill
 
 Start with:
@@ -368,6 +375,7 @@ References:
 Use this routing for ongoing development after the first PRD planning run:
 - Small feature request, bug report, issue, or implementation discovery: `akka-change-request-to-spec-update`
 - Full revised/replacement PRD: `akka-revised-prd-reconciliation`
+- Already-discussed initiative needs a fresh mini-project and task queue: `project-discussed-idea-to-pending-project`
 - Open design decisions need durable one-at-a-time clarification: `akka-pending-question-generation`
 - Question queue exists and user wants the next question: `akka-do-next-pending-question`
 - Question queue exists but may be stale/duplicated/blocked/unreconciled: `akka-pending-question-queue-maintenance`
