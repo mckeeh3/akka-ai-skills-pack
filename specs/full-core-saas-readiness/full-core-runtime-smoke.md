@@ -7,7 +7,7 @@
 
 ## Evidence summary
 
-The local validation pass exercised the current Akka/API/UI implementation through the repository's normal test and build commands. It supports readiness for the implemented full-core foundation scope at local/test scope, while preserving explicit blockers for live WorkOS/AuthKit, live Resend, live model-provider calls, and billing implementation.
+The local validation pass exercised the current Akka/API/UI implementation through the repository's normal test and build commands. It supports readiness for the implemented full-core foundation scope at local/test scope, while preserving explicit blockers for live WorkOS/AuthKit, live Resend, and billing implementation. TASK-FCSR-08-003 later supplied backend-only model-provider environment variables and passed the live model-backed workstream-agent smoke.
 
 ## Checks run
 
@@ -34,11 +34,11 @@ The local validation pass exercised the current Akka/API/UI implementation throu
 
 - Live WorkOS/AuthKit provider smoke remains blocked until backend-only WorkOS issuer/audience/provider configuration and a real AuthKit app are supplied.
 - Live Resend provider smoke remains blocked until backend-only Resend API key and sender/domain configuration are supplied.
-- Live model-backed worker/agent provider smoke remains blocked until a real model provider configuration, runtime tool-boundary configuration, and approved provider credentials are supplied. Local tests verify fail-closed behavior rather than making live model calls.
+- Live model-backed workstream-agent provider smoke passed in TASK-FCSR-08-003 with backend-only provider environment variables; local tests continue to verify fail-closed behavior when provider configuration is absent.
 - Billing implementation remains deferred by the readiness gap contract. Current smoke only preserves the billing-boundary invariant that billing/subscription metadata must not grant tenant application-data access.
 - Timer-backed invitation reminder scheduling remains deferred from the invitation task and is not claimed by this smoke.
 - Optional `tools/prove-workstream-icons-v0.sh` validation was repaired in TASK-FCSR-08-005 and now passes against the current package layout.
 
 ## Readiness conclusion
 
-The current app is locally smoke-validated for the selected full-core foundation scope except billing implementation and live external-provider smokes. Readiness may be described as `full-core local/test scope validated; production-provider readiness blocked by missing external configuration; billing implementation deferred`.
+The current app is locally smoke-validated for the selected full-core foundation scope except billing implementation and remaining live WorkOS/AuthKit and Resend provider smokes. Live model-backed workstream-agent provider smoke passed in TASK-FCSR-08-003. Readiness may be described as `full-core local/test scope validated; live model-provider workstream-agent smoke passed; remaining production-provider readiness blocked by missing WorkOS/AuthKit and Resend external configuration; billing implementation deferred`.

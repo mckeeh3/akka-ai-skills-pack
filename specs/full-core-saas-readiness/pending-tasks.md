@@ -447,7 +447,7 @@
 
 ### TASK-FCSR-08-003: Run live model-provider workstream-agent smoke
 
-- status: blocked
+- status: done
 - source: verification follow-up for production-provider readiness
 - task brief: specs/full-core-saas-readiness/tasks/08-follow-up/03-run-live-model-provider-smoke.md
 - depends on:
@@ -466,6 +466,7 @@
   - akka-agent-testing
 - expected outputs:
   - live model-backed workstream-agent/worker smoke evidence or updated blocker
+  - specs/full-core-saas-readiness/live-model-provider-smoke.md
 - required checks:
   - `git diff --check`
   - focused managed-agent/workstream tests plus live-provider smoke command/runbook
@@ -473,7 +474,11 @@
   - governed Akka Agent runtime path invokes a real configured provider with active AgentDefinition, prompt, manifests, ToolPermissionBoundary, loader tools, runtime tools, and durable traces
   - changes and queue update are committed
 - notes:
-  - blocker: requires backend-only model-provider credentials/configuration, approved runtime tool-boundary grants, and safe test tenant/runtime setup
+  - commit message: `full-core-ready: run live model provider smoke`
+  - completed after backend-only model-provider environment variables were supplied in the local shell
+  - evidence: `specs/full-core-saas-readiness/live-model-provider-smoke.md`
+  - checks: `mvn test -Dtest=RealModelProviderSmokeTest -DrealModelProviderSmoke=true`; `git diff --check`
+  - result: `RealModelProviderSmokeTest` passed with 1 test, 0 failures, 0 errors, 0 skipped; all five core workstream agents submitted messages through the governed Akka Agent runtime path and asserted provider secret non-exposure in `/api/me`, markdown responses, DTOs, persisted items/surfaces, and traces
 
 ### TASK-FCSR-08-004: Decide billing and timer-reminder follow-up scope
 
