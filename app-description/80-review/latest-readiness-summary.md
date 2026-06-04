@@ -11,7 +11,7 @@
   - complete code generation of all foundation phases at once without additional runtime validation
   - production WorkOS/AuthKit configuration and Resend invite-email configuration
   - full invitation onboarding, support access, billing-boundary behavior, and complete tenant-isolation/security coverage
-  - full User Admin, Agent Admin, Audit/Trace search/export, and Governance/Policy lifecycle depth through real backend capabilities and UI surfaces
+  - full cross-feature runtime smoke for User Admin, Agent Admin, Audit/Trace, and Governance/Policy through the local Akka/API/UI path; Audit/Trace and Governance/Policy backend/workstream readiness evidence is now recorded, while model-backed summary/impact workers remain fail-closed until real provider/runtime/tool-boundary configuration exists
 - workstream/UI readiness notes:
   - five core functional-agent workstreams are the primary application model: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy
   - canonical id aliases, surface/action-to-capability mappings, default dashboard loading, shell alias resolution, and bounded realtime v1 semantics are now recorded and aligned with implementation behavior
@@ -23,5 +23,5 @@
   - local/prod auth mode and provider secret configuration
   - full-core component coverage boundary and validation sequence
   - invitation/onboarding and email delivery completion
-  - managed-agent governance depth for prompts, skills, references, manifests, tool boundaries, proposals, approvals, and traces
+  - full local runtime smoke across all five core workstreams, auth, invitations, managed agents, Audit/Trace, Governance/Policy, tenant isolation, provider fail-closed behavior, and frontend secret boundaries
   - whether future work should remove or migrate legacy page-style fixture files after their contract-test value is replaced

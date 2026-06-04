@@ -31,8 +31,8 @@ Before declaring the core app complete, close and prove these gaps:
 - complete invitation onboarding with Resend and captured local/dev/test outbox;
 - complete User Admin structured surfaces for users, invitations, roles/memberships, access review, support access, and admin audit;
 - complete Agent Admin lifecycle for governed agent definitions, prompts, skills, references, manifests, tool boundaries, proposals, approvals, and traces;
-- searchable Audit/Trace investigation surfaces with scoped redaction/export rules;
-- Governance/Policy workflows, approval gates, impact analysis, review surfaces, and policy-change controls;
+- searchable Audit/Trace investigation surfaces with scoped redaction/export rules (local backend/workstream coverage now recorded in `specs/full-core-saas-readiness/audit-governance-validation.md`; full runtime smoke still pending);
+- Governance/Policy workflows, approval gates, impact analysis, review surfaces, and policy-change controls (local backend/workstream coverage now recorded in `specs/full-core-saas-readiness/audit-governance-validation.md`; full runtime smoke still pending);
 - support-access and billing-boundary semantics where the target product requires them;
 - full tenant isolation, forbidden access, disabled-user, role/scope denial, audit, UI, accessibility, and runtime smoke coverage.
 
@@ -54,7 +54,8 @@ Recent alignment work establishes starter-level contracts and runtime behavior f
 - exact surface-action to governed-tool/capability mappings for representative core workstream actions;
 - backend-authoritative default dashboard loading and safe denial/system-message behavior for forbidden shell targets;
 - backend-authoritative prompt/surface alias resolution for common workstream requests;
-- explicit realtime v1 semantics as bounded SSE replay/refresh behavior, not long-lived true-live streaming.
+- explicit realtime v1 semantics as bounded SSE replay/refresh behavior, not long-lived true-live streaming;
+- Audit/Trace scoped search/detail/timeline/failure-evidence/investigation-note surfaces and Governance/Policy proposal/simulation/decision/activation/rollback/outcome-note surfaces through backend-authorized workstream actions, with model-backed summary/impact workers failing closed until real provider/runtime/tool-boundary configuration is supplied.
 
 This evidence supports continued five-core starter realization work. It does not close full-core SaaS gaps unless the real local Akka/API/UI path is proven for each named feature.
 

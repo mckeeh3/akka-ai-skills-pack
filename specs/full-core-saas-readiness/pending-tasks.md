@@ -255,7 +255,7 @@
 
 ### TASK-FCSR-06-001: Complete Audit/Trace and Governance/Policy readiness
 
-- status: pending
+- status: done
 - source: full-core readiness gaps: searchable Audit/Trace investigation surfaces and Governance/Policy workflows/approval gates/impact/review controls
 - task brief: specs/full-core-saas-readiness/tasks/06-audit-governance/01-complete-audit-trace-and-governance.md
 - depends on:
@@ -296,6 +296,8 @@
 - notes:
   - commit message: `full-core-ready: complete audit governance`
   - vertical contract: Audit/Trace and Governance/Policy functional agents; audit timeline/search/detail/investigation and policy/decision surfaces; governance-decisions-audit capability; scoped redaction/export, approval, audit/work trace tests
+  - evidence: `specs/full-core-saas-readiness/audit-governance-validation.md`; backend workstream actions cover Audit/Trace search/detail/timeline/failure evidence/investigation notes and Governance/Policy proposal/simulation/decision/activation/rollback/outcome notes; model-backed summary/impact workers fail closed until real provider/runtime/tool-boundary config is supplied
+  - checks: `mvn test -Dtest=AdminAuditViewTest,GovernancePolicyServiceTest,DurableGovernancePolicyRepositoryEntityTest,WorkstreamServiceTest`; `npm --prefix frontend test -- --run workstream-audit-trace-vertical.contract.test.mjs workstream-governance-policy-vertical.contract.test.mjs`; `git diff --check`
 
 ### TASK-FCSR-07-001: Run full-core runtime smoke and update readiness
 
