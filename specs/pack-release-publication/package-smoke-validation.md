@@ -26,13 +26,13 @@ Smoke validation used a temporary workspace under `/tmp/tmp.AYHqKcxc5g`:
 bash tools/check-version-consistency.sh
 ```
 
-Result: passed. Version references match manifest version `0.2.12`.
+Result: passed. Version references match manifest version `0.3.0`.
 
 ```bash
 bash tools/build-pack.sh --output-dir "$BUNDLE_DIR" --github-repo mckeeh3/akka-ai-skills-pack --no-archive
 ```
 
-Result: passed. Built `akka-ai-skills-pack-0.2.12` and release installer in the temporary bundle directory.
+Result: passed. Built `akka-ai-skills-pack-0.3.0` and release installer in the temporary bundle directory.
 
 ```bash
 bash install.sh --location project --project "$PROJECT_DIR" --force

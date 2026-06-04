@@ -78,7 +78,7 @@ Use a disposable project outside this skills-pack repository.
 
 ## Release recommendation
 
-Cut a new release when maintainers are ready to publish the production-ready five-core v0 starter behavior. The current manifest version is `0.2.12`; a release cut should use the repository release flow and update versioned references if the release version changes.
+Cut a new release when maintainers are ready to publish the production-ready five-core v0 starter behavior. The current manifest version is `0.3.0`; a release cut should use the repository release flow and update versioned references if the release version changes.
 
 Suggested release commands after a clean working tree:
 

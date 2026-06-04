@@ -5,7 +5,7 @@ Date: 2026-06-02
 
 ## Release summary
 
-This release publication handoff prepares `akka-ai-skills-pack` version `0.2.12` for downstream installation and starter scaffolding. It carries forward the AI-first SaaS starter release-readiness evidence and the package/install/scaffold smoke validation evidence.
+This release publication handoff prepares `akka-ai-skills-pack` version `0.3.0` for downstream installation and starter scaffolding. It carries forward the AI-first SaaS starter release-readiness evidence and the package/install/scaffold smoke validation evidence.
 
 External publication is not performed by this task. Publishing remains a human/operator action unless explicitly requested.
 
@@ -41,8 +41,8 @@ Starter release-readiness evidence:
 
 Package smoke evidence:
 
-- `bash tools/check-version-consistency.sh` passed for manifest version `0.2.12`.
-- `bash tools/build-pack.sh --output-dir "$BUNDLE_DIR" --github-repo mckeeh3/akka-ai-skills-pack --no-archive` passed and built `akka-ai-skills-pack-0.2.12` plus release installer.
+- `bash tools/check-version-consistency.sh` passed for manifest version `0.3.0`.
+- `bash tools/build-pack.sh --output-dir "$BUNDLE_DIR" --github-repo mckeeh3/akka-ai-skills-pack --no-archive` passed and built `akka-ai-skills-pack-0.3.0` plus release installer.
 - Project-level install passed with `bash install.sh --location project --project "$PROJECT_DIR" --force`.
 - Installed-pack scaffold command passed and generated 456 files plus `specs/scaffold-report.md`.
 - Scaffolded backend `mvn test -q` passed.

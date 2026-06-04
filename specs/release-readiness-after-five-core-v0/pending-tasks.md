@@ -131,7 +131,7 @@
   - focused doc fixes only if stale release-facing guidance is found
 - required checks:
   - `git diff --check`
-  - `rg -n "0.2.12|five core|core v0|workstream-oriented core-app domain|older module-sequenced|scaffold-ai-first-saas-starter|validate-ai-first-saas-starter-fullstack" README.md docs/skills-pack-user-guide.md docs/skills-pack-developer-guide.md pack/README.md pack/AGENTS.md pack/manifest.yaml docs/examples/core-ai-first-saas-input/README.md docs/examples/ai-first-saas-core-app-domain/README.md specs/release-readiness-after-five-core-v0/release-handoff.md`
+  - `rg -n "0.3.0|five core|core v0|workstream-oriented core-app domain|older module-sequenced|scaffold-ai-first-saas-starter|validate-ai-first-saas-starter-fullstack" README.md docs/skills-pack-user-guide.md docs/skills-pack-developer-guide.md pack/README.md pack/AGENTS.md pack/manifest.yaml docs/examples/core-ai-first-saas-input/README.md docs/examples/ai-first-saas-core-app-domain/README.md specs/release-readiness-after-five-core-v0/release-handoff.md`
 - done criteria:
   - release-handoff states whether repository is ready to cut a version or names blockers
   - release-facing docs are coherent with five-core v0 and core PRD reconciliation

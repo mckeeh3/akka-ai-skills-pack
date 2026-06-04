@@ -200,7 +200,7 @@
   - kept root `install.sh` as a wrapper to `skills-pack/install.sh` so local install commands continue to work
   - added `skills-pack/AGENTS.md` and `skills-pack/README.md` as pack-maintenance entry points
   - updated installer/build/release/version tooling to resolve pack assets from `skills-pack/` and root app examples from the repository root or release bundle
-  - checks passed: `git diff --check`; `./install.sh --location project --project /tmp/akka-install-dry-run --dry-run`; `bash skills-pack/tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive`; bundled installer dry-run from `/tmp/akka-pack-build-check/akka-ai-skills-pack-0.2.12/install.sh`
+  - checks passed: `git diff --check`; `./install.sh --location project --project /tmp/akka-install-dry-run --dry-run`; `bash skills-pack/tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive`; bundled installer dry-run from `/tmp/akka-pack-build-check/akka-ai-skills-pack-0.3.0/install.sh`
 
 ### TASK-LAYOUT-03-002: Relocate focused Akka component examples
 
@@ -232,7 +232,7 @@
   - updated installable skill/reference/doc paths to point at the skills-pack examples source and installed `resources/examples/java` paths
   - updated pack install/build tooling to copy Java examples from `skills-pack/examples/akka-components` rather than root app `src/**`
   - removed root Maven `com/example/**` compile/test exclusions now that root `src/` no longer contains those reference examples
-  - checks passed: `git diff --check`; root `src` contains no `com/example` paths; installable guidance search found no bare root `src/main/java/com/example` or `src/test/java/com/example` references; `mvn test`; `./install.sh --location project --project /tmp/akka-install-dry-run --dry-run`; `./install.sh --location project --project /tmp/akka-install-real-check`; `bash skills-pack/tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive`; staged bundle installer check from `/tmp/akka-pack-build-check/akka-ai-skills-pack-0.2.12/install.sh`
+  - checks passed: `git diff --check`; root `src` contains no `com/example` paths; installable guidance search found no bare root `src/main/java/com/example` or `src/test/java/com/example` references; `mvn test`; `./install.sh --location project --project /tmp/akka-install-dry-run --dry-run`; `./install.sh --location project --project /tmp/akka-install-real-check`; `bash skills-pack/tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive`; staged bundle installer check from `/tmp/akka-pack-build-check/akka-ai-skills-pack-0.3.0/install.sh`
 
 ### TASK-LAYOUT-04-001: Update root app docs and domain extension guidance
 

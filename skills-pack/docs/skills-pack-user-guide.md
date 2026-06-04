@@ -22,7 +22,7 @@ For a new app with an implementation baseline, fork or copy from the upstream ru
 
 ## Install the skills
 
-Current manifest version: `0.2.12`
+Current manifest version: `0.3.0`
 
 Clone or check out the desired release tag, then install the skills into your harness skills directory:
 
