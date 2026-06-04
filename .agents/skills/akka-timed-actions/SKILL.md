@@ -1,0 +1,154 @@
+---
+name: akka-timed-actions
+description: Orchestrate Akka Java SDK timer and TimedAction work across scheduling, obsolete-timer handling, and testing. Use when the task spans more than one timer concern.
+---
+
+# Akka Timed Actions and Timers
+
+Use this as the top-level skill for Akka Java SDK timer-backed flows when a timer or TimedAction is already selected as a scheduled execution surface for one or more backend capabilities.
+
+For broad product, PRD, feature, reminder, expiry, or deadline requests, route through `capability-first-backend` and `akka-solution-decomposition` before implementing timers. Do not start from background jobs when scheduler authority, tenant/customer scope, idempotency, approval/policy references, no-op behavior, and audit semantics are still unclear.
+
+## Goal
+
+Generate or review timer code that is:
+- correct for Akka SDK 3.4+
+- explicit about where timers are scheduled and where they are handled
+- safe under at-least-once execution and retries
+- easy for AI agents to extend without loading unrelated component families
+
+## Capability-first AI-first substrate role
+
+In AI-first SaaS implementations, use timed actions for scheduled capabilities: deadlines, reminders, expiries, periodic digests, stale-work rechecks, retry nudges, replay/simulation schedules, policy-review cadences, and outcome-measurement windows.
+
+Treat each timer-backed operation as a selected timer-tool/internal-tool execution surface for a named governed-tool inside a backend capability, not as hidden background logic. Before coding, identify the capability id, governed-tool id, scheduler authority, system/service principal, tenant/customer scope, payload schema, idempotency key, approval or policy reference, retry budget, denial/no-op behavior, and audit/work-trace obligations.
+
+Timers should trigger bounded follow-up rather than make hidden consequential decisions. When a timer affects delegated work, approval SLAs, exceptions, policy changes, tenant/customer data, internal workstream agent graph follow-up, or outcome reporting, make the target command idempotent and ensure the authoritative entity or workflow records the actor or system principal, tenant/customer scope, authorization/approval reference, decision, timeout, escalation, and trace/outcome event.
+
+Pair AI-first timed actions with:
+- `akka-workflows` for approval deadlines, exception escalation, plan retries, and long-running automation checkpoints
+- `akka-consumers` for event-triggered scheduling and delayed integration follow-up
+- `akka-views` for digest inputs, overdue queues, and outcome windows
+- endpoint skills when humans or external clients schedule, cancel, or inspect timer-backed work
+
+## Required reading before coding
+
+Read these first if present:
+- `akka-context/sdk/timed-actions.html.md`
+- `akka-context/sdk/setup-and-dependency-injection.html.md`
+- `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
+- `../../docs/timer-pattern-selection.md`
+- existing timer examples under `src/main/java/**/TimedAction*.java`, `*TimedAction.java`, or timer-scheduling endpoints
+- matching tests under `src/test/java/**`
+
+In this repository, prefer these examples:
+- `../../examples/akka-components/src/main/java/com/example/application/TicketReservationEntity.java`
+- `../../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
+- `../../examples/akka-components/src/main/java/com/example/api/TicketReservationEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/domain/TicketReservation.java`
+- `../../examples/akka-components/src/test/java/com/example/application/TicketReservationEntityTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/TicketReservationTimedActionTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ReminderJobEntity.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ReminderJobTimedAction.java`
+- `../../examples/akka-components/src/main/java/com/example/api/ReminderJobEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/domain/ReminderJob.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ReminderJobEntityTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ReminderJobTimedActionTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
+- `../../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
+- `../../examples/akka-components/src/main/java/com/example/api/ApprovalDeadlineWorkflowEndpoint.java`
+- `../../examples/akka-components/src/main/java/com/example/domain/ApprovalDeadlineState.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineTimedActionTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
+
+## Companion skills
+
+Load the companion skill that matches the current task:
+
+- `akka-timed-action-component`
+  - writing the `TimedAction` class itself, constructor injection, and terminal-result handling
+- `akka-timers-scheduling`
+  - `TimerScheduler.createSingleTimer(...)`, timer naming, delete patterns, and placement of scheduling logic
+- `akka-timed-action-testing`
+  - `TimedActionTestkit`, endpoint integration tests, and eventual assertions for timer-triggered outcomes
+
+If the timer flow is part of a broader component story, also load the relevant family:
+- `akka-http-endpoint-component-client` when scheduling from an HTTP endpoint
+- `akka-workflows` when scheduling from workflow commands or steps
+- `akka-consumers` when scheduling from a consumer
+- `akka-key-value-entities` or `akka-event-sourced-entities` for the stateful target component
+
+## Core rules
+
+1. A timed action extends `akka.javasdk.timedaction.TimedAction` and has `@Component(id = "...")`.
+2. Timer-triggered methods should usually return `effects().done()` for business-terminal outcomes such as already-confirmed, already-expired, or not-found.
+3. Only propagate failures when retrying the timer is actually desired.
+4. Use stable component ids, method names, and payload types because scheduled calls persist those values.
+5. Timers are cluster-unique by name, so choose names that encode the target id and purpose.
+6. Schedule the timer before creating mutable state when an untracked resource would be worse than an obsolete timer.
+7. Delete timers as housekeeping after successful completion, but also make the target flow safe if deletion does not happen.
+8. Keep timed actions stateless; coordinate with entities, workflows, views, or endpoints through `ComponentClient`.
+9. Timer payloads for scoped SaaS work must include target id plus tenant/customer scope and the authorization/approval/audit reference needed by the target component.
+10. The target component must reject or no-op obsolete, unauthorized, stale, or cross-tenant timers without crossing tenant/customer boundaries.
+11. Timed actions that perform consequential work must use a system/service actor with explicit capability or route to a workflow/entity that reauthorizes before side effects.
+12. Define retry semantics explicitly: expected terminal denials/no-ops return `done()`, while transient dependency failures may fail the timed action to use timer retry.
+13. Audit or trace scheduled execution, denials/no-ops, retries when observable, and consequential side effects.
+
+## Decision guide
+
+### 1. Schedule a one-shot expiry or reminder
+Use when an endpoint or workflow should schedule one future call.
+
+Repository example:
+- `TicketReservationEndpoint`
+
+### 2. Implement the timer handler
+Use when the timed action translates the scheduled call into a command on another component.
+
+Repository examples:
+- `TicketReservationTimedAction`
+- `ReminderJobTimedAction`
+
+### 3. Self-reschedule from inside the timed action
+Use when each timer execution decides whether to schedule the next one.
+
+Repository example:
+- `ReminderJobTimedAction#sendReminder`
+
+### 4. Schedule a timer from a workflow command
+Use when a workflow start or resume command should register a timeout or reminder.
+
+Repository example:
+- `ApprovalDeadlineWorkflow#start`
+
+### 5. Make the target command timer-safe
+Use when the entity or workflow must treat stale timer executions as successful no-ops or explicit terminal replies.
+
+Repository examples:
+- `TicketReservationEntity#expire`
+- `ReminderJobEntity#recordReminderSent`
+- `ApprovalDeadlineWorkflow#markTimedOut`
+
+## Final review checklist
+
+Before finishing, verify:
+- `TimerScheduler` is injected only in supported component types
+- timer names are stable and unique
+- scheduled method signature is compatible with future deployments
+- timed action replies `done()` for obsolete, stale, or expected denied timers that should not retry
+- unexpected/transient failures are not swallowed unless intentionally converted to terminal success
+- tenant/customer scope, system principal, capability id, and authorization/approval/audit references are present for protected timer-triggered work
+- target commands are idempotent under repeated timer delivery and use stable dedupe keys where side effects are possible
+- timer-triggered side effects cannot cross tenant/customer boundaries and are audited when consequential
+- tests cover timer firing, explicit confirmation/cancellation, duplicate retry safety, and stale/forbidden scoped timer attempts when relevant
+
+## Response style
+
+When answering coding tasks:
+- name the scheduling component and the timed action component explicitly
+- say what makes the timer idempotent or safe under retries
+- call out the timer name strategy
+- list the concrete example files used as references

@@ -1,0 +1,81 @@
+---
+name: akka-consumer-from-key-value-entity
+description: Implement Akka Java SDK Consumers that subscribe to KeyValueEntity state changes and optional deletes, using idempotent downstream updates.
+---
+
+# Akka Consumer from Key Value Entity
+
+Use this skill when a Consumer reacts to Key Value Entity state updates.
+
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
+- functional agent or explicit internal-only/foundation scope;
+- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
+- capability id/class, selected Akka substrate, and exposure surfaces;
+- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
+
+If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+
+## Required reading
+
+Read these first if present:
+- `akka-context/sdk/consuming-producing.html.md`
+- `akka-context/sdk/key-value-entities.html.md`
+- `akka-context/sdk/component-and-service-calls.html.md`
+- `../../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
+- `../../examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
+
+## Source-specific semantics
+
+A Key Value Entity consumer receives the latest updated state, but not necessarily every intermediate state change.
+
+Therefore:
+- base reactions on the current state snapshot
+- do not depend on every historical transition being delivered
+- use `@DeleteHandler` when deletions matter
+
+## Core pattern
+
+1. Annotate the class with `@Consume.FromKeyValueEntity(MyEntity.class)`.
+2. Accept the state type in `onChange(...)` or `onUpdate(...)`.
+3. Filter on state fields such as flags or status.
+4. Use `messageContext().eventSubject()` for the entity id when needed.
+5. Add `@DeleteHandler` if the entity can be deleted and that delete matters downstream.
+6. Keep downstream writes idempotent.
+
+## Repository example
+
+- `DraftCartCheckoutConsumer`
+  - reacts only when the cart is checked out
+  - uses the cart id from metadata or state
+  - calls a downstream key value entity with an idempotent create command
+  - includes `@DeleteHandler`
+
+## Gotchas
+
+- do not model KVE consumers as if they receive a full event log
+- do not omit `@DeleteHandler` when delete behavior is required
+- do not store mutable progress in the consumer instance
+
+## Generated SaaS consumer contract
+
+For generated SaaS reactive capabilities, require:
+- reactive capability id, event provenance, correlation id, and tenant/customer scope;
+- system-principal or service-authority basis for downstream calls;
+- idempotency key/dedupe strategy for at-least-once delivery;
+- retry, poison, obsolete, forbidden, and no-op behavior;
+- scoped/redacted publication when producing topics or service streams;
+- audit/work-trace records for side effects, denials, retries, and emitted public events;
+- tests for duplicate delivery, cross-tenant/forbidden input, idempotent downstream effects, audit/trace, and surface/realtime/API outcomes where exposed.
+
+
+## Review checklist
+
+Before finishing, verify:
+- `@Consume.FromKeyValueEntity` points at the right entity
+- the handler accepts the entity state type
+- delete handling is explicit when needed
+- downstream logic depends on state, not historical event ordering
+- duplicate delivery is tolerated

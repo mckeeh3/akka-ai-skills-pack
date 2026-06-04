@@ -1,0 +1,85 @@
+---
+name: akka-agent-memory
+description: Configure Akka Java SDK agent session memory using session ids, MemoryProvider, limited windows, and filters. Use when memory behavior is the main concern.
+---
+
+# Akka Agent Memory
+
+Use this skill when the main task is session memory behavior.
+
+
+## Generated SaaS input contract
+
+For generated full-stack AI-first SaaS agent work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
+- placement as a user-facing functional agent or a bounded internal agent, including owning workstream and structured surface placement when user-facing;
+- capability id/class for each model request, tool call, output, workflow step, endpoint, or evaluation result;
+- caller `AuthContext`, tenant/customer scope, roles/capabilities, allowed data/tools, and backend authorization boundary;
+- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work trace fields, correlation ids, and required tests.
+
+If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing from prompt, memory, streaming, guardrail, or test mechanics.
+
+## Required reading
+
+Read these first if present:
+- `akka-context/sdk/agents/calling.html.md`
+- `akka-context/sdk/agents/memory.html.md`
+- `../../examples/akka-components/src/main/java/com/example/application/ActivityAgent.java`
+- `../../examples/akka-components/src/main/java/com/example/application/AgentTeamWorkflow.java`
+- `../../examples/akka-components/src/main/java/com/example/application/WorkerMemorySummaryAgent.java`
+- `../../examples/akka-components/src/main/java/com/example/application/SessionMemoryAlertsConsumer.java`
+- `../../examples/akka-components/src/main/java/com/example/application/SessionMemoryByComponentView.java`
+- `../../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
+- `../../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionConsumer.java`
+- `../../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
+- `../../examples/akka-components/src/test/java/com/example/application/SessionMemoryAlertsConsumerIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/SessionMemoryByComponentViewIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/SessionMemoryCompactionConsumerIntegrationTest.java`
+- `../../examples/akka-components/src/test/java/com/example/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
+
+## Use this pattern when
+
+- the agent should remember prior turns in the same session
+- several agents share context across one workflow or conversation
+- token cost must be controlled with a bounded window
+- some messages should be hidden from specific agents
+
+## Core pattern
+
+1. Treat the session id as a first-class design choice.
+2. Use `componentClient.forAgent().inSession(sessionId)` on every caller.
+3. Use `MemoryProvider.limitedWindow()` for bounded context.
+4. Use `readOnly()` when the agent should consume history without writing to it.
+5. Use `writeOnly()` when the agent should append interactions but not read prior context.
+6. Use `MemoryProvider.none()` for evaluators, compaction, or stateless judging agents.
+7. Use memory filters when a multi-agent session needs visibility rules.
+8. Prefer workflow id as session id when a workflow supervises agents.
+
+## Repository examples
+
+- `ActivityAgent`
+  - bounded memory with `readLast(6)`
+- `AgentTeamWorkflow`
+  - shared session id derived from `workflowId()`
+- `WorkerMemorySummaryAgent`
+  - read-only filtered memory that includes only worker-role messages and excludes `debug-agent`
+- `ActivityAnswerEvaluatorAgent`
+  - memory disabled for evaluation
+- `SessionMemoryAlertsConsumer`
+  - reacts to built-in `SessionMemoryEntity` events
+- `SessionMemoryByComponentView`
+  - indexes sessions by the latest component that wrote to memory
+- `SessionMemoryCompactionAgent`
+  - summarizes full session history without using memory itself
+- `SessionMemoryCompactionConsumer`
+  - compacts oversized histories back into `SessionMemoryEntity`
+- `SessionMemoryCompactionAuditConsumer`
+  - publishes compaction audit events to a topic
+
+## Review checklist
+
+Before finishing, verify:
+- session ids are created or supplied at the caller boundary
+- memory reads and writes are intentional
+- evaluators or compaction agents do not accidentally retain session history
+- workflow-supervised agents reuse the same session id when collaboration is intended
+- filtered memory examples use `MemoryFilter` explicitly when visibility rules matter

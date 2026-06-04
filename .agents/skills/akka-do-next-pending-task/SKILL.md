@@ -1,0 +1,334 @@
+---
+name: akka-do-next-pending-task
+description: Select and execute the next runnable task from specs/pending-tasks.md, preferably in a fresh context, updating the queue status when complete or blocked.
+---
+
+# Akka Do Next Pending Task
+
+Use this skill when the user asks to continue implementation from the project's pending task queue.
+
+Typical user prompts:
+- "do the next pending task"
+- "continue with the next task"
+- "run the next item in specs/pending-tasks.md"
+- "execute TASK-003"
+- "/do-next-pending-task"
+
+This is a queue-execution skill, not a broad planning skill.
+It should execute **one task only**.
+
+## Goal
+
+Reliably perform one bounded follow-on task from:
+
+```text
+specs/pending-tasks.md
+```
+
+The skill must:
+- select the next runnable `pending` task unless the user named a specific task
+- keep the task scope bounded
+- prefer fresh-context execution
+- load only the task's required reads and listed skills
+- preserve any AI-first operating-model, governance, approval, audit, supervision UI, or outcome constraints named by the task without broadening scope
+- preserve any workstream-expertise/reference-governance constraints named by the task: model binding, governed prompt/skill/reference docs, compact manifests, `readSkill`/`readReferenceDoc`, loader authorization, tool boundaries, load traces, expertise surfaces, seed/import behavior, and tests
+- require or inherit the generated-SaaS vertical contract before coding: workstream/functional agent or internal/foundation scope, attention category, role-specific dashboard, human surface graph node/action edge, governed-tool id and qualified exposure, capability id/API exposure, selected Akka substrate, internal workstream agent graph delegation/result mapping when applicable, autonomous task/result/notification mapping when applicable, auth, traces, and tests
+- generate or update the requested outputs
+- run the task's required checks and local/runtime validation path when the task implements app behavior
+- update the queue status before finishing
+- commit the task changes only when the selected task is marked `done`
+- report any blocking pending question or the next runnable pending task
+
+## Required reading
+
+Read these first if present:
+- `../README.md`
+- `../../docs/ai-first-saas-application-architecture.md` when the selected task or its listed skills include AI-first SaaS concerns
+- `../../docs/workstream-expertise-model.md` when the selected task includes LLM-backed functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, load traces, or expertise surfaces
+- `../../docs/pending-question-queue.md`
+- `../../docs/pending-task-queue.md`
+- `../../docs/intent-driven-usage-flow.md`
+- `../../docs/solution-plan-to-implementation-queue.md`
+- `../../docs/web-ui-style-guide.md` when selected task includes browser UI work
+- the target project's implementation artifacts or legacy `specs/scaffold-report.md` if present, to detect existing-app extension mode and preserve selected package/path decisions
+- the target project's `specs/pending-questions.md` if it exists
+- the target project's `specs/pending-tasks.md`
+
+Then read only the selected task's `required reads` and the listed implementation skills. If the selected task lists `ai-first-saas` or an AI-first companion skill, load only those listed AI-first skills, not the whole family.
+
+Do not reread the entire PRD unless the selected task explicitly lists it as a required read or the task is blocked without it. Prefer the AI-first interpretation already preserved in app-description, solution, sprint, slice, backlog, task brief, pending-question, or queue notes.
+
+## Use this skill when
+
+Use this skill when:
+- `specs/pending-tasks.md` exists and the user asks to continue pending work
+- a PRD/spec/backlog planning run has created queued implementation tasks
+- the user names a specific task ID from the queue
+- the next action should be one focused implementation run rather than new decomposition
+
+Do **not** use this skill when:
+- there is no pending-task queue yet and the user is still at the PRD/spec stage; use `akka-prd-to-specs-backlog` or `akka-solution-decomposition`
+- the user asks to revise the planning structure rather than execute a task
+- the user asks to implement a concrete component directly without relying on the queue; use the focused Stage 3 skills
+- the task belongs to description-first app maintenance; use `app-descriptions` and companions
+
+## Fresh-context rule
+
+Each queue task is intended to be performed in a fresh harness context.
+
+If this skill is invoked in a session that already contains substantial unrelated planning or coding context, and the harness cannot spawn an isolated fresh context, prefer a fresh handoff only when the contamination creates a concrete risk to scope or correctness. Otherwise, if the selected task is bounded, required reads are clear, and the user wants execution, proceed in the current session and execute exactly one queue item. When stopping is necessary, give the user this handoff prompt:
+
+```text
+Use the Akka skills pack to do the next pending task from specs/pending-tasks.md.
+Execute only that one task, load only its required reads and listed skills, update its status when finished, and report the next runnable pending task.
+```
+
+If the user explicitly asks to proceed in the current session anyway, continue when the selected task is bounded and its required reads are clear.
+Still execute only one queue item.
+
+## Queue file contract
+
+The canonical queue file is:
+
+```text
+specs/pending-tasks.md
+```
+
+Tasks should use this shape:
+
+```md
+### TASK-001: <short task title>
+
+- status: pending
+- source: specs/backlog/01-<slice>-build-backlog.md
+- task brief: specs/tasks/01-<slice>/01-<task>.md
+- depends on: []
+- required reads:
+  - specs/akka-solution-plan.md
+  - specs/backlog/01-<slice>-build-backlog.md
+- skills:
+  - <skill-name>
+- expected outputs:
+  - <output>
+- required checks:
+  - <check>
+- done criteria:
+  - <criterion>
+- notes:
+  - <optional note>
+```
+
+Status values:
+- `pending`
+- `in-progress`
+- `blocked`
+- `done`
+- `deferred`
+- `superseded`
+
+## Task selection
+
+If the user named a task ID:
+1. find that task in `specs/pending-tasks.md`
+2. verify it is not `done` unless the user explicitly asks to reopen or redo it
+3. verify its dependencies are satisfied
+4. execute only that task
+
+If the user did not name a task ID:
+1. read tasks in file order
+2. ignore `done`, `blocked`, `deferred`, and `superseded` tasks
+3. select the first `pending` task whose `depends on` list is empty or all dependencies are `done`
+4. if no task is runnable, report why and do not code
+
+If a task is `superseded`, do not execute it unless the user explicitly asks to inspect or replace it.
+
+If `specs/pending-questions.md` exists, verify that the selected task is not blocked by unresolved `blocking` questions referenced in task notes, dependencies, source specs, or affected component areas. Treat unresolved AI-first authority, approval-gate, policy, evidence, risk-threshold, supervision UI, trace-obligation, evaluation, or outcome-metric questions as blockers for affected work. If it is blocked, mark or keep the task `blocked`, cite the question IDs, and recommend `akka-do-next-pending-question` instead of coding.
+
+If the target already contains implementation artifacts or a legacy `specs/scaffold-report.md`, execute tasks as extensions of that existing core app baseline unless the task explicitly says otherwise. Preserve the selected Java package, foundation components, workstream UI baseline, and existing queue history; do not replace the app with a parallel generated app.
+
+If the selected task lacks or fails to inherit its vertical workstream contract, block it for queue/task-brief repair before coding. The repair target must name the affected workstream or internal/foundation scope, attention category or non-attention reason, role-specific dashboard purpose, human surface graph node/action edge or non-UI trigger, governed-tool id and qualified exposure (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP-tool), capability id/class, selected Akka substrate, internal workstream agent graph delegation/result surface when relevant, AuthContext, audit/work trace, and local validation path.
+
+If the selected task writes Java source and no selected Java base package is present in required reads, app-description, specs, Maven/Gradle configuration, legacy `specs/scaffold-report.md`, or existing source package roots, block the task and add/update the base-package pending question instead of defaulting to `com.example`. The question is: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`.
+
+If the selected task includes browser UI implementation and no selected style guide is present in required reads, app-description, or specs, block the task and add/update the style-selection pending question from `../../docs/web-ui-style-guide.md` instead of inventing visual styling.
+
+If a task is `in-progress` from a previous interrupted run:
+- inspect notes and changed files if needed
+- either continue it if it is clearly the intended active task, or ask the user whether to resume or reset it to `pending`
+
+## Execution workflow
+
+### 1. Identify selected task
+
+Report the selected task ID and title before editing application files.
+
+If no queue exists, say so and suggest one of:
+- `akka-prd-to-specs-backlog` for PRD-to-planning materialization
+- `akka-slice-spec-to-backlog` for slice-to-backlog creation
+- direct Stage 3 skills for an already concrete coding request
+
+### 2. Mark in progress
+
+Before implementation edits, update the selected task in `specs/pending-tasks.md`:
+
+```md
+- status: in-progress
+```
+
+Do not mark multiple tasks in progress.
+
+### 3. Load minimal context
+
+Read only:
+- the task's `required reads`
+- the task's `task brief`, if present
+- focused skills listed under `skills`
+- the smallest AI-first doctrine or companion-skill context needed to preserve authority, governance, audit, supervision, or outcome constraints named by the task
+- `docs/workstream-expertise-model.md` or focused agent governance skills only when listed or directly needed by the selected task's workstream-expertise/reference-governance contract
+- source files directly needed to modify or test the expected outputs
+
+Avoid broad context loading.
+
+### 4. Execute the task
+
+Implement exactly the selected task's scope.
+
+Allowed:
+- create or update files listed by the task
+- add tests required by the task
+- make small prerequisite edits that are directly necessary for compilation or test execution
+
+Not allowed:
+- starting the next queue item
+- opportunistically implementing adjacent backlog items
+- changing architecture beyond the task contract
+- silently widening scope because more context is available
+- inventing agent authority, policy defaults, approval thresholds, audit obligations, UI style, or outcome metrics not established by the task or accepted specs
+
+### 5. Run required checks
+
+Run each listed `required checks` command or the closest available equivalent.
+
+For generated app implementation tasks, also run the task's intended local runtime/API/UI validation path when specified by the task, backlog, or sprint. This may be an Akka local run, endpoint smoke call, frontend build plus route/API smoke, or manual-test checklist entry. Treat Akka local execution as production-like validation for the increment.
+
+If a check or local validation path cannot run, record:
+- which check or validation path was not run
+- why it was not run
+- whether that blocks completion
+
+A non-runnable required check blocks marking the task `done` unless the task is explicitly non-runtime/docs-only, or the user/project has accepted the limitation and the remaining done criteria still prove the named feature works.
+
+### 6. Update queue status
+
+When finished:
+
+Mark `done` only if done criteria are satisfied and required checks/local validation passed or are legitimately out of scope for this task:
+
+```md
+- status: done
+```
+
+Do not mark a feature-bearing task `done` merely because code was written, compiled, or unit-tested if the task's named user-visible/API/workstream behavior cannot be exercised through its intended local runtime surface. If the missing validation means "user auth", "sign-in", "onboarding", "User Admin", or another named feature is not actually usable, keep or set the task `blocked` instead of deferring the missing pieces silently.
+
+Mark `blocked` if implementation cannot proceed safely:
+
+```md
+- status: blocked
+```
+
+Add a note with the exact blocker and needed user/project action.
+
+If partially implemented but not complete, keep or set status to `blocked` rather than `done`.
+
+### 7. Commit completed task changes
+
+If the selected task is marked `done`, create a git commit that includes:
+- implementation changes for the selected task
+- tests/docs produced by the task
+- the `specs/pending-tasks.md` status update
+
+Before committing:
+- inspect `git status`
+- avoid including unrelated pre-existing changes
+- if unrelated changes are present and cannot be safely separated, do not commit; report the blocker
+
+Do not commit when the task is `blocked`, partially complete, or checks failed unless the user explicitly asks.
+
+### 8. Report result and next task
+
+Final response shape:
+
+```md
+# Pending Task Result
+
+## Executed task
+- task:
+- status:
+
+## Changed outputs
+- ...
+
+## Checks
+- passed:
+- failed:
+- not run:
+
+## Blockers or notes
+- ...
+
+## Next pending task
+- task:
+- fresh-context prompt:
+```
+
+If no pending tasks remain, say so clearly.
+
+## Blocking rules
+
+Block instead of guessing when:
+- required reads are missing
+- the task has unsatisfied dependencies
+- required architecture choices or blocking pending questions are unresolved
+- AI-first authority boundaries, approval gates, policies, evidence/risk thresholds, trace obligations, UI style, or outcome metrics are required for implementation but absent
+- a generated full-stack SaaS task is component-only, CRUD-only, page-only, or dashboard-only and lacks a vertical contract naming or inheriting workstream, attention category, role-specific dashboard, human surface graph node/action edge, governed-tool id/exposure, capability id, API/exposure channel, selected Akka substrate, internal workstream agent graph result handling when relevant, AuthContext, audit/work trace, and local validation path
+- an LLM-backed functional-agent task lacks or fails to inherit the workstream expert bundle, approved model binding, governed prompt/skill/reference documents, compact manifests, authorized `readSkill`/`readReferenceDoc` loader behavior, ToolPermissionBoundary, load/work traces, expertise surfaces, seed/import behavior, or required tests
+- an AutonomousAgent or autonomous task is in scope but start/query/result/lifecycle capabilities, progress/result surfaces, task notifications, failure/cancellation attention behavior, and lifecycle tests are missing
+- the task conflicts with current code or specs
+- a required external credential/service is unavailable for normal runtime; implement fail-closed configuration errors and test-only adapters where appropriate, but do not mark provider-backed user-facing behavior done through mocks, and do not use fail-closed internal persistence as a substitute for Akka component-backed state
+- required local app-run, endpoint, browser, or manual-smoke validation cannot be performed for a feature-bearing task; record incomplete validation and keep the task blocked unless the task is explicitly non-runtime/docs-only or the affected runtime feature is outside the named scope
+- completing the named feature would require widening into another queue item
+
+## Queue update discipline
+
+When editing `specs/pending-tasks.md`:
+- preserve task IDs and order
+- change only the selected task's status/notes unless discovering dependency state inconsistencies
+- do not renumber tasks
+- do not delete completed tasks
+- append new tasks only if the current task explicitly discovers required follow-on work outside its scope
+
+## Relationship to planning skills
+
+This skill consumes queues created by planning skills such as:
+- `akka-prd-to-specs-backlog`
+- `akka-slice-spec-to-backlog`
+- `akka-backlog-item-to-task-brief`
+- `akka-solution-decomposition` when its output has been materialized into `specs/pending-tasks.md`
+
+It does not replace those planning skills.
+It is the manual next-task execution entry point.
+
+## Final review checklist
+
+Before finishing, verify:
+- exactly one task was selected
+- the queue status was updated
+- only the selected task's scope was implemented
+- required reads and skills were loaded narrowly
+- any AI-first constraints in the task were preserved or explicitly blocked rather than guessed
+- checks were run or explicitly reported as not run
+- generated-SaaS implementation tasks carried a workstream-attention-dashboard/surface-graph-governed-tool-capability/substrate contract, or were explicitly internal-only/foundation/cross-cutting
+- LLM-backed functional-agent tasks carried workstream-expertise/reference-governance context, including model binding, manifests, `readReferenceDoc`, loader authorization, tool boundary, load traces, expertise surfaces, seed/import behavior, and tests when applicable
+- autonomous task work carried AutonomousAgent lifecycle, notification, result/progress surface, failure/cancellation attention, and test requirements when applicable
+- if the task was marked `done`, changes were committed or the reason not to commit was reported
+- the next runnable pending task was identified, or the absence of one was reported
