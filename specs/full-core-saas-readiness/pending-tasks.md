@@ -409,6 +409,7 @@
   - akka-web-ui-testing
 - expected outputs:
   - live WorkOS/AuthKit smoke evidence or updated blocker
+  - specs/full-core-saas-readiness/live-workos-authkit-provider-smoke.md
 - required checks:
   - `git diff --check`
   - focused backend/frontend auth checks plus live-provider smoke command/runbook
@@ -416,7 +417,11 @@
   - real issuer/audience/AuthKit app smoke validates JWT-bearing `/api/me` and protected workstream APIs without frontend secrets
   - changes and queue update are committed
 - notes:
-  - blocker: requires backend-only `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, configured AuthKit redirect/callback URL, and public `VITE_WORKOS_CLIENT_ID`
+  - blocker refreshed: backend/frontend WorkOS/AuthKit provider configuration variables are set, but no real AuthKit access token/session token is available locally for a JWT-bearing `/api/me` and protected workstream API smoke
+  - evidence: `specs/full-core-saas-readiness/live-workos-authkit-provider-smoke.md`
+  - checked token variable candidates: `WORKOS_ACCESS_TOKEN`, `AUTHKIT_ACCESS_TOKEN`, and `WORKOS_TEST_ACCESS_TOKEN`; none were set
+  - required next input: export a real AuthKit access token for an admin/test user represented by local `ADMIN_USERS`/membership state, using one of the token variable names above, then rerun this task
+  - commit message: `full-core-ready: refresh workos authkit blocker`
 
 ### TASK-FCSR-08-002: Run live Resend invite-email provider smoke
 
