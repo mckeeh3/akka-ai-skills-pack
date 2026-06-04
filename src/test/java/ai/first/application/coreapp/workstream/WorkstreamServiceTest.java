@@ -672,6 +672,32 @@ class WorkstreamServiceTest {
         "open_attention_item", "my_account_panel", "Open Agent Admin readiness", null, "agent-agent-admin", "surface-agent-admin-catalog", "attention-agent-admin-readiness", "agent-my-account", "surface-my-account-dashboard", "action-open-agent-admin", "authorized_cross_workstream", "corr-shell-attention", "membership-admin"));
     assertEquals("accepted", openAttention.status());
     assertEquals("agent-agent-admin", openAttention.resultSurface().ownerFunctionalAgentId());
+
+    var users = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
+        "show_surface", "user_prompt", "show users", null, "agent-user-admin", null, null, "agent-user-admin", null, null, "current_workstream", "corr-shell-users", "membership-admin"));
+    assertEquals("accepted", users.status());
+    assertEquals("surface-user-admin-list", users.resultSurface().surfaceId());
+    assertEquals("show users", users.request().canonicalPrompt());
+
+    var notifications = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
+        "show_surface", "user_prompt", "show notifications", null, "agent-my-account", null, null, "agent-my-account", null, null, "current_workstream", "corr-shell-notifications", "membership-admin"));
+    assertEquals("accepted", notifications.status());
+    assertEquals("surface-my-account-notification-center", notifications.resultSurface().surfaceId());
+
+    var auditTimeline = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
+        "show_surface", "user_prompt", "show audit timeline", null, "agent-audit-trace", null, null, "agent-audit-trace", null, null, "current_workstream", "corr-shell-audit-timeline", "membership-admin"));
+    assertEquals("accepted", auditTimeline.status());
+    assertEquals("surface-audit-trace-timeline", auditTimeline.resultSurface().surfaceId());
+
+    var agentCatalog = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
+        "show_surface", "user_prompt", "show agent catalog", null, "agent-agent-admin", null, null, "agent-agent-admin", null, null, "current_workstream", "corr-shell-agent-catalog", "membership-admin"));
+    assertEquals("accepted", agentCatalog.status());
+    assertEquals("surface-agent-admin-catalog", agentCatalog.resultSurface().surfaceId());
+
+    var governancePolicies = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
+        "show_surface", "user_prompt", "show governance policies", null, "agent-governance-policy", null, null, "agent-governance-policy", null, null, "current_workstream", "corr-shell-governance-policies", "membership-admin"));
+    assertEquals("accepted", governancePolicies.status());
+    assertEquals("surface-governance-policy-inventory", governancePolicies.resultSurface().surfaceId());
   }
 
   @Test
@@ -683,6 +709,24 @@ class WorkstreamServiceTest {
     assertEquals("system_message", denied.resultSurface().surfaceType());
     assertEquals("TARGET_NOT_FOUND_OR_FORBIDDEN", denied.resultSurface().data().get("code"));
     assertFalse(denied.resultSurface().toString().contains("agent_admin.list_definitions"));
+
+    var deniedAlias = service.runShellRequest(memberIdentity(), "membership-member", new WorkstreamService.WorkstreamShellRequest(
+        "show_surface", "user_prompt", "show agent catalog", null, "agent-my-account", null, null, "agent-my-account", null, null, "current_workstream", "corr-shell-denied-alias", "membership-member"));
+    assertEquals("denied", deniedAlias.status());
+    assertEquals("system_message", deniedAlias.resultSurface().surfaceType());
+    assertEquals("TARGET_NOT_FOUND_OR_FORBIDDEN", deniedAlias.resultSurface().data().get("code"));
+    assertFalse(deniedAlias.resultSurface().toString().contains("agent_admin.list_definitions"));
+  }
+
+  @Test
+  void shellRequestsDenyUnknownPromptAliasesWithoutDashboardFallback() {
+    var unknown = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
+        "show_surface", "user_prompt", "show payroll", null, "agent-my-account", null, null, "agent-my-account", null, null, "current_workstream", "corr-shell-unknown-alias", "membership-admin"));
+
+    assertEquals("denied", unknown.status());
+    assertEquals("system_message", unknown.resultSurface().surfaceType());
+    assertEquals("TARGET_NOT_FOUND_OR_FORBIDDEN", unknown.resultSurface().data().get("code"));
+    assertFalse(unknown.resultSurface().toString().contains("payroll"));
   }
 
   @Test

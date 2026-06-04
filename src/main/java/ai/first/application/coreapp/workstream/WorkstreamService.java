@@ -315,7 +315,9 @@ public final class WorkstreamService {
     var correlationId = firstNonBlank(request.correlationId(), "shell-request");
     var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
     seedStarterCoreAttention(actor, correlationId);
-    var attentionOpen = "open_attention_item".equals(firstNonBlank(request.requestType(), "show_surface"))
+    var requestType = firstNonBlank(request.requestType(), "show_surface");
+    if (!List.of("show_surface", "open_workstream", "refresh_surface", "open_attention_item").contains(requestType)) throw new AuthorizationException(400, "SHELL_REQUEST_TYPE_UNSUPPORTED");
+    var attentionOpen = "open_attention_item".equals(requestType)
         ? attentionService.openAttentionItem(actor, request.targetItemId(), correlationId)
         : null;
     if (attentionOpen != null && !"accepted".equals(attentionOpen.status())) {
@@ -323,33 +325,52 @@ public final class WorkstreamService {
       var item = shellRequestItem(MY_ACCOUNT_AGENT_ID, request, correlationId, denied.surfaceId(), "blocked");
       return new WorkstreamShellResponse(normalizeShellRequest(request, MY_ACCOUNT_AGENT_ID, null, correlationId), "denied", "The requested attention item is unavailable.", correlationId, denied.traceIds(), item, denied);
     }
-    var targetAgentId = attentionOpen != null && attentionOpen.targetFunctionalAgentId() != null
+    var requestedAgentId = attentionOpen != null && attentionOpen.targetFunctionalAgentId() != null
         ? attentionOpen.targetFunctionalAgentId()
         : firstNonBlank(request.targetFunctionalAgentId(), request.sourceFunctionalAgentId(), MY_ACCOUNT_AGENT_ID);
+    var alias = attentionOpen == null ? resolveShellSurfaceAlias(requestType, requestedAgentId, request) : null;
+    var resolvedRequest = alias == null ? request : new WorkstreamShellRequest(
+        requestType,
+        firstNonBlank(request.origin(), "user_prompt"),
+        firstNonBlank(request.displayText(), alias.canonicalPrompt()),
+        alias.canonicalPrompt(),
+        alias.targetAgentId(),
+        alias.targetSurfaceId(),
+        request.targetItemId(),
+        request.sourceFunctionalAgentId(),
+        request.sourceSurfaceId(),
+        request.sourceActionId(),
+        firstNonBlank(request.scope(), "current_workstream"),
+        correlationId,
+        request.selectedContextId());
+    var targetAgentId = alias == null ? requestedAgentId : alias.targetAgentId();
     var targetAgent = MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
         .filter(agent -> targetAgentId.equals(agent.functionalAgentId()))
         .findFirst()
         .orElse(null);
-    var requestType = firstNonBlank(request.requestType(), "show_surface");
-    if (!List.of("show_surface", "open_workstream", "refresh_surface", "open_attention_item").contains(requestType)) throw new AuthorizationException(400, "SHELL_REQUEST_TYPE_UNSUPPORTED");
     if (targetAgent == null || !"visible".equals(targetAgent.availability())) {
+      var denied = shellSystemMessageSurface(actor, targetAgentId, "TARGET_NOT_FOUND_OR_FORBIDDEN", "The requested workstream or surface is unavailable in the selected context.", correlationId);
+      var item = shellRequestItem(targetAgentId, resolvedRequest, correlationId, denied.surfaceId(), "blocked");
+      return new WorkstreamShellResponse(normalizeShellRequest(resolvedRequest, targetAgentId, null, correlationId), "denied", "The requested workstream or surface is unavailable.", correlationId, denied.traceIds(), item, denied);
+    }
+    var targetSurfaceId = attentionOpen != null && attentionOpen.surfaceRef() != null
+        ? attentionOpen.surfaceRef().targetSurfaceId()
+        : shellTargetSurfaceId(requestType, targetAgentId, resolvedRequest.targetSurfaceId());
+    if (alias == null && shouldDenyUnresolvedPromptAlias(requestType, request)) {
       var denied = shellSystemMessageSurface(actor, targetAgentId, "TARGET_NOT_FOUND_OR_FORBIDDEN", "The requested workstream or surface is unavailable in the selected context.", correlationId);
       var item = shellRequestItem(targetAgentId, request, correlationId, denied.surfaceId(), "blocked");
       return new WorkstreamShellResponse(normalizeShellRequest(request, targetAgentId, null, correlationId), "denied", "The requested workstream or surface is unavailable.", correlationId, denied.traceIds(), item, denied);
     }
-    var targetSurfaceId = attentionOpen != null && attentionOpen.surfaceRef() != null
-        ? attentionOpen.surfaceRef().targetSurfaceId()
-        : shellTargetSurfaceId(requestType, targetAgentId, request.targetSurfaceId());
     var surface = dynamicSurface(actor, targetSurfaceId, correlationId);
     if (surface == null && "refresh_surface".equals(requestType)) surface = surface(identity, selectedContextId, targetSurfaceId, correlationId);
     if (surface == null) {
       var denied = shellSystemMessageSurface(actor, targetAgentId, "TARGET_NOT_FOUND_OR_FORBIDDEN", "The requested surface is unavailable in the selected context.", correlationId);
-      var item = shellRequestItem(targetAgentId, request, correlationId, denied.surfaceId(), "blocked");
-      return new WorkstreamShellResponse(normalizeShellRequest(request, targetAgentId, targetSurfaceId, correlationId), "denied", "The requested surface is unavailable.", correlationId, denied.traceIds(), item, denied);
+      var item = shellRequestItem(targetAgentId, resolvedRequest, correlationId, denied.surfaceId(), "blocked");
+      return new WorkstreamShellResponse(normalizeShellRequest(resolvedRequest, targetAgentId, targetSurfaceId, correlationId), "denied", "The requested surface is unavailable.", correlationId, denied.traceIds(), item, denied);
     }
-    var item = shellRequestItem(surface.ownerFunctionalAgentId(), request, correlationId, surface.surfaceId(), "ready");
+    var item = shellRequestItem(surface.ownerFunctionalAgentId(), resolvedRequest, correlationId, surface.surfaceId(), "ready");
     workstreamLogRepository.appendSystemEntry(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), item, surface);
-    return new WorkstreamShellResponse(normalizeShellRequest(request, surface.ownerFunctionalAgentId(), surface.surfaceId(), correlationId), "accepted", "Shell request resolved through backend-authoritative surface capability.", correlationId, surface.traceIds(), item, surface);
+    return new WorkstreamShellResponse(normalizeShellRequest(resolvedRequest, surface.ownerFunctionalAgentId(), surface.surfaceId(), correlationId), "accepted", "Shell request resolved through backend-authoritative surface capability.", correlationId, surface.traceIds(), item, surface);
   }
 
   public CapabilityActionResult runAction(WorkosIdentity identity, String selectedContextId, CapabilityActionRequest request) {
@@ -1218,6 +1239,10 @@ public final class WorkstreamService {
 
   private String shellTargetSurfaceId(String requestType, String targetAgentId, String requestedSurfaceId) {
     if (requestedSurfaceId != null && !requestedSurfaceId.isBlank() && !"open_workstream".equals(requestType)) return requestedSurfaceId;
+    return defaultDashboardSurfaceId(targetAgentId);
+  }
+
+  private String defaultDashboardSurfaceId(String targetAgentId) {
     return switch (targetAgentId) {
       case MY_ACCOUNT_AGENT_ID -> "surface-my-account-dashboard";
       case AGENT_ADMIN_AGENT_ID -> "surface-agent-admin-catalog";
@@ -1226,6 +1251,36 @@ public final class WorkstreamService {
       default -> "surface-user-admin-dashboard";
     };
   }
+
+  private ShellSurfaceAlias resolveShellSurfaceAlias(String requestType, String selectedAgentId, WorkstreamShellRequest request) {
+    if (!("show_surface".equals(requestType) || "refresh_surface".equals(requestType))) return null;
+    var text = normalizedShellAliasText(firstNonBlank(request.canonicalPrompt(), request.displayText(), ""));
+    if (text.isBlank()) return null;
+    if (List.of("dashboard", "show dashboard", "open dashboard", "refresh dashboard", "show command center", "open command center").contains(text)) return new ShellSurfaceAlias(selectedAgentId, defaultDashboardSurfaceId(selectedAgentId), "show dashboard");
+    if (List.of("show notifications", "open notifications", "show notification center", "open notification center", "notifications").contains(text)) return new ShellSurfaceAlias(MY_ACCOUNT_AGENT_ID, "surface-my-account-notification-center", "show notifications");
+    if (List.of("show users", "open users", "show user list", "open user list", "show user directory", "open user directory", "users").contains(text)) return new ShellSurfaceAlias(USER_ADMIN_AGENT_ID, "surface-user-admin-list", "show users");
+    if (List.of("show invitations", "open invitations", "show invitation panel", "open invitation panel", "invitations").contains(text)) return new ShellSurfaceAlias(USER_ADMIN_AGENT_ID, "surface-user-admin-invitation-panel", "show invitations");
+    if (List.of("show agent catalog", "open agent catalog", "show agents", "open agents", "agent catalog").contains(text)) return new ShellSurfaceAlias(AGENT_ADMIN_AGENT_ID, "surface-agent-admin-catalog", "show agent catalog");
+    if (List.of("show audit timeline", "open audit timeline", "show trace timeline", "open trace timeline", "audit timeline").contains(text)) return new ShellSurfaceAlias(AUDIT_TRACE_AGENT_ID, "surface-audit-trace-timeline", "show audit timeline");
+    if (List.of("show audit search", "open audit search", "show traces", "open traces", "show audit traces", "open audit traces").contains(text)) return new ShellSurfaceAlias(AUDIT_TRACE_AGENT_ID, "surface-audit-trace-search", "show audit traces");
+    if (List.of("show governance policies", "open governance policies", "show policies", "open policies", "governance policies", "policies").contains(text)) return new ShellSurfaceAlias(GOVERNANCE_POLICY_AGENT_ID, "surface-governance-policy-inventory", "show governance policies");
+    if (List.of("show governance dashboard", "open governance dashboard", "show policy dashboard", "open policy dashboard").contains(text)) return new ShellSurfaceAlias(GOVERNANCE_POLICY_AGENT_ID, "surface-governance-policy-dashboard", "show governance dashboard");
+    return null;
+  }
+
+  private boolean shouldDenyUnresolvedPromptAlias(String requestType, WorkstreamShellRequest request) {
+    if (!("show_surface".equals(requestType) || "refresh_surface".equals(requestType))) return false;
+    if (request.targetSurfaceId() != null && !request.targetSurfaceId().isBlank()) return false;
+    if (!"user_prompt".equals(firstNonBlank(request.origin(), "user_prompt"))) return false;
+    var text = normalizedShellAliasText(firstNonBlank(request.canonicalPrompt(), request.displayText(), ""));
+    return text.startsWith("show ") || text.startsWith("open ") || text.startsWith("refresh ");
+  }
+
+  private String normalizedShellAliasText(String value) {
+    return value == null ? "" : value.trim().toLowerCase(Locale.ROOT).replaceAll("[.!?]+$", "").replaceAll("\\s+", " ");
+  }
+
+  private record ShellSurfaceAlias(String targetAgentId, String targetSurfaceId, String canonicalPrompt) {}
 
   private WorkstreamShellRequest normalizeShellRequest(WorkstreamShellRequest request, String targetAgentId, String targetSurfaceId, String correlationId) {
     var requestType = firstNonBlank(request.requestType(), "show_surface");

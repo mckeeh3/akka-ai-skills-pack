@@ -172,7 +172,7 @@
 
 ### TASK-WDA-02-002: Add shell surface alias resolver
 
-- status: pending
+- status: done
 - source: audit finding that prompt-entered surface routing is too narrow
 - task brief: specs/workstream-design-implementation-alignment/tasks/02-runtime-alignment/02-add-shell-surface-alias-resolver.md
 - depends on:
@@ -210,6 +210,8 @@
   - changes and queue update are committed
 - notes:
   - commit message: `workstream-align: add shell alias resolver`
+  - completed with backend-authoritative prompt alias resolver for users, invitations, notifications, agent catalog, audit timeline/search, and governance policies; frontend composer sends recognized aliases through `/api/workstream/shell-request` instead of model turns
+  - checks: `mvn test -Dtest=WorkstreamServiceTest`; `npm --prefix frontend test -- --run --testNamePattern="composer|workstream|shell"`; `npm --prefix frontend run typecheck`; `git diff --check`; focused `rg "show users|show audit timeline|show agent catalog|show governance policies|show notifications" src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java frontend/src/main.tsx`
   - vertical contract: selected workstream composer; `show_surface`/`open_workstream` shell requests; browser-tool/API exposure; backend auth, origin metadata, trace, and denial tests
 
 ### TASK-WDA-03-001: Align realtime/SSE semantics

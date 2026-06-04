@@ -607,9 +607,34 @@ function isMaterialBackgroundEvent(eventType: WorkstreamEvent['eventType']): boo
 
 function buildComposerShellRequest(prompt: string, functionalAgentId: string, selectedContextId: string, correlationId: string): WorkstreamShellRequest | undefined {
   const normalized = prompt.trim().toLowerCase().replace(/[.!?]+$/g, '').replace(/\s+/g, ' ');
-  if (!['dashboard', 'show dashboard', 'open dashboard', 'refresh dashboard', 'show command center', 'open command center'].includes(normalized)) return undefined;
-  const shellRequest = buildShowDashboardShellRequest(functionalAgentId, selectedContextId, correlationId, 'user_prompt', prompt.trim());
-  return normalized.startsWith('refresh') ? { ...shellRequest, requestType: 'refresh_surface' } : shellRequest;
+  if (['dashboard', 'show dashboard', 'open dashboard', 'refresh dashboard', 'show command center', 'open command center'].includes(normalized)) {
+    const shellRequest = buildShowDashboardShellRequest(functionalAgentId, selectedContextId, correlationId, 'user_prompt', prompt.trim());
+    return normalized.startsWith('refresh') ? { ...shellRequest, requestType: 'refresh_surface' } : shellRequest;
+  }
+  if (!isBackendShellAliasPrompt(normalized)) return undefined;
+  return {
+    requestType: normalized.startsWith('refresh') ? 'refresh_surface' : 'show_surface',
+    origin: 'user_prompt',
+    displayText: prompt.trim(),
+    targetFunctionalAgentId: functionalAgentId,
+    sourceFunctionalAgentId: functionalAgentId,
+    scope: 'current_workstream',
+    correlationId,
+    selectedContextId
+  };
+}
+
+function isBackendShellAliasPrompt(normalized: string): boolean {
+  return [
+    'show notifications', 'open notifications', 'show notification center', 'open notification center', 'notifications',
+    'show users', 'open users', 'show user list', 'open user list', 'show user directory', 'open user directory', 'users',
+    'show invitations', 'open invitations', 'show invitation panel', 'open invitation panel', 'invitations',
+    'show agent catalog', 'open agent catalog', 'show agents', 'open agents', 'agent catalog',
+    'show audit timeline', 'open audit timeline', 'show trace timeline', 'open trace timeline', 'audit timeline',
+    'show audit search', 'open audit search', 'show traces', 'open traces', 'show audit traces', 'open audit traces',
+    'show governance policies', 'open governance policies', 'show policies', 'open policies', 'governance policies', 'policies',
+    'show governance dashboard', 'open governance dashboard', 'show policy dashboard', 'open policy dashboard'
+  ].includes(normalized);
 }
 
 function buildShowDashboardShellRequest(functionalAgentId: string, selectedContextId: string, correlationId: string, origin: WorkstreamShellRequest['origin'], displayText = 'Show dashboard'): WorkstreamShellRequest {
