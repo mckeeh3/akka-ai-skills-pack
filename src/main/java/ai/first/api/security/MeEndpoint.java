@@ -1,5 +1,7 @@
 package ai.first.api.security;
 
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.Membership;
 import akka.http.javadsl.model.HttpResponse;
 import akka.javasdk.annotations.Acl;
 import akka.javasdk.annotations.JWT;

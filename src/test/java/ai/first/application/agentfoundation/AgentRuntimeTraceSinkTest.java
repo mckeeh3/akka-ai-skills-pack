@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ai.first.application.security.AuthContextResolver;
 import ai.first.application.security.LocalDemoIdentityRepository;
-import ai.first.domain.agentfoundation.AgentRuntimeTrace;
-import ai.first.domain.security.AuthContext;
-import ai.first.domain.security.FoundationRole;
-import ai.first.domain.security.ScopeType;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;

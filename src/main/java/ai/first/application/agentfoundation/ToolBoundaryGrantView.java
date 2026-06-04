@@ -5,7 +5,7 @@ import akka.javasdk.annotations.Consume;
 import akka.javasdk.annotations.Query;
 import akka.javasdk.view.TableUpdater;
 import akka.javasdk.view.View;
-import ai.first.domain.agentfoundation.ToolPermissionBoundary;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;

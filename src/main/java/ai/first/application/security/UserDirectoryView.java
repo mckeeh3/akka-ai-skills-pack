@@ -1,8 +1,8 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.FoundationRole;
-import ai.first.domain.security.MembershipStatus;
-import ai.first.domain.security.ScopeType;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.MembershipStatus;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.util.Comparator;
 import java.util.List;
 

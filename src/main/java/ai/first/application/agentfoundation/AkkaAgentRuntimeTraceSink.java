@@ -1,7 +1,7 @@
 package ai.first.application.agentfoundation;
 
 import akka.javasdk.client.ComponentClient;
-import ai.first.domain.agentfoundation.AgentRuntimeTrace;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 

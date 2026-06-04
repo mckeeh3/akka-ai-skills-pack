@@ -1,9 +1,9 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.EmailOutboxMessage;
-import ai.first.domain.security.Invitation;
-import ai.first.domain.security.InvitationLifecycleFact;
-import ai.first.domain.security.ScopeType;
+import ai.first.domain.foundation.email.EmailOutboxMessage;
+import ai.first.domain.foundation.invitation.Invitation;
+import ai.first.domain.foundation.invitation.InvitationLifecycleFact;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.util.List;
 import java.util.Optional;
 

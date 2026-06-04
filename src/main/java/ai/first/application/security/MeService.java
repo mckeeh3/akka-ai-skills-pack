@@ -1,6 +1,6 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.WorkosIdentity;
+import ai.first.domain.foundation.identity.WorkosIdentity;
 
 /** Application service backing GET /api/me. */
 public final class MeService {

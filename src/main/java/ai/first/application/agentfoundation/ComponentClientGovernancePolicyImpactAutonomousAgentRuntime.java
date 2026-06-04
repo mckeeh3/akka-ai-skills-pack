@@ -1,5 +1,6 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import akka.javasdk.agent.task.TaskStatus;
 import akka.javasdk.client.ComponentClient;
 import ai.first.application.security.AuthContextResolver;
@@ -41,7 +42,7 @@ public final class ComponentClientGovernancePolicyImpactAutonomousAgentRuntime i
           correlationId,
           "Prepare governed context for Governance/Policy impact AutonomousAgent task " + starterTask.impactTaskId() + "; advisory only, no direct policy mutation."));
       traceIds.addAll(preparation.traceIds());
-      if (preparation.decision() != ai.first.domain.agentfoundation.AgentRuntimeTrace.Decision.ALLOWED) {
+      if (preparation.decision() != ai.first.domain.foundation.agent.AgentRuntimeTrace.Decision.ALLOWED) {
         return StartOutcome.blocked(
             "Governance/Policy impact AutonomousAgent start failed closed during governed prompt/model preparation: " + preparation.safeErrorSummary(),
             "blocked_provider_or_runtime",

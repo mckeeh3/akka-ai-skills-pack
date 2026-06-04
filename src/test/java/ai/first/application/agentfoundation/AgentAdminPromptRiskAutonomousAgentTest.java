@@ -1,5 +1,6 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import static akka.javasdk.testkit.TestModelProvider.AutonomousAgentTools.completeTask;
 import static akka.javasdk.testkit.TestModelProvider.AutonomousAgentTools.failTask;
 import static org.junit.jupiter.api.Assertions.assertEquals;

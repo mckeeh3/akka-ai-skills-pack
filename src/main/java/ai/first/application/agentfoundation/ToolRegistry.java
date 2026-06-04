@@ -1,10 +1,11 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.identity.Account;
 import ai.first.application.security.MyAccountService;
 import ai.first.application.security.StarterSecurityComponents;
-import ai.first.domain.agentfoundation.ToolCatalogEntry;
-import ai.first.domain.agentfoundation.ToolPermissionBoundary;
-import ai.first.domain.security.AuthContext;
+import ai.first.domain.foundation.agent.ToolCatalogEntry;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import ai.first.domain.foundation.identity.AuthContext;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;

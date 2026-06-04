@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import akka.javasdk.testkit.KeyValueEntityTestKit;
-import ai.first.domain.security.GovernancePolicyProposal;
-import ai.first.domain.security.GovernancePolicySimulationResult;
+import ai.first.domain.foundation.governance.GovernancePolicyProposal;
+import ai.first.domain.foundation.governance.GovernancePolicySimulationResult;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;

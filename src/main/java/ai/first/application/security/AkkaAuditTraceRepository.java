@@ -1,5 +1,6 @@
 package ai.first.application.security;
 
+import ai.first.domain.foundation.identity.AuthContext;
 import akka.javasdk.client.ComponentClient;
 import ai.first.application.agentfoundation.AgentRuntimeTraceView;
 import java.time.Instant;

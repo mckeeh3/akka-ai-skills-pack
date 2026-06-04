@@ -1,7 +1,10 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.GovernancePolicyProposal;
-import ai.first.domain.security.GovernancePolicySimulationResult;
+import ai.first.domain.foundation.agent.AgentDefinition;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.governance.GovernancePolicyProposal;
+import ai.first.domain.foundation.governance.GovernancePolicySimulationResult;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.LinkedHashMap;

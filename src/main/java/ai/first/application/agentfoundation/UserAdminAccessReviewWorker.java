@@ -2,7 +2,7 @@ package ai.first.application.agentfoundation;
 
 import ai.first.application.security.AccessReviewWorker;
 import ai.first.application.security.AuthContextResolver;
-import ai.first.domain.agentfoundation.AgentRuntimeTrace;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.security.AccessReviewTask;
 import java.util.ArrayList;
 import java.util.List;

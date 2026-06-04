@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ai.first.domain.agentfoundation.AgentBehaviorRepositoryState;
-import ai.first.domain.agentfoundation.AgentLifecycleStatus;
+import ai.first.domain.foundation.agent.AgentBehaviorRepositoryState;
+import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;

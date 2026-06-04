@@ -1,15 +1,15 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.AdminAuditEvent;
-import ai.first.domain.security.EmailNotificationDelivery;
-import ai.first.domain.security.EmailNotificationDeliveryStatus;
-import ai.first.domain.security.EmailNotificationPreference;
-import ai.first.domain.security.EmailOutboxMessage;
-import ai.first.domain.security.NotificationCategory;
-import ai.first.domain.security.NotificationItem;
-import ai.first.domain.security.NotificationPriority;
-import ai.first.domain.security.NotificationRedactionLevel;
-import ai.first.domain.security.ScopeType;
+import ai.first.domain.foundation.audit.AdminAuditEvent;
+import ai.first.domain.foundation.email.EmailNotificationDelivery;
+import ai.first.domain.foundation.email.EmailNotificationDeliveryStatus;
+import ai.first.domain.foundation.email.EmailNotificationPreference;
+import ai.first.domain.foundation.email.EmailOutboxMessage;
+import ai.first.domain.foundation.notification.NotificationCategory;
+import ai.first.domain.foundation.notification.NotificationItem;
+import ai.first.domain.foundation.notification.NotificationPriority;
+import ai.first.domain.foundation.notification.NotificationRedactionLevel;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;

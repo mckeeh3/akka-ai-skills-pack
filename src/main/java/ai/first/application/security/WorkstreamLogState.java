@@ -1,5 +1,6 @@
 package ai.first.application.security;
 
+import ai.first.domain.foundation.identity.AuthContext;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;

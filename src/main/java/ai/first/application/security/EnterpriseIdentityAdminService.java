@@ -1,12 +1,12 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.AdminAuditEvent;
-import ai.first.domain.security.EnterpriseIdentityProviderStatus;
-import ai.first.domain.security.FoundationRole;
-import ai.first.domain.security.ScimProvisioningRequest;
-import ai.first.domain.security.ScimProvisioningResult;
-import ai.first.domain.security.ScopeType;
-import ai.first.domain.security.SsoConfigurationValidation;
+import ai.first.domain.foundation.audit.AdminAuditEvent;
+import ai.first.domain.foundation.identity.EnterpriseIdentityProviderStatus;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.ScimProvisioningRequest;
+import ai.first.domain.foundation.identity.ScimProvisioningResult;
+import ai.first.domain.foundation.identity.ScopeType;
+import ai.first.domain.foundation.identity.SsoConfigurationValidation;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;

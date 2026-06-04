@@ -1,13 +1,14 @@
 package ai.first.application.security;
 
+import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.agentfoundation.PromptRiskReviewTask;
 import ai.first.domain.security.AccessReviewTask;
 import ai.first.domain.security.AuditTraceSummaryTask;
 import ai.first.domain.security.GovernancePolicyImpactTask;
-import ai.first.domain.security.Invitation;
+import ai.first.domain.foundation.invitation.Invitation;
 import ai.first.domain.security.MyAccountPersonalAttentionDigestTask;
-import ai.first.domain.security.WorkstreamEventEnvelope;
-import ai.first.domain.security.WorkstreamEventSourceRef;
+import ai.first.domain.foundation.workstream.WorkstreamEventEnvelope;
+import ai.first.domain.foundation.workstream.WorkstreamEventSourceRef;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;

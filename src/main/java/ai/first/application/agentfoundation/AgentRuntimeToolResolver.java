@@ -1,10 +1,10 @@
 package ai.first.application.agentfoundation;
 
 import ai.first.application.security.AuthorizationException;
-import ai.first.domain.agentfoundation.AgentLifecycleStatus;
-import ai.first.domain.agentfoundation.ToolCatalogEntry;
-import ai.first.domain.agentfoundation.ToolPermissionBoundary;
-import ai.first.domain.security.AuthContext;
+import ai.first.domain.foundation.agent.AgentLifecycleStatus;
+import ai.first.domain.foundation.agent.ToolCatalogEntry;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import ai.first.domain.foundation.identity.AuthContext;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

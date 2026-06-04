@@ -1,12 +1,12 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.Account;
-import ai.first.domain.security.AccountStatus;
-import ai.first.domain.security.AdminAuditEvent;
-import ai.first.domain.security.FoundationRole;
-import ai.first.domain.security.Membership;
-import ai.first.domain.security.MembershipStatus;
-import ai.first.domain.security.ScopeType;
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.audit.AdminAuditEvent;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.MembershipStatus;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Comparator;

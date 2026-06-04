@@ -1,5 +1,6 @@
 package ai.first.application.security;
 
+import ai.first.domain.foundation.identity.Account;
 import akka.javasdk.client.ComponentClient;
 import ai.first.domain.security.MyAccountPersonalAttentionDigestTask;
 import java.util.Optional;

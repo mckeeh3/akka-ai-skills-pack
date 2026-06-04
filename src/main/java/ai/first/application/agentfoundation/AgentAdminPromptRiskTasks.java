@@ -1,5 +1,7 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.agent.AgentDefinition;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import akka.javasdk.agent.task.Task;
 import ai.first.domain.agentfoundation.PromptRiskReviewTask.BehaviorArtifactDelta;
 import java.util.List;

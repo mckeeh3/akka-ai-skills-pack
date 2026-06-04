@@ -1,12 +1,14 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.AttentionCategory;
-import ai.first.domain.security.AttentionItem;
-import ai.first.domain.security.AttentionItemStatus;
-import ai.first.domain.security.AttentionSeverity;
-import ai.first.domain.security.AttentionSourceRef;
-import ai.first.domain.security.AttentionSurfaceRef;
-import ai.first.domain.security.UserSettings;
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.attention.AttentionCategory;
+import ai.first.domain.foundation.attention.AttentionItem;
+import ai.first.domain.foundation.attention.AttentionItemStatus;
+import ai.first.domain.foundation.attention.AttentionSeverity;
+import ai.first.domain.foundation.attention.AttentionSourceRef;
+import ai.first.domain.foundation.attention.AttentionSurfaceRef;
+import ai.first.domain.foundation.identity.UserSettings;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;

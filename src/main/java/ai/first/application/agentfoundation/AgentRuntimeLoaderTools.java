@@ -1,7 +1,10 @@
 package ai.first.application.agentfoundation;
 
-import ai.first.domain.agentfoundation.AgentRuntimeTrace;
-import ai.first.domain.security.AuthContext;
+import ai.first.domain.foundation.agent.AgentReferenceManifest;
+import ai.first.domain.foundation.agent.AgentSkillManifest;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
+import ai.first.domain.foundation.identity.AuthContext;
 import akka.javasdk.annotations.Description;
 import akka.javasdk.annotations.FunctionTool;
 

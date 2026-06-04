@@ -1,7 +1,7 @@
 package ai.first.application.security;
 
 import akka.javasdk.client.ComponentClient;
-import ai.first.domain.security.WorkstreamEventEnvelope;
+import ai.first.domain.foundation.workstream.WorkstreamEventEnvelope;
 import java.util.List;
 import java.util.Optional;
 

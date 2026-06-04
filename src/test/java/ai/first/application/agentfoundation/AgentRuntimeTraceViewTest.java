@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ai.first.domain.agentfoundation.AgentRuntimeTrace;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 

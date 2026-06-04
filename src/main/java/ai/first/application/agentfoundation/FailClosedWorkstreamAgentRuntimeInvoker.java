@@ -1,6 +1,6 @@
 package ai.first.application.agentfoundation;
 
-import ai.first.domain.agentfoundation.AgentRuntimeTrace;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import java.util.List;
 
 /** Fail-closed placeholder used only when a service is constructed without an Akka ComponentClient. */

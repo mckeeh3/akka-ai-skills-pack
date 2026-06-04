@@ -1,5 +1,6 @@
 package ai.first.application.security;
 
+import ai.first.domain.foundation.identity.Account;
 import akka.javasdk.annotations.Component;
 import akka.javasdk.keyvalueentity.KeyValueEntity;
 import ai.first.domain.security.MyAccountPersonalAttentionDigestTask;

@@ -1,19 +1,20 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.Account;
-import ai.first.domain.security.AccountStatus;
-import ai.first.domain.security.AdminAuditEvent;
-import ai.first.domain.security.EmailDeliveryStatus;
-import ai.first.domain.security.EmailOutboxMessage;
-import ai.first.domain.security.FoundationRole;
-import ai.first.domain.security.Invitation;
-import ai.first.domain.security.InvitationStatus;
-import ai.first.domain.security.Membership;
-import ai.first.domain.security.MembershipStatus;
-import ai.first.domain.security.ScopeType;
-import ai.first.domain.security.UserProfile;
-import ai.first.domain.security.UserSettings;
-import ai.first.domain.security.WorkosIdentity;
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.audit.AdminAuditEvent;
+import ai.first.domain.foundation.email.EmailDeliveryStatus;
+import ai.first.domain.foundation.email.EmailOutboxMessage;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.invitation.Invitation;
+import ai.first.domain.foundation.invitation.InvitationStatus;
+import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.MembershipStatus;
+import ai.first.domain.foundation.identity.ScopeType;
+import ai.first.domain.foundation.identity.UserProfile;
+import ai.first.domain.foundation.identity.UserSettings;
+import ai.first.domain.foundation.identity.WorkosIdentity;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -336,14 +337,14 @@ public final class InvitationService {
         clock.instant());
   }
 
-  private void requireInvitationCapability(ai.first.domain.security.AuthContext auth, ScopeType targetScope) {
+  private void requireInvitationCapability(ai.first.domain.foundation.identity.AuthContext auth, ScopeType targetScope) {
     var required = targetScope == ScopeType.CUSTOMER ? "customer.invitation.manage" : targetScope == ScopeType.SAAS_OWNER ? "saas_owner.user.manage" : "tenant.invitation.manage";
     if (!auth.hasCapability(required)) {
       throw new AuthorizationException(403, "missing-capability:" + required);
     }
   }
 
-  private void requireScope(ai.first.domain.security.AuthContext auth, ScopeType scopeType, String tenantId, String customerId) {
+  private void requireScope(ai.first.domain.foundation.identity.AuthContext auth, ScopeType scopeType, String tenantId, String customerId) {
     if (scopeType == ScopeType.SAAS_OWNER && auth.scopeType() != ScopeType.SAAS_OWNER) {
       throw new AuthorizationException(403, "scope-forbidden");
     }
@@ -357,7 +358,7 @@ public final class InvitationService {
     }
   }
 
-  private void ensureRolesAssignable(ai.first.domain.security.AuthContext auth, List<FoundationRole> roles) {
+  private void ensureRolesAssignable(ai.first.domain.foundation.identity.AuthContext auth, List<FoundationRole> roles) {
     if (roles.contains(FoundationRole.SAAS_OWNER_ADMIN) && auth.scopeType() != ScopeType.SAAS_OWNER) {
       throw new AuthorizationException(403, "role-escalation-denied");
     }

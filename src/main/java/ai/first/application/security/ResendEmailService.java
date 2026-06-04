@@ -1,6 +1,6 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.EmailOutboxMessage;
+import ai.first.domain.foundation.email.EmailOutboxMessage;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;

@@ -2,8 +2,8 @@ package ai.first.application.security;
 
 import akka.javasdk.annotations.Component;
 import akka.javasdk.keyvalueentity.KeyValueEntity;
-import ai.first.domain.security.GovernancePolicyProposal;
-import ai.first.domain.security.GovernancePolicySimulationResult;
+import ai.first.domain.foundation.governance.GovernancePolicyProposal;
+import ai.first.domain.foundation.governance.GovernancePolicySimulationResult;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;

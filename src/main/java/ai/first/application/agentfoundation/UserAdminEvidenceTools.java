@@ -7,9 +7,9 @@ import ai.first.application.security.AuthorizationException;
 import ai.first.application.security.IdentityRepository;
 import ai.first.application.security.InvitationView;
 import ai.first.application.security.UserAdminService;
-import ai.first.domain.security.AccountStatus;
-import ai.first.domain.security.AuthContext;
-import ai.first.domain.security.UserSettings;
+import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.UserSettings;
 import java.util.List;
 import java.util.Objects;
 

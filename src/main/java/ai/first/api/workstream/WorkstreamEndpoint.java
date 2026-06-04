@@ -1,5 +1,6 @@
 package ai.first.api.workstream;
 
+import ai.first.domain.foundation.identity.Membership;
 import akka.NotUsed;
 import akka.http.javadsl.model.HttpResponse;
 import akka.javasdk.annotations.Acl;
@@ -23,7 +24,7 @@ import ai.first.application.security.WorkstreamService;
 import ai.first.application.security.WorkstreamService.CapabilityActionRequest;
 import ai.first.application.security.WorkstreamService.WorkstreamMessageRequest;
 import ai.first.application.security.WorkstreamService.WorkstreamShellRequest;
-import ai.first.domain.security.WorkosIdentity;
+import ai.first.domain.foundation.identity.WorkosIdentity;
 
 /** Workstream shell API endpoints for User Admin structured surfaces and capability actions. */
 @Acl(allow = @Acl.Matcher(principal = Acl.Principal.INTERNET))

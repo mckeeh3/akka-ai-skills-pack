@@ -1,5 +1,7 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.identity.AuthContext;
 import akka.javasdk.agent.autonomous.AgentDefinition;
 import akka.javasdk.agent.autonomous.AutonomousAgent;
 import akka.javasdk.agent.autonomous.capability.TaskAcceptance;

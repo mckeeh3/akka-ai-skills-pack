@@ -1,9 +1,11 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.EmailDeliveryStatus;
-import ai.first.domain.security.FoundationRole;
-import ai.first.domain.security.InvitationStatus;
-import ai.first.domain.security.ScopeType;
+import ai.first.domain.foundation.invitation.Invitation;
+import ai.first.domain.foundation.invitation.InvitationLifecycleFact;
+import ai.first.domain.foundation.email.EmailDeliveryStatus;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.invitation.InvitationStatus;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -18,7 +20,7 @@ public final class InvitationView {
 
   public List<InvitationRow> list(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
     return invitationService.listScoped(actor, scopeType, tenantId, customerId).stream()
-        .sorted(Comparator.comparing(ai.first.domain.security.Invitation::createdAt).reversed().thenComparing(ai.first.domain.security.Invitation::invitationId))
+        .sorted(Comparator.comparing(ai.first.domain.foundation.invitation.Invitation::createdAt).reversed().thenComparing(ai.first.domain.foundation.invitation.Invitation::invitationId))
         .map(invite -> new InvitationRow(
             invite.invitationId(),
             invite.normalizedEmail(),
@@ -45,7 +47,7 @@ public final class InvitationView {
     var invite = invitationService.invitationRepository().invitation(invitationId).orElseThrow(() -> new AuthorizationException(404, "invitation-not-found-or-forbidden"));
     invitationService.requireScopedRead(actor, invite.scopeType(), invite.tenantId(), invite.customerId());
     return invitationService.invitationRepository().lifecycleHistory(invitationId).stream()
-        .sorted(Comparator.comparing(ai.first.domain.security.InvitationLifecycleFact::occurredAt).thenComparing(ai.first.domain.security.InvitationLifecycleFact::factId))
+        .sorted(Comparator.comparing(ai.first.domain.foundation.invitation.InvitationLifecycleFact::occurredAt).thenComparing(ai.first.domain.foundation.invitation.InvitationLifecycleFact::factId))
         .map(fact -> new InvitationHistoryRow(
             fact.factId(),
             fact.invitationId(),

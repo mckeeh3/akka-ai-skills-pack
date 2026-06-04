@@ -1,5 +1,7 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
+import ai.first.domain.foundation.identity.Account;
 import akka.javasdk.agent.task.TaskStatus;
 import akka.javasdk.client.ComponentClient;
 import ai.first.application.security.AuthContextResolver;
@@ -45,7 +47,7 @@ public final class ComponentClientMyAccountPersonalAttentionDigestAutonomousAgen
           correlationId,
           "Prepare governed context for My Account personal attention digest AutonomousAgent task " + starterTask.digestTaskId() + "; advisory only, redacted, no source attention mutation."));
       traceIds.addAll(preparation.traceIds());
-      if (preparation.decision() != ai.first.domain.agentfoundation.AgentRuntimeTrace.Decision.ALLOWED) {
+      if (preparation.decision() != ai.first.domain.foundation.agent.AgentRuntimeTrace.Decision.ALLOWED) {
         return StartOutcome.blocked(
             "My Account personal attention digest AutonomousAgent start failed closed during governed prompt/model preparation: " + preparation.safeErrorSummary(),
             "blocked_provider_or_runtime",

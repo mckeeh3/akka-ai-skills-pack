@@ -5,7 +5,7 @@ import akka.javasdk.annotations.Consume;
 import akka.javasdk.annotations.Query;
 import akka.javasdk.view.TableUpdater;
 import akka.javasdk.view.View;
-import ai.first.domain.agentfoundation.AgentReferenceManifest;
+import ai.first.domain.foundation.agent.AgentReferenceManifest;
 import java.time.Instant;
 import java.util.List;
 

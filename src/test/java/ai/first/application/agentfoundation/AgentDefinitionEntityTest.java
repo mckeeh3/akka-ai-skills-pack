@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import akka.javasdk.testkit.EventSourcedTestKit;
-import ai.first.domain.agentfoundation.AgentDefinition;
-import ai.first.domain.agentfoundation.AgentLifecycleStatus;
+import ai.first.domain.foundation.agent.AgentDefinition;
+import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;

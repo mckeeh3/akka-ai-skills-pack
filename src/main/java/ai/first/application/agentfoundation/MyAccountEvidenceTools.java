@@ -1,14 +1,15 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.identity.Account;
 import akka.javasdk.annotations.Description;
 import akka.javasdk.annotations.FunctionTool;
 import ai.first.application.security.AuthContextResolver;
 import ai.first.application.security.AuthorizationException;
 import ai.first.application.security.IdentityRepository;
 import ai.first.application.security.MyAccountService;
-import ai.first.domain.security.AccountStatus;
-import ai.first.domain.security.AuthContext;
-import ai.first.domain.security.UserSettings;
+import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.UserSettings;
 import java.util.Objects;
 
 /** Request-scoped read-only My Account evidence facade for MyAccountAgent. */

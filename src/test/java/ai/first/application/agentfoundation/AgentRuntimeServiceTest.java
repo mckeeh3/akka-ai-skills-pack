@@ -1,5 +1,6 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.identity.Account;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -13,17 +14,17 @@ import ai.first.application.agentfoundation.AgentRuntimeService.SkillReadRequest
 import ai.first.application.security.AuthContextResolver;
 import ai.first.application.security.LocalDemoIdentityRepository;
 import ai.first.application.security.MyAccountService;
-import ai.first.domain.agentfoundation.AgentDefinition;
-import ai.first.domain.agentfoundation.AgentLifecycleStatus;
-import ai.first.domain.agentfoundation.AgentRuntimeTrace;
-import ai.first.domain.agentfoundation.BehaviorChangeProposal;
-import ai.first.domain.agentfoundation.ModelConfigRef;
-import ai.first.domain.agentfoundation.ModelPolicy;
-import ai.first.domain.agentfoundation.ReferenceDocument;
-import ai.first.domain.agentfoundation.ToolPermissionBoundary;
-import ai.first.domain.security.AuthContext;
-import ai.first.domain.security.FoundationRole;
-import ai.first.domain.security.ScopeType;
+import ai.first.domain.foundation.agent.AgentDefinition;
+import ai.first.domain.foundation.agent.AgentLifecycleStatus;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
+import ai.first.domain.foundation.agent.BehaviorChangeProposal;
+import ai.first.domain.foundation.agent.ModelConfigRef;
+import ai.first.domain.foundation.agent.ModelPolicy;
+import ai.first.domain.foundation.agent.ReferenceDocument;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.ScopeType;
 import akka.javasdk.annotations.FunctionTool;
 import java.time.Clock;
 import java.time.Instant;

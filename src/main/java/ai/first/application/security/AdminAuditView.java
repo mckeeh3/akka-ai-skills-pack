@@ -1,7 +1,7 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.AdminAuditEvent;
-import ai.first.domain.security.ScopeType;
+import ai.first.domain.foundation.audit.AdminAuditEvent;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import akka.javasdk.testkit.KeyValueEntityTestKit;
 import ai.first.domain.security.AccessReviewTask;
-import ai.first.domain.security.ScopeType;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;

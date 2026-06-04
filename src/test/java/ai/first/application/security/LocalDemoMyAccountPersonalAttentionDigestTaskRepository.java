@@ -1,5 +1,6 @@
 package ai.first.application.security;
 
+import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.security.MyAccountPersonalAttentionDigestTask;
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -1,7 +1,8 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.GovernancePolicyProposal;
-import ai.first.domain.security.GovernancePolicySimulationResult;
+import ai.first.domain.foundation.identity.Tenant;
+import ai.first.domain.foundation.governance.GovernancePolicyProposal;
+import ai.first.domain.foundation.governance.GovernancePolicySimulationResult;
 import java.util.List;
 import java.util.Optional;
 

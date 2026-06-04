@@ -1,6 +1,6 @@
 package ai.first.application.agentfoundation;
 
-import ai.first.domain.agentfoundation.AgentRuntimeTrace;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import java.util.ArrayList;
 import java.util.List;
 

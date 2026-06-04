@@ -1,5 +1,11 @@
 package ai.first.application.security;
 
+import ai.first.domain.foundation.agent.AgentDefinition;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import ai.first.domain.foundation.audit.AdminAuditEvent;
+import ai.first.domain.foundation.invitation.Invitation;
+import ai.first.domain.foundation.workstream.WorkstreamEventEnvelope;
+import ai.first.domain.foundation.workstream.WorkstreamEventSourceRef;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -13,21 +19,21 @@ import ai.first.application.agentfoundation.PromptRiskAutonomousAgentRuntime;
 import ai.first.application.agentfoundation.AgentBehaviorSeedLoader;
 import ai.first.domain.agentfoundation.PromptRiskReviewTask;
 import ai.first.domain.security.AccessReviewTask;
-import ai.first.domain.security.Account;
+import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.security.AuditTraceSummaryTask;
-import ai.first.domain.security.AccountStatus;
-import ai.first.domain.security.AttentionCategory;
-import ai.first.domain.security.AttentionItemStatus;
-import ai.first.domain.security.EmailDeliveryStatus;
-import ai.first.domain.security.FoundationRole;
+import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.attention.AttentionCategory;
+import ai.first.domain.foundation.attention.AttentionItemStatus;
+import ai.first.domain.foundation.email.EmailDeliveryStatus;
+import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.security.GovernancePolicyImpactTask;
-import ai.first.domain.security.Membership;
-import ai.first.domain.security.MembershipStatus;
-import ai.first.domain.security.ScopeType;
-import ai.first.domain.security.Tenant;
-import ai.first.domain.security.UserProfile;
-import ai.first.domain.security.UserSettings;
-import ai.first.domain.security.WorkosIdentity;
+import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.MembershipStatus;
+import ai.first.domain.foundation.identity.ScopeType;
+import ai.first.domain.foundation.identity.Tenant;
+import ai.first.domain.foundation.identity.UserProfile;
+import ai.first.domain.foundation.identity.UserSettings;
+import ai.first.domain.foundation.identity.WorkosIdentity;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -100,7 +106,7 @@ class WorkstreamEventBackboneServiceTest {
     assertNotNull(replay);
     assertEquals(item.lastChangedAt(), replay.lastChangedAt());
     assertEquals(1, attention.listWorkstreamItems(tenantAdmin, "agent-user-admin", "corr-list").size());
-    assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DUPLICATE") && audit.result() == ai.first.domain.security.AdminAuditEvent.Result.NO_OP));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DUPLICATE") && audit.result() == ai.first.domain.foundation.audit.AdminAuditEvent.Result.NO_OP));
   }
 
   @Test
@@ -155,7 +161,7 @@ class WorkstreamEventBackboneServiceTest {
     var replay = consumer.project(event, task);
     assertNotNull(replay);
     assertEquals(item.lastChangedAt(), replay.lastChangedAt());
-    assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DUPLICATE") && audit.result() == ai.first.domain.security.AdminAuditEvent.Result.NO_OP));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DUPLICATE") && audit.result() == ai.first.domain.foundation.audit.AdminAuditEvent.Result.NO_OP));
   }
 
   @Test
@@ -444,7 +450,7 @@ class WorkstreamEventBackboneServiceTest {
   @Test
   void genericLifecycleConsumerRejectsMalformedScopeAndMissingCapabilityWithoutAttention() {
     var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, new AttentionProducerService(attentionRepository, identityRepository, clock), clock);
-    var event = new ai.first.domain.security.WorkstreamEventEnvelope(
+    var event = new ai.first.domain.foundation.workstream.WorkstreamEventEnvelope(
         "evt-generic-cross-tenant",
         "membership.role.changed",
         WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN,
@@ -455,7 +461,7 @@ class WorkstreamEventBackboneServiceTest {
         null,
         Map.of("tenantId", "tenant-1", "capabilityIds", "secure-tenant-user-foundation"),
         Map.of("actorType", "account", "accountId", tenantAdmin.account().accountId()),
-        List.of(new ai.first.domain.security.WorkstreamEventSourceRef("membership", "membership-admin", "Membership", "secure-tenant-user-foundation", "trace-generic-cross-tenant", "corr-generic-cross-tenant")),
+        List.of(new ai.first.domain.foundation.workstream.WorkstreamEventSourceRef("membership", "membership-admin", "Membership", "secure-tenant-user-foundation", "trace-generic-cross-tenant", "corr-generic-cross-tenant")),
         List.of("secure-tenant-user-foundation"),
         "corr-generic-cross-tenant",
         "workstream-event:domain:membership.role.changed:tenant-1:none:membership-admin:changed",
@@ -472,7 +478,7 @@ class WorkstreamEventBackboneServiceTest {
     assertFalse(attentionRepository.find("tenant-1", "attention:workstream-event:membership-admin").isPresent());
     assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DENIED") && audit.reasonCode().equals("scope-mismatch")));
 
-    var missingCapability = new ai.first.domain.security.WorkstreamEventEnvelope(
+    var missingCapability = new ai.first.domain.foundation.workstream.WorkstreamEventEnvelope(
         "evt-generic-missing-capability",
         "notification.lifecycle.failed",
         "notification/lifecycle",
@@ -483,7 +489,7 @@ class WorkstreamEventBackboneServiceTest {
         null,
         Map.of("tenantId", "tenant-1", "capabilityIds", "audit.trace.read"),
         Map.of("actorType", "system", "accountId", "system"),
-        List.of(new ai.first.domain.security.WorkstreamEventSourceRef("notification", "notification-1", "Notification", "audit.trace.read", "trace-generic-missing-capability", "corr-generic-missing-capability")),
+        List.of(new ai.first.domain.foundation.workstream.WorkstreamEventSourceRef("notification", "notification-1", "Notification", "audit.trace.read", "trace-generic-missing-capability", "corr-generic-missing-capability")),
         List.of("audit.trace.read"),
         "corr-generic-missing-capability",
         "workstream-event:notification/lifecycle:notification.lifecycle.failed:tenant-1:none:notification-1:failed",
@@ -506,7 +512,7 @@ class WorkstreamEventBackboneServiceTest {
     var invite = invitations.createInvitation(tenantAdmin, inviteRequest("invite-cross-tenant", "cross@example.test"));
     var event = new WorkstreamEventPublisher(eventRepository, new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, new AttentionProducerService(attentionRepository, identityRepository, clock), clock), clock)
         .publishInvitationDelivery(invite, false, "delivery-1", "FAILED", "safe", "corr-cross-event");
-    var sourceFromOtherTenant = new ai.first.domain.security.Invitation(
+    var sourceFromOtherTenant = new ai.first.domain.foundation.invitation.Invitation(
         invite.invitationId(), invite.normalizedEmail(), invite.scopeType(), "tenant-2", invite.customerId(), invite.requestedRoles(), invite.accountId(), invite.membershipId(), invite.status(), invite.deliveryStatus(), invite.deliveryAttempts(), invite.providerMessageIds(), invite.lastDeliveryErrorSummary(), invite.acceptanceContextId(), invite.tokenHash(), invite.expiresAt(), invite.acceptedAt(), invite.acceptedByWorkosSubject(), invite.revokedAt(), invite.revokedByAccountId(), invite.revokeReason(), invite.resendCount(), invite.createdByAccountId(), invite.createdAt(), invite.idempotencyKey(), "corr-cross-source");
 
     var consumer = new WorkstreamEventAttentionConsumer(new LocalDemoAttentionRepository(), identityRepository, new AttentionProducerService(new LocalDemoAttentionRepository(), identityRepository, clock), clock);

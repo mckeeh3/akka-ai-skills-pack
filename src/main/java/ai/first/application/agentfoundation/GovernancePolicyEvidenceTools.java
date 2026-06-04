@@ -1,17 +1,18 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import akka.javasdk.annotations.Description;
 import akka.javasdk.annotations.FunctionTool;
 import ai.first.application.security.AuthContextResolver;
 import ai.first.application.security.AuthorizationException;
 import ai.first.application.security.GovernancePolicyService;
-import ai.first.domain.security.Account;
-import ai.first.domain.security.AccountStatus;
-import ai.first.domain.security.AuthContext;
-import ai.first.domain.security.Membership;
-import ai.first.domain.security.MembershipStatus;
-import ai.first.domain.security.UserProfile;
-import ai.first.domain.security.UserSettings;
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.MembershipStatus;
+import ai.first.domain.foundation.identity.UserProfile;
+import ai.first.domain.foundation.identity.UserSettings;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

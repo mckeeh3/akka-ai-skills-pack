@@ -1,5 +1,6 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import akka.javasdk.agent.task.TaskStatus;
 import akka.javasdk.client.ComponentClient;
 import ai.first.application.security.AccessReviewAutonomousAgentRuntime;
@@ -43,7 +44,7 @@ public final class ComponentClientAccessReviewAutonomousAgentRuntime implements 
           correlationId,
           "Prepare governed context for User Admin access-review AutonomousAgent task " + starterTask.taskId() + "; no direct mutation."));
       traceIds.addAll(preparation.traceIds());
-      if (preparation.decision() != ai.first.domain.agentfoundation.AgentRuntimeTrace.Decision.ALLOWED) {
+      if (preparation.decision() != ai.first.domain.foundation.agent.AgentRuntimeTrace.Decision.ALLOWED) {
         return StartOutcome.blocked(
             "Access-review AutonomousAgent start failed closed during governed prompt/model preparation: " + preparation.safeErrorSummary(),
             "blocked_provider_or_runtime",

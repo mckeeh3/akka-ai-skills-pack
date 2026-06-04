@@ -1,5 +1,12 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.MembershipStatus;
+import ai.first.domain.foundation.identity.ScopeType;
+import ai.first.domain.foundation.identity.UserProfile;
+import ai.first.domain.foundation.identity.UserSettings;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,10 +17,10 @@ import ai.first.application.security.LocalDemoAccessReviewTaskRepository;
 import ai.first.application.security.LocalDemoIdentityRepository;
 import ai.first.application.security.StarterSecurityComponents;
 import ai.first.application.security.UserAdminAccessReviewService;
-import ai.first.domain.agentfoundation.AgentRuntimeTrace;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.security.AccessReviewTask;
-import ai.first.domain.security.FoundationRole;
-import ai.first.domain.security.WorkosIdentity;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.WorkosIdentity;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -107,9 +114,9 @@ class UserAdminAccessReviewWorkerTest {
   }
 
   private void seedTenantMember(LocalDemoIdentityRepository identityRepository) {
-    identityRepository.saveAccount(new ai.first.domain.security.Account("member@example.test", null, "member@example.test", "member@example.test", ai.first.domain.security.AccountStatus.ACTIVE, "UNLINKED"));
-    identityRepository.saveProfile(new ai.first.domain.security.UserProfile("member@example.test", "member@example.test", "member", null, null, null));
-    identityRepository.saveSettings(new ai.first.domain.security.UserSettings("member@example.test", ai.first.domain.security.UserSettings.ThemeId.AURORA_LIGHT));
-    identityRepository.saveMembership(new ai.first.domain.security.Membership("membership-member@example.test", "member@example.test", ai.first.domain.security.ScopeType.TENANT, "tenant-starter", null, java.util.List.of(ai.first.domain.security.FoundationRole.TENANT_EMPLOYEE), ai.first.domain.security.MembershipStatus.ACTIVE, false, null));
+    identityRepository.saveAccount(new ai.first.domain.foundation.identity.Account("member@example.test", null, "member@example.test", "member@example.test", ai.first.domain.foundation.identity.AccountStatus.ACTIVE, "UNLINKED"));
+    identityRepository.saveProfile(new ai.first.domain.foundation.identity.UserProfile("member@example.test", "member@example.test", "member", null, null, null));
+    identityRepository.saveSettings(new ai.first.domain.foundation.identity.UserSettings("member@example.test", ai.first.domain.foundation.identity.UserSettings.ThemeId.AURORA_LIGHT));
+    identityRepository.saveMembership(new ai.first.domain.foundation.identity.Membership("membership-member@example.test", "member@example.test", ai.first.domain.foundation.identity.ScopeType.TENANT, "tenant-starter", null, java.util.List.of(ai.first.domain.foundation.identity.FoundationRole.TENANT_EMPLOYEE), ai.first.domain.foundation.identity.MembershipStatus.ACTIVE, false, null));
   }
 }

@@ -1,13 +1,13 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.EmailNotificationDelivery;
-import ai.first.domain.security.EmailNotificationPreference;
-import ai.first.domain.security.EmailOutboxMessage;
+import ai.first.domain.foundation.email.EmailNotificationDelivery;
+import ai.first.domain.foundation.email.EmailNotificationPreference;
+import ai.first.domain.foundation.email.EmailOutboxMessage;
 import ai.first.domain.security.DigestExportRequest;
-import ai.first.domain.security.NotificationDeliveryAttempt;
-import ai.first.domain.security.NotificationExternalOutboxMessage;
-import ai.first.domain.security.NotificationItem;
-import ai.first.domain.security.NotificationPreference;
+import ai.first.domain.foundation.notification.NotificationDeliveryAttempt;
+import ai.first.domain.foundation.notification.NotificationExternalOutboxMessage;
+import ai.first.domain.foundation.notification.NotificationItem;
+import ai.first.domain.foundation.notification.NotificationPreference;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;

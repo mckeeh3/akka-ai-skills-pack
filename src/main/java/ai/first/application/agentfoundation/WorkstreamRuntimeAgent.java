@@ -1,5 +1,8 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.agent.AgentDefinition;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import ai.first.domain.foundation.identity.Tenant;
 import akka.javasdk.agent.Agent;
 import akka.javasdk.agent.ModelProvider;
 import akka.javasdk.annotations.Component;
@@ -7,7 +10,7 @@ import akka.javasdk.annotations.Description;
 import akka.javasdk.client.ComponentClient;
 import ai.first.application.security.AuthorizationException;
 import ai.first.application.security.StarterSecurityComponents;
-import ai.first.domain.security.AuthContext;
+import ai.first.domain.foundation.identity.AuthContext;
 import java.util.List;
 
 /**

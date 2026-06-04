@@ -1,7 +1,7 @@
 package ai.first.application.security;
 
 import akka.javasdk.JwtClaims;
-import ai.first.domain.security.WorkosIdentity;
+import ai.first.domain.foundation.identity.WorkosIdentity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;

@@ -1,5 +1,7 @@
 package ai.first.api.admin;
 
+import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.invitation.Invitation;
 import akka.http.javadsl.model.HttpResponse;
 import akka.javasdk.annotations.Acl;
 import akka.javasdk.annotations.JWT;
@@ -24,14 +26,14 @@ import ai.first.application.security.UserAdminService.UserDirectoryRow;
 import ai.first.application.security.WorkosIdentityResolver;
 import ai.first.domain.security.AccessReviewTask;
 import ai.first.domain.security.DigestExportRequest;
-import ai.first.domain.security.EnterpriseIdentityProviderStatus;
-import ai.first.domain.security.FoundationRole;
-import ai.first.domain.security.MembershipStatus;
-import ai.first.domain.security.ScimProvisioningRequest;
-import ai.first.domain.security.ScimProvisioningResult;
-import ai.first.domain.security.ScopeType;
-import ai.first.domain.security.SsoConfigurationValidation;
-import ai.first.domain.security.WorkosIdentity;
+import ai.first.domain.foundation.identity.EnterpriseIdentityProviderStatus;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.MembershipStatus;
+import ai.first.domain.foundation.identity.ScimProvisioningRequest;
+import ai.first.domain.foundation.identity.ScimProvisioningResult;
+import ai.first.domain.foundation.identity.ScopeType;
+import ai.first.domain.foundation.identity.SsoConfigurationValidation;
+import ai.first.domain.foundation.identity.WorkosIdentity;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -589,7 +591,7 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
       return new InvitationApiResponse(invite.invitationId(), invite.targetEmail(), invite.status().name().toLowerCase(), invite.deliveryStatus().name().toLowerCase(), invite.deliveryAttempts(), invite.resendCount(), invite.canResend(), invite.canRevoke(), invite.expiresAt().toString(), null);
     }
 
-    static InvitationApiResponse from(ai.first.domain.security.Invitation invite, String correlationId) {
+    static InvitationApiResponse from(ai.first.domain.foundation.invitation.Invitation invite, String correlationId) {
       return new InvitationApiResponse(invite.invitationId(), invite.normalizedEmail(), invite.status().name().toLowerCase(), invite.deliveryStatus().name().toLowerCase(), invite.deliveryAttempts(), invite.resendCount(), invite.resendable(), !invite.terminal(), invite.expiresAt().toString(), correlationId);
     }
   }

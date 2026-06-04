@@ -1,5 +1,6 @@
 package ai.first.application.security;
 
+import ai.first.domain.foundation.identity.AuthContext;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;

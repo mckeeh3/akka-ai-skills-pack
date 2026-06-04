@@ -1,5 +1,6 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import akka.javasdk.agent.task.TaskStatus;
 import akka.javasdk.client.ComponentClient;
 import ai.first.application.security.AuthContextResolver;
@@ -41,7 +42,7 @@ public final class ComponentClientPromptRiskAutonomousAgentRuntime implements Pr
           correlationId,
           "Prepare governed context for Agent Admin prompt-risk AutonomousAgent task " + starterTask.taskId() + "; advisory only, no direct mutation."));
       traceIds.addAll(preparation.traceIds());
-      if (preparation.decision() != ai.first.domain.agentfoundation.AgentRuntimeTrace.Decision.ALLOWED) {
+      if (preparation.decision() != ai.first.domain.foundation.agent.AgentRuntimeTrace.Decision.ALLOWED) {
         return StartOutcome.blocked(
             "Agent Admin prompt-risk AutonomousAgent start failed closed during governed prompt/model preparation: " + preparation.safeErrorSummary(),
             "blocked_provider_or_runtime",

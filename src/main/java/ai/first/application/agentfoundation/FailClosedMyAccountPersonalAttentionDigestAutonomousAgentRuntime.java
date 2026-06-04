@@ -1,5 +1,6 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.identity.Account;
 import ai.first.application.security.AuthContextResolver;
 import ai.first.domain.security.MyAccountPersonalAttentionDigestTask;
 import java.util.List;

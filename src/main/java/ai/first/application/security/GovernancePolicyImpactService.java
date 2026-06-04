@@ -3,7 +3,7 @@ package ai.first.application.security;
 import ai.first.application.agentfoundation.FailClosedGovernancePolicyImpactAutonomousAgentRuntime;
 import ai.first.application.agentfoundation.GovernancePolicyImpactAutonomousAgentRuntime;
 import ai.first.domain.security.GovernancePolicyImpactTask;
-import ai.first.domain.security.GovernancePolicyProposal;
+import ai.first.domain.foundation.governance.GovernancePolicyProposal;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;

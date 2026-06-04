@@ -1,15 +1,16 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.identity.Tenant;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import akka.javasdk.testkit.EventSourcedTestKit;
-import ai.first.domain.agentfoundation.AgentLifecycleStatus;
-import ai.first.domain.agentfoundation.GovernedArtifactLifecycleFact;
-import ai.first.domain.agentfoundation.AgentReferenceManifest;
-import ai.first.domain.agentfoundation.AgentSkillManifest;
-import ai.first.domain.agentfoundation.ToolPermissionBoundary;
+import ai.first.domain.foundation.agent.AgentLifecycleStatus;
+import ai.first.domain.foundation.agent.GovernedArtifactLifecycleFact;
+import ai.first.domain.foundation.agent.AgentReferenceManifest;
+import ai.first.domain.foundation.agent.AgentSkillManifest;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;

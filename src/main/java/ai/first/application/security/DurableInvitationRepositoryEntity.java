@@ -2,10 +2,10 @@ package ai.first.application.security;
 
 import akka.javasdk.annotations.Component;
 import akka.javasdk.keyvalueentity.KeyValueEntity;
-import ai.first.domain.security.EmailOutboxMessage;
-import ai.first.domain.security.Invitation;
-import ai.first.domain.security.InvitationRepositoryState;
-import ai.first.domain.security.ScopeType;
+import ai.first.domain.foundation.email.EmailOutboxMessage;
+import ai.first.domain.foundation.invitation.Invitation;
+import ai.first.domain.foundation.invitation.InvitationRepositoryState;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.util.List;
 import java.util.Optional;
 

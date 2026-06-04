@@ -1,5 +1,6 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.identity.Account;
 import java.util.List;
 
 /** Typed advisory result returned by the My Account personal attention digest Akka AutonomousAgent task. */

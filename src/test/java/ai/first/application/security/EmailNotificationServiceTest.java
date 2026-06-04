@@ -1,22 +1,25 @@
 package ai.first.application.security;
 
+import ai.first.domain.foundation.notification.NotificationProjectionInput;
+import ai.first.domain.foundation.notification.NotificationSourceRef;
+import ai.first.domain.foundation.notification.NotificationSurfaceRef;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ai.first.domain.security.Account;
-import ai.first.domain.security.AccountStatus;
-import ai.first.domain.security.EmailNotificationDeliveryStatus;
-import ai.first.domain.security.FoundationRole;
-import ai.first.domain.security.Membership;
-import ai.first.domain.security.MembershipStatus;
-import ai.first.domain.security.NotificationCategory;
-import ai.first.domain.security.NotificationPriority;
-import ai.first.domain.security.ScopeType;
-import ai.first.domain.security.Tenant;
-import ai.first.domain.security.UserProfile;
-import ai.first.domain.security.UserSettings;
-import ai.first.domain.security.WorkosIdentity;
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.email.EmailNotificationDeliveryStatus;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.MembershipStatus;
+import ai.first.domain.foundation.notification.NotificationCategory;
+import ai.first.domain.foundation.notification.NotificationPriority;
+import ai.first.domain.foundation.identity.ScopeType;
+import ai.first.domain.foundation.identity.Tenant;
+import ai.first.domain.foundation.identity.UserProfile;
+import ai.first.domain.foundation.identity.UserSettings;
+import ai.first.domain.foundation.identity.WorkosIdentity;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -99,11 +102,11 @@ class EmailNotificationServiceTest {
   @Test
   void nonAllowlistedWorkstreamUpdatesAreDeniedByDefault() {
     var actor = actor("corr-allowlist");
-    var input = new ai.first.domain.security.NotificationProjectionInput(
+    var input = new ai.first.domain.foundation.notification.NotificationProjectionInput(
         "event-1", "workstream_event", "tenant-1", null, "admin@example.test", Map.of("selectedContextId", "membership-admin"), "agent-my-account", "my_account.view_summary",
-        List.of(new ai.first.domain.security.NotificationSourceRef("workstream_event", "event-1", "Routine update", "my_account.view_summary", "trace-event-1", "corr-event")),
+        List.of(new ai.first.domain.foundation.notification.NotificationSourceRef("workstream_event", "event-1", "Routine update", "my_account.view_summary", "trace-event-1", "corr-event")),
         List.of("trace-event-1"), "Routine update", "No email", NotificationCategory.WORKSTREAM_UPDATE, NotificationPriority.INFO,
-        new ai.first.domain.security.NotificationSurfaceRef("agent-my-account", "surface-my-account", "dashboard", "event-1", "open", "my_account.view_summary"),
+        new ai.first.domain.foundation.notification.NotificationSurfaceRef("agent-my-account", "surface-my-account", "dashboard", "event-1", "open", "my_account.view_summary"),
         "notification:in_app:tenant-1:none:admin@example.test:workstream_event:event-1:update", "corr-event");
     var notification = notifications.projectFromSource(actor, input, "corr-event");
     email.updatePreference(actor, NotificationCategory.ALL, true, NotificationPriority.INFO, null, "corr-pref");

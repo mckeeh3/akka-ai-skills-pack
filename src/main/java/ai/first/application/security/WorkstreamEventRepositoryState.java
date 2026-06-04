@@ -1,6 +1,6 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.WorkstreamEventEnvelope;
+import ai.first.domain.foundation.workstream.WorkstreamEventEnvelope;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;

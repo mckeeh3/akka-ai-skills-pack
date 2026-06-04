@@ -1,13 +1,14 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.identity.Tenant;
 import ai.first.application.security.AuthContextResolver;
 import ai.first.application.security.AuthorizationException;
-import ai.first.domain.agentfoundation.AgentDefinition;
-import ai.first.domain.agentfoundation.AgentLifecycleStatus;
-import ai.first.domain.agentfoundation.BehaviorChangeProposal;
-import ai.first.domain.agentfoundation.ToolCatalogEntry;
-import ai.first.domain.agentfoundation.ToolPermissionBoundary;
-import ai.first.domain.security.AuthContext;
+import ai.first.domain.foundation.agent.AgentDefinition;
+import ai.first.domain.foundation.agent.AgentLifecycleStatus;
+import ai.first.domain.foundation.agent.BehaviorChangeProposal;
+import ai.first.domain.foundation.agent.ToolCatalogEntry;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import ai.first.domain.foundation.identity.AuthContext;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

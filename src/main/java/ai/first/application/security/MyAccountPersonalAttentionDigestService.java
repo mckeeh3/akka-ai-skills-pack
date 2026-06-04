@@ -1,8 +1,9 @@
 package ai.first.application.security;
 
+import ai.first.domain.foundation.identity.Account;
 import ai.first.application.agentfoundation.FailClosedMyAccountPersonalAttentionDigestAutonomousAgentRuntime;
 import ai.first.application.agentfoundation.MyAccountPersonalAttentionDigestAutonomousAgentRuntime;
-import ai.first.domain.security.AttentionItem;
+import ai.first.domain.foundation.attention.AttentionItem;
 import ai.first.domain.security.MyAccountPersonalAttentionDigestTask;
 import java.time.Clock;
 import java.time.Instant;

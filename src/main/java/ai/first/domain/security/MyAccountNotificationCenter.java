@@ -1,5 +1,10 @@
 package ai.first.domain.security;
 
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.notification.NotificationChannel;
+import ai.first.domain.foundation.notification.NotificationItem;
+import ai.first.domain.foundation.notification.NotificationPreference;
+import ai.first.domain.foundation.notification.NotificationRedactionLevel;
 import java.util.List;
 import java.util.Map;
 

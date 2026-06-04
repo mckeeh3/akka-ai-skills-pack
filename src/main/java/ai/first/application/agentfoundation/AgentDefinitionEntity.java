@@ -3,8 +3,8 @@ package ai.first.application.agentfoundation;
 import akka.javasdk.annotations.Component;
 import akka.javasdk.annotations.TypeName;
 import akka.javasdk.eventsourcedentity.EventSourcedEntity;
-import ai.first.domain.agentfoundation.AgentDefinition;
-import ai.first.domain.agentfoundation.AgentLifecycleStatus;
+import ai.first.domain.foundation.agent.AgentDefinition;
+import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import java.util.Optional;
 
 /**

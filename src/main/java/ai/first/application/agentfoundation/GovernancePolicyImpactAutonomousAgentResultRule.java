@@ -1,5 +1,6 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import akka.javasdk.agent.task.TaskRule;
 import java.util.Locale;
 

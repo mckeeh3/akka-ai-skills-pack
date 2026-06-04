@@ -4,12 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import akka.javasdk.testkit.KeyValueEntityTestKit;
-import ai.first.domain.security.AttentionCategory;
-import ai.first.domain.security.AttentionItem;
-import ai.first.domain.security.AttentionItemStatus;
-import ai.first.domain.security.AttentionSeverity;
-import ai.first.domain.security.AttentionSourceRef;
-import ai.first.domain.security.AttentionSurfaceRef;
+import ai.first.domain.foundation.attention.AttentionCategory;
+import ai.first.domain.foundation.attention.AttentionItem;
+import ai.first.domain.foundation.attention.AttentionItemStatus;
+import ai.first.domain.foundation.attention.AttentionSeverity;
+import ai.first.domain.foundation.attention.AttentionSourceRef;
+import ai.first.domain.foundation.attention.AttentionSurfaceRef;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;

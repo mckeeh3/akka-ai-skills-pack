@@ -1,7 +1,7 @@
 package ai.first.application.security;
 
 import ai.first.domain.security.AccessReviewTask;
-import ai.first.domain.security.AdminAuditEvent;
+import ai.first.domain.foundation.audit.AdminAuditEvent;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;

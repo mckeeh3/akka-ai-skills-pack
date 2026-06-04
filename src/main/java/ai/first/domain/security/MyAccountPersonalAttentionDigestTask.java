@@ -1,5 +1,6 @@
 package ai.first.domain.security;
 
+import ai.first.domain.foundation.identity.Account;
 import java.time.Instant;
 import java.util.List;
 

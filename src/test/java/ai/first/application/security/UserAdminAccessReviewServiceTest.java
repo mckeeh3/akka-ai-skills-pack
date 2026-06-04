@@ -1,21 +1,22 @@
 package ai.first.application.security;
 
+import ai.first.domain.foundation.audit.AdminAuditEvent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ai.first.domain.security.AccessReviewTask;
-import ai.first.domain.security.Account;
-import ai.first.domain.security.AccountStatus;
-import ai.first.domain.security.FoundationRole;
-import ai.first.domain.security.Membership;
-import ai.first.domain.security.MembershipStatus;
-import ai.first.domain.security.ScopeType;
-import ai.first.domain.security.Tenant;
-import ai.first.domain.security.UserProfile;
-import ai.first.domain.security.UserSettings;
-import ai.first.domain.security.WorkosIdentity;
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.MembershipStatus;
+import ai.first.domain.foundation.identity.ScopeType;
+import ai.first.domain.foundation.identity.Tenant;
+import ai.first.domain.foundation.identity.UserProfile;
+import ai.first.domain.foundation.identity.UserSettings;
+import ai.first.domain.foundation.identity.WorkosIdentity;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -56,7 +57,7 @@ class UserAdminAccessReviewServiceTest {
 
     var replay = accessReviews.start(tenantAdmin, "idem-access-review", "corr-access-review-replay");
     assertEquals(task.taskId(), replay.taskId());
-    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("user_admin.access_review.start") && event.result() == ai.first.domain.security.AdminAuditEvent.Result.NO_OP));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("user_admin.access_review.start") && event.result() == ai.first.domain.foundation.audit.AdminAuditEvent.Result.NO_OP));
   }
 
   @Test

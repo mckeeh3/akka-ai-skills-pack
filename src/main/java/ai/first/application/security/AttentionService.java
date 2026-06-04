@@ -1,11 +1,12 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.AdminAuditEvent;
-import ai.first.domain.security.AttentionCategory;
-import ai.first.domain.security.AttentionItem;
-import ai.first.domain.security.AttentionItemStatus;
-import ai.first.domain.security.AttentionRedactionLevel;
-import ai.first.domain.security.AttentionSeverity;
+import ai.first.domain.foundation.attention.AttentionSurfaceRef;
+import ai.first.domain.foundation.audit.AdminAuditEvent;
+import ai.first.domain.foundation.attention.AttentionCategory;
+import ai.first.domain.foundation.attention.AttentionItem;
+import ai.first.domain.foundation.attention.AttentionItemStatus;
+import ai.first.domain.foundation.attention.AttentionRedactionLevel;
+import ai.first.domain.foundation.attention.AttentionSeverity;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Comparator;
@@ -204,7 +205,7 @@ public final class AttentionService {
 
   public record MyAccountAttentionSummary(int totalAttentionCount, AttentionSeverity highestSeverity, List<WorkstreamAttentionSummary> workstreams, List<AttentionItem> personalQueue, List<String> traceRefs, AttentionRedactionLevel redaction) {}
 
-  public record OpenAttentionItemResult(String status, String itemId, String targetFunctionalAgentId, ai.first.domain.security.AttentionSurfaceRef surfaceRef, List<String> traceRefs, AttentionRedactionLevel redaction, String correlationId) {
+  public record OpenAttentionItemResult(String status, String itemId, String targetFunctionalAgentId, ai.first.domain.foundation.attention.AttentionSurfaceRef surfaceRef, List<String> traceRefs, AttentionRedactionLevel redaction, String correlationId) {
     static OpenAttentionItemResult redacted(String correlationId) {
       return new OpenAttentionItemResult("not_found_or_redacted", null, null, null, List.of(), AttentionRedactionLevel.NOT_FOUND_OR_REDACTED, correlationId);
     }

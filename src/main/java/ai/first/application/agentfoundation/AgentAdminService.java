@@ -1,16 +1,17 @@
 package ai.first.application.agentfoundation;
 
+import ai.first.domain.foundation.agent.ModelConfigRef;
 import ai.first.application.security.AuthContextResolver;
 import ai.first.application.security.AuthorizationException;
-import ai.first.domain.agentfoundation.AgentDefinition;
-import ai.first.domain.agentfoundation.AgentLifecycleStatus;
-import ai.first.domain.agentfoundation.AgentReferenceManifest;
-import ai.first.domain.agentfoundation.AgentSkillManifest;
-import ai.first.domain.agentfoundation.PromptDocument;
-import ai.first.domain.agentfoundation.ReferenceDocument;
-import ai.first.domain.agentfoundation.SeedProvenance;
-import ai.first.domain.agentfoundation.SkillDocument;
-import ai.first.domain.agentfoundation.ToolPermissionBoundary;
+import ai.first.domain.foundation.agent.AgentDefinition;
+import ai.first.domain.foundation.agent.AgentLifecycleStatus;
+import ai.first.domain.foundation.agent.AgentReferenceManifest;
+import ai.first.domain.foundation.agent.AgentSkillManifest;
+import ai.first.domain.foundation.agent.PromptDocument;
+import ai.first.domain.foundation.agent.ReferenceDocument;
+import ai.first.domain.foundation.agent.SeedProvenance;
+import ai.first.domain.foundation.agent.SkillDocument;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;

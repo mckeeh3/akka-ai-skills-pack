@@ -1,10 +1,10 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.Account;
-import ai.first.domain.security.AuthContext;
-import ai.first.domain.security.Membership;
-import ai.first.domain.security.UserProfile;
-import ai.first.domain.security.UserSettings;
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.UserProfile;
+import ai.first.domain.foundation.identity.UserSettings;
 import java.util.List;
 import java.util.Locale;
 

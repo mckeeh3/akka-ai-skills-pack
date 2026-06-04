@@ -79,7 +79,7 @@
 
 ### TASK-PACKAGES-02-001: Move foundation domain packages
 
-- status: pending
+- status: done
 - source: specs/java-foundation-coreapp-business-partition/backlog/01-package-partition-build-backlog.md
 - task brief: specs/java-foundation-coreapp-business-partition/tasks/02-foundation/01-move-foundation-domain.md
 - depends on: [TASK-PACKAGES-01-001]
@@ -103,6 +103,8 @@
   - queue is updated and committed
 - notes:
   - commit message: `packages: move foundation domain layer`
+  - moved governed-agent, identity, audit, attention, email, invitation, notification, governance, and workstream-event foundation records to `ai.first.domain.foundation.*`
+  - checks: `git diff --check`; `mvn test`; scoped stale import/package search for moved foundation domain classes
 
 ### TASK-PACKAGES-02-002: Move foundation application and API packages
 

@@ -1,15 +1,17 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.Account;
-import ai.first.domain.security.AccountStatus;
-import ai.first.domain.security.AdminAuditEvent;
-import ai.first.domain.security.AuthContext;
-import ai.first.domain.security.Membership;
-import ai.first.domain.security.MembershipStatus;
-import ai.first.domain.security.ScopeType;
-import ai.first.domain.security.UserProfile;
-import ai.first.domain.security.UserSettings;
-import ai.first.domain.security.WorkosIdentity;
+import ai.first.domain.foundation.identity.Customer;
+import ai.first.domain.foundation.identity.Tenant;
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.audit.AdminAuditEvent;
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.MembershipStatus;
+import ai.first.domain.foundation.identity.ScopeType;
+import ai.first.domain.foundation.identity.UserProfile;
+import ai.first.domain.foundation.identity.UserSettings;
+import ai.first.domain.foundation.identity.WorkosIdentity;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -189,7 +191,7 @@ public final class AuthContextResolver {
 
   public record ResolvedMe(
       Account account,
-      ai.first.domain.security.UserProfile profile,
+      ai.first.domain.foundation.identity.UserProfile profile,
       UserSettings settings,
       List<Membership> memberships,
       AuthContext selectedContext,

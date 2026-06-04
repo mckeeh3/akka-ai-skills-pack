@@ -1,6 +1,6 @@
 package ai.first.application.security;
 
-import ai.first.domain.security.AttentionItem;
+import ai.first.domain.foundation.attention.AttentionItem;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
