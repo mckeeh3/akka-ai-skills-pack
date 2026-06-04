@@ -40,17 +40,17 @@ tools/**
 The supported default Java package is `ai.first`. Keep downstream domain work additive and merge-friendly by using extension zones such as:
 
 ```text
-src/main/java/ai/first/domain/extensions/<domain>/
-src/main/java/ai/first/application/extensions/<domain>/
-src/main/java/ai/first/api/extensions/<domain>/
-src/test/java/ai/first/extensions/<domain>/
+src/main/java/ai/first/domain/business/<domain>/
+src/main/java/ai/first/application/business/<domain>/
+src/main/java/ai/first/api/business/<domain>/
+src/test/java/ai/first/business/<domain>/
 frontend/src/extensions/<domain>/
 app-description/extensions/<domain>/
 specs/extensions/<domain>/
 docs/extensions/<domain>/
 ```
 
-When domain behavior needs core integration, prefer a small stable hook or registry in core code plus domain implementation under the extension path.
+When domain behavior needs core integration, prefer a small stable hook or registry in core code plus Java domain implementation under the `business.<domain>` package path.
 
 ## Required checks
 

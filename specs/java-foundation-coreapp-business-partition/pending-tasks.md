@@ -171,7 +171,7 @@
 
 ### TASK-PACKAGES-04-001: Add business boundary docs and checks
 
-- status: pending
+- status: done
 - source: specs/java-foundation-coreapp-business-partition/backlog/01-package-partition-build-backlog.md
 - task brief: specs/java-foundation-coreapp-business-partition/tasks/04-business-boundaries/01-add-business-boundary-docs-checks.md
 - depends on: [TASK-PACKAGES-03-001]
@@ -196,6 +196,8 @@
   - queue is updated and committed
 - notes:
   - commit message: `packages: document business boundaries`
+  - added `business.<area>` Java package docs, root/domain-extension guidance, and lightweight `JavaPackageBoundaryTest`
+  - checks: `git diff --check`; `mvn test`; boundary searches for business imports from foundation/coreapp and coreapp imports from foundation API/domain
 
 ### TASK-PACKAGES-05-001: Update docs and skills-pack package references
 

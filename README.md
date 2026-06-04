@@ -66,24 +66,24 @@ Use this repository as the upstream core baseline for a product fork:
 5. Validate backend, frontend, auth, authorization, audit/trace, and UI behavior through the root app runtime path.
 6. Merge upstream core changes regularly and resolve conflicts by keeping core hooks small and domain code isolated.
 
-Recommended extension zones are documented in [`docs/domain-extension-guide.md`](docs/domain-extension-guide.md). Upstream merge practices are documented in [`docs/upstream-merge-guide.md`](docs/upstream-merge-guide.md).
+Recommended extension zones are documented in [`docs/domain-extension-guide.md`](docs/domain-extension-guide.md). Java package ownership and dependency rules are documented in [`docs/java-package-boundaries.md`](docs/java-package-boundaries.md). Upstream merge practices are documented in [`docs/upstream-merge-guide.md`](docs/upstream-merge-guide.md).
 
 ## Where to add domain-specific work
 
 Prefer additive extension paths:
 
 ```text
-src/main/java/ai/first/domain/extensions/<domain>/
-src/main/java/ai/first/application/extensions/<domain>/
-src/main/java/ai/first/api/extensions/<domain>/
-src/test/java/ai/first/extensions/<domain>/
+src/main/java/ai/first/domain/business/<domain>/
+src/main/java/ai/first/application/business/<domain>/
+src/main/java/ai/first/api/business/<domain>/
+src/test/java/ai/first/business/<domain>/
 frontend/src/extensions/<domain>/
 app-description/extensions/<domain>/
 specs/extensions/<domain>/
 docs/extensions/<domain>/
 ```
 
-When domain behavior needs a core integration point, add the smallest stable registry or hook in core code and put domain logic in the extension path. Domain-specific extensions must preserve backend authorization, tenant/customer scoping, audit/work traces, governed capability boundaries, frontend secret boundaries, and provider fail-closed behavior.
+When domain behavior needs a core integration point, add the smallest stable registry or hook in core code and put Java domain logic under the `business.<domain>` package path. Domain-specific extensions must preserve backend authorization, tenant/customer scoping, audit/work traces, governed capability boundaries, frontend secret boundaries, and provider fail-closed behavior.
 
 ## Skills-pack maintenance
 
