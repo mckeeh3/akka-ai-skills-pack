@@ -127,12 +127,32 @@ class InvitationAndUserAdminServiceTest {
     var resent = invitations.resend(tenantAdmin, invite.invitationId(), "resend-1", "repair failed delivery", "corr-resend");
     assertEquals(1, resent.resendCount());
     assertEquals(2, invitationRepository.queuedEmails().size());
+    var replayedResend = invitations.resend(tenantAdmin, invite.invitationId(), "resend-1", "replay", "corr-resend-replay");
+    assertEquals(1, replayedResend.resendCount());
+    assertEquals(2, invitationRepository.queuedEmails().size());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_RESEND") && event.result() == ai.first.domain.foundation.audit.AdminAuditEvent.Result.NO_OP));
 
     var revoked = invitations.revoke(tenantAdmin, invite.invitationId(), "wrong recipient", "corr-revoke");
     assertEquals(InvitationStatus.REVOKED, revoked.status());
     assertEquals(InvitationStatus.REVOKED, invitations.expire(invite.invitationId(), "tenant-1", null, "corr-expire-late").status());
     assertThrows(AuthorizationException.class, () -> invitations.accept(new WorkosIdentity("workos-dupe", "dupe@example.com", "Dupe"), revoked.acceptanceContextId(), "corr-accept-revoked"));
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_REVOKE")));
+  }
+
+  @Test
+  void deliveryFailedInvitationRequiresAdminResendBeforeAcceptance() {
+    var invite = invitations.createInvitation(tenantAdmin, inviteRequest("failed-accept", "failed.accept@example.com"));
+    var failed = invitations.recordDeliveryResult(invite.invitationId(), "delivery-1", false, null, "resend-http-401", "corr-delivery-failed");
+
+    var browserResult = invitations.acceptForBrowser(
+        new WorkosIdentity("workos-failed", "failed.accept@example.com", "Failed Accept"),
+        new InvitationService.AcceptInvitationRequest(null, failed.acceptanceContextId()),
+        "corr-failed-browser");
+
+    assertEquals(InvitationStatus.DELIVERY_FAILED, failed.status());
+    assertEquals("delivery-failed", browserResult.status());
+    assertThrows(AuthorizationException.class, () -> invitations.accept(new WorkosIdentity("workos-failed", "failed.accept@example.com", "Failed Accept"), failed.acceptanceContextId(), "corr-failed-direct"));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.reasonCode().equals("delivery-failed-without-override")));
   }
 
   @Test

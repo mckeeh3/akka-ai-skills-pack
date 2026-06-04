@@ -123,7 +123,7 @@
 
 ### TASK-FCSR-03-001: Complete invitation onboarding and email outbox readiness
 
-- status: pending
+- status: done
 - source: full-core readiness gap: complete invitation onboarding with Resend and captured local/dev/test outbox
 - task brief: specs/full-core-saas-readiness/tasks/03-invitations/01-complete-invitation-onboarding.md
 - depends on:
@@ -160,6 +160,8 @@
 - notes:
   - commit message: `full-core-ready: complete invitations`
   - vertical contract: User Admin invitation surfaces/actions; secure-tenant-user-foundation capability; Resend/captured outbox; idempotency, audit, tenant isolation, expiry/reminder lifecycle where selected
+  - evidence: `specs/full-core-saas-readiness/invitation-onboarding-validation.md`; delivery-failed acceptance is denied until resend; resend replay is idempotent by client key; focused invitation/email tests and full `mvn test` passed locally
+  - blocker: live Resend provider smoke remains blocked until backend-only Resend configuration and sender/domain setup are supplied; timer-backed reminder scheduling remains deferred
 
 ### TASK-FCSR-04-001: Complete User Admin structured surfaces
 

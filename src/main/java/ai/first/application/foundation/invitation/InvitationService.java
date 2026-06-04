@@ -169,8 +169,13 @@ public final class InvitationService {
     if (!invite.resendable()) {
       throw deny(actor, invite, "INVITATION_RESEND", "not-resendable", correlationId);
     }
-    var rawToken = "invite-token-" + invitationId + "-resend-" + idempotencyKey;
-    var attempt = "delivery-" + (invite.resendCount() + 2);
+    var attempt = "delivery-resend-" + sha256(firstNonBlank(idempotencyKey, "missing-idempotency-key")).substring(0, 16);
+    var existingOutboxId = invitationId + ":" + attempt;
+    if (invitationRepository.email(existingOutboxId).isPresent()) {
+      audit(actor, invite, "INVITATION_RESEND", AdminAuditEvent.Result.NO_OP, "idempotent-replay", correlationId);
+      return invite;
+    }
+    var rawToken = "invite-token-" + invitationId + "-resend-" + firstNonBlank(idempotencyKey, "missing-idempotency-key");
     var updated = new Invitation(
         invite.invitationId(), invite.normalizedEmail(), invite.scopeType(), invite.tenantId(), invite.customerId(), invite.requestedRoles(),
         invite.accountId(), invite.membershipId(), InvitationStatus.PENDING_DELIVERY, EmailDeliveryStatus.QUEUED, invite.deliveryAttempts(),
@@ -240,6 +245,10 @@ public final class InvitationService {
       appendSystemAudit(invite, "INVITATION_ACCEPT", AdminAuditEvent.Result.DENIED, "not-acceptable", correlationId);
       throw new AuthorizationException(403, "invitation-not-acceptable");
     }
+    if (invite.status() == InvitationStatus.DELIVERY_FAILED || invite.deliveryStatus() == EmailDeliveryStatus.FAILED) {
+      appendSystemAudit(invite, "INVITATION_ACCEPT", AdminAuditEvent.Result.DENIED, "delivery-failed-without-override", correlationId);
+      throw new AuthorizationException(403, "invitation-delivery-failed");
+    }
     if (!invite.normalizedEmail().equals(normalizeEmail(identity.email()))) {
       appendSystemAudit(invite, "INVITATION_ACCEPT", AdminAuditEvent.Result.DENIED, "workos-email-mismatch", correlationId);
       throw new AuthorizationException(403, "workos-email-mismatch");
@@ -282,6 +291,10 @@ public final class InvitationService {
       var expired = invite.status() == InvitationStatus.EXPIRED ? invite : expire(invite.invitationId(), invite.tenantId(), invite.customerId(), correlationId);
       appendSystemAudit(expired, "INVITATION_ACCEPT", AdminAuditEvent.Result.DENIED, "expired", correlationId);
       return InvitationAcceptanceResult.from(expired, "expired", "This invitation has expired. Ask an administrator to resend it.", correlationId);
+    }
+    if (invite.status() == InvitationStatus.DELIVERY_FAILED || invite.deliveryStatus() == EmailDeliveryStatus.FAILED) {
+      appendSystemAudit(invite, "INVITATION_ACCEPT", AdminAuditEvent.Result.DENIED, "delivery-failed-without-override", correlationId);
+      return InvitationAcceptanceResult.from(invite, "delivery-failed", "This invitation email failed delivery. Ask an administrator to resend it before accepting.", correlationId);
     }
     if (!invite.normalizedEmail().equals(normalizeEmail(identity.email()))) {
       appendSystemAudit(invite, "INVITATION_ACCEPT", AdminAuditEvent.Result.DENIED, "workos-email-mismatch", correlationId);
@@ -431,6 +444,10 @@ public final class InvitationService {
     var copy = new java.util.ArrayList<>(ids);
     copy.add(id);
     return List.copyOf(copy);
+  }
+
+  private static String firstNonBlank(String value, String fallback) {
+    return value == null || value.isBlank() ? fallback : value.trim();
   }
 
   private static String sha256(String value) {
