@@ -1,26 +1,27 @@
 # Latest Readiness Summary
 
-- readiness: ready-with-assumptions-for-planning-and-ui-design-validation
+- readiness: not-ready-for-full-core-saas; ready-for-bounded-five-core-starter-alignment-work
 - ready for:
-  - implementation planning
-  - backlog/sprint decomposition
-  - phase-1 scaffold design
-  - UI design validation against the selected `ai-first-workstream-enterprise` style guide
-  - localized frontend implementation planning for the workstream shell, functional-agent rail, persistent composer, Governance/Policy, Governance Workbench, decision review, governance, audit, and admin surfaces
-  - first frontend execution slice: React/Vite/TypeScript foundation with four tokenized named themes
-- not yet fully ready for:
-  - complete code generation of all phases at once
-  - production WorkOS authentication setup values and Resend invite-email setup values
+  - implementation planning and localized runtime/UI alignment for the five core functional-agent workstreams
+  - app-description maintenance that preserves the canonical workstream shell, structured surfaces, governed capabilities, and traceability maps
+  - targeted backend/frontend tasks that prove behavior through the real Akka/API/UI path for the selected slice
+  - domain-specific planning only when the affected core/security/capability contracts remain intact
+- not yet ready for:
+  - declaring full-core SaaS completion
+  - complete code generation of all foundation phases at once without additional runtime validation
+  - production WorkOS/AuthKit configuration and Resend invite-email configuration
+  - full invitation onboarding, support access, billing-boundary behavior, and complete tenant-isolation/security coverage
+  - full User Admin, Agent Admin, Audit/Trace search/export, and Governance/Policy lifecycle depth through real backend capabilities and UI surfaces
 - workstream/UI readiness notes:
-  - functional agents, internal agents, workstream retention, surface index, and representative surface contracts are defined
-  - authoritative workstream expert bundles exist for all core foundation functional agents: My Account, User Admin, Agent Admin, Governance/Policy, Governance/Policy, and Audit/Trace
-  - selected `ai-first-workstream-enterprise` style guide is recorded
-  - named-theme model and lightweight style constraints are defined
-  - structured surface contracts, form/action behavior, frontend API DTO sketches, realtime behavior, and design-specific acceptance checks are defined
+  - five core functional-agent workstreams are the primary application model: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy
+  - canonical id aliases, surface/action-to-capability mappings, default dashboard loading, shell alias resolution, and bounded realtime v1 semantics are now recorded and aligned with implementation behavior
+  - structured surface contracts, form/action behavior, frontend API DTO sketches, stale/refresh realtime behavior, and design-specific acceptance checks are defined for starter work
   - route/deep-link support is subordinate to functional-agent workstreams and structured surfaces
-- main remaining decisions:
-  - local/prod auth mode
-  - first implementation slice boundary
-  - v1 component coverage boundary
-  - whether phase-1 frontend includes only My Account, User Admin, and Agent Admin workstreams or also Governance/Policy, Governance/Policy, and Audit/Trace surfaces
-  - whether MCP/gRPC are included in seed v1 or deferred modules
+  - `frontend/src/workstream/**` is the canonical runtime UI implementation reference
+  - `frontend/src/screens/**` files are legacy/reference/contract-fixture artifacts, not the primary architecture or evidence of feature completion
+- main remaining decisions/gaps:
+  - local/prod auth mode and provider secret configuration
+  - full-core component coverage boundary and validation sequence
+  - invitation/onboarding and email delivery completion
+  - managed-agent governance depth for prompts, skills, references, manifests, tool boundaries, proposals, approvals, and traces
+  - whether future work should remove or migrate legacy page-style fixture files after their contract-test value is replaced

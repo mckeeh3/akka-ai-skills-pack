@@ -1,11 +1,12 @@
 # Readiness Status
 
-- current-state: scaffolded-core-app-in-progress
-- readiness scope: five-core starter advancing toward full-core SaaS readiness
+- current-state: five-core-workstream-starter-partially-implemented
+- readiness scope: five-core starter advancing toward full-core SaaS readiness; full-core SaaS is not ready
 
 ## Ready for
 
 - local scaffold inspection and extension through this `app-description/` tree;
+- bounded runtime/UI alignment work against the five core workstream shell;
 - implementation planning from the five core workstreams;
 - focused follow-up tasks that close gaps in My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy;
 - adding domain-specific features only after the affected core/security/capability contracts are preserved.
@@ -45,6 +46,18 @@ CRM, SMB operations, billing, scheduling, inventory, reporting, or other domain-
 4. auth/security, audit/trace, behavior, tests, and UI implications;
 5. implementation/regeneration impact.
 
+## Current implementation evidence
+
+Recent alignment work establishes starter-level contracts and runtime behavior for:
+
+- canonical aliases between app-description ids and implementation ids for the five core functional-agent workstreams, dashboards, shell requests, and primary surface actions;
+- exact surface-action to governed-tool/capability mappings for representative core workstream actions;
+- backend-authoritative default dashboard loading and safe denial/system-message behavior for forbidden shell targets;
+- backend-authoritative prompt/surface alias resolution for common workstream requests;
+- explicit realtime v1 semantics as bounded SSE replay/refresh behavior, not long-lived true-live streaming.
+
+This evidence supports continued five-core starter realization work. It does not close full-core SaaS gaps unless the real local Akka/API/UI path is proven for each named feature.
+
 ## Last update basis
 
-Created by the AI-first SaaS starter scaffold as the initial core app document structure.
+Updated during workstream design/implementation alignment to reflect current five-core starter runtime evidence, bounded realtime semantics, and remaining full-core gaps.

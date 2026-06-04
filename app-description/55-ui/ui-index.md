@@ -32,4 +32,12 @@
   - `../../../../../docs/workstream-ui-reference-architecture.md`
   - `../../../../../frontend/src/workstream/**` reusable shell, rail, composer, stream, surface, action, realtime, type, and fixture modules
   - `../../../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs` for the canonical User Admin `user-admin-dashboard` → `user-admin-user-list` → `user-admin-user-account` vertical
-  - legacy `frontend/src/screens/**` and standalone static UI examples are not canonical core-app structure
+- legacy/reference frontend artifacts:
+  - `../../../../../frontend/src/screens/admin/AdminUsersPage.tsx` — legacy page-style User Admin fixture/reference, not the canonical `user-admin-dashboard` → `user-admin-user-list` → `user-admin-user-account` workstream vertical
+  - `../../../../../frontend/src/screens/audit/AuditTraceExplorerPage.tsx` — legacy page-style Audit/Trace fixture/reference, not the canonical workstream trace surface graph
+  - `../../../../../frontend/src/screens/briefing/BriefingPage.tsx` — legacy Mission Control fixture/reference for AI-first surface ideas, not an active route or primary shell architecture
+  - `../../../../../frontend/src/screens/decisions/DecisionQueuePage.tsx` — legacy decision-card fixture/reference, not a replacement for structured workstream decision surfaces
+  - `../../../../../frontend/src/screens/goals/GoalWorkbenchPage.tsx` — legacy goal-workbench fixture/reference, not an active generated-app page model
+  - `../../../../../frontend/src/screens/governance/GovernancePoliciesPage.tsx` — legacy Governance/Policy fixture/reference, not the canonical policy workstream surface graph
+  - `../../../../../frontend/src/screens/profile/ProfilePreferencesPage.tsx` — legacy My Account/profile fixture/reference; current My Account entry is the signed-in user tile plus workstream surfaces
+  - contract tests currently keep these files as reference fixtures and assert they are not imported by `frontend/src/main.tsx`; do not treat them as runtime completion evidence or remove them without a separate migration task

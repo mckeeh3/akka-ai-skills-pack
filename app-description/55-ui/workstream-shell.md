@@ -2,15 +2,15 @@
 
 The scaffolded core app description UI is an agent workstream shell, not a page-first admin console.
 
-Implementation reference: `../../../../../frontend/src/workstream/**` provides the reusable React/Vite shell, rail, composer, stream, surface, action, realtime, type, and fixture modules. `../../../../../frontend/src/main.tsx` shows shell integration and deep-link handling. Treat legacy screen/page files as drift or mechanics references only.
+Implementation reference: `../../../../../frontend/src/workstream/**` provides the reusable React/Vite shell, rail, composer, stream, surface, action, realtime, type, and fixture modules. `../../../../../frontend/src/main.tsx` shows shell integration and deep-link handling. Treat legacy screen/page files under `frontend/src/screens/**` as fixture/reference artifacts only, not active architecture or runtime-completion evidence.
 
 ## Regions
 
+- signed-in user tile:
+  - My Account / Access/Profile entry point in the lower-left shell area
 - left rail functional agents:
-  - Access/Profile
   - User Admin
   - Agent Admin
-  - Governance/Policy
   - Governance/Policy
   - Audit/Trace
 - main workstream panel:

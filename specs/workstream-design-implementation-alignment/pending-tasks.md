@@ -260,7 +260,7 @@
 
 ### TASK-WDA-04-001: Refresh readiness and legacy page notes
 
-- status: pending
+- status: done
 - source: audit finding that readiness docs are stale and page-style frontend artifacts need classification
 - task brief: specs/workstream-design-implementation-alignment/tasks/04-readiness/01-refresh-readiness-and-legacy-page-notes.md
 - depends on:
@@ -297,7 +297,9 @@
   - changes and queue update are committed
 - notes:
   - commit message: `workstream-align: refresh readiness notes`
-  - vertical contract: cross-cutting app-description readiness/UI realization; no direct runtime feature unless a follow-up task is appended
+  - completed with updated readiness status/summary, duplicate Governance/Policy wording correction, current five-core starter evidence, full-core not-ready gaps, and legacy `frontend/src/screens/**` classification as reference/contract fixtures rather than primary architecture
+  - checks: `git diff --check`; focused `rg "not-ready-for-full-core-saas|five-core-workstream-starter-partially-implemented|bounded SSE replay/refresh|frontend/src/screens/\\*\\*|legacy/reference frontend artifacts|Legacy page-style artifact classification|not active architecture|not runtime-completion evidence" app-description/00-system/readiness-status.md app-description/80-review/latest-readiness-summary.md app-description/55-ui/ui-index.md app-description/55-ui/routes-and-deep-links.md app-description/55-ui/workstream-shell.md`
+  - vertical contract: cross-cutting app-description readiness/UI realization; no direct runtime feature and no follow-up task appended because legacy page artifacts are documented as retained reference fixtures
 
 ### TASK-WDA-99-001: Verify workstream alignment completion
 
