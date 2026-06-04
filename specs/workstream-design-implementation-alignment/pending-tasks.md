@@ -1,0 +1,331 @@
+# Pending Tasks: Workstream Design/Implementation Alignment
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
+- Commit message format: `workstream-align: <short task title>`.
+
+## Tasks
+
+### TASK-WDA-00-001: Create workstream alignment planning scaffold
+
+- status: done
+- source: user requested targeted design/implementation alignment after workstream audit
+- task brief: specs/workstream-design-implementation-alignment/tasks/00-planning/00-create-workstream-alignment-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - skills-pack/skills/README.md
+  - skills-pack/docs/pending-task-queue.md
+  - current conversation and audit findings
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/workstream-design-implementation-alignment/README.md
+  - specs/workstream-design-implementation-alignment/conversation-capture.md
+  - specs/workstream-design-implementation-alignment/pending-tasks.md
+  - specs/workstream-design-implementation-alignment/sprints/*.md
+  - specs/workstream-design-implementation-alignment/backlog/*.md
+  - specs/workstream-design-implementation-alignment/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - mini-project has captured rationale, sprint sequence, backlog, task briefs, and pending queue
+  - task changes and queue update are committed
+- notes:
+  - commit message: `workstream-align: add alignment queue`
+
+### TASK-WDA-01-001: Add canonical workstream id map
+
+- status: pending
+- source: audit finding that app-description ids and implementation ids are inconsistent
+- task brief: specs/workstream-design-implementation-alignment/tasks/01-description-alignment/01-add-canonical-id-map.md
+- depends on:
+  - TASK-WDA-00-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-design-implementation-alignment/README.md
+  - specs/workstream-design-implementation-alignment/conversation-capture.md
+  - specs/workstream-design-implementation-alignment/sprints/01-alignment-contracts-sprint.md
+  - specs/workstream-design-implementation-alignment/backlog/01-workstream-alignment-build-backlog.md
+  - specs/workstream-design-implementation-alignment/tasks/01-description-alignment/01-add-canonical-id-map.md
+  - app-description/12-workstreams/functional-agents.md
+  - app-description/12-workstreams/surfaces-index.md
+  - app-description/70-traceability/functional-agent-to-capability-map.md
+  - app-description/70-traceability/surface-to-capability-map.md
+  - src/main/java/ai/first/application/foundation/identity/MeResponse.java
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - frontend/src/workstream/types/agents.ts
+  - frontend/src/main.tsx
+- skills:
+  - agent-workstream-apps
+  - app-description-functional-agent-modeling
+  - app-description-surface-modeling
+- expected outputs:
+  - app-description/70-traceability/workstream-id-map.md
+  - updated traceability/index links as needed
+- required checks:
+  - `git diff --check`
+  - focused `rg` proving the map includes the five core implementation agent ids and primary surface ids
+- done criteria:
+  - canonical and implementation ids are mapped without guessing
+  - changes and queue update are committed
+- notes:
+  - commit message: `workstream-align: add canonical id map`
+  - vertical contract: cross-cutting app-description traceability for five core functional-agent workstreams; no runtime behavior change
+
+### TASK-WDA-01-002: Expand surface governed-tool mappings
+
+- status: pending
+- source: audit finding that app-description surface maps are too coarse for implemented action ids/governed-tool ids
+- task brief: specs/workstream-design-implementation-alignment/tasks/01-description-alignment/02-expand-surface-governed-tool-map.md
+- depends on:
+  - TASK-WDA-01-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-design-implementation-alignment/README.md
+  - specs/workstream-design-implementation-alignment/conversation-capture.md
+  - specs/workstream-design-implementation-alignment/sprints/01-alignment-contracts-sprint.md
+  - specs/workstream-design-implementation-alignment/backlog/01-workstream-alignment-build-backlog.md
+  - specs/workstream-design-implementation-alignment/tasks/01-description-alignment/02-expand-surface-governed-tool-map.md
+  - app-description/10-capabilities/capabilities-index.md
+  - app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - app-description/10-capabilities/03-governance-decisions-and-audit.md
+  - app-description/10-capabilities/04-frontend-shell-and-integration-patterns.md
+  - app-description/10-capabilities/05-managed-agent-foundation.md
+  - app-description/12-workstreams/surfaces-index.md
+  - app-description/70-traceability/surface-to-capability-map.md
+  - app-description/70-traceability/workstream-id-map.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - frontend/src/workstream/types/actions.ts
+- skills:
+  - capability-first-backend
+  - app-description-capability-modeling
+  - app-description-surface-modeling
+- expected outputs:
+  - updated app-description capability/surface/action maps with exact governed-tool ids
+- required checks:
+  - `git diff --check`
+  - focused `rg` for representative exact governed-tool ids
+- done criteria:
+  - core surface actions map to exact capability/governed-tool ids and exposure labels
+  - changes and queue update are committed
+- notes:
+  - commit message: `workstream-align: map surface governed tools`
+  - vertical contract: cross-cutting workstream surface graph/action-to-capability mapping; no runtime behavior change
+
+### TASK-WDA-02-001: Align default dashboard loading
+
+- status: pending
+- source: audit finding that backend bootstrap returns empty initial items/surfaces while doctrine expects dashboard/attention on workstream selection
+- task brief: specs/workstream-design-implementation-alignment/tasks/02-runtime-alignment/01-align-default-dashboard-loading.md
+- depends on:
+  - TASK-WDA-01-001
+  - TASK-WDA-01-002
+- required reads:
+  - AGENTS.md
+  - specs/workstream-design-implementation-alignment/README.md
+  - specs/workstream-design-implementation-alignment/conversation-capture.md
+  - specs/workstream-design-implementation-alignment/sprints/02-runtime-ui-alignment-sprint.md
+  - specs/workstream-design-implementation-alignment/backlog/01-workstream-alignment-build-backlog.md
+  - specs/workstream-design-implementation-alignment/tasks/02-runtime-alignment/01-align-default-dashboard-loading.md
+  - app-description/12-workstreams/surfaces-index.md
+  - app-description/70-traceability/workstream-id-map.md
+  - app-description/70-traceability/surface-to-capability-map.md
+  - src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java
+  - frontend/src/main.tsx
+  - frontend/src/workstream/shell/WorkstreamShell.tsx
+- skills:
+  - akka-http-endpoint-component-client
+  - akka-web-ui-state-rendering
+  - akka-web-ui-api-client
+  - akka-http-endpoint-testing
+- expected outputs:
+  - updated backend/frontend workstream default dashboard path
+  - updated targeted tests
+- required checks:
+  - `git diff --check`
+  - `mvn test -Dtest=WorkstreamServiceTest`
+  - targeted frontend tests for changed workstream shell/dashboard behavior
+  - `npm --prefix frontend run typecheck` if TypeScript changed
+- done criteria:
+  - visible core workstream open/selection deterministically renders or requests default dashboard through backend-authoritative behavior
+  - forbidden targets produce safe denial/system-message behavior
+  - changes and queue update are committed
+- notes:
+  - commit message: `workstream-align: align dashboard loading`
+  - vertical contract: five core workstreams; structured dashboard surfaces; browser/API shell request path; backend authorization, traces, and surface rendering tests
+
+### TASK-WDA-02-002: Add shell surface alias resolver
+
+- status: pending
+- source: audit finding that prompt-entered surface routing is too narrow
+- task brief: specs/workstream-design-implementation-alignment/tasks/02-runtime-alignment/02-add-shell-surface-alias-resolver.md
+- depends on:
+  - TASK-WDA-02-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-design-implementation-alignment/README.md
+  - specs/workstream-design-implementation-alignment/conversation-capture.md
+  - specs/workstream-design-implementation-alignment/sprints/02-runtime-ui-alignment-sprint.md
+  - specs/workstream-design-implementation-alignment/backlog/01-workstream-alignment-build-backlog.md
+  - specs/workstream-design-implementation-alignment/tasks/02-runtime-alignment/02-add-shell-surface-alias-resolver.md
+  - app-description/70-traceability/workstream-id-map.md
+  - app-description/70-traceability/surface-to-capability-map.md
+  - app-description/55-ui/routes-and-deep-links.md
+  - app-description/55-ui/workstream-panel-and-composer.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java
+  - frontend/src/main.tsx
+  - frontend/src/workstream/composer/WorkstreamComposer.tsx
+- skills:
+  - agent-workstream-apps
+  - akka-http-endpoint-request-context
+  - akka-web-ui-api-client
+  - akka-web-ui-forms-validation
+- expected outputs:
+  - backend-authoritative alias resolver and frontend integration if needed
+  - updated tests
+- required checks:
+  - `git diff --check`
+  - `mvn test -Dtest=WorkstreamServiceTest`
+  - targeted frontend composer/workstream tests if frontend changed
+  - `npm --prefix frontend run typecheck` if TypeScript changed
+- done criteria:
+  - common prompt aliases resolve to shell requests/surfaces or safe denials without leaking hidden targets
+  - changes and queue update are committed
+- notes:
+  - commit message: `workstream-align: add shell alias resolver`
+  - vertical contract: selected workstream composer; `show_surface`/`open_workstream` shell requests; browser-tool/API exposure; backend auth, origin metadata, trace, and denial tests
+
+### TASK-WDA-03-001: Align realtime/SSE semantics
+
+- status: pending
+- source: audit finding that current events endpoint appears finite/replay-oriented rather than clearly continuous live SSE
+- task brief: specs/workstream-design-implementation-alignment/tasks/03-ui-realtime/01-align-realtime-semantics.md
+- depends on:
+  - TASK-WDA-02-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-design-implementation-alignment/README.md
+  - specs/workstream-design-implementation-alignment/conversation-capture.md
+  - specs/workstream-design-implementation-alignment/sprints/02-runtime-ui-alignment-sprint.md
+  - specs/workstream-design-implementation-alignment/backlog/01-workstream-alignment-build-backlog.md
+  - specs/workstream-design-implementation-alignment/tasks/03-ui-realtime/01-align-realtime-semantics.md
+  - app-description/55-ui/states-and-realtime.md
+  - app-description/12-workstreams/surfaces-index.md
+  - app-description/70-traceability/surface-to-capability-map.md
+  - src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - src/main/java/ai/first/application/foundation/workstream/DurableWorkstreamEventRepositoryEntity.java
+  - frontend/src/api/HttpWorkstreamRealtimeClient.ts
+  - frontend/src/workstream/realtime/workstreamEvents.ts
+- skills:
+  - akka-http-endpoint-sse
+  - akka-web-ui-realtime
+  - akka-kve-notifications if entity notification streams are introduced
+- expected outputs:
+  - explicit realtime v1 docs and matching backend/frontend/tests, or bounded live SSE implementation
+  - optional appended follow-up task if true live SSE remains out of scope
+- required checks:
+  - `git diff --check`
+  - targeted backend realtime/workstream tests
+  - targeted frontend realtime tests
+  - `npm --prefix frontend run typecheck` if TypeScript changed
+- done criteria:
+  - realtime behavior is explicit, non-misleading, scoped, and tested
+  - any remaining true-live gap is queued as bounded follow-up before verification
+  - changes and queue update are committed
+- notes:
+  - commit message: `workstream-align: align realtime semantics`
+  - vertical contract: five core workstream events/projections; SSE/API exposure; stale/reconnect surfaces; tenant/customer scoping and frontend replay safety
+
+### TASK-WDA-04-001: Refresh readiness and legacy page notes
+
+- status: pending
+- source: audit finding that readiness docs are stale and page-style frontend artifacts need classification
+- task brief: specs/workstream-design-implementation-alignment/tasks/04-readiness/01-refresh-readiness-and-legacy-page-notes.md
+- depends on:
+  - TASK-WDA-01-001
+  - TASK-WDA-01-002
+  - TASK-WDA-02-001
+  - TASK-WDA-02-002
+  - TASK-WDA-03-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-design-implementation-alignment/README.md
+  - specs/workstream-design-implementation-alignment/conversation-capture.md
+  - specs/workstream-design-implementation-alignment/backlog/01-workstream-alignment-build-backlog.md
+  - specs/workstream-design-implementation-alignment/tasks/04-readiness/01-refresh-readiness-and-legacy-page-notes.md
+  - app-description/00-system/readiness-status.md
+  - app-description/80-review/latest-readiness-summary.md
+  - app-description/55-ui/ui-index.md
+  - app-description/55-ui/routes-and-deep-links.md
+  - app-description/55-ui/workstream-shell.md
+  - frontend/src/screens/
+- skills:
+  - app-description-readiness-assessment
+  - app-description-readiness-summary
+  - app-description-ui
+- expected outputs:
+  - updated readiness/review/UI docs
+  - optional appended follow-up task if legacy artifacts need implementation cleanup
+- required checks:
+  - `git diff --check`
+  - focused `rg` for corrected readiness wording and legacy page classification
+- done criteria:
+  - readiness docs match current runtime state and gaps
+  - page-first artifacts are not presented as primary architecture
+  - changes and queue update are committed
+- notes:
+  - commit message: `workstream-align: refresh readiness notes`
+  - vertical contract: cross-cutting app-description readiness/UI realization; no direct runtime feature unless a follow-up task is appended
+
+### TASK-WDA-99-001: Verify workstream alignment completion
+
+- status: pending
+- source: mini-project verification loop
+- task brief: specs/workstream-design-implementation-alignment/tasks/99-verification/01-verify-workstream-alignment.md
+- depends on:
+  - TASK-WDA-01-001
+  - TASK-WDA-01-002
+  - TASK-WDA-02-001
+  - TASK-WDA-02-002
+  - TASK-WDA-03-001
+  - TASK-WDA-04-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-design-implementation-alignment/README.md
+  - specs/workstream-design-implementation-alignment/conversation-capture.md
+  - specs/workstream-design-implementation-alignment/pending-tasks.md
+  - specs/workstream-design-implementation-alignment/sprints/*.md
+  - specs/workstream-design-implementation-alignment/backlog/*.md
+  - specs/workstream-design-implementation-alignment/tasks/**/*.md
+  - changed app-description/backend/frontend/test files from completed tasks
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/workstream-design-implementation-alignment/pending-tasks.md
+  - optional completion summary or newly appended follow-up tasks
+- required checks:
+  - `git diff --check`
+  - targeted backend/frontend/docs checks needed to validate completed work
+  - focused `rg` evidence for id maps, governed-tool mappings, dashboard loading, alias resolver, realtime semantics, and readiness notes
+- done criteria:
+  - task group/sprint goals have been compared against completed work
+  - mini-project done state has been compared against completed work
+  - unresolved questions/blockers have been reviewed
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+  - changes and queue update are committed
+- notes:
+  - commit message: `workstream-align: verify completion`
