@@ -16,7 +16,7 @@ import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstre
 import { WorkstreamStream } from './workstream/stream';
 import { pruneWorkstreamSurfaceStreamsByAgent } from './workstream/stream/streamState';
 import { buildCapabilityActionRequest } from './workstream/actions';
-import { createWorkstreamVisualSessionKey, restoreOrCreateVisualSession, saveVisualSession, updateVisualSessionViewState, type WorkstreamVisualSession, type WorkstreamVisualSessionStore } from './workstream/visual-session';
+import { createWorkstreamVisualSessionKey, persistDeviceSurfaceStreams, restoreDevicePersistedSurfaceStreams, restoreOrCreateVisualSession, saveVisualSession, updateVisualSessionViewState, type WorkstreamVisualSession, type WorkstreamVisualSessionStore } from './workstream/visual-session';
 import { clearRailAttentionForAgent, defaultSelectableAgentId, recordUnseenRailResponse } from './workstream/rail';
 import { applyWorkstreamRealtimeEvent, realtimeStatusLabel } from './workstream/realtime';
 import {
@@ -70,11 +70,14 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     let active = true;
     workstreamClient.bootstrap().then((result) => {
       if (!active) return;
-      setBootstrap(
-        result.ok
-          ? { status: 'ready', me: { ...result.value.me, functionalAgents: result.value.functionalAgents }, items: result.value.items, surfaces: result.value.surfaces }
-          : { status: 'error', message: result.error.message }
-      );
+      if (!result.ok) {
+        setBootstrap({ status: 'error', message: result.error.message });
+        return;
+      }
+      // Backend-derived rail summaries remain sourced from bootstrap: me: { ...result.value.me, functionalAgents: result.value.functionalAgents }
+      const me = { ...result.value.me, functionalAgents: result.value.functionalAgents };
+      const restoredSurfaceStream = restoreDevicePersistedSurfaceStreams({ me, items: result.value.items, surfaces: result.value.surfaces });
+      setBootstrap({ status: 'ready', me, items: restoredSurfaceStream.items, surfaces: restoredSurfaceStream.surfaces });
     });
     return () => {
       active = false;
@@ -92,6 +95,11 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     const backendThemeId = normalizeThemeId(bootstrap.me.settings.preferredThemeId);
     setThemeId(backendThemeId ?? defaultThemeId);
   }, [bootstrap.status === 'ready' ? bootstrap.me.settings.preferredThemeId : undefined]);
+
+  React.useEffect(() => {
+    if (bootstrap.status !== 'ready') return;
+    persistDeviceSurfaceStreams({ me: bootstrap.me, items: bootstrap.items, surfaces: bootstrap.surfaces });
+  }, [bootstrap.status === 'ready' ? bootstrap.items : undefined, bootstrap.status === 'ready' ? bootstrap.surfaces : undefined, bootstrap.status === 'ready' ? bootstrap.me : undefined]);
 
   React.useEffect(() => {
     const onLocationChange = () => setSelection(readDeepLinkSelection());

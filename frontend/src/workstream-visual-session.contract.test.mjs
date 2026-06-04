@@ -6,6 +6,7 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 const visualSessionState = read('./workstream/visual-session/visualSessionState.ts');
 const visualSessionIndex = read('./workstream/visual-session/index.ts');
+const devicePersistence = read('./workstream/visual-session/devicePersistence.ts');
 const workstreamIndex = read('./workstream/index.ts');
 const workstreamStream = read('./workstream/stream/WorkstreamStream.tsx');
 const workstreamPanel = read('./workstream/shell/WorkstreamPanel.tsx');
@@ -22,6 +23,7 @@ test('visual-session helpers expose reusable turn-group and session contracts', 
   assert.match(visualSessionState, /selectedSurfaceId\?: string/);
   assert.match(visualSessionState, /collapsedSurfaceIds: string\[\]/);
   assert.match(visualSessionIndex, /export \* from '\.\/visualSessionState'/);
+  assert.match(visualSessionIndex, /export \* from '\.\/devicePersistence'/);
   assert.match(workstreamIndex, /export \* from '\.\/visual-session'/);
 });
 
@@ -44,7 +46,7 @@ test('visual-session limits are turn-group first with a secondary rendered-surfa
   assert.match(visualSessionState, /total \+ 1 \+ group\.responseItems\.length/);
 });
 
-test('snapshot semantics stay Akka component-backed and semantic rather than browser-local or backend persisted', () => {
+test('snapshot semantics stay semantic while surface streams use separate device persistence', () => {
   assert.match(visualSessionState, /toVisualSessionSnapshot/);
   assert.match(visualSessionState, /loadedTurnGroupIds: session\.loadedTurnGroupIds/);
   assert.match(visualSessionState, /userHasManualScroll: session\.userHasManualScroll/);
@@ -64,7 +66,20 @@ test('visual sessions are keyed by account, selected auth context, functional ag
   assert.match(visualSessionState, /updateVisualSessionViewState/);
 });
 
-test('workstream shell restores per-workstream Akka component-backed visual state on agent switch without browser or backend persistence', () => {
+test('workstream surface streams persist on the user device across refreshes and workstream switches', () => {
+  assert.match(devicePersistence, /workstreamSurfaceStreamStorageKey = 'workstream-surface-streams-v1'/);
+  assert.match(devicePersistence, /restoreDevicePersistedSurfaceStreams/);
+  assert.match(devicePersistence, /persistDeviceSurfaceStreams/);
+  assert.match(devicePersistence, /window\.localStorage\.getItem\(workstreamSurfaceStreamStorageKey\)/);
+  assert.match(devicePersistence, /window\.localStorage\.setItem\(workstreamSurfaceStreamStorageKey/);
+  assert.match(devicePersistence, /createWorkstreamVisualSessionKey\(\{\s*accountId: input\.me\.account\.accountId,\s*selectedContextId: input\.me\.selectedAuthContext\.selectedContextId,/s);
+  assert.match(devicePersistence, /surfacesForItemsAndAgent/);
+  assert.match(devicePersistence, /pruneWorkstreamSurfaceStreamsByAgent/);
+  assert.match(main, /restoreDevicePersistedSurfaceStreams\(\{ me, items: result\.value\.items, surfaces: result\.value\.surfaces \}\)/);
+  assert.match(main, /persistDeviceSurfaceStreams\(\{ me: bootstrap\.me, items: bootstrap\.items, surfaces: bootstrap\.surfaces \}\)/);
+});
+
+test('workstream shell restores per-workstream visual state on agent switch', () => {
   assert.match(main, /useState<WorkstreamVisualSessionStore>\(\{\}\)/);
   assert.match(main, /requestScrollTargetBySessionKey/);
   assert.match(main, /createWorkstreamVisualSessionKey\(\{\s*accountId: me\?\.account\.accountId \?\? 'bootstrap-loading',\s*selectedContextId: me\?\.selectedAuthContext\.selectedContextId \?\? 'bootstrap-loading',/s);
