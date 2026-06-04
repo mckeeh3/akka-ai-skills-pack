@@ -3,6 +3,7 @@ package ai.first.application.coreapp.useradmin;
 import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.identity.MembershipStatus;
 import ai.first.domain.foundation.identity.ScopeType;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import ai.first.application.foundation.identity.AuthContextResolver;
@@ -18,7 +19,7 @@ public final class UserDirectoryView {
   public List<UserDirectoryRow> list(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
     return userAdminService.listUsers(actor, scopeType, tenantId, customerId).stream()
         .sorted(Comparator.comparing(ai.first.application.coreapp.useradmin.UserAdminService.UserDirectoryRow::displayName).thenComparing(ai.first.application.coreapp.useradmin.UserAdminService.UserDirectoryRow::accountId))
-        .map(row -> new UserDirectoryRow(row.accountId(), row.displayName(), row.membershipId(), row.roles(), row.status(), row.scopeType(), row.tenantId(), row.customerId()))
+        .map(row -> new UserDirectoryRow(row.accountId(), row.displayName(), row.membershipId(), row.roles(), row.status(), row.scopeType(), row.tenantId(), row.customerId(), row.supportAccess(), row.expiresAt()))
         .toList();
   }
 
@@ -30,5 +31,7 @@ public final class UserDirectoryView {
       MembershipStatus membershipStatus,
       ScopeType scopeType,
       String tenantId,
-      String customerId) {}
+      String customerId,
+      boolean supportAccess,
+      Instant expiresAt) {}
 }

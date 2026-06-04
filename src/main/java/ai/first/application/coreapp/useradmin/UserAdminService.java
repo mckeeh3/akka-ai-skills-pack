@@ -34,7 +34,7 @@ public final class UserAdminService {
         .filter(m -> scopeType == m.scopeType())
         .filter(m -> java.util.Objects.equals(tenantId, m.tenantId()))
         .filter(m -> java.util.Objects.equals(customerId, m.customerId()))
-        .map(m -> new UserDirectoryRow(m.accountId(), repository.profile(m.accountId()) == null ? m.accountId() : repository.profile(m.accountId()).displayName(), m.membershipId(), m.roles(), m.status(), m.scopeType(), m.tenantId(), m.customerId()))
+        .map(m -> new UserDirectoryRow(m.accountId(), repository.profile(m.accountId()) == null ? m.accountId() : repository.profile(m.accountId()).displayName(), m.membershipId(), m.roles(), m.status(), m.scopeType(), m.tenantId(), m.customerId(), m.supportAccess(), m.expiresAt()))
         .toList();
   }
 
@@ -347,7 +347,7 @@ public final class UserAdminService {
     return Integer.toUnsignedString(java.util.Objects.requireNonNullElse(value, "user-admin").hashCode(), 36);
   }
 
-  public record UserDirectoryRow(String accountId, String displayName, String membershipId, List<FoundationRole> roles, MembershipStatus status, ScopeType scopeType, String tenantId, String customerId) {}
+  public record UserDirectoryRow(String accountId, String displayName, String membershipId, List<FoundationRole> roles, MembershipStatus status, ScopeType scopeType, String tenantId, String customerId, boolean supportAccess, Instant expiresAt) {}
   public record RoleChangePreview(boolean allowed, boolean noOp, String message, String traceId, List<String> capabilityDelta, List<String> affectedWorkstreams, List<String> policyHints, String lastAdminImpact) {}
   public record RoleChangeResult(String status, String message, Membership membership, String traceId) {}
   public record StatusTransitionResult(String status, String message, Membership membership, String traceId) {}

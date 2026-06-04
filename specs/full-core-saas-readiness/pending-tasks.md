@@ -165,7 +165,7 @@
 
 ### TASK-FCSR-04-001: Complete User Admin structured surfaces
 
-- status: pending
+- status: done
 - source: full-core readiness gap: complete User Admin structured surfaces for users, invitations, roles/memberships, access review, support access, and admin audit
 - task brief: specs/full-core-saas-readiness/tasks/04-user-admin/01-complete-user-admin-surfaces.md
 - depends on:
@@ -205,6 +205,8 @@
 - notes:
   - commit message: `full-core-ready: complete user admin surfaces`
   - vertical contract: User Admin functional agent; dashboard/list/detail/access review/admin audit surfaces; secure-tenant-user-foundation and governance-decisions-audit capabilities; backend API/workstream UI/audit tests
+  - evidence: `specs/full-core-saas-readiness/user-admin-surfaces-validation.md`; backend workstream support-access actions now use UserAdminService authority, idempotency, audit, scoped support-access surfaces, and frontend contract/typecheck coverage
+  - checks: `mvn test -Dtest=WorkstreamServiceTest,InvitationAndUserAdminServiceTest`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `git diff --check`
 
 ### TASK-FCSR-05-001: Complete managed-agent foundation readiness
 

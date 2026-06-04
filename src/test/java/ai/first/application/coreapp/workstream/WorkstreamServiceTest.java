@@ -37,6 +37,7 @@ import ai.first.domain.foundation.identity.WorkosIdentity;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -452,6 +453,30 @@ class WorkstreamServiceTest {
         "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-admin", "reason", "self-disable"), "idem-self-disable", "membership-admin", "surface-user-admin-list", "corr-self-disable")));
     assertEquals("self-disable-denied", selfDisable.reasonCode());
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("USERADMIN_UPDATE_MEMBER_STATUS") && event.reasonCode().equals("self-disable-denied")));
+  }
+
+  @Test
+  void userAdminSupportAccessActionsUseBackendAuthorityAndAuditTraceSurface() {
+    var grant = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-grant-support-access", "action-useradmin-grant-support-access", "USERADMIN_SUPPORT_ACCESS_GRANT", "USERADMIN_SUPPORT_ACCESS_GRANT", Map.of("membershipId", "membership-member", "reason", "break glass"), "idem-support-grant", "membership-admin", "surface-user-admin-detail-admin", "corr-support-grant"));
+
+    assertEquals("accepted", grant.status());
+    assertEquals("surface-user-admin-support-access", grant.resultSurface().surfaceId());
+    assertTrue(grant.resultSurface().toString().contains("user_admin.support_access.v1"));
+    assertTrue(grant.resultSurface().toString().contains("supportAccess=true"));
+    assertTrue(identityRepository.findMembership("membership-member").orElseThrow().supportAccess());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("SUPPORT_ACCESS_GRANT") && event.correlationId().equals("corr-support-grant")));
+
+    var duplicate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-grant-support-access", "action-useradmin-grant-support-access", "USERADMIN_SUPPORT_ACCESS_GRANT", "USERADMIN_SUPPORT_ACCESS_GRANT", Map.of("membershipId", "membership-member", "reason", "ignored replay"), "idem-support-grant", "membership-admin", "surface-user-admin-detail-admin", "corr-support-grant-replay"));
+    assertEquals(grant, duplicate);
+
+    var revoke = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-revoke-support-access", "action-useradmin-revoke-support-access", "USERADMIN_SUPPORT_ACCESS_REVOKE", "USERADMIN_SUPPORT_ACCESS_REVOKE", Map.of("membershipId", "membership-member", "reason", "done"), "idem-support-revoke", "membership-admin", "surface-user-admin-support-access", "corr-support-revoke"));
+    assertEquals("accepted", revoke.status());
+    assertFalse(identityRepository.findMembership("membership-member").orElseThrow().supportAccess());
+    assertEquals("surface-user-admin-support-access", revoke.resultSurface().surfaceId());
+    assertTrue(revoke.resultSurface().toString().contains("user_admin.support_access.v1"));
   }
 
   @Test
