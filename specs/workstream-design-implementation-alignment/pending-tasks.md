@@ -303,7 +303,7 @@
 
 ### TASK-WDA-99-001: Verify workstream alignment completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/workstream-design-implementation-alignment/tasks/99-verification/01-verify-workstream-alignment.md
 - depends on:
@@ -340,3 +340,6 @@
   - changes and queue update are committed
 - notes:
   - commit message: `workstream-align: verify completion`
+  - completed by comparing the mini-project README done state, sprint acceptance criteria, backlog acceptance criteria, completed task notes, changed app-description/backend/frontend/test files, and unresolved-question capture; no material in-scope gaps were found and no follow-up tasks were appended
+  - checks: `mvn test -Dtest=WorkstreamServiceTest`; `npm --prefix frontend test -- --run --test-name-pattern="dashboard|bootstrap|composer|workstream|shell|realtime|projection refresh|legacy"`; `npm --prefix frontend run typecheck`; focused `rg` evidence for canonical ids, governed-tool mappings, dashboard loading, shell aliases, realtime semantics, and readiness/legacy notes; `git diff --check`
+  - verified state: five-core workstream design/implementation alignment initiative complete at starter scope; full-core SaaS readiness gaps remain documented in `app-description/00-system/readiness-status.md` and `app-description/80-review/latest-readiness-summary.md`
