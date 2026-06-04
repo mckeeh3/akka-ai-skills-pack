@@ -74,7 +74,7 @@ Create or update:
 specs/pending-tasks.md
 ```
 
-Use the contract in `../../docs/pending-task-queue.md`.
+Use the contract in `../../docs/pending-task-queue.md`, especially the required `Vertical workstream contract` block. For generated full-stack AI-first SaaS, do not emit a runnable queue entry unless that contract is present or the task explicitly declares `internal-only`, `foundation-only`, `cross-cutting`, `docs-only`, or `non-runtime` scope with a non-attention/non-UI reason, trace expectations, and validation path.
 
 ## Queue derivation rules
 
@@ -215,6 +215,16 @@ If a task is not ready because it needs a task brief first, use:
 - notes:
   - blocked: split this backlog item with akka-backlog-item-to-task-brief before implementation
 ```
+
+### Validator gate
+
+After creating or repairing the queue, run the lightweight queue contract validator when the script is available in the pack source or downstream tooling:
+
+```bash
+bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md
+```
+
+If the target project uses an installed pack without `skills-pack/tools`, run the equivalent copied script path. Treat validator failures as queue repair work, not implementation blockers for a later coding run. The validator checks that runnable generated-SaaS tasks carry the required vertical contract vocabulary; it does not prove semantic correctness.
 
 ## Final review checklist
 

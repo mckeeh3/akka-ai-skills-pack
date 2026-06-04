@@ -122,6 +122,38 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
 
 If no separate task brief exists, omit `task brief:` or set it to `none` and make the `source` backlog item specific enough to execute.
 
+## Required vertical workstream contract block
+
+Generated full-stack AI-first SaaS task briefs and runnable queue entries must make their vertical context explicit in a dedicated section or note block. This is the pre-implementation gate that prevents component-only, page-only, CRUD-only, or dashboard-only tasks from bypassing the workstream model.
+
+Use this section in task briefs:
+
+```md
+## Vertical workstream contract
+
+- Workstream / functional agent: <workstream id and backing functional/context-area agent, or explicit internal-only/foundation/cross-cutting scope>
+- Attention category or non-attention reason: <approval/decision/exception/blocked/etc. or why no attention item applies>
+- Role-specific dashboard / surface: <dashboard or surface id/purpose and target role/AuthContext>
+- Surface graph node/action edge: <source surface, action, target/result/system-message surface, or non-UI trigger>
+- Governed-tool id and exposure: <governedToolId plus browser-tool/agent-tool/internal-tool/workflow-tool/timer-tool/consumer-tool/MCP-tool/API exposure, or explicit none for non-runtime/internal-only work>
+- Capability id: <capability id/class or explicit foundation scope>
+- AuthContext / roles / tenant scope: <actor/caller, roles/capabilities, tenant/customer/account scope, denial expectations>
+- Akka substrate: <entity/workflow/view/consumer/timed action/agent/autonomous agent/endpoint/frontend/test/docs-only>
+- API / frontend / realtime path: <route/API/SSE/WebSocket/workstream surface path or non-UI reason>
+- Audit/work trace requirements: <audit, trace, correlation, prompt/tool/data access, denial, or explicit none for docs-only>
+- Local validation path: <mvn/npm/API/browser/manual smoke command or explicit non-runtime/internal-only reason>
+```
+
+For `specs/pending-tasks.md`, put the same content under the task's `notes` as a `vertical contract:` line or as equivalent bullet notes. A task may omit workstream/surface/action fields only when it explicitly says `internal-only`, `foundation-only`, `cross-cutting`, `docs-only`, or `non-runtime` and explains the non-attention/non-UI reason, capability/foundation scope, trace expectations, and validation path.
+
+Before implementation, use the repository validator when available:
+
+```bash
+bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md
+```
+
+In an installed-pack or downstream project, run the copied script from wherever the pack tools are available, passing the target queue path. The validator is intentionally conservative: it checks for the presence of the required contract vocabulary, not semantic correctness. Passing the script does not replace reading the task brief; failing it means repair the backlog/task brief/queue before coding.
+
 ## Managed-agent and workstream expertise splitting guardrails
 
 Generated SaaS queues must never collapse governed runtime agent foundation work into one vague `agent governance`, `managed agents`, or `AI foundation` task. If a backlog item spans `AgentDefinition`, `PromptDocument`, `SkillDocument`, `ReferenceDocument`, `AgentSkillManifest`, `AgentReferenceManifest`, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, behavior editing agents, `ToolPermissionBoundary`, `AgentWorkTrace`, UI, and tests, the item is too broad and must be split or blocked for a task brief.

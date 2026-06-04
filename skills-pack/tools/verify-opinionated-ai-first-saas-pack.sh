@@ -90,6 +90,10 @@ require_rg "RoleRecommendationAgent" skills/ai-first-saas-admin-agents/SKILL.md 
 require_rg "AdminAuditSummaryAgent" skills/ai-first-saas-admin-agents/SKILL.md docs/core-saas-identity-tenancy-admin.md skills/core-saas-foundation/SKILL.md
 
 log "checking planning guardrails for full foundation task breakdown"
+require_file "tools/validate-pending-task-workstream-contract.sh"
+require_rg "Vertical workstream contract" docs/pending-task-queue.md skills/akka-backlog-item-to-task-brief/SKILL.md
+require_rg "validate-pending-task-workstream-contract" docs/pending-task-queue.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md skills/akka-do-next-pending-task/SKILL.md
+require_rg "vertical contract block/line" tools/validate-pending-task-workstream-contract.sh
 require_rg "invitation lifecycle" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
 require_rg "email delivery" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
 require_rg "UserDirectoryView" skills/akka-solution-decomposition/SKILL.md skills/akka-prd-to-specs-backlog/SKILL.md skills/akka-backlog-to-pending-tasks/SKILL.md skills/akka-slice-spec-to-backlog/SKILL.md skills/akka-backlog-item-to-task-brief/SKILL.md docs/module-sprint-planning.md docs/pending-task-queue.md
@@ -181,6 +185,8 @@ forbid_rg "optional invite email|optionally sends invite|optionally send invite|
   skills/akka-saas-invitation-onboarding/SKILL.md
 
 log "checking shell syntax for pack scripts"
-bash -n install-skills.sh "$APP_ROOT/install-skills.sh"
+for script in install-skills.sh "$APP_ROOT/install-skills.sh" tools/validate-pending-task-workstream-contract.sh; do
+  bash -n "$script"
+done
 
 log "verification passed"
