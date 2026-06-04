@@ -134,6 +134,21 @@ class MeServiceTest {
   }
 
   @Test
+  void missingWorkosClaimsAreDeniedAndAudited() {
+    var error =
+        assertThrows(
+            AuthorizationException.class,
+            () -> meService.me(new WorkosIdentity("workos-missing-email", null, "Missing Email"), null, "corr-missing-claims"));
+
+    assertEquals("missing-workos-claims", error.reasonCode());
+    assertTrue(repository.auditEvents().stream().anyMatch(event ->
+        event.actionType().equals("AUTH_CONTEXT_RESOLVE")
+            && event.result().name().equals("DENIED")
+            && event.reasonCode().equals("missing-workos-claims")
+            && event.correlationId().equals("corr-missing-claims")));
+  }
+
+  @Test
   void disabledAccountIsDeniedAndAudited() {
     inviteTenantAdmin("disabled@example.com", AccountStatus.DISABLED, MembershipStatus.ACTIVE, "tenant-1");
 

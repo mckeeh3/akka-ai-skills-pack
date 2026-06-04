@@ -82,7 +82,7 @@
 
 ### TASK-FCSR-02-001: Validate WorkOS/AuthKit runtime boundary
 
-- status: pending
+- status: done
 - source: full-core readiness gap: production WorkOS/AuthKit configuration and fail-closed local validation
 - task brief: specs/full-core-saas-readiness/tasks/02-auth/01-validate-workos-authkit-runtime.md
 - depends on:
@@ -118,6 +118,8 @@
 - notes:
   - commit message: `full-core-ready: validate auth runtime`
   - vertical contract: My Account and protected workstream shell auth boundary; `/api/me`; JWT/selected AuthContext; frontend secret-boundary tests
+  - evidence: `specs/full-core-saas-readiness/auth-runtime-boundary-validation.md`; focused backend auth tests and frontend tests/typecheck/build passed locally
+  - blocker: live WorkOS issuer/audience/provider smoke remains blocked until backend-only WorkOS config and real AuthKit app are supplied
 
 ### TASK-FCSR-03-001: Complete invitation onboarding and email outbox readiness
 

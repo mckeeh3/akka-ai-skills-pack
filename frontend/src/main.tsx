@@ -33,6 +33,10 @@ import {
 } from './workstream';
 
 const workosClientId = import.meta.env.VITE_WORKOS_CLIENT_ID;
+const configuredWorkosRedirectUri = import.meta.env.VITE_WORKOS_REDIRECT_URI;
+const workosRedirectUri = typeof configuredWorkosRedirectUri === 'string' && configuredWorkosRedirectUri.trim().length > 0
+  ? configuredWorkosRedirectUri
+  : window.location.origin;
 const hasConfiguredWorkosClient = typeof workosClientId === 'string' && workosClientId.startsWith('client_') && !workosClientId.includes('your_workos');
 
 type ThemePreference = 'aurora-light' | 'cobalt-light' | 'obsidian-dark' | 'midnight-dark' | 'dark-night';
@@ -738,13 +742,13 @@ function Root() {
     return (
       <div className="auth-gate">
         <h1>Configure WorkOS/AuthKit</h1>
-        <p>Set <code>VITE_WORKOS_CLIENT_ID</code> and <code>VITE_WORKOS_REDIRECT_URI</code>, then rebuild the frontend to use real backend APIs.</p>
+        <p>Set <code>VITE_WORKOS_CLIENT_ID</code> and optionally <code>VITE_WORKOS_REDIRECT_URI</code>, then rebuild the frontend to use real backend APIs.</p>
         <p>The normal frontend runtime does not provide a fixture mode. Tests keep fixture clients and data under test-only assets.</p>
       </div>
     );
   }
   return (
-    <AuthKitProvider clientId={workosClientId}>
+    <AuthKitProvider clientId={workosClientId} redirectUri={workosRedirectUri}>
       <AuthenticatedRoot />
     </AuthKitProvider>
   );
