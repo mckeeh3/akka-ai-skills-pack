@@ -11,8 +11,7 @@ Work here when a task targets installable `.agents` assets:
 - `skills-pack/pack/**`
 - `skills-pack/examples/**`
 - `skills-pack/tools/**`
-- `skills-pack/install.sh`
-- `skills-pack/dist/**` release artifacts when explicitly required
+- `skills-pack/install-skills.sh`
 
 The repository root is the canonical runnable Akka Java SDK + React/Vite core app. Do not add core app runtime code under `skills-pack/**`. Do not move focused skills-pack examples back into root `src/**`.
 

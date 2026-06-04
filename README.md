@@ -95,7 +95,7 @@ The installable pack source is isolated under [`skills-pack/`](skills-pack/):
 - `skills-pack/pack/` — installed `.agents` guidance and manifest
 - `skills-pack/tools/` — release, validation, and audit tooling
 
-Use root [`install-skills.sh`](install-skills.sh) to install the skills into a harness skills directory such as `.agents/skills/`. The root [`install.sh`](install.sh) remains a compatibility wrapper for the older full-pack installer. Do not add pack-only docs, skills, examples, or packaging assets to root app source paths.
+Use root [`install-skills.sh`](install-skills.sh) to install the skills into a harness skills directory such as `.agents/skills/`. Do not add pack-only docs, skills, examples, or packaging assets to root app source paths.
 
 ## App description and task queues
 

@@ -24,7 +24,7 @@ LOCAL_PREFIXES = (
     "skills/",
     "pom.xml",
     "AGENTS.md",
-    "install.sh",
+    "install-skills.sh",
 )
 # Paths commonly used as target-project placeholders rather than source-repo refs.
 PROJECT_PLACEHOLDER_PREFIXES = (
@@ -52,7 +52,7 @@ def resolve_ref(skill_file: Path, ref: str, repo_root: Path) -> Path:
     if path.startswith(("docs/", "src/", "skills/")) or path in {
         "pom.xml",
         "AGENTS.md",
-        "install.sh",
+        "install-skills.sh",
     }:
         return repo_root / path
     return skill_file.parent / path

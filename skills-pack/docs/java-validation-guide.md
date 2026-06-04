@@ -9,10 +9,9 @@ Validate source-controlled Java where it lives now:
 - root `src/main/java`, `src/test/java` — canonical runnable core app source and tests
 - `skills-pack/examples/akka-components/src/main`, `skills-pack/examples/akka-components/src/test` — focused Java reference examples exported by the pack
 
-Do not validate generated or packaged output as source:
+Do not validate generated build output as source:
 
 - `target/`
-- `skills-pack/dist/`
 
 ## Default fast gate
 
@@ -22,7 +21,7 @@ Use this before and after focused root Java edits:
 mvn -q -DskipTests compile
 ```
 
-For skills-pack Java examples, run from `skills-pack/examples/akka-components` when that example project is independently buildable, or use the pack install/build checks that export the examples.
+For skills-pack Java examples, run from `skills-pack/examples/akka-components` when that example project is independently buildable, or validate them through the root build when they are included there.
 
 ## Focused test gate
 

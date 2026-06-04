@@ -170,50 +170,6 @@ ensure_tag_available() {
   esac
 }
 
-release_is_draft() {
-  local tag="$1"
-  gh release view "$tag" --json isDraft --jq .isDraft
-}
-
-create_or_update_github_release() {
-  local tag="$1"
-  local archive_path="$2"
-  local installer_path="$3"
-  local is_draft
-
-  [[ -f "$archive_path" ]] || fail "Missing archive asset: $archive_path"
-  [[ -f "$installer_path" ]] || fail "Missing installer asset: $installer_path"
-
-  if gh release view "$tag" >/dev/null 2>&1; then
-    is_draft="$(release_is_draft "$tag")"
-    if [[ "$is_draft" != "true" ]]; then
-      fail "Published GitHub release already exists for $tag. Refusing to overwrite published assets."
-    fi
-    log "Draft GitHub release already exists for $tag; uploading assets with --clobber"
-    gh release upload "$tag" "$archive_path" "$installer_path" --clobber
-  else
-    log "Creating draft GitHub release for $tag"
-    if ! gh release create "$tag" "$archive_path" "$installer_path" \
-      --draft \
-      --generate-notes \
-      --title "$tag"; then
-      warn "Release creation failed; checking whether a release appeared concurrently"
-      gh release view "$tag" >/dev/null 2>&1 || return 1
-      is_draft="$(release_is_draft "$tag")"
-      if [[ "$is_draft" != "true" ]]; then
-        fail "Published GitHub release appeared for $tag. Refusing to overwrite published assets."
-      fi
-      gh release upload "$tag" "$archive_path" "$installer_path" --clobber
-    fi
-  fi
-}
-
-publish_github_release() {
-  local tag="$1"
-  log "Publishing GitHub release $tag"
-  gh release edit "$tag" --draft=false --latest
-}
-
 main() {
   if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     print_help

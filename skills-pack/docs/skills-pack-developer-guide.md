@@ -16,7 +16,6 @@ Skills-pack work includes:
 - `skills-pack/examples/**`
 - `skills-pack/tools/**`
 - `skills-pack/install-skills.sh`
-- `skills-pack/install.sh` legacy compatibility installer
 
 Do not add core app runtime code under `skills-pack/**`. Do not add skills-pack reference examples back into root `src/**`.
 
@@ -38,7 +37,6 @@ skills-pack/
 ├── AGENTS.md
 ├── README.md
 ├── install-skills.sh
-├── install.sh                 # legacy full-pack compatibility installer
 ├── pack/
 │   ├── AGENTS.md
 │   ├── README.md

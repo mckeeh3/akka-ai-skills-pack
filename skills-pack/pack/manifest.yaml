@@ -13,19 +13,21 @@ metadata:
   compatibleAkkaSdk: '3.5.x'
 
 install:
+  unit: repository-tag
+  installer: install-skills.sh
+  ownershipManifest: .akka-ai-skills-pack-install-manifest
   modes:
     project:
-      rootDir: '{projectRoot}/.agents'
       skillsDir: '{projectRoot}/.agents/skills'
-      manifestsDir: '{projectRoot}/.agents/manifests'
-      examplesDir: '{projectRoot}/.agents/resources/examples/java'
-      frontendExamplesDir: '{projectRoot}/.agents/resources/examples/frontend'
     global:
-      rootDir: ~/.agents
       skillsDir: ~/.agents/skills
-      manifestsDir: ~/.agents/manifests
-      examplesDir: ~/.agents/resources/examples/java
-      frontendExamplesDir: ~/.agents/resources/examples/frontend
+    explicit:
+      skillsDir: '<target-skills-dir>'
+  options:
+    mode: copy|symlink
+    prune: remove retired manifest-owned skills
+    uninstall: remove all manifest-owned skills
+    check: verify installed skills
 
 content:
   skills:

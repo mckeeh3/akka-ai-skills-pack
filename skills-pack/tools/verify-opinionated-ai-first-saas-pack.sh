@@ -144,19 +144,16 @@ require_rg "agent catalog" "$APP_ROOT/app-description"
 require_rg "agent detail" "$APP_ROOT/app-description"
 require_rg "unauthorized.*PromptDocument|unassigned skill denial|disabled-agent denial|authority expansion" "$APP_ROOT/app-description"
 
-log "checking packaged docs and core app-description assets"
-require_rg "docs/core-ai-first-saas-foundation.md" pack/manifest.yaml tools/build-pack.sh install.sh
-require_rg "docs/core-saas-identity-tenancy-admin.md" pack/manifest.yaml tools/build-pack.sh install.sh
-require_rg "docs/core-saas-owner-tenant-billing.md" pack/manifest.yaml tools/build-pack.sh install.sh
-require_rg "docs/workstream-ui-reference-architecture.md" pack/manifest.yaml tools/build-pack.sh
-require_rg "docs/agent-workstream-design-review-checklist.md" pack/manifest.yaml tools/build-pack.sh
-require_rg "docs/examples/README.md" pack/manifest.yaml tools/build-pack.sh
-require_rg "docs/frontend-with-akka-backend.md" pack/manifest.yaml tools/build-pack.sh skills/akka-web-ui-apps/SKILL.md skills/akka-web-ui-frontend-project/SKILL.md skills/akka-workos-user-auth/SKILL.md
-require_rg "resources/examples/frontend" pack/AGENTS.md pack/README.md pack/manifest.yaml install.sh
-require_rg "copy_frontend_reference" tools/build-pack.sh install.sh
-require_rg "\.env\.example" tools/build-pack.sh install.sh
+log "checking pack docs, manifest, skills, and core app-description assets"
+require_rg "docs/core-ai-first-saas-foundation.md" pack/manifest.yaml
+require_rg "docs/core-saas-identity-tenancy-admin.md" pack/manifest.yaml
+require_rg "docs/core-saas-owner-tenant-billing.md" pack/manifest.yaml
+require_rg "docs/workstream-ui-reference-architecture.md" pack/manifest.yaml
+require_rg "docs/agent-workstream-design-review-checklist.md" pack/manifest.yaml
+require_rg "docs/examples/README.md" pack/manifest.yaml
+require_rg "docs/frontend-with-akka-backend.md" pack/manifest.yaml skills/akka-web-ui-apps/SKILL.md skills/akka-web-ui-frontend-project/SKILL.md skills/akka-workos-user-auth/SKILL.md
 require_rg "frontend/src/workstream" docs/workstream-ui-reference-architecture.md "$APP_ROOT/frontend/README.md" skills/akka-web-ui-apps/SKILL.md
-require_rg "resources/examples/frontend" "$APP_ROOT/frontend/README.md" install.sh
+require_rg "install-skills" install-skills.sh "$APP_ROOT/install-skills.sh" README.md
 
 log "checking forbidden optional-security phrasing in top-level routing files"
 forbid_rg "security.*optional|optional.*security|when security is in scope|only when security is in scope|JWT/internal security skills only when security is in scope|generic Akka app|ordinary Akka app|CRUD-first" \
@@ -184,6 +181,6 @@ forbid_rg "optional invite email|optionally sends invite|optionally send invite|
   skills/akka-saas-invitation-onboarding/SKILL.md
 
 log "checking shell syntax for pack scripts"
-bash -n tools/build-pack.sh install.sh "$APP_ROOT/install.sh"
+bash -n install-skills.sh "$APP_ROOT/install-skills.sh"
 
 log "verification passed"
