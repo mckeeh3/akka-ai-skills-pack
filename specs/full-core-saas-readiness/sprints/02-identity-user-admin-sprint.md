@@ -1,0 +1,20 @@
+# Sprint 02: Identity, Invitation, and User Admin Foundation
+
+## Objective
+
+Close core SaaS identity and User Admin readiness gaps through protected backend capabilities, workstream surfaces, and local runtime validation.
+
+## Scope
+
+- WorkOS/AuthKit validation and fail-closed behavior.
+- `/api/me` and selected AuthContext readiness proof.
+- Invitation lifecycle with Resend production boundary and local/dev/test captured outbox.
+- Invitation expiry/reminder lifecycle where feasible.
+- User Admin users/invitations/roles/memberships/access-review/support-access/admin-audit surfaces and actions.
+
+## Acceptance criteria
+
+- Missing provider secrets fail closed with actionable system-message/API behavior.
+- Invitation lifecycle and user admin actions are tenant-scoped, idempotent, audited, and tested.
+- User Admin structured surfaces use backend-derived data and protected capability actions.
+- Frontend tests/typecheck/build pass for changed UI surfaces.

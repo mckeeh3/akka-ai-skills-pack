@@ -1,0 +1,373 @@
+# Pending Tasks: Full-Core SaaS Readiness
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
+- Commit message format: `full-core-ready: <short task title>`.
+
+## Tasks
+
+### TASK-FCSR-00-001: Create full-core readiness planning scaffold
+
+- status: done
+- source: user accepted next mini-project after workstream design/implementation alignment completed
+- task brief: specs/full-core-saas-readiness/tasks/00-planning/00-create-full-core-readiness-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - app-description/00-system/readiness-status.md
+  - app-description/80-review/latest-readiness-summary.md
+  - current conversation context
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/full-core-saas-readiness/README.md
+  - specs/full-core-saas-readiness/conversation-capture.md
+  - specs/full-core-saas-readiness/pending-tasks.md
+  - specs/full-core-saas-readiness/sprints/*.md
+  - specs/full-core-saas-readiness/backlog/*.md
+  - specs/full-core-saas-readiness/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - mini-project has captured rationale, sprint sequence, backlog, task briefs, and pending queue
+  - task changes and queue update are committed
+- notes:
+  - commit message: `full-core-ready: add readiness queue`
+
+### TASK-FCSR-01-001: Define full-core readiness gap contract
+
+- status: pending
+- source: app-description readiness docs list full-core gaps after five-core starter alignment
+- task brief: specs/full-core-saas-readiness/tasks/01-readiness-contract/01-define-readiness-gap-contract.md
+- depends on:
+  - TASK-FCSR-00-001
+- required reads:
+  - AGENTS.md
+  - app-description/00-system/readiness-status.md
+  - app-description/80-review/latest-readiness-summary.md
+  - app-description/10-capabilities/capabilities-index.md
+  - app-description/12-workstreams/functional-agents.md
+  - app-description/70-traceability/workstream-id-map.md
+  - specs/full-core-saas-readiness/README.md
+  - specs/full-core-saas-readiness/conversation-capture.md
+  - specs/full-core-saas-readiness/sprints/01-readiness-baseline-sprint.md
+  - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
+  - specs/full-core-saas-readiness/tasks/01-readiness-contract/01-define-readiness-gap-contract.md
+- skills:
+  - app-description-readiness-assessment
+  - app-description-change-impact
+  - core-saas-foundation
+  - agent-workstream-apps
+- expected outputs:
+  - specs/full-core-saas-readiness/full-core-readiness-gap-contract.md
+  - updated specs/full-core-saas-readiness/pending-tasks.md if task ordering/scope changes
+- required checks:
+  - `git diff --check`
+  - focused `rg` proving the contract covers WorkOS/AuthKit, invitations/Resend, User Admin, managed-agent foundation, Audit/Trace, Governance/Policy, support access, billing-boundary decision, tenant isolation, frontend secret boundary, and runtime smoke
+- done criteria:
+  - implementation tasks can proceed without guessing current evidence or scope
+  - blocked/deferred items are explicit
+  - changes and queue update are committed
+- notes:
+  - commit message: `full-core-ready: define gap contract`
+  - vertical contract: cross-cutting readiness inventory for five core functional-agent workstreams and foundation capabilities; docs/planning only
+
+### TASK-FCSR-02-001: Validate WorkOS/AuthKit runtime boundary
+
+- status: pending
+- source: full-core readiness gap: production WorkOS/AuthKit configuration and fail-closed local validation
+- task brief: specs/full-core-saas-readiness/tasks/02-auth/01-validate-workos-authkit-runtime.md
+- depends on:
+  - TASK-FCSR-01-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/full-core-readiness-gap-contract.md
+  - specs/full-core-saas-readiness/sprints/02-identity-user-admin-sprint.md
+  - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
+  - specs/full-core-saas-readiness/tasks/02-auth/01-validate-workos-authkit-runtime.md
+  - app-description/40-auth-security/identity-and-trust.md
+  - app-description/40-auth-security/boundary-and-surface-rules.md
+  - frontend/src/main.tsx
+  - frontend/src/api/HttpWorkstreamApiClient.ts
+  - src/main/java/ai/first/api/foundation/security/MeEndpoint.java
+  - src/main/java/ai/first/application/foundation/identity/
+- skills:
+  - akka-workos-user-auth
+  - akka-http-endpoint-jwt
+  - akka-web-ui-testing
+- expected outputs:
+  - auth/security validation docs or notes as needed
+  - backend/frontend tests or smoke evidence
+  - updated queue
+- required checks:
+  - `git diff --check`
+  - focused backend auth tests
+  - focused frontend tests/typecheck/build when frontend changes
+- done criteria:
+  - AuthKit/WorkOS runtime boundary is validated at local scope or blocked with precise actionable prerequisites
+  - no frontend secrets are introduced
+  - changes and queue update are committed
+- notes:
+  - commit message: `full-core-ready: validate auth runtime`
+  - vertical contract: My Account and protected workstream shell auth boundary; `/api/me`; JWT/selected AuthContext; frontend secret-boundary tests
+
+### TASK-FCSR-03-001: Complete invitation onboarding and email outbox readiness
+
+- status: pending
+- source: full-core readiness gap: complete invitation onboarding with Resend and captured local/dev/test outbox
+- task brief: specs/full-core-saas-readiness/tasks/03-invitations/01-complete-invitation-onboarding.md
+- depends on:
+  - TASK-FCSR-01-001
+  - TASK-FCSR-02-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/full-core-readiness-gap-contract.md
+  - specs/full-core-saas-readiness/sprints/02-identity-user-admin-sprint.md
+  - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
+  - specs/full-core-saas-readiness/tasks/03-invitations/01-complete-invitation-onboarding.md
+  - app-description/10-capabilities/01-secure-tenant-user-foundation.md
+  - app-description/20-behavior/flows/01-onboarding-and-access-flow.md
+  - app-description/40-auth-security/secure-saas-foundation.md
+  - src/main/java/ai/first/application/foundation/invitation/
+  - src/main/java/ai/first/application/foundation/email/
+  - src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java
+  - src/test/java/ai/first/application/foundation/invitation/
+  - src/test/java/ai/first/application/coreapp/useradmin/InvitationAndUserAdminServiceTest.java
+- skills:
+  - akka-saas-invitation-onboarding
+  - akka-resend-email-service
+  - akka-workflow-testing if workflow lifecycle is added/changed
+  - akka-timed-actions if expiry/reminders are added/changed
+- expected outputs:
+  - backend invitation/email code and tests, and app-description/readiness updates as needed
+- required checks:
+  - `git diff --check`
+  - focused invitation/email tests
+  - broader `mvn test` if shared foundation behavior changes
+- done criteria:
+  - invitation onboarding works through intended backend/API/workstream path at stated local scope, or precise blockers are recorded and affected tasks are blocked
+  - changes and queue update are committed
+- notes:
+  - commit message: `full-core-ready: complete invitations`
+  - vertical contract: User Admin invitation surfaces/actions; secure-tenant-user-foundation capability; Resend/captured outbox; idempotency, audit, tenant isolation, expiry/reminder lifecycle where selected
+
+### TASK-FCSR-04-001: Complete User Admin structured surfaces
+
+- status: pending
+- source: full-core readiness gap: complete User Admin structured surfaces for users, invitations, roles/memberships, access review, support access, and admin audit
+- task brief: specs/full-core-saas-readiness/tasks/04-user-admin/01-complete-user-admin-surfaces.md
+- depends on:
+  - TASK-FCSR-01-001
+  - TASK-FCSR-02-001
+  - TASK-FCSR-03-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/full-core-readiness-gap-contract.md
+  - specs/full-core-saas-readiness/sprints/02-identity-user-admin-sprint.md
+  - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
+  - specs/full-core-saas-readiness/tasks/04-user-admin/01-complete-user-admin-surfaces.md
+  - app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
+  - app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
+  - app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
+  - app-description/70-traceability/surface-to-capability-map.md
+  - src/main/java/ai/first/application/coreapp/useradmin/
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - frontend/src/workstream/surfaces/
+- skills:
+  - akka-basic-user-admin
+  - akka-web-ui-forms-validation
+  - akka-web-ui-state-rendering
+  - akka-http-endpoint-testing
+- expected outputs:
+  - updated backend/frontend User Admin paths and tests
+  - updated app-description/readiness notes as needed
+- required checks:
+  - `git diff --check`
+  - focused backend User Admin/workstream tests
+  - `npm --prefix frontend test -- --run` or targeted frontend tests
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build` if frontend production output changes
+- done criteria:
+  - User Admin surfaces/actions meet the full-core scope in the gap contract through real backend/API/UI paths
+  - changes and queue update are committed
+- notes:
+  - commit message: `full-core-ready: complete user admin surfaces`
+  - vertical contract: User Admin functional agent; dashboard/list/detail/access review/admin audit surfaces; secure-tenant-user-foundation and governance-decisions-audit capabilities; backend API/workstream UI/audit tests
+
+### TASK-FCSR-05-001: Complete managed-agent foundation readiness
+
+- status: pending
+- source: full-core readiness gap: complete Agent Admin lifecycle for governed agent definitions, prompts, skills, references, manifests, tool boundaries, proposals, approvals, and traces
+- task brief: specs/full-core-saas-readiness/tasks/05-managed-agent/01-complete-managed-agent-foundation.md
+- depends on:
+  - TASK-FCSR-01-001
+  - TASK-FCSR-02-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/full-core-readiness-gap-contract.md
+  - specs/full-core-saas-readiness/sprints/03-agent-audit-governance-sprint.md
+  - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
+  - specs/full-core-saas-readiness/tasks/05-managed-agent/01-complete-managed-agent-foundation.md
+  - app-description/10-capabilities/05-managed-agent-foundation.md
+  - app-description/12-workstreams/workstream-expertise/
+  - app-description/20-behavior/flows/04-managed-agent-foundation-flow.md
+  - src/main/java/ai/first/application/foundation/agent/
+  - src/main/java/ai/first/application/coreapp/agentadmin/
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+- skills:
+  - akka-agent-behavior-profiles
+  - akka-agent-governed-documents
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-reference-governance
+  - akka-agent-tool-boundaries
+  - akka-agent-seed-documents
+  - akka-agent-work-trace
+- expected outputs:
+  - backend/frontend/doc/test updates for managed-agent foundation readiness
+- required checks:
+  - `git diff --check`
+  - focused managed-agent backend tests
+  - frontend tests/typecheck/build if UI changes
+  - broader `mvn test` when shared agent foundation changes
+- done criteria:
+  - managed-agent foundation meets selected full-core scope through real backend/runtime paths or precise blockers are recorded
+  - changes and queue update are committed
+- notes:
+  - commit message: `full-core-ready: complete managed agents`
+  - vertical contract: Agent Admin functional agent plus runtime workstream agents; managed-agent-foundation capability; AgentDefinition/PromptDocument/SkillDocument/ReferenceDocument/manifests/tool-boundary/traces; real Akka Agent runtime path and fail-closed provider behavior
+
+### TASK-FCSR-06-001: Complete Audit/Trace and Governance/Policy readiness
+
+- status: pending
+- source: full-core readiness gaps: searchable Audit/Trace investigation surfaces and Governance/Policy workflows/approval gates/impact/review controls
+- task brief: specs/full-core-saas-readiness/tasks/06-audit-governance/01-complete-audit-trace-and-governance.md
+- depends on:
+  - TASK-FCSR-01-001
+  - TASK-FCSR-02-001
+  - TASK-FCSR-05-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/full-core-readiness-gap-contract.md
+  - specs/full-core-saas-readiness/sprints/03-agent-audit-governance-sprint.md
+  - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
+  - specs/full-core-saas-readiness/tasks/06-audit-governance/01-complete-audit-trace-and-governance.md
+  - app-description/10-capabilities/03-governance-decisions-and-audit.md
+  - app-description/12-workstreams/surface-contracts/05-decision-card.md
+  - app-description/12-workstreams/surface-contracts/06-audit-trace-explorer.md
+  - app-description/12-workstreams/surface-contracts/07-agent-governance-center.md
+  - src/main/java/ai/first/application/foundation/audit/
+  - src/main/java/ai/first/application/foundation/governance/
+  - src/main/java/ai/first/application/coreapp/audit/
+  - src/main/java/ai/first/application/coreapp/governance/
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+- skills:
+  - ai-first-saas-audit-trace
+  - ai-first-saas-policy-governance
+  - ai-first-saas-decision-cards
+  - akka-views
+  - akka-workflows
+  - akka-web-ui-state-rendering
+- expected outputs:
+  - backend/frontend/doc/test updates for Audit/Trace and Governance/Policy readiness
+- required checks:
+  - `git diff --check`
+  - focused audit/governance/backend workstream tests
+  - frontend tests/typecheck/build if UI changes
+- done criteria:
+  - Audit/Trace and Governance/Policy meet selected full-core scope through real backend/API/UI paths or precise blockers are recorded
+  - changes and queue update are committed
+- notes:
+  - commit message: `full-core-ready: complete audit governance`
+  - vertical contract: Audit/Trace and Governance/Policy functional agents; audit timeline/search/detail/investigation and policy/decision surfaces; governance-decisions-audit capability; scoped redaction/export, approval, audit/work trace tests
+
+### TASK-FCSR-07-001: Run full-core runtime smoke and update readiness
+
+- status: pending
+- source: full-core readiness requires real local Akka/API/UI validation before completion claims
+- task brief: specs/full-core-saas-readiness/tasks/07-runtime-smoke/01-run-full-core-runtime-smoke.md
+- depends on:
+  - TASK-FCSR-02-001
+  - TASK-FCSR-03-001
+  - TASK-FCSR-04-001
+  - TASK-FCSR-05-001
+  - TASK-FCSR-06-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/full-core-readiness-gap-contract.md
+  - specs/full-core-saas-readiness/sprints/04-runtime-smoke-verification-sprint.md
+  - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
+  - specs/full-core-saas-readiness/tasks/07-runtime-smoke/01-run-full-core-runtime-smoke.md
+  - app-description/00-system/readiness-status.md
+  - app-description/80-review/latest-readiness-summary.md
+  - frontend/package.json
+  - pom.xml
+  - tools/
+- skills:
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+  - app-description-readiness-assessment
+  - app-description-readiness-summary
+- expected outputs:
+  - specs/full-core-saas-readiness/full-core-runtime-smoke.md or equivalent validation artifact
+  - updated readiness docs and queue
+- required checks:
+  - `git diff --check`
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build`
+  - any repository secret-boundary/static asset scan if available
+- done criteria:
+  - full-core smoke evidence or precise blockers are recorded
+  - readiness docs match evidence
+  - follow-up tasks are appended if needed
+  - changes and queue update are committed
+- notes:
+  - commit message: `full-core-ready: run runtime smoke`
+  - vertical contract: cross-cutting full-core local Akka/API/UI validation; all five core workstreams, auth, invitations, User Admin, managed-agent foundation, Audit/Trace, Governance/Policy, tenant isolation, provider fail-closed, audit/work traces, frontend secret-boundary
+
+### TASK-FCSR-99-001: Verify full-core readiness mini-project
+
+- status: pending
+- source: mini-project verification loop
+- task brief: specs/full-core-saas-readiness/tasks/99-verification/01-verify-full-core-readiness.md
+- depends on:
+  - TASK-FCSR-07-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/README.md
+  - specs/full-core-saas-readiness/conversation-capture.md
+  - specs/full-core-saas-readiness/pending-tasks.md
+  - specs/full-core-saas-readiness/sprints/*.md
+  - specs/full-core-saas-readiness/backlog/*.md
+  - specs/full-core-saas-readiness/tasks/**/*.md
+  - specs/full-core-saas-readiness/full-core-readiness-gap-contract.md
+  - runtime smoke/validation artifacts from completed tasks
+  - changed app-description/backend/frontend/test files from completed tasks
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - updated specs/full-core-saas-readiness/pending-tasks.md
+  - optional specs/full-core-saas-readiness/full-core-readiness-verification.md
+  - new bounded tasks if gaps remain
+- required checks:
+  - `git diff --check`
+  - targeted or full backend/frontend checks needed to validate final claimed state
+  - focused `rg` evidence for readiness docs and gap contract closure/blocker statuses
+- done criteria:
+  - task group and overall mini-project goals are compared against completed work
+  - unresolved questions/blockers are reviewed
+  - if complete, completion is recorded with no new required work
+  - if incomplete, new bounded tasks are appended before a new terminal verification task
+  - changes and queue update are committed
+- notes:
+  - commit message: `full-core-ready: verify readiness`
