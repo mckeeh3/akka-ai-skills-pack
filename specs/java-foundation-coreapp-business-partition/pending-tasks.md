@@ -48,7 +48,7 @@
 
 ### TASK-PACKAGES-01-001: Inventory classes and define package map
 
-- status: pending
+- status: done
 - source: specs/java-foundation-coreapp-business-partition/backlog/01-package-partition-build-backlog.md
 - task brief: specs/java-foundation-coreapp-business-partition/tasks/01-design-inventory/01-inventory-and-package-map.md
 - depends on: [TASK-PACKAGES-00-001]
@@ -74,6 +74,8 @@
   - queue is updated and committed
 - notes:
   - commit message: `packages: map foundation coreapp classes`
+  - completed class inventory, package map, ambiguity notes, migration order, and stale-reference search patterns
+  - checks: `git diff --check`
 
 ### TASK-PACKAGES-02-001: Move foundation domain packages
 
