@@ -438,11 +438,15 @@
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: end;
   border-color: color-mix(in srgb, var(--color-ai) 24%, var(--color-border));
-  border-left: 0.25rem solid var(--color-ai);
   border-radius: var(--radius-xl);
   background: color-mix(in srgb, var(--color-surface-glass) 96%, transparent);
   box-shadow: var(--shadow-command);
   backdrop-filter: blur(20px) saturate(1.16);
+}
+
+.workstream-composer::before {
+  content: none;
+  display: none;
 }
 
 .workstream-composer:focus-within {

@@ -70,10 +70,10 @@ test('workstream accessibility and quality checklist markers have source evidenc
   assert.match(layout, /env\(safe-area-inset-top/);
 });
 
-test('workstream composer send tooltip can escape the composer frame and left accent remains on the field edge', () => {
+test('workstream composer send tooltip can escape the composer frame without a left accent artifact', () => {
   assert.match(components, /\.workstream-composer \{[\s\S]*?overflow: visible;/);
-  assert.match(components, /\.workstream-composer \{[\s\S]*?border-left: 0\.25rem solid var\(--color-ai\);/);
-  assert.doesNotMatch(components, /\.workstream-composer::before/);
+  assert.doesNotMatch(components, /\.workstream-composer \{[\s\S]*?border-left: 0\.25rem solid var\(--color-ai\);/);
+  assert.match(components, /\.workstream-composer::before \{[\s\S]*?content: none;[\s\S]*?display: none;/);
   assert.doesNotMatch(components, /\.composer-input-wrap::before/);
   assert.match(components, /\.send-prompt-button \{[\s\S]*?overflow: visible;/);
   assert.match(components, /\.workstream-send-prompt-tooltip \{[\s\S]*?position: absolute;/);
