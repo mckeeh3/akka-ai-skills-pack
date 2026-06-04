@@ -2,7 +2,7 @@ package ai.first.application.foundation.workstream;
 
 import java.util.List;
 import java.util.Optional;
-import ai.first.application.security.WorkstreamService;
+import ai.first.application.coreapp.workstream.WorkstreamService;
 
 /** Durable port for tenant/context/functional-agent scoped workstream log reads and appends. */
 public interface WorkstreamLogRepository {

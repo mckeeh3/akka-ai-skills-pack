@@ -2,7 +2,7 @@ package ai.first.application.foundation.workstream;
 
 import java.util.List;
 import java.util.Optional;
-import ai.first.application.security.WorkstreamService;
+import ai.first.application.coreapp.workstream.WorkstreamService;
 
 /** Unit-test/local adapter for the durable workstream log port; production API paths bind AkkaWorkstreamLogRepository. */
 public final class LocalDemoWorkstreamLogRepository implements WorkstreamLogRepository {

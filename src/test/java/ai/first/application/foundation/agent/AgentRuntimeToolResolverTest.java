@@ -17,9 +17,9 @@ import ai.first.application.foundation.workstream.LocalDemoWorkstreamLogReposito
 import ai.first.application.foundation.invitation.LocalDemoInvitationRepository;
 import ai.first.application.foundation.invitation.InvitationService;
 import ai.first.application.foundation.invitation.InvitationView;
-import ai.first.application.security.MyAccountService;
+import ai.first.application.coreapp.myaccount.MyAccountService;
 import ai.first.application.foundation.identity.StarterSecurityComponents;
-import ai.first.application.security.UserAdminService;
+import ai.first.application.coreapp.useradmin.UserAdminService;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import ai.first.domain.foundation.identity.Account;
@@ -38,11 +38,11 @@ import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ai.first.application.agentfoundation.AgentAdminEvidenceTools;
-import ai.first.application.agentfoundation.AuditTraceEvidenceTools;
-import ai.first.application.agentfoundation.GovernancePolicyEvidenceTools;
-import ai.first.application.agentfoundation.MyAccountEvidenceTools;
-import ai.first.application.agentfoundation.UserAdminEvidenceTools;
+import ai.first.application.coreapp.agentadmin.AgentAdminEvidenceTools;
+import ai.first.application.coreapp.audit.AuditTraceEvidenceTools;
+import ai.first.application.coreapp.governance.GovernancePolicyEvidenceTools;
+import ai.first.application.coreapp.myaccount.MyAccountEvidenceTools;
+import ai.first.application.coreapp.useradmin.UserAdminEvidenceTools;
 
 class AgentRuntimeToolResolverTest {
   private LocalDemoAgentBehaviorRepository repository;

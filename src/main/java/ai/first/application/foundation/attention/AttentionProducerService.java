@@ -1,22 +1,22 @@
 package ai.first.application.foundation.attention;
 
 import ai.first.domain.foundation.identity.Account;
-import ai.first.application.agentfoundation.AgentAdminPromptRiskReviewService;
-import ai.first.domain.agentfoundation.PromptRiskReviewTask;
-import ai.first.domain.security.AccessReviewTask;
+import ai.first.application.coreapp.agentadmin.AgentAdminPromptRiskReviewService;
+import ai.first.domain.coreapp.agentadmin.PromptRiskReviewTask;
+import ai.first.domain.coreapp.useradmin.AccessReviewTask;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
-import ai.first.domain.security.AuditTraceSummaryTask;
+import ai.first.domain.coreapp.audit.AuditTraceSummaryTask;
 import ai.first.domain.foundation.attention.AttentionCategory;
 import ai.first.domain.foundation.attention.AttentionItem;
 import ai.first.domain.foundation.attention.AttentionItemStatus;
 import ai.first.domain.foundation.attention.AttentionSeverity;
 import ai.first.domain.foundation.attention.AttentionSourceRef;
 import ai.first.domain.foundation.attention.AttentionSurfaceRef;
-import ai.first.domain.security.GovernancePolicyImpactTask;
+import ai.first.domain.coreapp.governance.GovernancePolicyImpactTask;
 import ai.first.domain.foundation.governance.GovernancePolicyProposal;
 import ai.first.domain.foundation.invitation.Invitation;
 import ai.first.domain.foundation.invitation.InvitationStatus;
-import ai.first.domain.security.MyAccountPersonalAttentionDigestTask;
+import ai.first.domain.coreapp.myaccount.MyAccountPersonalAttentionDigestTask;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -25,9 +25,9 @@ import java.util.Objects;
 import java.util.UUID;
 import ai.first.application.foundation.identity.IdentityRepository;
 import ai.first.application.foundation.invitation.InvitationRepository;
-import ai.first.application.security.AuditTraceSummaryService;
-import ai.first.application.security.GovernancePolicyImpactService;
-import ai.first.application.security.MyAccountPersonalAttentionDigestService;
+import ai.first.application.coreapp.audit.AuditTraceSummaryService;
+import ai.first.application.coreapp.governance.GovernancePolicyImpactService;
+import ai.first.application.coreapp.myaccount.MyAccountPersonalAttentionDigestService;
 
 /** Producer-oriented boundary that maps real starter service state into the shared attention backbone. */
 public final class AttentionProducerService {

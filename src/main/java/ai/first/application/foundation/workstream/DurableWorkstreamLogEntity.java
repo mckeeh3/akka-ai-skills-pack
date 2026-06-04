@@ -4,7 +4,7 @@ import akka.javasdk.annotations.Component;
 import akka.javasdk.keyvalueentity.KeyValueEntity;
 import java.util.List;
 import java.util.Optional;
-import ai.first.application.security.WorkstreamService;
+import ai.first.application.coreapp.workstream.WorkstreamService;
 
 /** Durable Akka Key Value Entity for tenant/context/functional-agent scoped workstream logs. */
 @Component(id = "starter-workstream-log")

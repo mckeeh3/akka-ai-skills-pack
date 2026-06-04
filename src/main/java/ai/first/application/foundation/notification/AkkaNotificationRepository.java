@@ -1,7 +1,7 @@
 package ai.first.application.foundation.notification;
 
 import akka.javasdk.client.ComponentClient;
-import ai.first.domain.security.DigestExportRequest;
+import ai.first.domain.coreapp.myaccount.DigestExportRequest;
 import ai.first.domain.foundation.email.EmailNotificationDelivery;
 import ai.first.domain.foundation.email.EmailNotificationPreference;
 import ai.first.domain.foundation.email.EmailOutboxMessage;

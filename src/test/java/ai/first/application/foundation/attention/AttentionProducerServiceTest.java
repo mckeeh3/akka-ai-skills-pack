@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ai.first.domain.security.AccessReviewTask;
+import ai.first.domain.coreapp.useradmin.AccessReviewTask;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.attention.AttentionCategory;
@@ -34,9 +34,9 @@ import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
 import ai.first.application.foundation.invitation.InvitationService;
 import ai.first.application.foundation.invitation.LocalDemoInvitationRepository;
-import ai.first.application.security.LocalDemoAccessReviewTaskRepository;
-import ai.first.application.security.UserAdminAccessReviewService;
-import ai.first.application.security.UserAdminService;
+import ai.first.application.coreapp.useradmin.LocalDemoAccessReviewTaskRepository;
+import ai.first.application.coreapp.useradmin.UserAdminAccessReviewService;
+import ai.first.application.coreapp.useradmin.UserAdminService;
 
 class AttentionProducerServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-28T12:00:00Z"), ZoneOffset.UTC);

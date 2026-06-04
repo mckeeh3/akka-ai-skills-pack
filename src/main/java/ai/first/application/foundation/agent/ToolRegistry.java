@@ -1,7 +1,7 @@
 package ai.first.application.foundation.agent;
 
 import ai.first.domain.foundation.identity.Account;
-import ai.first.application.security.MyAccountService;
+import ai.first.application.coreapp.myaccount.MyAccountService;
 import ai.first.application.foundation.identity.StarterSecurityComponents;
 import ai.first.domain.foundation.agent.ToolCatalogEntry;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import ai.first.application.agentfoundation.AgentAdminEvidenceTools;
-import ai.first.application.agentfoundation.AuditTraceEvidenceTools;
-import ai.first.application.agentfoundation.GovernancePolicyEvidenceTools;
-import ai.first.application.agentfoundation.MyAccountEvidenceTools;
-import ai.first.application.agentfoundation.UserAdminEvidenceTools;
+import ai.first.application.coreapp.agentadmin.AgentAdminEvidenceTools;
+import ai.first.application.coreapp.audit.AuditTraceEvidenceTools;
+import ai.first.application.coreapp.governance.GovernancePolicyEvidenceTools;
+import ai.first.application.coreapp.myaccount.MyAccountEvidenceTools;
+import ai.first.application.coreapp.useradmin.UserAdminEvidenceTools;
 
 /** Backend-owned registry that maps stable tool ids to hardcoded Java bindings. */
 public final class ToolRegistry {

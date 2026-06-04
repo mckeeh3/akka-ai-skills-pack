@@ -56,7 +56,7 @@ class EmailNotificationServiceTest {
   @Test
   void emailChannelRequiresOptInAllowlistAndWritesCapturedOutbox() {
     var actor = actor("corr-email");
-    var source = notifications.projectFromPersonalDigest(actor, digest("digest-ready", ai.first.domain.security.MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, "Digest token=secret ready", null), "corr-project");
+    var source = notifications.projectFromPersonalDigest(actor, digest("digest-ready", ai.first.domain.coreapp.myaccount.MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, "Digest token=secret ready", null), "corr-project");
 
     var denied = email.evaluateAndEnqueue(actor, source.notificationId(), "corr-denied");
     assertEquals(EmailNotificationDeliveryStatus.NOT_ELIGIBLE, denied.status());
@@ -77,7 +77,7 @@ class EmailNotificationServiceTest {
   void duplicateEmailProjectionReturnsExistingDeliveryWithoutDuplicateOutbox() {
     var actor = actor("corr-dup");
     email.updatePreference(actor, NotificationCategory.DIGEST_READY, true, NotificationPriority.INFO, null, "corr-pref");
-    var source = notifications.projectFromPersonalDigest(actor, digest("digest-dup", ai.first.domain.security.MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, "Digest ready", null), "corr-project");
+    var source = notifications.projectFromPersonalDigest(actor, digest("digest-dup", ai.first.domain.coreapp.myaccount.MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, "Digest ready", null), "corr-project");
 
     var first = email.evaluateAndEnqueue(actor, source.notificationId(), "corr-first");
     var second = email.evaluateAndEnqueue(actor, source.notificationId(), "corr-second");
@@ -92,7 +92,7 @@ class EmailNotificationServiceTest {
     var actor = actor("corr-prod");
     var productionEmail = new EmailNotificationService(notificationRepository, resolver, new ResendEmailService(Map.of(), (message, config) -> ResendEmailService.DeliveryResult.sent("should-not-send")), ResendEmailService.DeliveryMode.PRODUCTION, clock);
     productionEmail.updatePreference(actor, NotificationCategory.DIGEST_READY, true, NotificationPriority.INFO, null, "corr-pref");
-    var source = notifications.projectFromPersonalDigest(actor, digest("digest-prod", ai.first.domain.security.MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, "Digest ready", null), "corr-project");
+    var source = notifications.projectFromPersonalDigest(actor, digest("digest-prod", ai.first.domain.coreapp.myaccount.MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, "Digest ready", null), "corr-project");
     var queued = productionEmail.evaluateAndEnqueue(actor, source.notificationId(), "corr-queue");
 
     var failed = productionEmail.deliverOutbox(actor, queued.deliveryId(), "corr-fail-closed");
@@ -121,9 +121,9 @@ class EmailNotificationServiceTest {
     assertEquals("category-not-allowlisted", denied.safeErrorSummary());
   }
 
-  private ai.first.domain.security.MyAccountPersonalAttentionDigestTask digest(String digestTaskId, ai.first.domain.security.MyAccountPersonalAttentionDigestTask.Status status, String summary, String blockerCode) {
+  private ai.first.domain.coreapp.myaccount.MyAccountPersonalAttentionDigestTask digest(String digestTaskId, ai.first.domain.coreapp.myaccount.MyAccountPersonalAttentionDigestTask.Status status, String summary, String blockerCode) {
     var now = Instant.parse("2026-05-27T09:00:00Z");
-    return new ai.first.domain.security.MyAccountPersonalAttentionDigestTask(digestTaskId, "agent-task-" + digestTaskId, "tenant-1", null, "membership-admin", "admin@example.test", "membership-admin", "idem-" + digestTaskId, 3, status, 100, summary, blockerCode, null, null, List.of("evidence-" + digestTaskId), List.of("section-" + digestTaskId), List.of("trace-" + digestTaskId), now, now);
+    return new ai.first.domain.coreapp.myaccount.MyAccountPersonalAttentionDigestTask(digestTaskId, "agent-task-" + digestTaskId, "tenant-1", null, "membership-admin", "admin@example.test", "membership-admin", "idem-" + digestTaskId, 3, status, 100, summary, blockerCode, null, null, List.of("evidence-" + digestTaskId), List.of("section-" + digestTaskId), List.of("trace-" + digestTaskId), now, now);
   }
 
   private AuthContextResolver.ResolvedMe actor(String correlationId) {

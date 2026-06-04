@@ -5,7 +5,7 @@ import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AuthContext;
 import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.invitation.Invitation;
-import ai.first.application.security.MyAccountService;
+import ai.first.application.coreapp.myaccount.MyAccountService;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentReferenceManifest;
@@ -27,10 +27,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
-import ai.first.application.agentfoundation.AgentAdminService;
-import ai.first.application.agentfoundation.AuditTraceEvidenceTools;
-import ai.first.application.agentfoundation.GovernancePolicyEvidenceTools;
-import ai.first.application.agentfoundation.MyAccountEvidenceTools;
+import ai.first.application.coreapp.agentadmin.AgentAdminService;
+import ai.first.application.coreapp.audit.AuditTraceEvidenceTools;
+import ai.first.application.coreapp.governance.GovernancePolicyEvidenceTools;
+import ai.first.application.coreapp.myaccount.MyAccountEvidenceTools;
 
 /** Imports implementation-packaged default agent behavior records into tenant-scoped governed state. */
 public final class AgentBehaviorSeedLoader {

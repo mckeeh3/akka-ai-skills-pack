@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import ai.first.application.security.WorkstreamService;
+import ai.first.application.coreapp.workstream.WorkstreamService;
 
 /** Current durable workstream log state keyed by tenant, selected AuthContext, and functional agent. */
 public record WorkstreamLogState(

@@ -1,11 +1,11 @@
 package ai.first.application.foundation.workstream;
 
 import ai.first.domain.foundation.identity.Membership;
-import ai.first.domain.agentfoundation.PromptRiskReviewTask;
-import ai.first.domain.security.AccessReviewTask;
+import ai.first.domain.coreapp.agentadmin.PromptRiskReviewTask;
+import ai.first.domain.coreapp.useradmin.AccessReviewTask;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
-import ai.first.domain.security.AuditTraceSummaryTask;
-import ai.first.domain.security.GovernancePolicyImpactTask;
+import ai.first.domain.coreapp.audit.AuditTraceSummaryTask;
+import ai.first.domain.coreapp.governance.GovernancePolicyImpactTask;
 import ai.first.domain.foundation.attention.AttentionCategory;
 import ai.first.domain.foundation.attention.AttentionItem;
 import ai.first.domain.foundation.attention.AttentionItemStatus;
@@ -14,7 +14,7 @@ import ai.first.domain.foundation.attention.AttentionSeverity;
 import ai.first.domain.foundation.attention.AttentionSourceRef;
 import ai.first.domain.foundation.attention.AttentionSurfaceRef;
 import ai.first.domain.foundation.invitation.Invitation;
-import ai.first.domain.security.MyAccountPersonalAttentionDigestTask;
+import ai.first.domain.coreapp.myaccount.MyAccountPersonalAttentionDigestTask;
 import ai.first.domain.foundation.workstream.WorkstreamEventEnvelope;
 import java.time.Clock;
 import java.time.Instant;

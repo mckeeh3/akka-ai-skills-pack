@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import ai.first.application.security.WorkstreamService;
+import ai.first.application.coreapp.workstream.WorkstreamService;
 
 class DurableWorkstreamLogEntityTest {
 

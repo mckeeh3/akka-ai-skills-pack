@@ -138,7 +138,7 @@
 
 ### TASK-PACKAGES-03-001: Move core app packages
 
-- status: pending
+- status: done
 - source: specs/java-foundation-coreapp-business-partition/backlog/01-package-partition-build-backlog.md
 - task brief: specs/java-foundation-coreapp-business-partition/tasks/03-coreapp/01-move-coreapp-packages.md
 - depends on: [TASK-PACKAGES-02-002]
@@ -166,6 +166,8 @@
   - queue is updated and committed
 - notes:
   - commit message: `packages: move core app packages`
+  - moved mapped core app API, application, domain, and tests under `ai.first.*.coreapp.*`
+  - checks: `git diff --check`; `mvn test`; stale moved coreapp package declaration/import/resource search
 
 ### TASK-PACKAGES-04-001: Add business boundary docs and checks
 

@@ -14,7 +14,7 @@ import akka.javasdk.testkit.TestKitSupport;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.workstream.LocalDemoWorkstreamLogRepository;
-import ai.first.application.security.WorkstreamService;
+import ai.first.application.coreapp.workstream.WorkstreamService;
 
 /** Optional real-provider smoke. Skips unless backend-only provider env is present. */
 class RealModelProviderSmokeTest extends TestKitSupport {

@@ -3,7 +3,7 @@ package ai.first.application.foundation.workstream;
 import akka.javasdk.client.ComponentClient;
 import java.util.List;
 import java.util.Optional;
-import ai.first.application.security.WorkstreamService;
+import ai.first.application.coreapp.workstream.WorkstreamService;
 
 /** Akka-backed workstream log adapter for real local runtime API paths. */
 public final class AkkaWorkstreamLogRepository implements WorkstreamLogRepository {

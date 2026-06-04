@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import akka.javasdk.testkit.KeyValueEntityTestKit;
-import ai.first.domain.security.DigestExportRequest;
+import ai.first.domain.coreapp.myaccount.DigestExportRequest;
 import ai.first.domain.foundation.notification.NotificationCategory;
 import ai.first.domain.foundation.notification.NotificationChannel;
 import ai.first.domain.foundation.notification.NotificationDeliveryAttempt;

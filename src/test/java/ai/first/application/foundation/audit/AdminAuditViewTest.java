@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
-import ai.first.application.security.UserAdminService;
+import ai.first.application.coreapp.useradmin.UserAdminService;
 
 class AdminAuditViewTest {
   private LocalDemoIdentityRepository identityRepository;

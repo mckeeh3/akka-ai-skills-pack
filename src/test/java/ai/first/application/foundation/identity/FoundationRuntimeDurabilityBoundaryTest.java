@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.audit.FailClosedAuditTraceRepository;
 import ai.first.application.foundation.governance.FailClosedGovernancePolicyRepository;
 import ai.first.application.foundation.workstream.FailClosedWorkstreamLogRepository;
-import ai.first.application.security.FailClosedAccessReviewTaskRepository;
+import ai.first.application.coreapp.useradmin.FailClosedAccessReviewTaskRepository;
 
 final class FoundationRuntimeDurabilityBoundaryTest {
   @Test

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import ai.first.application.foundation.audit.AuditTraceService;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
-import ai.first.application.security.MyAccountService;
+import ai.first.application.coreapp.myaccount.MyAccountService;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ai.first.application.agentfoundation.AgentAdminService;
+import ai.first.application.coreapp.agentadmin.AgentAdminService;
 
 class AgentBehaviorSeedLoaderTest {
   private LocalDemoAgentBehaviorRepository repository;

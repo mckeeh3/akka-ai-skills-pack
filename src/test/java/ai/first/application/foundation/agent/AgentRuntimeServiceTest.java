@@ -13,7 +13,7 @@ import ai.first.application.foundation.agent.AgentRuntimeService.ReferenceReadRe
 import ai.first.application.foundation.agent.AgentRuntimeService.SkillReadRequest;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
-import ai.first.application.security.MyAccountService;
+import ai.first.application.coreapp.myaccount.MyAccountService;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;

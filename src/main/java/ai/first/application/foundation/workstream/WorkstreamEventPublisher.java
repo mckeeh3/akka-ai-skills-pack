@@ -1,12 +1,12 @@
 package ai.first.application.foundation.workstream;
 
 import ai.first.domain.foundation.identity.Account;
-import ai.first.domain.agentfoundation.PromptRiskReviewTask;
-import ai.first.domain.security.AccessReviewTask;
-import ai.first.domain.security.AuditTraceSummaryTask;
-import ai.first.domain.security.GovernancePolicyImpactTask;
+import ai.first.domain.coreapp.agentadmin.PromptRiskReviewTask;
+import ai.first.domain.coreapp.useradmin.AccessReviewTask;
+import ai.first.domain.coreapp.audit.AuditTraceSummaryTask;
+import ai.first.domain.coreapp.governance.GovernancePolicyImpactTask;
 import ai.first.domain.foundation.invitation.Invitation;
-import ai.first.domain.security.MyAccountPersonalAttentionDigestTask;
+import ai.first.domain.coreapp.myaccount.MyAccountPersonalAttentionDigestTask;
 import ai.first.domain.foundation.workstream.WorkstreamEventEnvelope;
 import ai.first.domain.foundation.workstream.WorkstreamEventSourceRef;
 import java.time.Clock;
@@ -15,11 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import ai.first.application.foundation.attention.AttentionService;
-import ai.first.application.security.AuditTraceSummaryService;
-import ai.first.application.security.GovernancePolicyImpactService;
-import ai.first.application.security.MyAccountPersonalAttentionDigestService;
-import ai.first.application.security.MyAccountService;
-import ai.first.application.security.UserAdminAccessReviewService;
+import ai.first.application.coreapp.audit.AuditTraceSummaryService;
+import ai.first.application.coreapp.governance.GovernancePolicyImpactService;
+import ai.first.application.coreapp.myaccount.MyAccountPersonalAttentionDigestService;
+import ai.first.application.coreapp.myaccount.MyAccountService;
+import ai.first.application.coreapp.useradmin.UserAdminAccessReviewService;
 
 /** Publishes selected starter domain transitions into the governed workstream event backbone. */
 public final class WorkstreamEventPublisher {

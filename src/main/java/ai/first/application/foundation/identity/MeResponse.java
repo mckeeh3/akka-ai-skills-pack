@@ -7,7 +7,7 @@ import ai.first.domain.foundation.identity.UserProfile;
 import ai.first.domain.foundation.identity.UserSettings;
 import java.util.List;
 import java.util.Locale;
-import ai.first.application.security.MyAccountService;
+import ai.first.application.coreapp.myaccount.MyAccountService;
 
 public record MeResponse(
     AccountSummary account,

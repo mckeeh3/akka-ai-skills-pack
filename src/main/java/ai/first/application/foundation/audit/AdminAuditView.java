@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import ai.first.application.foundation.identity.AuthContextResolver;
-import ai.first.application.security.UserAdminService;
+import ai.first.application.coreapp.useradmin.UserAdminService;
 
 /** Browser-safe Admin Audit projection seam with scoped ordering, pagination, and redaction. */
 public final class AdminAuditView {

@@ -1,18 +1,18 @@
 package ai.first.application.foundation.notification;
 
-import ai.first.application.agentfoundation.AgentAdminPromptRiskReviewService;
-import ai.first.domain.agentfoundation.PromptRiskReviewTask;
-import ai.first.domain.security.AccessReviewTask;
+import ai.first.application.coreapp.agentadmin.AgentAdminPromptRiskReviewService;
+import ai.first.domain.coreapp.agentadmin.PromptRiskReviewTask;
+import ai.first.domain.coreapp.useradmin.AccessReviewTask;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
 import ai.first.domain.foundation.attention.AttentionCategory;
 import ai.first.domain.foundation.attention.AttentionItem;
 import ai.first.domain.foundation.attention.AttentionRedactionLevel;
 import ai.first.domain.foundation.attention.AttentionSeverity;
-import ai.first.domain.security.AuditTraceSummaryTask;
+import ai.first.domain.coreapp.audit.AuditTraceSummaryTask;
 import ai.first.domain.foundation.email.EmailNotificationPreference;
-import ai.first.domain.security.GovernancePolicyImpactTask;
-import ai.first.domain.security.MyAccountNotificationCenter;
-import ai.first.domain.security.MyAccountPersonalAttentionDigestTask;
+import ai.first.domain.coreapp.governance.GovernancePolicyImpactTask;
+import ai.first.domain.coreapp.myaccount.MyAccountNotificationCenter;
+import ai.first.domain.coreapp.myaccount.MyAccountPersonalAttentionDigestTask;
 import ai.first.domain.foundation.notification.NotificationCategory;
 import ai.first.domain.foundation.notification.NotificationChannel;
 import ai.first.domain.foundation.notification.NotificationChannelRegistryEntry;
@@ -43,9 +43,9 @@ import java.util.stream.Collectors;
 import ai.first.application.foundation.email.EmailNotificationService;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.security.AuditTraceSummaryService;
-import ai.first.application.security.GovernancePolicyImpactService;
-import ai.first.application.security.UserAdminAccessReviewService;
+import ai.first.application.coreapp.audit.AuditTraceSummaryService;
+import ai.first.application.coreapp.governance.GovernancePolicyImpactService;
+import ai.first.application.coreapp.useradmin.UserAdminAccessReviewService;
 
 /** Backend-owned governed in-app notification projection, lifecycle, and preference service. */
 public final class NotificationService {

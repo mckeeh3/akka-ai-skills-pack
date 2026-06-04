@@ -1,7 +1,7 @@
 package ai.first.application.foundation.identity;
 
 import ai.first.domain.foundation.identity.WorkosIdentity;
-import ai.first.application.security.MyAccountService;
+import ai.first.application.coreapp.myaccount.MyAccountService;
 
 /** Application service backing GET /api/me. */
 public final class MeService {

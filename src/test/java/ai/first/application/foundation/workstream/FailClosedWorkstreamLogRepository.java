@@ -3,7 +3,7 @@ package ai.first.application.foundation.workstream;
 import java.util.List;
 import java.util.Optional;
 import ai.first.application.foundation.identity.FailClosedFoundationRuntime;
-import ai.first.application.security.WorkstreamService;
+import ai.first.application.coreapp.workstream.WorkstreamService;
 
 /** Test-only fail-closed workstream log port used to verify durable binding diagnostics. */
 public final class FailClosedWorkstreamLogRepository implements WorkstreamLogRepository {
