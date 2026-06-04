@@ -420,7 +420,7 @@
 
 ### TASK-FCSR-08-002: Run live Resend invite-email provider smoke
 
-- status: blocked
+- status: done
 - source: verification follow-up for production-provider readiness
 - task brief: specs/full-core-saas-readiness/tasks/08-follow-up/02-run-live-resend-provider-smoke.md
 - depends on:
@@ -436,6 +436,7 @@
   - akka-saas-invitation-onboarding
 - expected outputs:
   - live Resend delivery smoke evidence or updated blocker
+  - specs/full-core-saas-readiness/live-resend-provider-smoke.md
 - required checks:
   - `git diff --check`
   - focused invitation/email tests plus live-provider smoke command/runbook
@@ -443,7 +444,12 @@
   - real Resend API and sender/domain configuration deliver an invitation email through the backend provider boundary without exposing tokens/secrets in browser-safe state
   - changes and queue update are committed
 - notes:
-  - blocker: requires backend-only `RESEND_API_KEY` and `INVITE_EMAIL_FROM`/`RESEND_FROM_EMAIL` with verified sender/domain setup
+  - commit message: `full-core-ready: run live resend provider smoke`
+  - completed after backend-only Resend provider environment variables were supplied in the local shell
+  - evidence: `specs/full-core-saas-readiness/live-resend-provider-smoke.md`
+  - implementation repair: Resend production adapter now sends provider `headers` as a JSON object rather than an invalid string, resolving the first live `resend-http-422` response
+  - checks: `mvn test -Dtest=InvitationAndUserAdminServiceTest,RealResendProviderSmokeTest -DrealResendProviderSmoke=true`; `git diff --check`
+  - result: focused test run passed with 12 tests, 0 failures, 0 errors, 0 skipped; live invitation email delivery was accepted by Resend, invitation state recorded `SENT`, and secret non-exposure assertions passed for result DTOs, invitation state, outbox message, and audit events
 
 ### TASK-FCSR-08-003: Run live model-provider workstream-agent smoke
 

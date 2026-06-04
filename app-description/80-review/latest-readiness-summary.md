@@ -1,17 +1,15 @@
 # Latest Readiness Summary
 
-- readiness: full-core-local-test-scope-validated-with-provider-and-billing-blockers
+- readiness: full-core-local-test-scope-validated-with-live-resend-and-model-smokes
 - ready for:
   - local/test-scope evaluation of the implemented full-core foundation across My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy
   - app-description maintenance that preserves the canonical workstream shell, structured surfaces, governed capabilities, and traceability maps
   - domain-specific planning only when the affected core/security/capability contracts remain intact
-  - focused production-readiness tasks for provider configuration or stale validation tooling
+  - focused production-readiness tasks for the remaining live WorkOS/AuthKit provider configuration
   - future product-scope planning for billing implementation or timer-backed invitation reminders if required
 - not yet ready for:
-  - declaring production full-core SaaS completion without live provider evidence
+  - declaring production full-core SaaS completion without live WorkOS/AuthKit provider evidence
   - production WorkOS/AuthKit configuration and live AuthKit/JWT smoke
-  - production Resend invite-email configuration and live delivery smoke
-  - live model-backed summary/impact/agent worker smoke with approved provider/runtime/tool-boundary configuration
   - billing implementation; it remains deferred for the current target beyond preserving the billing-boundary invariant
   - timer-backed invitation reminder scheduling; it remains deferred for the current target until product scope requires it
 - workstream/UI readiness notes:
@@ -23,16 +21,17 @@
   - `frontend/src/screens/**` files are legacy/reference/contract-fixture artifacts, not the primary architecture or evidence of feature completion
 - main remaining decisions/gaps:
   - live WorkOS/AuthKit provider configuration and smoke evidence
-  - live Resend provider configuration and delivery smoke evidence
-  - live model-provider configuration for model-backed workstream agents/workers
   - future product-specific billing scope if subscription lifecycle, entitlements, payment-failure behavior, billing provider integration, or billing UI become required
   - future product-specific timer-reminder scope if scheduled invitation reminders become required
-  - whether to repair or retire stale optional validation tooling such as `tools/prove-workstream-icons-v0.sh`
   - whether future work should remove or migrate legacy page-style fixture files after their contract-test value is replaced
 - latest scope decision:
   - `specs/full-core-saas-readiness/billing-timer-reminder-scope-decision.md` records that billing implementation and timer-backed invitation reminders remain deferred for the current full-core target, with accepted readiness impact
 - latest validation evidence:
   - `specs/full-core-saas-readiness/full-core-runtime-smoke.md`
+  - `specs/full-core-saas-readiness/live-resend-provider-smoke.md`
+  - `specs/full-core-saas-readiness/live-model-provider-smoke.md`
+  - live Resend focused smoke passed with 12 tests, 0 failures, 0 errors, 0 skipped
+  - live model-provider focused smoke passed with 1 test, 0 failures, 0 errors, 0 skipped
   - `mvn test` passed with 285 tests, 0 failures, 0 errors, 1 skipped
   - `npm --prefix frontend test -- --run` passed with 139 frontend contract tests
   - `npm --prefix frontend run typecheck` passed

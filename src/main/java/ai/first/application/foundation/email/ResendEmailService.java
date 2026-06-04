@@ -120,7 +120,7 @@ public final class ResendEmailService {
           + jsonField("to", message.normalizedRecipientEmail()) + ","
           + jsonField("subject", subject(message, config)) + ","
           + jsonField("text", textBody(message)) + ","
-          + jsonField("headers", "X-Correlation-Id: " + message.correlationId())
+          + "\"headers\":{\"X-Correlation-Id\":" + jsonString(message.correlationId()) + "}"
           + "}";
       return HttpRequest.newBuilder(endpoint)
           .timeout(Duration.ofSeconds(10))
@@ -187,7 +187,11 @@ public final class ResendEmailService {
   }
 
   private static String jsonField(String name, String value) {
-    return "\"" + jsonEscape(name) + "\":\"" + jsonEscape(value) + "\"";
+    return jsonString(name) + ":" + jsonString(value);
+  }
+
+  private static String jsonString(String value) {
+    return "\"" + jsonEscape(value) + "\"";
   }
 
   private static String jsonEscape(String value) {

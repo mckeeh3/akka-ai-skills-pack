@@ -25,7 +25,7 @@ Evidence reviewed includes:
 | Area | Verification result |
 | --- | --- |
 | WorkOS/AuthKit boundary | Local/test boundary is validated with backend-authoritative `/api/me`, selected `AuthContext`, denied states, frontend public-config gating, bearer-token API calls, and no frontend backend-secret references. Live provider smoke remains blocked by missing backend-only issuer/audience/provider config and real AuthKit app. |
-| Invitation onboarding and Resend | Invitation lifecycle, captured local/test outbox, delivery failure handling, idempotency, tenant scope, audit/lifecycle history, and Resend production fail-closed behavior are validated. Live Resend delivery remains blocked by missing backend-only Resend key and sender/domain setup. |
+| Invitation onboarding and Resend | Invitation lifecycle, captured local/test outbox, delivery failure handling, idempotency, tenant scope, audit/lifecycle history, and Resend production fail-closed behavior are validated. Live Resend invite-email delivery passed in TASK-FCSR-08-002 with backend-only provider configuration. |
 | User Admin surfaces | Dashboard/list/detail/access-review/support-access/admin-audit paths are validated through backend workstream actions and frontend contract tests. |
 | Managed-agent foundation | AgentDefinition, prompt/skill/reference documents, manifests, tool boundaries, seed loading, runtime preparation, loader tools, behavior proposals, activation/rollback, model binding, and traces are validated locally. Live model-provider workstream-agent smoke passed in TASK-FCSR-08-003 with backend-only provider environment variables. |
 | Audit/Trace and Governance/Policy | Search/detail/timeline/investigation notes, redaction/export denial evidence, proposal/simulation/decision/activation/rollback/outcome-note paths, and fail-closed model-backed workers are validated. |
@@ -40,7 +40,7 @@ Evidence reviewed includes:
 The original full-core readiness queue is complete for the selected local/test-scope foundation, but not for production-provider readiness or billing implementation. Because the README done state allows completion with explicit blockers/deferred scope only when bounded follow-up work exists, `pending-tasks.md` now appends follow-up tasks for:
 
 1. live WorkOS/AuthKit provider smoke;
-2. live Resend provider smoke;
+2. live Resend provider smoke, completed by TASK-FCSR-08-002;
 3. live model-provider smoke, completed by TASK-FCSR-08-003;
 4. billing/timer-reminder scope decision;
 5. stale validation tooling repair/retirement;
@@ -50,4 +50,4 @@ Provider smoke tasks are marked blocked until external backend-only configuratio
 
 ## Verification conclusion
 
-The mini-project's implemented local/test-scope full-core foundation is verified. Live model-provider workstream-agent smoke passed in TASK-FCSR-08-003. Remaining live WorkOS/AuthKit, live Resend, billing, and timer-reminder gaps are explicit and queued or deferred; the optional validation-tool gap was repaired in TASK-FCSR-08-005.
+The mini-project's implemented local/test-scope full-core foundation is verified. Live Resend invite-email provider smoke passed in TASK-FCSR-08-002, and live model-provider workstream-agent smoke passed in TASK-FCSR-08-003. Remaining live WorkOS/AuthKit, billing, and timer-reminder gaps are explicit and queued or deferred; the optional validation-tool gap was repaired in TASK-FCSR-08-005.
