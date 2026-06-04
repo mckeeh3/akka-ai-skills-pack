@@ -44,7 +44,7 @@
 
 ### TASK-WDA-01-001: Add canonical workstream id map
 
-- status: pending
+- status: done
 - source: audit finding that app-description ids and implementation ids are inconsistent
 - task brief: specs/workstream-design-implementation-alignment/tasks/01-description-alignment/01-add-canonical-id-map.md
 - depends on:
@@ -79,6 +79,7 @@
   - changes and queue update are committed
 - notes:
   - commit message: `workstream-align: add canonical id map`
+  - completed with canonical/runtime functional-agent, workstream icon, dashboard surface, shell request, and primary action id aliases; no runtime behavior change
   - vertical contract: cross-cutting app-description traceability for five core functional-agent workstreams; no runtime behavior change
 
 ### TASK-WDA-01-002: Expand surface governed-tool mappings

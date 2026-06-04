@@ -1,5 +1,7 @@
 # Functional Agent to Capability Map
 
+See `workstream-id-map.md` for canonical app-description ids, runtime/API/frontend functional-agent ids, workstream icon ids, and primary dashboard surface aliases.
+
 | Functional agent | Expertise bundle | Primary surfaces | Capability links |
 | --- | --- | --- | --- |
 | My Account | `12-workstreams/workstream-expertise/my-account-agent.md` | `my-account-dashboard`, `markdown_response`, `system_message` | `secure-tenant-user-foundation`, `frontend-shell-integration-patterns`, personal notification/readiness slices |

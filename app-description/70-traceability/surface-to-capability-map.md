@@ -1,5 +1,7 @@
 # Surface to Capability Map
 
+See `workstream-id-map.md` for canonical app-description surface ids, runtime/API/frontend surface ids, owner functional-agent ids, and dashboard aliases.
+
 | Surface | Owning workstream(s) | Capability/action mapping |
 | --- | --- | --- |
 | `my-account-dashboard` | My Account | read account/profile/settings/context/notifications → `secure-tenant-user-foundation`; shell launch/context state → `frontend-shell-integration-patterns`. |
