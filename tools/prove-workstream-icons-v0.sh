@@ -52,7 +52,7 @@ rail_path = frontend / "workstream" / "rail" / "FunctionalAgentRail.tsx"
 rail_item_path = frontend / "workstream" / "rail" / "FunctionalAgentRailItem.tsx"
 icon_component_path = frontend / "workstream" / "rail" / "WorkstreamIcon.tsx"
 css_path = frontend / "styles" / "components.css"
-backend_me_path = root / "src" / "main" / "java" / "ai" / "first" / "application" / "security" / "MeResponse.java"
+backend_me_path = root / "src" / "main" / "java" / "ai" / "first" / "application" / "foundation" / "identity" / "MeResponse.java"
 
 for path in [fixtures_path, rail_path, rail_item_path, icon_component_path, css_path, backend_me_path]:
     if not path.exists():

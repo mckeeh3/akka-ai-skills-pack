@@ -508,7 +508,7 @@
 
 ### TASK-FCSR-08-005: Repair or retire stale workstream icon validation tool
 
-- status: pending
+- status: done
 - source: runtime smoke found optional `tools/prove-workstream-icons-v0.sh` stale against current package layout
 - task brief: specs/full-core-saas-readiness/tasks/08-follow-up/05-repair-or-retire-workstream-icon-validation.md
 - depends on:
@@ -531,6 +531,10 @@
 - done criteria:
   - stale optional validation tooling no longer reports false blockers against the current package layout
   - changes and queue update are committed
+- notes:
+  - commit message: `full-core-ready: repair icon proof`
+  - evidence: `tools/prove-workstream-icons-v0.sh` now targets `src/main/java/ai/first/application/foundation/identity/MeResponse.java`; runtime smoke and verification notes updated to remove the stale optional-tool blocker
+  - checks: `tools/prove-workstream-icons-v0.sh`; `git diff --check`
 
 ### TASK-FCSR-99-002: Verify follow-up full-core readiness closure
 

@@ -18,7 +18,7 @@ The local validation pass exercised the current Akka/API/UI implementation throu
 | `npm --prefix frontend run typecheck` | passed | TypeScript check completed with no errors. |
 | `npm --prefix frontend run build` | passed | Vite production build completed into `src/main/resources/static-resources`. |
 | `tools/scan-ai-first-saas-static-assets.sh src/main/resources/static-resources` | passed | Built static assets contained no configured backend secret markers. |
-| `tools/prove-workstream-icons-v0.sh` | blocked/stale optional tool | The script still expects `src/main/java/ai/first/application/security/MeResponse.java`, while the current app uses the foundation security/API package layout. This stale icon proof does not block the required secret-boundary scan but should be repaired separately if retained. |
+| `tools/prove-workstream-icons-v0.sh` | passed after TASK-FCSR-08-005 repair | The optional icon proof now targets `src/main/java/ai/first/application/foundation/identity/MeResponse.java` and no longer reports a false blocker against the current foundation identity/API package layout. |
 
 ## Runtime/API/UI coverage observed
 
@@ -37,6 +37,7 @@ The local validation pass exercised the current Akka/API/UI implementation throu
 - Live model-backed worker/agent provider smoke remains blocked until a real model provider configuration, runtime tool-boundary configuration, and approved provider credentials are supplied. Local tests verify fail-closed behavior rather than making live model calls.
 - Billing implementation remains deferred by the readiness gap contract. Current smoke only preserves the billing-boundary invariant that billing/subscription metadata must not grant tenant application-data access.
 - Timer-backed invitation reminder scheduling remains deferred from the invitation task and is not claimed by this smoke.
+- Optional `tools/prove-workstream-icons-v0.sh` validation was repaired in TASK-FCSR-08-005 and now passes against the current package layout.
 
 ## Readiness conclusion
 

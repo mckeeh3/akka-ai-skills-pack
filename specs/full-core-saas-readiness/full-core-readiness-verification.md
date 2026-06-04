@@ -33,7 +33,7 @@ Evidence reviewed includes:
 | Runtime smoke | `mvn test`, frontend tests, typecheck, production build, static asset secret scan, and readiness docs all support local/test-scope full-core foundation readiness. |
 | Billing boundary | Billing implementation remains explicitly deferred by the gap contract; only the invariant that billing/subscription metadata must not grant tenant application-data access is preserved. |
 | Timer-backed reminders | Invitation expiry is validated as an idempotent backend command; timer-backed reminder scheduling remains deferred unless required by product scope. |
-| Optional validation tooling | `tools/prove-workstream-icons-v0.sh` is stale against the current package layout and should be repaired or retired if retained. |
+| Optional validation tooling | `tools/prove-workstream-icons-v0.sh` was repaired in TASK-FCSR-08-005 to target the current foundation identity package layout and passes as optional evidence. |
 
 ## Required follow-up queue decision
 
@@ -50,4 +50,4 @@ Provider smoke tasks are marked blocked until external backend-only configuratio
 
 ## Verification conclusion
 
-The mini-project's implemented local/test-scope full-core foundation is verified. Remaining production-provider, billing, timer-reminder, and optional validation-tool gaps are explicit and queued; no additional implementation work was performed in this verification task.
+The mini-project's implemented local/test-scope full-core foundation is verified. Remaining production-provider, billing, and timer-reminder gaps are explicit and queued or deferred; the optional validation-tool gap was repaired in TASK-FCSR-08-005.
