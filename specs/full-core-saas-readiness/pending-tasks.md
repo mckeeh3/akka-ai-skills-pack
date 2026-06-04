@@ -350,7 +350,7 @@
 
 ### TASK-FCSR-99-001: Verify full-core readiness mini-project
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/full-core-saas-readiness/tasks/99-verification/01-verify-full-core-readiness.md
 - depends on:
@@ -384,3 +384,177 @@
   - changes and queue update are committed
 - notes:
   - commit message: `full-core-ready: verify readiness`
+  - evidence: `specs/full-core-saas-readiness/full-core-readiness-verification.md`; local/test-scope full-core foundation verified, while production-provider smokes, billing implementation, timer-reminder scheduling, and stale optional validation tooling remain explicitly queued
+  - checks: focused readiness `rg`; `git diff --check`
+
+### TASK-FCSR-08-001: Run live WorkOS/AuthKit provider smoke
+
+- status: blocked
+- source: verification follow-up for production-provider readiness
+- task brief: specs/full-core-saas-readiness/tasks/08-follow-up/01-run-live-workos-authkit-provider-smoke.md
+- depends on:
+  - TASK-FCSR-99-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/full-core-readiness-verification.md
+  - specs/full-core-saas-readiness/auth-runtime-boundary-validation.md
+  - app-description/00-system/readiness-status.md
+  - app-description/80-review/latest-readiness-summary.md
+  - frontend/src/main.tsx
+  - src/main/java/ai/first/api/foundation/security/MeEndpoint.java
+  - src/main/java/ai/first/application/foundation/identity/
+- skills:
+  - akka-workos-user-auth
+  - akka-http-endpoint-jwt
+  - akka-web-ui-testing
+- expected outputs:
+  - live WorkOS/AuthKit smoke evidence or updated blocker
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend auth checks plus live-provider smoke command/runbook
+- done criteria:
+  - real issuer/audience/AuthKit app smoke validates JWT-bearing `/api/me` and protected workstream APIs without frontend secrets
+  - changes and queue update are committed
+- notes:
+  - blocker: requires backend-only `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, configured AuthKit redirect/callback URL, and public `VITE_WORKOS_CLIENT_ID`
+
+### TASK-FCSR-08-002: Run live Resend invite-email provider smoke
+
+- status: blocked
+- source: verification follow-up for production-provider readiness
+- task brief: specs/full-core-saas-readiness/tasks/08-follow-up/02-run-live-resend-provider-smoke.md
+- depends on:
+  - TASK-FCSR-99-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/full-core-readiness-verification.md
+  - specs/full-core-saas-readiness/invitation-onboarding-validation.md
+  - src/main/java/ai/first/application/foundation/invitation/
+  - src/main/java/ai/first/application/foundation/email/
+- skills:
+  - akka-resend-email-service
+  - akka-saas-invitation-onboarding
+- expected outputs:
+  - live Resend delivery smoke evidence or updated blocker
+- required checks:
+  - `git diff --check`
+  - focused invitation/email tests plus live-provider smoke command/runbook
+- done criteria:
+  - real Resend API and sender/domain configuration deliver an invitation email through the backend provider boundary without exposing tokens/secrets in browser-safe state
+  - changes and queue update are committed
+- notes:
+  - blocker: requires backend-only `RESEND_API_KEY` and `INVITE_EMAIL_FROM`/`RESEND_FROM_EMAIL` with verified sender/domain setup
+
+### TASK-FCSR-08-003: Run live model-provider workstream-agent smoke
+
+- status: blocked
+- source: verification follow-up for production-provider readiness
+- task brief: specs/full-core-saas-readiness/tasks/08-follow-up/03-run-live-model-provider-smoke.md
+- depends on:
+  - TASK-FCSR-99-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/full-core-readiness-verification.md
+  - specs/full-core-saas-readiness/managed-agent-foundation-validation.md
+  - specs/full-core-saas-readiness/audit-governance-validation.md
+  - src/main/java/ai/first/application/foundation/agent/
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+- skills:
+  - akka-agent-component
+  - akka-agent-tools
+  - akka-agent-work-trace
+  - akka-agent-testing
+- expected outputs:
+  - live model-backed workstream-agent/worker smoke evidence or updated blocker
+- required checks:
+  - `git diff --check`
+  - focused managed-agent/workstream tests plus live-provider smoke command/runbook
+- done criteria:
+  - governed Akka Agent runtime path invokes a real configured provider with active AgentDefinition, prompt, manifests, ToolPermissionBoundary, loader tools, runtime tools, and durable traces
+  - changes and queue update are committed
+- notes:
+  - blocker: requires backend-only model-provider credentials/configuration, approved runtime tool-boundary grants, and safe test tenant/runtime setup
+
+### TASK-FCSR-08-004: Decide billing and timer-reminder follow-up scope
+
+- status: pending
+- source: verification found billing implementation and timer-backed reminder scheduling deferred by current scope
+- task brief: specs/full-core-saas-readiness/tasks/08-follow-up/04-decide-billing-and-timer-reminder-scope.md
+- depends on:
+  - TASK-FCSR-99-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/full-core-readiness-verification.md
+  - specs/full-core-saas-readiness/full-core-readiness-gap-contract.md
+  - app-description/00-system/readiness-status.md
+  - app-description/80-review/latest-readiness-summary.md
+  - specs/full-core-saas-readiness/pending-tasks.md
+- skills:
+  - ai-first-saas-policy-governance
+  - akka-change-request-to-spec-update
+- expected outputs:
+  - bounded billing and/or timer-reminder implementation tasks, or explicit retained deferral with acceptance impact
+  - updated app-description/readiness docs if scope changes
+  - updated queue
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for billing-boundary and timer-reminder scope/status
+- done criteria:
+  - billing lifecycle/entitlement/payment-failure/UI scope and invitation timer-reminder scope are explicitly accepted, deferred, or queued as implementation tasks
+  - changes and queue update are committed
+- notes:
+  - next runnable follow-up after TASK-FCSR-99-001
+
+### TASK-FCSR-08-005: Repair or retire stale workstream icon validation tool
+
+- status: pending
+- source: runtime smoke found optional `tools/prove-workstream-icons-v0.sh` stale against current package layout
+- task brief: specs/full-core-saas-readiness/tasks/08-follow-up/05-repair-or-retire-workstream-icon-validation.md
+- depends on:
+  - TASK-FCSR-99-001
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/full-core-readiness-verification.md
+  - specs/full-core-saas-readiness/full-core-runtime-smoke.md
+  - tools/prove-workstream-icons-v0.sh
+  - src/main/java/ai/first/application/foundation/identity/MeResponse.java
+  - src/main/java/ai/first/api/foundation/security/MeEndpoint.java
+- skills:
+  - none; repository tooling task
+- expected outputs:
+  - repaired validation script or documented retirement/removal
+  - updated queue/readiness notes if retained as required evidence
+- required checks:
+  - `git diff --check`
+  - `tools/prove-workstream-icons-v0.sh` if repaired and retained
+- done criteria:
+  - stale optional validation tooling no longer reports false blockers against the current package layout
+  - changes and queue update are committed
+
+### TASK-FCSR-99-002: Verify follow-up full-core readiness closure
+
+- status: pending
+- source: terminal verification for appended follow-up tasks
+- task brief: specs/full-core-saas-readiness/tasks/99-verification/02-verify-follow-up-readiness-closure.md
+- depends on:
+  - TASK-FCSR-08-001
+  - TASK-FCSR-08-002
+  - TASK-FCSR-08-003
+  - TASK-FCSR-08-004
+  - TASK-FCSR-08-005
+- required reads:
+  - AGENTS.md
+  - specs/full-core-saas-readiness/pending-tasks.md
+  - specs/full-core-saas-readiness/full-core-readiness-verification.md
+  - app-description/00-system/readiness-status.md
+  - app-description/80-review/latest-readiness-summary.md
+- skills:
+  - none; repository verification task
+- expected outputs:
+  - final follow-up verification artifact and queue update
+- required checks:
+  - `git diff --check`
+  - checks required by completed follow-up tasks
+- done criteria:
+  - follow-up provider/billing/timer/tooling statuses are verified against evidence or precise blockers
+  - changes and queue update are committed
