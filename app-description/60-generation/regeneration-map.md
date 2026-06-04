@@ -16,6 +16,6 @@
 - UI shell changes affect:
   - workstream shell, rail, composer, route/deep-link support, typed API client, interaction tests
 - horizontal implementation map changes affect:
-  - Akka component selection, implementation tasks, test scope, and skills-pack reference mapping
+  - Akka component selection, implementation tasks, test scope, skills-pack reference mapping, and Java package placement across `foundation`, `coreapp`, and `business.<area>` inside the standard `api` / `application` / `domain` layers
 - observability changes affect:
   - audit events, trace enrichment consumers, metrics/logging tests, Audit/Trace surfaces

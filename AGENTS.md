@@ -50,6 +50,8 @@ specs/extensions/<domain>/
 docs/extensions/<domain>/
 ```
 
+Within each Java layer, reusable platform/security/identity/managed-agent runtime code belongs under `foundation`, built-in five-core-workstream code belongs under `coreapp`, and user-owned product code belongs under `business.<domain>`.
+
 When domain behavior needs core integration, prefer a small stable hook or registry in core code plus Java domain implementation under the `business.<domain>` package path.
 
 ## Required checks

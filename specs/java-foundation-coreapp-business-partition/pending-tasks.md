@@ -201,7 +201,7 @@
 
 ### TASK-PACKAGES-05-001: Update docs and skills-pack package references
 
-- status: pending
+- status: done
 - source: specs/java-foundation-coreapp-business-partition/backlog/01-package-partition-build-backlog.md
 - task brief: specs/java-foundation-coreapp-business-partition/tasks/05-docs-validation/01-update-docs-and-skills-pack-references.md
 - depends on: [TASK-PACKAGES-04-001]
@@ -226,6 +226,8 @@
   - queue is updated and committed
 - notes:
   - commit message: `packages: update package guidance`
+  - updated root, app-description generation, and skills-pack package guidance for `foundation` / `coreapp` / `business.<area>` Java placement
+  - checks: `git diff --check`; stale root/app docs old-package search for `ai.first.api.admin|security|workstream`, `ai.first.application.security|agentfoundation`, `ai.first.domain.security|agentfoundation`
 
 ### TASK-PACKAGES-99-001: Verify package partition completion
 
