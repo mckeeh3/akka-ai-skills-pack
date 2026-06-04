@@ -84,7 +84,7 @@
 
 ### TASK-WDA-01-002: Expand surface governed-tool mappings
 
-- status: pending
+- status: done
 - source: audit finding that app-description surface maps are too coarse for implemented action ids/governed-tool ids
 - task brief: specs/workstream-design-implementation-alignment/tasks/01-description-alignment/02-expand-surface-governed-tool-map.md
 - depends on:
@@ -120,6 +120,8 @@
   - changes and queue update are committed
 - notes:
   - commit message: `workstream-align: map surface governed tools`
+  - completed by expanding `app-description/70-traceability/surface-to-capability-map.md` with runtime browser action ids, exact governed-tool ids or runtime constant aliases where imported, capability ids, exposure labels, result/denial notes, and capability-file anchors
+  - checks: `git diff --check`; `rg "my_account\\.view_summary|attention\\.open_attention_item|agent_admin\\.list_definitions|audit\\.trace\\.search|governance\\.policy\\.simulate" app-description/70-traceability/surface-to-capability-map.md`
   - vertical contract: cross-cutting workstream surface graph/action-to-capability mapping; no runtime behavior change
 
 ### TASK-WDA-02-001: Align default dashboard loading
