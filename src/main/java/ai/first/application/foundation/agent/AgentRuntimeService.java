@@ -11,6 +11,7 @@ import ai.first.domain.foundation.agent.BehaviorChangeProposal;
 import ai.first.domain.foundation.agent.ModelConfigRef;
 import ai.first.domain.foundation.agent.ModelPolicy;
 import ai.first.domain.foundation.agent.PromptDocument;
+import ai.first.domain.foundation.agent.ReferenceDocument;
 import ai.first.domain.foundation.agent.SeedProvenance;
 import ai.first.domain.foundation.agent.SkillDocument;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
@@ -386,6 +387,9 @@ public final class AgentRuntimeService {
     } else if (proposal.targetArtifact() == BehaviorChangeProposal.TargetArtifact.SKILL) {
       var existing = repository.skillDocument(proposal.tenantId(), proposal.targetArtifactId()).orElseThrow();
       return new RollbackSnapshot("skill", existing);
+    } else if (proposal.targetArtifact() == BehaviorChangeProposal.TargetArtifact.REFERENCE) {
+      var existing = repository.referenceDocument(proposal.tenantId(), proposal.targetArtifactId()).orElseThrow();
+      return new RollbackSnapshot("reference", existing);
     } else if (proposal.targetArtifact() == BehaviorChangeProposal.TargetArtifact.TOOL_BOUNDARY) {
       var existing = repository.toolBoundary(proposal.tenantId(), proposal.targetArtifactId()).orElseThrow();
       return new RollbackSnapshot("tool-boundary", existing);
@@ -400,6 +404,9 @@ public final class AgentRuntimeService {
     } else if (proposal.targetArtifact() == BehaviorChangeProposal.TargetArtifact.SKILL) {
       var existing = repository.skillDocument(proposal.tenantId(), proposal.targetArtifactId()).orElseThrow();
       repository.saveSkillDocument(new SkillDocument(existing.tenantId(), existing.skillDocumentId(), existing.stableSkillId(), existing.title(), existing.purpose(), existing.whenToUse(), existing.tags(), AgentLifecycleStatus.ACTIVE, existing.activeVersion() + 1, proposal.proposedContent(), checksum(proposal.proposedContent()), customized(existing.seedProvenance()), existing.createdAt(), Instant.now(clock)));
+    } else if (proposal.targetArtifact() == BehaviorChangeProposal.TargetArtifact.REFERENCE) {
+      var existing = repository.referenceDocument(proposal.tenantId(), proposal.targetArtifactId()).orElseThrow();
+      repository.saveReferenceDocument(new ReferenceDocument(existing.tenantId(), existing.referenceDocumentId(), existing.stableReferenceId(), existing.title(), existing.summary(), existing.whenToConsult(), existing.referenceType(), existing.accessLevel(), existing.tags(), AgentLifecycleStatus.ACTIVE, existing.activeVersion() + 1, proposal.proposedContent(), checksum(proposal.proposedContent()), customized(existing.seedProvenance()), existing.createdAt(), Instant.now(clock)));
     } else if (proposal.targetArtifact() == BehaviorChangeProposal.TargetArtifact.TOOL_BOUNDARY) {
       var existing = repository.toolBoundary(proposal.tenantId(), proposal.targetArtifactId()).orElseThrow();
       repository.saveToolBoundary(new ToolPermissionBoundary(existing.tenantId(), existing.boundaryId(), existing.agentDefinitionId(), AgentLifecycleStatus.ACTIVE, existing.boundaryVersion() + 1, proposal.proposedToolGrants(), checksum(proposal.proposedToolGrants().toString()), customized(existing.seedProvenance()), existing.createdAt(), Instant.now(clock)));
@@ -409,6 +416,7 @@ public final class AgentRuntimeService {
   private void restoreRollback(RollbackSnapshot rollback) {
     if (rollback.record() instanceof PromptDocument prompt) repository.savePromptDocument(prompt);
     else if (rollback.record() instanceof SkillDocument skill) repository.saveSkillDocument(skill);
+    else if (rollback.record() instanceof ReferenceDocument reference) repository.saveReferenceDocument(reference);
     else if (rollback.record() instanceof ToolPermissionBoundary boundary) repository.saveToolBoundary(boundary);
   }
 

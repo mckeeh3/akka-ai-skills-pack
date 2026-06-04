@@ -501,6 +501,36 @@ class AgentRuntimeServiceTest {
   }
 
   @Test
+  void behaviorEditApprovesActivatesAndRollsBackReferenceVersions() {
+    var revisedReference = "Approved revised access-review reference. Continue to require backend authorization, capability checks, manifests, and ToolPermissionBoundary enforcement.";
+    var proposal = service.proposeBehaviorChange(new BehaviorChangeRequest(
+        "tenant-1",
+        AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+        tenantAdmin,
+        BehaviorChangeProposal.TargetArtifact.REFERENCE,
+        revisedReference,
+        List.of(),
+        "Clarify access-review evidence guidance.",
+        "corr-reference-proposal"));
+    var before = repository.referenceDocument("tenant-1", proposal.targetArtifactId()).orElseThrow();
+
+    service.submitProposalForReview(tenantAdmin, "tenant-1", proposal.proposalId(), "corr-reference-submit");
+    service.approveProposal(tenantAdmin, "tenant-1", proposal.proposalId(), "corr-reference-approve");
+    var activated = service.activateProposal(tenantAdmin, "tenant-1", proposal.proposalId(), "corr-reference-activate");
+    var after = repository.referenceDocument("tenant-1", proposal.targetArtifactId()).orElseThrow();
+    var rolledBack = service.rollbackProposal(tenantAdmin, "tenant-1", proposal.proposalId(), "corr-reference-rollback");
+
+    assertEquals(BehaviorChangeProposal.Status.ACTIVATED, activated.status());
+    assertEquals(before.activeVersion() + 1, after.activeVersion());
+    assertEquals(revisedReference, after.contentBody());
+    assertTrue(after.seedProvenance().tenantCustomized());
+    assertEquals(BehaviorChangeProposal.Status.ROLLED_BACK, rolledBack.status());
+    assertEquals(before, repository.referenceDocument("tenant-1", proposal.targetArtifactId()).orElseThrow());
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("BEHAVIOR_ACTIVATION") && trace.targetId().equals(proposal.proposalId()) && trace.decision() == AgentRuntimeTrace.Decision.ALLOWED));
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("BEHAVIOR_ROLLBACK") && trace.targetId().equals(proposal.proposalId()) && trace.decision() == AgentRuntimeTrace.Decision.ALLOWED));
+  }
+
+  @Test
   void behaviorEditSupportsCancelRejectRollbackAndUnsupportedTargetsFailClosed() {
     var rejectedDraft = service.proposeBehaviorChange(new BehaviorChangeRequest(
         "tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, BehaviorChangeProposal.TargetArtifact.PROMPT,

@@ -210,7 +210,7 @@
 
 ### TASK-FCSR-05-001: Complete managed-agent foundation readiness
 
-- status: pending
+- status: done
 - source: full-core readiness gap: complete Agent Admin lifecycle for governed agent definitions, prompts, skills, references, manifests, tool boundaries, proposals, approvals, and traces
 - task brief: specs/full-core-saas-readiness/tasks/05-managed-agent/01-complete-managed-agent-foundation.md
 - depends on:
@@ -250,6 +250,8 @@
 - notes:
   - commit message: `full-core-ready: complete managed agents`
   - vertical contract: Agent Admin functional agent plus runtime workstream agents; managed-agent-foundation capability; AgentDefinition/PromptDocument/SkillDocument/ReferenceDocument/manifests/tool-boundary/traces; real Akka Agent runtime path and fail-closed provider behavior
+  - evidence: `specs/full-core-saas-readiness/managed-agent-foundation-validation.md`; reference behavior proposals now activate and rollback through governed backend state; focused managed-agent tests and full `mvn test` passed locally
+  - checks: `mvn test -Dtest=AgentRuntimeServiceTest,AgentBehaviorSeedLoaderTest,AgentRuntimeTraceSinkTest,AgentRuntimeTraceEntityTest,AgentRuntimeTraceViewTest,WorkstreamRuntimeAgentTest`; `mvn test`; `git diff --check`
 
 ### TASK-FCSR-06-001: Complete Audit/Trace and Governance/Policy readiness
 
