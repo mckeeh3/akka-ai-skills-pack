@@ -231,7 +231,7 @@
 
 ### TASK-PACKAGES-99-001: Verify package partition completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/java-foundation-coreapp-business-partition/tasks/05-docs-validation/02-verify-package-partition-completion.md
 - depends on:
@@ -264,3 +264,5 @@
   - queue is updated and committed
 - notes:
   - commit message: `packages: verify package partition`
+  - terminal verification found the package partition mini-project complete with no material unqueued gaps
+  - checks: `git diff --check`; `mvn test`; stale source package/import search for old `api.admin|security|workstream`, `application.security|agentfoundation`, and `domain.security|agentfoundation`; docs/skills-pack stale old-package search (remaining matches only in this mini-project's historical/provenance text); `JavaPackageBoundaryTest` via `mvn test`; counted 310 foundation/coreapp/business package declarations
