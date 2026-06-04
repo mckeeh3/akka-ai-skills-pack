@@ -20,43 +20,38 @@ The installed `.agents/` directory is the harness support library. Do not treat 
 
 For a new app with an implementation baseline, fork or copy from the upstream runnable core app repository root, then extend that workspace. For an existing app, install the pack and let the harness update the existing app-description/specs/source incrementally.
 
-## Install the pack
+## Install the skills
 
 Current manifest version: `0.2.12`
 
-Project install from the current directory:
+Clone or check out the desired release tag, then install the skills into your harness skills directory:
 
 ```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.12/install-akka-ai-skills-pack-0.2.12.sh | bash -s --
-```
-
-Project install into a specific directory:
-
-```bash
-curl -fsSL https://github.com/mckeeh3/akka-ai-skills-pack/releases/download/v0.2.12/install-akka-ai-skills-pack-0.2.12.sh | bash -s -- --target-dir /path/to/project
-```
-
-Install from an unpacked archive:
-
-```bash
-tar -xzf akka-ai-skills-pack-0.2.12.tar.gz
-cd akka-ai-skills-pack-0.2.12
-bash install.sh --location project --project /path/to/project
+git clone https://github.com/mckeeh3/akka-ai-skills-pack.git
+cd akka-ai-skills-pack
+./install-skills.sh --target /path/to/project/.agents/skills --prune
 ```
 
 Global install:
 
 ```bash
-bash install.sh --location global
+./install-skills.sh --location global --prune
 ```
 
-Dry run:
+Development symlink install:
 
 ```bash
-bash install.sh --location project --project /path/to/project --dry-run
+./install-skills.sh --mode symlink --target /path/to/project/.agents/skills --prune
 ```
 
-A project install creates `.agents/` under the target project. A global install creates `~/.agents`. Both modes install skills, docs, manifests, and reference examples only; they do not copy application code into the project root.
+Dry run and check:
+
+```bash
+./install-skills.sh --target /path/to/project/.agents/skills --dry-run
+./install-skills.sh --target /path/to/project/.agents/skills --check
+```
+
+The installer creates or updates only the harness skills directory. It writes `.akka-ai-skills-pack-install-manifest` in that directory so `--prune` can remove retired pack-owned skills and `--uninstall` can remove this pack without deleting unrelated skills.
 
 ## Choose a starting mode
 
@@ -78,15 +73,8 @@ Model-backed workstream agents must invoke a concrete Akka `Agent` component thr
 
 ```text
 .agents/
-├── AGENTS.md
-├── docs/
-├── manifests/
-│   └── akka-ai-skills-pack.yaml
-├── resources/
-│   └── examples/
-│       ├── java/
-│       └── frontend/
 └── skills/
+    ├── .akka-ai-skills-pack-install-manifest
     ├── README.md
     ├── references/
     └── <skill-name>/SKILL.md
@@ -94,10 +82,9 @@ Model-backed workstream agents must invoke a concrete Akka `Agent` component thr
 
 Important files:
 
-- `.agents/AGENTS.md` — installed guidance for the harness
 - `.agents/skills/README.md` — routing map for selecting the smallest relevant skills
-- `.agents/docs/` — doctrine, planning references, and examples
-- `.agents/resources/examples/java/` — focused Akka Java SDK reference examples
+- `.agents/skills/.akka-ai-skills-pack-install-manifest` — ownership manifest used by prune/uninstall
+- `.agents/skills/references/` — shared skill reference files
 - `.agents/resources/examples/frontend/` — React/Vite workstream UI reference source
 
 ## Recommended harness prompts

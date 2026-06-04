@@ -34,8 +34,9 @@ Choose the smallest checks that prove the task. Common skills-pack checks are:
 
 ```bash
 git diff --check
-./install.sh --location project --project /tmp/akka-install-dry-run --dry-run
-bash tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive
+./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run
+./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune
+./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check
 bash tools/verify-opinionated-ai-first-saas-pack.sh
 ```
 

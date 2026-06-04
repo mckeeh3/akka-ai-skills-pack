@@ -9,7 +9,8 @@ Primary maintenance entry points:
 - `pack/` — installed-pack guidance and manifest metadata
 - `docs/` — pack doctrine, routing, and reference docs
 - `akka-context/` — vendored official Akka reference material for maintainers; not installed
-- `tools/` — pack build, release, validation, and audit tools
-- `install.sh` — local installer entrypoint
+- `tools/` — release, validation, and audit tools
+- `install-skills.sh` — current skills-only installer entrypoint
+- `install.sh` — legacy full `.agents` installer retained for compatibility
 
-The repository root remains the canonical runnable core app. This directory owns installable guidance and packaging assets.
+The repository root remains the canonical runnable core app. This directory owns installable skills and supporting guidance assets. The repo/tag is now the unit of installation; a distribution bundle is no longer required for normal use.

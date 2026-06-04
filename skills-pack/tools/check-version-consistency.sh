@@ -41,14 +41,9 @@ pack_name = sys.argv[3]
 pack_version = sys.argv[4]
 
 
-def check_doc(label: str, path: Path, *, require_current_manifest_section: bool = False) -> list[str]:
+def check_doc(label: str, path: Path) -> list[str]:
     text = path.read_text()
     errors: list[str] = []
-
-    if require_current_manifest_section and f"Current manifest version:\n- `{pack_version}`" not in text:
-        errors.append(
-            f"{label} does not show the current manifest version in the Distribution model section"
-        )
 
     pack_refs = sorted(set(re.findall(rf"{re.escape(pack_name)}-(\d+\.\d+\.\d+)", text)))
     for version in pack_refs:
@@ -74,7 +69,7 @@ def check_doc(label: str, path: Path, *, require_current_manifest_section: bool 
     return errors
 
 errors: list[str] = []
-errors.extend(check_doc("README.md", readme_path, require_current_manifest_section=True))
+errors.extend(check_doc("README.md", readme_path))
 errors.extend(check_doc("pack/README.md", pack_readme_path))
 
 if errors:

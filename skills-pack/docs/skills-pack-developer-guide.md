@@ -15,7 +15,8 @@ Skills-pack work includes:
 - `skills-pack/pack/**`
 - `skills-pack/examples/**`
 - `skills-pack/tools/**`
-- `skills-pack/install.sh`
+- `skills-pack/install-skills.sh`
+- `skills-pack/install.sh` legacy compatibility installer
 
 Do not add core app runtime code under `skills-pack/**`. Do not add skills-pack reference examples back into root `src/**`.
 
@@ -36,7 +37,8 @@ Do not add core app runtime code under `skills-pack/**`. Do not add skills-pack 
 skills-pack/
 ├── AGENTS.md
 ├── README.md
-├── install.sh
+├── install-skills.sh
+├── install.sh                 # legacy full-pack compatibility installer
 ├── pack/
 │   ├── AGENTS.md
 │   ├── README.md
@@ -46,8 +48,7 @@ skills-pack/
 ├── examples/
 │   └── akka-components/
 ├── akka-context/
-├── tools/
-└── dist/
+└── tools/
 ```
 
 ## Maintaining skills and docs
@@ -70,73 +71,45 @@ Run the smallest check set that proves the task. Common pack checks:
 
 ```bash
 git diff --check
-./install.sh --location project --project /tmp/akka-install-dry-run --dry-run
-bash tools/build-pack.sh --github-repo example/repo --output-dir /tmp/akka-pack-build-check --clean --no-archive
+./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run
+./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune
+./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check
 bash tools/verify-opinionated-ai-first-saas-pack.sh
 ```
 
 When root app runtime or frontend files are touched, also run the relevant root checks from root `AGENTS.md`.
 
-## Distribution model
+## Installation model
 
-The installable resource pack is named `akka-ai-skills-pack`.
+The installable resource pack is named `akka-ai-skills-pack`, but the repository checkout/tag is now the unit of installation. Normal use does not require a generated distribution archive.
 
-The distribution includes:
+The current installer copies or symlinks:
 
-- source-authored skills copied from `skills-pack/skills/**`
-- pack-facing docs copied from `skills-pack/docs/**`
-- focused Java examples copied from `skills-pack/examples/akka-components/**`
-- frontend workstream reference source copied from root `frontend/**`
-- root `pom.xml` for Java example support
-- `skills-pack/install.sh`
-- root `LICENSE`
-- `skills-pack/pack/AGENTS.md` as installed `.agents/AGENTS.md`
-- `skills-pack/pack/EXAMPLES-README.md` as installed `.agents/resources/examples/java/README.md`
-- `skills-pack/pack/manifest.yaml` as installed manifest metadata
+- `skills-pack/skills/README.md`
+- `skills-pack/skills/references/**`
+- every `skills-pack/skills/<skill-name>/SKILL.md` skill directory
 
-The distribution excludes:
-
-- root app runtime source as application source
-- `skills-pack/akka-context/**`
-- repository-internal maintainer-only guidance
-- duplicate full-app core app baselines or scaffold commands
-
-During installation, copied skill and doc files are rewritten so installed references point to `.agents/` paths and do not depend on maintainer checkout paths.
-
-## Build a distribution
-
-From `skills-pack/`:
-
-```bash
-bash tools/build-pack.sh --clean
-```
-
-Useful options:
-
-```bash
-bash tools/build-pack.sh --clean --output-dir /tmp/akka-pack-builds
-bash tools/build-pack.sh --clean --github-repo your-org/your-repo
-bash tools/build-pack.sh --clean --no-archive
-bash tools/build-pack.sh --help
-```
+The installer writes `<target-skills-dir>/.akka-ai-skills-pack-install-manifest`. That manifest records pack-owned installed paths so `--prune` can remove retired skills and `--uninstall` can remove this pack without deleting unrelated harness skills.
 
 ## Development install for testing
 
 From `skills-pack/`:
 
 ```bash
-bash install.sh --location project --project /path/to/test/project --dry-run
-bash install.sh --location project --project /path/to/test/project
+bash install-skills.sh --target /path/to/project/.agents/skills --dry-run
+bash install-skills.sh --target /path/to/project/.agents/skills --prune
+bash install-skills.sh --target /path/to/project/.agents/skills --check
 ```
 
-Test a built archive:
+Useful options:
 
 ```bash
-tar -xzf dist/akka-ai-skills-pack-<version>.tar.gz -C /tmp
-cd /tmp/akka-ai-skills-pack-<version>
-bash install.sh --location project --project /path/to/test/project --dry-run
+bash install-skills.sh --location project --project /path/to/project
+bash install-skills.sh --location global
+bash install-skills.sh --mode symlink --target /path/to/project/.agents/skills
+bash install-skills.sh --uninstall --target /path/to/project/.agents/skills
 ```
 
 ## Release flow
 
-Use `skills-pack/tools/release.sh` when cutting a release. The release flow should check version consistency, run relevant root/pack tests, build the versioned archive and release installer, commit version changes, tag the release, and publish GitHub release assets when requested.
+Use `skills-pack/tools/release.sh` when cutting a release. The reduced flow checks version consistency, verifies the skills installer, runs whitespace checks, commits version changes, and creates an annotated tag. It does not build or publish distribution assets.

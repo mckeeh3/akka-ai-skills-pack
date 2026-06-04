@@ -5,7 +5,6 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PACK_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 APP_ROOT="$(cd -- "$PACK_ROOT/.." && pwd)"
 MANIFEST_PATH="$PACK_ROOT/pack/manifest.yaml"
-DIST_DIR="$PACK_ROOT/dist"
 
 log() {
   printf '[release] %s\n' "$*"
@@ -32,12 +31,13 @@ Flow:
   2. show the current manifest version and latest release tag
   3. prompt for the next semver version
   4. replace hardcoded current-version references in tracked text files
-  5. run version checks and Maven verification
-  6. build release assets under dist/
-  7. commit the version changes
-  8. create an annotated git tag
-  9. optionally push the release commit/tag
- 10. if gh is installed, optionally create/update and publish a GitHub release
+  5. run lightweight skills-pack validation
+  6. commit the version changes
+  7. create an annotated git tag
+  8. optionally push the release commit/tag
+
+No distribution archive or release-installer asset is built. The repository is the unit
+of installation; users install skills from the checked-out/tagged repository.
 EOF
 }
 
@@ -223,7 +223,6 @@ main() {
 
   command -v git >/dev/null 2>&1 || fail "git is required"
   command -v python3 >/dev/null 2>&1 || fail "python3 is required"
-  command -v mvn >/dev/null 2>&1 || fail "mvn is required"
   [[ -f "$MANIFEST_PATH" ]] || fail "Missing pack/manifest.yaml"
 
   cd "$APP_ROOT"
@@ -266,10 +265,12 @@ EOF
 Release plan:
 - update tracked hardcoded references from $current_version to $next_version
 - run version consistency check
-- run mvn verify
-- build release assets under dist/
+- run install-skills dry-run and install check
+- run git diff --check
 - commit version changes as: Release $next_tag
 - create annotated git tag: $next_tag
+
+No distribution archive or release-installer asset will be built.
 EOF
 
   confirm "Continue?" no || fail "Release cancelled"
@@ -286,18 +287,16 @@ EOF
   log "Checking version consistency"
   bash "$PACK_ROOT/tools/check-version-consistency.sh"
 
-  log "Running Maven verification"
-  mvn verify --no-transfer-progress
+  log "Running install-skills dry-run"
+  local install_check_dir
+  install_check_dir="$(mktemp -d)"
+  bash "$PACK_ROOT/install-skills.sh" --target "$install_check_dir/.agents/skills" --dry-run
+  bash "$PACK_ROOT/install-skills.sh" --target "$install_check_dir/.agents/skills"
+  bash "$PACK_ROOT/install-skills.sh" --target "$install_check_dir/.agents/skills" --check
+  rm -rf "$install_check_dir"
 
-  log "Building release assets"
-  bash "$PACK_ROOT/tools/build-pack.sh" --clean
-
-  local archive_path installer_path pushed=false
-  archive_path="$DIST_DIR/${pack_name}-${next_version}.tar.gz"
-  installer_path="$DIST_DIR/install-${pack_name}-${next_version}.sh"
-
-  [[ -f "$archive_path" ]] || fail "Expected archive was not built: $archive_path"
-  [[ -f "$installer_path" ]] || fail "Expected installer was not built: $installer_path"
+  log "Checking whitespace"
+  git -C "$APP_ROOT" diff --check
 
   log "Committing version changes"
   git -C "$APP_ROOT" add -u
@@ -313,36 +312,17 @@ EOF
     git -C "$APP_ROOT" push origin "$branch"
     log "Pushing tag $next_tag"
     git -C "$APP_ROOT" push origin "refs/tags/$next_tag"
-    pushed=true
   else
     warn "Release commit and tag were created locally but not pushed."
-  fi
-
-  if command -v gh >/dev/null 2>&1; then
-    if [[ "$pushed" == true ]]; then
-      if confirm "Create or update a GitHub release with gh?" yes; then
-        create_or_update_github_release "$next_tag" "$archive_path" "$installer_path"
-        if confirm "Publish the GitHub release now so curl install URLs work?" yes; then
-          publish_github_release "$next_tag"
-        else
-          warn "Release remains a draft. Public curl install URLs will return 404 until it is published."
-        fi
-      fi
-    else
-      warn "gh is installed, but GitHub release creation was skipped because the tag was not pushed."
-    fi
-  else
-    warn "gh is not installed; skipping GitHub release creation."
   fi
 
   cat <<EOF
 
 Release complete.
 
-Version:           $next_version
-Tag:               $next_tag
-Archive:           $archive_path
-Release installer: $installer_path
+Version: $next_version
+Tag:     $next_tag
+Install: git checkout $next_tag && ./install-skills.sh --target <harness>/.agents/skills
 
 If you did not push from this script, push manually with:
   git push origin ${branch:-<branch>}
