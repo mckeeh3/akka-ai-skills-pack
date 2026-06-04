@@ -44,7 +44,7 @@
 
 ### TASK-FCSR-01-001: Define full-core readiness gap contract
 
-- status: pending
+- status: done
 - source: app-description readiness docs list full-core gaps after five-core starter alignment
 - task brief: specs/full-core-saas-readiness/tasks/01-readiness-contract/01-define-readiness-gap-contract.md
 - depends on:
