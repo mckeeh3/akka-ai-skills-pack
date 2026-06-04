@@ -1,5 +1,7 @@
 import type { WorkstreamEvent, WorkstreamItem } from '../types';
 
+export const DEFAULT_WORKSTREAM_SURFACE_STREAM_LIMIT = 40;
+
 export type StreamMergeDiagnostics = {
   ignoredEventIds: string[];
   staleSurfaceIds: string[];
@@ -14,9 +16,31 @@ export type StreamMergeResult = {
 export function appendOrUpdateWorkstreamItem(items: WorkstreamItem[], next: WorkstreamItem): WorkstreamItem[] {
   const existingIndex = items.findIndex((item) => item.itemId === next.itemId);
   if (existingIndex === -1) {
-    return [...items, next].sort((left, right) => left.createdAt.localeCompare(right.createdAt));
+    return orderWorkstreamSurfaceStream([...items, next]);
   }
-  return items.map((item, index) => (index === existingIndex ? { ...item, ...next, traceIds: Array.from(new Set([...item.traceIds, ...next.traceIds])) } : item));
+  return orderWorkstreamSurfaceStream(items.map((item, index) => (index === existingIndex ? { ...item, ...next, traceIds: Array.from(new Set([...item.traceIds, ...next.traceIds])) } : item)));
+}
+
+export function orderWorkstreamSurfaceStream(items: WorkstreamItem[]): WorkstreamItem[] {
+  return [...items].sort((left, right) => {
+    const createdAtOrder = left.createdAt.localeCompare(right.createdAt);
+    return createdAtOrder === 0 ? left.itemId.localeCompare(right.itemId) : createdAtOrder;
+  });
+}
+
+export function pruneWorkstreamSurfaceStream(items: WorkstreamItem[], maxSurfaces = DEFAULT_WORKSTREAM_SURFACE_STREAM_LIMIT): WorkstreamItem[] {
+  const ordered = orderWorkstreamSurfaceStream(items);
+  return ordered.length > maxSurfaces ? ordered.slice(ordered.length - maxSurfaces) : ordered;
+}
+
+export function pruneWorkstreamSurfaceStreamsByAgent(items: WorkstreamItem[], maxSurfacesPerAgent = DEFAULT_WORKSTREAM_SURFACE_STREAM_LIMIT): WorkstreamItem[] {
+  const grouped = new Map<string, WorkstreamItem[]>();
+  for (const item of items) {
+    const agentItems = grouped.get(item.functionalAgentId) ?? [];
+    agentItems.push(item);
+    grouped.set(item.functionalAgentId, agentItems);
+  }
+  return orderWorkstreamSurfaceStream(Array.from(grouped.values()).flatMap((agentItems) => pruneWorkstreamSurfaceStream(agentItems, maxSurfacesPerAgent)));
 }
 
 export function markSurfaceItemsStale(items: WorkstreamItem[], surfaceId: string, reason = 'Realtime stream marked this surface stale.'): WorkstreamItem[] {

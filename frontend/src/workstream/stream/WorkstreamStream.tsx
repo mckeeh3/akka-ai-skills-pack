@@ -1,7 +1,8 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { SurfaceAction, SurfaceEnvelope, WorkstreamItem as WorkstreamItemContract } from '../types';
 import { SurfaceRenderer } from '../surfaces';
 import { WorkstreamItemCard } from './WorkstreamItem';
+import { DEFAULT_WORKSTREAM_SURFACE_STREAM_LIMIT, pruneWorkstreamSurfaceStream } from './streamState';
 
 type WorkstreamStreamProps = {
   items: WorkstreamItemContract[];
@@ -13,12 +14,14 @@ type WorkstreamStreamProps = {
   onSurfaceAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
   onSurfaceFieldValueChange?: (fieldId: string, value: string, surfaceId: string) => void;
   onAutoAnchorPaused?: (requestScrollTargetId: string) => void;
+  maxVisibleSurfaces?: number;
 };
 
-export function WorkstreamStream({ items, selectedItemId, requestScrollTargetId, autoAnchorPaused = false, surfaces = [], onOpenSurface, onSurfaceAction, onSurfaceFieldValueChange, onAutoAnchorPaused }: WorkstreamStreamProps) {
+export function WorkstreamStream({ items: rawItems, selectedItemId, requestScrollTargetId, autoAnchorPaused = false, surfaces = [], maxVisibleSurfaces = DEFAULT_WORKSTREAM_SURFACE_STREAM_LIMIT, onOpenSurface, onSurfaceAction, onSurfaceFieldValueChange, onAutoAnchorPaused }: WorkstreamStreamProps) {
   const streamRef = useRef<HTMLElement | null>(null);
   const [pausedAnchorTargetId, setPausedAnchorTargetId] = useState<string | undefined>();
   const shouldAutoAnchor = Boolean(requestScrollTargetId && !autoAnchorPaused && pausedAnchorTargetId !== requestScrollTargetId);
+  const items = useMemo(() => pruneWorkstreamSurfaceStream(rawItems, maxVisibleSurfaces), [rawItems, maxVisibleSurfaces]);
 
   useEffect(() => {
     setPausedAnchorTargetId(undefined);

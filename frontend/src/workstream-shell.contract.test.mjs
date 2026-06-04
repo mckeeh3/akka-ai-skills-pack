@@ -16,6 +16,7 @@ const composerState = read('./workstream/composer/composerState.ts');
 const panel = read('./workstream/shell/WorkstreamPanel.tsx');
 const shell = read('./workstream/shell/WorkstreamShell.tsx');
 const stream = read('./workstream/stream/WorkstreamStream.tsx');
+const streamState = read('./workstream/stream/streamState.ts');
 const deepLinks = read('./workstream/shell/WorkstreamDeepLinks.ts');
 const agentTypes = read('./workstream/types/agents.ts');
 const agentFixtures = read('./__tests__/fixtures/workstream/agents.ts');
@@ -218,6 +219,17 @@ test('workstream stream renders surface responses inline after requests', () => 
   assert.match(stream, /item\.kind !== 'surface'/);
   assert.match(stream, /item\.kind === 'surface'/);
   assert.match(stream, /onSurfaceAction/);
+});
+
+test('workstream stream is chronological and bounded as a bottom-appended surface stream', () => {
+  assert.match(stream, /maxVisibleSurfaces = DEFAULT_WORKSTREAM_SURFACE_STREAM_LIMIT/);
+  assert.match(stream, /const items = useMemo\(\(\) => pruneWorkstreamSurfaceStream\(rawItems, maxVisibleSurfaces\)/);
+  assert.match(stream, /items\.map/);
+  assert.match(streamState, /DEFAULT_WORKSTREAM_SURFACE_STREAM_LIMIT = 40/);
+  assert.match(streamState, /orderWorkstreamSurfaceStream/);
+  assert.match(streamState, /createdAt\.localeCompare/);
+  assert.match(streamState, /slice\(ordered\.length - maxSurfaces\)/);
+  assert.match(streamState, /pruneWorkstreamSurfaceStreamsByAgent/);
 });
 
 test('deep links are secondary selectors for agent, item, surface, and placement', () => {

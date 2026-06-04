@@ -14,6 +14,7 @@ import type { WorkstreamRealtimeClient } from './api/WorkstreamRealtimeClient';
 import { WorkstreamShell } from './workstream/shell';
 import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstream/shell/WorkstreamDeepLinks';
 import { WorkstreamStream } from './workstream/stream';
+import { pruneWorkstreamSurfaceStreamsByAgent } from './workstream/stream/streamState';
 import { buildCapabilityActionRequest } from './workstream/actions';
 import { createWorkstreamVisualSessionKey, restoreOrCreateVisualSession, saveVisualSession, updateVisualSessionViewState, type WorkstreamVisualSession, type WorkstreamVisualSessionStore } from './workstream/visual-session';
 import { clearRailAttentionForAgent, defaultSelectableAgentId, recordUnseenRailResponse } from './workstream/rail';
@@ -671,8 +672,8 @@ function withRuntimeNotification(items: WorkstreamItem[], connection: RealtimeCo
   return [...items, notification];
 }
 
-function pruneWorkstreamItems(items: WorkstreamItem[], maxItems = 80): WorkstreamItem[] {
-  return items.length > maxItems ? items.slice(items.length - maxItems) : items;
+function pruneWorkstreamItems(items: WorkstreamItem[], maxItems = 40): WorkstreamItem[] {
+  return pruneWorkstreamSurfaceStreamsByAgent(items, maxItems);
 }
 
 function normalizeThemeId(value: unknown): ThemePreference | undefined {
