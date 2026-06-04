@@ -301,7 +301,7 @@
 
 ### TASK-FCSR-07-001: Run full-core runtime smoke and update readiness
 
-- status: pending
+- status: done
 - source: full-core readiness requires real local Akka/API/UI validation before completion claims
 - task brief: specs/full-core-saas-readiness/tasks/07-runtime-smoke/01-run-full-core-runtime-smoke.md
 - depends on:
@@ -344,6 +344,9 @@
 - notes:
   - commit message: `full-core-ready: run runtime smoke`
   - vertical contract: cross-cutting full-core local Akka/API/UI validation; all five core workstreams, auth, invitations, User Admin, managed-agent foundation, Audit/Trace, Governance/Policy, tenant isolation, provider fail-closed, audit/work traces, frontend secret-boundary
+  - evidence: `specs/full-core-saas-readiness/full-core-runtime-smoke.md`; local/test-scope full-core foundation smoke passed for backend tests, frontend tests, typecheck, production frontend build, and built static-asset secret scan
+  - checks: `mvn test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `npm --prefix frontend run build`; `tools/scan-ai-first-saas-static-assets.sh src/main/resources/static-resources`; `git diff --check`
+  - blockers/deferred: live WorkOS/AuthKit, Resend, and model-provider smokes remain blocked until backend-only provider configuration and credentials are supplied; billing implementation remains deferred by the gap contract; optional `tools/prove-workstream-icons-v0.sh` is stale against the current package layout if retained
 
 ### TASK-FCSR-99-001: Verify full-core readiness mini-project
 

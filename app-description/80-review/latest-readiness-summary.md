@@ -1,17 +1,18 @@
 # Latest Readiness Summary
 
-- readiness: not-ready-for-full-core-saas; ready-for-bounded-five-core-starter-alignment-work
+- readiness: full-core-local-test-scope-validated-with-provider-and-billing-blockers
 - ready for:
-  - implementation planning and localized runtime/UI alignment for the five core functional-agent workstreams
+  - local/test-scope evaluation of the implemented full-core foundation across My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy
   - app-description maintenance that preserves the canonical workstream shell, structured surfaces, governed capabilities, and traceability maps
-  - targeted backend/frontend tasks that prove behavior through the real Akka/API/UI path for the selected slice
   - domain-specific planning only when the affected core/security/capability contracts remain intact
+  - focused production-readiness tasks for provider configuration, billing implementation, timer reminders, or stale validation tooling
 - not yet ready for:
-  - declaring full-core SaaS completion
-  - complete code generation of all foundation phases at once without additional runtime validation
-  - production WorkOS/AuthKit configuration and Resend invite-email configuration
-  - full invitation onboarding, support access, billing-boundary behavior, and complete tenant-isolation/security coverage
-  - full cross-feature runtime smoke for User Admin, Agent Admin, Audit/Trace, and Governance/Policy through the local Akka/API/UI path; Audit/Trace and Governance/Policy backend/workstream readiness evidence is now recorded, while model-backed summary/impact workers remain fail-closed until real provider/runtime/tool-boundary configuration exists
+  - declaring production full-core SaaS completion without live provider evidence
+  - production WorkOS/AuthKit configuration and live AuthKit/JWT smoke
+  - production Resend invite-email configuration and live delivery smoke
+  - live model-backed summary/impact/agent worker smoke with approved provider/runtime/tool-boundary configuration
+  - billing implementation beyond preserving the billing-boundary invariant
+  - timer-backed invitation reminder scheduling if required by the target product
 - workstream/UI readiness notes:
   - five core functional-agent workstreams are the primary application model: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy
   - canonical id aliases, surface/action-to-capability mappings, default dashboard loading, shell alias resolution, and bounded realtime v1 semantics are now recorded and aligned with implementation behavior
@@ -20,8 +21,17 @@
   - `frontend/src/workstream/**` is the canonical runtime UI implementation reference
   - `frontend/src/screens/**` files are legacy/reference/contract-fixture artifacts, not the primary architecture or evidence of feature completion
 - main remaining decisions/gaps:
-  - local/prod auth mode and provider secret configuration
-  - full-core component coverage boundary and validation sequence
-  - invitation/onboarding and email delivery completion
-  - full local runtime smoke across all five core workstreams, auth, invitations, managed agents, Audit/Trace, Governance/Policy, tenant isolation, provider fail-closed behavior, and frontend secret boundaries
+  - live WorkOS/AuthKit provider configuration and smoke evidence
+  - live Resend provider configuration and delivery smoke evidence
+  - live model-provider configuration for model-backed workstream agents/workers
+  - whether billing lifecycle/entitlements/payment failure behavior is in product scope now or remains deferred
+  - whether timer-backed invitation reminders are required in the current product scope
+  - whether to repair or retire stale optional validation tooling such as `tools/prove-workstream-icons-v0.sh`
   - whether future work should remove or migrate legacy page-style fixture files after their contract-test value is replaced
+- latest validation evidence:
+  - `specs/full-core-saas-readiness/full-core-runtime-smoke.md`
+  - `mvn test` passed with 285 tests, 0 failures, 0 errors, 1 skipped
+  - `npm --prefix frontend test -- --run` passed with 139 frontend contract tests
+  - `npm --prefix frontend run typecheck` passed
+  - `npm --prefix frontend run build` passed
+  - `tools/scan-ai-first-saas-static-assets.sh src/main/resources/static-resources` passed

@@ -1,14 +1,14 @@
 # Readiness Status
 
-- current-state: five-core-workstream-starter-partially-implemented
-- readiness scope: five-core starter advancing toward full-core SaaS readiness; full-core SaaS is not ready
+- current-state: full-core-local-test-scope-validated-with-provider-and-billing-blockers
+- readiness scope: full-core foundation local/test scope for the five core functional-agent workstreams is smoke-validated; production provider readiness and billing implementation are not ready
 
 ## Ready for
 
 - local scaffold inspection and extension through this `app-description/` tree;
-- bounded runtime/UI alignment work against the five core workstream shell;
+- local/test-scope evaluation of the full-core foundation across My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy;
 - implementation planning from the five core workstreams;
-- focused follow-up tasks that close gaps in My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy;
+- focused follow-up tasks that close production-provider, billing, timer-reminder, and validation-tool gaps;
 - adding domain-specific features only after the affected core/security/capability contracts are preserved.
 
 ## Five-core starter readiness target
@@ -25,16 +25,14 @@ The starter may be called five-core ready only when normal local runtime proves:
 
 ## Full-core SaaS readiness gaps
 
-Before declaring the core app complete, close and prove these gaps:
+The local/test-scope full-core foundation smoke is recorded in `specs/full-core-saas-readiness/full-core-runtime-smoke.md`. Before declaring production full-core SaaS completion, close and prove these remaining gaps:
 
-- production WorkOS/AuthKit configuration and fail-closed local validation;
-- complete invitation onboarding with Resend and captured local/dev/test outbox;
-- complete User Admin structured surfaces for users, invitations, roles/memberships, access review, support access, and admin audit;
-- complete Agent Admin lifecycle for governed agent definitions, prompts, skills, references, manifests, tool boundaries, proposals, approvals, and traces;
-- searchable Audit/Trace investigation surfaces with scoped redaction/export rules (local backend/workstream coverage now recorded in `specs/full-core-saas-readiness/audit-governance-validation.md`; full runtime smoke still pending);
-- Governance/Policy workflows, approval gates, impact analysis, review surfaces, and policy-change controls (local backend/workstream coverage now recorded in `specs/full-core-saas-readiness/audit-governance-validation.md`; full runtime smoke still pending);
-- support-access and billing-boundary semantics where the target product requires them;
-- full tenant isolation, forbidden access, disabled-user, role/scope denial, audit, UI, accessibility, and runtime smoke coverage.
+- live WorkOS/AuthKit provider smoke with backend-only issuer/audience/provider configuration and a real AuthKit app;
+- live Resend provider smoke with backend-only Resend API key and sender/domain configuration;
+- live model-provider smoke for model-backed workstream agents/workers with approved runtime tool-boundary configuration and provider credentials;
+- billing implementation where the target product requires subscription lifecycle, entitlements, payment-failure behavior, or billing UI; the current scope only preserves the billing-boundary invariant;
+- timer-backed invitation reminder scheduling if reminders are required for the target product;
+- optional repair of stale validation tooling such as `tools/prove-workstream-icons-v0.sh` if retained.
 
 ## Domain-specific expansion gate
 
@@ -57,8 +55,8 @@ Recent alignment work establishes starter-level contracts and runtime behavior f
 - explicit realtime v1 semantics as bounded SSE replay/refresh behavior, not long-lived true-live streaming;
 - Audit/Trace scoped search/detail/timeline/failure-evidence/investigation-note surfaces and Governance/Policy proposal/simulation/decision/activation/rollback/outcome-note surfaces through backend-authorized workstream actions, with model-backed summary/impact workers failing closed until real provider/runtime/tool-boundary configuration is supplied.
 
-This evidence supports continued five-core starter realization work. It does not close full-core SaaS gaps unless the real local Akka/API/UI path is proven for each named feature.
+This evidence, combined with `specs/full-core-saas-readiness/full-core-runtime-smoke.md`, supports local/test-scope full-core foundation evaluation for the implemented scope. It does not close production-provider readiness, billing implementation, or deferred timer-reminder gaps.
 
 ## Last update basis
 
-Updated during workstream design/implementation alignment to reflect current five-core starter runtime evidence, bounded realtime semantics, and remaining full-core gaps.
+Updated during TASK-FCSR-07-001 runtime smoke to reflect passing backend tests, frontend tests, typecheck, production frontend build, static asset secret scan, and the remaining provider/billing/deferred-tooling blockers.
