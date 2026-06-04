@@ -11,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ai.first.application.security.AuthContextResolver;
-import ai.first.application.security.BootstrapAdminSeeder;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.BootstrapAdminSeeder;
 import ai.first.application.security.LocalDemoAccessReviewTaskRepository;
-import ai.first.application.security.LocalDemoIdentityRepository;
-import ai.first.application.security.StarterSecurityComponents;
+import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.StarterSecurityComponents;
 import ai.first.application.security.UserAdminAccessReviewService;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.security.AccessReviewTask;
@@ -25,6 +25,12 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
+import ai.first.application.foundation.agent.AgentRuntimeService;
+import ai.first.application.foundation.agent.AgentRuntimeToolResolver;
+import ai.first.application.foundation.agent.LocalDemoAgentBehaviorRepository;
+import ai.first.application.foundation.agent.LocalDemoAgentRuntimeTraceSink;
+import ai.first.application.foundation.agent.ModelProviderClient;
+import ai.first.application.foundation.invitation.LocalDemoInvitationRepository;
 
 class UserAdminAccessReviewWorkerTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-24T12:00:00Z"), ZoneOffset.UTC);
@@ -103,7 +109,7 @@ class UserAdminAccessReviewWorkerTest {
   private AuthContextResolver.ResolvedMe starterTenantAdmin(String correlationId) {
     var identityRepository = new LocalDemoIdentityRepository();
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
-    StarterSecurityComponents.bindTestInvitationRepository(new ai.first.application.security.LocalDemoInvitationRepository());
+    StarterSecurityComponents.bindTestInvitationRepository(new ai.first.application.foundation.invitation.LocalDemoInvitationRepository());
     BootstrapAdminSeeder.seedConfiguredAdmins(identityRepository, "admin@example.test:TENANT_ADMIN:tenant-starter");
     seedTenantMember(identityRepository);
     StarterSecurityComponents.agentBehaviorSeedLoader().importStarterDefaults("tenant-starter", "test-bootstrap", correlationId + "-seed");

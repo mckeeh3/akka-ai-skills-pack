@@ -9,6 +9,11 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import ai.first.application.foundation.attention.AttentionProducerService;
+import ai.first.application.foundation.governance.GovernancePolicyRepository;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 
 /** Deterministic lifecycle owner for Governance/Policy impact-analysis AutonomousAgent tasks. */
 public final class GovernancePolicyImpactService {

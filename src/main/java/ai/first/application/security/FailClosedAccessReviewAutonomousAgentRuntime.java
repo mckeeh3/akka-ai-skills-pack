@@ -2,6 +2,7 @@ package ai.first.application.security;
 
 import ai.first.domain.security.AccessReviewTask;
 import java.util.List;
+import ai.first.application.foundation.identity.AuthContextResolver;
 
 /** Fail-closed runtime used before Akka AutonomousAgent provider/runtime binding is available. */
 public final class FailClosedAccessReviewAutonomousAgentRuntime implements AccessReviewAutonomousAgentRuntime {

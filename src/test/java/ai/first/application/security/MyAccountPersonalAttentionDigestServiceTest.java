@@ -29,6 +29,15 @@ import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ai.first.application.foundation.attention.AttentionProducerService;
+import ai.first.application.foundation.attention.AttentionService;
+import ai.first.application.foundation.attention.LocalDemoAttentionRepository;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.workstream.LocalDemoWorkstreamEventRepository;
+import ai.first.application.foundation.workstream.WorkstreamEventAttentionConsumer;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 
 class MyAccountPersonalAttentionDigestServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-25T10:15:30Z"), ZoneOffset.UTC);

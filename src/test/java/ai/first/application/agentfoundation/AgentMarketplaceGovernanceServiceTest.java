@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ai.first.application.security.AuthContextResolver;
-import ai.first.application.security.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
 import ai.first.domain.foundation.agent.BehaviorChangeProposal;
 import ai.first.domain.foundation.agent.ToolCatalogEntry;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
@@ -19,6 +19,12 @@ import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
+import ai.first.application.foundation.agent.AgentRuntimeService;
+import ai.first.application.foundation.agent.LocalDemoAgentBehaviorRepository;
+import ai.first.application.foundation.agent.LocalDemoAgentRuntimeTraceSink;
+import ai.first.application.foundation.agent.OpenAiModelProviderClient;
+import ai.first.application.foundation.agent.ToolRegistry;
 
 class AgentMarketplaceGovernanceServiceTest {
   private LocalDemoAgentBehaviorRepository repository;

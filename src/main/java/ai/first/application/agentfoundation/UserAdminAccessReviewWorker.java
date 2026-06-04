@@ -1,12 +1,18 @@
 package ai.first.application.agentfoundation;
 
 import ai.first.application.security.AccessReviewWorker;
-import ai.first.application.security.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.security.AccessReviewTask;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
+import ai.first.application.foundation.agent.AgentRuntimeService;
+import ai.first.application.foundation.agent.AgentRuntimeToolResolver;
+import ai.first.application.foundation.agent.ModelProviderClient;
+import ai.first.application.foundation.agent.ToolRegistry;
+import ai.first.application.foundation.agent.WorkstreamRuntimeAgent;
 
 /**
  * Minimal governed worker seam for SMB User Admin access-review tasks.

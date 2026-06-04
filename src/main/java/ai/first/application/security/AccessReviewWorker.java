@@ -2,6 +2,7 @@ package ai.first.application.security;
 
 import ai.first.domain.security.AccessReviewTask;
 import java.util.List;
+import ai.first.application.foundation.identity.AuthContextResolver;
 
 /** Model-backed worker seam for durable User Admin access-review tasks; no access mutations are exposed here. */
 public interface AccessReviewWorker {

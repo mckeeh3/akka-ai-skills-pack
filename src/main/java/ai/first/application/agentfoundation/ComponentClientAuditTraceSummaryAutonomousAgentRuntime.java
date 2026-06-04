@@ -4,10 +4,14 @@ import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import akka.javasdk.agent.task.TaskStatus;
 import akka.javasdk.client.ComponentClient;
 import ai.first.application.security.AuditTraceSummaryService;
-import ai.first.application.security.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.domain.security.AuditTraceSummaryTask;
 import java.util.List;
 import java.util.Objects;
+import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
+import ai.first.application.foundation.agent.AgentRuntimeService;
+import ai.first.application.foundation.agent.AgentRuntimeToolResolver;
+import ai.first.application.foundation.agent.ToolRegistry;
 
 /** ComponentClient-backed bridge from governed Audit/Trace capabilities to Akka AutonomousAgent summary tasks. */
 public final class ComponentClientAuditTraceSummaryAutonomousAgentRuntime implements AuditTraceSummaryAutonomousAgentRuntime {

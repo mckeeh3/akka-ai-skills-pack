@@ -14,6 +14,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import ai.first.application.foundation.attention.AttentionService;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.MeResponse;
+import ai.first.application.foundation.identity.StarterSecurityComponents;
 
 /** Deterministic My Account boundary for browser-safe account, context, settings, trace, and navigation data. */
 public final class MyAccountService {

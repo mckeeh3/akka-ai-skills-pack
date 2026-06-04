@@ -22,6 +22,10 @@ import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.notification.LocalDemoNotificationRepository;
 
 class DigestExportServiceTest {
   private LocalDemoIdentityRepository identityRepository;

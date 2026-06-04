@@ -5,6 +5,7 @@ import ai.first.domain.foundation.identity.MembershipStatus;
 import ai.first.domain.foundation.identity.ScopeType;
 import java.util.Comparator;
 import java.util.List;
+import ai.first.application.foundation.identity.AuthContextResolver;
 
 /** Browser-safe User Admin directory read model seam backed by scoped backend authorization. */
 public final class UserDirectoryView {

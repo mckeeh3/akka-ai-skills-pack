@@ -4,11 +4,15 @@ import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import akka.javasdk.agent.task.TaskStatus;
 import akka.javasdk.client.ComponentClient;
 import ai.first.application.security.AccessReviewAutonomousAgentRuntime;
-import ai.first.application.security.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.security.UserAdminAccessReviewService;
 import ai.first.domain.security.AccessReviewTask;
 import java.util.List;
 import java.util.Objects;
+import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
+import ai.first.application.foundation.agent.AgentRuntimeService;
+import ai.first.application.foundation.agent.AgentRuntimeToolResolver;
+import ai.first.application.foundation.agent.ToolRegistry;
 
 /** ComponentClient-backed bridge from governed User Admin capabilities to Akka AutonomousAgent tasks. */
 public final class ComponentClientAccessReviewAutonomousAgentRuntime implements AccessReviewAutonomousAgentRuntime {

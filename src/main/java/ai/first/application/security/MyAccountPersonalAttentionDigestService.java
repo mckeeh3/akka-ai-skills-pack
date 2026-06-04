@@ -9,6 +9,11 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import ai.first.application.foundation.attention.AttentionProducerService;
+import ai.first.application.foundation.attention.AttentionService;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 
 /** Governed lifecycle owner for My Account personal attention digest AutonomousAgent tasks and authorized attention evidence scope. */
 public final class MyAccountPersonalAttentionDigestService {

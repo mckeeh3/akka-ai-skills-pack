@@ -26,6 +26,11 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ai.first.application.foundation.governance.GovernancePolicyService;
+import ai.first.application.foundation.governance.LocalDemoGovernancePolicyRepository;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
 
 class GovernancePolicyImpactServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-26T10:15:30Z"), ZoneOffset.UTC);

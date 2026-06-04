@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ai.first.application.security.AuthContextResolver;
-import ai.first.application.security.AuthorizationException;
-import ai.first.application.security.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
 import ai.first.domain.agentfoundation.PromptRiskReviewTask;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
@@ -25,6 +25,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
 
 class AgentAdminPromptRiskReviewServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-25T10:15:30Z"), ZoneOffset.UTC);

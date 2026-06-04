@@ -14,6 +14,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.identity.IdentityRepository;
 
 /** Scoped User Admin capability seam for account, membership, role, audit, and last-admin safety. */
 public final class UserAdminService {

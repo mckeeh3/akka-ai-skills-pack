@@ -2,12 +2,13 @@ package ai.first.application.agentfoundation;
 
 import akka.javasdk.annotations.Description;
 import akka.javasdk.annotations.FunctionTool;
-import ai.first.application.security.AuthorizationException;
+import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.ModelConfigRef;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import ai.first.domain.foundation.identity.AuthContext;
 import java.util.Objects;
+import ai.first.application.foundation.agent.AgentBehaviorRepository;
 
 /** Request-scoped read-only Agent Admin evidence facade for AgentAdminAgent. */
 public final class AgentAdminEvidenceTools {

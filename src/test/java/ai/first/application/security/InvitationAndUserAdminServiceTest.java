@@ -26,6 +26,12 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ai.first.application.foundation.email.ResendEmailService;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.invitation.InvitationService;
+import ai.first.application.foundation.invitation.LocalDemoInvitationRepository;
 
 class InvitationAndUserAdminServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-20T10:15:30Z"), ZoneOffset.UTC);

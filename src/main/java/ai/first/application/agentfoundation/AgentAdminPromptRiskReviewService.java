@@ -1,9 +1,9 @@
 package ai.first.application.agentfoundation;
 
-import ai.first.application.security.AttentionProducerService;
-import ai.first.application.security.AuthContextResolver;
-import ai.first.application.security.AuthorizationException;
-import ai.first.application.security.WorkstreamEventPublisher;
+import ai.first.application.foundation.attention.AttentionProducerService;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 import ai.first.domain.agentfoundation.PromptRiskReviewTask;
 import java.time.Clock;
 import java.time.Instant;

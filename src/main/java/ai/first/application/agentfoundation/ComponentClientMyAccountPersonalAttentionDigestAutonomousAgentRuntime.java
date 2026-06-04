@@ -4,12 +4,16 @@ import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.foundation.identity.Account;
 import akka.javasdk.agent.task.TaskStatus;
 import akka.javasdk.client.ComponentClient;
-import ai.first.application.security.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.security.MyAccountPersonalAttentionDigestService;
 import ai.first.application.security.MyAccountService;
 import ai.first.domain.security.MyAccountPersonalAttentionDigestTask;
 import java.util.List;
 import java.util.Objects;
+import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
+import ai.first.application.foundation.agent.AgentRuntimeService;
+import ai.first.application.foundation.agent.AgentRuntimeToolResolver;
+import ai.first.application.foundation.agent.ToolRegistry;
 
 /** ComponentClient-backed bridge from governed My Account capabilities to Akka AutonomousAgent personal attention digest tasks. */
 public final class ComponentClientMyAccountPersonalAttentionDigestAutonomousAgentRuntime implements MyAccountPersonalAttentionDigestAutonomousAgentRuntime {

@@ -108,7 +108,7 @@
 
 ### TASK-PACKAGES-02-002: Move foundation application and API packages
 
-- status: pending
+- status: done
 - source: specs/java-foundation-coreapp-business-partition/backlog/01-package-partition-build-backlog.md
 - task brief: specs/java-foundation-coreapp-business-partition/tasks/02-foundation/02-move-foundation-application-api.md
 - depends on: [TASK-PACKAGES-02-001]
@@ -133,6 +133,8 @@
   - queue is updated and committed
 - notes:
   - commit message: `packages: move foundation application api layers`
+  - moved mapped foundation application services/repositories/agent runtime and `MeEndpoint` into `ai.first.application.foundation.*` and `ai.first.api.foundation.*`
+  - checks: `git diff --check`; `mvn test`; stale moved foundation app/API FQN search
 
 ### TASK-PACKAGES-03-001: Move core app packages
 

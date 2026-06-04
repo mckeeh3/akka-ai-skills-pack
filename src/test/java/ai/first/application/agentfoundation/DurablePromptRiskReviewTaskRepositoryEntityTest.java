@@ -8,6 +8,7 @@ import ai.first.domain.agentfoundation.PromptRiskReviewTask;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
 
 class DurablePromptRiskReviewTaskRepositoryEntityTest extends TestKitSupport {
   @Test

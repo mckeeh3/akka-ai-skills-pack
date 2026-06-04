@@ -2,6 +2,7 @@ package ai.first.application.security;
 
 import ai.first.domain.security.AccessReviewTask;
 import java.util.Optional;
+import ai.first.application.foundation.identity.FailClosedFoundationRuntime;
 
 /** Fail-closed access-review task port until durable task state is bound. */
 public final class FailClosedAccessReviewTaskRepository implements AccessReviewTaskRepository {

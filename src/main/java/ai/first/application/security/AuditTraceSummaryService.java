@@ -8,6 +8,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import ai.first.application.foundation.attention.AttentionProducerService;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 
 /** Governed lifecycle owner for Audit/Trace summary AutonomousAgent tasks and redacted evidence scope. */
 public final class AuditTraceSummaryService {

@@ -3,10 +3,15 @@ package ai.first.application.agentfoundation;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import akka.javasdk.agent.task.TaskStatus;
 import akka.javasdk.client.ComponentClient;
-import ai.first.application.security.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.domain.security.GovernancePolicyImpactTask;
 import java.util.List;
 import java.util.Objects;
+import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
+import ai.first.application.foundation.agent.AgentRuntimeService;
+import ai.first.application.foundation.agent.AgentRuntimeToolResolver;
+import ai.first.application.foundation.agent.ToolRegistry;
+import ai.first.application.security.GovernancePolicyImpactService;
 
 /** ComponentClient-backed bridge from governed Governance/Policy capabilities to Akka AutonomousAgent impact tasks. */
 public final class ComponentClientGovernancePolicyImpactAutonomousAgentRuntime implements GovernancePolicyImpactAutonomousAgentRuntime {

@@ -6,6 +6,9 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.notification.NotificationRepository;
 
 /** Governed digest/export platform lifecycle with redaction, approval gates, scheduling, idempotency, and audit traces. */
 public final class DigestExportService {

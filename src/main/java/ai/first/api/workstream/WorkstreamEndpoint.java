@@ -15,16 +15,17 @@ import akka.stream.javadsl.Source;
 import static akka.javasdk.http.HttpException.forbidden;
 import static akka.javasdk.http.HttpException.notFound;
 import static akka.javasdk.http.HttpException.unauthorized;
-import ai.first.application.security.AkkaWorkstreamLogRepository;
-import ai.first.application.security.AuthorizationException;
-import ai.first.application.security.InvitationService.AcceptInvitationRequest;
-import ai.first.application.security.StarterSecurityComponents;
-import ai.first.application.security.WorkosIdentityResolver;
+import ai.first.application.foundation.workstream.AkkaWorkstreamLogRepository;
+import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.invitation.InvitationService.AcceptInvitationRequest;
+import ai.first.application.foundation.identity.StarterSecurityComponents;
+import ai.first.application.foundation.identity.WorkosIdentityResolver;
 import ai.first.application.security.WorkstreamService;
 import ai.first.application.security.WorkstreamService.CapabilityActionRequest;
 import ai.first.application.security.WorkstreamService.WorkstreamMessageRequest;
 import ai.first.application.security.WorkstreamService.WorkstreamShellRequest;
 import ai.first.domain.foundation.identity.WorkosIdentity;
+import ai.first.application.foundation.invitation.InvitationService;
 
 /** Workstream shell API endpoints for User Admin structured surfaces and capability actions. */
 @Acl(allow = @Acl.Matcher(principal = Acl.Principal.INTERNET))

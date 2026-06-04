@@ -2,9 +2,9 @@ package ai.first.application.agentfoundation;
 
 import akka.javasdk.annotations.Description;
 import akka.javasdk.annotations.FunctionTool;
-import ai.first.application.security.AuditTraceService;
-import ai.first.application.security.AuthContextResolver;
-import ai.first.application.security.AuthorizationException;
+import ai.first.application.foundation.audit.AuditTraceService;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.identity.AuthContext;

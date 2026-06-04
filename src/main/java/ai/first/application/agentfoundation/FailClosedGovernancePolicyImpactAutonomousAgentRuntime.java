@@ -1,6 +1,6 @@
 package ai.first.application.agentfoundation;
 
-import ai.first.application.security.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.domain.security.GovernancePolicyImpactTask;
 import java.util.List;
 

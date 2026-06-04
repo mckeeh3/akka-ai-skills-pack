@@ -14,16 +14,16 @@ import akka.javasdk.http.HttpResponses;
 import static akka.javasdk.http.HttpException.forbidden;
 import static akka.javasdk.http.HttpException.notFound;
 import static akka.javasdk.http.HttpException.unauthorized;
-import ai.first.application.security.AdminAuditView;
-import ai.first.application.security.AdminAuditView.AdminAuditRow;
-import ai.first.application.security.AuthorizationException;
+import ai.first.application.foundation.audit.AdminAuditView;
+import ai.first.application.foundation.audit.AdminAuditView.AdminAuditRow;
+import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.security.UserAdminService.RoleChangePreview;
 import ai.first.application.security.DigestExportService;
-import ai.first.application.security.InvitationService;
-import ai.first.application.security.InvitationView.InvitationRow;
-import ai.first.application.security.StarterSecurityComponents;
+import ai.first.application.foundation.invitation.InvitationService;
+import ai.first.application.foundation.invitation.InvitationView.InvitationRow;
+import ai.first.application.foundation.identity.StarterSecurityComponents;
 import ai.first.application.security.UserAdminService.UserDirectoryRow;
-import ai.first.application.security.WorkosIdentityResolver;
+import ai.first.application.foundation.identity.WorkosIdentityResolver;
 import ai.first.domain.security.AccessReviewTask;
 import ai.first.domain.security.DigestExportRequest;
 import ai.first.domain.foundation.identity.EnterpriseIdentityProviderStatus;
@@ -37,6 +37,8 @@ import ai.first.domain.foundation.identity.WorkosIdentity;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import ai.first.application.foundation.invitation.InvitationView;
+import ai.first.application.security.UserAdminService;
 
 /** Concrete protected User Admin and audit APIs backing starter workstream surfaces. */
 @Acl(allow = @Acl.Matcher(principal = Acl.Principal.INTERNET))
@@ -582,7 +584,7 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public record InvitationsApiResponse(List<InvitationApiResponse> invitations, String correlationId) {}
   public record InvitationHistoryApiResponses(List<InvitationHistoryApiResponse> history, String correlationId) {}
   public record InvitationHistoryApiResponse(String factId, String invitationId, String eventType, String email, String status, String deliveryStatus, int deliveryAttempts, int resendCount, String actorAccountId, String result, String reasonCode, String deliveryAttemptId, String occurredAt, String correlationId) {
-    static InvitationHistoryApiResponse from(ai.first.application.security.InvitationView.InvitationHistoryRow row) {
+    static InvitationHistoryApiResponse from(ai.first.application.foundation.invitation.InvitationView.InvitationHistoryRow row) {
       return new InvitationHistoryApiResponse(row.factId(), row.invitationId(), row.eventType(), row.targetEmail(), row.invitationStatus().name().toLowerCase(), row.deliveryStatus().name().toLowerCase(), row.deliveryAttempts(), row.resendCount(), row.actorAccountId(), row.result(), row.reasonCode(), row.deliveryAttemptId(), row.occurredAt().toString(), row.correlationId());
     }
   }

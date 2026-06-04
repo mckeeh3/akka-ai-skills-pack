@@ -3,6 +3,7 @@ package ai.first.application.security;
 import ai.first.application.agentfoundation.AccessReviewAutonomousAgentResult;
 import ai.first.domain.security.AccessReviewTask;
 import java.util.List;
+import ai.first.application.foundation.identity.AuthContextResolver;
 
 /** Governed runtime adapter for starting/querying User Admin access-review Akka AutonomousAgent tasks. */
 public interface AccessReviewAutonomousAgentRuntime {

@@ -1,8 +1,8 @@
 package ai.first.application.agentfoundation;
 
 import ai.first.domain.foundation.agent.ModelConfigRef;
-import ai.first.application.security.AuthContextResolver;
-import ai.first.application.security.AuthorizationException;
+import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentReferenceManifest;
@@ -17,6 +17,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import ai.first.application.foundation.agent.AgentBehaviorRepository;
+import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
 
 /** Deterministic Agent Admin read facade for browser-safe, tenant-scoped managed-agent artifacts. */
 public final class AgentAdminService {

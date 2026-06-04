@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
 
 class AgentAdminPromptRiskAutonomousAgentTest extends TestKitSupport {
   private final TestModelProvider model = new TestModelProvider();
