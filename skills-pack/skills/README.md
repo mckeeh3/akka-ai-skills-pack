@@ -1,6 +1,8 @@
 # Akka Skill Routing Map
 
-This directory contains AI-focused skills for creating full-stack secure AI-first SaaS applications on Akka. It is an **internal routing layer for the harness**: users describe intent in natural language, and the harness loads the smallest relevant skill set.
+This directory contains AI-focused skills for creating and extending full-stack secure AI-first SaaS applications on Akka. It is an **internal routing layer for the harness**: users describe intent in natural language, and the harness loads the smallest relevant skill set.
+
+In this repository, the skills serve the two-fold project purpose: maintain the secure AI-first SMB SaaS core app and help users of cloned/forked repos add business-specific domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests.
 
 The previous long-form routing matrix has been moved to maintainer-only pack history. Do not load historical routing by default; prefer this quick map plus the smallest focused skill that matches the current task.
 
@@ -8,7 +10,7 @@ The previous long-form routing matrix has been moved to maintainer-only pack his
 
 This file serves both:
 
-- the **source repository**, where root `app-description/`, `specs/`, `frontend/`, `src/`, and `skills-pack/docs|examples|templates` are reference and runtime assets;
+- the **source repository**, where root `app-description/`, `specs/`, `frontend/`, `src/`, and `skills-pack/docs|examples|templates` are reference and runtime assets for the secure AI-first SMB SaaS core app;
 - the **harness skills-library install**, where this routing map, `SKILL.md` files, and referenced pack docs/examples/templates/tools are copied under `.agents/skills` while the target project's maintained `app-description/`, `specs/`, source, and frontend stay in the project workspace.
 
 When a skill lists required reads as target-project paths such as `AGENTS.md`, `specs/**`, `app-description/**`, `frontend/**`, or `src/**`, resolve them in the current target project workspace, not relative to a global `~/.agents/skills` install. Relative `../docs/**`, `../examples/**`, `../templates/**`, `../tools/**`, and `../references/**` paths are installed pack assets.
@@ -23,7 +25,7 @@ Use `domain-specific` or the user's actual domain name for later product feature
 
 ## Core-app-first routing
 
-For new secure AI-first SaaS apps where the user wants an implementation baseline, prefer fork-and-extend from this runnable core app repository root. Do not expect the skills install to contain or render a duplicate full-app baseline.
+For new secure AI-first SaaS apps where the user wants an implementation baseline, prefer fork-and-extend from this runnable secure AI-first SMB SaaS core app repository root. Do not expect the skills install to contain or render a duplicate full-app baseline.
 
 For this repository's runnable core app and downstream forks that keep its merge-friendly layout, preserve the standard Akka Java layers and use `foundation`, `coreapp`, and `business.<area>` partitions inside them:
 
@@ -31,7 +33,7 @@ For this repository's runnable core app and downstream forks that keep its merge
 - built-in five-core-workstream code under `<base>.api|application|domain.coreapp.*`;
 - user-owned domain-specific extensions under `<base>.api|application|domain.business.<area>.*`.
 
-Do not place new product-specific Java code in legacy top-level `security`, `agentfoundation`, `admin`, or `workstream` packages when extending the core app. Do not regenerate a parallel fresh app, replace existing foundation files, or use `.agents/` resources as writable project source unless explicitly requested.
+Do not place new product-specific Java code in legacy top-level `security`, `agentfoundation`, `admin`, or `workstream` packages when extending the core app. Users extend the root app workspace with business-specific domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests. Do not regenerate a parallel fresh app, replace existing foundation files, or use `.agents/` resources as writable project source unless explicitly requested.
 
 ## AI-first SaaS entry routing
 

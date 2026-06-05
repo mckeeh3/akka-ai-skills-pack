@@ -1,15 +1,20 @@
-# Repository Guidance: AI-first SaaS Core App
+# Repository Guidance: Secure AI-first SMB SaaS Core App
 
 ## Repository role
 
-This repository root is now the canonical runnable **AI-first SaaS core app**. Treat root source, frontend, app-description, specs, docs, and tools as app-facing assets unless a task explicitly targets the isolated skills pack.
+This repository has a two-fold purpose:
+
+1. Maintain the source harness skills, referenced docs, templates, tools, and code examples for building secure AI-first SMB SaaS applications on Akka.
+2. Provide the canonical runnable **secure AI-first SMB SaaS core app** that users clone or fork, run locally, and extend with business-specific domains, workstreams, surfaces, agents, and Akka components.
+
+Treat root source, frontend, app-description, specs, docs, and tools as app-facing assets unless a task explicitly targets the isolated skills pack.
 
 The installable Akka AI skills pack source lives under [`skills-pack/`](skills-pack/). For pack maintenance, read `skills-pack/AGENTS.md` and work inside `skills-pack/**` unless the task explicitly requires a root compatibility wrapper or root documentation link.
 
 ## Default interpretation
 
-- Root app work: improve the runnable Akka Java SDK + React/Vite core application, its app-description, specs, validation, docs, and domain-specific extension seams.
-- Skills-pack work: improve installable `.agents` assets under `skills-pack/`, including skills, docs, examples, package manifests, installers, and release tooling.
+- Root app work: improve the runnable secure AI-first SMB SaaS core application, its Akka Java SDK backend, React/Vite frontend, app-description, specs, validation, docs, and domain-specific extension seams.
+- Skills-pack work: improve installable `.agents` assets under `skills-pack/`, including skills, docs, code examples, templates, package manifests, installers, and release tooling used by harness agents to maintain the core app and generate downstream business-specific SaaS extensions.
 - Do not mix focused skills-pack reference examples into root `src/**`.
 - Do not add core app runtime code under `skills-pack/**`.
 
@@ -52,7 +57,7 @@ docs/extensions/<domain>/
 
 Within each Java layer, reusable platform/security/identity/managed-agent runtime code belongs under `foundation`, built-in five-core-workstream code belongs under `coreapp`, and user-owned product code belongs under `business.<domain>`.
 
-When domain behavior needs core integration, prefer a small stable hook or registry in core code plus Java domain implementation under the `business.<domain>` package path.
+Users of this repository should extend the root app rather than generate or maintain a separate parallel application. Business-specific features should land in the root app workspace as additive domains, workstreams, surfaces, agents, Akka components, app-description extensions, specs, frontend extensions, docs, and tests. When domain behavior needs core integration, prefer a small stable hook or registry in core code plus Java domain implementation under the `business.<domain>` package path.
 
 ## Required checks
 

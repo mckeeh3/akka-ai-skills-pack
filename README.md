@@ -1,8 +1,11 @@
-# AI-first SaaS Core App
+# Secure AI-first SMB SaaS Core App
 
-This repository root is the canonical runnable **AI-first SaaS core app**. It provides the secure foundation and five core workstreams that downstream teams can fork, run, validate, and extend with their own domain-specific capabilities.
+This repository has a two-fold purpose:
 
-The Akka AI skills library that used to own the repository root now lives under [`skills-pack/`](skills-pack/). Use the root for core app runtime work; use `skills-pack/` for skills maintenance, Akka reference examples, metadata, and validation tooling. The only install action is copying/symlinking skills into a harness-accessible directory such as `.agents/skills`.
+1. Develop and maintain the secure AI-first SMB SaaS harness skills, referenced docs, templates, tools, and code examples used by AI coding harnesses.
+2. Provide the canonical runnable **secure AI-first SMB SaaS core app** that users clone or fork, run locally, validate, and extend with business-specific domains, workstreams, surfaces, agents, Akka components, and UI.
+
+The Akka AI skills library lives under [`skills-pack/`](skills-pack/). Use the root for core app runtime work and downstream product extensions; use `skills-pack/` for skills maintenance, Akka/code-generation reference examples, metadata, and validation tooling. The only install action is copying/symlinking skills into a harness-accessible directory such as `.agents/skills`.
 
 ## What is in the root app
 
@@ -24,7 +27,7 @@ The supported default Java base package is `ai.first`. Downstream forks may rena
 
 ## Core app scope
 
-The baseline centers on the secure AI-first SaaS foundation and five core workstreams:
+The baseline centers on the secure AI-first SMB SaaS foundation and five core workstreams:
 
 - **My Account**
 - **User Admin**
@@ -60,11 +63,13 @@ For production-like local runtime smoke testing, configure the backend-only secr
 Use this repository as the upstream core baseline for a product fork:
 
 1. Fork or clone the repository.
-2. Keep the core app baseline on a branch that can receive upstream changes.
-3. Add product behavior as domain-specific extensions instead of rewriting core foundation code.
-4. Update `app-description/` and `specs/` before or alongside implementation changes.
-5. Validate backend, frontend, auth, authorization, audit/trace, and UI behavior through the root app runtime path.
-6. Merge upstream core changes regularly and resolve conflicts by keeping core hooks small and domain code isolated.
+2. Run and validate the secure AI-first SMB SaaS core app locally.
+3. Keep the core app baseline on a branch that can receive upstream changes.
+4. Add product behavior as domain-specific extensions instead of rewriting core foundation code or generating a separate parallel app.
+5. Add business-specific domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests in the root app workspace.
+6. Update `app-description/` and `specs/` before or alongside implementation changes.
+7. Validate backend, frontend, auth, authorization, audit/trace, and UI behavior through the root app runtime path.
+8. Merge upstream core changes regularly and resolve conflicts by keeping core hooks small and domain code isolated.
 
 Recommended extension zones are documented in [`docs/domain-extension-guide.md`](docs/domain-extension-guide.md). Java package ownership and dependency rules are documented in [`docs/java-package-boundaries.md`](docs/java-package-boundaries.md). Upstream merge practices are documented in [`docs/upstream-merge-guide.md`](docs/upstream-merge-guide.md).
 
@@ -87,11 +92,12 @@ When domain behavior needs a core integration point, add the smallest stable reg
 
 ## Skills-pack maintenance
 
-The skills library source is isolated under [`skills-pack/`](skills-pack/):
+The skills library source is isolated under [`skills-pack/`](skills-pack/). It exists to help harness agents maintain this core app and generate real downstream business-specific SaaS extensions in product forks:
 
 - `skills-pack/skills/` — skill routing and focused harness guidance
 - `skills-pack/docs/` — source-checkout doctrine and references
-- `skills-pack/examples/` — source-checkout focused Akka component examples
+- `skills-pack/examples/` — code examples used as generation guidance for real Akka/core-app implementation patterns
+- `skills-pack/templates/` — reusable app-description and validation templates
 - `skills-pack/pack/` — skills-only install metadata
 - `skills-pack/tools/` — release, validation, and audit tooling
 

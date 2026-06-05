@@ -1,8 +1,8 @@
-# Curated Akka component reference examples
+# Akka component code examples for generation guidance
 
-This directory contains a curated source-attention subset of Java examples from the runnable core app. The files exist so installed skills can inspect concrete Akka Java SDK and core SaaS foundation patterns for implementation guidance.
+This directory contains curated Java code examples used by installed skills when generating or reviewing real Akka Java SDK and secure SaaS implementation patterns.
 
-These files are **reference snippets**, not a duplicate app baseline, independent build module, generated output, or target application source tree. Do not copy this tree wholesale into a target app. Use individual files to study patterns, then implement in the target project's canonical source layout.
+These files are **generation guidance examples**, not a duplicate app baseline, independent build module, generated output, or target application source tree. Do not copy this tree wholesale into a target app. Use individual files to study patterns, then implement the needed behavior in the target project's canonical source layout.
 
 Included patterns:
 
@@ -15,8 +15,8 @@ Included patterns:
 
 Maintenance rules:
 
-1. Keep this tree small and intentional; do not mirror all root `src/**` or `src/test/**` files.
-2. Add a file only when a skill/doc uses it as a concrete repository example or when `REFERENCE-INDEX.md` records it as compact support context for a referenced pattern.
+1. Keep this tree small and intentional; include code only when it improves harness generation or review quality.
+2. Add a file only when a skill/doc uses it as a concrete code example or when `REFERENCE-INDEX.md` records it as compact support context for a referenced pattern.
 3. Remove examples that no longer teach or support an installed skill pattern.
-4. Keep referenced files synchronized with the root core app implementation when the pattern changes.
+4. Keep examples current with the implementation patterns they are meant to teach.
 5. Prefer adding a focused doc snippet over adding a large dependency closure just to make this tree compile.

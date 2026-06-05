@@ -1,6 +1,8 @@
 # Skills-Pack Maintainer Guidance
 
-This directory is the source area for the installable Akka AI skills pack inside the core-app-first repository.
+This directory is the source area for the installable Akka AI skills pack inside the secure AI-first SMB SaaS core app repository.
+
+The repository has a two-fold purpose: maintain the harness skills library and provide the runnable core app that users clone or fork. The skills pack supports both purposes by giving harness agents focused guidance, referenced docs, templates, tools, and code examples for maintaining the core app and adding downstream business-specific SaaS domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests.
 
 ## Scope
 
@@ -13,13 +15,13 @@ Work here when a task targets installable `.agents` assets:
 - `skills-pack/tools/**`
 - `skills-pack/install-skills.sh`
 
-The repository root is the canonical runnable Akka Java SDK + React/Vite core app. Do not add core app runtime code under `skills-pack/**`. Do not move focused skills-pack examples back into root `src/**`.
+The repository root is the canonical runnable secure AI-first SMB SaaS core app: an Akka Java SDK + React/Vite application with the built-in five core workstreams. Do not add core app runtime code under `skills-pack/**`. Do not move focused skills-pack examples back into root `src/**`.
 
 ## Harness install model
 
-This repository is the product baseline: pack users clone or fork this repo, run the root Akka full-stack app, and build their domain-specific workstreams in the root app workspace. There is no separate full-pack installer, generated distribution bundle, or installed duplicate app baseline.
+This repository is the product baseline: pack users clone or fork this repo, run the root Akka full-stack app, and build their business-specific domains and workstreams in the root app workspace. The skills install supports harness-assisted development of that app; it is not a separate full-pack installer, generated distribution bundle, or installed duplicate app baseline.
 
-The install step copies or symlinks `skills-pack/skills/**`, shared `skills-pack/skills/references/**`, and referenced pack assets such as `skills-pack/docs/**`, curated `skills-pack/examples/**`, `skills-pack/templates/**`, and downstream-safe `skills-pack/tools/**` into a harness-accessible skills directory such as `.agents/skills` or `~/.agents/skills`. The installed `.agents/skills` directory is a support library for the harness, not the target application's source tree, app-description/spec storage location, or duplicate app baseline. Maintainer-only release/version tooling belongs under `skills-pack/pack/maintainer/**`, not in the installed tools payload.
+The install step copies or symlinks `skills-pack/skills/**`, shared `skills-pack/skills/references/**`, and referenced pack assets such as `skills-pack/docs/**`, curated `skills-pack/examples/**`, `skills-pack/templates/**`, and downstream-safe `skills-pack/tools/**` into a harness-accessible skills directory such as `.agents/skills` or `~/.agents/skills`. The installed `.agents/skills` directory is a support library for the harness, not the target application's source tree, app-description/spec storage location, or duplicate app baseline. Code examples under `skills-pack/examples/**` exist to guide real code generation and implementation decisions; they are not application source to copy wholesale. Maintainer-only release/version tooling belongs under `skills-pack/pack/maintainer/**`, not in the installed tools payload.
 
 `akka-context/**` is the exception: it is official Akka reference material maintained independently by the Akka team and expected as a top-level, usually git-ignored project/repository directory. Do not install it into `.agents/skills`; installed skill references should point to the top-level `akka-context/**` location.
 
