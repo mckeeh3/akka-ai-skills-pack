@@ -11,13 +11,7 @@ For generated full-stack AI-first SaaS, the hosted app is an agent workstream sh
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS web-UI endpoint work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- functional-agent shell, workstream deep-link routes, structured surface ids/actions/events, and browser API/realtime route families;
-- governed capability ids/classes behind protected JSON/SSE/WebSocket routes and selected Akka substrates;
-- `AuthContext`, tenant/customer scope, `/api/me` context selection, roles/capabilities, disabled/forbidden behavior, and static/protected route separation;
-- DTOs, redaction, idempotency/correlation ids, policy/approval/escalation, audit/work trace fields, rendering/API/realtime tests, selected style guide, and named-theme contract.
-
-If these are absent for generated SaaS implementation, route back to `akka-web-ui-apps`, `agent-workstream-apps`, and `capability-first-backend` or repair the task brief instead of serving a page-first shell.
+Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
 
 ## Capability-first exposure rule
 

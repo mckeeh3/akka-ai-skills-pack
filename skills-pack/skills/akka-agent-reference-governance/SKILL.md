@@ -11,18 +11,12 @@ References are not procedural skills by default. Use `akka-agent-skill-governanc
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS reference-governance work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-
-- owning functional/internal agent, workstream expert bundle id, reference catalog/manifest/evidence surface ids, and affected surface actions;
-- capability ids/classes for draft, propose, review, activate, assign, manifest assembly, `readReferenceDoc`, denial review, and test-run operations;
-- `AuthContext`, tenant/customer scope, steward/reviewer roles, allowed reference access levels, redaction rules, tool/data boundaries, and denied reference-load behavior;
-- reference document/version ids, compact expertise manifest entries, version policy, checksum, token limits, citation/evidence use, ReferenceLoadTrace fields, audit/work trace obligations, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of treating references as arbitrary files or prompt stuffing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
 
 ## Required reading
 
 Read these first if present:
+- `../docs/governed-agent-substrate.md`
 
 - `../docs/workstream-expertise-model.md`
 - `../docs/agent-runtime-invocation-pattern.md`

@@ -10,13 +10,7 @@ Use this skill when adding or reviewing tests for Akka-hosted browser apps.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS UI work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- owning functional agent, workstream, structured surface id/type/version, and surface action or workstream event;
-- governed capability id/class, selected Akka substrate, frontend/API/realtime exposure, and required tests;
-- `AuthContext`, tenant/customer scope, roles/capabilities, disabled/forbidden behavior, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work trace fields, correlation ids, and denial/error shapes.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing from UI mechanics.
+Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
 
 ## Required reading
 

@@ -15,6 +15,7 @@ Use this skill only for model-selection authority, policy, fallback, secret-boun
 
 Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md`
+- `../docs/governed-agent-substrate.md`
 - `../docs/agent-runtime-invocation-pattern.md`
 - `../docs/agent-coverage-matrix.md`
 - `../akka-agent-behavior-profiles/SKILL.md`

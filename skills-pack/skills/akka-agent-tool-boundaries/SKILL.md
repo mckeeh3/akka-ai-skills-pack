@@ -11,17 +11,12 @@ A `ToolPermissionBoundary` is backend-enforced authority for agent tool and data
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS tool-boundary work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- owning functional/internal agent, workstream placement when user-facing, governance surface id/action, and affected tool/action surfaces;
-- capability ids/classes for each tool grant, data grant, side effect, approval request, and boundary-management action;
-- `AuthContext`, tenant/customer scope, caller roles/capabilities, agent authority, tool categories, data classifications, and denial behavior;
-- idempotency, policy/approval/escalation, audit/work trace fields, redaction, simulation/diff requirements, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of inventing tool authority.
+Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
 
 ## Required reading
 
 Read these first if present:
+- `../docs/governed-agent-substrate.md`
 - `../docs/capability-first-backend-architecture.md`
 - `../docs/agent-runtime-invocation-pattern.md`
 - `../akka-agent-behavior-profiles/SKILL.md`

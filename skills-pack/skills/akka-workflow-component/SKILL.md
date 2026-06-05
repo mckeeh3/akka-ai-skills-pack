@@ -9,13 +9,7 @@ Use this skill when the task is mainly about the workflow class itself.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS workflow work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- initiating functional agent, structured surface action/workstream event, or explicit internal trigger;
-- governed workflow capability id/class, workflow id/idempotency strategy, selected start/advance exposure, and downstream substrates;
-- `AuthContext`, tenant/customer scope, roles/capabilities, system principal for internal steps, approval/supervision authority, and forbidden behavior;
-- command/state DTOs, redaction, side effects, compensation/no-op rules, policy/approval/escalation, audit/work trace fields, notification events, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of modeling steps from process mechanics alone.
+Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
 
 ## Required reading
 

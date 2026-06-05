@@ -70,17 +70,11 @@ Covered coverage:
 
 ### P0: first domain-neutral executable AI-first decision/work trace slice
 
-Status: **open**.
+Status: **planned; implementation shape captured**.
 
-Need: a compact domain-neutral fixture that demonstrates durable evidence-backed decisions, retained human authority, policy gates, trace completeness, idempotency, and outcome linkage without depending on an app-specific vertical such as supplies, finance, procurement, or fleet operations.
+Planning reference: `docs/examples/domain-neutral-decision-work-trace-slice.md`.
 
-Suggested shape:
-
-- small Event Sourced Entity for `DecisionRecord` or `WorkDecision`;
-- workflow for recommendation → approval-required/auto-allowed → outcome link;
-- view for pending decisions and trace lookup;
-- endpoint tests proving authorization, idempotency, trace completeness, and no unauthorized side effect;
-- optional deterministic agent/tool stub for recommendation drafting.
+Need: implement the compact domain-neutral fixture described there so future harnesses have executable coverage for durable evidence-backed decisions, retained human authority, policy gates, trace completeness, idempotency, and outcome linkage without depending on an app-specific vertical such as supplies, finance, procurement, or fleet operations.
 
 ### P0: explicit AI-first acceptance/evaluation test patterns
 

@@ -22,7 +22,7 @@ Current implementation references:
 - canonical User Admin UI vertical pattern: `frontend/src/workstream-user-admin-vertical.contract.test.mjs` plus shared test fixtures under `frontend/src/__tests__/fixtures/**` when needed
 - shell/surface/action/deep-link/realtime contract coverage: `frontend/src/workstream*.contract.test.mjs`, `frontend/src/frontend.contract.test.mjs`, and `frontend/src/seed-frontend-quality.contract.test.mjs`
 
-Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Test fixtures are contract/test references only; generated user-facing runtime must bind to real backend `/api/me`, workstream APIs, authorization, audit/work-trace, and realtime API paths rather than simulated data. Static UI fixture examples were removed from the pack; generated SaaS UI should use the root workstream frontend reference, not standalone static pages.
+Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Test fixtures are contract/test references only; generated user-facing runtime must bind to real backend `/api/me`, workstream APIs, authorization, audit/work-trace, and realtime API paths rather than simulated data. For non-canonical retired UI structures, use `docs/retired-content-boundaries.md`.
 
 ## Core rule
 

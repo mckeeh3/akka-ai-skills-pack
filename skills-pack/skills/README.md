@@ -41,12 +41,13 @@ For high-level product input, treat the target as a secure AI-first SaaS **agent
 
 Security is mandatory. Load `core-saas-foundation` early whenever generated-app foundation rules are in scope. The mandatory secure SaaS foundation includes WorkOS/AuthKit browser authentication, local Akka-owned authorization state, account/profile/settings/membership/role/capability state, `/api/me`, email-invite onboarding with Resend, backend authorization checks, tenant/customer scoping, support access, admin audit, audit/work traces, workstream UI surfaces, tenant-isolation tests, and frontend secret boundaries.
 
-AI-first managed agents / governed runtime agent foundation is mandatory for model-backed workstream behavior: active `AgentDefinition` resolution, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, authorized Akka `@FunctionTool` `readSkill(skillId)` and `readReferenceDoc(referenceId)`, runtime registration with `effects().tools(runtimeTools)`, and first-install/tenant-bootstrap seed documents.
+AI-first managed agents / governed runtime agent foundation is mandatory for model-backed workstream behavior. Use `../docs/governed-agent-substrate.md` for the shared record/runtime/trace model; focused agent-governance skills own only their specific slice.
 
 Scope control: load only the smallest companion set needed for the current user request. Use the full foundation/admin path only when creating or changing secure SaaS foundation behavior, app-generation readiness, or model-backed workstream runtime. For narrow maintenance, documentation, isolated Akka component work, or domain-specific extension work, preserve the mandatory guardrails without expanding the task into unrelated foundation verticals.
 
 Canonical doctrine:
 
+- `../docs/generated-saas-canonical-doctrine.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/minimum-ai-first-saas-app.md`
 - `../docs/requirements-to-workstream-development-process.md`
@@ -151,4 +152,4 @@ Load only the family/focused skill needed for the current implementation slice:
 - MCP endpoints: `akka-mcp-endpoints`, component-client, request-context, resources/prompts, and testing.
 - Web UI: `akka-web-ui-apps`, frontend project, API client, UX design, accessibility/responsive, state rendering, forms validation, realtime, testing.
 
-When this quick map is too terse, inspect the relevant focused skill family directly instead of loading a broad historical routing catalog.
+When this quick map is too terse, inspect the relevant focused skill family directly instead of loading a broad historical routing catalog. For retired/static/legacy content boundaries, use `../docs/retired-content-boundaries.md` rather than repeating long warnings in normal skill text.

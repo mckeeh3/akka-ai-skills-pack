@@ -30,6 +30,7 @@ Use request-based agents as bounded operational workers for planning, classifica
 ## Required reading before coding
 
 Read these first if present:
+- `../docs/governed-agent-substrate.md`
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/agents.html.md`

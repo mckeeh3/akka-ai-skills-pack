@@ -13,13 +13,7 @@ Use this skill before implementing details with `akka-web-ui-frontend-project` s
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS UX work, produce an implementation-ready UX plan only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agents, workstream regions, role-specific dashboard attention sources, structured surface ids/types/versions, human surface graph edges, surface actions/events, and deep-link intent;
-- browser-tool exposure names, governed-tool ids, governed capability ids/classes behind consequential actions/queries, and selected frontend/API/realtime exposure;
-- `AuthContext`, tenant/customer scope, roles/capabilities, authority indicators, disabled/forbidden states, and retained-human-authority rules;
-- DTO/error states, redaction, idempotency/correlation, policy/approval/escalation states, audit/work trace links, selected style guide, named-theme contract, accessibility, and required rendering/API/realtime tests.
-
-If these are absent for generated SaaS implementation, route back to `akka-web-ui-apps`, `agent-workstream-apps`, and `capability-first-backend` or repair the task brief instead of designing page-first UX.
+Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
 
 ## AI-first UX role
 

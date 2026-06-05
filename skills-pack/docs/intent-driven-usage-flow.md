@@ -57,7 +57,7 @@ Preferred generated-SaaS planning example:
 Conventional planning mechanics only:
 - `prd-to-akka-flow.md`
 
-Historical domain-specific planning examples were removed; use current domain-neutral examples or the user's actual domain.
+Use current domain-neutral examples or the user's actual domain; see `docs/retired-content-boundaries.md` for retired historical/example content boundaries.
 
 ## Rule of thumb
 

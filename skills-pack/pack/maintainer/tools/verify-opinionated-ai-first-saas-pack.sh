@@ -208,7 +208,9 @@ require_rg "install-skills" install-skills.sh "$APP_ROOT/install-skills.sh" READ
 
 log "checking repository example references"
 require_file "tools/validate-repository-example-references.py"
+require_file "tools/validate-curated-example-index.py"
 python3 tools/validate-repository-example-references.py
+python3 tools/validate-curated-example-index.py
 example_java_count="$(find examples/akka-components/src -name '*.java' | wc -l | tr -d ' ')"
 if [[ "$example_java_count" -gt 120 ]]; then
   fail "Curated akka-components examples are too large ($example_java_count Java files); do not reinstall a duplicate app baseline"

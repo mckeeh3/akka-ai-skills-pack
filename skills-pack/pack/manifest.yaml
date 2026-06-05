@@ -529,8 +529,11 @@ content:
     - docs/examples/ai-first-saas-core-app-domain/my-account-workstream/README.md
     - docs/examples/ai-first-saas-core-app-domain/user-admin-workstream/README.md
     - docs/examples/domain-workstream-surface-contract-example.md
+    - docs/examples/domain-neutral-decision-work-trace-slice.md
     - docs/examples/requirements-to-workstream-mini-example.md
     - docs/frontend-with-akka-backend.md
+    - docs/generated-saas-canonical-doctrine.md
+    - docs/governed-agent-substrate.md
     - docs/full-core-foundation-readiness.md
     - docs/intent-driven-usage-flow.md
     - docs/internal-app-description-architecture.md
@@ -540,6 +543,7 @@ content:
     - docs/pending-task-queue.md
     - docs/prd-to-akka-flow.md
     - docs/requirements-to-workstream-development-process.md
+    - docs/retired-content-boundaries.md
     - docs/security-pattern-selection.md
     - docs/security-review-checklist.md
     - docs/security-workos-auth-and-admin.md
@@ -571,6 +575,7 @@ content:
     - templates/ai-first-saas-core-app/app-description/55-ui/structured-surface-rendering.md
     - templates/ai-first-saas-core-app/app-description/70-traceability/surface-to-capability-map.md
     - tools/validate-surface-contracts.sh
+    - tools/validate-curated-example-index.py
     - skills/references/akka-entity-comparison.md
     - skills/references/akka-grpc-jwt-patterns.md
     - skills/references/generated-saas-input-contract.md

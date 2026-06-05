@@ -11,18 +11,13 @@ This is the focused prompt companion to `akka-agent-governed-documents`. It does
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS prompt-governance work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- owning functional/internal agent, governance workstream, prompt editor/review/test surface ids, and affected surface actions;
-- capability ids/classes for draft, propose, review, activate, rollback, assemble, and test-run operations;
-- `AuthContext`, tenant/customer scope, steward/reviewer roles, agent authority boundaries, and forbidden/disabled behavior;
-- prompt version refs, redaction, policy/approval/escalation, prompt assembly trace fields, audit/work trace obligations, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of treating prompt editing as generic text CRUD.
+Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
 
 ## Required reading
 
 Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md`
+- `../docs/governed-agent-substrate.md`
 - `../docs/agent-coverage-matrix.md`
 - `../docs/examples/ai-first-saas-core-app-domain/agent-admin-workstream/README.md`
 - `../core-saas-foundation/SKILL.md`

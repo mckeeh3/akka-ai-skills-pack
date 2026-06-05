@@ -9,13 +9,7 @@ Use this skill when an HTTP endpoint requires JWT authentication.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS JWT endpoint work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- source functional agent, structured surface action, browser/API caller, or explicit service/internal caller;
-- governed capability id/class, route exposure, selected tenant/customer context, and matching backend substrate;
-- JWT issuer/audience/claim contract, local `AuthContext`, roles/capabilities, disabled/forbidden behavior, and backend authorization boundary;
-- DTOs, redaction, idempotency/correlation ids, policy/approval/escalation, audit/work trace events, denial/error shapes, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of treating JWT presence as sufficient authorization.
+Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
 
 ## Capability-first exposure rule
 

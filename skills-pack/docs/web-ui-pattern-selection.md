@@ -8,7 +8,7 @@ Use this doc when an Akka service needs a browser-facing React/Vite/TypeScript a
 
 Use this for real web apps. Generated SaaS apps should implement the agent workstream shell: role-authorized functional-agent left rail, continuous main workstream panel, persistent bottom composer, context/authority indicators, and structured surfaces.
 
-Canonical full-core implementation reference in this source repository and downstream forks: the runnable core app repository root. Reusable workstream UI architecture and source-reference modules live in `docs/workstream-ui-reference-architecture.md`, root `frontend/src/workstream/**`, and root `frontend/src/workstream-user-admin-vertical.contract.test.mjs`. The harness install includes pack examples under `.agents/skills/examples/**`, but application code belongs in the target project and root frontend source is not exported into `.agents`. The User Admin vertical is the canonical foundation-admin UI pattern for dashboard → list/search → detail/edit behavior through structured surfaces. Old static-resource UI fixtures have been removed from the pack; use focused HTTP/SSE/WebSocket endpoint skills for backend delivery mechanics and the root workstream frontend for UI structure.
+Canonical UI architecture lives in `docs/workstream-ui-reference-architecture.md`. The source repository/root app provides reusable implementation references under `frontend/src/workstream/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`; installed pack examples remain guidance only. For retired UI/source boundaries, use `docs/retired-content-boundaries.md`.
 
 - frontend source and tooling: `frontend/**`
 - production build output: `src/main/resources/static-resources/**`
@@ -38,12 +38,11 @@ Use a standard React/Vite/TypeScript frontend project when the browser app has p
 Akka components, endpoints, and backend tests stay in Java. The frontend project owns browser source and generated production assets. Conventional route/page navigation is an implementation/deep-link detail for generated SaaS apps, not the primary decomposition. Route/page existence tests are not enough for generated SaaS UI; include shell, functional-agent rail, composer, structured-surface, action, deep-link, realtime/stale, and User Admin vertical contract coverage.
 
 Read next:
-- `docs/workstream-ui-reference-architecture.md`
-- `docs/web-ui-frontend-decomposition.md`
-- `docs/web-ui-frontend-project-integration.md`
-- `docs/web-ui-style-guide.md`
-- `docs/web-ui-api-contract-patterns.md`
-- `docs/web-ui-quality-checklist.md`
+- `docs/workstream-ui-reference-architecture.md` for canonical UI architecture
+- `docs/web-ui-frontend-project-integration.md` for build/hosting mechanics
+- `docs/web-ui-style-guide.md` for styling choices
+- `docs/web-ui-api-contract-patterns.md` for typed API contracts
+- `docs/web-ui-quality-checklist.md` for review gates
 
 ## Recommended route shape
 

@@ -9,7 +9,7 @@ Primary maintenance entry points:
 - `AGENTS.md` — source-maintainer guidance for skills-pack work
 - `skills/README.md` — skill routing map installed with the skills
 - `skills/*/SKILL.md` — focused harness guidance installed into `.agents/skills` or `~/.agents/skills`
-- `docs/` — source-attention doctrine, routing, and reference docs
+- `docs/` — source-attention doctrine, routing, and reference docs; start with `docs/generated-saas-canonical-doctrine.md` for shared generated-app rules
 - `examples/` — code examples used by installed skills as generation guidance for real Akka/core-app implementation patterns
 - `templates/` — source-attention core app-description assets
 - root `akka-context/` — official Akka reference material kept at repository top level and not installed
@@ -23,4 +23,4 @@ The repository root is the canonical runnable secure AI-first SMB SaaS core app.
 
 The pack targets one full-stack system: Akka Java SDK backend components plus a React/Vite/TypeScript frontend hosted by the Akka service when appropriate. Backend guidance should prefer explicit Akka write paths, read paths, event reactions, workflows, timers, endpoints, and governed agent/tool boundaries over generic CRUD. Frontend guidance should preserve typed API contracts, structured workstream surfaces, realtime state where needed, accessibility, responsive behavior, and production build output under `src/main/resources/static-resources/`.
 
-Use focused skills for implementation mechanics; this README is only the source map.
+Use focused skills for implementation mechanics; this README is only the source map. Keep repeated generated-app, governed-agent, UI, and retired-content rules in shared docs rather than copying them into every skill.

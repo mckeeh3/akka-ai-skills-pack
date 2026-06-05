@@ -11,18 +11,13 @@ This is the governed runtime skill pattern for AI-first SaaS apps. For generated
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS skill-governance work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- owning functional/internal agent, governance workstream, skill catalog/editor/manifest surface ids, and affected surface actions;
-- capability ids/classes for draft, propose, review, activate, assign, readSkill, manifest assembly, and test-run operations;
-- `AuthContext`, tenant/customer scope, steward/reviewer roles, per-agent authority, tool/data boundaries, and denied skill-load behavior;
-- skill/manifest version refs, compact prompt context, redaction, policy/approval/escalation, SkillLoadTrace fields, audit/work trace obligations, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of treating skill management as generic document CRUD.
+Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
 
 ## Required reading
 
 Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md`
+- `../docs/governed-agent-substrate.md`
 - `../docs/agent-coverage-matrix.md`
 - `../docs/examples/ai-first-saas-core-app-domain/agent-admin-workstream/README.md`
 - `../core-saas-foundation/SKILL.md`
