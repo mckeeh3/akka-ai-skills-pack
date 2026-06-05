@@ -27,7 +27,7 @@ Read these first if present:
 - `../README.md`
 - `../docs/description-first-application-doctrine.md`
 - `../docs/requirements-to-workstream-development-process.md` for the canonical input/PRD → workstreams → attention → dashboards → surfaces/actions → capabilities → Akka substrate process
-- `../docs/minimum-ai-first-saas-app.md` for minimum/core app/basic/chatbot-like generated SaaS scope: five core workstream core app domain with `markdown_response`, not a generic chatbot or single-workstream slice
+- `../docs/minimum-ai-first-saas-app.md` for minimum/core app/basic/chatbot-like generated SaaS scope: five-core-workstream core app domain with `markdown_response`, not a generic chatbot or single-workstream slice
 - `../docs/agent-workstream-application-architecture.md` for functional-agent workstream semantics
 - `../docs/structured-surface-contracts.md` for surface/action contracts
 - `../docs/capability-first-backend-architecture.md` for capability contract fields and exposure-surface semantics
@@ -189,7 +189,7 @@ Use `candidate inferred deltas` for plausible implications that still need confi
 
 ### 3. Preserve the requirements-to-workstream chain
 For broad generated-SaaS input, normalize in this order before code or component concepts:
-1. secure SaaS/AuthContext assumptions, including the five core workstream core app domain when the prompt says minimum, core app, basic, smallest useful app, or chatbot-like SaaS
+1. secure SaaS/AuthContext assumptions, including the five-core-workstream core app domain when the prompt says minimum, core app, basic, smallest useful app, or chatbot-like SaaS
 2. workstream count/boundary and functional-agent candidates
 3. attention needs and role-specific dashboard implications
 4. human surface graph nodes, states, system-message surfaces, and surface actions

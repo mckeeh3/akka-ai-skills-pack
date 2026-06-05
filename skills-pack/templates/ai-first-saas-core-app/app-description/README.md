@@ -1,4 +1,4 @@
-# AI-first SaaS core app app-description template
+# AI-first SaaS core app-description template
 
 This template is a source-controlled core app for workstream surface modeling in generated secure AI-first SaaS apps. Copy the smallest relevant files into a target project's `app-description/` tree when bootstrapping or repairing surface contracts.
 

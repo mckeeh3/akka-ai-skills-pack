@@ -19,7 +19,7 @@ Create a minimum viable internal app-description tree that:
 - records internal workstream agent graph candidates, internal worker delegations, autonomous task candidates, notification/projection implications, and trace expectations when durable internal/background agent work may be needed
 - records an initial readiness posture
 - defines a generation policy that labels scope as `core app baseline`, `full core`, `Module 1-only / not full core`, or another explicit narrower scope
-- for core app/basic/minimum/chatbot-like generated SaaS requests, represents the five core workstream core app domain — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — with `markdown_response`, bootstrap auth/security, durable workstream logs, trace substrate, backend capability boundaries, and explicit follow-up gaps to full core
+- for core app/basic/minimum/chatbot-like generated SaaS requests, represents the five-core-workstream core app domain — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — with `markdown_response`, bootstrap auth/security, durable workstream logs, trace substrate, backend capability boundaries, and explicit follow-up gaps to full core
 - creates enough cross-linking that later changes can stay localized and traceable
 
 ## Required reading
@@ -30,13 +30,13 @@ Read these first if present:
 - `../docs/description-first-application-doctrine.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/requirements-to-workstream-development-process.md` for the canonical input → workstreams → attention → dashboards → surfaces/actions → capabilities/APIs → Akka substrate → agent/autonomous task → notifications/projections/traces process
-- `../docs/minimum-ai-first-saas-app.md` for minimum/core app/basic/chatbot-like generated SaaS scope: five core workstream core app domain with `markdown_response`, not a single-workstream or generic chatbot slice
+- `../docs/minimum-ai-first-saas-app.md` for minimum/core app/basic/chatbot-like generated SaaS scope: five-core-workstream core app domain with `markdown_response`, not a single-workstream or generic chatbot slice
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation every new app-description must establish
 - `../docs/internal-app-description-architecture.md`
 - `../docs/app-description-maintenance-flow.md`
 - `../app-descriptions/SKILL.md`
 - `../ai-first-saas/SKILL.md` when the initial app idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
-- the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md` for the preferred core app core app-description shape
+- the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md` for the preferred core app-description shape
 
 Prefer these example references for generated SaaS foundation bootstraps:
 - target project `app-description/00-system/app-manifest.md`
@@ -80,7 +80,7 @@ If the repository already has a different stable internal root for app descripti
 
 ## Minimum required outputs
 
-Bootstrap at least these artifacts:
+Bootstrap the smallest subset that truthfully represents the request. For generated full-stack AI-first SaaS, start from this structure; for narrower discovery or non-SaaS work, create only the applicable files and record deferred full-core gaps in readiness status:
 
 ```text
 app-description/
@@ -95,7 +95,7 @@ app-description/
   12-workstreams/          # required for generated full-stack AI-first SaaS apps
     functional-agents.md
     attention-and-dashboards.md
-    internal-agents.md      # create when internal/background agent work or autonomous task candidates are in scope
+    internal-agents.md      # create only when internal/background agent work or autonomous task candidates are in scope
     surfaces-index.md
     surface-contracts/
       00-markdown-response.md      # required for each core-baseline core workstream domain
@@ -104,7 +104,7 @@ app-description/
       03-agent-admin.md
       04-audit-trace.md
       05-governance-policy.md
-  15-operating-model/      # required for generated AI-first SaaS apps
+  15-operating-model/      # required for generated AI-first SaaS apps; summarize rather than inventing details
     goals-and-objectives.md
     agent-roles-and-authority.md
     governed-runtime-agents.md
@@ -166,14 +166,14 @@ app-description/
     style-guide.md        # create when style is supplied; otherwise record unselected or queue a style question
 ```
 
-This `55-ui/` file set is the canonical generated SaaS bootstrap set and matches `docs/internal-app-description-architecture.md`, `app-description-ui`, and the current AI-first SaaS core app core template. Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
+This `55-ui/` file set is the canonical generated SaaS bootstrap set and matches `docs/internal-app-description-architecture.md`, `app-description-ui`, and the current AI-first SaaS core app-description template. Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
 
 ## Scope gates
 
 At bootstrap time, classify the requested generation scope before writing readiness or generation policy:
-- `core app baseline` means the app-description may be small but must describe the real five core workstream core app domain: bootstrap-authorized identity, selected `AuthContext`, role/capability-checked My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents, durable workstream request/response logs, `markdown_response` structured surface contracts for each core workstream, backend capability boundaries for actions/tools, audit/work trace substrate, bootstrap auth/security rules, and explicit follow-up gaps to full core. This is the canonical interpretation for “minimum app”, “core app”, “basic app”, or initial chatbot-like generated SaaS requests.
+- `core app baseline` means the app-description may be small but must describe the real five-core-workstream core app domain: bootstrap-authorized identity, selected `AuthContext`, role/capability-checked My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents, durable workstream request/response logs, `markdown_response` structured surface contracts for each core workstream, backend capability boundaries for actions/tools, audit/work trace substrate, bootstrap auth/security rules, and explicit follow-up gaps to full core. This is the canonical interpretation for “minimum app”, “core app”, “basic app”, or initial chatbot-like generated SaaS requests.
 - `full core` means the app-description must include My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, reference documents, skill/reference manifests, tool boundaries, prompt/skill/reference/work traces, `readSkill`, and `readReferenceDoc`); workstream UI; managed-agent UI files (`agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, reference-governance surfaces, and `edit-agent-proposals-and-traces.md`); and full security/test coverage.
-- `Module 1-only / not full core` means only minimal authentication, `/api/me`, selected context, My Account, and an authenticated shell are in scope; it must explicitly defer User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitation lifecycle, governed prompts/skills/references/manifests/tool boundaries, managed-agent UI files, audit/work trace UI, and governance loops. Do not use this label for core app baseline requests that should be the five core workstream core app domain.
+- `Module 1-only / not full core` means only minimal authentication, `/api/me`, selected context, My Account, and an authenticated shell are in scope; it must explicitly defer User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitation lifecycle, governed prompts/skills/references/manifests/tool boundaries, managed-agent UI files, audit/work trace UI, and governance loops. Do not use this label for core app baseline requests that should be the five-core-workstream core app domain.
 - any other narrower scope must be named in `00-system/app-manifest.md`, repeated in `00-system/readiness-status.md`, and enforced by `00-system/generation-policy.md`.
 
 Do not allow a bootstrap to imply full-core readiness while omitting full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, complete workstream UI, or required tests. Missing full-core elements are acceptable only when the generated app is explicitly labeled as `core app baseline`, Module 1-only, or another accepted narrower scope. Minimum core app readiness must not be reported as full-core readiness.
@@ -202,7 +202,7 @@ From the initial user input, derive as applicable:
 - initial governed runtime agent expectations: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap governed setup of implementation-developed default behavior/reference documents, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, behavior-editing agent proposals, and denial of unauthorized authority expansion
 - initial observability expectations for identity, Membership/role, support-access, admin, audit, policy, data-access, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, and consequential AI/tool events
 - initial policy, approval, exception, audit, trace, and outcome expectations for the AI-first SaaS operating model
-- initial frontend/UI expectations for the mandatory browser app, including sign-in state, context selection, `/api/me`, account/profile/settings, tenant/customer admin, Membership/role administration, invitation, support-access, audit, agent catalog, agent detail, prompt governance, skill governance, skill manifest, tool permission, editing agent proposal, and trace surfaces; for core app baseline scope, record the five core workstream shell, functional-agent rail (with My Account launched from the bottom user tile), composer, workstream logs, `markdown_response` rendering, trace links, and deferred richer surfaces
+- initial frontend/UI expectations for the mandatory browser app, including sign-in state, context selection, `/api/me`, account/profile/settings, tenant/customer admin, Membership/role administration, invitation, support-access, audit, agent catalog, agent detail, prompt governance, skill governance, skill manifest, tool permission, editing agent proposal, and trace surfaces; for core app baseline scope, record the five-core-workstream shell, functional-agent rail (with My Account launched from the bottom user tile), composer, workstream logs, `markdown_response` rendering, trace links, and deferred richer surfaces
 - selected web UI style guide when supplied, or an explicit `unselected` style state when not supplied
 - initial non-goals
 - an initial readiness posture
@@ -230,7 +230,7 @@ For most fresh bootstraps, prefer:
 - or `ready-with-assumptions` only if the input is already unusually complete and remaining assumptions are non-runtime or explicitly outside the named scope
 
 ### 3. Establish generation policy
-Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the fixed Java base package `ai.first`, labels core-baseline/full-core/narrower generation scope, blocks unlabeled omissions of full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, forbids package-selection questions, and states that generated runtime features are complete only after real local Akka/API/UI validation with no mock/fixture/simulated normal-runtime substitute. For `core app baseline`, require the five core workstream core app domain and follow-up tasks for richer My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces/capabilities, invitations/onboarding, governed behavior/reference documents, and security coverage.
+Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the fixed Java base package `ai.first`, labels core-baseline/full-core/narrower generation scope, blocks unlabeled omissions of full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, forbids package-selection questions, and states that generated runtime features are complete only after real local Akka/API/UI validation with no mock/fixture/simulated normal-runtime substitute. For `core app baseline`, require the five-core-workstream core app domain and follow-up tasks for richer My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces/capabilities, invitations/onboarding, governed behavior/reference documents, and security coverage.
 
 ### 4. Create the first capability layer
 Create a `10-capabilities/` index and a mandatory `01-secure-tenant-user-foundation.md` capability covering SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests.

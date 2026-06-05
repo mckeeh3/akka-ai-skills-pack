@@ -62,7 +62,7 @@ app-description/55-ui/
   style-guide.md
 ```
 
-This is the canonical generated SaaS `55-ui/` file set and should remain consistent with `docs/internal-app-description-architecture.md`, `app-description-bootstrap`, and the current AI-first SaaS core app core template.
+This is the canonical generated SaaS `55-ui/` file set and should remain consistent with `docs/internal-app-description-architecture.md`, `app-description-bootstrap`, and the current AI-first SaaS core app-description template.
 
 Create only files justified by the app, but do not omit the UI layer for generated AI-first SaaS. For `full core` scope, do not omit the managed-agent UI files: `agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, and `edit-agent-proposals-and-traces.md`. They may be omitted or explicitly marked deferred only when `00-system/app-manifest.md`, `readiness-status.md`, and `generation-policy.md` label a narrower scope such as `Module 1-only / not full core`. For a very small full-core app, one `ui-index.md`, `workstream-shell.md`, `functional-agent-rail.md`, `workstream-panel-and-composer.md`, `structured-surface-rendering.md`, `routes-and-deep-links.md`, those managed-agent UI files, and `style-guide.md` may be enough.
 

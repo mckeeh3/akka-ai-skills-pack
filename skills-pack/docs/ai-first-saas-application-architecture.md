@@ -80,7 +80,7 @@ Use `core-ai-first-saas-foundation.md`, `core-saas-identity-tenancy-admin.md`, a
 
 ## AI-first SaaS core app baseline
 
-The smallest valid generated AI-first SaaS app is a bootstrap-authorized **five core workstream core app domain**, not a generic chatbot. See `minimum-ai-first-saas-app.md` for the canonical minimum-app doctrine.
+The smallest valid generated AI-first SaaS app is a bootstrap-authorized **five-core-workstream core app domain**, not a generic chatbot. See `minimum-ai-first-saas-app.md` for the canonical minimum-app doctrine.
 
 Minimum core app readiness means the My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy workstreams work for bootstrap-authorized users with a selected `AuthContext`, backend role/capability checks, a durable workstream log, audit/work trace substrate, capability-first backend boundaries, and a `markdown_response` structured surface rendered as sanitized HTML. This core app may use a chat-like shell, but the application model remains workstream + surface + capability.
 

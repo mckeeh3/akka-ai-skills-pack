@@ -531,6 +531,7 @@ content:
     - docs/examples/domain-workstream-surface-contract-example.md
     - docs/examples/requirements-to-workstream-mini-example.md
     - docs/frontend-with-akka-backend.md
+    - docs/full-core-foundation-readiness.md
     - docs/intent-driven-usage-flow.md
     - docs/internal-app-description-architecture.md
     - docs/minimum-ai-first-saas-app.md

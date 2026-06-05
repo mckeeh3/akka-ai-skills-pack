@@ -7,7 +7,7 @@ It defines the mandatory default UI/application model for generated full-stack s
 
 Use this doctrine below `ai-first-saas-application-architecture.md` and above detailed app-description, web UI, agent, and Akka component guidance. For broad input, PRD, app-description, planning, backlog, and implementation-readiness work, apply `requirements-to-workstream-development-process.md` before component selection. This document does not replace `capability-first-backend-architecture.md`: workstream UI actions, agent tools, workflow steps, APIs, timers, consumers, and internal calls still map to governed backend capabilities before Akka implementation is selected.
 
-For core app app-description surface examples, use the source-controlled files under `templates/ai-first-saas-core-app/app-description/**`; do not depend on generated distribution output directories as template sources.
+For core app-description surface examples, use the source-controlled files under `templates/ai-first-saas-core-app/app-description/**`; do not depend on generated distribution output directories as template sources.
 
 ## Default generated-app architecture
 
@@ -50,7 +50,7 @@ AutonomousAgent task progress/result surfaces are part of the workstream model w
 
 ## Minimum initial core workstream set
 
-The smallest generated AI-first SaaS core app is a bootstrap-authorized **five core workstream core app domain**, not a generic chatbot. Use this interpretation for prompts such as "minimum AI-first app," "core app," "basic app," or "initial chatbot" unless the user explicitly asks for non-SaaS reference material.
+The smallest generated AI-first SaaS core app is a bootstrap-authorized **five-core-workstream core app domain**, not a generic chatbot. Use this interpretation for prompts such as "minimum AI-first app," "core app," "basic app," or "initial chatbot" unless the user explicitly asks for non-SaaS reference material.
 
 The minimum initial shell contains these role-authorized functional agents for the bootstrap operator:
 
@@ -60,7 +60,7 @@ The minimum initial shell contains these role-authorized functional agents for t
 4. **Audit/Trace Agent**
 5. **Governance/Policy Agent**
 
-Each core core workstream is intentionally narrow, but each must still use the same shell model:
+Each core workstream is intentionally narrow, but each must still use the same shell model:
 
 - **Left rail** — exposes role-authorized core functional agents for the bootstrap operator. User Admin, Agent Admin, Audit/Trace, and Governance/Policy appear in the top workstream rail when allowed. My Account is still one of the five core workstreams, but its only launcher is the signed-in user tile/email in the bottom rail user region. Unavailable richer full-core actions or surfaces are represented as explicit deferred/denied behavior, not hidden readiness claims.
 - **Main workstream panel** — renders a durable request/response timeline for the selected core workstream with capability results, denials, trace references, and the first structured surface type: `markdown_response`.
@@ -71,7 +71,7 @@ The first renderable surface for each core workstream is `markdown_response`: mo
 
 Audit/work trace recording starts in this first slice for identity basis, AuthContext selection, capability checks, prompt/tool use, denials, and rendered responses. The Audit/Trace workstream is present from the first runnable core app, but it may initially explain and link to the trace substrate through `markdown_response` before richer search and investigation surfaces are implemented.
 
-Full-core generated SaaS readiness remains stricter than this core app baseline. The five core workstream core app domain is a valid first runnable slice only when follow-up work remains explicit for complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed runtime agent documents, tenant isolation, and full security coverage.
+Full-core generated SaaS readiness remains stricter than this core app baseline. The five-core-workstream core app domain is a valid first runnable slice only when follow-up work remains explicit for complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed runtime agent documents, tenant isolation, and full security coverage.
 
 A workstream is not production-ready just because fixture items render, a deterministic placeholder response exists, or a service directly calls a provider without the workstream Akka Agent. Named model-backed workstream behavior must pass through the real local Akka runtime path: selected AuthContext, backend authorization, durable workstream entries, governed prompt/runtime assembly, active managed configuration resolution, governed `readSkill`/`readReferenceDoc` loader tools, `ToolPermissionBoundary` enforcement, invocation of a concrete Akka `Agent` component for the functional agent with resolved tools registered through `effects().tools(runtimeTools)`, configured model/provider invocation from that Agent path, trace emission, API response, and frontend rendering. Workstream/foundation state claimed as implemented must be backed by Akka components in normal runtime. Provider/configuration failures should become safe system-message surfaces and traces. Mocks, fixtures, deterministic fakes, service-only provider bypasses, and test doubles are allowed only in tests or explicitly test-only adapters; they are not normal runtime substitutes.
 
@@ -214,7 +214,7 @@ Surfaces are structured renderable results, not just text. They are associated w
 
 Canonical surface types:
 
-- `markdown_response` for sanitized model-authored markdown in the minimum five core workstream core app domain and other intentionally text-first responses;
+- `markdown_response` for sanitized model-authored markdown in the minimum five-core-workstream core app domain and other intentionally text-first responses;
 - `system_message` for typed system feedback, denial, warning, success, validation, approval-required, deferred, stale, background-work, and recovery messages;
 - dashboard / attention surface;
 - form or guided intake;

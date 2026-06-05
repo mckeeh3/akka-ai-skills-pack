@@ -10,12 +10,12 @@ Use it to avoid hiding coverage gaps behind broad doctrine or retrofitting domai
 
 The repository already has strong focused examples for individual Akka substrate families:
 
-- canonical full-core core app baseline source under this repository's runnable core app root for new generated secure AI-first SaaS apps;
+- canonical runnable core app baseline source under this repository's runnable core app root for new generated secure AI-first SaaS apps;
 - reusable workstream UI reference modules under root `frontend/src/workstream/**` for shell/surface mechanics;
 - agents, structured responses, tools, guardrails, evaluation, orchestration, memory/runtime state, and streaming;
 - workflows with approval, pause/resume, compensation-style flow, notifications, deadlines, and endpoint integration;
 - Event Sourced Entities, Key Value Entities, Views, Consumers, Timed Actions, HTTP/gRPC/MCP endpoints, and Akka-hosted web UI delivery patterns;
-- source-controlled core app app-description templates and current AI-first SaaS core app-description references for description/planning mechanics.
+- source-controlled core app-description templates and current AI-first SaaS core app-description references for description/planning mechanics.
 
 The core app baseline is the canonical end-to-end implementation baseline. Do not add domain-specific vertical examples unless they provide reusable skills-pack value that the core app, root app-description, workstream UI reference, governed-agent examples, and focused Akka substrate examples do not already cover.
 

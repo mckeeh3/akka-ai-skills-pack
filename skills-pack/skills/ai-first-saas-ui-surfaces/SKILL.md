@@ -15,7 +15,7 @@ Read first:
 - `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
-Use canonical doctrine plus this skill for surface selection. Also use `../docs/agent-workstream-application-architecture.md` and `../docs/structured-surface-contracts.md` when deciding where a surface belongs in the agent workstream model. Use the runnable core app repository root as the canonical full-core implementation baseline and root `frontend/**` as the reusable frontend reference source. Pack examples are available under `.agents/skills/examples/**` after install.
+Use canonical doctrine plus this skill for surface selection. Also use `../docs/agent-workstream-application-architecture.md`, `../docs/structured-surface-contracts.md`, and `../docs/full-core-foundation-readiness.md` when deciding where a surface belongs in the agent workstream model. Use the runnable core app repository root as the canonical runnable implementation baseline and root `frontend/**` as the reusable frontend reference source; do not call it full-core ready unless it satisfies the full-core readiness checklist. Pack examples are available under `.agents/skills/examples/**` after install.
 
 Then load focused downstream implementation skills only for the selected UI, API, realtime, and backing component scope.
 

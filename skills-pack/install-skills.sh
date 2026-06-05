@@ -38,7 +38,7 @@ Options:
   --force              Replace existing non-manifest-owned targets
   --prune              Remove previously installed pack-owned skills that no longer exist in source
   --uninstall          Remove all entries owned by this installer manifest
-  --check              Verify current source skills are installed and report retired managed entries
+  --check              Verify installed pack content matches current source and report retired managed entries
   --dry-run            Show planned actions without writing files
   --help               Show this help text
 
@@ -157,6 +157,24 @@ remove_target() {
   if [[ -e "$dest" || -L "$dest" ]]; then
     log "Removing managed path: $dest"
     run_cmd rm -rf "$dest"
+  fi
+}
+
+content_digest() {
+  local path="$1"
+  if [[ -f "$path" ]]; then
+    sha256sum "$path" | awk '{ print $1 }'
+  elif [[ -d "$path" ]]; then
+    (
+      cd "$path"
+      find . -type f -print0 \
+        | sort -z \
+        | while IFS= read -r -d '' file; do sha256sum "$file"; done \
+        | sha256sum \
+        | awk '{ print $1 }'
+    )
+  else
+    return 1
   fi
 }
 
@@ -304,27 +322,48 @@ prune_retired_entries() {
 }
 
 check_install() {
-  local failed=false rel dest src
+  local failed=false rel dest src source_hash installed_hash
   validate_source_skills
   [[ -f "$MANIFEST_PATH" ]] || { warn "Missing install manifest: $MANIFEST_PATH"; failed=true; }
 
-  for rel in README.md; do
-    dest="$TARGET_DIR/$rel"
-    [[ -f "$dest" || -L "$dest" ]] || { warn "Missing installed $rel"; failed=true; }
-  done
+  check_entry_matches() {
+    local rel="$1"
+    local src="$2"
+    local dest="$TARGET_DIR/$rel"
+    if [[ ! -e "$dest" && ! -L "$dest" ]]; then
+      warn "Missing installed $rel"
+      failed=true
+      return
+    fi
+    if ! source_hash="$(content_digest "$src")"; then
+      warn "Could not digest source $src"
+      failed=true
+      return
+    fi
+    if ! installed_hash="$(content_digest "$dest")"; then
+      warn "Could not digest installed $rel"
+      failed=true
+      return
+    fi
+    if [[ "$source_hash" != "$installed_hash" ]]; then
+      warn "Installed content differs from current source: $rel"
+      failed=true
+    fi
+  }
+
+  check_entry_matches README.md "$SOURCE_SKILLS_DIR/README.md"
   if [[ -d "$SOURCE_SKILLS_DIR/references" ]]; then
-    [[ -d "$TARGET_DIR/references" || -L "$TARGET_DIR/references" ]] || { warn "Missing installed references"; failed=true; }
+    check_entry_matches references "$SOURCE_SKILLS_DIR/references"
   fi
   local asset_dir
   for asset_dir in "${INSTALL_ASSET_DIRS[@]}"; do
     if [[ -d "$PACK_ROOT/$asset_dir" ]]; then
-      [[ -d "$TARGET_DIR/$asset_dir" || -L "$TARGET_DIR/$asset_dir" ]] || { warn "Missing installed $asset_dir"; failed=true; }
+      check_entry_matches "$asset_dir" "$PACK_ROOT/$asset_dir"
     fi
   done
   while IFS= read -r src; do
     rel="$(basename "$src")"
-    dest="$TARGET_DIR/$rel"
-    [[ -f "$dest/SKILL.md" ]] || { warn "Missing installed skill: $rel/SKILL.md"; failed=true; }
+    check_entry_matches "$rel" "$src"
   done < <(find "$SOURCE_SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
 
   report_retired_entries
@@ -376,4 +415,8 @@ while IFS= read -r skill_dir; do
   install_entry dir "$(basename "$skill_dir")" "$skill_dir"
 done < <(find "$SOURCE_SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
 write_manifest
-log "Install complete. Harness skills directory: $TARGET_DIR"
+if [[ "$DRY_RUN" == true ]]; then
+  log "Dry run complete. No files were written. Harness skills directory: $TARGET_DIR"
+else
+  log "Install complete. Harness skills directory: $TARGET_DIR"
+fi

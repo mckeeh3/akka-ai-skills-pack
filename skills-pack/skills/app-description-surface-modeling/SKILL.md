@@ -73,7 +73,7 @@ When the target app has no usable core app surface layer, copy and adapt the sou
 
 Use these types unless the product intent requires a more specific typed surface:
 
-- `markdown_response` for the minimum five core workstream core app domain (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) and other low-ceremony explanatory replies that still require a typed payload, sanitized rendering, trace/correlation ids, explicit states, accessibility, and rendering/security tests; do not treat it as an informal chat blob or as a substitute for richer typed surfaces when decisions, approvals, forms, tables, settings, audit timelines, or workflow status are required;
+- `markdown_response` for the minimum five-core-workstream core app domain (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) and other low-ceremony explanatory replies that still require a typed payload, sanitized rendering, trace/correlation ids, explicit states, accessibility, and rendering/security tests; do not treat it as an informal chat blob or as a substitute for richer typed surfaces when decisions, approvals, forms, tables, settings, audit timelines, or workflow status are required;
 - `dashboard` / `attention-surface`;
 - `autonomous-task-progress` / `autonomous-task-result` / `notification-summary` for durable internal/background work surfaced through governed task lifecycle capabilities;
 - `form` / `guided-intake`;

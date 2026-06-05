@@ -108,7 +108,7 @@ Rules:
 
 Canonical example:
 - a domain-specific attention-advisor agent injects `ComponentClient` and registers a domain-specific tool facade instance.
-- a domain-specific read-only attention-advice facade tool is a read-only `workstream event.attention-advice` facade that calls a domain-specific curated component read method and a domain-specific view query method, applies deterministic readiness logic, and returns a curated a domain-specific curated advice result result.
+- a domain-specific read-only attention-advice facade tool is a read-only `workstream event.attention-advice` facade that calls a domain-specific curated component read method and a domain-specific view query method, applies deterministic readiness logic, and returns a curated domain-specific advice result.
 
 ## Capability-first tool design
 

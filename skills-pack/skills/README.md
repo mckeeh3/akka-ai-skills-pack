@@ -52,6 +52,7 @@ Canonical doctrine:
 - `../docs/capability-first-backend-architecture.md`
 - `../docs/core-ai-first-saas-foundation.md`
 - `../docs/core-saas-identity-tenancy-admin.md`
+- `../docs/full-core-foundation-readiness.md`
 - `../docs/core-saas-owner-tenant-billing.md`
 
 Top-level entry skills:
@@ -86,7 +87,7 @@ Use companion skills only for concerns actually in scope, except foundation/admi
 
 Secure AI-first SaaS interpretation → agent workstream model → mandatory core SaaS foundation verticals → affected workstreams → role-specific dashboard attention model → human surface graph → internal workstream agent graph → governed-tools in capability files and surface/action maps → capability-first backend substrate → description/decomposition/planning path → focused implementation.
 
-For minimum/core app/basic/chatbot-like generated SaaS prompts, the first runnable target is the five core workstream core app domain with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. It is not a generic public chatbot or page-first CRUD shell.
+For minimum/core app/basic/chatbot-like generated SaaS prompts, the first runnable target is the five-core-workstream core app domain with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. It is not a generic public chatbot or page-first CRUD shell.
 
 ## Implementation completion standard
 

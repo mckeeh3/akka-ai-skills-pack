@@ -9,7 +9,7 @@ Primary maintenance entry points:
 - `skills/*/SKILL.md` — focused harness guidance installed into `.agents/skills` or `~/.agents/skills`
 - `docs/` — source-attention doctrine, routing, and reference docs
 - `examples/` — source-attention Akka core app component examples copied from the current root app implementation
-- `templates/` — source-attention core app app-description assets
+- `templates/` — source-attention core app-description assets
 - root `akka-context/` — official Akka reference material kept at repository top level and not installed
 - `pack/` — source metadata for the skills-only install contract
 - `tools/` — release, validation, and audit tools

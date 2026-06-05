@@ -6,7 +6,7 @@
 - **Backing functional agent:** `functional_agent.user_admin`
 - **Domain:** `ai_first_saas_core_app`
 - **Purpose:** tenant/customer-scoped user administration: user discovery, invitations, memberships, roles/capabilities, disabled access, access review, support-access visibility, and admin audit
-- **Core app baseline role:** User Admin participates in the five core workstream core app domain using `markdown_response`; it is not a valid single-workstream generated SaaS core app by itself, and full-core readiness requires the surfaces/capabilities below
+- **Core app baseline role:** User Admin participates in the five-core-workstream core app domain using `markdown_response`; it is not a valid single-workstream generated SaaS core app by itself, and full-core readiness requires the surfaces/capabilities below
 
 ## Invariants
 

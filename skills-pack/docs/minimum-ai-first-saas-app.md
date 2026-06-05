@@ -4,7 +4,7 @@
 
 This is the canonical doctrine for the smallest generated AI-first SaaS core app that this skills pack may treat as a valid first implementation slice.
 
-The core app baseline is **not a generic chatbot**. It is a bootstrap-authorized **five core workstream core app domain** inside the agent workstream application model. Each core workstream starts with the same first renderable response surface, `markdown_response`, usually model-authored markdown rendered as sanitized HTML.
+The core app baseline is **not a generic chatbot**. It is a bootstrap-authorized **five-core-workstream core app domain** inside the agent workstream application model. Each core workstream starts with the same first renderable response surface, `markdown_response`, usually model-authored markdown rendered as sanitized HTML.
 
 Use this doctrine when routing prompts such as “minimum AI-first app,” “core app,” “basic app,” “initial chatbot,” or “smallest useful generated SaaS app.” The correct interpretation is a minimal five-core workstream shell, not a casual chat application and not a full production-ready core SaaS foundation.
 
@@ -15,7 +15,7 @@ The core app baseline must include these parts together:
 ```text
 bootstrap-authorized human user
 + selected AuthContext
-+ role-authorized five core workstream core app domain
++ role-authorized five-core-workstream core app domain
 + bounded AI-first managed functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy
 + configuration-driven runtime resolution, governed loader tools, ToolPermissionBoundary, and runtimeTools registration
 + request/response timeline for each visible core workstream
@@ -27,7 +27,7 @@ bootstrap-authorized human user
 
 The app shell may look chat-like: a left rail, main workstream timeline, and persistent composer. That visual shape does not make the app a chatbot. The left rail exposes role-authorized workstreams; the main panel renders durable requests, responses, capability results, traces, and structured surfaces; the composer is an input channel for the selected functional agent. My Account is one of the five required workstreams, but its launcher is the signed-in user tile/email at the bottom of the left rail; it must not be duplicated in the top workstream list.
 
-## First workstreams: five core core app set
+## First workstreams: five-core-workstream core app set
 
 The first functional agents are the **five core workstream agents**, scoped to bootstrap operation of the generated SaaS foundation:
 
@@ -41,7 +41,7 @@ The first functional agents are the **five core workstream agents**, scoped to b
 
 In the core app each workstream may be intentionally narrow, but each must still be a real functional-agent workstream backed by an AI-first managed agent. If the workstream claims model-backed behavior, message submission must run through the governed prompt/runtime path, resolve active `AgentDefinition`/prompt/manifest/`ToolPermissionBoundary` configuration, expose governed `readSkill` and `readReferenceDoc` loader tools where assigned, register resolved tool objects with `effects().tools(runtimeTools)`, invoke a concrete Akka `Agent` component for the selected workstream, and use a configured provider boundary; service-only provider calls that bypass the Akka Agent component are not complete workstream-agent runtime. Missing provider configuration must produce a safe blocked/error surface and trace, not a deterministic canned reply. Deterministic/demo/mock/model-less workstream replies are acceptable only as explicitly named test doubles or fixture-mode development aids, never as the normal runtime path used to call the core app functional.
 
-Minimum responsibilities across the five core core app agents:
+Minimum responsibilities across the five core app agents:
 
 - answer bootstrap questions within the selected workstream's known scope;
 - explain current bootstrap access, selected AuthContext, roles, visible capabilities, and unavailable/deferred capabilities;
@@ -60,7 +60,7 @@ Minimum authority:
 
 ## `markdown_response` as the first surface
 
-The core app baseline's first structured surface is `markdown_response` for **each** of the five core core workstreams.
+The core app baseline's first structured surface is `markdown_response` for **each** of the five core workstreams.
 
 It is a real surface contract, not an informal chat blob. At minimum it needs:
 
@@ -110,7 +110,7 @@ Minimum core app readiness is intentionally useful but narrower than full-core S
 Use this sequence for iterative generation:
 
 ```text
-five core workstream core app domain
+five-core-workstream core app domain
   bootstrap auth + markdown_response + workstream log + trace substrate
 → fuller My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy structured surfaces and capabilities
 → invitations/onboarding, support access, security completeness
@@ -139,7 +139,7 @@ When a user asks for the smallest useful AI-first SaaS app, route as follows:
 
 1. Apply secure AI-first SaaS interpretation.
 2. Apply this core app baseline doctrine when the request is for a core app/minimum/basic app or an initial chatbot-like shell.
-3. Treat the first runnable core app as the five core workstream core app domain with `markdown_response`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
+3. Treat the first runnable core app as the five-core-workstream core app domain with `markdown_response`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
 4. Model capabilities before selecting Akka components or exposing agent tools/browser actions.
 5. Record follow-up tasks for full-core SaaS readiness instead of pretending the core app baseline is complete production foundation.
 

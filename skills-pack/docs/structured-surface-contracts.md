@@ -113,7 +113,7 @@ AutonomousAgent task progress/result surfaces are required when durable internal
 
 ## Base surface: `markdown_response`
 
-Use `markdown_response` as the smallest valid structured surface for the five core workstream core app domain (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) and other low-ceremony explanatory replies. It is a structured surface, not a raw chat transcript or untyped assistant message.
+Use `markdown_response` as the smallest valid structured surface for the five-core-workstream core app domain (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) and other low-ceremony explanatory replies. It is a structured surface, not a raw chat transcript or untyped assistant message.
 
 Contract:
 
