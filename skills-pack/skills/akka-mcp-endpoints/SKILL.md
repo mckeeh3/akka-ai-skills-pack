@@ -49,8 +49,6 @@ Read these first if present:
 - existing project MCP endpoints under `src/main/java/**/api/*McpEndpoint.java`
 - matching MCP endpoint tests under `src/test/java/**`
 
-In this repository, prefer these examples:
-
 ## Companion skills
 
 Load the companion skill that matches the current task:
@@ -112,23 +110,23 @@ Repository example:
 ### 2. Resource and prompt endpoint
 Use when the main work is exposing static guidance, dynamic resources, or reusable prompt templates.
 
-Repository examples:
-- `CoreAppMcpEndpoint#attentionGuidelines`
-- `CoreAppMcpEndpoint#workstream eventSummaryResource`
+Pattern references:
+- a packaged-resource guidance method such as `attentionGuidelines`
+- a resource method that returns a domain-specific event or state summary
 - a domain-specific MCP prompt/resource responder
 
 ### 3. Request-context or JWT-aware endpoint
 Use when the endpoint behavior depends on headers, principals, or validated JWT claims.
 
-Repository example:
-- `SecureSupportMcpEndpoint`
+Pattern to implement:
+- a secure support/admin endpoint that validates bearer tokens, tenant headers, subject, issuer, and role through request context
 
 ### 4. MCP testing task
 Use when you need to verify tool output, prompt construction, or context-aware behavior.
 
-Repository examples:
-- `CoreAppMcpEndpointTest`
-- `SecureSupportMcpEndpointTest`
+Pattern references:
+- a component-backed endpoint test using `TestKitSupport` and direct endpoint instantiation
+- a request-context endpoint test with a stubbed `McpRequestContext`
 
 ## Final review checklist
 

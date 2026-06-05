@@ -16,7 +16,7 @@ Read when API details are needed:
 - `../docs/agent-component-selection-guide.md`
 - `../docs/capability-first-backend-architecture.md`
 - `../docs/agent-runtime-invocation-pattern.md`
-- `../../../specs/autonomous-agents-integration/research-notes.md`
+- `../docs/autonomous-agents-api-notes.md`
 - `../akka-agent-tool-boundaries/SKILL.md`
 - `../akka-agent-model-governance/SKILL.md` when model policies/aliases are in scope
 - `../akka-agent-work-trace/SKILL.md` when trace storage/search is in scope

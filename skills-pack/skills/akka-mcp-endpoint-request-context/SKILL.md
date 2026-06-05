@@ -38,13 +38,13 @@ Read these first if present:
 5. Keep request-context logic in the MCP endpoint instead of pushing it into domain code.
 6. Return compact summaries or prompts derived from validated caller context.
 
-## Repository example
+## Pattern to implement
 
-- `SecureSupportMcpEndpoint`
-  - validates bearer tokens at class level
-  - reads tenant header, subject, issuer, and role from request context
-  - exposes `callerContext` as a tool
-  - builds a tenant-aware `triagePrompt`
+Create a secure support/admin MCP endpoint that demonstrates:
+- validates bearer tokens at class level
+- reads tenant header, subject, issuer, and role from request context
+- exposes caller context as a tool
+- builds a tenant-aware prompt
 
 ## Security notes
 

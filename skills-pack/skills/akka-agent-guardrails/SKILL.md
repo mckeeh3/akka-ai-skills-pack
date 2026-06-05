@@ -40,13 +40,12 @@ Read these first if present:
 5. Target agents by component id or `@AgentRole`.
 6. Choose `report-only = true` for observation-only rollout, or `false` to block.
 
-## Repository examples
+## Pattern to implement
 
-- `CompetitorMentionGuard`
-  - custom `TextGuardrail`
-  - config-driven blocked phrase
-- `src/main/resources/application.conf`
-  - report-only guardrail bound to `activity-agent`
+Create a domain-specific guardrail and config pair that demonstrates:
+- custom `TextGuardrail`
+- config-driven blocked phrase or policy signal
+- `src/main/resources/application.conf` binding with report-only rollout before blocking rollout
 
 ## Review checklist
 

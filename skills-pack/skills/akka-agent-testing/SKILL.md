@@ -45,7 +45,7 @@ Read these first if present:
 6. Call agents through `componentClient.forAgent().inSession(...)`.
 7. Call endpoints through `httpClient` and workflows through `componentClient.forWorkflow(...)`.
 
-## Repository examples
+## Pattern references
 
 - `WorkstreamRuntimeAgentTest`
   - single agent, structured reply mapping

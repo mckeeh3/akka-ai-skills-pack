@@ -44,7 +44,7 @@ Read these first if present:
 8. Keep tool calls aligned to named capability contracts; tool availability does not define the agent's responsibility or authorization boundary.
 9. For generated app runtime, missing provider/model config, disabled/unknown managed agent state, missing `AuthContext`, denied tool boundary, or policy denial must fail closed with audit/work trace and actionable error; do not return canned, deterministic, or simulated successful work as the normal user-facing response.
 
-## Repository example
+## Pattern reference
 
 - `WorkstreamRuntimeAgent`
   - single command handler

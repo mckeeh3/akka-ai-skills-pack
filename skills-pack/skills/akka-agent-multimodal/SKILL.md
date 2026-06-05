@@ -38,7 +38,7 @@ Read these first if present:
 5. Keep the loader deterministic and explicit about MIME types.
 6. Prefer a per-request loader when credentials vary by call.
 
-## Repository example
+## Pattern reference
 
 - a domain-specific multimodal/document analysis agent
   - multimodal request with text, image, and PDF

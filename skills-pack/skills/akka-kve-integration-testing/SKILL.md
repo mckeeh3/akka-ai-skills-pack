@@ -33,7 +33,7 @@ Use when validating HTTP behavior:
 - deserialize responses as API response records
 - assert HTTP success or expected failure behavior
 
-Repository examples:
+Pattern references:
 - `WorkstreamLogIntegrationTest`
 - a domain-specific admin endpoint integration test
 
@@ -45,7 +45,7 @@ Use when a state change from one entity triggers work in another component:
 - assert final state using `componentClient` or endpoint reads
 - account for asynchronous propagation
 
-Repository example:
+Pattern reference:
 - `WorkstreamEventAttentionConsumerIntegrationTest`
 
 ## Waiting strategy

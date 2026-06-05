@@ -139,7 +139,7 @@ Repository examples:
 ### 7. Integration and eventing tests
 Use `akka-consumer-testing`.
 
-Repository examples:
+Pattern references:
 - `WorkstreamEventAttentionConsumerIntegrationTest`
 - a domain-specific workflow topic consumer integration test
 - `WorkstreamEventAttentionConsumerIntegrationTest`

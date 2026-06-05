@@ -49,8 +49,6 @@ Read these first if present:
 - existing project gRPC endpoints under `src/main/java/**/api/*GrpcEndpointImpl.java`
 - matching gRPC endpoint tests under `src/test/java/**`
 
-In this repository, prefer these examples:
-
 ## Companion skills
 
 Load the companion skill that matches the current task:
@@ -117,26 +115,26 @@ Choose one of these modes before coding:
 ### 1. Pure edge mapping endpoint
 Use when the endpoint mainly maps protobuf requests to protobuf replies and does not need component calls.
 
-Repository example:
-- `InternalStatusGrpcEndpointImpl`
+Pattern to implement:
+- a small service/internal status endpoint with no component dependency
 
 ### 2. Component-calling unary endpoint
 Use when the endpoint translates protobuf requests into entity or view calls and maps replies back into protobuf.
 
-Repository example:
-- `CoreAppGrpcEndpointImpl`
+Pattern to implement:
+- a domain-specific endpoint that maps protobuf requests to component calls and protobuf replies
 
 ### 3. Request-context endpoint
 Use when endpoint logic depends on gRPC metadata, principals, JWT claims, or tracing.
 
-Repository example:
-- `InternalStatusGrpcEndpointImpl`
+Pattern to implement:
+- a service/internal endpoint that inspects principals, metadata, JWT claims, or trace headers through `requestContext()`
 
 ### 4. Streaming endpoint
 Use when a gRPC method should stream multiple replies.
 
-Repository example:
-- `CoreAppGrpcEndpointImpl#streamCheckedOutRows`
+Pattern to implement:
+- a domain-specific endpoint method that forwards a streamed view query
 
 ### 5. Protocol-design task
 Use when the main work is protobuf layout, compatibility, common message types, or external proto imports.

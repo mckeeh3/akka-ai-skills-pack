@@ -513,6 +513,7 @@ content:
     - docs/app-description-end-to-end-workflow-example.md
     - docs/app-description-maintenance-flow.md
     - docs/autonomous-agent-worker-runtime-pattern.md
+    - docs/autonomous-agents-api-notes.md
     - docs/capability-first-backend-architecture.md
     - docs/consumer-reference.md
     - docs/core-ai-first-saas-foundation.md
@@ -543,6 +544,7 @@ content:
     - docs/security-workos-auth-and-admin.md
     - docs/service-to-service-consumers.md
     - docs/service-to-service-views.md
+    - docs/skill-routing-reference.md
     - docs/solution-plan-to-implementation-queue.md
     - docs/structured-surface-contracts.md
     - docs/timer-pattern-selection.md

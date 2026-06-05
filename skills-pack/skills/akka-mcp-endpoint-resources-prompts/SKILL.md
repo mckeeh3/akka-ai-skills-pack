@@ -30,7 +30,7 @@ Read these first if present:
 ### Static resource
 Use when the resource has a fixed URI and no parameters.
 
-Repository example:
+Pattern reference:
 - `CoreAppMcpEndpoint#attentionGuidelines`
 
 Rules:

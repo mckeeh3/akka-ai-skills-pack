@@ -76,7 +76,7 @@ Repository example:
 ### Schedule from a workflow command
 Use when a workflow owns the timeout or reminder lifecycle.
 
-Repository example:
+Pattern reference:
 - `ApprovalDeadlineWorkflow#start`
 
 ### Delete after successful completion
@@ -88,13 +88,13 @@ Repository example:
 ### Reschedule by reusing the same name
 Use when the latest reminder or expiry time should replace the previous one.
 
-Repository example:
+Pattern reference:
 - `AttentionRefreshTimedAction#sendReminder`
 
 ### Schedule from inside a timed action
 Use when each execution decides whether more work remains.
 
-Repository example:
+Pattern reference:
 - `AttentionRefreshTimedAction#sendReminder`
 
 ## Generated SaaS timer contract

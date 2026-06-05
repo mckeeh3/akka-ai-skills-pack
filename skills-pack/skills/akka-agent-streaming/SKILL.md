@@ -39,7 +39,7 @@ Read these first if present:
 4. Convert the returned `Source<String, NotUsed>` into an HTTP response or notifications.
 5. Group tokens when you want fewer downstream events.
 
-## Repository examples
+## Pattern references
 
 - `StreamingWorkstreamRuntimeAgent`
   - minimal token-streaming agent

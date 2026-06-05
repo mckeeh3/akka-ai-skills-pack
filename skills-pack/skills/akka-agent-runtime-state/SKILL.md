@@ -36,7 +36,7 @@ Read these first if present:
 6. Use a dedicated compaction agent with `MemoryProvider.none()` when summarizing history.
 7. Keep audit publication separate from compaction logic when you need topic output.
 
-## Repository examples
+## Pattern references
 
 - `WorkstreamRuntimeAgent` with governed prompt/runtime loading
   - prompt loaded from `PromptTemplate`

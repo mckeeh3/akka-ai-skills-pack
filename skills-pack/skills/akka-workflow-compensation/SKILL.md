@@ -29,7 +29,7 @@ Use compensation for governed capabilities whose side effects may need safe reve
 4. Store durable command ids in workflow state so downstream retries are idempotent.
 5. Reserve workflow recovery settings for unknown failures or timeouts.
 
-## Repository example
+## Pattern reference
 
 - a domain-specific workflow
   - withdraw succeeds first

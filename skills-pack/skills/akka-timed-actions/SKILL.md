@@ -41,8 +41,6 @@ Read these first if present:
 - existing timer examples under `src/main/java/**/TimedAction*.java`, `*TimedAction.java`, or timer-scheduling endpoints
 - matching tests under `src/test/java/**`
 
-In this repository, prefer these examples:
-
 ## Companion skills
 
 Load the companion skill that matches the current task:
@@ -87,26 +85,26 @@ Repository example:
 ### 2. Implement the timer handler
 Use when the timed action translates the scheduled call into a command on another component.
 
-Repository examples:
+Pattern references:
 - `AttentionProducerService`
 - `AttentionRefreshTimedAction`
 
 ### 3. Self-reschedule from inside the timed action
 Use when each timer execution decides whether to schedule the next one.
 
-Repository example:
+Pattern reference:
 - `AttentionRefreshTimedAction#sendReminder`
 
 ### 4. Schedule a timer from a workflow command
 Use when a workflow start or resume command should register a timeout or reminder.
 
-Repository example:
+Pattern reference:
 - `ApprovalDeadlineWorkflow#start`
 
 ### 5. Make the target command timer-safe
 Use when the entity or workflow must treat stale timer executions as successful no-ops or explicit terminal replies.
 
-Repository examples:
+Pattern references:
 - `DurableAttentionRepositoryEntity#expire`
 - `AttentionRefreshEntity#recordReminderSent`
 - `ApprovalDeadlineWorkflow#markTimedOut`

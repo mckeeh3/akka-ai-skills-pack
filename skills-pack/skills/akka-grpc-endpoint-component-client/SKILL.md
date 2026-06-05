@@ -39,13 +39,13 @@ Read these first if present:
 6. Convert normal validation failures into `GrpcServiceException(Status.INVALID_ARGUMENT...)`.
 7. For streamed replies, delegate to a streamed component source and map each element to protobuf.
 
-## Repository example
+## Pattern to implement
 
-- `CoreAppGrpcEndpointImpl`
-  - unary protobuf-to-entity mapping
-  - `CommandException` translated into `INVALID_ARGUMENT`
-  - server-streaming reply backed by a view stream
-  - `google.protobuf.Timestamp` and `StringValue` used in API messages
+Create a domain-specific gRPC endpoint that demonstrates:
+- unary protobuf-to-entity mapping
+- `CommandException` translated into `INVALID_ARGUMENT`
+- optional server-streaming reply backed by a view stream
+- `google.protobuf.Timestamp` and `StringValue` used in API messages when needed
 
 ## Mapping rules
 

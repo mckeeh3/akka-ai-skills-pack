@@ -13,7 +13,7 @@ Read before defining generated-app worker task contracts:
 - `../docs/autonomous-agent-worker-runtime-pattern.md`
 
 Read when API details are needed:
-- `../../../specs/autonomous-agents-integration/research-notes.md`
+- `../docs/autonomous-agents-api-notes.md`
 - `akka-context/sdk/autonomous-agents/tasks.html.md`
 - `akka-context/sdk/autonomous-agents/client.html.md`
 - `akka-context/sdk/autonomous-agents/notifications.html.md`

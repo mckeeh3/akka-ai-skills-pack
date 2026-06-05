@@ -42,12 +42,12 @@ Read these first if present:
 4. Keep the model reply structured and map it into the final evaluation result.
 5. Validate labels before translating them into pass/fail.
 
-## Repository example
+## Pattern to implement
 
-- `ActivityAnswerEvaluatorAgent`
-  - structured model result
-  - label validation
-  - mapping into `EvaluationResult`
+Create or select a domain-specific evaluator `Agent` that demonstrates:
+- structured model result
+- label validation
+- mapping into `EvaluationResult`
 
 ## Closed-loop routing
 

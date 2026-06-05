@@ -40,8 +40,6 @@ If these files exist, read them first:
 - matching domain files under `src/main/java/**/domain/*`
 - matching tests under `src/test/java/**`
 
-In this repository, prefer these examples:
-
 ## Companion skills
 
 Load the companion skill that matches the current task:
@@ -154,7 +152,7 @@ Prefer a minimal example per topic:
 - replication/consistent read
 - testing
 
-Repository example:
+Pattern reference:
 - `ExpiringAgentDefinitionEntity`
 
 ## Final review checklist

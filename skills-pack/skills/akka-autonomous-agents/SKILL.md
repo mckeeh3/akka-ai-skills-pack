@@ -16,7 +16,7 @@ Read before implementing generated-app AutonomousAgent worker tasks:
 
 Read when API details are needed:
 - `../docs/agent-component-selection-guide.md`
-- `../../../specs/autonomous-agents-integration/research-notes.md`
+- `../docs/autonomous-agents-api-notes.md`
 - `akka-context/sdk/autonomous-agents.html.md`
 - `akka-context/sdk/autonomous-agents/defining.html.md`
 - `akka-context/sdk/autonomous-agents/tasks.html.md`

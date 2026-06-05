@@ -44,7 +44,7 @@ Rules:
 - use the snapshot to initialize downstream state or emit a summary message
 - keep snapshot logic compatible with later event processing
 
-## Repository examples
+## Pattern references
 
 These are Akka substrate mechanics examples, not generated-product architecture templates.
 

@@ -51,8 +51,6 @@ Read these first if present:
 - existing project endpoints under `src/main/java/**/api/*Endpoint.java`
 - matching endpoint tests under `src/test/java/**`
 
-In this repository, prefer these examples:
-
 ## Companion skills
 
 Load the companion skill that matches the current task:

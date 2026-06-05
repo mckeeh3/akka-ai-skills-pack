@@ -39,7 +39,7 @@ Read these first if present:
 6. Serialize tool results with `JsonSupport.encodeToString(...)`.
 7. Reuse the same summary mapper for matching dynamic resources when helpful.
 
-## Repository examples
+## Pattern references
 
 - `CoreAppMcpEndpoint`
   - a domain-specific summary tool calls a domain-specific component read method

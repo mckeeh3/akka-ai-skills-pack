@@ -101,7 +101,7 @@ When one command may cause a more complex full-state transition:
 - return an updated state or empty
 - calculate the minimal state change needed, then let the entity replace the full state once
 
-Repository example:
+Pattern reference:
 - `GovernancePolicyReadyToShipBusinessLogic`
 
 ## Hard rules

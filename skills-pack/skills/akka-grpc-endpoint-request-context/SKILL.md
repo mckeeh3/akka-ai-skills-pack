@@ -39,12 +39,12 @@ Read these first if present:
 4. Keep request-context logic in the endpoint rather than pushing it into components.
 5. Return protobuf replies that summarize the request-context-derived behavior.
 
-## Repository example
+## Pattern to implement
 
-- `InternalStatusGrpcEndpointImpl`
-  - service-only ACL
-  - principal inspection via `requestContext().getPrincipals()`
-  - metadata access via `requestContext().metadata()`
+Create a service/internal gRPC endpoint that demonstrates:
+- service-only ACL
+- principal inspection via `requestContext().getPrincipals()`
+- metadata access via `requestContext().metadata()`
   - optional JWT subject mapping via `requestContext().getJwtClaims()`
 
 ## Security notes

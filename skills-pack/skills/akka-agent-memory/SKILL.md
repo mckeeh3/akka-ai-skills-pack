@@ -42,7 +42,7 @@ Read these first if present:
 7. Use memory filters when a multi-agent session needs visibility rules.
 8. Prefer workflow id as session id when a workflow supervises agents.
 
-## Repository examples
+## Pattern references
 
 - `WorkstreamRuntimeAgent`
   - bounded memory with `readLast(6)`
@@ -50,7 +50,7 @@ Read these first if present:
   - shared session id derived from `workflowId()`
 - a domain-specific memory summary agent
   - read-only filtered memory that includes only worker-role messages and excludes `debug-agent`
-- `ActivityAnswerEvaluatorAgent`
+- a domain-specific evaluator agent
   - memory disabled for evaluation
 - `SessionMemoryAlertsConsumer`
   - reacts to built-in `SessionMemoryEntity` events

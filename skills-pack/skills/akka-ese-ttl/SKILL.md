@@ -51,7 +51,7 @@ Use `EventSourcedTestKit` and assert:
 - `result.getExpireAfter()`
 - resulting state
 
-Repository example:
+Pattern reference:
 - `ExpiringAgentDefinitionEntityTest`
 
 ## Generated SaaS checks

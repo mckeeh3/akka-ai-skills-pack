@@ -40,7 +40,7 @@ Workflow command handlers are capability entry/advance points. They should valid
 6. Use step input records when a later step needs durable input.
 7. Add a read-only command handler when callers need the current workflow state.
 
-## Repository examples
+## Pattern references
 
 - a domain-specific workflow
   - start command updates state and transitions to a withdraw step

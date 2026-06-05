@@ -25,7 +25,7 @@ Read these first if present:
 ### 1. End-to-end through endpoint or component flow
 Use when the consumer is triggered by the real upstream component in the same service.
 
-Repository examples:
+Pattern references:
 - `WorkstreamEventAttentionConsumerIntegrationTest`
 - `WorkstreamEventAttentionConsumerIntegrationTest`
 
@@ -37,7 +37,7 @@ Pattern:
 ### 2. Mocked incoming topic messages
 Use when the consumer source is a broker topic.
 
-Repository example:
+Pattern reference:
 - `WorkstreamEventAttentionConsumerIntegrationTest`
 
 Pattern:

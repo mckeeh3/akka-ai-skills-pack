@@ -46,7 +46,7 @@ Read these first if present:
   - structured recommendation reply
   - `responseConformsTo(...)`
   - fallback value
-- `ActivityAnswerEvaluatorAgent`
+- a domain-specific evaluator agent
   - structured model reply mapped into an `EvaluationResult`
 
 ## Review checklist

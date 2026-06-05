@@ -31,13 +31,12 @@ Read these first if present:
 5. If reconnects matter, design the request so the client can resume from its own offset or cursor.
 6. Do not rely on a single JVM instance staying alive for the lifetime of the gRPC connection.
 
-## Repository example
+## Pattern to implement
 
-- `CoreAppGrpcEndpointImpl#streamCheckedOutRows`
-  - forwards a streamed view query
-  - maps each row to a protobuf a domain-specific summary DTO
-- `UserDirectoryView#streamRows`
-  - query-stream method used by the endpoint
+Create a domain-specific streaming gRPC endpoint that demonstrates:
+- forwarding a streamed view query
+- mapping each row to a protobuf summary DTO
+- pairing the endpoint with a view query-stream method
 
 ## Testing pattern
 

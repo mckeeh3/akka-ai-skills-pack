@@ -25,7 +25,7 @@ Use pause/resume when a capability must wait for human approval, additional evid
 4. Guard the resume command so it only works in the waiting status and caller has the required role/scope for the capability.
 5. Resume by recording the approval/supervision decision, emitting audit/work-trace details, and transitioning to the next step with any required input.
 
-## Repository example
+## Pattern reference
 
 - a domain-specific approval workflow
   - pauses in `waitForApprovalStep()`

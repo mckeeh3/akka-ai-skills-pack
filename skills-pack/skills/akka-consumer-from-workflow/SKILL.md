@@ -32,7 +32,7 @@ Read these first if present:
 5. Add `@DeleteHandler` if workflow deletion matters.
 6. Produce or trigger side effects only when the status you care about is reached.
 
-## Repository example
+## Pattern reference
 
 - a domain-specific workflow topic consumer
   - consumes workflow state updates

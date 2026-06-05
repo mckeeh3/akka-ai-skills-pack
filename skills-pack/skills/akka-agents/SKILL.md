@@ -49,8 +49,6 @@ Read these first if present:
 - `../docs/agent-runtime-state-reference.md`
 - `../docs/agent-runtime-invocation-pattern.md`
 
-In this repository, prefer these examples:
-
 ## Agent governance routing matrix
 
 Use this matrix before reading every governance companion. Load the first matching row, then add only the named companions required by the task.
@@ -259,7 +257,7 @@ For model-loadable guidance that approximates harness skills inside an Akka serv
 ### 12. Streaming request-based agent
 Use when tokens should be returned incrementally to an endpoint or notification flow.
 
-Repository examples:
+Pattern references:
 - `StreamingWorkstreamRuntimeAgent`
 - `WorkstreamRuntimeAgentEndpoint#stream`
 
@@ -275,9 +273,9 @@ Repository example:
 ### 15. Evaluated or governed request-based agent
 Use when output quality or runtime safety checks are a first-class concern.
 
-Repository examples:
-- `ActivityAnswerEvaluatorAgent`
-- `CompetitorMentionGuard`
+Pattern references:
+- a domain-specific evaluator agent returning `EvaluationResult`
+- a domain-specific `TextGuardrail` implementation
 
 ## Final review checklist
 
