@@ -53,6 +53,8 @@ Dry run and check:
 
 The installer creates or updates only the harness skills directory. It writes `.akka-ai-skills-pack-install-manifest` in that directory so `--prune` can remove retired pack-owned entries and `--uninstall` can remove this skills library without deleting unrelated skills. It installs referenced pack assets under `.agents/skills/**`; it does not install `.agents/AGENTS.md`, `.agents/docs`, `.agents/resources/examples`, manifests, `akka-context/**`, backend source, frontend source, or a duplicate app baseline. Keep `akka-context/**` as an independently maintained top-level project/repository directory when Akka SDK reference docs are needed.
 
+Project-file references inside skills, such as `../../../AGENTS.md`, `../../../specs/**`, `../../../app-description/**`, `../../../frontend/**`, and `../../../src/**`, mean the target project workspace. They are not global-install-relative paths when skills are installed under `~/.agents/skills`.
+
 ## Choose a starting mode
 
 ### Existing application or PRD-first app

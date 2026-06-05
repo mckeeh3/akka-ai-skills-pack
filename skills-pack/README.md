@@ -15,4 +15,4 @@ Primary maintenance entry points:
 - `tools/` — release, validation, and audit tools
 - `install-skills.sh` — skills-only harness install entrypoint
 
-The repository root is the canonical runnable full-stack Akka app. Pack users clone or fork this repo and build domain-specific workstreams in the root app workspace. There is no separate full-pack installer and no installed duplicate baseline app; the only install action is making the skills library available to an AI coding harness.
+The repository root is the canonical runnable full-stack Akka app. Pack users clone or fork this repo and build domain-specific workstreams in the root app workspace. There is no separate full-pack installer and no installed duplicate baseline app; the install action makes the skills library and referenced pack assets (`docs/`, `examples/`, `templates/`, and `tools/`) available to an AI coding harness under `.agents/skills/**` or `~/.agents/skills/**`.

@@ -196,10 +196,12 @@ Load the companion skill that matches the current task:
 
 ## Default package layout
 
-Use:
-- `com.<org>.<app>.domain`
-- `com.<org>.<app>.application`
-- `com.<org>.<app>.api`
+Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples may use `com.example`, but generated application code must not use template package placeholders or `com.example` unless explicitly selected.
+
+Typical layer paths are:
+- `<base>.domain`
+- `<base>.application`
+- `<base>.api`
 
 Rules:
 - agent classes belong in `application`

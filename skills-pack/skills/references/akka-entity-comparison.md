@@ -46,18 +46,18 @@ Use this reference when deciding whether to implement an Akka Java SDK stateful 
 ## Reference examples in this repository
 
 ### Event Sourced Entity references
-- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ExpiringShoppingCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/ShoppingCart.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/Order.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/ExpiringShoppingCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/domain/ShoppingCart.java`
+- `../examples/akka-components/src/main/java/com/example/domain/Order.java`
 
 ### Key Value Entity references
-- `../../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ExpiringDraftCartSessionEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/DraftCart.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/PurchaseOrder.java`
+- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/ExpiringDraftCartSessionEntity.java`
+- `../examples/akka-components/src/main/java/com/example/domain/DraftCart.java`
+- `../examples/akka-components/src/main/java/com/example/domain/PurchaseOrder.java`
 
 ## Command handler algorithms
 

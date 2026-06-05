@@ -40,7 +40,7 @@ fields:
       compatibleAkkaSdk:
         type: string
         required: true
-        example: '3.5.x'
+        example: '3.6.x'
 
   install:
     type: map

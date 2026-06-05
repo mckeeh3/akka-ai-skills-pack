@@ -221,10 +221,14 @@ If a task is not ready because it needs a task brief first, use:
 After creating or repairing the queue, run the lightweight queue contract validator when the script is available in the pack source or downstream tooling:
 
 ```bash
+# source checkout
 bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md
+
+# skills-library install
+bash .agents/skills/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md
 ```
 
-If the target project has only a skills-library harness install, pack tools are available under `.agents/skills/tools/**`; when working from the repository source checkout, the same validator is available under `skills-pack/tools/**`. Treat validator failures as queue repair work, not implementation blockers for a later coding run. The validator checks that runnable generated-SaaS tasks carry the required vertical contract vocabulary; it does not prove semantic correctness.
+Pack tools are installed under `.agents/skills/tools/**`; when working from this repository source checkout, the same validator is available under `skills-pack/tools/**`. Treat validator failures as queue repair work, not implementation blockers for a later coding run. The validator checks that runnable generated-SaaS tasks carry the required vertical contract vocabulary; it does not prove semantic correctness.
 
 ## Final review checklist
 

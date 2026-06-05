@@ -19,7 +19,7 @@ Current implementation references:
 - reusable React/Vite/TypeScript modules: `frontend/src/workstream/**`
 - fixture API and realtime seams: `frontend/src/api/WorkstreamApiClient.ts`, `frontend/src/api/WorkstreamRealtimeClient.ts`
 - integrated shell example: `frontend/src/main.tsx`
-- canonical User Admin UI vertical pattern: fixtures in `frontend/src/workstream/fixtures/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+- canonical User Admin UI vertical pattern: `frontend/src/workstream-user-admin-vertical.contract.test.mjs` plus shared test fixtures under `frontend/src/__tests__/fixtures/**` when needed
 - shell/surface/action/deep-link/realtime contract coverage: `frontend/src/workstream*.contract.test.mjs`, `frontend/src/frontend.contract.test.mjs`, and `frontend/src/seed-frontend-quality.contract.test.mjs`
 
 Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Test fixtures are contract/test references only; generated user-facing runtime must bind to real backend `/api/me`, workstream APIs, authorization, audit/work-trace, and realtime API paths rather than simulated data. Static UI fixture examples were removed from the pack; generated SaaS UI should use the root workstream frontend reference, not standalone static pages.
@@ -57,13 +57,6 @@ frontend/src/workstream/
     surfaces.ts            # SurfaceEnvelope, SurfaceAction, surface data unions, UI state unions
     events.ts              # SurfaceEvent/workstream event contracts and realtime connection state
     actions.ts             # capability action request/result/idempotency/confirmation contracts
-    index.ts
-  fixtures/
-    me.ts                  # /api/me fixture variants: admin, user, auditor/support, disabled/forbidden
-    agents.ts              # foundation functional agents and denied-agent examples
-    workstream.ts          # initial workstreams, stream item examples, action-feedback items
-    surfaces.ts            # canonical surface envelopes for each reusable surface type
-    events.ts              # duplicate, out-of-order, stale, reconnect, denied, malformed-safe event examples
     index.ts
   shell/
     WorkstreamShell.tsx    # layout composition: rail + context + stream + composer
@@ -425,7 +418,7 @@ Do not restore removed static UI fixtures as canonical full-stack SaaS UI guidan
 
 ## Implementation handoff sequence
 
-1. Add `frontend/src/workstream/types/**` and `frontend/src/workstream/fixtures/**` with focused contract tests.
+1. Add or update `frontend/src/workstream/types/**` and focused contract tests. Keep reusable runtime modules under `frontend/src/workstream/**`; put test-only fixtures under `frontend/src/__tests__/fixtures/**` or inside the relevant contract test.
 2. Add shell, rail, context/authority, and composer components.
 3. Add stream item and structured surface components.
 4. Add capability action components and action state helpers.

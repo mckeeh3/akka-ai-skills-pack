@@ -15,6 +15,8 @@ This file serves both:
 - the **source repository**, where root `app-description/`, `specs/`, `frontend/`, `src/`, and `skills-pack/docs|examples|templates` are reference and runtime assets
 - the **harness skills-library install**, where this routing map, `SKILL.md` files, and referenced pack docs/examples/templates/tools are copied under `.agents/skills` while the project's maintained `app-description/` tree stays in the project workspace, not under `.agents/`
 
+When a skill lists required reads such as `../../../AGENTS.md`, `../../../specs/**`, `../../../app-description/**`, `../../../frontend/**`, or `../../../src/**`, resolve those as target-project workspace paths. In a project-local install they may also be correct relative paths from `.agents/skills/<skill>/`; in a global install under `~/.agents/skills`, do not follow them relative to the global skill directory.
+
 Core-app-first routing:
 - the harness install remains a skills-library install model: `.agents/skills` is a guidance/reference library and application artifacts live in the cloned/forked repository workspace
 - for new secure AI-first SaaS apps where the user wants an implementation baseline, prefer fork-and-extend from this runnable core app repository root; do not expect the skills install to contain or render a duplicate full-app core app baseline

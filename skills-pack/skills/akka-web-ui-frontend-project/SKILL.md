@@ -55,8 +55,8 @@ For workstream apps, organize frontend source around the canonical reusable work
 - `frontend/src/workstream/surfaces/` for typed dashboard, list/search, detail/edit, decision, diff, approval, audit timeline, workflow status, and outcome surface components;
 - `frontend/src/workstream/actions/` for capability-backed action controls and idempotency/result-surface helpers;
 - `frontend/src/workstream/realtime/` for surface/workstream event parsing, dedupe, reconnect, and stale markers;
-- `frontend/src/workstream/types/` and `frontend/src/workstream/fixtures/` for reusable contracts and fixture examples;
-- `frontend/src/api/` for browser-safe DTO clients and error mapping, including `WorkstreamApiClient.ts`, `WorkstreamRealtimeClient.ts`, and fixture implementations.
+- `frontend/src/workstream/types/` for reusable contracts and `frontend/src/__tests__/fixtures/` or colocated contract-test fixtures for test-only examples;
+- `frontend/src/api/` for browser-safe DTO clients and error mapping, including `WorkstreamApiClient.ts`, `WorkstreamRealtimeClient.ts`, and explicit test/dev fixture implementations where present.
 
 Do not organize the primary frontend solely as a conventional route/page tree unless the task is public/static, non-SaaS, or explicitly outside the generated workstream default.
 

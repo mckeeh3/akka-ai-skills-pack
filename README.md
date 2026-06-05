@@ -95,7 +95,7 @@ The skills library source is isolated under [`skills-pack/`](skills-pack/):
 - `skills-pack/pack/` — skills-only install metadata
 - `skills-pack/tools/` — release, validation, and audit tooling
 
-Use root [`install-skills.sh`](install-skills.sh) to make the skills available to a harness in a directory such as `.agents/skills/`. This does not install docs, examples, templates, manifests, frontend/backend source, or another app baseline. Do not add pack-only docs, skills, examples, or metadata assets to root app source paths.
+Use root [`install-skills.sh`](install-skills.sh) to make the skills library available to a harness in a directory such as `.agents/skills/`. The installer copies or symlinks skill directories plus referenced pack assets (`docs/`, `examples/`, `templates/`, and `tools/`) under `.agents/skills/**`; it does not install pack manifests, `akka-context/**`, frontend/backend source, or another app baseline. Do not add pack-only docs, skills, examples, or metadata assets to root app source paths.
 
 ## App description and task queues
 

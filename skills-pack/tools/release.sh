@@ -24,7 +24,9 @@ print_help() {
 Cut a release for the Akka AI skills pack.
 
 Usage:
-  bash tools/release.sh
+  cd skills-pack && bash tools/release.sh
+  # or, from the repository root:
+  bash skills-pack/tools/release.sh
 
 Flow:
   1. require a clean git working tree
