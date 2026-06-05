@@ -6,7 +6,7 @@ For user-facing installation and usage guidance, see [`skills-pack-user-guide.md
 
 ## Repository model
 
-The repository root is the canonical runnable Akka Java SDK + React/Vite core app. The skills library source lives under `skills-pack/`; `skills-pack/skills/**`, shared skill references, and referenced pack docs/examples/templates/tools are installed into a harness skills directory.
+The repository root is the canonical runnable Akka Java SDK + React/Vite core app. The skills library source lives under `skills-pack/`; `skills-pack/skills/**`, shared skill references, and referenced pack docs/curated examples/templates/downstream-safe tools are installed into a harness skills directory.
 
 Skills-pack work includes:
 
@@ -28,7 +28,7 @@ Do not add core app runtime code under `skills-pack/**`. Do not add skills-pack 
 - `skills-pack/docs/**` — pack doctrine, references, and mechanics examples copied/symlinked to `.agents/skills/docs`
 - `skills-pack/examples/**` — focused reference examples copied/symlinked to `.agents/skills/examples`
 - `skills-pack/templates/**` — pack templates copied/symlinked to `.agents/skills/templates`
-- `skills-pack/tools/**` — pack tools copied/symlinked to `.agents/skills/tools`
+- `skills-pack/tools/**` — downstream-safe pack validation tools copied/symlinked to `.agents/skills/tools`
 - root `frontend/**` — core app frontend and source-attention frontend workstream reference; not installed into `.agents`
 - root `akka-context/**` — official Akka reference material kept as an independently maintained top-level directory; not installed into `.agents/skills`
 - `skills-pack/pack/maintainer/**` — maintainer-only gap lists and release planning notes; not installed as harness-facing doctrine unless intentionally promoted into `docs/**` or `skills/**`
@@ -44,7 +44,8 @@ skills-pack/
 │   ├── AGENTS.md
 │   ├── README.md
 │   ├── manifest.schema.yaml
-│   └── manifest.yaml
+│   ├── manifest.yaml
+│   └── maintainer/      # maintainer-only history, gap lists, and release tools
 ├── skills/
 ├── docs/
 ├── examples/
@@ -80,7 +81,7 @@ git diff --check
 ./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run
 ./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune
 ./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check
-bash tools/verify-opinionated-ai-first-saas-pack.sh
+bash pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh
 ```
 
 When root app runtime or frontend files are touched, also run the relevant root checks from root `AGENTS.md`.
@@ -93,7 +94,7 @@ The current installer copies or symlinks:
 
 - `skills-pack/skills/README.md`
 - `skills-pack/skills/references/**`
-- referenced pack assets under `skills-pack/docs/**`, `skills-pack/examples/**`, `skills-pack/templates/**`, and `skills-pack/tools/**`
+- referenced pack assets under `skills-pack/docs/**`, curated `skills-pack/examples/**`, `skills-pack/templates/**`, and downstream-safe `skills-pack/tools/**`
 - every `skills-pack/skills/<skill-name>/SKILL.md` skill directory
 
 The installer writes `<target-skills-dir>/.akka-ai-skills-pack-install-manifest`. That manifest records pack-owned installed paths so `--prune` can remove retired skills and `--uninstall` can remove this pack without deleting unrelated harness skills.
@@ -119,4 +120,4 @@ bash install-skills.sh --uninstall --target /path/to/project/.agents/skills
 
 ## Release flow
 
-Use `skills-pack/tools/release.sh` when cutting a release. The reduced flow checks version consistency, verifies the skills installer, runs whitespace checks, commits version changes, and creates an annotated tag. It does not build or publish distribution assets.
+Use `skills-pack/pack/maintainer/tools/release.sh` when cutting a release. The reduced flow checks version consistency, verifies the skills installer, runs whitespace checks, commits version changes, and creates an annotated tag. It does not build or publish distribution assets.

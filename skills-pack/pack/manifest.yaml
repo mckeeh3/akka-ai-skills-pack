@@ -545,7 +545,6 @@ content:
     - docs/security-workos-auth-and-admin.md
     - docs/service-to-service-consumers.md
     - docs/service-to-service-views.md
-    - docs/skill-routing-reference.md
     - docs/solution-plan-to-implementation-queue.md
     - docs/structured-surface-contracts.md
     - docs/timer-pattern-selection.md
@@ -574,6 +573,7 @@ content:
     - tools/validate-surface-contracts.sh
     - skills/references/akka-entity-comparison.md
     - skills/references/akka-grpc-jwt-patterns.md
+    - skills/references/generated-saas-input-contract.md
 bundles:
   - id: all
     description: Install the full skills library, shared skill references, and referenced pack assets into a harness skills directory.

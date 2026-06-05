@@ -2,7 +2,7 @@
 
 This directory contains AI-focused skills for creating full-stack secure AI-first SaaS applications on Akka. It is an **internal routing layer for the harness**: users describe intent in natural language, and the harness loads the smallest relevant skill set.
 
-For the full historical routing matrix and detailed component catalog, read `../docs/skill-routing-reference.md`. Do not load that long reference by default; use it only when this quick map is insufficient.
+The previous long-form routing matrix has been moved to maintainer-only pack history. Do not load historical routing by default; prefer this quick map plus the smallest focused skill that matches the current task.
 
 ## Install and path model
 
@@ -153,4 +153,4 @@ Load only the family/focused skill needed for the current implementation slice:
 - MCP endpoints: `akka-mcp-endpoints`, component-client, request-context, resources/prompts, and testing.
 - Web UI: `akka-web-ui-apps`, frontend project, API client, UX design, accessibility/responsive, state rendering, forms validation, realtime, testing.
 
-When this quick map is too terse, consult `../docs/skill-routing-reference.md` for the previous full route catalog.
+When this quick map is too terse, inspect the relevant focused skill family directly instead of loading a broad historical routing catalog.

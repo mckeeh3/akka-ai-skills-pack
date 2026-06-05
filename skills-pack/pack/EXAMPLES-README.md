@@ -4,12 +4,12 @@ Pack examples are installed into `.agents/skills/examples/**` because installed 
 
 Use examples from the installed skills library or from a clone/fork of this repository:
 
-- `.agents/skills/examples/akka-components/**` / `skills-pack/examples/akka-components/**` — focused Akka component examples
+- `.agents/skills/examples/akka-components/**` / `skills-pack/examples/akka-components/**` — curated Akka/core-app component reference snippets, not a full app baseline
 - `.agents/skills/templates/ai-first-saas-core-app/app-description/**` / `skills-pack/templates/ai-first-saas-core-app/app-description/**` — core app-description surface contracts
 - root `frontend/**` — runnable React/Vite workstream UI reference from the core app, not installed into `.agents`
 - root `src/main/java/ai/first/**` and `src/test/java/ai/first/**` — runnable core app backend and tests, not installed into `.agents`
 
-The installed skills directory contains skill guidance, shared skill references, docs, examples, templates, and tools:
+The installed skills directory contains skill guidance, shared skill references, docs, curated examples, templates, and downstream-safe tools:
 
 ```text
 .agents/skills/

@@ -1,9 +1,0 @@
-package ai.first.domain.foundation.notification;
-
-/** Runtime availability of a governed notification channel. */
-public enum NotificationChannelStatus {
-  ACTIVE,
-  LOCAL_TEST_CAPTURED,
-  PROVIDER_UNCONFIGURED,
-  DISABLED
-}

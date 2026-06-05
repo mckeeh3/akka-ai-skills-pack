@@ -2,7 +2,7 @@
 
 This guide is for developers using this repository with an AI coding harness.
 
-The repository contains both the runnable Akka full-stack core app and the Akka AI skills library. The skills library is guidance and routing for the harness; it does not provide a separate callable framework, duplicate app baseline, or generated distribution bundle. The installer does install pack docs/examples/templates/tools referenced by skills under `.agents/skills/**`. The default generated-product target remains full-stack secure AI-first SaaS on Akka, implemented through capability-first backend architecture and validated through real local Akka/API/UI paths.
+The repository contains both the runnable Akka full-stack core app and the Akka AI skills library. The skills library is guidance and routing for the harness; it does not provide a separate callable framework, duplicate app baseline, or generated distribution bundle. The installer does install pack docs, curated examples, templates, and downstream-safe tools referenced by skills under `.agents/skills/**`. The default generated-product target remains full-stack secure AI-first SaaS on Akka, implemented through capability-first backend architecture and validated through real local Akka/API/UI paths.
 
 ## Core idea
 
@@ -24,7 +24,7 @@ For a new app with an implementation baseline, fork or clone this repository, th
 
 Current manifest version: `0.3.0`
 
-Clone or check out the desired release tag. This repository clone/fork is the source attention for the runnable core app. Then copy or symlink the skills library, including referenced pack docs/examples/templates/tools, into your harness skills directory:
+Clone or check out the desired release tag. This repository clone/fork is the source attention for the runnable core app. Then copy or symlink the skills library, including referenced pack docs, curated examples, templates, and downstream-safe tools, into your harness skills directory:
 
 ```bash
 git clone https://github.com/mckeeh3/akka-ai-skills-pack.git
@@ -51,7 +51,7 @@ Dry run and check:
 ./install-skills.sh --target /path/to/project/.agents/skills --check
 ```
 
-The installer creates or updates only the harness skills directory. It writes `.akka-ai-skills-pack-install-manifest` in that directory so `--prune` can remove retired pack-owned entries and `--uninstall` can remove this skills library without deleting unrelated skills. It installs referenced pack assets under `.agents/skills/**`; it does not install `.agents/AGENTS.md`, `.agents/docs`, `.agents/resources/examples`, manifests, `akka-context/**`, target-application backend/frontend source, or a duplicate app baseline. Some installed `examples/**` files are read-only Java source snapshots for pattern lookup; they are not installed as the target app's `src/**`, are not independently buildable, and must not be copied wholesale as an application baseline. Keep `akka-context/**` as an independently maintained top-level project/repository directory when Akka SDK reference docs are needed.
+The installer creates or updates only the harness skills directory. It writes `.akka-ai-skills-pack-install-manifest` in that directory so `--prune` can remove retired pack-owned entries and `--uninstall` can remove this skills library without deleting unrelated skills. It installs referenced pack assets under `.agents/skills/**`; it does not install `.agents/AGENTS.md`, `.agents/docs`, `.agents/resources/examples`, manifests, `akka-context/**`, target-application backend/frontend source, or a duplicate app baseline. Installed `examples/**` files are curated read-only Java reference snippets for pattern lookup; they are not installed as the target app's `src/**`, are not independently buildable, and must not be copied wholesale as an application baseline. Keep `akka-context/**` as an independently maintained top-level project/repository directory when Akka SDK reference docs are needed.
 
 Project-file references inside skills, such as `../../../AGENTS.md`, `../../../specs/**`, `../../../app-description/**`, `../../../frontend/**`, and `../../../src/**`, mean the target project workspace. They are not global-install-relative paths when skills are installed under `~/.agents/skills`.
 

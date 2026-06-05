@@ -6,7 +6,7 @@ Primary official semantics:
 - `akka-context/sdk/workflows.html.md`
 - `akka-context/sdk/http-endpoints.html.md`
 
-Local executable examples: none in the current copied core-app snapshot. Treat the code below as a minimal domain-specific pattern, not a class name to look up.
+Local executable examples: none in the current curated core-app examples. Treat the code below as a minimal domain-specific pattern, not a class name to look up.
 
 ## Use this pattern when
 

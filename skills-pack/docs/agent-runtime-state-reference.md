@@ -12,7 +12,7 @@ Primary official semantics:
 Current local executable agent example:
 - `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/WorkstreamRuntimeAgent.java`
 
-The built-in `PromptTemplate` and `SessionMemoryEntity` snippets below are patterns, not current copied core-app classes. The current core app primarily uses governed prompt/skill/reference documents plus durable runtime traces.
+The built-in `PromptTemplate` and `SessionMemoryEntity` snippets below are patterns, not current curated core-app classes. The current core app primarily uses governed prompt/skill/reference documents plus durable runtime traces.
 
 ## Quick selection
 

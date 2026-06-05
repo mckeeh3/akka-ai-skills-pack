@@ -9,7 +9,7 @@ The current installer includes:
 - `skills/**` — AI-first SaaS routing, description-first, planning, and Akka implementation skills
 - `skills/README.md` — skill routing map
 - `skills/references/**` — shared skill reference files
-- `docs/**`, `examples/**`, `templates/**`, and `tools/**` — pack assets referenced by installed skills
+- `docs/**`, curated `examples/**`, `templates/**`, and downstream-safe `tools/**` — pack assets referenced by installed skills
 
 The source checkout also contains the runnable Akka full-stack core app and app-description/spec assets. Use those application files directly from a clone or fork of this repository. The installer does not copy manifests, application source, `akka-context/**`, repository-internal maintainer guidance, or duplicate full-app baselines. `akka-context/**` is expected as an independently maintained top-level project/repository directory.
 
@@ -39,7 +39,7 @@ Installed layout:
 
 ## Install model
 
-Each install copies or symlinks the full current skill library, shared references, and referenced pack docs/examples/templates/tools into the harness skills directory. There is no duplicate application baseline, automatic project-source generation, or bundled `akka-context` install.
+Each install copies or symlinks the full current skill library, shared references, and referenced pack docs/curated examples/templates/downstream-safe tools into the harness skills directory. There is no duplicate application baseline, automatic project-source generation, or bundled `akka-context` install.
 
 The ownership manifest records pack-owned entries. `--prune` removes manifest-owned entries that no longer exist in source, which covers retired skills. `--uninstall` removes all manifest-owned entries and the manifest. Unrelated skills in the target directory are not deleted.
 

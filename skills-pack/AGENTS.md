@@ -19,7 +19,7 @@ The repository root is the canonical runnable Akka Java SDK + React/Vite core ap
 
 This repository is the product baseline: pack users clone or fork this repo, run the root Akka full-stack app, and build their domain-specific workstreams in the root app workspace. There is no separate full-pack installer, generated distribution bundle, or installed duplicate app baseline.
 
-The install step copies or symlinks `skills-pack/skills/**`, shared `skills-pack/skills/references/**`, and referenced pack assets such as `skills-pack/docs/**`, `skills-pack/examples/**`, `skills-pack/templates/**`, and `skills-pack/tools/**` into a harness-accessible skills directory such as `.agents/skills` or `~/.agents/skills`. The installed `.agents/skills` directory is a support library for the harness, not the target application's source tree, app-description/spec storage location, or duplicate app baseline.
+The install step copies or symlinks `skills-pack/skills/**`, shared `skills-pack/skills/references/**`, and referenced pack assets such as `skills-pack/docs/**`, curated `skills-pack/examples/**`, `skills-pack/templates/**`, and downstream-safe `skills-pack/tools/**` into a harness-accessible skills directory such as `.agents/skills` or `~/.agents/skills`. The installed `.agents/skills` directory is a support library for the harness, not the target application's source tree, app-description/spec storage location, or duplicate app baseline. Maintainer-only release/version tooling belongs under `skills-pack/pack/maintainer/**`, not in the installed tools payload.
 
 `akka-context/**` is the exception: it is official Akka reference material maintained independently by the Akka team and expected as a top-level, usually git-ignored project/repository directory. Do not install it into `.agents/skills`; installed skill references should point to the top-level `akka-context/**` location.
 
@@ -38,7 +38,7 @@ git diff --check
 ./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run
 ./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune
 ./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check
-bash tools/verify-opinionated-ai-first-saas-pack.sh
+bash pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh
 ```
 
 Use root app checks only when a task explicitly touches root app runtime/frontend paths.
