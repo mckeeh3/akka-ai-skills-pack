@@ -56,12 +56,12 @@ Read these first if present:
 - `../akka-change-request-to-spec-update/SKILL.md`
 - `../app-description-change-impact/SKILL.md`
 - `../ai-first-saas/SKILL.md`
-- target project `app-description/00-system/app-manifest.md` if present
-- target project `app-description/10-capabilities/capabilities-index.md` if present
-- target project `app-description/20-behavior/behavior-index.md` if present
-- target project `specs/README.md` if present
-- target project `specs/akka-solution-plan.md` if present
-- target project `specs/pending-tasks.md` if present
+- target project path: app-description/00-system/app-manifest.md if present
+- target project path: app-description/10-capabilities/capabilities-index.md if present
+- target project path: app-description/20-behavior/behavior-index.md if present
+- target project path: specs/README.md if present
+- target project path: specs/akka-solution-plan.md if present
+- target project path: specs/pending-tasks.md if present
 - relevant `specs/slices/*.md`, `specs/backlog/*.md`, and `specs/tasks/**/*.md`
 
 Read the revised PRD completely.

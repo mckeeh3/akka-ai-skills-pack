@@ -46,21 +46,21 @@ This skill should be used after:
 Read these first if present:
 - `../README.md`
 - `../akka-prd-to-specs-backlog/SKILL.md`
-- `../../../specs/README.md`
-- `../../../specs/backlog/README.md`
-- `../../../specs/tasks/README.md`
-- `../../../specs/pending-tasks.md` if it already exists
+- target project path: specs/README.md
+- target project path: specs/backlog/README.md
+- target project path: specs/tasks/README.md
+- target project path: specs/pending-tasks.md if it already exists
 - `../docs/pending-task-queue.md`
 - `../docs/ai-first-saas-application-architecture.md` when the slice or sprint includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../docs/requirements-to-workstream-development-process.md` when the source increment includes generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent candidates, notifications/projections, or task queues
-- `../../../app-description/15-operating-model/` or equivalent operating-model specs when present and relevant
-- `../../../specs/templates/build-backlog-template.md` if the target project provides it; otherwise use the backlog structure described in this skill
-- `../../../specs/templates/implementation-task-template.md` if the target project provides it; otherwise use the task-brief structure described in this skill
-- the target slice spec file under `../../../specs/slices/` or sprint spec file under `../../../specs/sprints/`
-- the related module spec under `../../../specs/modules/` when present
+- target project path: app-description/15-operating-model/ or equivalent operating-model specs when present and relevant
+- target project path: specs/templates/build-backlog-template.md if the target project provides it; otherwise use the backlog structure described in this skill
+- target project path: specs/templates/implementation-task-template.md if the target project provides it; otherwise use the task-brief structure described in this skill
+- the target slice spec file under target project path: specs/slices/ or sprint spec file under target project path: specs/sprints/
+- the related module spec under target project path: specs/modules/ when present
 - any cross-cutting spec files referenced or obviously relevant to the slice or sprint
-- `../../../specs/cross-cutting/*ui-style-guide*.md`, `../../../app-description/55-ui/style-guide.md`, or equivalent style artifact when the slice or sprint includes browser UI work
-- `../../../specs/akka-solution-plan.md`
+- target project path: specs/cross-cutting/*ui-style-guide*.md, target project path: app-description/55-ui/style-guide.md, or equivalent style artifact when the slice or sprint includes browser UI work
+- target project path: specs/akka-solution-plan.md
 
 If a matching backlog file already exists:
 - read it first

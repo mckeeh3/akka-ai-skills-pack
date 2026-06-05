@@ -12,7 +12,7 @@ A surface is a typed renderable artifact in an agent workstream. It is not a pag
 ## Required reading
 
 Read these first if present:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/requirements-to-workstream-development-process.md` for attention/dashboard/surface-action/autonomous task notification semantics

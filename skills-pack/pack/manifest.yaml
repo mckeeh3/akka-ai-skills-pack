@@ -574,6 +574,7 @@ content:
     - skills/references/akka-entity-comparison.md
     - skills/references/akka-grpc-jwt-patterns.md
     - skills/references/generated-saas-input-contract.md
+    - skills/references/generated-saas-runtime-completion.md
 bundles:
   - id: all
     description: Install the full skills library, shared skill references, and referenced pack assets into a harness skills directory.

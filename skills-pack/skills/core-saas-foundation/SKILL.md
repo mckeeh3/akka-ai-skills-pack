@@ -12,7 +12,7 @@ This is a mandatory foundation skill. It does not replace `ai-first-saas`, app-d
 ## Required reading
 
 Read these first when using this skill:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
 - `../docs/core-ai-first-saas-foundation.md`
 - `../docs/core-saas-identity-tenancy-admin.md`

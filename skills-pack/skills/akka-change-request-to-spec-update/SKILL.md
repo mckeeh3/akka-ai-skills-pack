@@ -57,10 +57,10 @@ Read these first if present:
 - `../app-description-change-impact/SKILL.md`
 - `../ai-first-saas/SKILL.md` for generated AI-first SaaS semantics
 - `../akka-backlog-to-pending-tasks/SKILL.md`
-- target project `app-description/` indexes if present
-- target project `specs/README.md` if present
-- target project `specs/akka-solution-plan.md` if present
-- target project `specs/pending-tasks.md` if present
+- target project path: app-description/ indexes if present
+- target project path: specs/README.md if present
+- target project path: specs/akka-solution-plan.md if present
+- target project path: specs/pending-tasks.md if present
 
 Then read only the affected slice, backlog, task brief, and description files needed to apply the change.
 

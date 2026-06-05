@@ -51,9 +51,9 @@ Read these first if present:
 - `../docs/workstream-expertise-model.md` when questions involve functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, or load traces
 - `../akka-pending-question-generation/SKILL.md`
 - `../akka-do-next-pending-question/SKILL.md`
-- target project `specs/README.md` if present
-- target project `specs/pending-questions.md`
-- target project `specs/akka-solution-plan.md` if present
+- target project path: specs/README.md if present
+- target project path: specs/pending-questions.md
+- target project path: specs/akka-solution-plan.md if present
 - relevant `specs/slices/*.md`, `specs/backlog/*.md`, and app-description files referenced by questions
 - `specs/pending-tasks.md` if it exists and questions claim to block or unblock tasks
 

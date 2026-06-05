@@ -56,10 +56,10 @@ Read these first if present:
 - `../docs/workstream-expertise-model.md` when the queue contains or references LLM-backed functional agents, workstream expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, or load traces
 - `../akka-do-next-pending-task/SKILL.md`
 - `../akka-backlog-to-pending-tasks/SKILL.md`
-- target project `specs/README.md` if present
-- target project `specs/akka-solution-plan.md` if present
-- target project `specs/pending-questions.md` if present
-- target project `specs/pending-tasks.md`
+- target project path: specs/README.md if present
+- target project path: specs/akka-solution-plan.md if present
+- target project path: specs/pending-questions.md if present
+- target project path: specs/pending-tasks.md
 - relevant `specs/backlog/*.md` files referenced by queue tasks
 - relevant `specs/tasks/**/*.md` task briefs referenced by queue tasks
 

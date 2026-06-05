@@ -12,7 +12,7 @@ This skill defines the application/UX shape. It does not replace `core-saas-foun
 ## Required reading
 
 Read these first when using this skill:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/structured-surface-contracts.md`

@@ -1,5 +1,7 @@
 # Akka Skill Routing Map
 
+> Maintainer-only historical routing reference. Do not load this file for normal harness routing, task execution, or user-facing skill selection. Use `skills/README.md` plus the smallest focused `SKILL.md` instead. This file preserves long-form routing history for pack maintainers and may intentionally be broader and heavier than installed runtime guidance.
+
 This directory contains AI-focused skills for creating full-stack secure AI-first SaaS applications on Akka: interpret high-level requirements through the mandatory SaaS security foundation and agent workstream application model, model governed backend capabilities, derive the right Akka Java SDK solution, then turn that solution plan into concrete backend, frontend, test, and delivery assets.
 
 These skills are primarily an **internal routing layer for the harness**.

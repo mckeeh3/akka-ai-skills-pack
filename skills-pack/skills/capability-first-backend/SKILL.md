@@ -12,7 +12,7 @@ This is a routing and framing skill. It does not replace `core-saas-foundation`,
 ## Required reading
 
 Read these first when using this skill:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app modeling before backend capability design

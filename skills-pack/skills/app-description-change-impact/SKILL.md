@@ -25,7 +25,7 @@ Analyze a requested or completed description change and produce an impact result
 ## Required reading
 
 Read these first if present:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
 - `../docs/description-first-application-doctrine.md`
 - `../docs/ai-first-saas-application-architecture.md`
@@ -43,13 +43,13 @@ Read these first if present:
 - `../ai-first-saas/SKILL.md` when the change involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
 
 Prefer these current generated-SaaS references when present:
-- the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md`
-- target project `app-description/60-generation/regeneration-map.md`
-- target project `app-description/70-traceability/functional-agent-to-capability-map.md`
-- target project `app-description/70-traceability/surface-to-capability-map.md`
-- target project `app-description/70-traceability/capability-to-behavior-map.md`
-- target project `app-description/70-traceability/behavior-to-tests-map.md`
-- target project `app-description/70-traceability/change-impact-map.md`
+- the target project path: app-description/README.md plus `../docs/core-ai-first-saas-foundation.md`
+- target project path: app-description/60-generation/regeneration-map.md
+- target project path: app-description/70-traceability/functional-agent-to-capability-map.md
+- target project path: app-description/70-traceability/surface-to-capability-map.md
+- target project path: app-description/70-traceability/capability-to-behavior-map.md
+- target project path: app-description/70-traceability/behavior-to-tests-map.md
+- target project path: app-description/70-traceability/change-impact-map.md
 
 Use current target-project app-description files and core app templates for traceability mechanics; do not depend on removed historical domain examples.
 

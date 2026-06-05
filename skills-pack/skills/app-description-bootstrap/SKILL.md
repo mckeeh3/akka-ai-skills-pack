@@ -25,7 +25,7 @@ Create a minimum viable internal app-description tree that:
 ## Required reading
 
 Read these first if present:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
 - `../docs/description-first-application-doctrine.md`
 - `../docs/ai-first-saas-application-architecture.md`
@@ -36,11 +36,11 @@ Read these first if present:
 - `../docs/app-description-maintenance-flow.md`
 - `../app-descriptions/SKILL.md`
 - `../ai-first-saas/SKILL.md` when the initial app idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
-- the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md` for the preferred core app-description shape
+- the target project path: app-description/README.md plus `../docs/core-ai-first-saas-foundation.md` for the preferred core app-description shape
 
 Prefer these example references for generated SaaS foundation bootstraps:
-- target project `app-description/00-system/app-manifest.md`
-- target project `app-description/10-capabilities/01-secure-tenant-user-foundation.md`
+- target project path: app-description/00-system/app-manifest.md
+- target project path: app-description/10-capabilities/01-secure-tenant-user-foundation.md
 
 Use current target-project app-description files and core app templates for cross-linking mechanics; do not depend on removed historical domain examples.
 

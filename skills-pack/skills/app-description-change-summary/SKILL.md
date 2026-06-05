@@ -25,7 +25,7 @@ The summary should help the human understand the consequence of their requested 
 ## Required reading
 
 Read these first if present:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
 - `../docs/description-first-application-doctrine.md`
 - `../docs/internal-app-description-architecture.md`

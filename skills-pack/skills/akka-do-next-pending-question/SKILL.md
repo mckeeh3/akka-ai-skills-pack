@@ -42,7 +42,7 @@ Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md` when the selected question involves delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../docs/workstream-expertise-model.md` when the selected question involves LLM-backed functional-agent expertise, model binding, skill/reference governance, `readReferenceDoc`, manifests, loader authorization, tool boundaries, load traces, or expertise surfaces
 - `../docs/web-ui-style-guide.md` when selected question is a UI style-guide question
-- target project `specs/pending-questions.md`
+- target project path: specs/pending-questions.md
 
 Then read only the selected question's `source` and any artifacts needed to reconcile its answer.
 

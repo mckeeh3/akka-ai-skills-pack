@@ -60,11 +60,11 @@ Read these first if present:
 - `../docs/intent-driven-usage-flow.md`
 - `../docs/web-ui-style-guide.md`
 - `../ai-first-saas/SKILL.md`
-- `../../../specs/README.md`
-- `../../../specs/pending-questions.md` if it already exists
-- `../../../specs/akka-solution-plan.md` if present
-- relevant `../../../specs/slices/*.md`
-- relevant `../../../specs/backlog/*-build-backlog.md`
+- target project path: specs/README.md
+- target project path: specs/pending-questions.md if it already exists
+- target project path: specs/akka-solution-plan.md if present
+- relevant target project path: specs/slices/*.md
+- relevant target project path: specs/backlog/*-build-backlog.md
 - relevant app-description files if the project uses description-first artifacts
 - the user-provided PRD or requirements file when it is the source of the plan
 

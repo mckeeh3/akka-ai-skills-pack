@@ -21,7 +21,7 @@ Maintain or realize an application from its internal app-description system in a
 ## Required reading
 
 Read these first if present:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
 - `../docs/description-first-application-doctrine.md`
 - `../docs/ai-first-saas-application-architecture.md`
@@ -34,7 +34,7 @@ Read these first if present:
 - `../docs/web-ui-style-guide.md` for mandatory generated SaaS browser UI style selection
 
 Prefer these local examples and references:
-- the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md` for secure AI-first SaaS foundation shape and current generated-app target architecture
+- the target project path: app-description/README.md plus `../docs/core-ai-first-saas-foundation.md` for secure AI-first SaaS foundation shape and current generated-app target architecture
 - `../docs/minimum-ai-first-saas-app.md` for minimum/core app/basic/chatbot-like generated SaaS scope
 - current target-project app-description files and core app templates for description-layer mechanics; do not depend on removed historical domain examples
 

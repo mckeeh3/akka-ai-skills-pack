@@ -1,0 +1,82 @@
+# Curated example file index
+
+Every file under `src/**` is either directly referenced by a skill/doc or retained as compact support context for a referenced pattern. This tree is not independently buildable and must not become a mirror of root `src/**`.
+
+## Files
+
+- `src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java` — primary pattern reference.
+- `src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java` — primary pattern reference.
+- `src/main/java/ai/first/api/foundation/security/MeEndpoint.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/agentadmin/AgentAdminPromptRiskAutonomousAgent.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/agentadmin/AgentAdminService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/audit/AuditTraceSummaryAutonomousAgent.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/audit/AuditTraceSummaryService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/governance/GovernancePolicyImpactAutonomousAgent.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/governance/GovernancePolicyImpactService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/myaccount/MyAccountPersonalAttentionDigestAutonomousAgent.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/myaccount/MyAccountService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewAutonomousAgent.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/useradmin/UserAdminEvidenceTools.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/useradmin/UserAdminService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/useradmin/UserDirectoryView.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/AgentBehaviorSeedLoader.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/AgentDefinitionEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/AgentReferenceManifestEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/AgentRuntimeLoaderTools.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/AgentRuntimeService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/AgentRuntimeTraceEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/AgentRuntimeTraceView.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/AgentSkillManifestEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/DefaultWorkstreamAgentRuntimeInvoker.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/FailClosedWorkstreamAgentRuntimeInvoker.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/PromptDocumentEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/ReferenceDocumentEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/SkillDocumentEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/ToolPermissionBoundaryEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/WorkstreamRuntimeAgent.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/attention/AttentionProducerService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/attention/DurableAttentionRepositoryEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/audit/AdminAuditView.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/email/EmailNotificationService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/email/ResendEmailService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/identity/AkkaIdentityRepository.java` — support context.
+- `src/main/java/ai/first/application/foundation/identity/AuthContextResolver.java` — support context.
+- `src/main/java/ai/first/application/foundation/identity/DurableIdentityRepositoryEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/identity/MeService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/invitation/DurableInvitationRepositoryEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/invitation/InvitationView.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/notification/DurableNotificationRepositoryEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/workstream/DurableWorkstreamEventRepositoryEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/workstream/DurableWorkstreamLogEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java` — primary pattern reference.
+- `src/main/java/ai/first/domain/foundation/agent/ModelConfigRef.java` — support context.
+- `src/main/java/ai/first/domain/foundation/agent/ToolPermissionBoundary.java` — support context.
+- `src/main/java/ai/first/domain/foundation/email/EmailDeliveryStatus.java` — support context.
+- `src/main/java/ai/first/domain/foundation/email/EmailNotificationDelivery.java` — support context.
+- `src/main/java/ai/first/domain/foundation/email/EmailNotificationDeliveryStatus.java` — support context.
+- `src/main/java/ai/first/domain/foundation/email/EmailOutboxMessage.java` — support context.
+- `src/main/resources/application.conf` — support context.
+- `src/test/java/ai/first/application/coreapp/agentadmin/DurablePromptRiskReviewTaskRepositoryEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/coreapp/audit/AuditTraceSummaryAutonomousAgentTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/coreapp/useradmin/DurableAccessReviewTaskRepositoryEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/coreapp/useradmin/InvitationAndUserAdminServiceTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/coreapp/useradmin/RealResendProviderSmokeTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/agent/AgentDefinitionEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/agent/AgentRuntimeServiceTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/agent/AgentRuntimeTraceEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/agent/GovernedDocumentEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/agent/ManifestBoundaryEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/agent/WorkstreamRuntimeAgentTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/attention/DurableAttentionRepositoryEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/governance/DurableGovernancePolicyRepositoryEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/identity/DurableIdentityRepositoryEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/identity/FoundationRuntimeDurabilityBoundaryTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/identity/MeServiceTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/invitation/DurableInvitationRepositoryEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/invitation/InvitationLifecycleHistoryEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/notification/DurableNotificationRepositoryEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/workstream/DurableWorkstreamLogEntityTest.java` — test/reference coverage.
+- `src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java` — test/reference coverage.

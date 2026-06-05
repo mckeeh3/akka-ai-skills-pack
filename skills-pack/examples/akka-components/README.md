@@ -16,7 +16,7 @@ Included patterns:
 Maintenance rules:
 
 1. Keep this tree small and intentional; do not mirror all root `src/**` or `src/test/**` files.
-2. Add a file only when a skill or doc uses it as a concrete repository example.
-3. Remove examples that no longer teach an installed skill pattern.
+2. Add a file only when a skill/doc uses it as a concrete repository example or when `REFERENCE-INDEX.md` records it as compact support context for a referenced pattern.
+3. Remove examples that no longer teach or support an installed skill pattern.
 4. Keep referenced files synchronized with the root core app implementation when the pattern changes.
 5. Prefer adding a focused doc snippet over adding a large dependency closure just to make this tree compile.

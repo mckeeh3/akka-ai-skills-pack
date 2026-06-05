@@ -15,7 +15,7 @@ For generated full-stack AI-first SaaS implementation work, apply `../references
 
 Read these first if present:
 - `akka-context/sdk/grpc-endpoints.html.md`
-- `../../../pom.xml`
+- target project path: pom.xml
 
 ## Use this pattern when
 

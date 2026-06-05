@@ -32,7 +32,7 @@ Then choose the smallest downstream path that can implement or maintain that mod
 ## Required reading
 
 Read these first when using this skill:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
 - `../core-saas-foundation/SKILL.md`
 - `../agent-workstream-apps/SKILL.md` for generated full-stack SaaS app routing

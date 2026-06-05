@@ -53,7 +53,7 @@ Dry run and check:
 
 The installer creates or updates only the harness skills directory. It writes `.akka-ai-skills-pack-install-manifest` in that directory so `--prune` can remove retired pack-owned entries and `--uninstall` can remove this skills library without deleting unrelated skills. It installs referenced pack assets under `.agents/skills/**`; it does not install `.agents/AGENTS.md`, `.agents/docs`, `.agents/resources/examples`, manifests, `akka-context/**`, target-application backend/frontend source, or a duplicate app baseline. Installed `examples/**` files are curated read-only Java reference snippets for pattern lookup; they are not installed as the target app's `src/**`, are not independently buildable, and must not be copied wholesale as an application baseline. Keep `akka-context/**` as an independently maintained top-level project/repository directory when Akka SDK reference docs are needed.
 
-Project-file references inside skills, such as `../../../AGENTS.md`, `../../../specs/**`, `../../../app-description/**`, `../../../frontend/**`, and `../../../src/**`, mean the target project workspace. They are not global-install-relative paths when skills are installed under `~/.agents/skills`.
+Project-file references inside skills, such as target project `AGENTS.md`, `specs/**`, `app-description/**`, `frontend/**`, and `src/**`, mean the target project workspace. They are not global-install-relative paths when skills are installed under `~/.agents/skills`.
 
 ## Choose a starting mode
 
@@ -67,9 +67,9 @@ Fork or clone this repository as the baseline. Keep the fixed `ai.first` package
 
 ## Runtime validation expectations
 
-A generated-app feature is complete only when the intended local runtime path works at the stated scope. For secure AI-first SaaS work, normal behavior must go through the generated Akka components, protected APIs, authorization checks, durable state, provider boundaries, audit/work traces, and browser UI where applicable.
+A generated-app feature is complete only when the intended local runtime path works at the stated scope. For secure AI-first SaaS work, normal behavior must go through generated Akka components, protected APIs, authorization checks, durable state, provider boundaries, audit/work traces, and browser UI where applicable.
 
-Model-backed workstream agents must invoke a concrete Akka `Agent` component through the governed runtime path: active `AgentDefinition`, prompt/skill/reference manifest resolution, authorized `readSkill`/`readReferenceDoc`, `ToolPermissionBoundary` enforcement, `effects().tools(runtimeTools)`, provider invocation, and durable traces. Missing provider/security configuration should fail closed with actionable errors, not deterministic placeholder success.
+For the canonical governed-agent and no-fixture-runtime rules, installed skills should use `.agents/skills/references/generated-saas-runtime-completion.md`.
 
 ## Installed layout
 

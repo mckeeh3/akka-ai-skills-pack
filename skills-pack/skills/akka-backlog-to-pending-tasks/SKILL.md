@@ -54,15 +54,15 @@ Read these first if present:
 - `../docs/solution-plan-to-implementation-queue.md`
 - `../docs/module-sprint-planning.md` when `specs/modules/` or `specs/sprints/` exists
 - `../docs/web-ui-style-guide.md` when materializing browser UI tasks
-- `../../../specs/README.md`
-- `../../../specs/akka-solution-plan.md`
-- `../../../specs/pending-questions.md` if it exists
-- `../../../specs/pending-tasks.md` if it already exists
-- all relevant `../../../specs/backlog/*-build-backlog.md` files
-- `../../../specs/tasks/README.md` if present
-- relevant `../../../specs/tasks/**/*.md` task briefs if present
-- relevant `../../../specs/modules/*.md` and `../../../specs/sprints/*.md` files when present
-- relevant `../../../specs/slices/*.md` files when needed to resolve dependencies or reads
+- target project path: specs/README.md
+- target project path: specs/akka-solution-plan.md
+- target project path: specs/pending-questions.md if it exists
+- target project path: specs/pending-tasks.md if it already exists
+- all relevant target project path: specs/backlog/*-build-backlog.md files
+- target project path: specs/tasks/README.md if present
+- relevant target project path: specs/tasks/**/*.md task briefs if present
+- relevant target project path: specs/modules/*.md and target project path: specs/sprints/*.md files when present
+- relevant target project path: specs/slices/*.md files when needed to resolve dependencies or reads
 
 Do not reread the original PRD unless the existing backlogs are too ambiguous to create queue tasks. Prefer carrying forward the AI-first interpretation already captured in solution, sprint, slice, backlog, task brief, app-description, and pending-question artifacts.
 

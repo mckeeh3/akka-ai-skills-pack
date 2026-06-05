@@ -23,7 +23,7 @@ Produce a normalized input result that:
 ## Required reading
 
 Read these first if present:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
 - `../docs/description-first-application-doctrine.md`
 - `../docs/requirements-to-workstream-development-process.md` for the canonical input/PRD → workstreams → attention → dashboards → surfaces/actions → capabilities → Akka substrate process
@@ -38,11 +38,11 @@ Read these first if present:
 - `../app-description-intake-router/SKILL.md`
 
 Prefer these current generated-SaaS references when present:
-- the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md`
-- target project `app-description/12-workstreams/functional-agents.md`
-- target project `app-description/12-workstreams/surfaces-index.md`
-- target project `app-description/10-capabilities/01-secure-tenant-user-foundation.md`
-- target project `app-description/55-ui/ui-index.md`
+- the target project path: app-description/README.md plus `../docs/core-ai-first-saas-foundation.md`
+- target project path: app-description/12-workstreams/functional-agents.md
+- target project path: app-description/12-workstreams/surfaces-index.md
+- target project path: app-description/10-capabilities/01-secure-tenant-user-foundation.md
+- target project path: app-description/55-ui/ui-index.md
 
 Use current target-project app-description files and core app templates for normalization or cross-linking mechanics; do not depend on removed historical domain examples.
 

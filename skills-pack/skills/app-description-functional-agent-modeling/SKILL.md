@@ -12,7 +12,7 @@ Functional agents are the user-facing vertical application areas in the authenti
 ## Required reading
 
 Read these first if present:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/requirements-to-workstream-development-process.md` for workstream → attention → dashboard → surfaces/actions → capabilities → autonomous task/notification/projection/trace semantics

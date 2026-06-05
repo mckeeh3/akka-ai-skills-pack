@@ -11,7 +11,7 @@ This file serves both:
 - the **source repository**, where root `app-description/`, `specs/`, `frontend/`, `src/`, and `skills-pack/docs|examples|templates` are reference and runtime assets;
 - the **harness skills-library install**, where this routing map, `SKILL.md` files, and referenced pack docs/examples/templates/tools are copied under `.agents/skills` while the target project's maintained `app-description/`, `specs/`, source, and frontend stay in the project workspace.
 
-When a skill lists required reads such as `../../../AGENTS.md`, `../../../specs/**`, `../../../app-description/**`, `../../../frontend/**`, or `../../../src/**`, resolve those as target-project workspace paths. In a global install under `~/.agents/skills`, do not follow them relative to the global skill directory.
+When a skill lists required reads as target-project paths such as `AGENTS.md`, `specs/**`, `app-description/**`, `frontend/**`, or `src/**`, resolve them in the current target project workspace, not relative to a global `~/.agents/skills` install. Relative `../docs/**`, `../examples/**`, `../templates/**`, `../tools/**`, and `../references/**` paths are installed pack assets.
 
 Java base package for generated code:
 
@@ -91,13 +91,7 @@ For minimum/core app/basic/chatbot-like generated SaaS prompts, the first runnab
 
 ## Implementation completion standard
 
-For generated Akka apps, a named feature is implemented only when it works at the stated scope through the intended local runtime surface. Akka local execution is production-like validation and should prove feature readiness through backend components, provider/config checks, endpoints, frontend/workstream UI, authorization, audit/trace behavior, tests, and local smoke/manual validation.
-
-Model-backed workstream agents are done only when normal message submission invokes a concrete Akka `Agent` component through the configuration-driven governed runtime path, including active managed configuration resolution, governed `readSkill`/`readReferenceDoc` loader tools, `ToolPermissionBoundary` enforcement, and `effects().tools(runtimeTools)` registration. Direct service/provider calls that bypass the Agent component are incomplete.
-
-Normal runtime behavior must not be satisfied by deterministic/demo/mock/simulated/model-less substitutes. Workstream agents must use the real governed runtime path and configured provider boundary for model-backed behavior; auth, durability, protected capabilities, provider calls, authorization denials, and audit/work traces must execute through the same local Akka paths the app will use in production-like operation. Claimed workstream/foundation state must be backed by Akka components in normal runtime; fail-closed behavior is appropriate for missing external provider/security configuration or unbound pre-runtime setup, not as a replacement for internal Akka persistence. Missing provider or security configuration should fail closed with actionable errors, not silently fall back to canned responses.
-
-Fixtures, mocks, deterministic fakes, and test doubles are allowed only inside tests, local-only harness checks, or explicitly named test adapters. They must not be wired as the default user-facing runtime path, and passing fixture-only tests is not enough to mark a runtime feature implemented.
+Generated Akka app features are complete only when they work at the stated scope through the intended local Akka/API/UI runtime path. For the canonical runtime-completion doctrine, including governed Akka `Agent` invocation, provider fail-closed behavior, and fixture/mock boundaries, read `references/generated-saas-runtime-completion.md`.
 
 ## Description-first path
 
