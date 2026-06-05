@@ -24,7 +24,7 @@ class FrontendReferenceWebUiIntegrationTest extends TestKitSupport {
     var page = httpClient.GET("/ui/frontend-reference").responseBodyAs(String.class).invoke();
 
     assertTrue(page.status().isSuccess());
-    assertTrue(page.body().contains("Purchase request dashboard"));
+    assertTrue(page.body().contains("Work item dashboard"));
     assertTrue(page.body().contains("type=\"module\" src=\"/ui/frontend-reference/app.js\""));
     assertTrue(page.body().contains("data-api-path=\"/api/frontend-reference/dashboard\""));
     assertTrue(page.body().contains("aria-describedby=\"title-error\""));

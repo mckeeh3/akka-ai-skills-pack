@@ -83,12 +83,12 @@ secure SaaS foundation
 - [ ] A `55-ui/style-guide.md` selection exists before web UI realization; if no style is selected, web UI implementation/generation is blocked by a pending style question rather than inventing visual styling.
 - [ ] Frontend API contracts and realtime behavior preserve `/api/me`, selected AuthContext, `browserToolId`, `governedToolId`, `capabilityId`, denial/error DTOs, idempotency/correlation ids, trace links, and stale/reconnect behavior.
 
-### Legacy and mechanics quarantine
+### Legacy and mechanics cleanup
 
-- [ ] Legacy page/screen/navigation examples are labeled as compatibility or mechanics references only and are not presented as canonical generated-SaaS architecture.
-- [ ] Static asset hosting examples, endpoint wiring examples, and `frontend/src/screens/**` are quarantined as implementation mechanics or stale references unless explicitly migrated.
-- [ ] Purchase-request or other conventional examples are linked only for description mechanics when generated AI-first SaaS target architecture is in scope.
-- [ ] Consolidated historical files are either migrated into `12-workstreams/` + `10-capabilities/` + split `55-ui/` ownership or clearly labeled as reference-specific/non-canonical.
+- [ ] Legacy page/screen/navigation examples are removed or explicitly migrated into current generated-SaaS architecture.
+- [ ] Static asset hosting and endpoint wiring examples are retained only when they directly support focused skills-pack code examples.
+- [ ] Historical domain-specific planning examples are not linked as generic description or queue mechanics.
+- [ ] Consolidated historical files are either migrated into `12-workstreams/` + `10-capabilities/` + split `55-ui/` ownership or removed.
 
 ## Pass condition
 

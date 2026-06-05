@@ -2,7 +2,7 @@
 
 This directory contains `com.example` reference examples for installable skills-pack guidance.
 
-These examples are not the runnable core app. The repository root app uses the fixed `ai.first` package; keep focused Akka component fixtures here so root `src/` remains the canonical core application source.
+These examples are not the runnable core app and are not a standalone build module. They are focused source fixtures read by skills and tests in downstream/generated projects. The repository root app uses the fixed `ai.first` package; keep focused Akka component fixtures here so root `src/` remains the canonical core application source.
 
 Key paths:
 

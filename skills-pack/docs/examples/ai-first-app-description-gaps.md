@@ -20,13 +20,11 @@ Use it when the task is about:
 - mapping a reusable AI-first operating model to implementation phases;
 - planning the runnable starter core app that future skills and examples can reference.
 
-### `purchase-request-app-description/`
+### Historical domain-specific app-description example
 
-Status: **low-agentic / conventional approval-workflow reference**.
+Status: **removed**.
 
-Keep this example focused on the existing purchase request workflow unless a later task intentionally evolves it. It demonstrates the baseline app-description layer structure for capabilities, behavior, tests, auth/security, observability, generation, traceability, and review.
-
-Do **not** force-fit this example into a full AI-first SaaS operating model. It lacks durable delegated goals, bounded agent/team execution, governed policy learning, decision-card evidence, work traces, and outcome loops by design.
+The old low-agentic approval-workflow app-description example has been removed so current guidance points at the core app-description baseline, starter templates, and focused Akka component examples. Do not reintroduce it as a generic mechanics reference.
 
 ## Remaining gaps
 
@@ -34,5 +32,5 @@ Remaining gaps are executable reference implementation and test gaps, not app-de
 
 ## Non-goals for this note
 
-- Do not retrofit the purchase-request example into a complete AI-first example without explicit product intent.
+- Do not reintroduce historical domain-specific app-description examples as generic generated-SaaS guidance without explicit product intent.
 - Do not create new domain-specific vertical examples unless they add reusable skills-pack value that the core app path cannot provide.

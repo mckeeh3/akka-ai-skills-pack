@@ -25,11 +25,7 @@ For the canonical broad-input planning shape, see:
 - `../docs/requirements-to-workstream-development-process.md`
 - `../docs/examples/requirements-to-workstream-mini-example.md`
 
-Conventional mechanics-only examples, not canonical generated AI-first SaaS target architecture:
-- `../docs/prd-to-akka-flow.md` conventional mechanics section
-- `../docs/examples/purchase-request-prd.md`
-- `../docs/examples/purchase-request-solution-plan.md`
-
+For planning mechanics, use `../docs/prd-to-akka-flow.md` and current domain-neutral examples. Do not reintroduce removed historical domain-specific planning examples as generic guidance.
 
 Use this skill when the input is one or more of:
 - a high-level prompt

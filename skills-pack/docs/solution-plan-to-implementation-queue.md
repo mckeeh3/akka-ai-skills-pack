@@ -129,8 +129,6 @@ Before starting code generation, verify that the solution plan already answers:
 - `prd-to-akka-flow.md`
 - `module-sprint-planning.md`
 - `examples/requirements-to-workstream-mini-example.md` — preferred generated-SaaS planning shape
-- `examples/purchase-request-solution-plan.md` — conventional solution-plan mechanics only
-- `examples/purchase-request-pending-tasks.md` — conventional queue mechanics only
 - `../README.md`
 - `../akka-solution-decomposition/SKILL.md`
 - `../akka-pending-question-generation/SKILL.md`

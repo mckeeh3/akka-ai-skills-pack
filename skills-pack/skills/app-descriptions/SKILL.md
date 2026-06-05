@@ -29,22 +29,14 @@ Read these first if present:
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation that every new app description, readiness review, and generation flow must preserve
 - `../docs/internal-app-description-architecture.md`
 - `../docs/app-description-maintenance-flow.md`
-- `../docs/app-description-end-to-end-workflow-example.md` only as description-maintenance mechanics; do not treat its purchase-request scenario as generated SaaS target architecture
+- `../docs/app-description-end-to-end-workflow-example.md` only as description-maintenance mechanics; do not treat its sample scenario as generated SaaS target architecture
 - `../ai-first-saas/SKILL.md` when product intent involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
 - `../docs/web-ui-style-guide.md` for mandatory generated SaaS browser UI style selection
 
 Prefer these local examples and references:
 - the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md` for secure AI-first SaaS foundation shape and current generated-app target architecture
 - `../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope
-- Purchase-request description examples only for description-layer mechanics, never target architecture doctrine:
-  - `../docs/examples/purchase-request-app-description/README.md`
-  - `../docs/examples/purchase-request-app-description/normalized-input-example.md`
-  - `../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
-  - `../docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md`
-  - `../docs/examples/purchase-request-app-description/app-description/30-tests/acceptance/01-purchase-request-acceptance.md`
-  - `../docs/examples/purchase-request-app-description/app-description/40-auth-security/identity-and-authorization.md`
-  - `../docs/examples/purchase-request-app-description/app-description/50-observability/logs-metrics-traces-and-alerts.md`
-  - `../docs/examples/purchase-request-app-description/app-description/70-traceability/capability-to-behavior-map.md`
+- current target-project app-description files and starter templates for description-layer mechanics; do not depend on removed historical domain examples
 
 ## Use this skill when
 

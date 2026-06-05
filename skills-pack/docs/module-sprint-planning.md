@@ -37,20 +37,20 @@ specs/
     02-ui-style-guide.md
   modules/
     01-identity-access.md
-    02-purchase-requests.md
+    02-domain-workstream.md
     03-approvals.md
   sprints/
     01-identity-access-sprint.md
-    02-purchase-request-core-sprint.md
+    02-domain-workstream-core-sprint.md
     03-approval-flow-sprint.md
   backlog/
     README.md
     01-identity-access-build-backlog.md
-    02-purchase-request-core-build-backlog.md
+    02-domain-workstream-core-build-backlog.md
     03-approval-flow-build-backlog.md
   tasks/
     README.md
-    02-purchase-request-core/
+    02-domain-workstream-core/
       01-request-entity.md
 ```
 
@@ -104,8 +104,8 @@ A sprint should end with a named, working app state. For generated full-stack Ak
 Each sprint should have one matching backlog file:
 
 ```text
-specs/sprints/02-purchase-request-core-sprint.md
-specs/backlog/02-purchase-request-core-build-backlog.md
+specs/sprints/02-domain-workstream-core-sprint.md
+specs/backlog/02-domain-workstream-core-build-backlog.md
 ```
 
 The backlog should break the sprint into harness-sized vertical tasks. Each implementation task should carry:
@@ -211,7 +211,6 @@ Avoid:
 ## Related skills and examples
 
 - `examples/requirements-to-workstream-mini-example.md` — preferred generated-SaaS planning shape
-- `examples/purchase-request-module-sprint-plan.md` — conventional module/sprint mechanics only, not generated-SaaS target architecture
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-slice-spec-to-backlog/SKILL.md`
 - `../akka-backlog-to-pending-tasks/SKILL.md`

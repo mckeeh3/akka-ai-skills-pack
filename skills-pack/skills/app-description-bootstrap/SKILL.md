@@ -37,19 +37,12 @@ Read these first if present:
 - `../app-descriptions/SKILL.md`
 - `../ai-first-saas/SKILL.md` when the initial app idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
 - the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md` for the preferred starter core app-description shape
-- `../docs/examples/purchase-request-app-description/README.md` for description-layer mechanics only, not target architecture doctrine
 
 Prefer these example references for generated SaaS foundation bootstraps:
 - target project `app-description/00-system/app-manifest.md`
 - target project `app-description/10-capabilities/01-secure-tenant-user-foundation.md`
 
-Use purchase-request mechanics references only when the task is specifically about cross-linked description mechanics:
-- `../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
-- `../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
-- `../docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md`
-- `../docs/examples/purchase-request-app-description/app-description/30-tests/acceptance/01-purchase-request-acceptance.md`
-- `../docs/examples/purchase-request-app-description/app-description/40-auth-security/identity-and-authorization.md`
-- `../docs/examples/purchase-request-app-description/app-description/50-observability/logs-metrics-traces-and-alerts.md`
+Use current target-project app-description files and starter templates for cross-linking mechanics; do not depend on removed historical domain examples.
 
 ## Use this skill when
 

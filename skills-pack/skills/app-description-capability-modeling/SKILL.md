@@ -47,10 +47,7 @@ Prefer these AI-first SaaS seed capability references when present:
 - target project `app-description/10-capabilities/03-governance-decisions-and-audit.md`
 - target project `app-description/10-capabilities/05-managed-agent-foundation.md`
 
-Conventional mechanics-only references, not canonical generated AI-first SaaS target architecture:
-- `../docs/examples/purchase-request-app-description/app-description/10-capabilities/capabilities-index.md`
-- `../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
-- `../docs/examples/purchase-request-app-description/app-description/70-traceability/capability-to-behavior-map.md`
+For capability cross-linking mechanics, use current target-project app-description files and starter templates; do not depend on removed historical domain examples.
 
 ## Use this skill when
 

@@ -10,12 +10,12 @@ Preferred current generated SaaS references:
 Runnable generated-app baseline:
 - this repository's runnable core app root — canonical local executable Akka Java + React/Vite/TypeScript baseline for fork-and-extend work.
 
-Mechanics-only / conventional references:
-- `purchase-request-app-description/README.md` — compact low-agentic approval workflow for app-description mechanics and cross-linking only. Do not use it as generated AI-first SaaS target architecture.
-- `purchase-request-prd.md`, `purchase-request-solution-plan.md`, `purchase-request-module-sprint-plan.md`, and `purchase-request-pending-tasks.md` — conventional planning/queue mechanics examples only. They must remain secondary to `requirements-to-workstream-mini-example.md`, the AI-first SaaS core app-description, and the core app baseline for generated SaaS work.
+Focused example policy:
+- Keep examples aligned with current generated-SaaS doctrine, starter app-description templates, or executable Akka component references that are read by focused skills.
+- Do not add historical domain-specific planning examples as generic mechanics references; prefer domain-neutral examples or the user's actual domain.
 
 Review guardrails:
 - canonical doctrine: `../ai-first-saas-application-architecture.md`, `../agent-workstream-application-architecture.md`, `../structured-surface-contracts.md`, and `../capability-first-backend-architecture.md`
 - design review checklist: `../agent-workstream-design-review-checklist.md`
 
-When generating or reviewing a full-stack AI-first SaaS app, use the core app-description and review checklist for description-layer meaning, and use the core app baseline for runnable behavior. Use conventional, static, page/screen, or consolidated examples only for explicitly labeled mechanics or domain-content reference. Do not use historical/example domain names such as DCA as generic labels for app-specific follow-up work; say `domain-specific` or use the user's actual domain name.
+When generating or reviewing a full-stack AI-first SaaS app, use the core app-description and review checklist for description-layer meaning, and use the core app baseline for runnable behavior. Keep examples focused on current skills-pack behavior and executable Akka patterns. Do not use historical/example domain names as generic labels for app-specific follow-up work; say `domain-specific` or use the user's actual domain name.

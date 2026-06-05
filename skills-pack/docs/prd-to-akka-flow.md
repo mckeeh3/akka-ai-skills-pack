@@ -64,16 +64,9 @@ Use it with:
 - `capability-first-backend-architecture.md`
 - the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md`
 
-## Conventional mechanics references
+## Focused examples
 
-These files remain useful only for conventional planning mechanics such as comparing an input artifact to a solution plan, seeing queue formatting, or reviewing module/sprint file shape:
-
-- `examples/purchase-request-prd.md`
-- `examples/purchase-request-solution-plan.md`
-- `examples/purchase-request-pending-tasks.md`
-- `examples/purchase-request-module-sprint-plan.md`
-
-They are **not** the canonical generated AI-first SaaS target architecture. Do not copy their page/resource/CRUD decomposition as the primary model for a generated app. If you use them, first apply the secure SaaS foundation, workstream/surface/capability chain, and runtime completion standard above.
+Use the current examples in `docs/examples/` for generated-SaaS planning mechanics and core foundation inputs. Keep examples domain-neutral or directly tied to executable skills-pack code; do not reintroduce historical domain-specific planning examples as generic guidance.
 
 ## Prompt pattern for a direct solution plan
 

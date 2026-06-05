@@ -15,7 +15,7 @@ The repository already has strong focused examples for individual Akka substrate
 - agents, structured responses, tools, guardrails, evaluation, orchestration, memory/runtime state, and streaming;
 - workflows with approval, pause/resume, compensation-style flow, notifications, deadlines, and endpoint integration;
 - Event Sourced Entities, Key Value Entities, Views, Consumers, Timed Actions, HTTP/gRPC/MCP endpoints, and Akka-hosted web UI delivery patterns;
-- a low-agentic purchase-request app-description reference under `docs/examples/purchase-request-app-description/` for description/planning mechanics only.
+- source-controlled starter app-description templates and current AI-first SaaS core app-description references for description/planning mechanics.
 
 The core app baseline is the canonical end-to-end implementation baseline. Do not add domain-specific vertical examples unless they provide reusable skills-pack value that the core app, root app-description, workstream UI reference, governed-agent examples, and focused Akka substrate examples do not already cover.
 
@@ -46,7 +46,7 @@ Covered core app scope:
 - workstream backend API foundation for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces;
 - React/Vite workstream frontend under root `frontend/**`; this remains application source in the repository workspace and is not exported into `.agents` by the harness install.
 
-Canonical routing rule: for new full-core generated apps that need an implementation baseline, fork or clone this repository, then extend the target workspace. Use purchase-request, shopping-cart, and standalone static UI examples only for explicitly labeled mechanics after the core-app architecture is clear.
+Canonical routing rule: for new full-core generated apps that need an implementation baseline, fork or clone this repository, then extend the target workspace. Use focused Akka component examples only when they directly support the selected skill or substrate pattern after the core-app architecture is clear.
 
 ## Completed app-description coverage
 

@@ -224,7 +224,7 @@ After creating or repairing the queue, run the lightweight queue contract valida
 bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md
 ```
 
-If the target project has only a skills-only harness install, `tools/**` is not available under `.agents`; run the validator from the repository source checkout when available or skip with an explicit note. Treat validator failures as queue repair work, not implementation blockers for a later coding run. The validator checks that runnable generated-SaaS tasks carry the required vertical contract vocabulary; it does not prove semantic correctness.
+If the target project has only a skills-library harness install, pack tools are available under `.agents/skills/tools/**`; when working from the repository source checkout, the same validator is available under `skills-pack/tools/**`. Treat validator failures as queue repair work, not implementation blockers for a later coding run. The validator checks that runnable generated-SaaS tasks carry the required vertical contract vocabulary; it does not prove semantic correctness.
 
 ## Final review checklist
 

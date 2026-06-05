@@ -44,14 +44,7 @@ Prefer these current generated-SaaS references when present:
 - target project `app-description/10-capabilities/01-secure-tenant-user-foundation.md`
 - target project `app-description/55-ui/ui-index.md`
 
-Use these conventional mechanics references only when the task is specifically about normalization or cross-linking mechanics, not as the target generated-SaaS architecture:
-- `../docs/examples/purchase-request-app-description/normalized-input-example.md`
-- `../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
-- `../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
-- `../docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md`
-- `../docs/examples/purchase-request-app-description/app-description/30-tests/acceptance/01-purchase-request-acceptance.md`
-- `../docs/examples/purchase-request-app-description/app-description/40-auth-security/identity-and-authorization.md`
-- `../docs/examples/purchase-request-app-description/app-description/50-observability/logs-metrics-traces-and-alerts.md`
+Use current target-project app-description files and starter templates for normalization or cross-linking mechanics; do not depend on removed historical domain examples.
 
 ## Use this skill when
 

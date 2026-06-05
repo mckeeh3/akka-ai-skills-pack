@@ -43,7 +43,7 @@ The exact root name may vary by project, but the harness should prefer one stabl
 
 Reference examples:
 - canonical core app-description baseline: the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md`
-- mechanics-only cross-linking example: `docs/examples/purchase-request-app-description/app-description/`
+- starter templates under `templates/ai-first-saas-starter/app-description/**` for source-controlled cross-linking examples
 
 ## Architecture goals
 

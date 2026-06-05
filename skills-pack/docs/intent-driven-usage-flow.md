@@ -57,9 +57,8 @@ Preferred generated-SaaS planning example:
 
 Conventional planning mechanics only:
 - `prd-to-akka-flow.md`
-- purchase-request examples linked from that doc
 
-Purchase-request examples are not the canonical generated AI-first SaaS target architecture. Use them only for narrow mechanics such as solution-plan or queue shape after the secure AI-first SaaS workstream model is clear.
+Historical domain-specific planning examples were removed; use current domain-neutral examples or the user's actual domain.
 
 ## Rule of thumb
 

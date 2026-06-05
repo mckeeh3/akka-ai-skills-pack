@@ -20,7 +20,7 @@ Use this together with:
 - the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md`
 - `docs/requirements-to-workstream-development-process.md`
 
-Purchase-request app-description files are mechanics-only references for older cross-linking patterns; they are not the target architecture for this workflow.
+Historical domain-specific app-description examples have been removed; use current target-project app-description files and starter templates for cross-linking mechanics.
 
 ## Example context
 
