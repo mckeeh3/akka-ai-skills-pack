@@ -26,7 +26,7 @@ Use this doc as a concise bridge from broad requirements to an Akka implementati
    Every browser action, surface request, prompt suggestion, request-based Agent tool, AutonomousAgent task operation, workflow step, timer, consumer reaction, and API endpoint must map to a capability contract and governed-tool id with AuthContext, scope, schemas, side effects, idempotency, approval/policy, audit/work traces, qualified exposure (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP exposure), and tests.
 
 8. **Plan workstream expertise.**
-   For each new or materially changed LLM-backed functional agent, plan prompt intent, skill/reference document families, compact manifests, tool boundaries, authorized loaders, denied-load behavior, seed/import expectations, user-help examples, governance surfaces, and tests.
+   For each new or materially changed LLM-backed functional agent, plan prompt intent, skill/reference document families, compact manifests, tool boundaries, authorized loaders, denied-load behavior, default-content governance expectations, user-help examples, governance surfaces, and tests.
 
 9. **Select Akka substrate after capability contracts.**
    Choose Entities, Workflows, Views, Consumers, Timed Actions, HTTP/gRPC/MCP endpoints, request-based Agents, and AutonomousAgents based on capability semantics and participant lifecycle.

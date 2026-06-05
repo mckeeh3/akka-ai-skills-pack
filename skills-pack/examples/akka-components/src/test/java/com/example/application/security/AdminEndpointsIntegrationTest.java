@@ -57,11 +57,11 @@ class AdminEndpointsIntegrationTest extends TestKitSupport {
 
     var first =
         bootstrap.bootstrapFrom(
-            "seed-admin@example.com:APP_ADMIN:ALL,owner@example.com:DEALER_OWNER:tenant-1",
+            "bootstrap-admin@example.com:APP_ADMIN:ALL,owner@example.com:DEALER_OWNER:tenant-1",
             NOW);
     var second =
         bootstrap.bootstrapFrom(
-            "seed-admin@example.com:APP_ADMIN:ALL,owner@example.com:DEALER_OWNER:tenant-1",
+            "bootstrap-admin@example.com:APP_ADMIN:ALL,owner@example.com:DEALER_OWNER:tenant-1",
             NOW.plusSeconds(60));
 
     assertEquals(2, first.size());
@@ -70,7 +70,7 @@ class AdminEndpointsIntegrationTest extends TestKitSupport {
     assertEquals(2, second.size());
     assertTrue(second.stream().noneMatch(AdminUserBootstrap.BootstrapResult::created));
     assertTrue(second.stream().allMatch(result -> result.auditId() == null));
-    assertTrue(account("seed-admin@example.com").isAppAdmin());
+    assertTrue(account("bootstrap-admin@example.com").isAppAdmin());
     assertTrue(account("owner@example.com").roles().stream().anyMatch(role -> role.tenantId().equals("tenant-1")));
 
     var audit = audit(first.getFirst().auditId());

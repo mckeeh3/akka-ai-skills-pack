@@ -1,6 +1,6 @@
 # Domain workstream PRD structure
 
-Use this structure when capturing PRDs or seed/reference descriptions for AI-first SaaS domains. It applies to the core SaaS app domain and to later domain-specific app domains.
+Use this structure when capturing PRDs or reference descriptions for AI-first SaaS domains. It applies to the core SaaS app domain and to later domain-specific app domains.
 
 The goal is to decompose product intent into fully functional workstreams before implementation:
 
@@ -153,7 +153,7 @@ Use them to capture user-assistance knowledge for the workstream agent, such as:
 
 Each `SKILL.md` should be scoped to one user-facing assistance topic. For example, User Admin may have skills for general user administration, invitation guidance, role/capability guidance, access review, denial recovery, or surface-specific help.
 
-If a generated app also stores runtime governed skills as `SkillDocument`/`SkillVersion` records, these files are seed/reference content that can be imported into governed storage with provenance, review, activation, and tenant-customization rules.
+If a generated app also stores runtime governed skills as `SkillDocument`/`SkillVersion` records, these files are default/reference content that can be represented in governed storage with provenance, review, activation, and tenant-customization rules.
 
 ## `surfaces/`
 

@@ -31,7 +31,7 @@ The skill must:
 - prefer fresh-context execution
 - load only the task's required reads and listed skills
 - preserve any AI-first operating-model, governance, approval, audit, supervision UI, or outcome constraints named by the task without broadening scope
-- preserve any workstream-expertise/reference-governance constraints named by the task: model binding, governed prompt/skill/reference docs, compact manifests, `readSkill`/`readReferenceDoc`, loader authorization, tool boundaries, load traces, expertise surfaces, seed/import behavior, and tests
+- preserve any workstream-expertise/reference-governance constraints named by the task: model binding, governed prompt/skill/reference docs, compact manifests, `readSkill`/`readReferenceDoc`, loader authorization, tool boundaries, load traces, expertise surfaces, default-content governance, and tests
 - require or inherit the generated-SaaS vertical contract before coding: workstream/functional agent or internal/foundation scope, attention category, role-specific dashboard, human surface graph node/action edge, governed-tool id and qualified exposure, capability id/API exposure, selected Akka substrate, internal workstream agent graph delegation/result mapping when applicable, autonomous task/result/notification mapping when applicable, auth, traces, and tests
 - generate or update the requested outputs
 - run the task's required checks and local/runtime validation path when the task implements app behavior
@@ -291,7 +291,7 @@ Block instead of guessing when:
 - required architecture choices or blocking pending questions are unresolved
 - AI-first authority boundaries, approval gates, policies, evidence/risk thresholds, trace obligations, UI style, or outcome metrics are required for implementation but absent
 - a generated full-stack SaaS task is component-only, CRUD-only, page-only, or dashboard-only and lacks a vertical contract naming or inheriting workstream, attention category, role-specific dashboard, human surface graph node/action edge, governed-tool id/exposure, capability id, API/exposure channel, selected Akka substrate, internal workstream agent graph result handling when relevant, AuthContext, audit/work trace, and local validation path
-- an LLM-backed functional-agent task lacks or fails to inherit the workstream expert bundle, approved model binding, governed prompt/skill/reference documents, compact manifests, authorized `readSkill`/`readReferenceDoc` loader behavior, ToolPermissionBoundary, load/work traces, expertise surfaces, seed/import behavior, or required tests
+- an LLM-backed functional-agent task lacks or fails to inherit the workstream expert bundle, approved model binding, governed prompt/skill/reference documents, compact manifests, authorized `readSkill`/`readReferenceDoc` loader behavior, ToolPermissionBoundary, load/work traces, expertise surfaces, default-content governance, or required tests
 - an AutonomousAgent or autonomous task is in scope but start/query/result/lifecycle capabilities, progress/result surfaces, task notifications, failure/cancellation attention behavior, and lifecycle tests are missing
 - the task conflicts with current code or specs
 - a required external credential/service is unavailable for normal runtime; implement fail-closed configuration errors and test-only adapters where appropriate, but do not mark provider-backed user-facing behavior done through mocks, and do not use fail-closed internal persistence as a substitute for Akka component-backed state
@@ -328,7 +328,7 @@ Before finishing, verify:
 - any AI-first constraints in the task were preserved or explicitly blocked rather than guessed
 - checks were run or explicitly reported as not run
 - generated-SaaS implementation tasks carried a workstream-attention-dashboard/surface-graph-governed-tool-capability/substrate contract, or were explicitly internal-only/foundation/cross-cutting
-- LLM-backed functional-agent tasks carried workstream-expertise/reference-governance context, including model binding, manifests, `readReferenceDoc`, loader authorization, tool boundary, load traces, expertise surfaces, seed/import behavior, and tests when applicable
+- LLM-backed functional-agent tasks carried workstream-expertise/reference-governance context, including model binding, manifests, `readReferenceDoc`, loader authorization, tool boundary, load traces, expertise surfaces, default-content governance, and tests when applicable
 - autonomous task work carried AutonomousAgent lifecycle, notification, result/progress surface, failure/cancellation attention, and test requirements when applicable
 - if the task was marked `done`, changes were committed or the reason not to commit was reported
 - the next runnable pending task was identified, or the absence of one was reported

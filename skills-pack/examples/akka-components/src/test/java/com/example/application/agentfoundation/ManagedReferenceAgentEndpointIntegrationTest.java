@@ -37,13 +37,13 @@ class ManagedReferenceAgentEndpointIntegrationTest extends TestKitSupport {
             .POST("/agentfoundation/managed-reference-agent/invoke")
             .withRequestBody(
                 new ManagedReferenceAgentEndpoint.InvokeRequest(
-                    ReferenceAgentFoundationSeed.TENANT_ID,
+                    ReferenceAgentFoundationDefaults.TENANT_ID,
                     "account-admin-1",
                     Set.of(ReferenceAgentRuntimeResolver.INVOKE_CAPABILITY),
-                    ReferenceAgentFoundationSeed.AGENT_ID,
+                    ReferenceAgentFoundationDefaults.AGENT_ID,
                     "corr-http-success",
                     "Need a rainy-day activity",
-                    ReferenceAgentFoundationSeed.ASSIGNED_SKILL_ID))
+                    ReferenceAgentFoundationDefaults.ASSIGNED_SKILL_ID))
             .responseBodyAs(ManagedReferenceAgentEndpoint.InvokeResponse.class)
             .invoke();
 
@@ -72,13 +72,13 @@ class ManagedReferenceAgentEndpointIntegrationTest extends TestKitSupport {
             .POST("/agentfoundation/managed-reference-agent/invoke")
             .withRequestBody(
                 new ManagedReferenceAgentEndpoint.InvokeRequest(
-                    ReferenceAgentFoundationSeed.TENANT_ID,
+                    ReferenceAgentFoundationDefaults.TENANT_ID,
                     "account-admin-1",
                     Set.of(ReferenceAgentRuntimeResolver.INVOKE_CAPABILITY),
-                    ReferenceAgentFoundationSeed.DISABLED_AGENT_ID,
+                    ReferenceAgentFoundationDefaults.DISABLED_AGENT_ID,
                     "corr-http-disabled",
                     "This should be denied before model invocation",
-                    ReferenceAgentFoundationSeed.ASSIGNED_SKILL_ID))
+                    ReferenceAgentFoundationDefaults.ASSIGNED_SKILL_ID))
             .responseBodyAs(ManagedReferenceAgentEndpoint.InvokeResponse.class)
             .invoke();
 
@@ -102,10 +102,10 @@ class ManagedReferenceAgentEndpointIntegrationTest extends TestKitSupport {
                     .POST("/agentfoundation/managed-reference-agent/invoke")
                     .withRequestBody(
                         new ManagedReferenceAgentEndpoint.InvokeRequest(
-                            ReferenceAgentFoundationSeed.TENANT_ID,
+                            ReferenceAgentFoundationDefaults.TENANT_ID,
                             "account-admin-1",
                             Set.of(ReferenceAgentRuntimeResolver.INVOKE_CAPABILITY),
-                            ReferenceAgentFoundationSeed.AGENT_ID,
+                            ReferenceAgentFoundationDefaults.AGENT_ID,
                             " ",
                             "Need an activity",
                             null))

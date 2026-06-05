@@ -65,7 +65,7 @@ Direct solution plans and PRD-to-spec/backlog outputs must make the graph model 
 4. per-role dashboard/attention contracts, including My Account and left rail effects;
 5. human surface graph nodes, action edges, result surfaces, edge effects, and trace links;
 6. internal workstream agent graph, including virtual dashboard agent, worker agents, delegations, governed-tools, stop/escalation rules, and result/proposal surfaces;
-7. workstream expertise plan: prompt intent, skill/reference families, compact manifests, tool boundaries, authorized loaders, denials, governance owner, seed/import expectations, user-help examples, and tests;
+7. workstream expertise plan: prompt intent, skill/reference families, compact manifests, tool boundaries, authorized loaders, denials, governance owner, default-content governance expectations, user-help examples, and tests;
 8. capability and governed-tool inventory with AuthContext, tenant/customer scope, schemas, side effects, idempotency, policy/approval, audit/work traces, qualified exposure channels, and tests;
 9. Akka substrate mapping only after the capability/governed-tool contract is clear;
 10. implementation order by vertical workstream/attention/dashboard/surface-edge/governed-tool/capability increments;

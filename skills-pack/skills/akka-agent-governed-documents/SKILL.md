@@ -7,7 +7,7 @@ description: Model prompts, skills, rubrics, policies, examples, and other behav
 
 Use this skill when agent behavior is shaped by runtime-managed documents that need lifecycle, version history, review, approval, activation, deprecation, immutable snapshots, diff UI, or audit.
 
-This skill models governed artifacts. It does not replace focused prompt, skill, policy, evaluation, entity, view, endpoint, web UI, or seed-import implementation skills. Use `akka-agent-seed-documents` when implementation-developed default documents must be loaded into governed storage on first install, tenant bootstrap, or app upgrade.
+This skill models governed artifacts. It does not replace focused prompt, skill, policy, evaluation, entity, view, endpoint, web UI, or default-document setup implementation work. Use it when implementation-developed default documents must exist in governed storage on first install, tenant bootstrap, or app upgrade.
 
 ## Required reading
 
@@ -33,7 +33,7 @@ Read these first if present:
 - activation, deprecation, archival, rollback, or immutable snapshots
 - approved prompt version, approved skill version, policy version, rubric version, or reference-example version
 - content checksum, provenance, author/reviewer, secret scanning, or change rationale
-- seed provenance, default first versions, first-install document import, tenant bootstrap, starter prompts/skills, or implementation-packaged behavior defaults
+- default-content provenance, default first versions, first-install document setup, tenant bootstrap, starter prompts/skills, or implementation-defined behavior defaults
 - agent-mediated prompt, skill, manifest, tool-boundary, policy, rubric, or example maintenance
 - an `AgentBehaviorEditorAgent`, editing agent, proposed diff, draft version, or review/approval flow for behavior changes
 
@@ -49,7 +49,7 @@ BehaviorDocumentEntity(docId)
 
 BehaviorDocumentVersionEntity(docId:version)
 - Key Value Entity stores immutable version snapshot
-- populated by Consumer from document events or seed-import workflow
+- populated by Consumer from document events or default-document setup workflow
 - supports runtime version pinning, history, rollback, and diff UI
 ```
 
@@ -132,28 +132,28 @@ Typical events:
 - `BehaviorDocumentRolledBack`
 - `BehaviorDocumentArchived`
 
-## Seeded default document flow
+## Default document setup flow
 
-Apps that manage agent prompts and skills internally still need an initial source for those records. Treat implementation-developed defaults as packaged seed material that is imported into the same governed document/version entities used by runtime editing.
+Apps that manage agent prompts and skills internally still need an initial source for those records. Treat implementation-developed defaults as governed records in the same document/version entities used by runtime editing.
 
 Normal first-install or tenant-bootstrap flow:
 
 ```text
-packaged agent behavior seed bundle
-→ validate manifest, references, checksums, token limits, and secret-like content
+implementation-defined agent behavior defaults
+→ validate references, checksums, token limits, and secret-like content
 → create missing tenant-scoped AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, ReferenceDocument/ReferenceVersion, AgentSkillManifest, AgentReferenceManifest, and ToolPermissionBoundary records
-→ mark seed v1 approved/active only under an accepted deployment policy
-→ record seed provenance and AdminAuditEvent/work trace facts
-→ runtime resolves only governed records, never seed files
+→ mark default v1 approved/active only under an accepted deployment policy
+→ record default-content provenance and AdminAuditEvent/work trace facts
+→ runtime resolves only governed records, never filesystem defaults
 ```
 
 Upgrade flow:
 
-- if tenant active content still matches prior seed checksum, the app may import the new packaged default as the next approved/active version according to policy;
+- if tenant active content still matches the prior governed baseline checksum, the app may create the new implementation default as the next approved/active version according to policy;
 - if tenant active content diverged, create a draft/proposal with a diff and require review instead of overwriting tenant behavior;
 - manifest or tool-boundary changes that expand authority require approval/decision-card routing before activation.
 
-Load `akka-agent-seed-documents` for seed manifest shape, idempotency, upgrade, and test expectations.
+Use focused prompt/skill/reference/tool-boundary governance guidance for default record shape, review, upgrade, and test expectations.
 
 ## Agent-mediated maintenance flow
 
@@ -194,8 +194,8 @@ For implementation details, load `akka-agent-behavior-editing` to define the Age
 6. Lifecycle changes and runtime use of active versions are audited or work-traced.
 7. Diff/history views are tenant-scoped and authorization-protected.
 8. Prompt, skill, policy, and rubric content is behavior guidance, not a security boundary.
-9. Implementation seed files are not runtime behavior sources after bootstrap; they only create or propose governed document versions.
-10. Seed imports must be idempotent and must not overwrite tenant-customized active content during upgrades.
+9. Filesystem defaults are not runtime behavior sources after bootstrap; runtime uses governed records only.
+10. Default-document setup must be idempotent when implemented and must not overwrite tenant-customized active content during upgrades.
 11. Runtime flows must still enforce data/tool permissions mechanically.
 12. Rollback is an explicit audited activation of a prior approved version, not an invisible state edit.
 13. Workstream reference documents should use `akka-agent-reference-governance` when they need per-agent reference manifests, authorized `readReferenceDoc(referenceId)` loading, denied-load semantics, ReferenceLoadTrace, or compact expertise manifest entries.

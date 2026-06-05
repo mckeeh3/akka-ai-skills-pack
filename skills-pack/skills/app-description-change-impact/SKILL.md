@@ -70,7 +70,7 @@ Use it after or alongside changes to:
 - observability
 - UI/supervision surfaces
 - AI-first operating-model semantics such as delegated work, authority, policies, decisions, traces, outcomes, or readiness-driving assumptions
-- workstream expertise semantics such as prompt intent, governed skill documents, reference documents, expertise manifests, loader access, tool boundaries, trace obligations, governance owners, seed/upgrade behavior, or expertise tests
+- workstream expertise semantics such as prompt intent, governed skill documents, reference documents, expertise manifests, loader access, tool boundaries, trace obligations, governance owners, default-content upgrade behavior, or expertise tests
 
 ## Core operating rule
 
@@ -89,7 +89,7 @@ A one-line behavior change may still require:
 For each change, determine as applicable:
 - which capability artifacts are impacted, including changes to governed-tool ids, actors/callers, AuthContext, schemas, side effects, idempotency, policy/approval, audit/trace, selected exposure surfaces, or browser-tool/agent-tool/internal-tool mappings
 - which workstream graph artifacts are impacted: role-specific dashboard surfaces, attention categories, human surface graph nodes/edges, system-message surfaces, cross-workstream surface requests, internal workstream agent graph nodes/delegations/results/escalations, or notification/projection effects
-- which `12-workstreams/workstream-expertise/` artifacts are impacted: bundle scope, prompt intent, skill/reference ids, compact manifest entries, capability map, `ToolPermissionBoundary`, authority profile, loader denials, governed-tool explanations, trace obligations, governance owner, seed/upgrade behavior, or tests
+- which `12-workstreams/workstream-expertise/` artifacts are impacted: bundle scope, prompt intent, skill/reference ids, compact manifest entries, capability map, `ToolPermissionBoundary`, authority profile, loader denials, governed-tool explanations, trace obligations, governance owner, default-content upgrade behavior, or tests
 - which `15-operating-model/` artifacts are impacted for generated AI-first SaaS: goals, delegated work, retained human authority, agent/team responsibilities, policies, approval gates, decisions, exceptions, evidence, traces, learning, or outcomes
 - which behavior artifacts are impacted
 - which test artifacts are impacted
@@ -98,7 +98,7 @@ For each change, determine as applicable:
 - which UI artifacts are impacted, especially `55-ui` workstream shell, functional-agent rail, composer, structured surface rendering, human surface graph realization, capability-backed browser-tool actions, frontend API contracts, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces
 - which traceability maps must change, including functional-agent-to-dashboard, surface-to-capability/governed-tool, functional-agent-to-expertise, expertise-to-capability/surface, expertise-to-observability, and expertise-to-tests relationships when present
 - whether `00-system/readiness-status.md` must be updated
-- which generation surfaces are likely affected, including seeded prompt/skill/reference resources, manifest fixtures, governed-document import code, loader/tool-boundary implementation, frontend governance surfaces, and tests when workstream expertise changed
+- which generation surfaces are likely affected, including default prompt/skill/reference resources, manifest fixtures, governed-document import code, loader/tool-boundary implementation, frontend governance surfaces, and tests when workstream expertise changed
 - which specs/backlogs/task briefs/pending tasks are likely affected when they already exist
 - whether regeneration can remain localized or should broaden
 
@@ -196,7 +196,7 @@ Route onward as needed:
 - to `app-description-ui` when `55-ui` workstream shell, rail/composer, structured surface rendering, supervision, decision, governance, digest, goal-to-execution, or audit UI implications exist
 - to focused AI-first companion skills when operating-model semantics changed and need decomposition before app-description updates
 - to `app-description-readiness-assessment` when readiness likely changed
-- to `akka-change-request-to-spec-update` when existing specs/backlogs/pending tasks must be reconciled after a bounded change, especially when expertise changes require new or revised tasks for governed documents, manifests, loaders, boundaries, UI/governance surfaces, generation/seed assets, or tests
+- to `akka-change-request-to-spec-update` when existing specs/backlogs/pending tasks must be reconciled after a bounded change, especially when expertise changes require new or revised tasks for governed documents, manifests, loaders, boundaries, UI/governance surfaces, generation/default-content assets, or tests
 - to `akka-revised-prd-reconciliation` when the change basis is a revised/replacement PRD
 - to `app-generate-app` only after the impacted description layers are updated and readiness is acceptable
 

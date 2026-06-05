@@ -42,7 +42,7 @@ Covered core app scope:
 - fixed `ai.first` root package and Maven skeleton;
 - secure SaaS foundation records and `/api/me` AuthContext bootstrap;
 - invitation/user-admin backend services, views/seams, captured outbox/Resend boundary, and tests;
-- governed agent records, seed import, prompt assembly, authorized `readSkill`, behavior-editing flow, and tests;
+- governed agent records, governed default setup, prompt assembly, authorized `readSkill`, behavior-editing flow, and tests;
 - workstream backend API foundation for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces;
 - React/Vite workstream frontend under root `frontend/**`; this remains application source in the repository workspace and is not exported into `.agents` by the harness install.
 

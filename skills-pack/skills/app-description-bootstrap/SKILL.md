@@ -31,7 +31,7 @@ Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/requirements-to-workstream-development-process.md` for the canonical input → workstreams → attention → dashboards → surfaces/actions → capabilities/APIs → Akka substrate → agent/autonomous task → notifications/projections/traces process
 - `../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope: five core workstream starter with `markdown_response`, not a single-workstream or generic chatbot slice
-- `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation every new app-description must seed
+- `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation every new app-description must establish
 - `../docs/internal-app-description-architecture.md`
 - `../docs/app-description-maintenance-flow.md`
 - `../app-descriptions/SKILL.md`
@@ -199,7 +199,7 @@ From the initial user input, derive as applicable:
 - likely primary behavior flow, starting with sign-in, `/api/me`, context selection, Account/Profile/Settings maintenance, administration, invitations, support-access, audit viewing, and tenant/customer-scoped access
 - first acceptance scenarios, including secure foundation acceptance plus tenant-isolation, forbidden-access, disabled-user, role/scope-denial, `/api/me`, audit, support-access, billing-boundary, and frontend secret-boundary baseline tests
 - initial auth/security expectations based on `core-saas-foundation`, including explicit default-deny authorization for every route, agent tool, data access, workflow action, view query, stream, and generated UI action
-- initial governed runtime agent expectations: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap loading of implementation-developed default behavior/reference seed documents, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, behavior-editing agent proposals, and denial of unauthorized authority expansion
+- initial governed runtime agent expectations: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap governed setup of implementation-developed default behavior/reference documents, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, behavior-editing agent proposals, and denial of unauthorized authority expansion
 - initial observability expectations for identity, Membership/role, support-access, admin, audit, policy, data-access, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, and consequential AI/tool events
 - initial policy, approval, exception, audit, trace, and outcome expectations for the AI-first SaaS operating model
 - initial frontend/UI expectations for the mandatory browser app, including sign-in state, context selection, `/api/me`, account/profile/settings, tenant/customer admin, Membership/role administration, invitation, support-access, audit, agent catalog, agent detail, prompt governance, skill governance, skill manifest, tool permission, editing agent proposal, and trace surfaces; for minimum starter scope, record the five core workstream shell, functional-agent rail (with My Account launched from the bottom user tile), composer, workstream logs, `markdown_response` rendering, trace links, and deferred richer surfaces
@@ -243,10 +243,10 @@ Create `12-workstreams/functional-agents.md`, `12-workstreams/attention-and-dash
 ### 5. Create the AI-first operating-model layer
 Create `15-operating-model/` for generated AI-first SaaS apps. The secure foundation itself includes delegated admin assistance, supervision, policy-governed decisions, auditability, and outcome accountability, so this layer is not optional for generated apps.
 
-Seed only the files justified by the input, but prefer the standard operating-model files when the app is clearly agentic:
+Create only the files justified by the input, but prefer the standard operating-model files when the app is clearly agentic:
 - `goals-and-objectives.md`
 - `agent-roles-and-authority.md`
-- `governed-runtime-agents.md` for `AgentDefinition`, governed prompt, skill, and reference documents, default behavior/reference seed import, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, behavior-editing agent responsibilities, `readSkill(skillId)`, `readReferenceDoc(referenceId)`, and prompt/skill/reference load tracing
+- `governed-runtime-agents.md` for `AgentDefinition`, governed prompt, skill, and reference documents, governed default behavior/reference setup, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, behavior-editing agent responsibilities, `readSkill(skillId)`, `readReferenceDoc(referenceId)`, and prompt/skill/reference load tracing
 - `policies-and-approval-gates.md`
 - `decisions-exceptions-and-evidence.md`
 - `audit-trace-and-outcomes.md`
@@ -256,7 +256,7 @@ Capture durable goals, delegated work, retained human authority, agent/team boun
 ### 6. Create the first behavior layer
 Create a `20-behavior/` index plus secure foundation behavior artifacts before app-specific flows:
 - `state-models/01-tenant-user-access-model.md` for Account, UserProfile, UserSettings, Tenant, Customer, Membership, Role, Permission/Capability, Invitation, AuthContext, support-access, and billing-boundary state semantics
-- `state-models/02-governed-agent-behavior-model.md` for `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, seed import/provenance, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace` lifecycle semantics
+- `state-models/02-governed-agent-behavior-model.md` for `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, governed default setup/provenance, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace` lifecycle semantics
 - `flows/01-secure-foundation-access-flow.md` for sign-in, `/api/me`, context selection, profile/settings, invitation, admin, support-access, audit, and tenant/customer-scoped access
 - `flows/02-governed-agent-behavior-maintenance-flow.md` for editing agent change requests, proposed diffs, draft versions, review/approval, activation, rollback, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, and trace creation
 - `rules/01-tenant-authz-rules.md` for default-deny authorization, tenant/customer isolation, disabled-user behavior, role/scope checks, and forbidden access behavior
@@ -287,7 +287,7 @@ Create:
 - `50-observability/security-and-admin-audit-events.md`
 - `50-observability/governed-agent-traces.md` for `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, editing agent proposal traces, prompt/skill/reference activation audit, and denied skill/reference/tool attempts
 
-These must seed the mandatory secure SaaS foundation from `core-saas-foundation`; WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the supported production email service for invitation/account emails and future app email features. WorkOS/Resend setup values may remain explicit open questions, but auth or email provider selection should not. Authorization, tenancy, audit, and tenant isolation are not optional. The bootstrap must state that no route, agent tool, data access, workflow action, view query, stream, or generated UI action is public or authorized by default except deliberately public static assets.
+These must establish the mandatory secure SaaS foundation from `core-saas-foundation`; WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the supported production email service for invitation/account emails and future app email features. WorkOS/Resend setup values may remain explicit open questions, but auth or email provider selection should not. Authorization, tenancy, audit, and tenant isolation are not optional. The bootstrap must state that no route, agent tool, data access, workflow action, view query, stream, or generated UI action is public or authorized by default except deliberately public static assets.
 
 ### 9. Create initial cross-links
 Cross-link the first capability, operating-model artifacts when present, behavior, and test artifacts so later maintenance and change-impact work have a stable base.
@@ -366,7 +366,7 @@ Examples:
 
 Avoid:
 - bootstrapping code instead of the app description
-- inventing provider-specific security details from thin input while still failing to seed the mandatory secure SaaS foundation
+- inventing provider-specific security details from thin input while still failing to establish the mandatory secure SaaS foundation
 - creating dozens of files from a vague one-paragraph idea
 - reducing delegated operational work to CRUD screens or a chatbot without durable goals, authority, policies, decisions, traces, and outcomes
 - marking a fresh bootstrap `ready` without substantial supporting detail
@@ -390,6 +390,6 @@ Before finishing, verify:
 When answering:
 - summarize the app idea briefly
 - state that the app-description tree was bootstrapped
-- list the created layer roots and seed artifacts
+- list the created layer roots and initial artifacts
 - call out the initial readiness state
 - recommend the next focused description skills

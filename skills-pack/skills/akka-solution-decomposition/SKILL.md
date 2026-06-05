@@ -169,7 +169,7 @@ For generated full-stack SaaS input, load or apply `agent-workstream-apps` befor
 - role-specific dashboard variants for each affected actor, including summary cards, attention item sources, hidden/zero/forbidden states, and authoritative projection/query needs;
 - the human surface graph: dashboard trunk, surface nodes, surface-request/action edges, system-message nodes, result surfaces, edge effects, realtime/refresh behavior, and trace links;
 - backend capability and governed-tool candidates behind each surface action, payload-producing query, browser-tool, agent-tool, workflow step, API call, timer, consumer reaction, or internal operation;
-- workstream expertise needs: prompt intent, procedural skills, factual/process references, compact manifests, tool boundaries, denied-load behavior, governance owner, seed/import expectations, user-help examples, and tests;
+- workstream expertise needs: prompt intent, procedural skills, factual/process references, compact manifests, tool boundaries, denied-load behavior, governance owner, default-content governance expectations, user-help examples, and tests;
 - the internal workstream agent graph: virtual dashboard agent responsibility, internal worker agents, delegation edges, stop conditions, escalation/handoff rules, result/proposal surfaces, and governed-tools allowed to each worker;
 - internal/background model-driven worker candidates, defaulting to Akka `AutonomousAgent` when typed tasks, snapshots/results, dependencies, notification streams, failure/cancellation, delegation, handoff, teams, or moderation fit;
 - events, notifications, authoritative attention projections, and audit/work traces that connect workstream actions, autonomous task progress/results, dashboards, My Account, and left rail indicators.
@@ -663,7 +663,7 @@ Use this exact response shape whenever the task starts from requirements:
 - <task-candidate-id>: why request-based Agent is insufficient or why no AutonomousAgent is needed; task start/result/read/notification capabilities; owning workstream; dashboard/result surfaces; notification-to-attention rules; audit/work traces; tests
 
 ## Workstream expertise plan
-- <functional-agent-id>: prompt intent; workstream skill documents; reference document families; compact manifests; tool boundaries; denied-load behavior; governance owner; seed/import expectations; user-help examples; tests
+- <functional-agent-id>: prompt intent; workstream skill documents; reference document families; compact manifests; tool boundaries; denied-load behavior; governance owner; default-content governance expectations; user-help examples; tests
 
 ## Capability and governed-tool inventory
 - <capability-id>/<governed-tool-id> (<class>): actors/callers; AuthContext/scope; inputs/outputs; side effects; idempotency; policy/approval; audit/trace; qualified exposure channels; required tests

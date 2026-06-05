@@ -40,7 +40,7 @@ Read these first if present:
 ## Use when the request mentions
 
 - runtime-managed system prompts that need governance
-- implementation-developed default system prompts that must be loaded as the initial governed prompt versions at install or tenant bootstrap
+- implementation-developed default system prompts that must exist as initial governed prompt versions at install or tenant bootstrap
 - prompt editor, prompt review, prompt approval, or prompt activation
 - prompt version history, prompt diff, rollback, or deprecation
 - active prompt version for an `AgentDefinition`
@@ -170,17 +170,17 @@ Rules:
 - do not include raw secrets, provider tokens, or frontend-only trust claims;
 - include full skill text only after explicit `readSkill(skillId)` tool calls, not during initial assembly.
 
-## Initial seeded prompt versions
+## Initial default prompt versions
 
-When an app ships with implementation-developed default system prompts, load them through `akka-agent-seed-documents` into `PromptDocument`/`PromptVersion` state during first install or tenant bootstrap.
+When an app ships with implementation-developed default system prompts, create them as governed `PromptDocument`/`PromptVersion` records during first install or tenant bootstrap, or include them in the app-description backlog for explicit implementation.
 
 Rules:
-- seed prompt content is packaged with the application artifact and validated by a seed manifest;
-- seed import creates the first approved/active prompt version only under an accepted deployment policy;
-- every seeded prompt version stores seed bundle id, source resource id, checksum, app/content version, import actor, timestamp, and correlation id;
-- seed import is idempotent and safe to retry;
-- app upgrades must not overwrite tenant-customized active prompts; create a proposed draft/diff when the tenant prompt diverged from prior seed checksum;
-- runtime assembly reads active governed `PromptVersion` records, never packaged seed files directly.
+- default prompt content is defined by implementation or app-description artifacts and validated before activation;
+- default setup creates the first approved/active prompt version only under an accepted governance policy;
+- every default prompt version stores provenance, checksum or content hash, app/content version, actor, timestamp, and correlation id;
+- default setup is idempotent and safe to retry when implemented as a bootstrap path;
+- app upgrades must not overwrite tenant-customized active prompts; create a proposed draft/diff when tenant content diverges from the prior governed baseline;
+- runtime assembly reads active governed `PromptVersion` records, never filesystem defaults directly.
 
 ## Agent-mediated prompt maintenance
 
@@ -250,7 +250,7 @@ Before finishing, verify:
 - prompt assembly is deterministic and traceable
 - skill manifests are compact references, not full skill text
 - prompt text cannot grant data/tool permissions by itself
-- prompt lifecycle, assembly, test actions, and first-install seed imports emit audit/work trace events
-- packaged default prompts are imported into governed storage before runtime use and upgrades preserve tenant-customized active prompt versions
+- prompt lifecycle, assembly, test actions, and first-install governed default setups emit audit/work trace events
+- default prompts exist as governed records before runtime use and upgrades preserve tenant-customized active prompt versions
 - AgentBehaviorEditorAgent prompt proposals, draft version creation, review/approval, activation, and rejection paths are tested
 - unauthorized authority expansion through prompt edits is denied, audited, and routed to review/approval when appropriate

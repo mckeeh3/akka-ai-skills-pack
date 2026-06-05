@@ -80,7 +80,7 @@ New-project setup checklist:
 If issuer/audience validation is required, store WorkOS issuer/audience values in backend-only deployment configuration, commonly `WORKOS_JWT_ISSUER` and `WORKOS_JWT_AUDIENCE`, and apply them in Akka JWT configuration/annotations. Never put `WORKOS_API_KEY`, Resend keys, bootstrap admin data, JWT key material, or service credentials in `frontend/.env*`.
 
 Java environment-variable handling rules:
-- load `ADMIN_USERS` through the app's single Akka `@Setup` `ServiceSetup.onStartup()` bootstrap path so initial admin state exists before protected routes depend on it; startup seeding must be idempotent because each service instance/restart may run it;
+- load `ADMIN_USERS` through the app's single Akka `@Setup` `ServiceSetup.onStartup()` bootstrap path so initial admin state exists before protected routes depend on it; startup bootstrap must be idempotent because each service instance/restart may run it;
 - use a shared env/config helper for backend variables; do not scatter raw `System.getenv(...)` calls;
 - trim values and treat missing, empty, and blank values as unset;
 - when a required variable is missing at startup/readiness validation or while blocking a required operation, log `error` and include the full env var name, e.g. `Required backend environment variable [WORKOS_API_KEY] is not set or is blank`;

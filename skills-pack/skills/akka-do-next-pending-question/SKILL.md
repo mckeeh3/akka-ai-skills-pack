@@ -97,7 +97,7 @@ When the user provides an answer:
 1. identify the matching question from the prompt or conversation
 2. preserve AI-first meaning in the normalized answer when present: delegated work, retained authority, policies, approvals, risk thresholds, evidence, traces, UI surfaces, evaluations, and outcomes
 3. preserve requirements-to-workstream meaning when present: workstream responsibility, attention category lifecycle, role-specific dashboard scope, human surface graph nodes/edges, surface action authority, governed-tool id/exposure, capability id/API exposure, internal workstream agent graph delegation/result behavior, AutonomousAgent lifecycle/result behavior, notification visibility, task result/progress surfaces, and human/agent worker assignment
-4. preserve workstream-expertise meaning when present: model binding, governed prompt/skill/reference docs, compact manifests, `readSkill`/`readReferenceDoc` loader authorization, ToolPermissionBoundary, load traces, expertise surfaces, seed/import behavior, and tests
+4. preserve workstream-expertise meaning when present: model binding, governed prompt/skill/reference docs, compact manifests, `readSkill`/`readReferenceDoc` loader authorization, ToolPermissionBoundary, load traces, expertise surfaces, default-content governance, and tests
 5. update:
    - `status: answered`
    - `answer: >` with the user's answer
@@ -120,7 +120,7 @@ For an `answered` question:
    - `specs/pending-tasks.md` only if it already exists and the decision changes tasks
 3. when the answer resolves an AI-first blocker, carry the decision into affected backlog/task metadata so delegated authority, policy, decision-card, trace, UI-surface, evaluation, and outcome constraints remain visible to future implementation runs
 4. when the answer resolves a requirements-to-workstream blocker, carry the decision into affected backlog/task metadata so workstream, attention, role-specific dashboard, human surface graph node/edge, surface action, governed-tool id/exposure, capability id, API/exposure, Akka substrate, internal workstream agent graph delegation/result surface, autonomous task lifecycle/notification/result surface, auth, trace, and test constraints remain visible to future implementation runs
-5. when the answer resolves a workstream-expertise or reference-governance blocker, carry the decision into affected app-description/spec/backlog/task metadata so model binding, skill/reference manifests, authorized `readSkill`/`readReferenceDoc`, loader denials/redaction, tool boundaries, SkillLoadTrace/ReferenceLoadTrace/AgentWorkTrace, expertise surfaces, seed/import policy, and tests remain visible to future implementation runs
+5. when the answer resolves a workstream-expertise or reference-governance blocker, carry the decision into affected app-description/spec/backlog/task metadata so model binding, skill/reference manifests, authorized `readSkill`/`readReferenceDoc`, loader denials/redaction, tool boundaries, SkillLoadTrace/ReferenceLoadTrace/AgentWorkTrace, expertise surfaces, default-content governance policy, and tests remain visible to future implementation runs
 6. for web UI style-guide answers, write the selected AI-first style id/name, source reference, named-theme contract, available/default theme ids, My Account preference behavior when in scope, key token expectations, and brand adaptation notes into the authoritative style-guide artifact before resolving the question
 7. update the question:
    - `status: resolved`
@@ -174,7 +174,7 @@ Before finishing, verify:
 - answers were not treated as resolved until reconciled
 - AI-first authority, policy, decision, trace, UI-surface, evaluation, and outcome semantics from the answer were preserved in reconciliation targets when relevant
 - requirements-to-workstream semantics from the answer were preserved in reconciliation targets when relevant, including attention/dashboard/surface-graph/surface-action/governed-tool/capability-id/internal-agent-graph/autonomous-task notification context
-- workstream-expertise/reference-governance semantics from the answer were preserved in reconciliation targets when relevant, including model-binding, manifests, `readReferenceDoc`, loader authorization, tool-boundary, load-trace, expertise-surface, seed, and test context
+- workstream-expertise/reference-governance semantics from the answer were preserved in reconciliation targets when relevant, including model-binding, manifests, `readReferenceDoc`, loader authorization, tool-boundary, load-trace, expertise-surface, default-content, and test context
 - only relevant planning artifacts were edited
 - no application implementation was started
 - the next actionable question or next planning step was reported

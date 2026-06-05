@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-This is the canonical doctrine for making a user-facing functional agent an expert in its workstream. It sits below `agent-workstream-application-architecture.md` and `capability-first-backend-architecture.md`, and above runtime agent, skill-governance, app-description, seed, and testing guidance.
+This is the canonical doctrine for making a user-facing functional agent an expert in its workstream. It sits below `agent-workstream-application-architecture.md` and `capability-first-backend-architecture.md`, and above runtime agent, skill-governance, app-description, default-document setup, and testing guidance.
 
 A functional agent is not ready merely because it has a prompt, a chat surface, or a list of agent-tools/internal-tools. It is workstream-ready only when its expertise is explicit, governed, loadable, bounded, traceable, and tested.
 
@@ -45,7 +45,7 @@ A bundle must name:
 | Trace requirements | PromptAssemblyTrace, SkillLoadTrace, reference-load trace, AgentWorkTrace, data-access, decision, and audit events. |
 | Tests | Authorization, tenant isolation, assigned/unassigned loads, denied loads, tool-boundary denial, capability behavior, surface rendering, and trace emission. |
 | Governance owner | Steward/reviewer role responsible for approving prompt, skill, reference, manifest, and boundary changes. |
-| Seed/upgrade policy | Initial default content, provenance/checksums, idempotent import, and customization-preserving upgrade behavior. |
+| Default-content/upgrade policy | Initial default content, provenance, review/activation policy, and customization-preserving upgrade behavior. |
 
 ## Distinctions
 
@@ -123,7 +123,7 @@ The model must not receive all skill/reference bodies by default. Full content i
 
 1. Every functional agent with LLM behavior needs an explicit workstream expert bundle or an explicit deferral that prevents readiness from being claimed.
 2. Expertise artifacts are tenant-scoped governed behavior/knowledge records, not static prompt-only text.
-3. Seeded default prompts, model config refs/policies, skills, references, manifests, and boundaries are imported into governed storage with provenance, checksums, idempotency, audit, and customization-preserving upgrade behavior.
+3. Default prompts, model config refs/policies, skills, references, manifests, and boundaries are represented as governed records with provenance, review, audit, and customization-preserving upgrade behavior.
 4. Every LLM-backed bundle must name either a specific active `ModelConfigRef`/`ModelPolicy` pair or an inherited governed default model binding; missing or implicit model selection blocks readiness unless explicitly deferred with scope impact.
 5. Provider secrets are never bundle content: bundles may reference safe provider aliases only, while deployment/runtime configuration resolves credentials outside prompts, skills, references, traces, browser payloads, and app-description examples.
 6. Manifest changes, tool-boundary changes, and model-binding/model-policy changes are governance-impacting and must be reviewed, approved, audited, and tested.
@@ -143,7 +143,7 @@ app-description/12-workstreams/
     <functional-agent-id>.md
 ```
 
-Each `<functional-agent-id>.md` should capture the bundle contract: role-specific dashboard semantics, surface graph help, prompt intent, model binding, skills, references, manifests, capability map, governed-tool map, tool boundary, surfaces, denials/user help, traces, governance owner, seed policy, and tests. Cross-layer files should link to it rather than redefining it:
+Each `<functional-agent-id>.md` should capture the bundle contract: role-specific dashboard semantics, surface graph help, prompt intent, model binding, skills, references, manifests, capability map, governed-tool map, tool boundary, surfaces, denials/user help, traces, governance owner, default-content policy, and tests. Cross-layer files should link to it rather than redefining it:
 
 - `10-capabilities/**` owns detailed capability contracts.
 - `15-operating-model/**` owns governed runtime agent behavior and lifecycle rules.
@@ -168,7 +168,7 @@ A functional agent is not expertise-ready until:
 - [ ] denied unassigned skill/reference loads are specified;
 - [ ] SkillLoadTrace/reference-load trace and AgentWorkTrace obligations are specified;
 - [ ] surfaces expose manifest, evidence, denials, decisions, traces, or governance state where needed;
-- [ ] seed/import and customization-preserving upgrade behavior are defined for default content;
+- [ ] default-content governance and customization-preserving upgrade behavior are defined;
 - [ ] tests cover assigned loads, unassigned denied loads, tool-boundary denial, capability auth, no authority expansion from text, surface rendering, tenant isolation, and audit/trace emission.
 
 ## Test expectations
@@ -190,5 +190,5 @@ Workstream expertise tests should verify:
 - Use `akka-agent-skill-governance` for governed `SkillDocument`, `SkillVersion`, `AgentSkillManifest`, `readSkill`, and `SkillLoadTrace` implementation guidance.
 - Use `akka-agent-reference-governance` for `ReferenceDocument`, `ReferenceVersion`, `AgentReferenceManifest`, `readReferenceDoc(referenceId)`, denied-load semantics, and ReferenceLoadTrace; do not silently collapse references into generic prompts or procedural skills.
 - Use `akka-agent-tool-boundaries` for enforcing loader agent-tool and governed-tool permissions.
-- Use `akka-agent-seed-documents` for default prompt/skill/reference/manifest/boundary seed import.
+- Use `akka-agent-governed-documents` plus focused prompt/skill/reference/tool-boundary skills for default prompt/skill/reference/manifest/boundary governance.
 - Use `akka-agent-testing` and `akka-agent-work-trace` for expertise runtime and trace tests.

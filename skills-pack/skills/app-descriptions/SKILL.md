@@ -120,7 +120,7 @@ When a change crosses rows, update the primary owner first, then only the linked
 Prefer this sequence unless the task is already narrowly scoped:
 
 1. apply `ai-first-saas` interpretation when broad input involves delegated work, agents, policy-bound decisions, approvals, supervision, audit, learning, or outcomes
-2. apply `core-saas-foundation` for every new SaaS app description so Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, admin, and tenant isolation are seeded before app-specific features
+2. apply `core-saas-foundation` for every new SaaS app description so Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, admin, and tenant isolation are established before app-specific features
 3. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `12-workstreams/`, `15-operating-model/`, and `55-ui/` for generated full-stack AI-first SaaS apps; for minimum/starter/basic/chatbot-like app requests, bootstrap the `minimum starter / not full core` five core workstream starter set from `../docs/minimum-ai-first-saas-app.md` — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — with `markdown_response`, durable workstream logs, trace substrate, bootstrap auth/security, governed managed-agent/runtime boundary, capability boundary, and explicit full-core follow-up gaps
 4. normalize input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 5. route input with `app-description-intake-router`

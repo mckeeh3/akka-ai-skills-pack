@@ -32,7 +32,6 @@ Read these first if present:
 - `../akka-agent-tool-boundaries/SKILL.md`
 - `../akka-agent-tools/SKILL.md`
 - `../akka-agent-work-trace/SKILL.md`
-- `../akka-agent-seed-documents/SKILL.md`
 - `../core-saas-foundation/SKILL.md`
 
 ## Use when the request mentions

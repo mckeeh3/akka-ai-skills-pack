@@ -40,7 +40,7 @@ Read these first if present:
 - `../app-description-ui/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 
-Prefer these AI-first SaaS seed capability references when present:
+Prefer these AI-first SaaS starter capability references when present:
 - target project `app-description/10-capabilities/capabilities-index.md`
 - target project `app-description/10-capabilities/01-secure-tenant-user-foundation.md`
 - target project `app-description/10-capabilities/02-ai-first-work-management.md`

@@ -7,7 +7,7 @@ import akka.javasdk.annotations.http.Post;
 import akka.javasdk.client.ComponentClient;
 import akka.javasdk.http.HttpResponses;
 import com.example.application.agentfoundation.ManagedReferenceActivityAgent;
-import com.example.application.agentfoundation.ReferenceAgentFoundationSeed;
+import com.example.application.agentfoundation.ReferenceAgentFoundationDefaults;
 import com.example.application.agentfoundation.ReferenceAgentSkillTools;
 import com.example.application.agentfoundation.ReferenceTraceSink;
 import com.example.domain.agentfoundation.ReferenceAgentWorkTrace;
@@ -57,10 +57,10 @@ public class ManagedReferenceAgentEndpoint {
 
     var traceSink = new ReferenceTraceSink();
     var authContext =
-        ReferenceAgentFoundationSeed.authContext(
+        ReferenceAgentFoundationDefaults.authContext(
             request.tenantId(), request.accountId(), request.capabilityIds(), "runtime");
     var runtime =
-        ReferenceAgentFoundationSeed.resolver(traceSink)
+        ReferenceAgentFoundationDefaults.resolver(traceSink)
             .resolve(authContext, request.agentDefinitionId(), request.correlationId());
 
     var loadedSkillId = "";
@@ -68,7 +68,7 @@ public class ManagedReferenceAgentEndpoint {
     if (runtime.allowed() && request.loadSkillId() != null && !request.loadSkillId().isBlank()) {
       var tools =
           new ReferenceAgentSkillTools(
-              runtime, ReferenceAgentFoundationSeed.skillReadAuthorizer(traceSink));
+              runtime, ReferenceAgentFoundationDefaults.skillReadAuthorizer(traceSink));
       var loadedSkill = tools.readSkill(request.loadSkillId());
       loadedSkillId = request.loadSkillId();
       skillLoadAllowed = !loadedSkill.contains("Skill unavailable");

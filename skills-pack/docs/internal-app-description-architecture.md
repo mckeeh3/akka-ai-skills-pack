@@ -253,7 +253,7 @@ Default files:
 - `internal-agents.md` for non-navigation agents with governed definitions, prompt/skill references, tool boundaries, service or AuthContext authority basis, model policy, internal workstream agent graph placement, traces, and tests
 - `workstreams-and-retention.md` for timeline semantics, persistence, replay, summarization, correlation ids, attachments, follow-up handling, and retention/redaction rules
 - `surfaces-index.md` for stable surface ids, surface type/version, owning or reusable functional agents, role-specific dashboard designation, payload schema location, allowed actions, linked capabilities/governed-tools, and rendering tests
-- `workstream-expertise/` for one workstream expert bundle contract per LLM-enabled functional agent, including prompt intent, governed skills, reference documents, compact expertise manifest, dashboard and surface graph summary, capability/governed-tool map, tool boundary, denials, user-help examples, surfaces, traces, governance owner, seed/upgrade policy, and tests
+- `workstream-expertise/` for one workstream expert bundle contract per LLM-enabled functional agent, including prompt intent, governed skills, reference documents, compact expertise manifest, dashboard and surface graph summary, capability/governed-tool map, tool boundary, denials, user-help examples, surfaces, traces, governance owner, default-content/upgrade policy, and tests
 - `surface-contracts/` for individual structured surface contracts such as role-specific dashboards, forms, tables, charts, detail cards, decision/approval/exception cards, diffs, audit timelines, workflow status cards, evidence bundles, prompt/skill version cards, outcome panels, and system-message surfaces
 
 A page, route, or screen may deep-link to a surface, but it must not replace the functional-agent/workstream/surface model as the primary description root.
@@ -413,7 +413,7 @@ Do not treat this layer as the source of app meaning.
 Default ownership should be:
 
 - `app-description-bootstrap`
-  - creates the initial `00-system/`, secure foundation `10-capabilities/`, foundation `12-workstreams/`, foundation `15-operating-model/`, foundation `20-behavior/`, foundation `30-tests/`, `40-auth-security/`, `50-observability/`, and required `55-ui/` seed artifacts for generated full-stack AI-first SaaS apps
+  - creates the initial `00-system/`, secure foundation `10-capabilities/`, foundation `12-workstreams/`, foundation `15-operating-model/`, foundation `20-behavior/`, foundation `30-tests/`, `40-auth-security/`, `50-observability/`, and required `55-ui/` initial artifacts for generated full-stack AI-first SaaS apps
   - establishes the first stable app-description root
 
 - `app-description-input-normalization`
@@ -426,7 +426,7 @@ Default ownership should be:
 
 - `app-description-functional-agent-modeling`
   - primarily owns `12-workstreams/functional-agents.md` and `12-workstreams/workstream-expertise/**` for LLM-enabled user-facing functional agents
-  - keeps each workstream expert bundle tied to one functional agent and linked to governed prompts, skills, reference documents, compact expertise manifests, capabilities, tool boundaries, surfaces, traces, governance owner, seed/upgrade policy, tests, and readiness impact
+  - keeps each workstream expert bundle tied to one functional agent and linked to governed prompts, skills, reference documents, compact expertise manifests, capabilities, tool boundaries, surfaces, traces, governance owner, default-content/upgrade policy, tests, and readiness impact
   - coordinates with capability, surface, operating-model, auth/security, observability, UI, and traceability layers without moving their detailed contracts into the expertise file
 
 - `app-description-capability-modeling`
@@ -482,7 +482,7 @@ The harness should maintain these invariants:
 
 1. Every generated SaaS app must include the secure tenant/user foundation capability, agent workstream model, AI-first operating model, behavior, auth/security, observability, web UI, and test artifacts before app-specific generation.
 2. Every generated full-stack AI-first SaaS app must model authenticated consequential work as role-authorized functional agents, governed internal agents where needed, durable workstreams, and structured surfaces rather than as a primary page/screen hierarchy.
-3. Every LLM-enabled functional agent must have a `12-workstreams/workstream-expertise/<functional-agent-id>.md` expert bundle or an explicit readiness deferral that prevents that agent/workstream from being reported implemented; the bundle owns prompt intent, skill/reference assignments, compact expertise manifest, tool boundary, capability map, trace obligations, governance owner, seed/upgrade policy, and tests for that workstream.
+3. Every LLM-enabled functional agent must have a `12-workstreams/workstream-expertise/<functional-agent-id>.md` expert bundle or an explicit readiness deferral that prevents that agent/workstream from being reported implemented; the bundle owns prompt intent, skill/reference assignments, compact expertise manifest, tool boundary, capability map, trace obligations, governance owner, default-content/upgrade policy, and tests for that workstream.
 4. Every surface action, browser-tool, agent-tool, workflow step, timer-tool, consumer-tool, API, MCP-tool/resource, or internal-tool must map to a governed capability and, when executable, a governed-tool in the relevant capability and surface/action map.
 5. Every in-scope capability must record actors/callers, AuthContext/scope, input/output shape, side effects, idempotency, approval/policy, audit/trace, selected exposure surfaces, and tests at the level needed to avoid generation-time invention.
 6. Every in-scope capability must link to at least one behavior artifact.

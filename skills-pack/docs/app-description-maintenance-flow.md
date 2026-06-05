@@ -44,7 +44,7 @@ Use only when the user explicitly asks to realize outputs or accepts a harness r
 
 Prefer this default sequence:
 
-1. bootstrap the internal app-description tree if no usable root exists yet, seeding the secure SaaS foundation capability, governed runtime agent foundation, AI-first operating model, behavior, tests, auth/security, observability, and mandatory UI surfaces; for minimum/starter/basic app requests, seed a `minimum starter / not full core` five core workstream starter set (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) with `markdown_response`, bootstrap auth/security, durable workstream logs, trace substrate, capability boundaries, and explicit full-core follow-up gaps
+1. bootstrap the internal app-description tree if no usable root exists yet, creating the secure SaaS foundation capability, governed runtime agent foundation, AI-first operating model, behavior, tests, auth/security, observability, and mandatory UI surfaces; for minimum/starter/basic app requests, create a `minimum starter / not full core` five core workstream starter set (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) with `markdown_response`, bootstrap auth/security, durable workstream logs, trace substrate, capability boundaries, and explicit full-core follow-up gaps
 2. normalize the user input when it is broad, mixed, or ambiguous
 3. intake and route the user input
 4. identify impacted description layers by reconciling against the existing workstream graph rather than generating parallel structures
@@ -87,7 +87,7 @@ Capture or verify:
 - role-specific dashboard surfaces for each affected actor/AuthContext and the attention items they must surface;
 - the human surface graph: dashboard trunk, surface nodes, action edges, system-message surfaces, trace links, denial/recovery edges, and deep-link/open-workstream edges;
 - the internal workstream agent graph when delegated/internal work is affected: virtual dashboard attention, worker nodes, governed-tools used, escalation rules, result/proposal return, and human attention items created;
-- workstream expertise ownership under `12-workstreams/workstream-expertise/<functional-agent-id>.md` for each LLM-enabled functional agent, including prompt intent, governed skills, reference documents, compact expertise manifest, dashboard/surface graph summary, capability/governed-tool map, tool boundary, denials, user-help examples, traces, governance owner, seed/upgrade policy, and tests;
+- workstream expertise ownership under `12-workstreams/workstream-expertise/<functional-agent-id>.md` for each LLM-enabled functional agent, including prompt intent, governed skills, reference documents, compact expertise manifest, dashboard/surface graph summary, capability/governed-tool map, tool boundary, denials, user-help examples, traces, governance owner, default-content/upgrade policy, and tests;
 - structured surface ids, payload/action candidates, states, traces, and tests;
 - surface action-to-capability/governed-tool candidates, including governed surface-request actions such as `open_workstream` for buttons, links, icons, cards, rows, and status panels that open protected surfaces/workstreams;
 - which changes are browser realization details for `55-ui/` rather than application meaning, including icon rendering while `12-workstreams/` owns icon semantics.
@@ -237,7 +237,7 @@ Readiness is a maintained state, not a one-time milestone.
 
 The harness should reassess readiness after material description changes, especially when they affect:
 - capability contract completeness: actors/callers, AuthContext/scope, schemas, side effects, idempotency, approval, audit, exposure surfaces, and tests
-- workstream expertise completeness: expert bundles, governed prompts/skills/references, compact manifests, authorized loaders, tool boundaries, trace obligations, UI/governance surfaces, seed/generation assets, and expertise tests
+- workstream expertise completeness: expert bundles, governed prompts/skills/references, compact manifests, authorized loaders, tool boundaries, trace obligations, UI/governance surfaces, default-content generation assets, and expertise tests
 - state transitions
 - failure semantics
 - delegated authority, approvals, exceptions, or policy controls

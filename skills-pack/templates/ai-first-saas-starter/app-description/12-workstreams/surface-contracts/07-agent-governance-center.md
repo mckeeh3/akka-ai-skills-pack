@@ -46,7 +46,7 @@ Payload must include:
 - Behavior documents, manifests, and tool boundaries are versioned governed records; prompt/skill text cannot grant authority.
 - Authority expansion requests are denied or routed to explicit approval policy.
 - Provider credentials, secret refs, raw prompt internals beyond authorized view, and hidden tool bindings are not sent to unauthorized browsers.
-- Runtime assembly reads active governed versions, not static seed files.
+- Runtime assembly reads active governed versions, not static filesystem defaults.
 
 ## Rendering and capability tests
 

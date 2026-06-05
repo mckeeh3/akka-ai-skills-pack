@@ -47,7 +47,7 @@ Read these first if present:
 - `../docs/requirements-to-workstream-development-process.md` when the change touches workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or planning queues
 - `../docs/internal-app-description-architecture.md`
 - `../docs/app-description-maintenance-flow.md`
-- `../docs/workstream-expertise-model.md` when the change adds or revises a functional agent, expert bundle, governed skills, references, manifests, loader authorization, tool boundaries, traces, seed content, or expertise tests
+- `../docs/workstream-expertise-model.md` when the change adds or revises a functional agent, expert bundle, governed skills, references, manifests, loader authorization, tool boundaries, traces, default content, or expertise tests
 - `../docs/pending-task-queue.md`
 - `../docs/solution-plan-to-implementation-queue.md`
 - `../docs/web-ui-style-guide.md` when the change affects web UI style guide
@@ -73,7 +73,7 @@ Classify the input as one or more of:
 - security/auth change
 - observability/operations change
 - AI-first operating-model change: delegated work, retained human authority, agent/team responsibility, approval gates, exception handling, policy/permission rules, audit traces, evidence/risk thresholds, UI supervision surfaces, or outcome metrics
-- workstream expertise change: functional-agent prompt intent, `SkillDocument`/`ReferenceDocument` content, `AgentSkillManifest`/`AgentReferenceManifest` entries, `readSkill`/`readReferenceDoc` loader access, `ToolPermissionBoundary`, authority profile, seed/upgrade policy, governance owner, `PromptAssemblyTrace`/`SkillLoadTrace`/`ReferenceLoadTrace`/`AgentWorkTrace`, or expertise tests
+- workstream expertise change: functional-agent prompt intent, `SkillDocument`/`ReferenceDocument` content, `AgentSkillManifest`/`AgentReferenceManifest` entries, `readSkill`/`readReferenceDoc` loader access, `ToolPermissionBoundary`, authority profile, default-content/upgrade policy, governance owner, `PromptAssemblyTrace`/`SkillLoadTrace`/`ReferenceLoadTrace`/`AgentWorkTrace`, or expertise tests
 - integration contract change
 - UI/API surface change, including web UI style-guide selection or token changes
 - workstream graph change: workstream responsibility, role-specific dashboard summary, attention category/item, human surface graph node/edge, system-message surface, internal workstream agent graph delegation/result, governed-tool exposure, capability exposure, autonomous task candidate, notification/projection, or audit/work trace linkage
@@ -95,7 +95,7 @@ Summarize:
 - affected tests
 - affected AI-first semantics: durable goals/plans, agent authority, policy, approval, exception, trace, UI, or outcome implications
 - affected internal workstream agent graph semantics: virtual dashboard agent attention, internal worker delegation, worker results/proposals, escalations, and human attention items created
-- affected workstream expertise semantics: bundle scope, prompt/skill/reference docs, compact manifests, governed-tool descriptions/denials, loader denials, tool boundaries, seed/import, governance owner, traces, UI/governance surfaces, and tests
+- affected workstream expertise semantics: bundle scope, prompt/skill/reference docs, compact manifests, governed-tool descriptions/denials, loader denials, tool boundaries, default-content governance, governance owner, traces, UI/governance surfaces, and tests
 - likely affected Akka components
 - whether this is local, cross-slice, or foundational
 
@@ -108,7 +108,7 @@ When the input says to make an agent more capable, more expert, more knowledgeab
 ### 2. Update authoritative meaning first
 
 If `app-description/` exists, update it before implementation specs:
-1. `12-workstreams/` workstream expertise when functional-agent competence changes: bundle scope, prompt intent, governed skills, reference documents, compact skill/reference manifests, capability map, `ToolPermissionBoundary`, authority profile, loader denial semantics, traces, governance owner, seed/upgrade policy, surfaces, and expertise tests
+1. `12-workstreams/` workstream expertise when functional-agent competence changes: bundle scope, prompt intent, governed skills, reference documents, compact skill/reference manifests, capability map, `ToolPermissionBoundary`, authority profile, loader denial semantics, traces, governance owner, default-content/upgrade policy, surfaces, and expertise tests
 2. capabilities when scope/outcomes, capability exposure, agent-callable tools, approval semantics, or capability-to-expertise mappings changed
 3. behavior when app semantics changed
 4. tests for acceptance, regression, negative, idempotency, security, operational, assigned/unassigned loader, tool-boundary, no-authority-expansion, trace, or surface verification
@@ -126,7 +126,7 @@ Update the smallest relevant `specs/` artifacts:
 - `specs/akka-solution-plan.md` only if architectural choices, AI-first operating model, requirements-to-workstream contract, workstream expertise foundation, authority boundaries, minimum-starter/five-core/full-core readiness, or global implementation order changed
 - `specs/cross-cutting/*.md` for shared conventions/policies, including agent authority, expert bundle governance, prompt/skill/reference document governance, manifest/loader/boundary rules, approval/evidence/risk rules, audit/trace contracts, outcome metrics, and `*ui-style-guide*.md` for browser UI style-guide decisions
 - `specs/slices/*.md` for business slice meaning, including workstream expertise responsibilities when a slice introduces or materially changes a functional agent
-- `specs/backlog/*-build-backlog.md` for implementation breakdown, preserving separate bounded tasks for affected role dashboards, attention sources, surface graph nodes/edges, governed-tools, internal-agent delegations/results, expert bundle description, seed documents, skill/reference manifests, `readSkill`/`readReferenceDoc` loaders, `SkillLoadTrace`/`ReferenceLoadTrace`, loader/boundary behavior, UI/governance surfaces, and expertise tests instead of one vague agent-governance task; repair or block CRUD/page/component-only backlog items that lack workstream/surface/governed-tool/capability context
+- `specs/backlog/*-build-backlog.md` for implementation breakdown, preserving separate bounded tasks for affected role dashboards, attention sources, surface graph nodes/edges, governed-tools, internal-agent delegations/results, expert bundle description, default documents, skill/reference manifests, `readSkill`/`readReferenceDoc` loaders, `SkillLoadTrace`/`ReferenceLoadTrace`, loader/boundary behavior, UI/governance surfaces, and expertise tests instead of one vague agent-governance task; repair or block CRUD/page/component-only backlog items that lack workstream/surface/governed-tool/capability context
 - `specs/tasks/**/*.md` when one task brief must change or a new leaf task is needed
 
 Preserve numbering and existing file names unless the user asks for a larger reorganization.
@@ -141,7 +141,7 @@ Rules:
 - append new tasks for new work
 - mark obsolete pending/deferred/blocked tasks as `superseded` when a later spec change replaces them
 - leave completed tasks as `done`; add new follow-up tasks if completed work now needs changes
-- update required reads and skills for affected pending tasks, preserving workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, governed-tool id/class, capability id/class, internal-agent delegation/result context, AuthContext/scope, selected substrate/exposure channel, notification/projection, and audit/work trace context; add `ai-first-saas` and relevant companion skills when the task implements agentic operating-model behavior; add `akka-autonomous-agents` or focused governance/testing skills when the task changes durable AutonomousAgent task lifecycle, notifications, results, or governed-tool authority; add `docs/workstream-expertise-model.md` plus focused agent governance/testing skills when the task changes expert bundles, skills, references, manifests, loaders, boundaries, traces, seed content, or expertise UI
+- update required reads and skills for affected pending tasks, preserving workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, governed-tool id/class, capability id/class, internal-agent delegation/result context, AuthContext/scope, selected substrate/exposure channel, notification/projection, and audit/work trace context; add `ai-first-saas` and relevant companion skills when the task implements agentic operating-model behavior; add `akka-autonomous-agents` or focused governance/testing skills when the task changes durable AutonomousAgent task lifecycle, notifications, results, or governed-tool authority; add `docs/workstream-expertise-model.md` plus focused agent governance/testing skills when the task changes expert bundles, skills, references, manifests, loaders, boundaries, traces, default content, or expertise UI
 - block or decompose stale/vague pending tasks such as CRUD/page/component-only work, `make the agent expert`, or `agent governance` unless they have a self-contained scope for the relevant workstream/surface/capability contract and exactly which expert bundle, governed documents, manifests, `readSkill`/`readReferenceDoc` loaders, `SkillLoadTrace`/`ReferenceLoadTrace`, boundaries, surfaces, traces, and tests are in or out
 - block tasks whose delegation, authority, approval, policy, evidence/risk, audit, UI supervision, workstream expertise, or outcome semantics are now ambiguous
 - block web UI tasks whose source spec has no selected style guide and add or update the pending style-selection question

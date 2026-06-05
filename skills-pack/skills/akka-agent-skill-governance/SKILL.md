@@ -43,7 +43,7 @@ Read these first if present:
 ## Use when the request mentions
 
 - governed agent skills or shared runtime skills
-- implementation-developed default skills that must be loaded as initial governed SkillDocument/SkillVersion records at install or tenant bootstrap
+- implementation-developed default skills that must exist as initial governed SkillDocument/SkillVersion records at install or tenant bootstrap
 - skill catalog, skill editor, skill review, skill activation, or skill version history
 - per-agent skill allowlist or `AgentSkillManifest`
 - compact skill manifest in the prompt with skill id/name/description/when-to-use entries
@@ -140,19 +140,19 @@ Prefer:
 - HTTP endpoints and web UI for skill catalog/editor/review/diff/manifest/test surfaces.
 - An `@FunctionTool` class for `readSkill(skillId)` that enforces tenant, agent, manifest, skill status, version, and mode checks.
 
-## Initial seeded skill versions and manifests
+## Initial default skill versions and manifests
 
-When the app implementation defines default runtime skills and manifests, load them through `akka-agent-seed-documents` into governed storage during first install or tenant bootstrap.
+When the app implementation defines default runtime skills and manifests, create them as governed records during first install or tenant bootstrap.
 
 Rules:
 - package default skill text, compact manifest entries, and default manifest assignments with the app artifact;
-- validate seed manifest references, checksums, token limits, stable ids/slugs, and secret-like content before import;
+- validate manifest references, checksums, token limits, stable ids/slugs, and secret-like content before activation;
 - create initial approved/active `SkillDocument`/`SkillVersion` records and `AgentSkillManifest` assignments only under an accepted deployment policy;
-- store seed bundle id, resource id, checksum, app/content version, import actor, timestamp, and correlation id on versions/manifests;
-- make seed import idempotent and safe to retry;
+- store provenance id, checksum, app/content version, actor, timestamp, and correlation id on versions/manifests;
+- make governed default setup idempotent and safe to retry;
 - do not overwrite tenant-customized active skills or manifests on upgrade; create draft/proposed diffs instead;
 - treat new manifest entries and tool-boundary changes as governance-impacting, with approval required for authority expansion;
-- runtime `readSkill(skillId)` loads only governed active `SkillVersion` records, never packaged seed files directly.
+- runtime `readSkill(skillId)` loads only governed active `SkillVersion` records, never filesystem defaults directly.
 
 ## Compact skill manifest
 
@@ -176,7 +176,7 @@ Manifest entries should include:
 
 When a workstream expert bundle has both skills and references, render a compact expertise manifest with separate `Available internal skills` and `Available workstream references` sections. Do not mix reference ids into the skill section.
 
-The manifest must be per agent. For example, `UserAdminAgent` might include `access-review`, `admin-risk-scoring`, `invitation-drafting`, `role-recommendation`, `support-access-review`, and `audit-summary`, while `AgentAdminAgent` might include `agent-definition-review`, `prompt-diff-review`, `skill-manifest-review`, `tool-boundary-review`, `behavior-test-analysis`, and `seed-upgrade-review`.
+The manifest must be per agent. For example, `UserAdminAgent` might include `access-review`, `admin-risk-scoring`, `invitation-drafting`, `role-recommendation`, `support-access-review`, and `audit-summary`, while `AgentAdminAgent` might include `agent-definition-review`, `prompt-diff-review`, `skill-manifest-review`, `tool-boundary-review`, `behavior-test-analysis`, and `default-upgrade-review`.
 
 ## `readSkill(skillId)` tool contract
 
@@ -297,7 +297,7 @@ A skill-loading test console should:
 
 Before finishing, verify:
 - SkillDocument/SkillVersion follow the governed document/version pattern
-- implementation-developed default skills and manifests are seeded into governed storage with provenance, idempotency, audit, and customization-preserving upgrade behavior
+- implementation-developed default skills and manifests are created in governed storage with provenance, idempotency, audit, and customization-preserving upgrade behavior
 - AgentSkillManifest is tenant-scoped and tied to AgentDefinition
 - prompt assembly includes compact skill manifest only, or a compact expertise manifest with separate skill/reference sections when references are in scope
 - `readSkill(skillId)` enforces tenant, agent, manifest, status, version, and mode checks

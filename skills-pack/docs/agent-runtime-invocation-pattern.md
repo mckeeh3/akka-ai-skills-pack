@@ -237,7 +237,7 @@ After using this pattern, load focused skills by the next implementation slice:
 - `akka-agent-prompt-governance` for `PromptDocument`, `PromptVersion`, and prompt assembly;
 - `akka-agent-skill-governance` for `AgentSkillManifest`, `readSkill(skillId)`, and `SkillLoadTrace`;
 - `akka-agent-reference-governance` for `ReferenceDocument`, `AgentReferenceManifest`, `readReferenceDoc(referenceId)`, and `ReferenceLoadTrace`;
-- `akka-agent-seed-documents` for seeded expert bundles, prompts, skills, references, manifests, and boundaries;
+- `akka-agent-governed-documents` for governed expert bundles, prompts, skills, references, manifests, and boundaries;
 - `akka-agent-work-trace` for trace records and timeline/search surfaces;
 - `akka-agent-tools` and tool-boundary guidance for local/component/MCP/readSkill/readReferenceDoc tools;
 - `akka-agent-component` only after the governed runtime profile contract is clear;

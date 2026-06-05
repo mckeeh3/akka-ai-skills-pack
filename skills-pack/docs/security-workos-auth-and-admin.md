@@ -294,7 +294,7 @@ Local/dev/test environments may replace external delivery with an explicit safe 
 
 Bootstrap behavior:
 - implement startup bootstrap in the service's single Akka `@Setup` class implementing `akka.javasdk.ServiceSetup`; `onStartup()` must load `ADMIN_USERS` before `/api/me` or admin endpoints depend on local admin state
-- keep bootstrap idempotent because Akka invokes `onStartup()` for each service instance and restart; do not rely on endpoint lazy initialization or tests calling the seeder directly as the production startup path
+- keep bootstrap idempotent because Akka invokes `onStartup()` for each service instance and restart; do not rely on endpoint lazy initialization or tests calling the bootstrap helper directly as the production startup path
 - parse configured initial admins at startup using canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`) plus explicitly mapped app-specific roles when needed
 - create invited local Akka user accounts idempotently
 - create Invitation records with invite token or acceptance context, status, expiry, delivery status, delivery attempts, and audit metadata

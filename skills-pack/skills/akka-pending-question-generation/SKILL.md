@@ -79,7 +79,7 @@ For new Java generation/scaffolding, ensure the Java base package is resolved be
 Create questions only when the answer can change one or more of:
 - AI-first operating model: delegated work, retained human authority, supervision mode, or outcome loop
 - requirements-to-workstream contract: workstream ownership, attention categories, role-specific dashboard summaries, left-rail/My Account attention behavior, human surface graph nodes/edges, structured surface actions, governed-tool ids and qualified exposure, capability mapping, internal workstream agent graph delegations/results, AutonomousAgent task lifecycle/results, notifications/projections, or audit/work trace linkage
-- workstream expertise contract: model binding, prompt intent, skill/reference document ownership, compact manifests, `readSkill`/`readReferenceDoc` loader authorization, `ToolPermissionBoundary`, SkillLoadTrace/ReferenceLoadTrace/AgentWorkTrace, expertise surfaces, seed policy, or tests
+- workstream expertise contract: model binding, prompt intent, skill/reference document ownership, compact manifests, `readSkill`/`readReferenceDoc` loader authorization, `ToolPermissionBoundary`, SkillLoadTrace/ReferenceLoadTrace/AgentWorkTrace, expertise surfaces, default-content policy, or tests
 - agent or agent-team authority: autonomous decisions, tool/data permissions, escalation rules, or memory/trace requirements
 - governance model: policies, clauses, guardrails, prompts, thresholds, approval gates, simulations, or human-governed commits
 - decision semantics: required evidence, risk/confidence/impact thresholds, alternatives, exception handling, or override behavior
@@ -167,7 +167,7 @@ If `specs/pending-questions.md` already exists:
 
 ## Relationship to pending tasks
 
-Before creating or updating `specs/pending-tasks.md`, check whether unresolved `blocking` questions affect planned tasks. For AI-first plans, also check whether tasks depend on unresolved workstream identity, attention/dashboard contracts, human surface graph nodes/edges, surface actions, governed-tool ids/exposure, capability ids, internal workstream agent graph delegation/result behavior, authority, approval, policy, evidence, risk, AutonomousAgent lifecycle, notification/projection, trace, UI-supervision, evaluation, or outcome-metric decisions. For LLM-backed functional-agent work, also check for unresolved workstream expert bundle, model-binding, skill/reference governance, `readReferenceDoc`, manifest assignment, loader authorization, tool-boundary, load-trace, expertise-surface, and seed/test decisions.
+Before creating or updating `specs/pending-tasks.md`, check whether unresolved `blocking` questions affect planned tasks. For AI-first plans, also check whether tasks depend on unresolved workstream identity, attention/dashboard contracts, human surface graph nodes/edges, surface actions, governed-tool ids/exposure, capability ids, internal workstream agent graph delegation/result behavior, authority, approval, policy, evidence, risk, AutonomousAgent lifecycle, notification/projection, trace, UI-supervision, evaluation, or outcome-metric decisions. For LLM-backed functional-agent work, also check for unresolved workstream expert bundle, model-binding, skill/reference governance, `readReferenceDoc`, manifest assignment, loader authorization, tool-boundary, load-trace, expertise-surface, and default-content/test decisions.
 
 If blocking questions exist:
 - create or update `specs/pending-questions.md`

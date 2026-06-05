@@ -15,7 +15,7 @@ The core model supports a three-level SaaS business structure:
 SaaS Owner -> Tenant -> Customer
 ```
 
-A **Tenant** is the SaaS user organization. A **Customer** is always modeled initially as an organization served by a Tenant. Specific generated applications may later adapt this model for individual consumers, but the seed foundation should start with organization customers.
+A **Tenant** is the SaaS user organization. A **Customer** is always modeled initially as an organization served by a Tenant. Specific generated applications may later adapt this model for individual consumers, but the starter foundation should start with organization customers.
 
 ## Identity and authorization model
 

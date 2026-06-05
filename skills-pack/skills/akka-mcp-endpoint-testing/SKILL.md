@@ -48,7 +48,7 @@ Because there is no dedicated MCP test kit utility, prefer these test styles:
 ### Component-backed MCP endpoint tests
 - `ShoppingCartMcpEndpointTest`
   - extends `TestKitSupport`
-  - seeds entity state through `componentClient`
+  - creates entity state through `componentClient`
   - instantiates the MCP endpoint directly
   - parses returned JSON strings into endpoint-facing records
   - verifies prompt and packaged-resource output

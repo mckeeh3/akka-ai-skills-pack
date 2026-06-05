@@ -110,7 +110,7 @@ Use this matrix before reading every governance companion. Load the first matchi
 |---|---|---|
 | Agent identity, lifecycle, owner/steward, functional/internal placement, authority level, active references, or admin catalog | `akka-agent-behavior-profiles` | `akka-agent-model-governance`, `akka-agent-tool-boundaries`, `akka-agent-work-trace` |
 | Tenant-scoped versioned artifacts such as prompts, skills, rubrics, policies, examples, snapshots, review, activation, diff/history, or rollback | `akka-agent-governed-documents` | focused prompt/skill/policy/rubric skills |
-| First install, tenant bootstrap, or upgrade import of implementation-developed default AgentDefinitions, prompts, skills, manifests, or tool boundaries | `akka-agent-seed-documents` | `akka-agent-governed-documents`, prompt/skill/tool-boundary skills |
+| First install, tenant bootstrap, or upgrade setup of implementation-developed default AgentDefinitions, prompts, skills, manifests, or tool boundaries | `akka-agent-governed-documents` | prompt/skill/tool-boundary skills |
 | Prompt versions, prompt review/activation, effective prompt assembly, prompt test console, or `PromptAssemblyTrace` | `akka-agent-prompt-governance` | `akka-agent-governed-documents`, `akka-agent-behavior-editing` |
 | Runtime skills, compact `AgentSkillManifest`, `readSkill(skillId)`, skill-load denials, or `SkillLoadTrace` | `akka-agent-skill-governance` | `akka-agent-tool-boundaries`, `akka-agent-governed-documents` |
 | Governed-tool registry/catalog, agent-tool exposure, local/component/MCP/readSkill grants, data scope, side effects, approval-required tool expansion, or tool invocation denials | `akka-agent-tool-boundaries` | `akka-agent-tools`, `akka-agent-component-tools`, `akka-agent-mcp-tools`, `akka-agent-work-trace` |
@@ -124,7 +124,7 @@ Boundary rules:
 - `PromptDocument` and `SkillDocument` are behavior guidance; they never grant role, data, tenant/customer, tool, model, approval, or autonomous authority.
 - `AgentSkillManifest` advertises compact skill ids and when-to-use hints; full skill text is returned only through authorized `readSkill(skillId)`.
 - `ToolPermissionBoundary`, AuthContext, permissions/capabilities, approval policy, and backend checks are the authority source for tool/data/side-effect access.
-- Seed files are import sources only; runtime agents resolve governed records after bootstrap.
+- Runtime agents resolve governed records after bootstrap; they must not depend on filesystem defaults for authority or content.
 - Editing agents and evaluator agents may draft proposals and evidence, not directly activate consequential changes unless a narrow backend-enforced auto-approval policy is explicitly modeled and tested.
 
 ## Companion skills
@@ -139,8 +139,8 @@ Load the companion skill that matches the current task:
   - concrete runtime invocation sequence from AuthContext through active AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission
 - `akka-agent-governed-documents`
   - tenant-scoped governed prompts, skills, rubrics, policies, and examples with version history, immutable snapshots, review, activation, diff UI, and audit
-- `akka-agent-seed-documents`
-  - first-install/tenant-bootstrap loading of implementation-developed default AgentDefinition, prompt, skill, manifest, and tool-boundary records into governed storage with provenance, idempotency, upgrade behavior, and audit
+- `akka-agent-governed-documents`
+  - first-install/tenant-bootstrap governed setup of implementation-developed default AgentDefinition, prompt, skill, manifest, and tool-boundary records with provenance, upgrade behavior, and audit
 - `akka-agent-prompt-governance`
   - runtime-managed agent system prompts with PromptDocument/PromptVersion, review, activation, diff/history UI, effective prompt assembly, PromptAssemblyTrace, and safe test consoles
 - `akka-agent-skill-governance`
@@ -222,7 +222,7 @@ Rules:
 8. For deploy-time harness-like skills, expose only whitelisted packaged resources through focused `@FunctionTool` methods or MCP; do not read `.agents/skills` from the Akka runtime.
 9. For tenant-managed runtime skills, use governed SkillDocument/SkillVersion and AgentSkillManifest checks before `readSkill(skillId)` returns content.
 10. Keep agents stateless; use memory or Akka components for context instead of mutable fields.
-11. For managed runtime agents, package implementation-developed default prompts, skills, manifests, tool boundaries, and AgentDefinitions as starter resources and import them into governed storage during install or tenant bootstrap; runtime agents must not read those seed files directly.
+11. For managed runtime agents, create implementation-developed default prompts, skills, manifests, tool boundaries, and AgentDefinitions as governed records during install or tenant bootstrap; runtime agents must read governed records, not filesystem defaults.
 12. Use workflows to orchestrate multiple agents or to add retries, timeouts, and durable progress.
 13. Use `TestModelProvider` for deterministic tests.
 
@@ -258,7 +258,7 @@ Load `akka-agent-behavior-profiles` before prompt, skill, tool, orchestration, o
 ### 3. Governed behavior documents
 Use when prompts, skills, rubrics, policies, or examples need tenant-scoped version history, review, approval, activation, immutable snapshots, diff/history UI, or audit.
 
-Load `akka-agent-governed-documents` before focused prompt governance, skill governance, policy governance, evaluation-rubric, or runtime document lookup implementation. Load `akka-agent-seed-documents` when the app must preload implementation-developed default document versions at install, tenant bootstrap, or upgrade.
+Load `akka-agent-governed-documents` before focused prompt governance, skill governance, policy governance, evaluation-rubric, default-document setup, or runtime document lookup implementation.
 
 ### 4. Governed runtime prompts
 Use when agent system prompts need tenant-scoped review, approval, activation, version history, diff/history UI, effective prompt assembly, prompt assembly trace, or a safe prompt test console.
@@ -345,7 +345,7 @@ Before finishing, verify:
 - workflow orchestration is used instead of agent-to-agent tool chaining
 - managed runtime agents have durable behavior profiles with tenant scope, lifecycle status, owner/steward, authority level, governed `ModelConfigRef`/model policy references, tool permission boundaries, and active prompt/skill references
 - governed behavior documents use tenant-scoped version history, immutable snapshots, checksums, approval/activation rules, protected diff/history surfaces, and audit events
-- implementation-developed default prompts, skills, manifests, tool boundaries, and AgentDefinitions are seeded into governed storage on first install or tenant bootstrap with provenance, idempotency, audit, and customization-preserving upgrade behavior
+- implementation-developed default prompts, skills, manifests, tool boundaries, and AgentDefinitions are created in governed storage on first install or tenant bootstrap with provenance, idempotency, audit, and customization-preserving upgrade behavior
 - AI-first agents are explicitly classified as functional/context-area agents or internal agents
 - functional agents have workstream, structured surface, capability, authority, trace, and UI-test contracts before implementation
 - internal agents are not presented as primary navigation/workstream units unless promoted to a functional agent by product intent

@@ -14,7 +14,7 @@ import java.util.Set;
  * Main-source reference fixture factory for the optional managed-agent HTTP/test-console surface.
  * This is intentionally static sample data, not a production authorization or governance store.
  */
-public final class ReferenceAgentFoundationSeed {
+public final class ReferenceAgentFoundationDefaults {
   public static final String TENANT_ID = "tenant-reference-1";
   public static final String AGENT_ID = "agent-activity-guide";
   public static final String DISABLED_AGENT_ID = "agent-disabled";
@@ -26,7 +26,7 @@ public final class ReferenceAgentFoundationSeed {
   public static final String TOOL_BOUNDARY_ID = "tool-boundary-activity-guide";
   public static final String RUNTIME_MODE = "runtime";
 
-  private ReferenceAgentFoundationSeed() {}
+  private ReferenceAgentFoundationDefaults() {}
 
   public static ReferenceAuthContext authContext(
       String tenantId, String accountId, Set<String> capabilityIds, String mode) {

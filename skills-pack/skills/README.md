@@ -36,7 +36,7 @@ For high-level product input, treat the target as a secure AI-first SaaS **agent
 Mandatory secure SaaS, agent workstream, AI-first managed agents, and web UI foundation before app-specific features:
 - WorkOS/AuthKit browser user authentication (the supported user auth service)
 - local Akka-owned authorization state: Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, and selected AuthContext
-- AI-first managed agents / governed runtime agent foundation: active AgentDefinition resolution, PromptDocument/PromptVersion, SkillDocument/SkillVersion, ReferenceDocument/ReferenceVersion, per-agent AgentSkillManifest and AgentReferenceManifest with compact skill/reference ids/names/descriptions/when-to-use or when-to-consult hints in the assembled prompt, backend-owned tool registry ids, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, deterministic prompt assembly, authorized Akka `@FunctionTool` readSkill(skillId) and readReferenceDoc(referenceId), runtime registration with `effects().tools(runtimeTools)`, and first-install/tenant-bootstrap seeding of implementation-developed default prompt/skill/reference/manifest/tool-boundary documents into governed storage
+- AI-first managed agents / governed runtime agent foundation: active AgentDefinition resolution, PromptDocument/PromptVersion, SkillDocument/SkillVersion, ReferenceDocument/ReferenceVersion, per-agent AgentSkillManifest and AgentReferenceManifest with compact skill/reference ids/names/descriptions/when-to-use or when-to-consult hints in the assembled prompt, backend-owned tool registry ids, ToolPermissionBoundary, PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, deterministic prompt assembly, authorized Akka `@FunctionTool` readSkill(skillId) and readReferenceDoc(referenceId), runtime registration with `effects().tools(runtimeTools)`, and first-install/tenant-bootstrap governed setup of implementation-developed default prompt/skill/reference/manifest/tool-boundary documents
 - SaaS Owner, Tenant, and Customer organization model with tenant/customer-scoped commands and queries
 - `/api/me` for the signed-in account, memberships, selected context, profile, settings, and browser-safe capabilities
 - complete email-invite onboarding with Resend (resend.com) as the supported production email service, explicit local/dev/test captured outbox behavior, and the same Resend email service reusable for other app email features and governed agent `@FunctionTool` email tools
@@ -74,7 +74,7 @@ AI-first companion skills:
 - `ai-first-saas-object-model` — select durable goals, plans, policies, decisions, traces, outcomes, and related substrate objects before choosing Akka components
 - `ai-first-saas-agent-team-design` — design bounded coordinator/specialist/evaluator agent teams, authority limits, tools, escalation rules, traces, and workflow supervision
 - `ai-first-saas-admin-agents` — make AI-assisted admin offload mandatory for generated SaaS foundations with bounded admin responsibilities backed by governed `AgentDefinition`, prompts, skills, manifests, tool boundaries, traces, decision cards, and approval rules
-- `akka-agent-seed-documents` — seed implementation-developed default `AgentDefinition`, prompt, skill, manifest, and tool-boundary records into app-managed governed storage on first install or tenant bootstrap, with idempotency, provenance, upgrade behavior, audit, and tests
+- `akka-agent-governed-documents` — model tenant-scoped governed `AgentDefinition`, prompt, skill, reference, manifest, policy, rubric, example, and tool-boundary records with review, activation, provenance, upgrade behavior, audit, and tests
 - `ai-first-saas-policy-governance` — model policies, clauses, permissions, thresholds, approval gates, proposals, simulations, and human-governed commits
 - `ai-first-saas-decision-cards` — design recommendation, approval, exception, and deviation review surfaces with evidence, risk, confidence, impact, alternatives, and actions
 - `ai-first-saas-audit-trace` — design durable work, decision, policy, tool, data-access, approval, and outcome traces
@@ -465,10 +465,6 @@ Use when agents are managed as tenant-scoped runtime actors with durable `AgentD
 ### Governed documents
 Use when prompts, skills, references, rubrics, policies, examples, or other behavior-shaping artifacts need tenant-scoped version history, immutable snapshots, review, approval, activation, deprecation, diff/history UI, or audit.
 - `akka-agent-governed-documents`
-
-### Seeded default agent documents
-Use when implementation-developed default prompts, skills, manifests, tool boundaries, or AgentDefinitions must be loaded as the first governed document versions at app install, tenant bootstrap, or upgrade without overwriting tenant customizations.
-- `akka-agent-seed-documents`
 
 ### Prompt governance
 Use when agent system prompts need tenant-scoped review, approval, activation, version history, diff/history UI, effective prompt assembly, prompt assembly trace, or a safe prompt test console.
@@ -896,7 +892,7 @@ Load:
 Load:
 - `akka-agents`
 - `akka-agent-governed-documents`
-- `akka-agent-seed-documents` when default first versions are packaged with the app or tenant bootstrap
+- `akka-agent-governed-documents` when default first versions must exist at app install or tenant bootstrap
 - `core-saas-foundation`
 - `ai-first-saas-audit-trace`
 - `akka-event-sourced-entities`
@@ -1394,8 +1390,7 @@ Testing examples:
 ### Agents
 Routing references:
 - `akka-agent-behavior-profiles` for durable tenant-scoped AgentDefinition and runtime behavior profile design before implementation of managed agents
-- `akka-agent-governed-documents` for tenant-scoped governed prompts, skills, rubrics, policies, and examples with immutable versions, review, activation, diff/history, and audit
-- `akka-agent-seed-documents` for first-install/tenant-bootstrap loading of implementation-developed default AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, and ToolPermissionBoundary records with idempotency, provenance, upgrade behavior, and audit
+- `akka-agent-governed-documents` for tenant-scoped governed prompts, skills, references, rubrics, policies, examples, and implementation-developed default AgentDefinition/manifest/tool-boundary records with immutable versions, provenance, review, activation, diff/history, upgrade behavior, and audit
 - `akka-agent-prompt-governance` for governed runtime-managed system prompts, PromptDocument/PromptVersion, effective prompt assembly, PromptAssemblyTrace, and prompt test consoles
 - `akka-agent-skill-governance` for governed runtime procedural skills, SkillDocument/SkillVersion, AgentSkillManifest, compact skill manifest prompt context, readSkill(skillId), and SkillLoadTrace
 - `akka-agent-reference-governance` for governed workstream references, ReferenceDocument/ReferenceVersion, AgentReferenceManifest, compact reference manifest prompt context, readReferenceDoc(referenceId), denied reference loads, redaction/access checks, and ReferenceLoadTrace

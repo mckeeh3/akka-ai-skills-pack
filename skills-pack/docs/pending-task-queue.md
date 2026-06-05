@@ -176,7 +176,7 @@ Use bounded foundation task families such as:
 
 For every new or materially changed domain-specific functional agent with LLM behavior, queue self-contained fresh-session workstream expertise tasks. Split as needed into:
 - app-description expert bundle contract with functional agent, approved model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited governed default), surfaces, capabilities, authority, traces, and tests
-- seeded default model refs/policies, prompt, skill documents, reference documents, compact skill/reference manifests, and provenance/checksum expectations
+- default model refs/policies, prompt, skill documents, reference documents, compact skill/reference manifests, and provenance/checksum expectations
 - runtime model-binding and loader/boundary work for model policy validation, fallback/no-fallback behavior, provider secret boundaries, `readSkill`, `readReferenceDoc`, assigned loads, unassigned denials, missing-boundary denials, redaction/token limits, and trace emission
 - expertise manifest and governance UI surfaces that show model aliases/policy summaries, compact manifests, evidence, denials, decisions, trace links, and review state without exposing full bodies or provider secrets by default
 - contract/runtime tests for model binding success/denial/fallback, provider-secret non-exposure, assigned skill/reference loads, denied loads, tool-boundary denial, no authority expansion from prompt/skill/reference text, tenant isolation, audit/work traces, and surface rendering
