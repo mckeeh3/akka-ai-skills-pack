@@ -105,82 +105,11 @@ The updated behavior specification should make it possible for a later harness s
 
 ## Standard behavioral output shape
 
-Use this response shape when updating or summarizing behavior changes:
-
-```md
-# Behavior Specification Update
-
-## Requested change
-- ...
-
-## Capability or scope change
-- linked capability id/class:
-- contract changes: actors/callers, AuthContext/scope, inputs/outputs, side effects, idempotency, approval, audit, exposure surfaces
-
-## AI-first operating semantics for generated SaaS apps
-- delegated work:
-- retained human authority:
-- approval / exception / decision semantics:
-- policy / permission semantics:
-- trace / feedback / outcome semantics:
-
-## Behavioral rules
-- ...
-
-## State and transitions
-- ...
-
-## Invariants
-- ...
-
-## Forbidden behavior
-- ...
-
-## No-op / idempotent behavior
-- ...
-
-## Open questions and assumptions
-- ...
-
-## Affected linked layers
-- operating model:
-- tests:
-- auth/security:
-- observability:
-```
+Use the delta modeling contract in `../docs/app-description-skill-output-contracts.md`. For this behavior skill, report the requested change, authoritative layer/file targets, in-scope and out-of-scope behavior, authority/scope, DTOs or payloads where relevant, side effects/idempotency/denials/traces/tests, linked layers, assumptions, and next handoff. Avoid repeating the full app-description layer model.
 
 ## Behavior modeling rules
 
-### 1. State intent before implementation
-Describe behavior in terms of outcomes, transitions, and invariants before discussing code structure.
-
-### 2. Separate confirmed facts from assumptions
-Never present an inferred behavior as confirmed if the user did not actually specify it.
-
-### 3. Pull hidden expectations upward
-If the request implies missing semantics such as idempotency, ordering, approval boundaries, or failure handling, make them explicit as assumptions or questions.
-
-### 4. Make no-op behavior explicit
-For update and retry scenarios, describe what should happen when the requested change is already true or no longer applicable.
-
-### 5. Make forbidden behavior explicit
-Do not stop at positive happy-path rules.
-Capture what the system must refuse, reject, or ignore.
-
-### 6. Flag cross-layer impact
-If a behavior change implies new tests, tighter security, or more observability, say so explicitly.
-
-### 7. Preserve delegation and governance semantics
-When behavior involves agents, automation, recommendations, approvals, exceptions, or policy-bound action, define:
-- what the system or agent may do autonomously
-- where it must pause for human review
-- what evidence, risk, confidence, impact, and alternatives are required
-- what transitions are allowed after approval, rejection, override, timeout, or exception resolution
-- what must be recorded for audit and outcome learning
-
-### 8. Keep policy-controlled behavior mechanical
-Do not describe policy, permission, or approval behavior as prompt advice only.
-Behavior specs must identify enforceable rules, forbidden transitions, and escalation points, then link security and observability impacts.
+Apply the concise rules in `../docs/app-description-skill-output-contracts.md` plus the focused skill's goal. Preserve mandatory secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agent/tool boundaries, traces, and tests when those concerns are in scope. Ask only blocking questions; otherwise record assumptions and hand off to the next focused skill.
 
 ## Clarification policy
 

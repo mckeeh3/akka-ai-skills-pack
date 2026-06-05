@@ -70,112 +70,11 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 
 ## What to capture
 
-### Personas and journeys
-- user roles/personas
-- user goals
-- primary journeys
-- role-specific access or UI differences
-- temporal modes for AI-first work: delegation, supervision, review/approval, exception handling, teaching/governance, catch-up, and audit
-
-### AI-first surfaces
-- Goal-to-Execution Workbench: intent capture, plan review, agent assignments, tool/data permissions, approval gates, simulation, launch/cancel controls
-- Command Center / Mission Control: active objectives, agent activity, progress, risks, exceptions, approval queues, material events, and trace links
-- Decision Card / Deviation Review: recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, reviewer actions, and learning options
-- Policy / Governance / Learning Center: policy versions, clause IDs, examples, proposals, diffs, simulations/replays, approvals, commits, and rollback controls
-- Async Digest / Executive Briefing: routine-activity compression, material events, pending decisions, prior outcomes, and links to traces
-- Audit / Work Trace: chronological agent steps, tool calls, data access, policy invocations, approvals, actions, rollbacks, and outcome links
-
-### Managed-agent foundation UI
-- Agent catalog: tenant-scoped list/search/filter of active, disabled, draft, and archived `AgentDefinition` records with owner/steward, authority level, model reference, prompt reference, skill manifest, tool permission boundary, status, and trace summary.
-- Agent detail: lifecycle controls, prompt/skill/manifest/tool-boundary references, effective capability grants, disabled-agent denial state, recent `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` links.
-- Prompt governance: `PromptDocument`/`PromptVersion` list, editor/proposal intake, diff/history, review/approval, activation, rollback, checksum/status, test console, and prompt assembly preview.
-- Skill governance: `SkillDocument`/`SkillVersion` list, compact manifest hints, full skill text review, diff/history, approval, activation/deprecation, and `readSkill(skillId)` test console.
-- Skill manifests and tool permissions: `AgentSkillManifest` assignment UI, unassigned skill denial visibility, `ToolPermissionBoundary` editor/review, scoped tool/data permissions, approval-required authority expansion, and policy citations.
-- Editing agent proposals: `AgentBehaviorEditorAgent` or equivalent proposed diff review, rationale, risk/impact notes, affected artifacts, suggested tests/replays, approval actions, denial reasons, and activation/rollback results.
-- Trace surfaces: prompt assembly, allowed/denied skill loads, tool/data access, policy decisions, approval outcomes, and consequential agent work traces with tenant/customer scope, correlation ids, redaction, and auditor views.
-
-### Routes and deep links
-- implementation routes, UI paths, direct surface URLs, and auth-transition/public-static paths
-- mapping from each route/deep link to the selected functional agent, workstream item, or structured surface it opens
-- route/deep-link entry through the same shell request pipeline as prompts and surface actions: normalize to `show surface <surface-id>` or `show workstream <workstream-id>`, append the prompt-like request item in the target workstream only, preserve `origin: "deep_link"`, and render denial as a typed `system_message` surface
-- navigation entry/exit points as shell behavior, not as the primary application decomposition
-- empty/not-found/forbidden route states and recovery actions
-- reminder: primary/secondary actions, loading/error states, and authorization semantics belong first in structured surface contracts and governed capability contracts
-
-### Shell navigation, attention summaries, and workstream icons
-- render workstream icon descriptors from `12-workstreams/` using stable icon ids, visual hints, theme accent color tokens, tooltips, accessible labels, and optional approved asset references; realization must use an approved SVG/icon-library registry or semantic SVG fallback derived from the workstream name/responsibility, never letter initials as the normal icon
-- show My Account only through the lower-left signed-in user tile/email; do not duplicate it as a top-rail workstream button
-- render left-rail counts and My Account aggregate attention from backend-governed projections such as `WorkstreamAttentionSummary`; define hidden/unavailable/zero states and highest-severity behavior in UI, but do not compute authority or attention from frontend-only notification state
-- treat buttons, links, icons, cards, rows, and status panels that open protected surfaces or workstreams as governed surface-request actions such as `show_surface` or `open_workstream`, backed by capabilities and denial/system-message behavior
-- support prompt-entered shell requests such as `show users list`, `show surface users-list`, and `show workstream user-admin`; transform resolved aliases into canonical prompt feedback such as `show surface users-list` so users learn precise commands
-- allow authorized cross-workstream surface requests as a power-user path while defaulting ambiguous surface requests to the selected workstream; unauthorized or unresolved targets return safe `system_message` surfaces without leaking hidden workstreams
-- render surface-action, My Account panel, rail, and deep-link navigation as compact prompt-like request items with honest origin metadata, and place workstream-switch request items in the new target workstream only
-- keep browser interaction details, tooltip/focus behavior, responsive rail collapse, and visual treatment in `55-ui/`; do not assign domain icon meaning here
-
-### Interactions and forms
-- forms and fields
-- client validation
-- backend validation mapping
-- submit/success/failure behavior
-- duplicate-submit/idempotency expectations
-
-### Surface graph, browser-tool actions, and frontend API contracts
-- dashboard root surfaces, surface graph nodes, and surface-action edges that the browser must render, including prompt-entered, deep-link, row/card/button, denial/recovery, and cross-workstream surface requests
-- linked capability id/class and governed-tool id for each protected browser action or query
-- browser-tool exposure name when a governed-tool is invoked from a surface action
-- browser API route and method as an exposure surface, when selected
-- request DTO and idempotency/correlation fields where applicable
-- success response DTO and redaction rules
-- error/denial response DTO
-- required AuthContext, capability grant, and tenant/customer scope
-- denial/system-message surface behavior for unauthorized, stale, unresolved, or cross-workstream actions
-- governed agent artifact ids when the action reads or changes `AgentDefinition`, `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, `ToolPermissionBoundary`, editing agent proposal, `PromptAssemblyTrace`, `SkillLoadTrace`, or `AgentWorkTrace`
-- audit/trace expectation visible to users, supervisors, admins, or auditors when applicable
-
-### States and realtime
-- loading/ready/empty/error/submitting/success/stale states
-- supervisor attention states: needs review, waiting on evidence, blocked by policy, escalated, autonomous progress, completed, overridden, stale, and trace unavailable
-- autonomous task notification states: pending, assigned, in progress, dependency stuck, result rejected, completed with recommendation, failed, cancelled, and escalation-needed
-- SSE or WebSocket behavior
-- reconnect and stale data UX
-
-### Accessibility and responsive behavior
-- semantic structure
-- keyboard and focus behavior
-- labels and errors
-- narrow-screen layout expectations
-
-### Style guide selection
-- selected AI-first style id/name from `../docs/web-ui-style-guide.md`, custom style reference, or `unselected`
-- visual direction: aesthetic point of view, tone, memorable motif, and forbidden generic patterns
-- theme model: named-theme selection; available theme ids/names; default theme id; user preference scope and persistence expectations
-- My Account theme behavior when in scope: users choose one available named theme and the UI applies it at the documented scope
-- typography, spacing, radius, elevation, color, chart, status, and focus tokens for every available named theme
-- layout shell/density and navigation treatment
-- component rules for cards, buttons, forms, tables/lists, charts, and feedback states
-- motion, texture, background, and elevation rules with reduced-motion and contrast constraints
-- brand adaptations and forbidden copied demo content from reference images
-- CSS variable/token expectations for frontend styling; TypeScript toggles only documented theme ids/classes/attributes
-- frontend implementation shape: standard frontend project
-- UX handoff for each non-trivial structured surface or route/deep-link target: primary action, information hierarchy, UX copy, feedback/recovery states, responsive behavior, and keyboard/focus path
-- static asset output and Akka hosting route expectations
-
-If no UI style is selected for a generated AI-first SaaS app, do **not** choose implicitly. Add or request a `category: ui` pending question in `specs/pending-questions.md` using `../docs/web-ui-style-guide.md`; this blocks web UI implementation/generation tasks until style is selected.
-
-Cosmetic style work may improve visual quality only within already-authoritative UI meaning. Do not use style-guide updates to add, remove, rename, or reinterpret functional agents, workstreams, workstream icon semantics, structured surfaces, capability-backed actions, authorization, API contracts, tests, or readiness semantics.
+Use `../docs/app-description-skill-output-contracts.md` plus `../docs/workstream-ui-reference-architecture.md` for the detailed UI contract. Capture only the affected browser-realization meaning: workstream shell, functional-agent rail, structured surfaces, routes/deep links, personas/journeys, managed-agent governance UI, forms/interactions, API contracts, realtime/stale states, accessibility/responsive behavior, and style-guide selection. Link every protected action to backend capability/tool authority, AuthContext/scope, denial behavior, traces, and tests.
 
 ## Change handling
 
-For any UI change, update:
-1. affected UI description files, including `workstream-shell.md`, `functional-agent-rail.md`, `workstream-panel-and-composer.md`, `structured-surface-rendering.md`, `ai-first-surfaces.md` when delegated work surfaces change, the managed-agent UI files when full-core agent behavior governance changes, and `style-guide.md` when style system, branding, density, tokens, icon rendering, or component styling change
-2. `12-workstreams/functional-agents.md` via `app-description-functional-agent-modeling` when a UI change adds, removes, or changes a user-facing functional agent, workstream icon assignment/meaning, prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, or tests
-3. `12-workstreams/surfaces-index.md` and `surface-contracts/**` via `app-description-surface-modeling` when a UI change adds, removes, or changes structured surfaces, role-specific dashboard/attention surfaces, human surface graph nodes/edges, autonomous task result/progress surfaces, payload schemas, reusable placement, allowed actions, states, notification/realtime behavior, trace links, or rendering tests
-4. `10-capabilities/` via `app-description-capability-modeling` when a browser action/query adds, removes, or changes a capability exposure surface, governed-tool id, browser-tool mapping, AuthContext, schema, side effect, approval, audit, idempotency, notification/projection output, or autonomous task lifecycle semantics
-5. behavior flows if user-visible behavior changes
-6. tests if acceptance criteria, evaluation, realtime, loading/error, authorization, idempotency, or trace-link expectations change
-7. auth/security if route visibility, shell request resolution, cross-workstream surface discovery, roles, agent/tool permissions, prompt/skill/manifest/tool-boundary authority, approval authority, or trace access changes
-8. observability if the UI needs work traces, decision traces, policy invocations, digests, audit search, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, editing agent proposal traces, or outcome evidence
-9. readiness status if generation completeness changes
+Update only affected UI description files and linked workstream/surface/capability/behavior/test/security/observability/readiness artifacts. Do not use UI edits to redefine domain meaning, authorization, tool authority, or generated-app completion semantics.
 
 ## Realization routing
 

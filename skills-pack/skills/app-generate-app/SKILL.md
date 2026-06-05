@@ -73,47 +73,7 @@ When the target project already contains implementation artifacts or a legacy `s
 
 ## Generation responsibilities
 
-When generating, this skill must:
-- identify the current description baseline
-- detect existing implementation artifacts or legacy `specs/scaffold-report.md` and treat generation as existing-app extension by default rather than fresh app replacement
-- identify the generation scope label (`core app baseline`, `full core`, `Module 1-only / not full core`, or another narrower scope) from the app description/specs/user instruction and report it in the summary
-- use the fixed Java base package `ai.first` for generated code; package selection is out of scope
-- verify readiness did not ignore the secure SaaS foundation required by `core-saas-foundation`
-- block full-core generation or return to readiness if User Admin, Agent Admin, complete invitation onboarding, full user administration, governed runtime agents, workstream UI, or required tests are missing without an explicit narrower-scope label
-- block full-core generation or return to readiness if User Admin cannot be proven through the fullstack `user-admin-dashboard` → `user-admin-user-list` search/filter → `user-admin-user-account` detail/action path, including scoped APIs, backend capability enforcement, UserAdminAgent behavior, audit/trace output, and negative checks for disabled actor, cross-tenant access, Customer Admin Tenant-level denial, SaaS Owner without support access, role escalation, and last-admin loss
-- block or return to readiness if generated SaaS web UI would be realized from `frontend/src/screens/**`, route/page-first tests, or removed static UI fixtures instead of the `frontend/src/workstream/**` shell, structured-surface modules, and User Admin reference vertical
-- block or return to readiness when role-specific dashboard attention, human surface graph nodes/edges, system-message denial surfaces, internal workstream agent graph delegation, governed-tools, or browser-tool/agent-tool/internal-tool exposure mappings are missing or not traceable to capabilities, surfaces, tests, audit, and runtime validation paths
-- block generation or return to readiness if Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, complete invitation onboarding, `/api/me`, backend authorization, audit, admin/support-access/billing-boundary semantics, AI-assisted admin offload, governed runtime agent foundation, tenant isolation, forbidden access, disabled-user, role/scope denial, or foundation tests are missing
-- block generation or return to readiness if `AgentDefinition`, governed model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited default), fallback/no-fallback policy, provider secret boundary, model-use trace facts, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap governed setup of implementation-developed default behavior/reference documents, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, editing agent proposals, or agent catalog/detail/model/prompt/skill/reference/manifest/tool-permission UI surfaces are missing for generated AI-first SaaS
-- verify readiness did not ignore the required `15-operating-model/` for generated AI-first SaaS apps
-- identify whether realization is localized extension/repair or explicitly scoped broad regeneration/replacement
-- identify which outputs are in scope
-- identify the role-specific dashboard, human surface graph, internal workstream agent graph, governed-tool, browser-tool, agent-tool, and internal-tool contracts that generation must realize or explicitly exclude from the named scope
-- identify the local run, endpoint smoke, browser/workstream smoke, or manual-test path expected to prove the generated scope works
-- realize the generated scope as working runtime code with Akka component-backed normal runtime state for claimed workstream/foundation features, not as a mock/demo/simulated substitute; provider/security gaps must fail closed with actionable configuration errors, while missing internal Akka persistence must block or narrow the completion claim
-- realize outputs from the description
-- keep implementation and generated/derived outputs consistent with the current description
-- avoid treating code-only drift as authoritative over the description
-- report failures or ambiguities back as description-level issues where appropriate
-
-## Realization scope rules
-
-### Localized extension/repair
-Prefer when:
-- the target repository already has implementation artifacts
-- the work extends this core-app-first baseline or a downstream fork
-- the description change is well-localized
-- the affected implementation, test, UI, spec, or generated/derived areas are clear
-- preserving stable unaffected outputs reduces churn, cost, or review noise
-
-### Broad regeneration/replacement
-Use only when:
-- the user explicitly asks for destructive reset, fresh realization, or broad regeneration
-- the scope label is named and the files safe to replace are clear
-- prior outputs are unreliable or obsolete enough that targeted repair is riskier
-- replacement will not discard the fixed Java package `ai.first`, foundation behavior, queue history, or user-owned domain work without explicit approval
-
-Localized realization must never override description correctness.
+Use `../docs/generated-saas-canonical-doctrine.md`, `../docs/app-description-skill-output-contracts.md`, and the selected implementation skills for the detailed generation contract. Generate only the declared realization scope, preserve description primacy, keep app code in the target workspace, and prove generated behavior through the real local Akka/API/UI path at the stated scope.
 
 ## Output categories
 
@@ -133,43 +93,7 @@ For generated SaaS apps, route through `core-saas-foundation` before app-specifi
 
 ## Standard generation output shape
 
-Use this response shape when summarizing generation:
-
-```md
-# App Generation Summary
-
-## Generation basis
-- description state:
-- readiness state:
-- generation scope label: core app baseline | full core | Module 1-only / not full core | other narrower scope
-- operating-model basis:
-- secure SaaS foundation basis:
-- assumptions used:
-- Java base package:
-
-## Realization scope
-- localized extension/repair | explicitly scoped broad regeneration/replacement
-- affected output areas:
-
-## Generated or updated outputs
-- ...
-
-## Executed steps
-- generation:
-- tests:
-- app run:
-
-## Results
-- passed:
-- failed:
-- not run:
-
-## Remaining uncertainties
-- ...
-
-## Recommended next step
-- ...
-```
+Use `../docs/generated-saas-canonical-doctrine.md`, `../docs/app-description-skill-output-contracts.md`, and the selected implementation skills for the detailed generation contract. Generate only the declared realization scope, preserve description primacy, keep app code in the target workspace, and prove generated behavior through the real local Akka/API/UI path at the stated scope.
 
 ## Handoff behavior
 

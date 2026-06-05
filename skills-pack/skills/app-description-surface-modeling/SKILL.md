@@ -116,71 +116,7 @@ For each surface, capture the fields below. Use `../docs/structured-surface-cont
 
 ## Standard output shape
 
-Use this shape when adding or revising a surface:
-
-```md
-# Surface Modeling Update
-
-## Requested change
-- ...
-
-## Surface
-- id / name:
-- type / version:
-- purpose / user outcome:
-- owner functional agent:
-- reusable by:
-- workstream placement:
-- attention category / dashboard role:
-- surface graph node / incoming edges / outgoing edges:
-
-## Payload contract
-- schema summary:
-- data sources / read capabilities:
-- redaction rules:
-- trace / correlation fields:
-
-## Actions and capabilities
-- action:
-  - label:
-  - input payload:
-  - linked capability id:
-  - linked governed-tool id / exposure (`browser-tool`, `agent-tool`, `internal-tool`, etc.):
-  - authority / AuthContext:
-  - approval / policy gate:
-  - idempotency / duplicate behavior:
-  - success / failure / denial state:
-- autonomous task or notification binding, if applicable:
-
-## UI states
-- loading:
-- empty:
-- error:
-- forbidden:
-- stale / reconnect:
-- autonomous task progress/result states:
-- notification/projection update behavior:
-- responsive / accessibility:
-
-## Tests
-- rendering:
-- action-to-capability invocation:
-- authorization / tenant isolation:
-- denial / forbidden:
-- approval / workflow status:
-- audit / trace:
-- realtime / stale behavior:
-
-## Linked layers
-- functional agents:
-- capabilities:
-- behavior:
-- tests:
-- auth/security:
-- observability:
-- UI:
-- traceability:
-```
+Use the delta modeling contract in `../docs/app-description-skill-output-contracts.md`. For this surface skill, report the requested change, authoritative layer/file targets, in-scope and out-of-scope behavior, authority/scope, DTOs or payloads where relevant, side effects/idempotency/denials/traces/tests, linked layers, assumptions, and next handoff. Avoid repeating the full app-description layer model.
 
 ## Modeling rules
 

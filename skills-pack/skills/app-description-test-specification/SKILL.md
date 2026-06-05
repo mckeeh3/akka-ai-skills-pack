@@ -122,72 +122,11 @@ When delegated work or agentic judgment is in scope, define how to prove:
 
 ## Standard output shape
 
-Use this structure when updating or summarizing the test layer:
-
-```md
-# Test Specification Update
-
-## Behavior or capability under test
-- linked capability id/class:
-- exposure surfaces:
-
-## Acceptance cases
-- ...
-
-## Regression cases
-- ...
-
-## Negative cases
-- ...
-
-## No-op / idempotency cases
-- ...
-
-## Security verification cases
-- ...
-
-## Observability / trace verification cases
-- ...
-
-## AI-first evaluation and outcome cases
-- ...
-
-## Open questions and assumptions
-- ...
-```
+Use the delta modeling contract in `../docs/app-description-skill-output-contracts.md`. For this test skill, report the requested change, authoritative layer/file targets, in-scope and out-of-scope behavior, authority/scope, DTOs or payloads where relevant, side effects/idempotency/denials/traces/tests, linked layers, assumptions, and next handoff. Avoid repeating the full app-description layer model.
 
 ## Test authoring rules
 
-### 1. Tie tests to behavior, not implementation files
-Describe what must be proven, not which class or helper probably implements it.
-
-### 2. Prefer explicit scenario language
-A good test statement says:
-- given what context
-- when what action happens
-- then what must be true
-
-### 3. Cover forbidden and repeated behavior
-Do not stop at happy-path acceptance.
-Include rejected behavior, repeated commands, obsolete callbacks, and retry situations where relevant.
-
-### 4. Add regression tests for every bug-fix semantic change
-If a bug triggered the change, capture the old failure mode as a regression expectation.
-
-### 5. Include secure foundation, security, and observability baseline tests
-For generated SaaS apps, secure foundation tests are mandatory even when the feature request is app-specific. Do not treat tenant isolation, forbidden access, disabled users, role/scope denial, `/api/me`, audit, or frontend secret-boundary checks as polish.
-
-If additional access control or operational evidence is part of the requested behavior, define it here explicitly.
-
-### 6. Test delegated authority, not just generated answers
-For AI-first behavior, include tests that prove what the agent/system may do, what it must only recommend, what requires approval, and what must be denied or escalated.
-Do not accept prompt wording as the only safety evidence.
-
-### 7. Include evaluation and outcome loops where meaningful
-When recommendations, classifications, summaries, policy proposals, or autonomous actions affect outcomes, specify evaluator, regression, feedback, replay/simulation, and later-outcome verification expectations.
-
-### 8. Leave ambiguity visible
-If expected behavior is still uncertain, record the ambiguity instead of inventing a test that overcommits.
+Apply the concise rules in `../docs/app-description-skill-output-contracts.md` plus the focused skill's goal. Preserve mandatory secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agent/tool boundaries, traces, and tests when those concerns are in scope. Ask only blocking questions; otherwise record assumptions and hand off to the next focused skill.
 
 ## Handoff rules
 

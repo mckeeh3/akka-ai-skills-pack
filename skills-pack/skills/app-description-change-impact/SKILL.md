@@ -104,87 +104,11 @@ For each change, determine as applicable:
 
 ## Standard impact output shape
 
-Use this response shape:
-
-```md
-# App Description Change Impact
-
-## Change basis
-- ...
-
-## Impacted authoritative layers
-- capabilities:
-- workstream-expertise:
-- operating-model:
-- behavior:
-- tests:
-- auth/security:
-- observability:
-- UI:
-
-## Impacted derived layers
-- traceability:
-- readiness:
-- generation maps:
-- review summaries:
-- specs/backlogs/pending tasks:
-
-## Likely affected implementation and derived outputs
-- ...
-
-## Realization recommendation
-- localized extension/repair | broad scoped realization | explicit replacement/regeneration
-- rationale:
-
-## Required next updates
-1. ...
-2. ...
-```
+Use `../docs/app-description-skill-output-contracts.md` for the detailed output contract. Return only the actionable summary, affected artifacts/layers, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
 
 ## Impact analysis rules
 
-### 1. Start from semantics, not files
-Ask what the change means for the app, then identify which artifacts must reflect that meaning.
-
-### 2. Preserve AI-first operating-model context
-When delegated operations are in scope, do not let a change bypass `15-operating-model/`.
-Detect whether it changes goals, plans, delegated authority, retained human authority, agent/team responsibility, policies, approval gates, decision evidence, exception handling, audit traces, learning loops, outcomes, or supervision surfaces.
-
-### 3. Always inspect verification impact
-Any important change in behavior, security, observability, UI supervision, or AI-first operating semantics should trigger a test-impact check.
-
-### 4. Treat security, observability, and UI as dependency surfaces
-Behavior or operating-model changes may force security, observability, and UI updates even when the user did not explicitly ask for them.
-
-### 5. Reassess readiness when meaning changed materially
-If the change alters core behavior, failure semantics, role-specific dashboard attention, human surface graph edges, internal workstream agent graph delegation, governed-tools, browser-tool/agent-tool/internal-tool exposure, delegated authority, workstream expert bundles, skill/reference manifests, tool boundaries, policies, approvals, decisions, traces, outcomes, production constraints, UI supervision surfaces, or test coverage expectations, readiness should usually be revisited.
-
-### 6. Prefer localized realization only when the dependency chain is clear
-If the harness cannot confidently bound the affected outputs, recommend a broader explicitly scoped realization plan instead of pretending the change is local.
-
-### 7. Update traceability maps explicitly
-When capability-to-behavior, operating-model-to-behavior, behavior-to-tests, or change-impact maps are now stale, mark them for update.
-
-## Realization recommendation guide
-
-### Recommend `localized extension/repair` when
-- the changed semantic area is narrow
-- affected authoritative layers are clearly bounded
-- affected output surfaces are known
-- no broad architectural, authority, policy, decision, trace, outcome, or UI-supervision assumption shifted
-
-### Recommend `broad scoped realization` when
-- multiple authoritative layers changed in connected ways
-- the impact is larger than one bounded feature area
-- readiness or production concerns shifted meaningfully
-- functional-agent expertise, manifest, reference, tool-boundary, or trace requirements changed
-
-### Recommend `explicit replacement/regeneration` only when
-- the user has approved that scope
-- the change affects foundational assumptions
-- traceability is incomplete or stale
-- the harness cannot safely preserve unaffected outputs
-- a clean realization is lower risk than partial preservation
+Use `../docs/app-description-skill-output-contracts.md` to keep impact analysis concise. Identify authoritative layers, derived artifacts, implementation outputs, readiness implications, required next updates, and whether realization can stay localized. Escalate scope only when the change affects secure foundation, functional-agent/workstream boundaries, capability/tool authority, data scope, tests, traces, UI contract, or generation policy.
 
 ## Handoff rules
 

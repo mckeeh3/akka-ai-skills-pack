@@ -115,97 +115,11 @@ For each capability, identify and describe as applicable:
 
 ## Standard capability output shape
 
-Use this response shape when updating or summarizing capability work:
-
-```md
-# Capability Modeling Update
-
-## Requested change
-- ...
-
-## Capability definition
-- id / name:
-- class:
-- business goal:
-- actors / callers:
-- source workstream / attention / role-specific dashboard context:
-- source surface graph node / edge:
-
-## Authority and contract
-- AuthContext / scope:
-- permissions / named capability grants:
-- inputs / validation / idempotency:
-- outputs / redaction / denial shape:
-- data access:
-- side effects:
-- governed-tools:
-  - id:
-  - class:
-  - exposure (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP/API/view):
-  - authority / schemas / side effects / idempotency / audit:
-- source functional agents / workstream actions:
-- source surfaces / surface actions / graph edges:
-- exposure surfaces:
-- internal workstream agent graph / autonomous task lifecycle / AutonomousAgent fit, if applicable:
-- notification / dashboard / attention projection outputs:
-- internal-only declaration, if applicable:
-
-## AI-first operating semantics
-- delegated work:
-- retained human authority:
-- governance / policy boundary:
-- decision, exception, or supervision needs:
-- trace / learning / outcome needs:
-
-## In-scope outcomes
-- ...
-
-## Out-of-scope outcomes
-- ...
-
-## Major assumptions or constraints
-- ...
-
-## Linked layers
-- operating model:
-- behavior:
-- tests:
-- auth/security:
-- observability:
-- UI:
-- traceability:
-```
+Use the delta modeling contract in `../docs/app-description-skill-output-contracts.md`. For this capability skill, report the requested change, authoritative layer/file targets, in-scope and out-of-scope behavior, authority/scope, DTOs or payloads where relevant, side effects/idempotency/denials/traces/tests, linked layers, assumptions, and next handoff. Avoid repeating the full app-description layer model.
 
 ## Capability modeling rules
 
-### 1. Model capability before implementation structure
-Use business outcomes, governed operation/query contracts, governed-tools, and user-visible purpose, not classes, services, endpoints, or agent tools, as the primary definition.
-
-### 2. Keep scope boundaries explicit
-Every important capability should make clear what it does not include.
-This reduces later ambiguity and uncontrolled scope creep.
-
-### 3. Keep capabilities stable but bounded
-Do not create one giant capability for the whole app.
-Do not create tiny pseudo-capabilities that are really just implementation details.
-
-### 4. Link forward deliberately
-A capability is incomplete if it cannot be linked to behavior, verification, security, observability, UI when exposed to humans, traceability artifacts, governed-tool exposure channels, and any attention/dashboard/autonomous task notification projections it changes.
-
-### 5. Separate capability change from behavior detail
-A new capability may require later behavior work, but capability modeling should first establish the business boundary, authority model, contract shape, side-effect boundaries, audit/approval obligations, and intended outcomes.
-
-### 6. Preserve AI-first semantics before component or CRUD framing
-When the capability involves delegated operational work, autonomous or semi-autonomous judgment, human approval, policy controls, exceptions, auditability, or outcome accountability, define those as capability semantics.
-Do not flatten them into CRUD records, dashboards, or a chatbot feature.
-Link the capability to `15-operating-model/` artifacts for goals, agent authority, policies, decisions, traces, and outcomes as applicable.
-
-### 7. Keep human governance visible
-If automation can affect consequential state, money, commitments, permissions, customer communication, compliance, or operational outcomes, record what humans delegate and what humans retain.
-If the boundary is unknown, ask or flag it before downstream behavior or generation work.
-
-### 8. Preserve user language where useful
-When the user names a business concept clearly, preserve that concept in the capability name or description rather than replacing it with framework language.
+Apply the concise rules in `../docs/app-description-skill-output-contracts.md` plus the focused skill's goal. Preserve mandatory secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agent/tool boundaries, traces, and tests when those concerns are in scope. Ask only blocking questions; otherwise record assumptions and hand off to the next focused skill.
 
 ## Handoff rules
 

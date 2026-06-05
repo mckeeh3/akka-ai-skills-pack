@@ -69,54 +69,7 @@ If a matching backlog file already exists:
 
 ## What this skill must produce
 
-For one target slice file such as:
-- `specs/slices/03-domain-specific-process.md`
-
-produce the matching backlog file:
-- `specs/backlog/03-domain-specific-process-build-backlog.md`
-
-For one target sprint file such as:
-- `specs/sprints/03-domain-specific-process-sprint.md`
-
-produce the matching backlog file:
-- `specs/backlog/03-domain-specific-process-build-backlog.md`
-
-Also create or update:
-- `specs/pending-tasks.md`
-
-This skill is a one-increment expansion step. Do not reinterpret the whole PRD, create a fresh parallel app, or change unrelated slices/sprints while creating the backlog. The backlog and queue entries must inherit the fixed Java base package `ai.first`, core-app-extension assumptions, style-guide status, workstream ids, role-specific dashboards, attention items, surface graph nodes/edges, internal-agent graph context, governed-tool ids, capability ids, AuthContext/scope, role/capability rules, approval gates, audit/trace obligations, and test expectations from the solution plan and source slice/sprint. If the source increment lacks those contracts, block or queue the narrow repair question instead of inventing implementation authority.
-
-## Required backlog content
-
-The backlog file must include:
-1. Purpose
-2. Delivery goal
-3. Workstream/attention/dashboard contract: workstream id, functional agent, role-specific dashboards, attention categories/items, left-rail/My Account contribution, and notification/projection expectations when in scope
-4. Human surface graph plus governed-tool/capability map: surface nodes, edges, states/actions, system-message surfaces, governed-tool ids/classes, capability ids/classes, AuthContext, approval/policy, audit/work trace, and exposure channel
-5. Internal workstream agent graph and autonomous task candidates: virtual dashboard agent attention, internal worker delegations/results/escalations, durable internal/background work that should use AutonomousAgent, plus task lifecycle/result/notification surfaces when applicable
-6. Recommended package layout additions
-7. Class-by-class file list
-8. Concrete endpoint list
-9. Write-model design decisions
-10. View/workflow/consumer/timer/integration design as relevant
-11. Web UI style-guide dependency and selected AI-first style when the slice includes browser UI work
-12. Test plan by file/class
-13. Implementation order
-14. Suggested harness task breakdown
-15. Done criteria, including the working local app/API/UI state for the slice or sprint goal
-16. Explicit defer list, including whether each deferral narrows the goal or blocks calling the feature implemented
-
-The suggested harness task breakdown is the default leaf layer for implementation.
-Each item should be small enough to become one focused implementation prompt without reopening the full PRD.
-
-When the target slice or sprint is the SaaS foundation, split the breakdown into concrete foundation and five-core workstream domain tasks before app-specific domain features: invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents including AdminRiskAgent and AccessReviewAgent or a skilled UserAdminAgent, decision cards for risky admin actions, My Account/User Admin/Agent Admin/Audit or Trace/Governance or Policy workstream surfaces, admin UI surfaces, and security/admin tests. Do not produce one broad `auth/admin` item or a User-Admin-only core app backlog for this work.
-
-Also split governed runtime agent foundation work into separate backlog and pending-task items by component/UI/test family: `AgentDefinition` lifecycle/profile and agent catalog/detail, `PromptDocument`/`PromptVersion` governance with prompt assembly and `PromptAssemblyTrace`, `SkillDocument`/`SkillVersion` governance, `ReferenceDocument`/`ReferenceVersion` governance, `AgentSkillManifest`/`AgentReferenceManifest`, authorized `readSkill(skillId)`/`readReferenceDoc(referenceId)` and `SkillLoadTrace`/`ReferenceLoadTrace`, `ToolPermissionBoundary`, `AgentWorkTrace`, behavior editing agents and proposed-diff approval, prompt/skill/reference/manifest/tool-boundary UI, trace UI, and security/admin/agent-governance tests. Do not produce one broad managed-agent or `agent governance` item that spans all of these.
-
-For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../docs/pending-task-queue.md`. Each backlog and queue item must carry the relevant workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, source governed-tool ids, source capability ids, internal-agent delegation/result context, actor/caller, `AuthContext`, role/scope or permission checks, approval gates, selected Akka substrate/exposure channel, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace requirements, UI surface, concrete checks, and local/runtime validation path when the work implements app behavior rather than reducing the work to a vague implementation label.
-If the slice or sprint goal names a feature such as sign-in, user auth, invitation onboarding, User Admin, Agent Admin, or an app-specific workflow, the backlog must include the backend, endpoint/API, frontend/workstream surface, authorization, audit/trace, tests, and local smoke/manual verification needed for that named feature to work at the stated scope. Deferrals that prevent that working state must narrow/rename the goal or block completion; they must not be counted as done.
-If a bounded item implements browser UI and style is unresolved, do not make it runnable; add/update a `specs/pending-questions.md` style-selection question using `../docs/web-ui-style-guide.md` and mark only the affected UI task as blocked or defer it with an explicitly accepted default.
-Preserve existing task IDs and statuses when updating an existing queue.
+Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Preserve generated-SaaS/full-core context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
 ## Mapping rules
 

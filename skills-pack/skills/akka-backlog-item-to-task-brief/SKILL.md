@@ -74,77 +74,7 @@ If a matching task brief already exists:
 
 ## What this skill must produce
 
-For one specific backlog item, produce one matching task brief such as:
-- source backlog: `specs/backlog/01-domain-specific-build-backlog.md`
-- target task brief: `specs/tasks/01-domain-specific/01-shared-foundations-and-tenant-settings.md`
-
-Also create or update the matching task entry in:
-- `specs/pending-tasks.md`
-
-The brief should normally correspond to:
-- one item from `Suggested harness task breakdown`
-- or one smaller child task split from an oversized backlog item
-
-For generated secure AI-first SaaS, the brief must preserve the vertical workstream graph chain for the focused work: workstream → role-specific dashboard attention → human surface graph node/action or workstream event → internal workstream agent graph delegation/result when applicable → governed-tool inside capability and surface/action maps → selected Akka substrate/exposure channel → request-based Agent or durable AutonomousAgent task → notification/projection → audit/work trace.
-
-## Required task brief content
-
-Each task brief must include:
-1. Purpose
-2. Reads
-3. A dedicated `## Vertical workstream contract` section for generated SaaS, using the exact contract shape from `../docs/pending-task-queue.md`: workstream / functional agent or explicit internal/foundation/cross-cutting scope; attention category or non-attention reason; role-specific dashboard / surface; surface graph node/action edge or non-UI trigger; governed-tool id and qualified exposure; capability id; AuthContext / roles / tenant scope; Akka substrate; API / frontend / realtime path; audit/work trace requirements; local validation path; plus internal-agent delegation/result context, notification/projection, and AutonomousAgent task lifecycle/result semantics when applicable
-4. Scope
-5. Non-goals
-6. Akka components involved
-7. Skills to load
-8. Expected outputs
-9. Required tests
-10. Local/runtime validation path when the task implements app behavior
-11. Done criteria
-
-If the focused task is not user-facing workstream work, the vertical contract section must still say why by naming `internal-only`, `foundation-only`, `cross-cutting`, `docs-only`, or `non-runtime` scope and recording the non-attention/non-UI reason, relevant capability/foundation scope, trace expectations, and validation path. Do not let this section collapse to `N/A` for generated SaaS work.
-
-The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, local/runtime validation path when applicable, and done criteria from the brief. It must also preserve relevant workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, source governed-tool ids, source capability ids, internal-agent delegation/result context, actor/caller, `AuthContext`, required scope/permission checks, approval gates, selected Akka substrate/exposure channel, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace obligations, UI surfaces, style-guide status when UI is in scope, Java base package for generated source work, core-app-extension assumptions, and test/check expectations from the backlog item.
-
-## AI-first context preservation
-
-When the backlog item includes AI-first operating-model semantics, the task brief must preserve only the context needed for this focused implementation run. Do not reduce role-specific dashboard attention, surface graph actions, governed-tools, capability, internal-agent delegation, or autonomous-task context to a generic component task.
-
-Carry forward, when applicable:
-- delegated work and retained human authority for the component boundary
-- relevant policies, permissions, approval gates, thresholds, and escalation rules
-- decision-card evidence, risk, confidence, impact, alternatives, and actions
-- audit/work/decision trace records, tool/data-access records, and outcome links produced or consumed by the task
-- supervision, governance, digest, and audit UI-surface expectations
-- evaluation, replay, simulation, or outcome-metric checks
-
-If any of these are required but unresolved, do not make the queue entry runnable. Add or reference a `specs/pending-questions.md` blocker and mark only the affected task `blocked`.
-
-## Mapping rules
-
-### Backlog item to task brief mapping
-- `specs/backlog/01-domain-specific-build-backlog.md` -> `specs/tasks/01-domain-specific/...`
-- preserve the slice number and stem in the task directory name
-- use stable, short task filenames that describe the bounded work
-
-Examples:
-- `specs/tasks/01-domain-specific/01-shared-foundations-and-tenant-settings.md`
-- `specs/tasks/01-domain-specific/02-core-entity-kves.md`
-- `specs/tasks/03-domain-specific-process/03-workflow-core.md`
-
-### Scope preservation
-The task brief must not silently widen the backlog item or create a fresh parallel app/spec track. For existing apps, preserve core-app-extension assumptions, existing app-description/spec locations, queue IDs/statuses, Java base package, and style decisions unless the source backlog explicitly replaces them.
-
-Allowed:
-- narrowing one backlog item into a smaller implementation contract
-- making file outputs explicit
-- clarifying exact tests, local validation, and stopping conditions
-- splitting one oversized backlog item into two or more task briefs when necessary
-
-Not allowed:
-- pulling in adjacent backlog items just because they are related
-- expanding the task into later slices
-- turning one focused task into a mini-backlog
+Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Preserve generated-SaaS/full-core context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
 ## Sizing rules
 

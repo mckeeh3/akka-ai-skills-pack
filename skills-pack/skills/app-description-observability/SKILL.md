@@ -88,48 +88,7 @@ For each requested change, identify and describe as applicable:
 
 ## Standard observability output shape
 
-Use this response shape when updating or summarizing observability changes:
-
-```md
-# Observability Specification Update
-
-## Requested change
-- ...
-
-## Linked capability evidence
-- capability ids/classes:
-- exposure surfaces:
-- required audit/work-trace facts:
-
-## Logs and audit events
-- ...
-
-## Metrics
-- ...
-
-## Traces and correlation
-- ...
-
-## AI-first audit, evaluation, digest, and outcome evidence
-- ...
-
-## Health signals
-- ...
-
-## Alert-worthy conditions
-- ...
-
-## Diagnosability expectations
-- ...
-
-## Open questions and assumptions
-- ...
-
-## Affected linked layers
-- behavior:
-- tests:
-- auth/security:
-```
+Use `../docs/app-description-skill-output-contracts.md` for the detailed output contract. Return only the actionable summary, affected artifacts/layers, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
 
 ## Observability modeling rules
 

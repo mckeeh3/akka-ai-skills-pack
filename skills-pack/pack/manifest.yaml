@@ -512,6 +512,7 @@ content:
     - docs/ai-first-saas-application-architecture.md
     - docs/app-description-end-to-end-workflow-example.md
     - docs/app-description-maintenance-flow.md
+    - docs/app-description-skill-output-contracts.md
     - docs/autonomous-agent-worker-runtime-pattern.md
     - docs/autonomous-agents-api-notes.md
     - docs/capability-first-backend-architecture.md
@@ -541,6 +542,7 @@ content:
     - docs/module-sprint-planning.md
     - docs/pending-question-queue.md
     - docs/pending-task-queue.md
+    - docs/planning-skill-output-contracts.md
     - docs/prd-to-akka-flow.md
     - docs/requirements-to-workstream-development-process.md
     - docs/retired-content-boundaries.md

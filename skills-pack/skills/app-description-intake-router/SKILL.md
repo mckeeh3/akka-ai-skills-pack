@@ -86,31 +86,7 @@ Example:
 
 ## Intent signals
 
-### Strong description-maintenance signals
-Examples:
-- "change the behavior so..."
-- "add support for..."
-- "the app should..."
-- "for security, require..."
-- "clarify what happens when..."
-- "fix the bug where..."
-- "update the description to include..."
-
-### Strong generation signals
-Examples:
-- "generate the app"
-- "generate the code"
-- "run the app"
-- "run the tests"
-- "build it now"
-- "regenerate from the current description"
-
-### Mixed signals
-If the input contains both revision and generation requests:
-1. extract the requested description changes first
-2. note that generation is also requested
-3. route through the relevant description-maintenance skills before generation
-4. only then hand off to generation or readiness assessment
+Classify the user's input using `../docs/app-description-skill-output-contracts.md`: description delta, generation/realization request, review/readiness request, planning/backlog request, implementation request, or pure question. Preserve confirmed facts separately from inferred candidate deltas.
 
 ## What this skill must extract
 
@@ -137,80 +113,7 @@ Use provisional extraction plus targeted clarification when needed.
 
 ## Routing rules
 
-### If the input has not yet been normalized and is broad, mixed, or ambiguous
-Load next:
-- `app-description-input-normalization`
-- then continue routing based on the normalized envelope
-
-### If broad input includes delegated work, agents, governance, decisions, supervision, audit, or outcomes
-Load next:
-- `ai-first-saas`
-- then route to `app-description-bootstrap` if no usable description root exists, or update `15-operating-model/` plus the smallest affected app-description companion skills
-
-### If the input asks for a minimum, core app, basic, or chatbot-like generated SaaS app
-Load next:
-- `app-description-bootstrap` when no usable app-description root exists, using `core app baseline` scope with the five-core-workstream core app domain
-- `app-description-functional-agent-modeling` and `app-description-surface-modeling` when an existing description needs the five core workstreams and `markdown_response` surfaces added or repaired
-- `app-description-capability-modeling` for the read/explain/deny capability boundaries behind those core workstream turns
-- `app-description-ui` for `55-ui` workstream shell, rail, composer, durable log, markdown rendering, trace links, and fail-closed/error states
-
-Record follow-up gaps to full-core readiness instead of treating the core app baseline as full production foundation.
-
-Use focused AI-first companion skills only for the concerns in scope:
-- `ai-first-saas-object-model`
-- `ai-first-saas-agent-team-design`
-- `ai-first-saas-policy-governance`
-- `ai-first-saas-decision-cards`
-- `ai-first-saas-audit-trace`
-- `ai-first-saas-ui-surfaces`
-- `ai-first-saas-outcomes-metrics`
-
-### If generated SaaS input changes user-facing work areas, attention, dashboards, surfaces, or actions
-Load next as applicable:
-- `app-description-functional-agent-modeling` to preserve the owner functional agent/workstream, authorization scope, attention responsibility, and icon/workstream identity
-- `app-description-surface-modeling` to preserve dashboard, attention item, system-message, form/table/card/timeline/status, surface state, and surface action contracts
-- then `app-description-capability-modeling` for governed operation/query contracts behind every surface action, agent tool, API, workflow step, timer, consumer reaction, or internal operation
-
-Use this route before direct UI, capability, component, endpoint, or page routing when ordinary user vocabulary names a dashboard, portal, work queue, admin console, command center, browser action, approval, decision, audit timeline, workflow status, form, table, blocked/overdue/risky/failed item, notification, investigation, digest, or agent/chat area. Buttons, links, rail badges, dashboard cards, and agent suggestions are routed as governed surface actions backed by capability-contained governed-tools, not ad hoc frontend jumps. Preserve browser-tool, agent-tool, and internal-tool exposure as qualified mappings after the governed-tool contract is clear.
-
-### If the input changes capability contracts
-Load next:
-- `app-description-capability-modeling`
-
-Use this route when the input changes capability scope, actors/callers, user-visible outcomes, AuthContext, input/output schema, data access, side effects, idempotency, approval/policy, audit/trace, or selected exposure surfaces **after** preserving the owning workstream, attention/dashboard, and surface-action context when the request is broad generated-SaaS input. Then route linked impacts to behavior, tests, auth/security, UI, observability, change-impact, and readiness as needed.
-
-### If the input implies durable internal/background model-driven work
-Load next as applicable:
-- `app-description-capability-modeling` for the authorized task lifecycle, start/query/result/notification/tool capabilities, approval/policy, idempotency, and traces
-- then `agent-workstream-apps`, `ai-first-saas`, or focused agent planning to evaluate Akka `AutonomousAgent` fit after authority is clear
-
-Use this route when the input implies investigation, review, evaluation, summary, monitoring/remediation, specialist follow-up, coordination, handoff, team, moderation, dependency, notification, cancellation, snapshot/result, or long-running model-driven work. Do not collapse these into request-based workstream Agent chat turns.
-
-### If the input is primarily behavior change
-Load next:
-- `app-description-behavior-specification`
-
-### If the input is primarily about examples, edge cases, or verification
-Load next:
-- `app-description-test-specification`
-
-### If the input directly changes access rules, trust boundaries, or sensitive-data handling
-Load next:
-- `app-description-auth-security`
-
-### If the input directly changes logs, metrics, traces, auditability, or diagnosability
-Load next:
-- `app-description-observability`
-
-### If the user explicitly requests realization from the current description
-Load next:
-- `app-description-readiness-assessment`
-- then `app-generate-app` if ready or accepted with assumptions
-
-### If the user asks what changed or whether the description is ready
-Load next as applicable:
-- `app-description-change-summary`
-- `app-description-readiness-summary`
+Apply the concise rules in `../docs/app-description-skill-output-contracts.md` plus the focused skill's goal. Preserve mandatory secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agent/tool boundaries, traces, and tests when those concerns are in scope. Ask only blocking questions; otherwise record assumptions and hand off to the next focused skill.
 
 ## Clarification policy
 
@@ -243,40 +146,15 @@ Produce a routing result with these sections:
 
 ## Standard output template
 
-Use this response shape internally or in structured notes:
+Return a concise routing envelope:
 
-```md
-# App Description Routing
+- input summary;
+- primary intent and secondary intents;
+- confirmed/candidate deltas;
+- next skill or skill sequence;
+- clarifications needed, if any.
 
-## Input summary
-- ...
-
-## Primary intent
-- description-change | generate-app | mixed | review
-
-## Candidate description deltas
-- functional agents:
-- attention / role-specific dashboard:
-- human surface graph / structured surfaces/actions:
-- surface-action capability candidates:
-- capabilities / governed-tools:
-- internal workstream agent graph:
-- autonomous task candidates:
-- events/notifications/projections/traces:
-- operating-model:
-- behavior:
-- tests:
-- auth/security:
-- observability:
-- UI / 55-ui:
-
-## Next skill or skill sequence
-1. ...
-2. ...
-
-## Clarifications needed
-- none
-```
+Do not include full layer boilerplate; use `../docs/app-description-skill-output-contracts.md` for the detailed envelope.
 
 ## Anti-patterns
 
