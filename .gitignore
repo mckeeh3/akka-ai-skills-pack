@@ -37,6 +37,8 @@ dist/
 db.mv.db
 
 akka-context/
+.akka/
+
 .claude/settings.local.json
 
 .git-bak
