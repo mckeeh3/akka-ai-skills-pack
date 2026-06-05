@@ -109,7 +109,7 @@ Before any coding, produce a component plan with these sections:
 20. Recommended implementation order by vertical workstream/attention/dashboard/surface/governed-tool/capability increments
 21. Required tests
 
-For section 2, resolve the Java base package from existing project configuration or user input. If absent, ask: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Use `ai.first` only when accepted/deferred. Do not infer the generated application package solely from local examples; use `ai.first` only when accepted/deferred as the selected default or explicitly requested.
+For section 2, use the fixed Java base package `ai.first`. Package selection is out of scope. Apply `ai.first` consistently to group id, package declarations, imports, tests, and source paths.
 
 For section 3, label scope before choosing components. `minimum starter` is allowed for minimum/starter/basic/chatbot-like generated SaaS requests and must be the five core workstream starter from `docs/minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; bootstrap authorization; selected AuthContext; durable workstream log; `markdown_response` system-message surfaces; backend capability boundary; audit/work trace substrate; markdown sanitization; starter tests; and explicit follow-up for full-core work. `full core` requires those five functional agents plus complete Invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, reference documents, skill/reference manifests, tool boundaries, prompt/skill/reference/work traces, authorized `readSkill`, and authorized `readReferenceDoc`); workstream UI; and acceptance/security/agent-governance/frontend tests. `Module 1-only / not full core` is allowed only when the plan explicitly defers User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/references/manifests/tool boundaries, unified audit/work trace UI, and governance loops. Any other narrower scope must be named and must list deferred full-core areas.
 
@@ -127,15 +127,9 @@ It must also tell the downstream implementation phase:
 
 ## Decomposition workflow
 
-### 0. Resolve Java base package
+### 0. Record the fixed Java base package
 
-Before planning work that will generate Java source files, determine the application base package. Prefer an existing Maven/Gradle group id or existing package root in the target project. If no package is present and the user has not supplied one, ask the initial package question:
-
-```text
-What Java base package should I use for generated code? Press Enter to use `ai.first`.
-```
-
-Record the selected package in the solution plan and apply it consistently to group id, package declarations, imports, tests, and source paths. Never infer the package solely from this repository's examples; use `ai.first` only when accepted/deferred as the selected default or explicitly requested.
+Before planning work that will generate Java source files, record `ai.first` as the fixed application base package. Apply it consistently to group id, package declarations, imports, tests, and source paths. Do not ask the user to choose a Java package and do not create a base-package pending question.
 
 ### 1. Apply core secure SaaS foundation
 

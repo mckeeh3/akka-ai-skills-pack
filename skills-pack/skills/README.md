@@ -5,11 +5,10 @@ This directory contains AI-focused skills for creating full-stack secure AI-firs
 These skills are primarily an **internal routing layer for the harness**.
 Users should be able to describe intent in natural language; the harness should infer the right path and load the smallest relevant skill set.
 
-Java base package intake for generated code:
-- before creating a new Java Akka project, scaffolding Java source files, or realizing an app description into Java code, ask: "What Java base package should I use for generated code? Press Enter to use `ai.first`."
-- use `ai.first` as the default only when the user accepts or defers the choice
-- do not infer a generated application package solely from bundled examples; use `ai.first` only when accepted/deferred as the selected default or explicitly requested
-- record the selected package in app-description/spec/generation artifacts and apply it consistently to group id, packages, imports, tests, and source paths
+Java base package for generated code:
+- always use the fixed base package `ai.first` for this core app baseline and downstream generated code
+- do not ask users to choose a Java package and do not create pending questions about the Java base package
+- record `ai.first` in app-description/spec/generation artifacts and apply it consistently to group id, packages, imports, tests, and source paths
 
 This file serves both:
 - the **source repository**, where root `app-description/`, `specs/`, `frontend/`, `src/`, and `skills-pack/docs|examples|templates` are reference and runtime assets
@@ -24,7 +23,7 @@ Core-app-first routing:
 - the runnable core app repository root is the canonical generated-app implementation baseline; the minimum starter is a narrower readiness state than full-core SaaS and must record follow-up work to reach full-core readiness; focused Akka component examples are supporting references only when they directly match the selected skill/substrate pattern
 - when extending the core app or generated-app foundation with durable internal/background agent work such as access-review investigations, admin-risk batches, audit summaries, evaluation/replay loops, monitoring/remediation, specialist follow-up, task dependencies, notifications, handoff, or team coordination, route to Akka `AutonomousAgent` and apply `docs/autonomous-agent-worker-runtime-pattern.md` for worker-style generated-app tasks; keep request-based Akka `Agent` as the default for the five core user-facing workstream request/response turns and other bounded `markdown_response` workstream interactions
 - when the user asks what comes next after the app runs, recommend the next milestone from actual readiness gaps, app-description state, or pending tasks; say `domain-specific` or use the user's actual domain name for later product features, and never say `DCA-specific` unless DCA is explicitly the user's domain
-- if a project has existing implementation artifacts, preserve its selected Java base package, foundation, workstream UI, and queue history; update app-description/specs before adding implementation tasks
+- if a project has existing implementation artifacts, preserve the fixed `ai.first` Java base package, foundation, workstream UI, and queue history; update app-description/specs before adding implementation tasks
 - for this repository's runnable core app and downstream forks that keep its merge-friendly layout, preserve the standard Akka Java layers and use `foundation`, `coreapp`, and `business.<area>` partitions inside them: reusable SaaS/platform code under `<base>.api|application|domain.foundation.*`, built-in five-core-workstream code under `<base>.api|application|domain.coreapp.*`, and user-owned domain-specific extensions under `<base>.api|application|domain.business.<area>.*`
 - do not place new product-specific Java code in legacy top-level `security`, `agentfoundation`, `admin`, or `workstream` packages when extending the core app; use stable foundation contracts and approved core app hooks from `business.<area>` packages instead
 - do not regenerate a parallel fresh app, replace the existing foundation files, or use `.agents/` resources as writable project source unless the user explicitly asks for destructive reset or pack maintenance
@@ -304,7 +303,7 @@ Start with:
 Use when a backlog file already exists and one specific item from its `Suggested harness task breakdown` still needs to be turned into a smaller physical task brief under `specs/tasks/` before coding.
 
 This is the leaf-planning skill for converting one backlog item into a single focused implementation contract with exact reads, scope, non-goals, skills, outputs, tests, and done criteria, then updating the matching `specs/pending-tasks.md` entry.
-See `skills/akka-backlog-item-to-task-brief/SKILL.md` for example invocation patterns.
+See `akka-backlog-item-to-task-brief/SKILL.md` for example invocation patterns.
 
 ### Pending question queue skills
 
@@ -1353,7 +1352,7 @@ Load:
 
 ## Repository reference examples
 
-These Java examples are **Akka substrate references**, not generated-product architecture templates. Use them to copy component structure, APIs, tests, and edge patterns after secure AI-first SaaS foundation and operating-model decisions are already made. Do not use shopping-cart or other low-level examples to choose the product architecture. Paths under `ai.first` are bundled reference examples; use their component patterns, but resolve the target project's selected Java base package before copying code. `ai.first` remains valid when accepted/deferred as the selected default or explicitly requested.
+These Java examples are **Akka substrate references**, not generated-product architecture templates. Use them to copy component structure, APIs, tests, and edge patterns after secure AI-first SaaS foundation and operating-model decisions are already made. Do not use shopping-cart or other low-level examples to choose the product architecture. Paths under `ai.first` are bundled reference examples; use their component patterns and keep generated code in the fixed `ai.first` base package.
 
 ### Event sourced entities
 Core entities:

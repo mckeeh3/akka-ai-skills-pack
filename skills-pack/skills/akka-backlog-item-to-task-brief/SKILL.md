@@ -123,7 +123,7 @@ If any of these are required but unresolved, do not make the queue entry runnabl
 ## Mapping rules
 
 ### Backlog item to task brief mapping
-- `specs/backlog/01-foo-build-backlog.md` -> `specs/tasks/01-foo/...`
+- `specs/backlog/01-domain-specific-build-backlog.md` -> `specs/tasks/01-domain-specific/...`
 - preserve the slice number and stem in the task directory name
 - use stable, short task filenames that describe the bounded work
 
@@ -170,8 +170,8 @@ Managed-agent foundation task briefs must also be split before coding when they 
 ## Naming rules
 
 Keep numbering aligned inside each slice task directory:
-- `specs/tasks/01-foo/01-...md`
-- `specs/tasks/01-foo/02-...md`
+- `specs/tasks/01-domain-specific/01-...md`
+- `specs/tasks/01-domain-specific/02-...md`
 
 Use names that describe the implementation boundary, not just the business area.
 

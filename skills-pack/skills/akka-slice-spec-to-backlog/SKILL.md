@@ -84,7 +84,7 @@ produce the matching backlog file:
 Also create or update:
 - `specs/pending-tasks.md`
 
-This skill is a one-increment expansion step. Do not reinterpret the whole PRD, create a fresh parallel app, or change unrelated slices/sprints while creating the backlog. The backlog and queue entries must inherit the selected Java base package, core-app-extension assumptions, style-guide status, workstream ids, role-specific dashboards, attention items, surface graph nodes/edges, internal-agent graph context, governed-tool ids, capability ids, AuthContext/scope, role/capability rules, approval gates, audit/trace obligations, and test expectations from the solution plan and source slice/sprint. If the source increment lacks those contracts, block or queue the narrow repair question instead of inventing implementation authority.
+This skill is a one-increment expansion step. Do not reinterpret the whole PRD, create a fresh parallel app, or change unrelated slices/sprints while creating the backlog. The backlog and queue entries must inherit the fixed Java base package `ai.first`, core-app-extension assumptions, style-guide status, workstream ids, role-specific dashboards, attention items, surface graph nodes/edges, internal-agent graph context, governed-tool ids, capability ids, AuthContext/scope, role/capability rules, approval gates, audit/trace obligations, and test expectations from the solution plan and source slice/sprint. If the source increment lacks those contracts, block or queue the narrow repair question instead of inventing implementation authority.
 
 ## Required backlog content
 
@@ -121,10 +121,10 @@ Preserve existing task IDs and statuses when updating an existing queue.
 ## Mapping rules
 
 ### Slice or sprint to backlog name mapping
-- `specs/slices/01-foo.md` -> `specs/backlog/01-foo-build-backlog.md`
-- `specs/slices/02-bar.md` -> `specs/backlog/02-bar-build-backlog.md`
-- `specs/sprints/01-foo-sprint.md` -> `specs/backlog/01-foo-build-backlog.md`
-- `specs/sprints/02-bar-sprint.md` -> `specs/backlog/02-bar-build-backlog.md`
+- `specs/slices/01-domain-specific.md` -> `specs/backlog/01-domain-specific-build-backlog.md`
+- `specs/slices/02-domain-specific-process.md` -> `specs/backlog/02-domain-specific-process-build-backlog.md`
+- `specs/sprints/01-domain-specific-sprint.md` -> `specs/backlog/01-domain-specific-build-backlog.md`
+- `specs/sprints/02-domain-specific-process-sprint.md` -> `specs/backlog/02-domain-specific-process-build-backlog.md`
 
 ### AI-first context preservation
 

@@ -43,7 +43,7 @@ For AI-first SaaS apps, the description must define the operating model as well 
 
 ### 2. Code is maintained realization, not disposable output
 Source code is the maintained realization of the described system.
-Do not replace the canonical root app, foundation files, selected Java package, queue history, or user-owned implementation work unless the user explicitly requests a destructive reset.
+Do not replace the canonical root app, foundation files, fixed Java package `ai.first`, queue history, or user-owned implementation work unless the user explicitly requests a destructive reset.
 Localized extension and repair are the default for existing repositories; broad regeneration is an exceptional strategy that must be explicitly scoped and justified.
 
 ### 3. Tests are part of the description

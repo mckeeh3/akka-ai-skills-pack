@@ -74,7 +74,7 @@ Do not read the entire codebase. This skill is about planning decisions, not imp
 
 Do not ask security-provider selection questions in a way that blocks the core model itself. WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the supported production email service. Unknown WorkOS setup values or missing Resend settings may block only provider-specific integration tasks; they must not block modeling Tenant/Customer boundaries, local Account/Membership/Role/Permission authorization, AuthContext, `/api/me`, AdminAuditEvent, tenant/customer-scoped commands and queries, or tenant-isolation tests.
 
-For new Java generation/scaffolding, ensure the Java base package is resolved before implementation tasks write source files. If no package exists in project configuration or app-description/spec artifacts, create or ask a focused `category: generation` question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`. Mark it blocking only for Java source generation/scaffolding tasks. Do not infer the package solely from bundled examples; use `ai.first` only when it is the selected package or the user accepts/defers the default.
+For new Java generation/scaffolding, use the fixed Java base package `ai.first`. Do not create or ask a Java base-package question, and package selection is out of scope.
 
 Create questions only when the answer can change one or more of:
 - AI-first operating model: delegated work, retained human authority, supervision mode, or outcome loop
@@ -96,7 +96,6 @@ Create questions only when the answer can change one or more of:
 - failure handling, retries, idempotency, or compensation
 - acceptance, regression, evaluation, replay/simulation, or edge-case tests
 - backlog slicing, dependencies, or task generation
-- Java package namespace, group id, generated source paths, imports, and test package names
 
 For generated full-stack AI-first SaaS, if no selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent UI spec, append a `category: ui` question using the canonical AI-first style options from `../docs/web-ui-style-guide.md`: `ai-first-workstream-enterprise` with the four initial named themes, or `custom` with a user-supplied style brief that preserves named-theme semantics. Mark it `priority: blocking` for web UI implementation/generation tasks; do not block unrelated backend work.
 
@@ -115,7 +114,6 @@ For AI-first SaaS inputs, prefer a small number of actionable blocker questions 
 - `category: governed-tool` — which semantic operation is being added or changed, and is it a browser-tool, agent-tool, internal-tool, workflow/timer/consumer/MCP-tool, or multiple exposures?
 - `category: internal-agent-graph` — which internal worker delegation, result, proposal, escalation, or human attention item should the workstream agent graph produce?
 - `category: workflow` — which attention item lifecycle, notification/projection source, or AutonomousAgent task state should drive a dashboard or surface action?
-- `category: generation` — what Java base package should generated code use, defaulting to `ai.first` if the user defers?
 
 Avoid questions that are:
 - cosmetic
@@ -179,7 +177,7 @@ If blocking questions exist:
 
 Before finishing, verify:
 - `specs/pending-questions.md` exists or no durable questions were needed
-- Java source generation has a selected base package or a pending/deferred base-package question with default `ai.first` that blocks only affected Java generation tasks
+- Java source generation records and uses the fixed base package `ai.first`
 - browser UI work has a selected style guide or a pending/deferred style-selection question that blocks only affected UI tasks
 - every question has a clear design impact
 - AI-first questions are actionable blockers or meaningful quality decisions, not cosmetic prompts

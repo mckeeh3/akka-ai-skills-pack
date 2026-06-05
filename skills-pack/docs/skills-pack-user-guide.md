@@ -63,7 +63,7 @@ Use the harness skills-library install, put source input under `docs/input/`, th
 
 ### New app with baseline implementation
 
-Fork or clone this repository as the baseline. Keep the default `ai.first` package unless you deliberately perform a product package rename. Add product/domain input under `docs/input/`, then ask the harness to reconcile it into the existing root `app-description/`, `specs/`, backend, and frontend. Extend with `domain-specific` packages and frontend/app-description extension zones rather than editing skills-pack internals.
+Fork or clone this repository as the baseline. Keep the fixed `ai.first` package. Add product/domain input under `docs/input/`, then ask the harness to reconcile it into the existing root `app-description/`, `specs/`, backend, and frontend. Extend with `domain-specific` packages and frontend/app-description extension zones rather than editing skills-pack internals.
 
 ## Runtime validation expectations
 

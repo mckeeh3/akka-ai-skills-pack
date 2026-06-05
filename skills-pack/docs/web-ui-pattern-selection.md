@@ -20,11 +20,11 @@ The frontend build owns generated files under `static-resources/`. Edit `fronten
 
 | Need | Use | First example |
 | --- | --- | --- |
-| Full React/Vite/TypeScript agent workstream app with functional-agent rail, stream panel, composer, structured surfaces, state, forms, typed API clients, accessibility, responsive behavior, and a standard frontend build | Frontend project web app pattern | `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, `frontend/src/workstream-user-admin-vertical.contract.test.mjs`, `skills/akka-web-ui-apps/SKILL.md`, and `skills/akka-web-ui-frontend-project/SKILL.md` |
-| Co-hosted frontend app calling JSON endpoints | UI + JSON API pattern | `skills/akka-http-endpoint-web-ui/SKILL.md`, `skills/akka-web-ui-api-client/SKILL.md`, and protected `/api/...` endpoint guidance |
-| Frontend app consuming live one-way updates | UI + SSE pattern | `skills/akka-http-endpoint-sse/SKILL.md`, `skills/akka-web-ui-realtime/SKILL.md`, and `../examples/akka-components/src/main/java/ai/first/api/CounterStreamEndpoint.java` for backend stream mechanics |
-| Frontend app needing two-way communication | UI + WebSocket pattern | `skills/akka-http-endpoint-websocket/SKILL.md`, `skills/akka-web-ui-realtime/SKILL.md`, and `../examples/akka-components/src/main/java/ai/first/api/PingWebSocketEndpoint.java` for backend socket mechanics |
-| Route exposure and backend access boundaries | Apply the mandatory secure SaaS foundation for protected APIs; public static asset routes are the exception | `skills/core-saas-foundation/SKILL.md`, `skills/akka-http-endpoint-jwt/SKILL.md`, and `skills/akka-http-endpoint-acl-internal/SKILL.md` |
+| Full React/Vite/TypeScript agent workstream app with functional-agent rail, stream panel, composer, structured surfaces, state, forms, typed API clients, accessibility, responsive behavior, and a standard frontend build | Frontend project web app pattern | `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, `frontend/src/workstream-user-admin-vertical.contract.test.mjs`, `../akka-web-ui-apps/SKILL.md`, and `../akka-web-ui-frontend-project/SKILL.md` |
+| Co-hosted frontend app calling JSON endpoints | UI + JSON API pattern | `../akka-http-endpoint-web-ui/SKILL.md`, `../akka-web-ui-api-client/SKILL.md`, and protected `/api/...` endpoint guidance |
+| Frontend app consuming live one-way updates | UI + SSE pattern | `../akka-http-endpoint-sse/SKILL.md`, `../akka-web-ui-realtime/SKILL.md`, and `../examples/akka-components/src/main/java/ai/first/api/CounterStreamEndpoint.java` for backend stream mechanics |
+| Frontend app needing two-way communication | UI + WebSocket pattern | `../akka-http-endpoint-websocket/SKILL.md`, `../akka-web-ui-realtime/SKILL.md`, and `../examples/akka-components/src/main/java/ai/first/api/PingWebSocketEndpoint.java` for backend socket mechanics |
+| Route exposure and backend access boundaries | Apply the mandatory secure SaaS foundation for protected APIs; public static asset routes are the exception | `../core-saas-foundation/SKILL.md`, `../akka-http-endpoint-jwt/SKILL.md`, and `../akka-http-endpoint-acl-internal/SKILL.md` |
 
 ## Frontend project requirement for workstream web apps
 
@@ -73,14 +73,14 @@ Generated API documentation assets are not a browser UI implementation path. If 
 Start with:
 
 - `docs/web-ui-style-guide.md` for style-guide selection when browser UI styling is not yet selected
-- `skills/akka-web-ui-apps/SKILL.md` for complete frontend apps
-- `skills/akka-web-ui-frontend-project/SKILL.md` for standard frontend project integration
-- `skills/akka-http-endpoint-web-ui/SKILL.md` for Akka hosting and web UI delivery
+- `../akka-web-ui-apps/SKILL.md` for complete frontend apps
+- `../akka-web-ui-frontend-project/SKILL.md` for standard frontend project integration
+- `../akka-http-endpoint-web-ui/SKILL.md` for Akka hosting and web UI delivery
 
 Then load the focused companion skill you need:
 
-- `skills/akka-http-endpoint-sse/SKILL.md`
-- `skills/akka-http-endpoint-websocket/SKILL.md`
-- `skills/core-saas-foundation/SKILL.md` for mandatory SaaS identity, tenancy, authorization, `/api/me`, audit, and tenant-isolation expectations
-- `skills/akka-http-endpoint-jwt/SKILL.md` for protected browser/service API routes
-- `skills/akka-http-endpoint-acl-internal/SKILL.md` for internal-only routes or method-level service ACLs
+- `../akka-http-endpoint-sse/SKILL.md`
+- `../akka-http-endpoint-websocket/SKILL.md`
+- `../core-saas-foundation/SKILL.md` for mandatory SaaS identity, tenancy, authorization, `/api/me`, audit, and tenant-isolation expectations
+- `../akka-http-endpoint-jwt/SKILL.md` for protected browser/service API routes
+- `../akka-http-endpoint-acl-internal/SKILL.md` for internal-only routes or method-level service ACLs

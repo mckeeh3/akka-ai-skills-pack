@@ -69,7 +69,7 @@ Minimum-starter generation is a named narrower scope, not a full-core shortcut. 
 
 Full-core generation has an additional hard gate: the generation basis must be labeled `full core` and include My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; complete Invitation onboarding; full user administration; governed runtime agent records, reference documents, `readSkill`, and `readReferenceDoc`; workstream UI; and acceptance/security/agent-governance/frontend tests. Workstream UI realization must start from the canonical `frontend/src/workstream/**` reference and User Admin dashboard → list/search → detail/edit vertical, not legacy `frontend/src/screens/**`, page-first route examples, or removed standalone static UI fixtures. The User Admin vertical must realize `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` as fullstack surfaces backed by scoped backend APIs/capabilities/views/components and tests; fixture-only, API-only, or UI-only User Admin output is not full-core functional completion. If any are absent, stop generation unless the requested output is explicitly labeled `minimum starter`, `Module 1-only / not full core`, or another named narrower scope with the omitted full-core areas listed.
 
-When the target project already contains implementation artifacts or a legacy `specs/scaffold-report.md`, prefer localized extension of that core app foundation over fresh full-app regeneration: preserve the selected Java base package, existing foundation components, workstream shell, and app-description/spec queue history. Generate new outputs as vertical capability extensions unless the user explicitly asks to reset or replace the app.
+When the target project already contains implementation artifacts or a legacy `specs/scaffold-report.md`, prefer localized extension of that core app foundation over fresh full-app regeneration: preserve the fixed Java base package `ai.first`, existing foundation components, workstream shell, and app-description/spec queue history. Generate new outputs as vertical capability extensions unless the user explicitly asks to reset or replace the app.
 
 ## Generation responsibilities
 
@@ -77,7 +77,7 @@ When generating, this skill must:
 - identify the current description baseline
 - detect existing implementation artifacts or legacy `specs/scaffold-report.md` and treat generation as existing-app extension by default rather than fresh app replacement
 - identify the generation scope label (`minimum starter`, `full core`, `Module 1-only / not full core`, or another narrower scope) from the app description/specs/user instruction and report it in the summary
-- resolve the Java base package from existing project configuration, legacy `specs/scaffold-report.md`, the app description, or the initial package question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default to `ai.first` only when accepted/deferred, and do not infer the generated package solely from bundled examples
+- use the fixed Java base package `ai.first` for generated code; package selection is out of scope
 - verify readiness did not ignore the secure SaaS foundation required by `core-saas-foundation`
 - block full-core generation or return to readiness if User Admin, Agent Admin, complete invitation onboarding, full user administration, governed runtime agents, workstream UI, or required tests are missing without an explicit narrower-scope label
 - block full-core generation or return to readiness if User Admin cannot be proven through the fullstack `user-admin-dashboard` → `user-admin-user-list` search/filter → `user-admin-user-account` detail/action path, including scoped APIs, backend capability enforcement, UserAdminAgent behavior, audit/trace output, and negative checks for disabled actor, cross-tenant access, Customer Admin Tenant-level denial, SaaS Owner without support access, role escalation, and last-admin loss
@@ -111,7 +111,7 @@ Use only when:
 - the user explicitly asks for destructive reset, fresh realization, or broad regeneration
 - the scope label is named and the files safe to replace are clear
 - prior outputs are unreliable or obsolete enough that targeted repair is riskier
-- replacement will not discard the selected Java package, foundation behavior, queue history, or user-owned domain work without explicit approval
+- replacement will not discard the fixed Java package `ai.first`, foundation behavior, queue history, or user-owned domain work without explicit approval
 
 Localized realization must never override description correctness.
 
@@ -119,7 +119,7 @@ Localized realization must never override description correctness.
 
 As applicable, generation may include:
 - secure SaaS foundation outputs first: identity/tenancy/domain types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, complete Invitation lifecycle with email delivery/outbox, resend, revoke, expiry, acceptance, delivery status and delivery attempts, AuthContext, `/api/me`, backend authorization service, AdminAuditEvent/audit views, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, support-access, subscription/billing boundary, mandatory governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`), behavior editing agent proposals, mandatory AI admin agents (AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent or one governed `UserAdminAgent` with equivalent skills and references), role-specific dashboard projections, human surface graph rendering/action plumbing, internal workstream agent graph runtime paths, governed-tool implementations and browser-tool/agent-tool/internal-tool mappings, agent catalog/detail, prompt governance, skill governance, reference governance, skill/reference manifest, tool permission, edit-agent proposal, and trace UI surfaces, User Admin `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` fullstack surfaces with safe mutation or decision-card-producing actions, decision cards for risky admin actions, mandatory admin/context-selection/supervision UI surfaces, and tenant-isolation/security tests for forbidden access, disabled users, cross-tenant access, Customer Admin Tenant-level denial, SaaS Owner no-support-access denial, role/scope denial, role escalation, audit, invite lifecycle, membership lifecycle, last-admin protection, admin-agent approval boundaries, disabled-agent denial, unassigned skill/reference denial, unauthorized prompt/skill/reference/tool-boundary change denial, trace creation, audit/search views, surface graph UI behavior, browser-tool denial, and frontend secret boundaries
-- source code under the selected Java base package, with Maven/Gradle group id, package declarations, imports, tests, and source paths kept consistent
+- source code under the fixed Java base package `ai.first`, with Maven/Gradle group id, package declarations, imports, tests, and source paths kept consistent
 - generated tests
 - configuration or deployment assets
 - runtime startup commands or scripts
@@ -184,7 +184,6 @@ After generation, route onward as needed:
 Ask only the smallest questions needed to avoid an obviously wrong realization step.
 
 Examples:
-- "What Java base package should I use for generated code? Press Enter to use `ai.first`."
 - "Should I localize the implementation change to the affected area, or are you explicitly asking for a broader regeneration/replacement?"
 - "Should I also run the available tests and start/smoke the local app path needed to prove this generated scope works?"
 - "Which named narrower scope should I generate now, and which missing runtime features should remain blocked outside that completion claim?"
@@ -198,7 +197,7 @@ Avoid:
 - using code-only edits to hide semantic gaps that belong in the app description
 - hiding assumptions used during `ready-with-assumptions` generation
 - generating AI-first apps from CRUD-only or chatbot-only descriptions when goals, authority, policies, decisions, traces, outcomes, or supervision surfaces are actually in scope
-- copying the reference-example package into generated application code without resolving the target project's selected package first
+- changing generated application code away from the fixed `ai.first` package
 
 ## Final review checklist
 
@@ -211,7 +210,7 @@ Before finishing, verify:
 - missing foundation/security semantics block generation instead of becoming assumptions
 - operating-model basis is explicit for generated AI-first SaaS
 - assumptions are explicit when used
-- Java base package is explicit and is not accidentally inherited from reference examples
+- Java base package is explicit and fixed to `ai.first`
 - realization scope is explicit
 - outputs in scope are listed clearly
 - executed steps and results are reported clearly, including whether the app was run locally and what visible/API/workstream paths were validated

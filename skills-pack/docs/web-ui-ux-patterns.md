@@ -8,7 +8,7 @@ Pair with:
 - `docs/web-ui-frontend-decomposition.md`
 - `docs/web-ui-style-guide.md`
 - `docs/web-ui-quality-checklist.md`
-- `skills/akka-web-ui-ux-design/SKILL.md`
+- `../akka-web-ui-ux-design/SKILL.md`
 
 ## UX principles
 

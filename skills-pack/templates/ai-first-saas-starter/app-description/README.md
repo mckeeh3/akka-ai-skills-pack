@@ -4,12 +4,12 @@ This template is a source-controlled starter for workstream surface modeling in 
 
 The template is intentionally app-description-only. It is not a runnable app baseline and does not replace the upstream core app implementation.
 
-Use with:
+Use with companion pack guidance under `.agents/skills` or the source `skills-pack` directory:
 
 - `docs/agent-workstream-application-architecture.md`
 - `docs/requirements-to-workstream-development-process.md`
 - `docs/structured-surface-contracts.md`
-- `skills/app-description-surface-modeling/SKILL.md`
+- `app-description-surface-modeling/SKILL.md`
 
 ## Included starter layers
 

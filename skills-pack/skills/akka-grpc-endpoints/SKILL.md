@@ -87,7 +87,7 @@ Use this top-level skill plus the official docs when those are the main concern.
 
 ## Default package layout
 
-Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples use `ai.first`; generated application code must use the target project's selected package and must not infer that package solely from examples.
+Use the fixed Java base package `ai.first` for this core-app-first repository and downstream generated code. Keep package declarations, imports, tests, and source paths under `ai.first`; do not infer package names from examples.
 
 Typical layer paths are:
 - `<base>.domain`

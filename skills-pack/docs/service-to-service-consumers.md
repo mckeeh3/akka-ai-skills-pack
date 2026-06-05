@@ -13,8 +13,8 @@ Local producer-side executable example:
 ## Related references
 
 - `docs/service-to-service-views.md` — use when the subscriber should build a query model instead of triggering side effects
-- `skills/akka-consumer-from-service-stream/SKILL.md` — focused routing for service-stream consumer subscribers
-- `skills/akka-view-from-service-stream/SKILL.md` — focused routing for service-stream view subscribers
+- `../akka-consumer-from-service-stream/SKILL.md` — focused routing for service-stream consumer subscribers
+- `../akka-view-from-service-stream/SKILL.md` — focused routing for service-stream view subscribers
 
 ## When to use this pattern
 

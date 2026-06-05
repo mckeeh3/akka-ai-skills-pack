@@ -96,10 +96,10 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
   - specs/tasks/01-<slice>/01-<task>.md
   - docs/ai-first-saas-application-architecture.md when the task implements AI-first objects, authority, policies, decisions, traces, UI surfaces, or outcomes
   - docs/workstream-expertise-model.md when the task implements or changes an LLM-backed functional agent's workstream expertise, model binding, skills, references, manifests, loaders, tool boundaries, traces, or expertise surfaces
-  - skills/akka-agent-behavior-profiles/SKILL.md when the task implements AgentDefinition, lifecycle, authority, agent catalog, or agent detail
-  - skills/akka-agent-prompt-governance/SKILL.md when the task implements PromptDocument, PromptVersion, prompt assembly, PromptAssemblyTrace, or prompt governance UI
-  - skills/akka-agent-skill-governance/SKILL.md when the task implements SkillDocument, SkillVersion, AgentSkillManifest, readSkill, SkillLoadTrace, or skill/manifest/tool-boundary UI
-  - skills/akka-agent-work-trace/SKILL.md when the task implements AgentWorkTrace or agent trace search/detail UI
+  - ../akka-agent-behavior-profiles/SKILL.md when the task implements AgentDefinition, lifecycle, authority, agent catalog, or agent detail
+  - ../akka-agent-prompt-governance/SKILL.md when the task implements PromptDocument, PromptVersion, prompt assembly, PromptAssemblyTrace, or prompt governance UI
+  - ../akka-agent-skill-governance/SKILL.md when the task implements SkillDocument, SkillVersion, AgentSkillManifest, readSkill, SkillLoadTrace, or skill/manifest/tool-boundary UI
+  - ../akka-agent-work-trace/SKILL.md when the task implements AgentWorkTrace or agent trace search/detail UI
 - skills:
   - <skill-name>
   - ai-first-saas when the task must preserve AI-first operating-model semantics

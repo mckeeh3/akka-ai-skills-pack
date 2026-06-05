@@ -43,7 +43,7 @@ Do **not** use this skill when the user already has a settled slice/backlog and 
 If the target project already contains implementation artifacts or a legacy `specs/scaffold-report.md`, use this skill to extend the existing baseline, not to plan a separate fresh application:
 
 - read the existing app-description/specs and legacy report when present before creating or rewriting planning artifacts
-- preserve the selected Java base package, Maven group id, foundation scope, workstream UI baseline, and existing app-description/spec structure
+- preserve the fixed Java base package `ai.first`, Maven group id, foundation scope, workstream UI baseline, and existing app-description/spec structure
 - reconcile new PRD/domain input into the existing `app-description/` and `specs/` before creating tasks
 - create vertical capability backlogs and `specs/pending-tasks.md` entries that build on the existing foundation
 - queue questions for conflicts with core app foundation semantics instead of overwriting them silently
@@ -94,7 +94,7 @@ Read these first if present:
 - `../../../specs/README.md`
 - `../../../specs/backlog/README.md`
 - `../../../specs/tasks/README.md`
-- target project implementation artifacts or legacy `../../../specs/scaffold-report.md` if present, to detect existing-app extension mode and preserve selected package/path decisions
+- target project implementation artifacts or legacy `../../../specs/scaffold-report.md` if present, to detect existing-app extension mode and preserve fixed package/path decisions
 - `../../../specs/pending-questions.md` if it already exists
 - `../../../specs/pending-tasks.md` if it already exists
 - `../docs/pending-question-queue.md`
@@ -147,7 +147,7 @@ For every SaaS app PRD, create the secure foundation spec first:
 - `specs/cross-cutting/01-auth-tenancy-audit.md` — required for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, protected capability authorization, audit, support-access, billing boundary, and tenant-isolation tests unless the task is explicitly non-SaaS reference material.
 
 Create additional cross-cutting specs as justified by the PRD:
-- `specs/cross-cutting/00-common-domain-and-conventions.md` — include the selected Java base package; if absent, queue or ask "What Java base package should I use for generated code? Press Enter to use `ai.first`." and default to `ai.first` only when accepted/deferred
+- `specs/cross-cutting/00-common-domain-and-conventions.md` — record the fixed Java base package `ai.first`
 - `specs/cross-cutting/02-ui-style-guide.md` for generated full-stack AI-first SaaS when style is selected
 - `specs/cross-cutting/03-<integration-or-platform-concern>.md`
 
@@ -379,7 +379,7 @@ The queue must:
 - include why each question matters and what artifacts or decisions it affects
 - avoid dumping a large interrogation list into the chat response
 
-If no Java base package exists in project configuration, `specs/cross-cutting/00-common-domain-and-conventions.md`, app-description system artifacts, or equivalent project convention, create a `category: generation` question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`. This blocks only Java source generation/scaffolding tasks. Never use `ai.first` as the generated package unless the user explicitly selects it.
+Use the fixed Java base package `ai.first` for Java source generation/scaffolding. Do not ask a base-package pending question and package selection is out of scope.
 
 If no selected style guide or named-theme contract exists in `specs/cross-cutting/*ui-style-guide*.md`, `app-description/55-ui/style-guide.md`, or equivalent UI spec for a generated AI-first SaaS app, create a `category: ui` style-selection question with the canonical AI-first style options from `../docs/web-ui-style-guide.md`: `ai-first-workstream-enterprise` with four initial named themes, or `custom` with a user-supplied style brief that preserves named-theme semantics. This blocks web UI implementation/generation tasks until style and named themes are selected.
 
@@ -461,9 +461,9 @@ Use component family names to describe implementation files, not to define the t
 ## Naming rules
 
 Keep numbering aligned:
-- `sprints/01-foo-sprint.md` ↔ `backlog/01-foo-build-backlog.md`
-- `sprints/02-bar-sprint.md` ↔ `backlog/02-bar-build-backlog.md`
-- or, for smaller slice-based plans, `slices/01-foo.md` ↔ `backlog/01-foo-build-backlog.md`
+- `sprints/01-domain-specific-sprint.md` ↔ `backlog/01-domain-specific-build-backlog.md`
+- `sprints/02-domain-specific-process-sprint.md` ↔ `backlog/02-domain-specific-process-build-backlog.md`
+- or, for smaller slice-based plans, `slices/01-domain-specific.md` ↔ `backlog/01-domain-specific-build-backlog.md`
 
 Use stable names:
 - module names should describe durable app areas
