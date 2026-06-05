@@ -12,7 +12,7 @@ For broad product, PRD, feature, or process requests, route through `capability-
 ## Goal
 
 Generate or review workflow code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about command handlers vs step handlers
 - durable across retries and restarts
 - safe to compensate or pause when business flow requires it

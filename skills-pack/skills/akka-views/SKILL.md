@@ -12,7 +12,7 @@ For broad product, PRD, feature, dashboard, reporting, or search requests, route
 ## Goal
 
 Generate or review view code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about its source and update model
 - queryable with low-ambiguity result mappings
 - easy for AI agents to extend safely

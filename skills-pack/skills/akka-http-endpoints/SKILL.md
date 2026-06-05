@@ -12,7 +12,7 @@ For broad product, PRD, feature, or UI/API requests, route through `capability-f
 ## Goal
 
 Generate or review HTTP endpoint code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about public API request and response shapes
 - safe at the edge with clear validation and HTTP error mapping
 - easy for AI agents to extend without reading unrelated files

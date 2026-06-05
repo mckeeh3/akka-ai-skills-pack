@@ -12,7 +12,7 @@ For broad product, PRD, feature, reminder, expiry, or deadline requests, route t
 ## Goal
 
 Generate or review timer code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about where timers are scheduled and where they are handled
 - safe under at-least-once execution and retries
 - easy for AI agents to extend without loading unrelated component families

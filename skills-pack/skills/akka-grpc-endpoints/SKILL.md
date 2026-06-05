@@ -12,7 +12,7 @@ For broad product, PRD, feature, or service-contract requests, route through `ca
 ## Goal
 
 Generate or review gRPC endpoint code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about protobuf contracts in `src/main/proto`
 - safe at the edge with clear gRPC status mapping
 - easy for AI agents to extend without reading unrelated files

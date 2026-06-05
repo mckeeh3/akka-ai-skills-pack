@@ -213,7 +213,7 @@ Before finishing, verify:
 - done criteria define a clear stopping point and do not call a named feature implemented when required backend/API/UI/auth/audit/test pieces are deferred
 - `specs/pending-tasks.md` has a matching entry or updated existing entry for this task brief
 - the task brief and queue entry both carry the required vertical workstream contract, or an explicit internal/foundation/cross-cutting/docs-only/non-runtime exemption with non-attention/non-UI reason, trace expectations, and validation path
-- `bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md` passes when the validator is available in the target workspace or pack source
+- the pending-task validator passes when available: use `bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md` from a source checkout, or `bash .agents/skills/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md` from an installed skills library
 - existing queue task IDs and statuses are preserved
 
 ## Example invocation patterns

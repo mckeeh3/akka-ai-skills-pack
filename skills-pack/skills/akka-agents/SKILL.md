@@ -12,7 +12,7 @@ For broad product, PRD, feature, or automation requests in generated full-stack 
 ## Goal
 
 Generate or review agent code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about the agent's single responsibility
 - safe about session ids, memory, and failure handling
 - easy for AI coding agents to extend with focused companion skills

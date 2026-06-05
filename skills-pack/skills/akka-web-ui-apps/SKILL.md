@@ -56,7 +56,7 @@ Canonical frontend project integration reference:
 
 Canonical full-core implementation reference:
 - source checkout or downstream fork: use the runnable core app repository root
-- skills-only install: no frontend example tree is installed under `.agents`; application source belongs in the target project
+- skills-only install: root frontend application source is not installed under `.agents`; application source belongs in the target project, while pack examples remain under `.agents/skills/examples/**`
 
 Canonical source-checkout workstream UI reference:
 - reusable implementation modules: `../../../frontend/src/workstream/**`

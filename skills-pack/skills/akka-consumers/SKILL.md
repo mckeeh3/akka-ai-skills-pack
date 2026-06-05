@@ -12,7 +12,7 @@ For broad product, PRD, feature, or integration requests, route through `capabil
 ## Goal
 
 Generate or review Consumer code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about the source being consumed
 - safe for at-least-once delivery and duplicate redelivery
 - clear about whether the consumer ignores, completes, or produces

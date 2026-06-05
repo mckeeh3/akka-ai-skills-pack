@@ -146,13 +146,19 @@ Use this section in task briefs:
 
 For `specs/pending-tasks.md`, put the same content under the task's `notes` as a `vertical contract:` line or as equivalent bullet notes. A task may omit workstream/surface/action fields only when it explicitly says `internal-only`, `foundation-only`, `cross-cutting`, `docs-only`, or `non-runtime` and explains the non-attention/non-UI reason, capability/foundation scope, trace expectations, and validation path.
 
-Before implementation, use the repository validator when available:
+Before implementation, use the pending-task validator when available. From a source checkout, run:
 
 ```bash
 bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md
 ```
 
-In a downstream fork, run the script from the repository source checkout when available, passing the target queue path. The harness install also makes pack tools available under `.agents/skills/tools/**` for installed-skill use. The validator is intentionally conservative: it checks for the presence of the required contract vocabulary, not semantic correctness. Passing the script does not replace reading the task brief; failing it means repair the backlog/task brief/queue before coding.
+From an installed skills library, run the installed equivalent:
+
+```bash
+bash .agents/skills/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md
+```
+
+In a downstream fork, use whichever path exists and pass the target queue path. The validator is intentionally conservative: it checks for the presence of the required contract vocabulary, not semantic correctness. Passing the script does not replace reading the task brief; failing it means repair the backlog/task brief/queue before coding.
 
 ## Managed-agent and workstream expertise splitting guardrails
 

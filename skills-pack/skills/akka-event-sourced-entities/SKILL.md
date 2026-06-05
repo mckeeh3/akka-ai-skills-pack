@@ -12,7 +12,7 @@ Use it only after the relevant backend capability contract is clear enough, or a
 ## Goal
 
 Generate or review event sourced entity code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - cleanly split across `domain`, `application`, and `api`
 - replay-safe
 - aligned to a named capability's AuthContext, scope, idempotency, audit/trace, and approval semantics

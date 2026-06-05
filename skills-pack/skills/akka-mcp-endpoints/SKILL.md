@@ -12,7 +12,7 @@ For broad product, PRD, feature, or agent-integration requests, route through `c
 ## Goal
 
 Generate or review MCP endpoint code that is:
-- correct for Akka SDK 3.5+
+- correct for Akka SDK 3.6.x
 - explicit about tool, resource, and prompt contracts
 - safe for LLM clients through strong descriptions and validated inputs
 - easy for AI agents to extend without loading unrelated files

@@ -10,4 +10,4 @@ Key paths:
 - `src/test/java/com/example/**` — focused tests and integration tests for the reference examples
 - `src/main/proto/com/example/**` — gRPC example proto definitions
 
-Static browser UI fixtures were removed from this examples tree. Use the root app `frontend/src/workstream/**` reference and `skills-pack/docs/workstream-ui-reference-architecture.md` for generated SaaS UI structure; use focused HTTP/SSE/WebSocket endpoint examples only for backend delivery mechanics.
+Static browser UI fixtures were removed from this examples tree. In a source checkout, use the root app `frontend/src/workstream/**` reference and `skills-pack/docs/workstream-ui-reference-architecture.md` for generated SaaS UI structure. From an installed skills library, use `.agents/skills/docs/workstream-ui-reference-architecture.md`; root frontend application source is not installed. Use focused HTTP/SSE/WebSocket endpoint examples only for backend delivery mechanics.
