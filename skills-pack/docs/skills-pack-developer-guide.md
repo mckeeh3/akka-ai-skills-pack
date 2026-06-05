@@ -31,6 +31,7 @@ Do not add core app runtime code under `skills-pack/**`. Do not add skills-pack 
 - `skills-pack/tools/**` — pack tools copied/symlinked to `.agents/skills/tools`
 - root `frontend/**` — core app frontend and source-attention frontend workstream reference; not installed into `.agents`
 - root `akka-context/**` — official Akka reference material kept as an independently maintained top-level directory; not installed into `.agents/skills`
+- `skills-pack/pack/maintainer/**` — maintainer-only gap lists and release planning notes; not installed as harness-facing doctrine unless intentionally promoted into `docs/**` or `skills/**`
 
 ## Source layout
 
@@ -67,6 +68,8 @@ Maintain the pack so downstream harnesses:
 - use `domain-specific` or the user's actual domain name for app follow-up work
 
 The skills library no longer owns a duplicate full-app core app baseline. Guidance for a new implementation baseline should point users to fork or clone this repository and extend the runnable root app workspace.
+
+Keep user-facing installed guidance free of maintainer backlog residue. Put open example/test gap lists and release planning notes under `skills-pack/pack/maintainer/**` until they are converted into concrete docs, examples, or pending tasks.
 
 ## Common checks
 

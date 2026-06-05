@@ -146,7 +146,7 @@ Status: **partially covered for side-effecting tool-boundary mechanics**.
 
 Current reference coverage:
 
-- a domain-specific governed MCP endpoint exposes the side-effecting a domain-specific consequential capability capability as a domain-specific governed action tool id with service ACL, stable MCP tool id, tenant/customer scope checks, idempotency, approval-required behavior, and trace emission.
+- a domain-specific governed MCP endpoint exposes a side-effecting consequential capability through a domain-specific governed action tool id with service ACL, stable MCP tool id, tenant/customer scope checks, idempotency, approval-required behavior, and trace emission.
 - a domain-specific governed tool-boundary integration test covers ungranted MCP denial, approval-required behavior, duplicate idempotency handling, and no direct side-effect execution.
 
 Remaining useful future breadth: MCP endpoints exposing approved resources/tools for goals, policies, traces, or broader bounded action requests.

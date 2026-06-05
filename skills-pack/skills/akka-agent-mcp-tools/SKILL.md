@@ -38,19 +38,16 @@ Read these first if present:
 8. Keep tool results curated for the agent's purpose; do not ask a remote MCP tool for raw state when the capability requires redacted evidence.
 9. Emit `ToolInvocation`/work trace records for allowed, denied, approval-required, and failed remote tool attempts.
 
-## Repository example
+## Repository example status
 
-- `CoreAppToolsMcpEndpoint`
-  - default-path MCP server exposing the read-only a domain-specific read-only summary capability capability through a domain-specific summary tool
-  - uses a service ACL to show the remote MCP boundary is selective rather than open by default
-  - returns a compact workstream event summary, not raw entity state
-- `RemoteCoreAppAgent`
-  - connects to an explicit remote MCP server URL
-  - allows only a domain-specific summary tool for the a domain-specific read-only summary capability capability
-- a domain-specific governed MCP endpoint
-  - exposes side-effecting a domain-specific consequential capability through a domain-specific governed action tool id
-  - preserves service ACL, stable MCP tool id, `ToolPermissionBoundary`, tenant/customer scope, idempotency, approval-required behavior, and trace emission
-  - covered by a domain-specific governed tool-boundary integration test for ungranted MCP denial, approval-required result, duplicate idempotency behavior, and no direct side-effect execution
+The current core app example snapshot does not include MCP runtime examples. Do not cite retired MCP fixture class names as current repository examples.
+
+When implementing this pattern in a target project, create target-specific examples that:
+- expose only the selected read-only summary or governed action tool ids;
+- use service ACLs so the remote MCP boundary is selective rather than open by default;
+- return compact, redacted evidence DTOs instead of raw entity state;
+- preserve `ToolPermissionBoundary`, tenant/customer scope, idempotency, approval-required behavior, and trace emission;
+- include integration tests for ungranted MCP denial, approval-required results, duplicate idempotency behavior, and no direct side-effect execution.
 
 ## Review checklist
 

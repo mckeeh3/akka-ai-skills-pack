@@ -9,14 +9,7 @@ Use this skill when a Consumer subscribes to a stream published by another Akka 
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+For generated full-stack AI-first SaaS implementation work, apply `../references/generated-saas-input-contract.md` before coding. If the selected task lacks the required workstream/capability/AuthContext/surface/trace/test contract and does not explicitly defer it, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
 
 ## Required reading
 
