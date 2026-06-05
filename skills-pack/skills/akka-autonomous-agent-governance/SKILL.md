@@ -10,20 +10,20 @@ Use this skill when Autonomous Agents are part of a generated secure AI-first Sa
 ## Required reading
 
 Read before generated-app worker task implementation or review:
-- `../../docs/autonomous-agent-worker-runtime-pattern.md`
+- `../docs/autonomous-agent-worker-runtime-pattern.md`
 
 Read when API details are needed:
-- `../../docs/agent-component-selection-guide.md`
-- `../../docs/capability-first-backend-architecture.md`
-- `../../docs/agent-runtime-invocation-pattern.md`
-- `../../specs/autonomous-agents-integration/research-notes.md`
+- `../docs/agent-component-selection-guide.md`
+- `../docs/capability-first-backend-architecture.md`
+- `../docs/agent-runtime-invocation-pattern.md`
+- `../../../specs/autonomous-agents-integration/research-notes.md`
 - `../akka-agent-tool-boundaries/SKILL.md`
 - `../akka-agent-model-governance/SKILL.md` when model policies/aliases are in scope
 - `../akka-agent-work-trace/SKILL.md` when trace storage/search is in scope
 
 ## Governance model
 
-Autonomous Agents add durable task machinery. They do not relax the pack's managed-agent requirements. Model-driven task loops still need backend-owned capability contracts, authorization, model policy, tool boundaries, approval rules, and durable traces. Generated-app worker tasks must additionally follow `../../docs/autonomous-agent-worker-runtime-pattern.md`: explicit task contract, governed capabilities, v3 `worker.task.*` events, attention rules, structured surfaces, provider fail-closed behavior, and no fake success.
+Autonomous Agents add durable task machinery. They do not relax the pack's managed-agent requirements. Model-driven task loops still need backend-owned capability contracts, authorization, model policy, tool boundaries, approval rules, and durable traces. Generated-app worker tasks must additionally follow `../docs/autonomous-agent-worker-runtime-pattern.md`: explicit task contract, governed capabilities, v3 `worker.task.*` events, attention rules, structured surfaces, provider fail-closed behavior, and no fake success.
 
 Qualify terminology:
 - **Akka autonomous `AgentDefinition`**: SDK definition returned by `AutonomousAgent.definition()` / `define()` or dynamic `AgentSetup`.

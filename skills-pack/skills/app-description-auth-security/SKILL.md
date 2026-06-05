@@ -26,18 +26,18 @@ Create or update auth/security-oriented app-description artifacts that:
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/capability-first-backend-architecture.md` for protected capability AuthContext, permission, scope, exposure, and audit semantics
+- `../docs/description-first-application-doctrine.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/capability-first-backend-architecture.md` for protected capability AuthContext, permission, scope, exposure, and audit semantics
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation semantics
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 - `../app-description-test-specification/SKILL.md`
-- `../../docs/security-workos-auth-and-admin.md` when browser user authentication, WorkOS, JWT-secured APIs, or basic administration are in scope
+- `../docs/security-workos-auth-and-admin.md` when browser user authentication, WorkOS, JWT-secured APIs, or basic administration are in scope
 
 ## Use this skill when
 

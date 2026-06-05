@@ -12,14 +12,14 @@ A surface is a typed renderable artifact in an agent workstream. It is not a pag
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/agent-workstream-application-architecture.md`
-- `../../docs/requirements-to-workstream-development-process.md` for attention/dashboard/surface-action/autonomous task notification semantics
-- `../../docs/structured-surface-contracts.md`
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
-- `../../docs/capability-first-backend-architecture.md`
+- `../docs/agent-workstream-application-architecture.md`
+- `../docs/requirements-to-workstream-development-process.md` for attention/dashboard/surface-action/autonomous task notification semantics
+- `../docs/structured-surface-contracts.md`
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
+- `../docs/capability-first-backend-architecture.md`
 - `../app-descriptions/SKILL.md`
 - `../agent-workstream-apps/SKILL.md`
 - `../app-description-functional-agent-modeling/SKILL.md`
@@ -28,9 +28,9 @@ Read these first if present:
 - existing `app-description/12-workstreams/**`
 - existing `app-description/55-ui/**`
 - existing `app-description/70-traceability/surface-to-capability-map.md`
-- `../../templates/ai-first-saas-starter/app-description/README.md` and its `12-workstreams/**`, `55-ui/**`, and `70-traceability/**` files when bootstrapping or repairing starter surface contracts
-- `../../docs/examples/domain-workstream-surface-contract-example.md` when a domain-specific surface example is useful
-- `../../tools/validate-surface-contracts.sh` when validating a target app-description surface layer
+- `../templates/ai-first-saas-starter/app-description/README.md` and its `12-workstreams/**`, `55-ui/**`, and `70-traceability/**` files when bootstrapping or repairing starter surface contracts
+- `../docs/examples/domain-workstream-surface-contract-example.md` when a domain-specific surface example is useful
+- `../tools/validate-surface-contracts.sh` when validating a target app-description surface layer
 
 ## Use this skill when
 
@@ -67,7 +67,7 @@ app-description/70-traceability/
 
 Create or update only the smallest files needed. Keep `12-workstreams/surface-contracts/**` authoritative for what a surface means; keep `12-workstreams/functional-agents.md` authoritative for workstream icon assignment and meaning; keep `55-ui/**` focused on rendering, interaction, route/deep-link, style, and frontend API realization details.
 
-When the target app has no usable starter surface layer, copy and adapt the source-controlled starter files from `../../templates/ai-first-saas-starter/app-description/**` into the target project's `app-description/**`. Do not reference retired distribution output directories as template sources.
+When the target app has no usable starter surface layer, copy and adapt the source-controlled starter files from `../templates/ai-first-saas-starter/app-description/**` into the target project's `app-description/**`. Do not reference retired distribution output directories as template sources.
 
 ## Canonical surface types
 
@@ -92,7 +92,7 @@ Use these types unless the product intent requires a more specific typed surface
 
 ## Surface contract
 
-For each surface, capture the fields below. Use `../../docs/structured-surface-contracts.md` as the canonical implementation contract when the surface must specify payload envelopes, action envelopes, realtime events, auth, trace/audit fields, and rendering tests.
+For each surface, capture the fields below. Use `../docs/structured-surface-contracts.md` as the canonical implementation contract when the surface must specify payload envelopes, action envelopes, realtime events, auth, trace/audit fields, and rendering tests.
 
 - stable surface id, display name, type, and version;
 - purpose and user outcome;

@@ -25,13 +25,13 @@ Create or update observability-oriented app-description artifacts that:
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/capability-first-backend-architecture.md` for capability audit/trace, data-access, approval, side-effect, and exposure-surface evidence requirements
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
+- `../docs/description-first-application-doctrine.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/capability-first-backend-architecture.md` for capability audit/trace, data-access, approval, side-effect, and exposure-surface evidence requirements
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 - `../app-description-test-specification/SKILL.md`

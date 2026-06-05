@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Audit source skill file path references resolved from each skill directory.
+"""Audit source skill file path references using the installed skills layout.
 
 This is a lightweight hygiene check for references in skills/*/SKILL.md that
-look like source-repository docs/examples/resources. It intentionally ignores
-workspace-template paths such as specs/*, app-description/*, and frontend/*
-because those are often target-project paths in generated-app guidance.
+should resolve after installation under .agents/skills. It intentionally ignores
+target-project paths such as specs/*, app-description/*, frontend/*, src/*, and
+external top-level akka-context/* references.
 """
 from __future__ import annotations
 
@@ -20,7 +20,6 @@ LOCAL_PREFIXES = (
     "../../",
     "../../../",
     "docs/",
-    "src/",
     "skills/",
     "pom.xml",
     "AGENTS.md",
@@ -34,7 +33,18 @@ PROJECT_PLACEHOLDER_PREFIXES = (
     "../../app-description/",
     "frontend/",
     "../../frontend/",
+    "src/",
+    "../src/",
+    "../../src/",
+    "../../../src/",
+    "../../../specs/",
+    "../../../app-description/",
+    "../../../frontend/",
+    "../../../AGENTS.md",
+    "../../../pom.xml",
     "../src/main/resources/static-resources",
+    "../../../akka-context/",
+    "../../pom.xml",
 )
 SKIP_MARKERS = ("://", "*", "<", ">", "...")
 
@@ -49,7 +59,12 @@ def is_candidate(ref: str) -> bool:
 
 def resolve_ref(skill_file: Path, ref: str, repo_root: Path) -> Path:
     path = ref.split("#", 1)[0]
-    if path.startswith(("docs/", "src/", "skills/")) or path in {
+    installed_asset_prefixes = ("../docs/", "../examples/", "../templates/", "../tools/")
+    if path.startswith(installed_asset_prefixes):
+        return repo_root / path.removeprefix("../")
+    if path.startswith("../references/"):
+        return repo_root / "skills" / path.removeprefix("../")
+    if path.startswith(("docs/", "examples/", "templates/", "tools/", "references/", "skills/")) or path in {
         "pom.xml",
         "AGENTS.md",
         "install-skills.sh",
@@ -60,12 +75,16 @@ def resolve_ref(skill_file: Path, ref: str, repo_root: Path) -> Path:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--repo-root", default=".")
+    parser.add_argument("--repo-root", default=Path(__file__).resolve().parents[1])
     parser.add_argument("--quiet", action="store_true")
     args = parser.parse_args()
 
     repo_root = Path(args.repo_root).resolve()
     skill_files = sorted((repo_root / "skills").glob("*/SKILL.md"))
+    if not skill_files:
+        print(f"skill_files=0 checked_refs=0 broken_refs=0")
+        print(f"error: no skill files found under {repo_root / 'skills'}", file=sys.stderr)
+        return 1
     checked = 0
     broken: list[tuple[Path, str, Path]] = []
 

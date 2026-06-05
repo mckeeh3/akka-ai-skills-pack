@@ -12,8 +12,8 @@ This skill models governed artifacts. It does not replace focused prompt, skill,
 ## Required reading
 
 Read these first if present:
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/agent-coverage-matrix.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/agent-coverage-matrix.md`
 - `../core-saas-foundation/SKILL.md`
 - `../ai-first-saas-audit-trace/SKILL.md`
 - `../ai-first-saas-policy-governance/SKILL.md`

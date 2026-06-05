@@ -12,8 +12,8 @@ This is an operating-model and routing skill. It distinguishes user-facing funct
 ## Required reading
 
 Read first:
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/agent-workstream-application-architecture.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/agent-workstream-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 - `../agent-workstream-apps/SKILL.md`
 

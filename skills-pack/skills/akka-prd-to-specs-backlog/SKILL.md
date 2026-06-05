@@ -86,22 +86,22 @@ Read these first if present:
 - `../agent-workstream-apps/SKILL.md` for generated full-stack SaaS workstream interpretation before module, page, or component decomposition
 - `../capability-first-backend/SKILL.md` for capability inventory, authority, schemas, side effects, audit, approval, exposure channels, and tests before component planning
 - `../akka-solution-decomposition/SKILL.md`
-- `../../docs/ai-first-saas-application-architecture.md` for the canonical AI-first doctrine
-- `../../docs/agent-workstream-application-architecture.md` for functional agents, workstreams, structured surfaces, and vertical delivery
-- `../../docs/workstream-expertise-model.md` when planning any functional agent with LLM behavior or material expertise changes
-- `../../docs/structured-surface-contracts.md` for surface payload/action contracts
-- `../../docs/agent-workstream-design-review-checklist.md` when reviewing generated planning artifacts for page-first or component-first drift
-- `../../specs/README.md`
-- `../../specs/backlog/README.md`
-- `../../specs/tasks/README.md`
-- target project implementation artifacts or legacy `../../specs/scaffold-report.md` if present, to detect existing-app extension mode and preserve selected package/path decisions
-- `../../specs/pending-questions.md` if it already exists
-- `../../specs/pending-tasks.md` if it already exists
-- `../../docs/pending-question-queue.md`
-- `../../docs/pending-task-queue.md`
-- `../../docs/module-sprint-planning.md` when the input is large, multi-module, or includes backend plus frontend delivery
-- `../../docs/web-ui-style-guide.md` for mandatory generated SaaS browser UI style selection
-- `../../specs/akka-solution-plan.md` if it already exists
+- `../docs/ai-first-saas-application-architecture.md` for the canonical AI-first doctrine
+- `../docs/agent-workstream-application-architecture.md` for functional agents, workstreams, structured surfaces, and vertical delivery
+- `../docs/workstream-expertise-model.md` when planning any functional agent with LLM behavior or material expertise changes
+- `../docs/structured-surface-contracts.md` for surface payload/action contracts
+- `../docs/agent-workstream-design-review-checklist.md` when reviewing generated planning artifacts for page-first or component-first drift
+- `../../../specs/README.md`
+- `../../../specs/backlog/README.md`
+- `../../../specs/tasks/README.md`
+- target project implementation artifacts or legacy `../../../specs/scaffold-report.md` if present, to detect existing-app extension mode and preserve selected package/path decisions
+- `../../../specs/pending-questions.md` if it already exists
+- `../../../specs/pending-tasks.md` if it already exists
+- `../docs/pending-question-queue.md`
+- `../docs/pending-task-queue.md`
+- `../docs/module-sprint-planning.md` when the input is large, multi-module, or includes backend plus frontend delivery
+- `../docs/web-ui-style-guide.md` for mandatory generated SaaS browser UI style selection
+- `../../../specs/akka-solution-plan.md` if it already exists
 - `../references/akka-entity-comparison.md`
 
 If the user provided a path to a PRD or requirements file:
@@ -158,7 +158,7 @@ When the input is large, multi-module, or includes meaningful backend plus front
 - `specs/sprints/01-<sprint-name>-sprint.md`
 - `specs/sprints/02-<sprint-name>-sprint.md`
 
-Module specs define durable boundaries. Sprint specs define ordered vertical full-stack delivery increments. See `../../docs/module-sprint-planning.md`.
+Module specs define durable boundaries. Sprint specs define ordered vertical full-stack delivery increments. See `../docs/module-sprint-planning.md`.
 
 ### Vertical slice specs for smaller plans
 For smaller plans, or when preserving an existing project shape, create numbered files such as:
@@ -363,7 +363,7 @@ A good task brief should contain:
 Create or update:
 - `specs/pending-questions.md`
 
-Use `../../docs/pending-question-queue.md` as the queue contract.
+Use `../docs/pending-question-queue.md` as the queue contract.
 
 Create this queue when unresolved decisions would otherwise make the solution plan, module specs, sprint specs, slice specs, backlogs, or task queue speculative. Questions should be one-at-a-time, dependency-aware, and tied to concrete design impact.
 
@@ -381,7 +381,7 @@ The queue must:
 
 If no Java base package exists in project configuration, `specs/cross-cutting/00-common-domain-and-conventions.md`, app-description system artifacts, or equivalent project convention, create a `category: generation` question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`. This blocks only Java source generation/scaffolding tasks. Never use `com.example` as the generated package unless the user explicitly selects it.
 
-If no selected style guide or named-theme contract exists in `specs/cross-cutting/*ui-style-guide*.md`, `app-description/55-ui/style-guide.md`, or equivalent UI spec for a generated AI-first SaaS app, create a `category: ui` style-selection question with the canonical AI-first style options from `../../docs/web-ui-style-guide.md`: `ai-first-workstream-enterprise` with four initial named themes, or `custom` with a user-supplied style brief that preserves named-theme semantics. This blocks web UI implementation/generation tasks until style and named themes are selected.
+If no selected style guide or named-theme contract exists in `specs/cross-cutting/*ui-style-guide*.md`, `app-description/55-ui/style-guide.md`, or equivalent UI spec for a generated AI-first SaaS app, create a `category: ui` style-selection question with the canonical AI-first style options from `../docs/web-ui-style-guide.md`: `ai-first-workstream-enterprise` with four initial named themes, or `custom` with a user-supplied style brief that preserves named-theme semantics. This blocks web UI implementation/generation tasks until style and named themes are selected.
 
 If unresolved `blocking` questions affect planned implementation work, either:
 - stop before creating blocked implementation tasks and recommend `akka-do-next-pending-question`, or
@@ -392,7 +392,7 @@ If unresolved `blocking` questions affect planned implementation work, either:
 Create or update:
 - `specs/pending-tasks.md`
 
-Use `../../docs/pending-task-queue.md` as the queue contract.
+Use `../docs/pending-task-queue.md` as the queue contract.
 
 The queue must:
 - start with runnable full-stack secure foundation tasks before app-specific CRM/domain tasks for Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, complete email-invite onboarding, InvitationWorkflow, email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin invite UI/APIs, concrete managed-agent tasks for `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, deterministic prompt assembly, authorized `readSkill(skillId)`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `AgentWorkTrace`, behavior editing agent proposal flow, agent catalog/detail UI, prompt/skill/manifest/tool-boundary UI, AI admin responsibilities, decision cards for risky admin actions, audit, frontend shell/context selection/admin surfaces, and tenant-isolation/frontend/agent-governance tests
@@ -572,7 +572,7 @@ For every new or materially changed domain-specific functional agent, the `Sugge
 
 ## Required content for the pending question queue
 
-`specs/pending-questions.md` must follow `../../docs/pending-question-queue.md` and include, for each question:
+`specs/pending-questions.md` must follow `../docs/pending-question-queue.md` and include, for each question:
 - question ID and title
 - status
 - priority
@@ -590,7 +590,7 @@ Create this queue only when open decisions are meaningful enough to affect plann
 
 ## Required content for the pending task queue
 
-`specs/pending-tasks.md` must follow `../../docs/pending-task-queue.md` and include, for each task:
+`specs/pending-tasks.md` must follow `../docs/pending-task-queue.md` and include, for each task:
 - task ID and title
 - status
 - source backlog path

@@ -41,15 +41,15 @@ If these files exist, read them first:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ExpiringShoppingCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/api/OrderEndpoint.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartEntityTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/OrderEntityTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ExpiringShoppingCartEntityTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/ExpiringShoppingCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
+- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/OrderEndpoint.java`
+- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartEntityTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/OrderEntityTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ExpiringShoppingCartEntityTest.java`
 
 ## Companion skills
 

@@ -12,7 +12,7 @@ This is a governance modeling and routing skill. It does not replace security, e
 ## Required reading
 
 Read first:
-- `../../docs/ai-first-saas-application-architecture.md`
+- `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
 Then load focused downstream skills only for selected implementation components.

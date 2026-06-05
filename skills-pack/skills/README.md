@@ -13,14 +13,14 @@ Java base package intake for generated code:
 
 This file serves both:
 - the **source repository**, where root `app-description/`, `specs/`, `frontend/`, `src/`, and `skills-pack/docs|examples|templates` are reference and runtime assets
-- the **skills-only harness install**, where this routing map and `SKILL.md` files are copied under `.agents/skills` while the project's maintained `app-description/` tree stays in the project workspace, not under `.agents/`
+- the **harness skills-library install**, where this routing map, `SKILL.md` files, and referenced pack docs/examples/templates/tools are copied under `.agents/skills` while the project's maintained `app-description/` tree stays in the project workspace, not under `.agents/`
 
 Core-app-first routing:
-- skills-only install remains the only install model: `.agents/skills` is a guidance library and application artifacts live in the cloned/forked repository workspace
+- the harness install remains a skills-library install model: `.agents/skills` is a guidance/reference library and application artifacts live in the cloned/forked repository workspace
 - for new secure AI-first SaaS apps where the user wants an implementation baseline, prefer fork-and-extend from this runnable core app repository root; do not expect the skills install to contain or render a duplicate full-app core app baseline
-- natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS must route to `../docs/minimum-ai-first-saas-app.md`: a bootstrap-authorized five core workstream starter readiness target with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, not a generic public chatbot or page-first CRUD shell
+- natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS must route to `docs/minimum-ai-first-saas-app.md`: a bootstrap-authorized five core workstream starter readiness target with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, not a generic public chatbot or page-first CRUD shell
 - the runnable core app repository root is the canonical generated-app implementation baseline; the minimum starter is a narrower readiness state than full-core SaaS and must record follow-up work to reach full-core readiness; purchase-request, shopping-cart, and standalone static UI examples are mechanics references only
-- when extending the core app or generated-app foundation with durable internal/background agent work such as access-review investigations, admin-risk batches, audit summaries, evaluation/replay loops, monitoring/remediation, specialist follow-up, task dependencies, notifications, handoff, or team coordination, route to Akka `AutonomousAgent` and apply `../docs/autonomous-agent-worker-runtime-pattern.md` for worker-style generated-app tasks; keep request-based Akka `Agent` as the default for the five core user-facing workstream request/response turns and other bounded `markdown_response` workstream interactions
+- when extending the core app or generated-app foundation with durable internal/background agent work such as access-review investigations, admin-risk batches, audit summaries, evaluation/replay loops, monitoring/remediation, specialist follow-up, task dependencies, notifications, handoff, or team coordination, route to Akka `AutonomousAgent` and apply `docs/autonomous-agent-worker-runtime-pattern.md` for worker-style generated-app tasks; keep request-based Akka `Agent` as the default for the five core user-facing workstream request/response turns and other bounded `markdown_response` workstream interactions
 - when the user asks what comes next after the app runs, recommend the next milestone from actual readiness gaps, app-description state, or pending tasks; say `domain-specific` or use the user's actual domain name for later product features, and never say `DCA-specific` unless DCA is explicitly the user's domain
 - if a project has existing implementation artifacts, preserve its selected Java base package, foundation, workstream UI, and queue history; update app-description/specs before adding implementation tasks
 - for this repository's runnable core app and downstream forks that keep its merge-friendly layout, preserve the standard Akka Java layers and use `foundation`, `coreapp`, and `business.<area>` partitions inside them: reusable SaaS/platform code under `<base>.api|application|domain.foundation.*`, built-in five-core-workstream code under `<base>.api|application|domain.coreapp.*`, and user-owned CRM/ERP/procurement/domain extensions under `<base>.api|application|domain.business.<area>.*`
@@ -44,16 +44,16 @@ Mandatory secure SaaS, agent workstream, AI-first managed agents, and web UI fou
 - tenant-isolation, forbidden-access, disabled-user, role/scope denial, audit, frontend secret-boundary, UI, and security-review tests
 
 Canonical doctrine:
-- `../docs/ai-first-saas-application-architecture.md`
-- `../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS requests
-- `../docs/requirements-to-workstream-development-process.md` for broad input/PRD/incremental change → affected workstreams → attention → role-specific dashboards → human surface graph → internal workstream agent graph → governed-tools in capability files/surface maps → governed capabilities/APIs → Akka substrate/exposure channels → Agents/AutonomousAgents/events/traces
-- `../docs/agent-workstream-application-architecture.md`
-- `../docs/domain-workstream-prd-structure.md`
-- `../docs/structured-surface-contracts.md`
-- `../docs/capability-first-backend-architecture.md`
-- `../docs/core-ai-first-saas-foundation.md`
-- `../docs/core-saas-identity-tenancy-admin.md`
-- `../docs/core-saas-owner-tenant-billing.md`
+- `docs/ai-first-saas-application-architecture.md`
+- `docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS requests
+- `docs/requirements-to-workstream-development-process.md` for broad input/PRD/incremental change → affected workstreams → attention → role-specific dashboards → human surface graph → internal workstream agent graph → governed-tools in capability files/surface maps → governed capabilities/APIs → Akka substrate/exposure channels → Agents/AutonomousAgents/events/traces
+- `docs/agent-workstream-application-architecture.md`
+- `docs/domain-workstream-prd-structure.md`
+- `docs/structured-surface-contracts.md`
+- `docs/capability-first-backend-architecture.md`
+- `docs/core-ai-first-saas-foundation.md`
+- `docs/core-saas-identity-tenancy-admin.md`
+- `docs/core-saas-owner-tenant-billing.md`
 
 Top-level AI-first entry skill:
 - `ai-first-saas` — interpret product intent as a secure AI-first SaaS operating model, identify mandatory foundation/security requirements, delegated work, and retained human authority, then route to app-description, decomposition, PRD planning, or focused implementation skills
@@ -85,7 +85,7 @@ Canonical generated-app handoff order: secure AI-first SaaS interpretation → a
 3. use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlog, and pending-task artifacts; preserve functional-agent/dashboard/surface-graph context plus capability ids, governed-tool ids, auth/scope, side effects, approval, audit, exposure channels, and tests in generated tasks
 4. use focused Stage 3 component skills only after the secure foundation, agent workstream model, surface graph, governed-tool/capability contracts, and solution shape are clear enough for implementation
 
-Capability-first backend design is the substrate step below secure AI-first SaaS and the agent workstream application model, and above component implementation. A capability is a product-level ability or grouping of related governed-tools with explicit actors/callers, AuthContext, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace requirements, selected exposure surfaces, and tests. A governed-tool is one executable semantic operation inside that boundary. Workstream actions, structured surface actions, browser-tools, agent-tools, HTTP/gRPC/MCP endpoints, workflow steps, timers, consumers, and internal-tools are exposure or realization choices for capabilities/governed-tools; they are not the root abstraction. Use the top-level `capability-first-backend` skill with `../docs/capability-first-backend-architecture.md` for capability and governed-tool modeling and routing.
+Capability-first backend design is the substrate step below secure AI-first SaaS and the agent workstream application model, and above component implementation. A capability is a product-level ability or grouping of related governed-tools with explicit actors/callers, AuthContext, input/output schemas, data access, side effects, idempotency, policy/approval rules, audit/trace requirements, selected exposure surfaces, and tests. A governed-tool is one executable semantic operation inside that boundary. Workstream actions, structured surface actions, browser-tools, agent-tools, HTTP/gRPC/MCP endpoints, workflow steps, timers, consumers, and internal-tools are exposure or realization choices for capabilities/governed-tools; they are not the root abstraction. Use the top-level `capability-first-backend` skill with `docs/capability-first-backend-architecture.md` for capability and governed-tool modeling and routing.
 
 Capability-first backend entry skill:
 - `capability-first-backend` — model backend behavior as governed capabilities before choosing Akka components or exposure surfaces, then route to app-description, decomposition, PRD/backlog, or focused implementation skills
@@ -96,7 +96,7 @@ Use companion skills only for the AI-first concerns that are actually in scope, 
 
 For generated Akka apps, a named feature is implemented only when it works at the stated scope through the intended local runtime surface. Akka local execution is production-like validation for these apps and should be used aggressively to prove feature readiness rather than avoided or replaced by paper checks. If a sprint or task says `user auth`, `sign-in`, `invitation onboarding`, `User Admin`, `Agent Admin`, a workstream agent, or an app-specific workstream is done, the required backend components, provider/configuration checks, endpoints, frontend/workstream UI, authorization, audit/trace behavior, tests, and local smoke/manual validation for that named feature must be present. Model-backed workstream agents are done only when normal message submission invokes a concrete Akka `Agent` component through the configuration-driven governed runtime path, including active managed configuration resolution, governed `readSkill`/`readReferenceDoc` loader tools, `ToolPermissionBoundary` enforcement, and `effects().tools(runtimeTools)` registration; direct service/provider calls that bypass the Agent component are incomplete even if they return plausible markdown.
 
-Normal runtime behavior must not be satisfied by deterministic/demo/mock/simulated/model-less substitutes. Workstream agents must use the real governed runtime path and configured provider boundary for model-backed behavior; auth, durability, protected capabilities, provider calls, authorization denials, and audit/work traces must execute through the same local Akka paths the app will use in production-like operation. Claimed workstream/foundation state must be backed by Akka components in normal runtime; fail-closed behavior is appropriate for missing external provider/security configuration or unbound pre-runtime setup, not as a replacement for internal Akka persistence. Missing provider or security configuration should fail closed with actionable errors, not silently fall back to canned responses. Generated-app AutonomousAgent workers must also follow `../docs/autonomous-agent-worker-runtime-pattern.md`: task contract and governed capabilities first, v3 `worker.task.*` events, attention, structured surfaces, provider fail-closed behavior, and no fake success.
+Normal runtime behavior must not be satisfied by deterministic/demo/mock/simulated/model-less substitutes. Workstream agents must use the real governed runtime path and configured provider boundary for model-backed behavior; auth, durability, protected capabilities, provider calls, authorization denials, and audit/work traces must execute through the same local Akka paths the app will use in production-like operation. Claimed workstream/foundation state must be backed by Akka components in normal runtime; fail-closed behavior is appropriate for missing external provider/security configuration or unbound pre-runtime setup, not as a replacement for internal Akka persistence. Missing provider or security configuration should fail closed with actionable errors, not silently fall back to canned responses. Generated-app AutonomousAgent workers must also follow `docs/autonomous-agent-worker-runtime-pattern.md`: task contract and governed capabilities first, v3 `worker.task.*` events, attention, structured surfaces, provider fail-closed behavior, and no fake success.
 
 Fixtures, mocks, deterministic fakes, and test doubles are allowed only inside tests, local-only harness checks, or explicitly named test adapters. They must not be wired as the default user-facing runtime path, and passing fixture-only tests is not enough to mark a runtime feature implemented. Deferrals are allowed only when they explicitly narrow or rename the goal, mark affected work blocked/deferred, or are outside the selected scope. Do not use `explicitly deferred` to count missing required behavior as implemented.
 
@@ -145,14 +145,14 @@ Default description-first flow:
 15. answer review questions with `app-description-change-summary` and `app-description-readiness-summary`
 
 Reference docs:
-- the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md` — preferred core app-description shape
-- `../docs/description-first-application-doctrine.md`
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
-- `../docs/app-description-end-to-end-workflow-example.md`
-- `../docs/structured-surface-contracts.md`
-- `../docs/examples/purchase-request-app-description/README.md` — description mechanics reference only; not target architecture doctrine
-- `../docs/examples/purchase-request-app-description/normalized-input-example.md`
+- the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md` — preferred core app-description shape
+- `docs/description-first-application-doctrine.md`
+- `docs/internal-app-description-architecture.md`
+- `docs/app-description-maintenance-flow.md`
+- `docs/app-description-end-to-end-workflow-example.md`
+- `docs/structured-surface-contracts.md`
+- `docs/examples/purchase-request-app-description/README.md` — description mechanics reference only; not target architecture doctrine
+- `docs/examples/purchase-request-app-description/normalized-input-example.md`
 
 Important routing rule:
 - use the description-first path to maintain or review the app's authoritative description
@@ -173,9 +173,9 @@ Use the skills in this order:
 8. generate code and tests only after capability contracts, decomposition, and structural selection are done
 
 Short reusable version:
-- `../docs/intent-driven-usage-flow.md`
-- `../docs/prd-to-akka-flow.md`
-- `../docs/module-sprint-planning.md`
+- `docs/intent-driven-usage-flow.md`
+- `docs/prd-to-akka-flow.md`
+- `docs/module-sprint-planning.md`
 
 ## Visible 3-stage skill model
 
@@ -246,12 +246,12 @@ If the task is already narrowed to a stateful component and you have not yet cho
 You can also consult the comparison/reference files:
 - `references/akka-entity-comparison.md`
 - `references/akka-grpc-jwt-patterns.md`
-- `../docs/agent-coverage-matrix.md`
-- `../docs/agent-runtime-state-reference.md`
-- `../docs/agent-runtime-invocation-pattern.md` — managed runtime invocation sequence from AuthContext through AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission
-- `../docs/agent-component-selection-guide.md` — choose between request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, and Workflow + AutonomousAgent; includes the Akka autonomous `AgentDefinition` vs governed managed-agent `AgentDefinition` terminology guardrail
-- `../docs/workflow-endpoint-pattern.md`
-- `../docs/timer-pattern-selection.md`
+- `docs/agent-coverage-matrix.md`
+- `docs/agent-runtime-state-reference.md`
+- `docs/agent-runtime-invocation-pattern.md` — managed runtime invocation sequence from AuthContext through AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission
+- `docs/agent-component-selection-guide.md` — choose between request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, and Workflow + AutonomousAgent; includes the Akka autonomous `AgentDefinition` vs governed managed-agent `AgentDefinition` terminology guardrail
+- `docs/workflow-endpoint-pattern.md`
+- `docs/timer-pattern-selection.md`
 
 ## PRD planning entry skills
 
@@ -367,8 +367,8 @@ Use when `specs/pending-tasks.md` exists and the user asks to continue, do the n
 This is the manual queue-consumption skill for downstream implementation work. It selects one runnable task, prefers a fresh context session, loads only that task's required reads and skills, updates the task status, and reports the next runnable pending task.
 
 References:
-- `../docs/pending-task-queue.md`
-- `../docs/examples/purchase-request-pending-tasks.md` — conventional mechanics-only queue-format reference; not the canonical generated AI-first SaaS target architecture
+- `docs/pending-task-queue.md`
+- `docs/examples/purchase-request-pending-tasks.md` — conventional mechanics-only queue-format reference; not the canonical generated AI-first SaaS target architecture
 
 ### Iterative planning quick routing
 
@@ -425,22 +425,22 @@ Stage 3 family orchestrators are the capability handoff point. Focused companion
 For durable multi-session execution, materialize the work as `specs/pending-tasks.md` and use `akka-do-next-pending-task` to execute one task per fresh context.
 
 Decomposition is complete only when it enables focused implementation work with low ambiguity.
-Use the target project `app-description/README.md` and `../docs/core-ai-first-saas-foundation.md` as the first references for generated SaaS foundation shape. Purchase-request examples are conventional planning/queue mechanics references only.
-For a lightweight template, see `../docs/solution-plan-to-implementation-queue.md`.
-For the durable queue contract, see `../docs/pending-task-queue.md`.
+Use the target project `app-description/README.md` and `docs/core-ai-first-saas-foundation.md` as the first references for generated SaaS foundation shape. Purchase-request examples are conventional planning/queue mechanics references only.
+For a lightweight template, see `docs/solution-plan-to-implementation-queue.md`.
+For the durable queue contract, see `docs/pending-task-queue.md`.
 
 ## Agent skills
 
 Start with:
 - `akka-agents` for request-based Akka Agent work such as user-facing workstream turns, bounded request/response reasoning, streaming responses, model-backed tools, session memory, and workflow steps with one model round trip.
-- `akka-autonomous-agents` for durable task-oriented internal/background agent work such as long-running investigations, autonomous monitoring/remediation, batch review, escalation processing, evaluator loops, handoff/delegation/team coordination, task dependencies, snapshots, cancellation/failure, and notification streams; for generated-app worker tasks, pair it with `../docs/autonomous-agent-worker-runtime-pattern.md`.
+- `akka-autonomous-agents` for durable task-oriented internal/background agent work such as long-running investigations, autonomous monitoring/remediation, batch review, escalation processing, evaluator loops, handoff/delegation/team coordination, task dependencies, snapshots, cancellation/failure, and notification streams; for generated-app worker tasks, pair it with `docs/autonomous-agent-worker-runtime-pattern.md`.
 
-If the substrate is not clear, read `../docs/agent-component-selection-guide.md` before choosing between request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`. Do not replace workstream request/response agents with Autonomous Agents by default.
+If the substrate is not clear, read `docs/agent-component-selection-guide.md` before choosing between request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`. Do not replace workstream request/response agents with Autonomous Agents by default.
 
 Then load the focused skill that matches the current task:
 
 ### Autonomous Agents
-Use when implementing durable task-oriented internal/background model-driven work with typed task lifecycle, dependencies, snapshots, cancellation/failure, notification streams, or coordination. Do not use as the default for user-facing request/response workstream turns. For generated-app worker tasks, apply `../docs/autonomous-agent-worker-runtime-pattern.md` so the task contract, governed capabilities, v3 events, attention, surfaces, provider fail-closed behavior, and no fake success guardrails are preserved.
+Use when implementing durable task-oriented internal/background model-driven work with typed task lifecycle, dependencies, snapshots, cancellation/failure, notification streams, or coordination. Do not use as the default for user-facing request/response workstream turns. For generated-app worker tasks, apply `docs/autonomous-agent-worker-runtime-pattern.md` so the task contract, governed capabilities, v3 events, attention, surfaces, provider fail-closed behavior, and no fake success guardrails are preserved.
 - `akka-autonomous-agents`
 
 ### Autonomous Agent tasks
@@ -460,7 +460,7 @@ Use when generated-app Autonomous Agents need capability contracts, model policy
 - `akka-autonomous-agent-governance`
 
 ### Behavior profiles
-Use when agents are managed as tenant-scoped runtime actors with durable `AgentDefinition`, lifecycle, owner/steward, authority level, model references, tool permission boundaries, admin UI, or runtime profile lookup. For implementation handoff, pair this with `../docs/agent-runtime-invocation-pattern.md` to define the `AgentRuntimeResolver` sequence across AuthContext, active AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace.
+Use when agents are managed as tenant-scoped runtime actors with durable `AgentDefinition`, lifecycle, owner/steward, authority level, model references, tool permission boundaries, admin UI, or runtime profile lookup. For implementation handoff, pair this with `docs/agent-runtime-invocation-pattern.md` to define the `AgentRuntimeResolver` sequence across AuthContext, active AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, PromptAssemblyTrace, SkillLoadTrace, and AgentWorkTrace.
 - `akka-agent-behavior-profiles`
 
 ### Governed documents
@@ -749,12 +749,12 @@ Then load the focused skill that matches the current task:
 Pair this family with `akka-http-endpoint-web-ui` for Akka hosting and with HTTP endpoint companion skills for JSON, SSE, or WebSocket routes. For generated SaaS apps, load JWT/request-context/internal ACL guidance as part of the mandatory security foundation; only public static asset routes are outside authenticated API authorization.
 
 Reference docs:
-- `../docs/web-ui-frontend-decomposition.md`
-- `../docs/web-ui-frontend-project-integration.md`
-- `../docs/web-ui-style-guide.md`
-- `../docs/structured-surface-contracts.md`
-- `../docs/web-ui-api-contract-patterns.md`
-- `../docs/web-ui-quality-checklist.md`
+- `docs/web-ui-frontend-decomposition.md`
+- `docs/web-ui-frontend-project-integration.md`
+- `docs/web-ui-style-guide.md`
+- `docs/structured-surface-contracts.md`
+- `docs/web-ui-api-contract-patterns.md`
+- `docs/web-ui-quality-checklist.md`
 
 ## HTTP endpoint skills
 
@@ -796,9 +796,9 @@ Use when the endpoint validates bearer tokens and reads claims.
 - `akka-http-endpoint-jwt`
 
 Security references:
-- `../docs/security-pattern-selection.md`
-- `../docs/security-workos-auth-and-admin.md`
-- `../docs/security-review-checklist.md`
+- `docs/security-pattern-selection.md`
+- `docs/security-workos-auth-and-admin.md`
+- `docs/security-review-checklist.md`
 
 ### WorkOS user authentication
 Use when an Akka-hosted browser app uses WorkOS/AuthKit for sign-in and calls `/api/...` with bearer JWTs.
@@ -1186,7 +1186,7 @@ Load:
 - `akka-web-ui-testing`
 - `akka-http-endpoint-testing`
 
-For generated AI-first SaaS, this UI work is mandatory and should implement the agent workstream shell by default, not a page-first or chatbot-bolt-on app. In this source repository and downstream forks, use `../docs/workstream-ui-reference-architecture.md`, root `../../frontend/src/workstream/**`, and the User Admin vertical test `../../frontend/src/workstream-user-admin-vertical.contract.test.mjs` as the canonical frontend reference. The skills-only install does not include an exported frontend example tree. If no style guide or named-theme contract is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
+For generated AI-first SaaS, this UI work is mandatory and should implement the agent workstream shell by default, not a page-first or chatbot-bolt-on app. In this source repository and downstream forks, use `docs/workstream-ui-reference-architecture.md`, root `../../frontend/src/workstream/**`, and the User Admin vertical test `../../frontend/src/workstream-user-admin-vertical.contract.test.mjs` as the canonical frontend reference. The harness install includes pack examples under `examples/**`, but it does not include root frontend application source. If no style guide or named-theme contract is selected in the app-description or specs, first add or answer the pending UI style-selection question from `docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
 
 Then add one or more focused frontend companions as needed:
 - `akka-web-ui-frontend-project`
@@ -1503,8 +1503,8 @@ Core consumer examples:
 - `../src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
 - `../src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
 - `../src/main/java/com/example/application/ReviewWorkflowTopicConsumer.java`
-- `../docs/consumer-reference.md`
-- `../docs/service-to-service-consumers.md`
+- `docs/consumer-reference.md`
+- `docs/service-to-service-consumers.md`
 
 Testing examples:
 - `../src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
@@ -1520,7 +1520,7 @@ Core view examples:
 - `../src/main/java/com/example/application/DraftCartLifecycleView.java`
 - `../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
 - `../src/main/java/com/example/application/ShoppingCartTopicView.java`
-- `../docs/service-to-service-views.md`
+- `docs/service-to-service-views.md`
 
 Testing examples:
 - `../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
@@ -1533,7 +1533,7 @@ Testing examples:
 ### HTTP endpoints
 Core endpoint examples:
 
-For generated SaaS browser UI, these endpoint examples are delivery mechanics only. Use `../docs/workstream-ui-reference-architecture.md` and the canonical root frontend reference `../../frontend/src/workstream/**` from this repository or a downstream fork; do not treat `WebUi*PageEndpoint` examples as page-first UI architecture. The skills-only install does not include `resources/examples/frontend/**`.
+For generated SaaS browser UI, these endpoint examples are delivery mechanics only. Use `docs/workstream-ui-reference-architecture.md` and the canonical root frontend reference `../../frontend/src/workstream/**` from this repository or a downstream fork; do not treat `WebUi*PageEndpoint` examples as page-first UI architecture. The harness install includes pack examples under `examples/**`, but it does not include `resources/examples/frontend/**` or root frontend application source.
 
 - `../src/main/java/com/example/api/GreetingEndpoint.java`
 - `../src/main/java/com/example/api/WebUiHomeEndpoint.java`

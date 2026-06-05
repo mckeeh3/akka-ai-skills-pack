@@ -12,14 +12,14 @@ Functional agents are the user-facing vertical application areas in the authenti
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/agent-workstream-application-architecture.md`
-- `../../docs/requirements-to-workstream-development-process.md` for workstream → attention → dashboard → surfaces/actions → capabilities → autonomous task/notification/projection/trace semantics
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/capability-first-backend-architecture.md`
+- `../docs/agent-workstream-application-architecture.md`
+- `../docs/requirements-to-workstream-development-process.md` for workstream → attention → dashboard → surfaces/actions → capabilities → autonomous task/notification/projection/trace semantics
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/capability-first-backend-architecture.md`
 - `../app-descriptions/SKILL.md`
 - `../agent-workstream-apps/SKILL.md`
 - `../app-description-capability-modeling/SKILL.md`

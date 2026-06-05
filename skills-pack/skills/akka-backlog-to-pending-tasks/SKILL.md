@@ -47,22 +47,22 @@ Do **not** use this skill when:
 Read these first if present:
 - `../README.md`
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline and first-slice implementation order
-- `../../docs/ai-first-saas-application-architecture.md` when backlog work involves delegated operations, agents, governance, decisions, supervision, audit, or outcomes
-- `../../docs/requirements-to-workstream-development-process.md` when materializing generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or trace-aware queues
-- `../../docs/pending-question-queue.md`
-- `../../docs/pending-task-queue.md`
-- `../../docs/solution-plan-to-implementation-queue.md`
-- `../../docs/module-sprint-planning.md` when `specs/modules/` or `specs/sprints/` exists
-- `../../docs/web-ui-style-guide.md` when materializing browser UI tasks
-- `../../specs/README.md`
-- `../../specs/akka-solution-plan.md`
-- `../../specs/pending-questions.md` if it exists
-- `../../specs/pending-tasks.md` if it already exists
-- all relevant `../../specs/backlog/*-build-backlog.md` files
-- `../../specs/tasks/README.md` if present
-- relevant `../../specs/tasks/**/*.md` task briefs if present
-- relevant `../../specs/modules/*.md` and `../../specs/sprints/*.md` files when present
-- relevant `../../specs/slices/*.md` files when needed to resolve dependencies or reads
+- `../docs/ai-first-saas-application-architecture.md` when backlog work involves delegated operations, agents, governance, decisions, supervision, audit, or outcomes
+- `../docs/requirements-to-workstream-development-process.md` when materializing generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or trace-aware queues
+- `../docs/pending-question-queue.md`
+- `../docs/pending-task-queue.md`
+- `../docs/solution-plan-to-implementation-queue.md`
+- `../docs/module-sprint-planning.md` when `specs/modules/` or `specs/sprints/` exists
+- `../docs/web-ui-style-guide.md` when materializing browser UI tasks
+- `../../../specs/README.md`
+- `../../../specs/akka-solution-plan.md`
+- `../../../specs/pending-questions.md` if it exists
+- `../../../specs/pending-tasks.md` if it already exists
+- all relevant `../../../specs/backlog/*-build-backlog.md` files
+- `../../../specs/tasks/README.md` if present
+- relevant `../../../specs/tasks/**/*.md` task briefs if present
+- relevant `../../../specs/modules/*.md` and `../../../specs/sprints/*.md` files when present
+- relevant `../../../specs/slices/*.md` files when needed to resolve dependencies or reads
 
 Do not reread the original PRD unless the existing backlogs are too ambiguous to create queue tasks. Prefer carrying forward the AI-first interpretation already captured in solution, sprint, slice, backlog, task brief, app-description, and pending-question artifacts.
 
@@ -74,7 +74,7 @@ Create or update:
 specs/pending-tasks.md
 ```
 
-Use the contract in `../../docs/pending-task-queue.md`, especially the required `Vertical workstream contract` block. For generated full-stack AI-first SaaS, do not emit a runnable queue entry unless that contract is present or the task explicitly declares `internal-only`, `foundation-only`, `cross-cutting`, `docs-only`, or `non-runtime` scope with a non-attention/non-UI reason, trace expectations, and validation path.
+Use the contract in `../docs/pending-task-queue.md`, especially the required `Vertical workstream contract` block. For generated full-stack AI-first SaaS, do not emit a runnable queue entry unless that contract is present or the task explicitly declares `internal-only`, `foundation-only`, `cross-cutting`, `docs-only`, or `non-runtime` scope with a non-attention/non-UI reason, trace expectations, and validation path.
 
 ## Queue derivation rules
 
@@ -108,7 +108,7 @@ Rules:
 - if only part of a backlog is blocked, create tasks for unblocked work and leave blocked work out or blocked with explicit question references
 - if a question is `answered` but not `resolved`, reconcile it or leave affected tasks blocked
 - do not silently choose defaults unless the question is `deferred` with an accepted default or limitation
-- if browser UI tasks exist and no selected style guide or pending style question exists, add/update `specs/pending-questions.md` with the style-selection question from `../../docs/web-ui-style-guide.md` and block only the affected UI tasks
+- if browser UI tasks exist and no selected style guide or pending style question exists, add/update `specs/pending-questions.md` with the style-selection question from `../docs/web-ui-style-guide.md` and block only the affected UI tasks
 
 ### Task sizing
 

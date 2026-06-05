@@ -10,12 +10,12 @@ Use this skill when an AI-first SaaS app stores agent system prompts, runtime sk
 This skill complements `akka-agent-governed-documents`, `akka-agent-prompt-governance`, `akka-agent-skill-governance`, `akka-agent-reference-governance`, and `akka-agent-behavior-profiles`. It covers the **initial loading path** for governed agent behavior and knowledge artifacts; it does not replace runtime editing, review, approval, `readSkill(skillId)` authorization, or `readReferenceDoc(referenceId)` authorization. Generated apps must seed each managed agent with its own default expertise manifest; for example, `UserAdminAgent` and `AgentAdminAgent` start with different skill ids, reference ids, descriptions/summaries, and when-to-use or when-to-consult hints.
 
 Reference example:
-- `../../examples/akka-components/src/main/java/com/example/domain/agentfoundation/ReferenceAgentBehaviorSeedManifest.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/agentfoundation/ReferenceSeededAgentBehaviorState.java`
-- `../../examples/akka-components/src/main/java/com/example/application/agentfoundation/ReferenceAgentBehaviorSeedLoader.java`
-- `../../examples/akka-components/src/main/resources/agent-behavior-seeds/reference-v1/manifest.properties`
-- `../../examples/akka-components/src/main/resources/agent-behavior-seeds/reference-v1/user-admin-system.md`
-- `../../examples/akka-components/src/test/java/com/example/application/agentfoundation/ReferenceAgentBehaviorSeedLoaderTest.java`
+- `../examples/akka-components/src/main/java/com/example/domain/agentfoundation/ReferenceAgentBehaviorSeedManifest.java`
+- `../examples/akka-components/src/main/java/com/example/domain/agentfoundation/ReferenceSeededAgentBehaviorState.java`
+- `../examples/akka-components/src/main/java/com/example/application/agentfoundation/ReferenceAgentBehaviorSeedLoader.java`
+- `../examples/akka-components/src/main/resources/agent-behavior-seeds/reference-v1/manifest.properties`
+- `../examples/akka-components/src/main/resources/agent-behavior-seeds/reference-v1/user-admin-system.md`
+- `../examples/akka-components/src/test/java/com/example/application/agentfoundation/ReferenceAgentBehaviorSeedLoaderTest.java`
 
 ## Use when the request mentions
 

@@ -20,15 +20,15 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 ## Required reading
 
 Read these first if present:
-- `../../docs/capability-first-backend-architecture.md`
+- `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
-- `../../docs/timer-pattern-selection.md`
-- `../../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/TransferState.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/ApprovalState.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/ApprovalDeadlineState.java`
+- `../docs/timer-pattern-selection.md`
+- `../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/domain/TransferState.java`
+- `../examples/akka-components/src/main/java/com/example/domain/ApprovalState.java`
+- `../examples/akka-components/src/main/java/com/example/domain/ApprovalDeadlineState.java`
 
 ## Capability-first pattern
 

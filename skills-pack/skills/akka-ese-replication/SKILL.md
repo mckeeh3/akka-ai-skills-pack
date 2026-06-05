@@ -22,10 +22,10 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
-- `../../examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/api/OrderEndpoint.java`
-- `../../examples/akka-components/src/test/java/com/example/application/OrderEntityTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
+- `../examples/akka-components/src/main/java/com/example/api/OrderEndpoint.java`
+- `../examples/akka-components/src/test/java/com/example/application/OrderEntityTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
 
 ## Read patterns
 

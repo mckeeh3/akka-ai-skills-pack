@@ -23,18 +23,18 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 Read these first if present:
 - `akka-context/sdk/agents/calling.html.md`
 - `akka-context/sdk/agents/memory.html.md`
-- `../../examples/akka-components/src/main/java/com/example/application/ActivityAgent.java`
-- `../../examples/akka-components/src/main/java/com/example/application/AgentTeamWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/WorkerMemorySummaryAgent.java`
-- `../../examples/akka-components/src/main/java/com/example/application/SessionMemoryAlertsConsumer.java`
-- `../../examples/akka-components/src/main/java/com/example/application/SessionMemoryByComponentView.java`
-- `../../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
-- `../../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionConsumer.java`
-- `../../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
-- `../../examples/akka-components/src/test/java/com/example/application/SessionMemoryAlertsConsumerIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/SessionMemoryByComponentViewIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/SessionMemoryCompactionConsumerIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/ActivityAgent.java`
+- `../examples/akka-components/src/main/java/com/example/application/AgentTeamWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/WorkerMemorySummaryAgent.java`
+- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryAlertsConsumer.java`
+- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryByComponentView.java`
+- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
+- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionConsumer.java`
+- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
+- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryAlertsConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryByComponentViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryCompactionConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
 
 ## Use this pattern when
 

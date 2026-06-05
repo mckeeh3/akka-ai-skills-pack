@@ -43,14 +43,14 @@ Keep this skill local-delta oriented. It may update affected app-description/spe
 
 Read these first if present:
 - `../README.md`
-- `../../docs/ai-first-saas-application-architecture.md` when the change involves delegated work, agents, governance, approvals, exceptions, audit, or outcomes
-- `../../docs/requirements-to-workstream-development-process.md` when the change touches workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or planning queues
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
-- `../../docs/workstream-expertise-model.md` when the change adds or revises a functional agent, expert bundle, governed skills, references, manifests, loader authorization, tool boundaries, traces, seed content, or expertise tests
-- `../../docs/pending-task-queue.md`
-- `../../docs/solution-plan-to-implementation-queue.md`
-- `../../docs/web-ui-style-guide.md` when the change affects web UI style guide
+- `../docs/ai-first-saas-application-architecture.md` when the change involves delegated work, agents, governance, approvals, exceptions, audit, or outcomes
+- `../docs/requirements-to-workstream-development-process.md` when the change touches workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or planning queues
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
+- `../docs/workstream-expertise-model.md` when the change adds or revises a functional agent, expert bundle, governed skills, references, manifests, loader authorization, tool boundaries, traces, seed content, or expertise tests
+- `../docs/pending-task-queue.md`
+- `../docs/solution-plan-to-implementation-queue.md`
+- `../docs/web-ui-style-guide.md` when the change affects web UI style guide
 - `../app-descriptions/SKILL.md`
 - `../app-description-input-normalization/SKILL.md`
 - `../app-description-intake-router/SKILL.md`

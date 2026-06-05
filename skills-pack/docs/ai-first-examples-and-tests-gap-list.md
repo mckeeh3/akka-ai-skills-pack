@@ -33,7 +33,7 @@ Status: **canonical implementation baseline, extended by downstream forks and va
 
 Reference:
 - source repository and downstream forks: the runnable core app repository root
-- skills-only harness install: skills and shared skill references only; no docs/examples/frontend exports and no duplicate full-app source are installed
+- harness skills-library install: skills plus referenced pack docs/examples/templates/tools are installed under `.agents/skills`; no duplicate full-app source is installed
 
 Qualification: generated target projects are not complete until backend APIs, workstream endpoints, provider/security failure modes, tests, and the local Akka/API/UI smoke path are recorded for the selected scope.
 
@@ -44,7 +44,7 @@ Covered core app scope:
 - invitation/user-admin backend services, views/seams, captured outbox/Resend boundary, and tests;
 - governed agent records, seed import, prompt assembly, authorized `readSkill`, behavior-editing flow, and tests;
 - workstream backend API foundation for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces;
-- React/Vite workstream frontend under root `frontend/**`; this remains a source-checkout reference and is not exported into `.agents` by the skills-only install.
+- React/Vite workstream frontend under root `frontend/**`; this remains application source in the repository workspace and is not exported into `.agents` by the harness install.
 
 Canonical routing rule: for new full-core generated apps that need an implementation baseline, fork or clone this repository, then extend the target workspace. Use purchase-request, shopping-cart, and standalone static UI examples only for explicitly labeled mechanics after the core-app architecture is clear.
 

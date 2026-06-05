@@ -12,11 +12,11 @@ Use this skill when deciding how a key value entity participates in a larger flo
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/api/PurchaseOrderEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
+- `../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/PurchaseOrderEndpoint.java`
 
 ## Capability-first framing
 

@@ -43,13 +43,13 @@ The skill must:
 
 Read these first if present:
 - `../README.md`
-- `../../docs/ai-first-saas-application-architecture.md` when the selected task or its listed skills include AI-first SaaS concerns
-- `../../docs/workstream-expertise-model.md` when the selected task includes LLM-backed functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, load traces, or expertise surfaces
-- `../../docs/pending-question-queue.md`
-- `../../docs/pending-task-queue.md`
-- `../../docs/intent-driven-usage-flow.md`
-- `../../docs/solution-plan-to-implementation-queue.md`
-- `../../docs/web-ui-style-guide.md` when selected task includes browser UI work
+- `../docs/ai-first-saas-application-architecture.md` when the selected task or its listed skills include AI-first SaaS concerns
+- `../docs/workstream-expertise-model.md` when the selected task includes LLM-backed functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, load traces, or expertise surfaces
+- `../docs/pending-question-queue.md`
+- `../docs/pending-task-queue.md`
+- `../docs/intent-driven-usage-flow.md`
+- `../docs/solution-plan-to-implementation-queue.md`
+- `../docs/web-ui-style-guide.md` when selected task includes browser UI work
 - the target project's implementation artifacts or legacy `specs/scaffold-report.md` if present, to detect existing-app extension mode and preserve selected package/path decisions
 - the target project's `specs/pending-questions.md` if it exists
 - the target project's `specs/pending-tasks.md`
@@ -150,7 +150,7 @@ If the selected task lacks or fails to inherit its vertical workstream contract,
 
 If the selected task writes Java source and no selected Java base package is present in required reads, app-description, specs, Maven/Gradle configuration, legacy `specs/scaffold-report.md`, or existing source package roots, block the task and add/update the base-package pending question instead of defaulting to `com.example`. The question is: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`.
 
-If the selected task includes browser UI implementation and no selected style guide is present in required reads, app-description, or specs, block the task and add/update the style-selection pending question from `../../docs/web-ui-style-guide.md` instead of inventing visual styling.
+If the selected task includes browser UI implementation and no selected style guide is present in required reads, app-description, or specs, block the task and add/update the style-selection pending question from `../docs/web-ui-style-guide.md` instead of inventing visual styling.
 
 If a task is `in-progress` from a previous interrupted run:
 - inspect notes and changed files if needed

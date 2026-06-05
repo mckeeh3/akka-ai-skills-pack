@@ -44,17 +44,17 @@ Read these first if present:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartCommandsTopicConsumer.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ReviewWorkflowTopicConsumer.java`
-- `../../docs/consumer-reference.md`
-- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
+- `../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCommandsTopicConsumer.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
+- `../examples/akka-components/src/main/java/com/example/application/ReviewWorkflowTopicConsumer.java`
+- `../docs/consumer-reference.md`
+- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 
 ## Companion skills
 

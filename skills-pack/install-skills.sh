@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PACK_ROOT="$SCRIPT_DIR"
 SOURCE_SKILLS_DIR="$PACK_ROOT/skills"
+INSTALL_ASSET_DIRS=(docs examples templates tools)
 PROJECT_ROOT="$(pwd)"
 TARGET_DIR=""
 LOCATION="project"
@@ -22,7 +23,7 @@ fail() { printf '[install-skills][error] %s\n' "$*" >&2; exit 1; }
 
 print_help() {
   cat <<'EOF'
-Install Akka AI skills pack skills into a harness-discoverable skills directory.
+Install Akka AI skills pack skills and referenced pack assets into a harness-discoverable skills directory.
 
 Usage:
   ./install-skills.sh [options]
@@ -44,7 +45,13 @@ Options:
 Manifest:
   The installer writes <target>/.akka-ai-skills-pack-install-manifest. Prune and
   uninstall only remove paths recorded in that manifest, so unrelated harness
-  skills in the same directory are not deleted.
+  skills or local files in the same directory are not deleted.
+
+Installed content:
+  The installer copies/symlinks skill directories plus pack docs, examples,
+  templates, tools, and shared references needed by installed skills. It does not
+  install akka-context; standard Akka projects keep that independently maintained
+  directory at the project root.
 EOF
 }
 
@@ -180,6 +187,10 @@ write_manifest() {
     printf 'installed_at\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
     printf 'entry\tfile\tREADME.md\n'
     [[ -d "$SOURCE_SKILLS_DIR/references" ]] && printf 'entry\tdir\treferences\n'
+    local asset_dir
+    for asset_dir in "${INSTALL_ASSET_DIRS[@]}"; do
+      [[ -d "$PACK_ROOT/$asset_dir" ]] && printf 'entry\tdir\t%s\n' "$asset_dir"
+    done
     while IFS= read -r skill_dir; do
       printf 'entry\tdir\t%s\n' "$(basename "$skill_dir")"
     done < <(find "$SOURCE_SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
@@ -219,6 +230,10 @@ current_rel_file() {
   {
     printf 'README.md\n'
     [[ -d "$SOURCE_SKILLS_DIR/references" ]] && printf 'references\n'
+    local asset_dir
+    for asset_dir in "${INSTALL_ASSET_DIRS[@]}"; do
+      [[ -d "$PACK_ROOT/$asset_dir" ]] && printf '%s\n' "$asset_dir"
+    done
     while IFS= read -r skill_dir; do basename "$skill_dir"; done < <(find "$SOURCE_SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
   } | sort > "$tmp"
 }
@@ -284,6 +299,12 @@ check_install() {
   if [[ -d "$SOURCE_SKILLS_DIR/references" ]]; then
     [[ -d "$TARGET_DIR/references" || -L "$TARGET_DIR/references" ]] || { warn "Missing installed references"; failed=true; }
   fi
+  local asset_dir
+  for asset_dir in "${INSTALL_ASSET_DIRS[@]}"; do
+    if [[ -d "$PACK_ROOT/$asset_dir" ]]; then
+      [[ -d "$TARGET_DIR/$asset_dir" || -L "$TARGET_DIR/$asset_dir" ]] || { warn "Missing installed $asset_dir"; failed=true; }
+    fi
+  done
   while IFS= read -r src; do
     rel="$(basename "$src")"
     dest="$TARGET_DIR/$rel"
@@ -327,6 +348,11 @@ install_entry file README.md "$SOURCE_SKILLS_DIR/README.md"
 if [[ -d "$SOURCE_SKILLS_DIR/references" ]]; then
   install_entry dir references "$SOURCE_SKILLS_DIR/references"
 fi
+for asset_dir in "${INSTALL_ASSET_DIRS[@]}"; do
+  if [[ -d "$PACK_ROOT/$asset_dir" ]]; then
+    install_entry dir "$asset_dir" "$PACK_ROOT/$asset_dir"
+  fi
+done
 while IFS= read -r skill_dir; do
   install_entry dir "$(basename "$skill_dir")" "$skill_dir"
 done < <(find "$SOURCE_SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)

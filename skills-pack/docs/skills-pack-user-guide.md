@@ -2,7 +2,7 @@
 
 This guide is for developers using this repository with an AI coding harness.
 
-The repository contains both the runnable Akka full-stack core app and the Akka AI skills library. The skills library is guidance and routing for the harness; it does not provide a separate callable framework, full-pack installer, installed docs tree, installed examples tree, or duplicate app baseline. The default generated-product target remains full-stack secure AI-first SaaS on Akka, implemented through capability-first backend architecture and validated through real local Akka/API/UI paths.
+The repository contains both the runnable Akka full-stack core app and the Akka AI skills library. The skills library is guidance and routing for the harness; it does not provide a separate callable framework, duplicate app baseline, or generated distribution bundle. The installer does install pack docs/examples/templates/tools referenced by skills under `.agents/skills/**`. The default generated-product target remains full-stack secure AI-first SaaS on Akka, implemented through capability-first backend architecture and validated through real local Akka/API/UI paths.
 
 ## Core idea
 
@@ -18,13 +18,13 @@ frontend/            # generated or maintained browser app
 
 The installed `.agents/skills` directory is a harness support library. Do not treat it as application source, documentation storage, examples storage, or app-description/spec storage.
 
-For a new app with an implementation baseline, fork or clone this repository, then extend the root app workspace. For an existing app, install only the skills into that app's harness skills directory and let the harness update the existing app-description/specs/source incrementally.
+For a new app with an implementation baseline, fork or clone this repository, then extend the root app workspace. For an existing app, install the skills library into that app's harness skills directory and let the harness update the existing app-description/specs/source incrementally.
 
 ## Make the skills available to the harness
 
 Current manifest version: `0.3.0`
 
-Clone or check out the desired release tag. This repository clone/fork is the source checkout for docs, examples, templates, and the runnable core app. Then copy or symlink only the skills into your harness skills directory:
+Clone or check out the desired release tag. This repository clone/fork is the source checkout for the runnable core app. Then copy or symlink the skills library, including referenced pack docs/examples/templates/tools, into your harness skills directory:
 
 ```bash
 git clone https://github.com/mckeeh3/akka-ai-skills-pack.git
@@ -51,13 +51,13 @@ Dry run and check:
 ./install-skills.sh --target /path/to/project/.agents/skills --check
 ```
 
-The skills installer creates or updates only the harness skills directory. It writes `.akka-ai-skills-pack-install-manifest` in that directory so `--prune` can remove retired pack-owned skills and `--uninstall` can remove this skills library without deleting unrelated skills. It does not install `.agents/AGENTS.md`, `.agents/docs`, `.agents/resources/examples`, templates, manifests, tools, backend source, frontend source, or a duplicate app baseline.
+The installer creates or updates only the harness skills directory. It writes `.akka-ai-skills-pack-install-manifest` in that directory so `--prune` can remove retired pack-owned entries and `--uninstall` can remove this skills library without deleting unrelated skills. It installs referenced pack assets under `.agents/skills/**`; it does not install `.agents/AGENTS.md`, `.agents/docs`, `.agents/resources/examples`, manifests, `akka-context/**`, backend source, frontend source, or a duplicate app baseline. Keep `akka-context/**` as an independently maintained top-level project/repository directory when Akka SDK reference docs are needed.
 
 ## Choose a starting mode
 
 ### Existing application or PRD-first app
 
-Use the skills-only harness install, put source input under `docs/input/`, then ask the harness to maintain `app-description/`, `specs/`, and `specs/pending-tasks.md` before coding. The harness should queue questions instead of guessing and execute one task per fresh session.
+Use the harness skills-library install, put source input under `docs/input/`, then ask the harness to maintain `app-description/`, `specs/`, and `specs/pending-tasks.md` before coding. The harness should queue questions instead of guessing and execute one task per fresh session.
 
 ### New app with baseline implementation
 
@@ -77,6 +77,10 @@ Model-backed workstream agents must invoke a concrete Akka `Agent` component thr
     ├── .akka-ai-skills-pack-install-manifest
     ├── README.md
     ├── references/
+    ├── docs/
+    ├── examples/
+    ├── templates/
+    ├── tools/
     └── <skill-name>/SKILL.md
 ```
 
@@ -85,8 +89,9 @@ Important installed files:
 - `.agents/skills/README.md` — routing map for selecting the smallest relevant skills
 - `.agents/skills/.akka-ai-skills-pack-install-manifest` — ownership manifest used by prune/uninstall
 - `.agents/skills/references/` — shared skill reference files
+- `.agents/skills/docs/`, `.agents/skills/examples/`, `.agents/skills/templates/`, `.agents/skills/tools/` — pack assets referenced by installed skills
 
-Important source-checkout references remain in the cloned/forked repository, not `.agents`: root `frontend/**`, root `src/**`, `app-description/**`, `specs/**`, `skills-pack/docs/**`, `skills-pack/examples/**`, and `skills-pack/templates/**`.
+Important project/application references remain in the cloned/forked repository, not `.agents`: root `frontend/**`, root `src/**`, `app-description/**`, and `specs/**`. Akka SDK context remains in the top-level `akka-context/**` directory when present.
 
 ## Recommended harness prompts
 

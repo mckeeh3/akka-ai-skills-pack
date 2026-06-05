@@ -26,13 +26,13 @@ Create or update behavior-oriented app-description artifacts that:
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/capability-first-backend-architecture.md` for preserving capability contracts when behavior changes alter authority, side effects, idempotency, approval, audit, or exposure
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
+- `../docs/description-first-application-doctrine.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/capability-first-backend-architecture.md` for preserving capability contracts when behavior changes alter authority, side effects, idempotency, approval, audit, or exposure
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 
 ## Use this skill when

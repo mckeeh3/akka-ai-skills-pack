@@ -1,23 +1,27 @@
 # Akka AI Skills Pack Examples
 
-Examples are source-checkout reference assets. They are **not** installed into `.agents/` by the skills-only harness installer.
+Pack examples are installed into `.agents/skills/examples/**` because installed skills cite them as required reference material.
 
-Use examples from a clone or fork of this repository:
+Use examples from the installed skills library or from a clone/fork of this repository:
 
-- root `frontend/**` — runnable React/Vite workstream UI reference from the core app
-- root `src/main/java/ai/first/**` and `src/test/java/ai/first/**` — runnable core app backend and tests
-- `skills-pack/examples/akka-components/**` — focused Akka component examples
-- `skills-pack/templates/ai-first-saas-starter/app-description/**` — source starter app-description surface contracts
+- `.agents/skills/examples/akka-components/**` / `skills-pack/examples/akka-components/**` — focused Akka component examples
+- `.agents/skills/templates/ai-first-saas-starter/app-description/**` / `skills-pack/templates/ai-first-saas-starter/app-description/**` — starter app-description surface contracts
+- root `frontend/**` — runnable React/Vite workstream UI reference from the core app, not installed into `.agents`
+- root `src/main/java/ai/first/**` and `src/test/java/ai/first/**` — runnable core app backend and tests, not installed into `.agents`
 
-The installed skills directory contains only skill guidance and shared skill references:
+The installed skills directory contains skill guidance, shared skill references, docs, examples, templates, and tools:
 
 ```text
 .agents/skills/
   README.md
   references/
+  docs/
+  examples/
+  templates/
+  tools/
   <skill-name>/SKILL.md
 ```
 
-If a skill or doc still points to `.agents/resources/examples/**`, `resources/examples/**`, or an installed Java/frontend example tree, treat that as stale content and update it to either a source-checkout path or a target-project path.
+If a skill or doc still points to `.agents/resources/examples/**` or `resources/examples/**`, treat that as stale content and update it to `.agents/skills/examples/**` or an installed-relative `../examples/**` path from a skill.
 
 Examples may use `com.example` package names. Treat those names as reference-only. For generated or domain-specific application code, keep the root app's `ai.first` package unless the product deliberately performs a package rename.

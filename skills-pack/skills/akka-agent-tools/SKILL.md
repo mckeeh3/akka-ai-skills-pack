@@ -10,14 +10,14 @@ Use this skill when an agent must call local or external function tools as selec
 ## Required reading
 
 Read these first if present:
-- `../../docs/capability-first-backend-architecture.md`
+- `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/agents/extending.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../../examples/akka-components/src/main/java/com/example/application/WeatherAgent.java`
-- `../../examples/akka-components/src/main/java/com/example/application/WeatherForecastTools.java`
-- `../../examples/akka-components/src/main/java/com/example/application/CartCheckoutAdvisorAgent.java`
-- `../../examples/akka-components/src/main/java/com/example/application/CartCheckoutAdvisorTools.java`
-- `../../examples/akka-components/src/test/java/com/example/application/CartCheckoutAdvisorAgentTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/WeatherAgent.java`
+- `../examples/akka-components/src/main/java/com/example/application/WeatherForecastTools.java`
+- `../examples/akka-components/src/main/java/com/example/application/CartCheckoutAdvisorAgent.java`
+- `../examples/akka-components/src/main/java/com/example/application/CartCheckoutAdvisorTools.java`
+- `../examples/akka-components/src/test/java/com/example/application/CartCheckoutAdvisorAgentTest.java`
 
 If the main task is not local or external tool classes, load the focused companion skill instead:
 - `akka-agent-tool-boundaries` for backend-enforced ToolPermissionBoundary grants, tool registry/catalog, denied-tool semantics, approval-required expansion, and tool invocation traces

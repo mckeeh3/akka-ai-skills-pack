@@ -10,10 +10,10 @@ Use this skill when a browser frontend authenticates users through WorkOS and ca
 ## Required reading
 
 Read these first if present:
-- `../../docs/security-pattern-selection.md`
-- `../../docs/security-workos-auth-and-admin.md`
-- `../../docs/security-review-checklist.md`
-- `../../docs/frontend-with-akka-backend.md` — authentication, frontend API calls, JWT validation, authorization model, bootstrap, and security notes
+- `../docs/security-pattern-selection.md`
+- `../docs/security-workos-auth-and-admin.md`
+- `../docs/security-review-checklist.md`
+- `../docs/frontend-with-akka-backend.md` — authentication, frontend API calls, JWT validation, authorization model, bootstrap, and security notes
 - `../akka-http-endpoint-jwt/SKILL.md`
 - `../akka-http-endpoint-request-context/SKILL.md`
 - `../akka-web-ui-frontend-project/SKILL.md`

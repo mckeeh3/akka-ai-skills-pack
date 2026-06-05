@@ -19,9 +19,9 @@ Prefer read-only evidence capabilities for remote MCP tool use. Side-effecting r
 
 Read these first if present:
 - `akka-context/sdk/agents/extending.html.md`
-- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartToolsMcpEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/application/RemoteShoppingCartAgent.java`
-- `../../examples/akka-components/src/test/java/com/example/application/RemoteShoppingCartAgentTest.java`
+- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartToolsMcpEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/application/RemoteShoppingCartAgent.java`
+- `../examples/akka-components/src/test/java/com/example/application/RemoteShoppingCartAgentTest.java`
 
 ## Use this pattern when
 

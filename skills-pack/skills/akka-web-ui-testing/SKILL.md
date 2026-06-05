@@ -20,8 +20,8 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 
 ## Required reading
 
-- `../../docs/web-ui-quality-checklist.md`
-- `../../docs/web-ui-style-guide.md`
+- `../docs/web-ui-quality-checklist.md`
+- `../docs/web-ui-style-guide.md`
 - `../akka-http-endpoint-testing/SKILL.md`
 - existing `src/test/java/**WebUi*Test.java`
 - project `frontend/package.json` when present

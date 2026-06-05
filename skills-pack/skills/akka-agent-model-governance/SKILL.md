@@ -14,14 +14,14 @@ Use this skill only for model-selection authority, policy, fallback, secret-boun
 ## Required reading
 
 Read these first if present:
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/agent-runtime-invocation-pattern.md`
-- `../../docs/agent-coverage-matrix.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/agent-runtime-invocation-pattern.md`
+- `../docs/agent-coverage-matrix.md`
 - `../akka-agent-behavior-profiles/SKILL.md`
 - `../akka-agent-component/SKILL.md`
 - `../akka-agent-work-trace/SKILL.md`
-- `../../examples/akka-components/src/main/java/com/example/application/ConfiguredModelActivityAgent.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ConfiguredModelActivityAgentTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/ConfiguredModelActivityAgent.java`
+- `../examples/akka-components/src/test/java/com/example/application/ConfiguredModelActivityAgentTest.java`
 
 ## Use when the request mentions
 

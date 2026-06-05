@@ -26,17 +26,17 @@ The result should tell the harness and the user whether to:
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/requirements-to-workstream-development-process.md` for readiness gates across workstreams, attention, dashboards, surface actions, autonomous tasks, notifications/projections, and traces
-- `../../docs/capability-first-backend-architecture.md` for capability contract completeness criteria
-- `../../docs/agent-workstream-application-architecture.md` for functional-agent, workstream shell, and structured-surface readiness gates
-- `../../docs/workstream-expertise-model.md` for per-functional-agent workstream expert bundle readiness gates
+- `../docs/description-first-application-doctrine.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/requirements-to-workstream-development-process.md` for readiness gates across workstreams, attention, dashboards, surface actions, autonomous tasks, notifications/projections, and traces
+- `../docs/capability-first-backend-architecture.md` for capability contract completeness criteria
+- `../docs/agent-workstream-application-architecture.md` for functional-agent, workstream shell, and structured-surface readiness gates
+- `../docs/workstream-expertise-model.md` for per-functional-agent workstream expert bundle readiness gates
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation readiness criteria
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-functional-agent-modeling/SKILL.md`
 - `../app-description-surface-modeling/SKILL.md`
@@ -46,7 +46,7 @@ Read these first if present:
 - `../app-description-observability/SKILL.md`
 - `../app-description-ui/SKILL.md`
 - `../ai-first-saas/SKILL.md` when delegated work, agents, decisions, governance, supervision, audit, or outcomes are in scope
-- `../../docs/web-ui-style-guide.md`
+- `../docs/web-ui-style-guide.md`
 
 ## Use this skill when
 

@@ -52,19 +52,19 @@ Do **not** use this skill when:
 Read these first if present:
 - `../README.md`
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline and the provider-uncertainty rule
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/requirements-to-workstream-development-process.md` when unresolved decisions affect workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or task materialization
-- `../../docs/workstream-expertise-model.md` when unresolved decisions affect LLM-backed functional-agent expertise, model binding, skills, references, manifests, `readSkill`, `readReferenceDoc`, tool boundaries, traces, or expertise surfaces
-- `../../docs/pending-question-queue.md`
-- `../../docs/pending-task-queue.md`
-- `../../docs/intent-driven-usage-flow.md`
-- `../../docs/web-ui-style-guide.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/requirements-to-workstream-development-process.md` when unresolved decisions affect workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or task materialization
+- `../docs/workstream-expertise-model.md` when unresolved decisions affect LLM-backed functional-agent expertise, model binding, skills, references, manifests, `readSkill`, `readReferenceDoc`, tool boundaries, traces, or expertise surfaces
+- `../docs/pending-question-queue.md`
+- `../docs/pending-task-queue.md`
+- `../docs/intent-driven-usage-flow.md`
+- `../docs/web-ui-style-guide.md`
 - `../ai-first-saas/SKILL.md`
-- `../../specs/README.md`
-- `../../specs/pending-questions.md` if it already exists
-- `../../specs/akka-solution-plan.md` if present
-- relevant `../../specs/slices/*.md`
-- relevant `../../specs/backlog/*-build-backlog.md`
+- `../../../specs/README.md`
+- `../../../specs/pending-questions.md` if it already exists
+- `../../../specs/akka-solution-plan.md` if present
+- relevant `../../../specs/slices/*.md`
+- relevant `../../../specs/backlog/*-build-backlog.md`
 - relevant app-description files if the project uses description-first artifacts
 - the user-provided PRD or requirements file when it is the source of the plan
 
@@ -98,7 +98,7 @@ Create questions only when the answer can change one or more of:
 - backlog slicing, dependencies, or task generation
 - Java package namespace, group id, generated source paths, imports, and test package names
 
-For generated full-stack AI-first SaaS, if no selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent UI spec, append a `category: ui` question using the canonical AI-first style options from `../../docs/web-ui-style-guide.md`: `ai-first-workstream-enterprise` with the four initial named themes, or `custom` with a user-supplied style brief that preserves named-theme semantics. Mark it `priority: blocking` for web UI implementation/generation tasks; do not block unrelated backend work.
+For generated full-stack AI-first SaaS, if no selected style exists in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent UI spec, append a `category: ui` question using the canonical AI-first style options from `../docs/web-ui-style-guide.md`: `ai-first-workstream-enterprise` with the four initial named themes, or `custom` with a user-supplied style brief that preserves named-theme semantics. Mark it `priority: blocking` for web UI implementation/generation tasks; do not block unrelated backend work.
 
 For AI-first SaaS inputs, prefer a small number of actionable blocker questions over broad product interviews. Queue a blocking question only when the harness cannot safely choose a default for a concrete implementation area. Good AI-first blocker patterns include:
 - `category: behavior` — what work is delegated to agents versus retained by humans?
@@ -136,7 +136,7 @@ If a question blocks only one slice or component family, say so in `blocks:`. Do
 
 ## Required output shape
 
-Follow `../../docs/pending-question-queue.md` exactly.
+Follow `../docs/pending-question-queue.md` exactly.
 
 Each question must include:
 - stable question ID and short title

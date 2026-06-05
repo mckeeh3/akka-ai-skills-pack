@@ -20,12 +20,12 @@ Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../docs/capability-first-backend-architecture.md` when the stateful object implements a named capability with auth/scope, idempotency, audit, approval, or exposure-surface choices
-- `../../docs/ai-first-saas-application-architecture.md` when the stateful object represents goals, plans, policies, decisions, approvals, traces, outcomes, agent authority, or other AI-first substrate state
-- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
+- `../docs/capability-first-backend-architecture.md` when the stateful object implements a named capability with auth/scope, idempotency, audit, approval, or exposure-surface choices
+- `../docs/ai-first-saas-application-architecture.md` when the stateful object represents goals, plans, policies, decisions, approvals, traces, outcomes, agent authority, or other AI-first substrate state
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
 - `../references/akka-entity-comparison.md`
 
 ## Decision rule

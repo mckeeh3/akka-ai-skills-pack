@@ -15,13 +15,13 @@ Work here when a task targets installable `.agents` assets:
 
 The repository root is the canonical runnable Akka Java SDK + React/Vite core app. Do not add core app runtime code under `skills-pack/**`. Do not move focused skills-pack examples back into root `src/**`.
 
-## Skills-only harness install model
+## Harness install model
 
 This repository is the product baseline: pack users clone or fork this repo, run the root Akka full-stack app, and build their domain-specific workstreams in the root app workspace. There is no separate full-pack installer, generated distribution bundle, or installed duplicate app baseline.
 
-The only install step copies or symlinks `skills-pack/skills/**` plus shared `skills-pack/skills/references/**` into a harness-accessible skills directory such as `.agents/skills` or `~/.agents/skills`. The installed `.agents/` directory is a support library for the harness, not the target application's source tree, documentation tree, examples tree, or app-description/spec storage location.
+The install step copies or symlinks `skills-pack/skills/**`, shared `skills-pack/skills/references/**`, and referenced pack assets such as `skills-pack/docs/**`, `skills-pack/examples/**`, `skills-pack/templates/**`, and `skills-pack/tools/**` into a harness-accessible skills directory such as `.agents/skills` or `~/.agents/skills`. The installed `.agents/skills` directory is a support library for the harness, not the target application's source tree, app-description/spec storage location, or duplicate app baseline.
 
-Pack docs, examples, templates, `akka-context/**`, manifests, and tools remain source-checkout assets under `skills-pack/**` unless a future task explicitly changes the skills-only install contract.
+`akka-context/**` is the exception: it is official Akka reference material maintained independently by the Akka team and expected as a top-level, usually git-ignored project/repository directory. Do not install it into `.agents/skills`; installed skill references should point to the top-level `akka-context/**` location.
 
 ## Runtime completion doctrine
 
@@ -46,6 +46,6 @@ Use root app checks only when a task explicitly touches root app runtime/fronten
 ## Path rules
 
 - Pack source paths are relative to `skills-pack/`.
-- Installed-skill guidance may refer to `.agents/skills` for loaded skills and shared skill references only; it must not imply `.agents/docs`, `.agents/resources/examples`, templates, manifests, or application source are installed.
+- Installed-skill guidance may refer to pack docs/examples/templates/tools under `.agents/skills/**` and shared skill references under `.agents/skills/references/**`; it must not imply `.agents/docs`, `.agents/resources/examples`, manifests, application source, or `akka-context/**` are installed under `.agents`.
 - Root app guidance should remain in root `AGENTS.md`, `README.md`, `docs/**`, `app-description/**`, and runtime source paths.
 - Use `domain-specific` or the user's actual domain name for app-specific follow-up work; do not use historical placeholder names as generic labels.

@@ -9,8 +9,9 @@ metadata:
     Versioned Akka AI skills library for AI-first SaaS interpretation,
     description-first application maintenance and realization, intent-driven Akka
     application design, decomposition, and code generation. Users clone or fork
-    this repository for the runnable full-stack app and source-checkout references;
-    the harness install copies only skills and shared skill references.
+    this repository for the runnable full-stack app; the harness install copies
+    skills plus referenced pack docs, examples, templates, tools, and shared skill
+    references into the target skills directory.
   compatibleAkkaSdk: '3.5.x'
 
 install:
@@ -539,7 +540,7 @@ content:
     - skills/references/akka-grpc-jwt-patterns.md
 bundles:
   - id: all
-    description: Install the full skills library and shared skill references into a harness skills directory.
+    description: Install the full skills library, shared skill references, and referenced pack assets into a harness skills directory.
     includeReferences: true
     includeExamples: false
     skills:
@@ -666,6 +667,7 @@ bundles:
       - akka-resend-email-service
       - akka-change-request-to-spec-update
       - akka-revised-prd-reconciliation
+      - project-discussed-idea-to-pending-project
       - akka-pending-question-generation
       - akka-pending-question-queue-maintenance
       - akka-pending-task-queue-maintenance
@@ -703,11 +705,11 @@ bundles:
 transforms:
   rewriteExamplePaths: false
   rewriteAkkaContextReferences: false
-  akkaContextRewriteMessage: Official Akka SDK docs are source-checkout references only and are not installed into `.agents`.
+  akkaContextRewriteMessage: Official Akka SDK docs are expected in the top-level `akka-context/**` directory and are not installed into `.agents/skills`.
 
 externalDocs:
   bundled: false
   note: >-
-    akka-context is intentionally excluded from installation. It is included in this repository only
-    as a maintainer/reference source.
+    akka-context is intentionally excluded from installation because it is maintained independently
+    by the Akka team and expected as a top-level, often git-ignored project/repository directory.
   sourcePath: akka-context

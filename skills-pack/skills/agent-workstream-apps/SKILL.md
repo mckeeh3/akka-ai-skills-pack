@@ -12,16 +12,16 @@ This skill defines the application/UX shape. It does not replace `core-saas-foun
 ## Required reading
 
 Read these first when using this skill:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/agent-workstream-application-architecture.md`
-- `../../docs/structured-surface-contracts.md`
-- `../../docs/capability-first-backend-architecture.md`
-- `../../docs/workstream-expertise-model.md` when LLM-backed workstreams, workstream help/explanation, governed skills/references, or user-facing workstream guidance are in scope
+- `../docs/agent-workstream-application-architecture.md`
+- `../docs/structured-surface-contracts.md`
+- `../docs/capability-first-backend-architecture.md`
+- `../docs/workstream-expertise-model.md` when LLM-backed workstreams, workstream help/explanation, governed skills/references, or user-facing workstream guidance are in scope
 
-For minimum, starter, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../../docs/minimum-ai-first-saas-app.md` before applying the minimum starter routing rule.
+For minimum, starter, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../docs/minimum-ai-first-saas-app.md` before applying the minimum starter routing rule.
 
-For high-level product input, also read `../../docs/ai-first-saas-application-architecture.md` and load `../ai-first-saas/SKILL.md` plus `../core-saas-foundation/SKILL.md`.
+For high-level product input, also read `../docs/ai-first-saas-application-architecture.md` and load `../ai-first-saas/SKILL.md` plus `../core-saas-foundation/SKILL.md`.
 
 ## Use when
 
@@ -59,7 +59,7 @@ Do not make a conventional page tree, CRUD console, or chatbot-bolt-on design th
 
 ## Minimum starter routing
 
-For natural-language requests such as “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or an initial chatbot-like generated SaaS, apply `../../docs/minimum-ai-first-saas-app.md`.
+For natural-language requests such as “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or an initial chatbot-like generated SaaS, apply `../docs/minimum-ai-first-saas-app.md`.
 
 The correct first runnable target is the **five core workstream starter set**:
 - bootstrap-authorized user and selected AuthContext;
@@ -97,11 +97,11 @@ Common foundation functional agents include My Account, User Admin, Agent Admin,
 
 ### 3. Distinguish internal agents
 
-Internal agents are not left-rail navigation units. Use them for bounded backend AI work such as classification, summarization, evaluation, routing, proposal drafting, governance review, extraction, replay, or escalation triage. Model them as nodes in the internal workstream agent graph: the functional agent or workflow owns the virtual dashboard view of work to be delegated, chooses bounded worker nodes, records delegation/result edges, and escalates unresolved or high-risk outcomes back to human surfaces. They still need governed `AgentDefinition`, prompts/skills/references, skill/reference manifests when expertise is loaded, governed-tool exposure as agent-tools/internal-tools, tool boundaries, model policy, AuthContext or service authority basis, traces, and tests. When the internal node is durable task-oriented/background work, route to `akka-autonomous-agents` and `../../docs/autonomous-agent-worker-runtime-pattern.md`; require a task contract, governed capabilities, v3 `worker.task.*` events, attention, structured surfaces, provider fail-closed behavior, and no fake success.
+Internal agents are not left-rail navigation units. Use them for bounded backend AI work such as classification, summarization, evaluation, routing, proposal drafting, governance review, extraction, replay, or escalation triage. Model them as nodes in the internal workstream agent graph: the functional agent or workflow owns the virtual dashboard view of work to be delegated, chooses bounded worker nodes, records delegation/result edges, and escalates unresolved or high-risk outcomes back to human surfaces. They still need governed `AgentDefinition`, prompts/skills/references, skill/reference manifests when expertise is loaded, governed-tool exposure as agent-tools/internal-tools, tool boundaries, model policy, AuthContext or service authority basis, traces, and tests. When the internal node is durable task-oriented/background work, route to `akka-autonomous-agents` and `../docs/autonomous-agent-worker-runtime-pattern.md`; require a task contract, governed capabilities, v3 `worker.task.*` events, attention, structured surfaces, provider fail-closed behavior, and no fake success.
 
 ### 4. Define structured surfaces
 
-Model surfaces as typed renderable artifacts, not text-only messages. Use `../../docs/structured-surface-contracts.md` when a surface needs implementation-ready payload, action, event, auth, trace, or rendering-test detail. Each surface should define:
+Model surfaces as typed renderable artifacts, not text-only messages. Use `../docs/structured-surface-contracts.md` when a surface needs implementation-ready payload, action, event, auth, trace, or rendering-test detail. Each surface should define:
 - stable type and version;
 - payload schema and redaction rules;
 - allowed actions mapped to backend capabilities;
@@ -145,7 +145,7 @@ Choose the smallest next path:
 
 ## Cleanup warnings
 
-For design-content review, use `../../docs/agent-workstream-design-review-checklist.md` as the compact pass/fail checklist.
+For design-content review, use `../docs/agent-workstream-design-review-checklist.md` as the compact pass/fail checklist.
 
 When revising existing docs, specs, examples, or skills:
 - replace page-first, CRUD-first, dashboard-with-chat, or chatbot-bolt-on defaults with the workstream model;
@@ -160,7 +160,7 @@ When this skill is used for planning, hand downstream work a concise model conta
 - selected functional agents and their roles/capabilities;
 - workstream expertise skills/references needed to let the workstream agent explain role-specific dashboards, surface graph behavior, available governed-tools, denials, and examples of what users can do;
 - incremental-change reconciliation notes when the app already has workstreams, dashboards, surface graph nodes/edges, internal workstream agent graph delegations, governed-tools, or workstream expertise that must be updated rather than duplicated;
-- internal agents when applicable, clearly separated from left-rail functional agents; durable worker nodes should reference `../../docs/autonomous-agent-worker-runtime-pattern.md` and preserve task contract, v3 events, attention, surfaces, provider fail-closed, and no fake success guardrails;
+- internal agents when applicable, clearly separated from left-rail functional agents; durable worker nodes should reference `../docs/autonomous-agent-worker-runtime-pattern.md` and preserve task contract, v3 events, attention, surfaces, provider fail-closed, and no fake success guardrails;
 - initial workstreams, universal workstream icon descriptors, and default surfaces;
 - structured surface contracts or required follow-up to create them;
 - surface action-to-capability mappings;

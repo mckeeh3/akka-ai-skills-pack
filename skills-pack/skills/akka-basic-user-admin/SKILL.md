@@ -10,9 +10,9 @@ Use this skill when an Akka web app needs local user/account administration afte
 ## Required reading
 
 Read these first if present:
-- `../../docs/security-pattern-selection.md`
-- `../../docs/security-workos-auth-and-admin.md`
-- `../../docs/security-review-checklist.md`
+- `../docs/security-pattern-selection.md`
+- `../docs/security-workos-auth-and-admin.md`
+- `../docs/security-review-checklist.md`
 - `../akka-workos-user-auth/SKILL.md`
 - `../akka-saas-invitation-onboarding/SKILL.md` for complete InvitationWorkflow, Resend email delivery/outbox, expiry/reminder, InvitationView, and invite lifecycle tests
 - `../akka-resend-email-service/SKILL.md` for the shared Resend email service, local captured outbox, future feature emails, and agent email `@FunctionTool` exposure

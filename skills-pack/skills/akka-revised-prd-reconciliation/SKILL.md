@@ -45,13 +45,13 @@ Use this skill as a reconciliation layer, not as a fresh planning generator: pre
 
 Read these first if present:
 - `../README.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/requirements-to-workstream-development-process.md` when reconciling generated SaaS requirements, PRDs, workstreams, dashboards, attention, surface actions, capabilities, or task queues
-- `../../docs/pending-task-queue.md`
-- `../../docs/solution-plan-to-implementation-queue.md`
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
-- `../../docs/workstream-expertise-model.md` when the revised PRD adds or changes functional agents, workstream expertise, prompts, skills, references, manifests, loaders, tool boundaries, governed agent behavior, traces, seed content, or expertise tests
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/requirements-to-workstream-development-process.md` when reconciling generated SaaS requirements, PRDs, workstreams, dashboards, attention, surface actions, capabilities, or task queues
+- `../docs/pending-task-queue.md`
+- `../docs/solution-plan-to-implementation-queue.md`
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
+- `../docs/workstream-expertise-model.md` when the revised PRD adds or changes functional agents, workstream expertise, prompts, skills, references, manifests, loaders, tool boundaries, governed agent behavior, traces, seed content, or expertise tests
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-change-request-to-spec-update/SKILL.md`
 - `../app-description-change-impact/SKILL.md`

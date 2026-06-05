@@ -12,15 +12,15 @@ This is a routing and framing skill. It does not replace `core-saas-foundation`,
 ## Required reading
 
 Read these first when using this skill:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app modeling before backend capability design
-- `../../docs/structured-surface-contracts.md` when workstream surfaces, surface actions, or browser UI actions are in scope
-- `../../docs/capability-first-backend-architecture.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app modeling before backend capability design
+- `../docs/structured-surface-contracts.md` when workstream surfaces, surface actions, or browser UI actions are in scope
+- `../docs/capability-first-backend-architecture.md`
 - `../agent-workstream-apps/SKILL.md` when generated SaaS intent has not already produced functional-agent, workstream, and structured-surface context
 
-For generated-app durable AutonomousAgent worker tasks, also read `../../docs/autonomous-agent-worker-runtime-pattern.md` before finalizing the capability contract.
+For generated-app durable AutonomousAgent worker tasks, also read `../docs/autonomous-agent-worker-runtime-pattern.md` before finalizing the capability contract.
 
 Then load only the smallest downstream skill set needed for the selected path.
 
@@ -123,7 +123,7 @@ Use the shape to choose the Akka substrate later:
 - command governed-tool in a capability → entity/workflow command with validation, idempotency, auth, audit;
 - proposal governed-tool in a capability → agent or human drafts change without committing side effects;
 - approval governed-tool in a capability → human or policy-governed decision commits/rejects/delegates;
-- AutonomousAgent worker governed-tool in a capability → durable task-oriented internal/background model-driven work; apply `../../docs/autonomous-agent-worker-runtime-pattern.md` so start/read/cancel/accept/reject style capabilities preserve task contract, v3 `worker.task.*` events, attention, structured surfaces, provider fail-closed behavior, and no fake success;
+- AutonomousAgent worker governed-tool in a capability → durable task-oriented internal/background model-driven work; apply `../docs/autonomous-agent-worker-runtime-pattern.md` so start/read/cancel/accept/reject style capabilities preserve task contract, v3 `worker.task.*` events, attention, structured surfaces, provider fail-closed behavior, and no fake success;
 - workflow governed-tool in a capability → long-running, retryable, approval-gated, or compensating process;
 - policy/governance governed-tool in a capability → versioned policy, prompt, skill, threshold, simulation, activation, rollback;
 - trace/audit governed-tool in a capability → record, search, explain, redact, or export history;

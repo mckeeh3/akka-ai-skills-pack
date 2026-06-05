@@ -31,8 +31,8 @@ Read these first when implementing invitation onboarding:
 - `../akka-timed-actions/SKILL.md`
 - `../akka-timers-scheduling/SKILL.md`
 - `../akka-views/SKILL.md`
-- `../../docs/core-saas-identity-tenancy-admin.md`
-- `../../docs/security-workos-auth-and-admin.md`
+- `../docs/core-saas-identity-tenancy-admin.md`
+- `../docs/security-workos-auth-and-admin.md`
 
 ## Mandatory outcome
 

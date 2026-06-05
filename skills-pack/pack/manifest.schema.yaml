@@ -4,8 +4,8 @@ name: akka-ai-skills-pack-manifest
 
 description: >-
   Schema for the Akka AI skills library manifest. The manifest describes the
-  skills-only harness install contract, source-checkout reference files, and
-  external/source docs that are intentionally not installed into `.agents`.
+  harness skills-library install contract, installed pack reference files, and
+  external Akka SDK docs that are intentionally not installed into `.agents/skills`.
 
 fields:
   apiVersion:
@@ -89,7 +89,7 @@ fields:
       options:
         type: map
         required: false
-        note: copy, symlink, prune, uninstall, and check options for skills-only installs.
+        note: copy, symlink, prune, uninstall, and check options for skills-library installs.
 
   content:
     type: map
@@ -120,15 +120,15 @@ fields:
         type: list
         required: false
         itemType: string
-        note: Source-checkout reference files. Only skills/references/** is copied by install-skills.sh.
+        note: Pack reference files installed under the target skills directory when present, except akka-context which remains external.
       examples:
         type: map
         required: false
-        note: Deprecated; examples are source-checkout assets and are not installed into `.agents`.
+        note: Optional metadata for examples installed under `.agents/skills/examples` when present.
       frontendExamples:
         type: map
         required: false
-        note: Deprecated; frontend references are source-checkout assets and are not installed into `.agents`.
+        note: Optional metadata for frontend references. Root application frontend source is not installed into `.agents`.
 
   bundles:
     type: list
@@ -151,7 +151,7 @@ fields:
       includeExamples:
         type: boolean
         required: true
-        note: Must be false for the current skills-only install contract.
+        note: Bundle metadata only; install-skills.sh installs referenced pack examples when present.
 
   transforms:
     type: map
@@ -160,11 +160,11 @@ fields:
       rewriteExamplePaths:
         type: boolean
         required: true
-        note: Must be false for the current skills-only install contract.
+        note: Must remain false; source paths should already be authored for installed layout.
       rewriteAkkaContextReferences:
         type: boolean
         required: true
-        note: Must be false for the current skills-only install contract.
+        note: Must remain false; akka-context references should target the top-level project/repository directory.
       akkaContextRewriteMessage:
         type: string
         required: false
@@ -188,5 +188,5 @@ fields:
 validationRules:
   - metadata.name must be stable across releases
   - content.skills ids must match skills/*/SKILL.md directories
-  - bundles[].includeExamples must be false while install-skills.sh remains skills-only
-  - manifests must not define installed docs, templates, examples, frontend examples, or application source paths unless install-skills.sh is intentionally changed in the same release
+  - bundles[].includeExamples is metadata only; install-skills.sh installs pack examples when present
+  - manifests must not define installed application source paths or bundled akka-context paths unless install-skills.sh is intentionally changed in the same release

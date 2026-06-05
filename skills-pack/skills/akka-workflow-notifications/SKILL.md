@@ -21,14 +21,14 @@ If these are absent and the work is generated SaaS implementation, route back to
 ## Required reading
 
 Read these first if present:
-- `../../docs/capability-first-backend-architecture.md`
+- `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
-- `../../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
-- `../../examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
+- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
 
 ## Capability-first notification role
 

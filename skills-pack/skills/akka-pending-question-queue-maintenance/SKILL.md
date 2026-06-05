@@ -45,10 +45,10 @@ Use `akka-do-next-pending-question` when the user wants to answer or reconcile o
 
 Read these first if present:
 - `../README.md`
-- `../../docs/pending-question-queue.md`
-- `../../docs/pending-task-queue.md`
-- `../../docs/ai-first-saas-application-architecture.md` when questions involve delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
-- `../../docs/workstream-expertise-model.md` when questions involve functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, or load traces
+- `../docs/pending-question-queue.md`
+- `../docs/pending-task-queue.md`
+- `../docs/ai-first-saas-application-architecture.md` when questions involve delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
+- `../docs/workstream-expertise-model.md` when questions involve functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, or load traces
 - `../akka-pending-question-generation/SKILL.md`
 - `../akka-do-next-pending-question/SKILL.md`
 - target project `specs/README.md` if present

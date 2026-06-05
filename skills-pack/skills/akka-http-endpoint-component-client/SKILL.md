@@ -32,18 +32,18 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/api/OrderEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/api/PurchaseOrderEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
-- `../../docs/workflow-endpoint-pattern.md`
-- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/OrderEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/PurchaseOrderEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
+- `../docs/workflow-endpoint-pattern.md`
+- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

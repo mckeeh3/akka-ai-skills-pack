@@ -26,8 +26,8 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 
 ## Required reading
 
-- `../../docs/web-ui-quality-checklist.md`
-- `../../docs/web-ui-style-guide.md`
+- `../docs/web-ui-quality-checklist.md`
+- `../docs/web-ui-style-guide.md`
 - the selected `app-description/55-ui/style-guide.md` or `specs/cross-cutting/*ui-style-guide*.md` when present, including available named themes and default theme id
 - existing frontend source under `frontend/src/**`
 

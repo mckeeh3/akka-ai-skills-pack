@@ -14,15 +14,15 @@ High-visibility guardrail: `55-ui/` must not create application meaning that is 
 ## Required reading
 
 Read these first if present:
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/requirements-to-workstream-development-process.md` for attention/dashboard/surface-action/autonomous task notification/projection rules
-- `../../docs/capability-first-backend-architecture.md` for selected capability exposure surfaces, browser action authority, frontend API contracts, audit, and denial semantics
-- `../../docs/workstream-ui-reference-architecture.md` for the canonical generated-app workstream UI implementation reference under `frontend/src/workstream/**`
-- `../../docs/web-ui-frontend-decomposition.md`
-- `../../docs/web-ui-style-guide.md`
-- `../../docs/web-ui-quality-checklist.md`
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/requirements-to-workstream-development-process.md` for attention/dashboard/surface-action/autonomous task notification/projection rules
+- `../docs/capability-first-backend-architecture.md` for selected capability exposure surfaces, browser action authority, frontend API contracts, audit, and denial semantics
+- `../docs/workstream-ui-reference-architecture.md` for the canonical generated-app workstream UI implementation reference under `frontend/src/workstream/**`
+- `../docs/web-ui-frontend-decomposition.md`
+- `../docs/web-ui-style-guide.md`
+- `../docs/web-ui-quality-checklist.md`
 - `../app-descriptions/SKILL.md`
 - `../app-description-functional-agent-modeling/SKILL.md` for role-authorized functional-agent rail, workstream, surface, capability, prompt/skill/tool, trace, and test semantics
 - `../app-description-surface-modeling/SKILL.md` for structured workstream surface contracts, typed payloads, reusable functional-agent placement, capability-backed actions, rendering states, traces, and tests
@@ -146,7 +146,7 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 - narrow-screen layout expectations
 
 ### Style guide selection
-- selected AI-first style id/name from `../../docs/web-ui-style-guide.md`, custom style reference, or `unselected`
+- selected AI-first style id/name from `../docs/web-ui-style-guide.md`, custom style reference, or `unselected`
 - visual direction: aesthetic point of view, tone, memorable motif, and forbidden generic patterns
 - theme model: named-theme selection; available theme ids/names; default theme id; user preference scope and persistence expectations
 - My Account theme behavior when in scope: users choose one available named theme and the UI applies it at the documented scope
@@ -160,7 +160,7 @@ Use `screens-and-navigation.md` only as a legacy compatibility note when maintai
 - UX handoff for each non-trivial structured surface or route/deep-link target: primary action, information hierarchy, UX copy, feedback/recovery states, responsive behavior, and keyboard/focus path
 - static asset output and Akka hosting route expectations
 
-If no UI style is selected for a generated AI-first SaaS app, do **not** choose implicitly. Add or request a `category: ui` pending question in `specs/pending-questions.md` using `../../docs/web-ui-style-guide.md`; this blocks web UI implementation/generation tasks until style is selected.
+If no UI style is selected for a generated AI-first SaaS app, do **not** choose implicitly. Add or request a `category: ui` pending question in `specs/pending-questions.md` using `../docs/web-ui-style-guide.md`; this blocks web UI implementation/generation tasks until style is selected.
 
 Cosmetic style work may improve visual quality only within already-authoritative UI meaning. Do not use style-guide updates to add, remove, rename, or reinterpret functional agents, workstreams, workstream icon semantics, structured surfaces, capability-backed actions, authorization, API contracts, tests, or readiness semantics.
 

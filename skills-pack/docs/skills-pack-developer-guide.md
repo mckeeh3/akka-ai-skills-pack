@@ -6,7 +6,7 @@ For user-facing installation and usage guidance, see [`skills-pack-user-guide.md
 
 ## Repository model
 
-The repository root is the canonical runnable Akka Java SDK + React/Vite core app. The skills library source lives under `skills-pack/`; only `skills-pack/skills/**` and shared skill references are installed into a harness skills directory.
+The repository root is the canonical runnable Akka Java SDK + React/Vite core app. The skills library source lives under `skills-pack/`; `skills-pack/skills/**`, shared skill references, and referenced pack docs/examples/templates/tools are installed into a harness skills directory.
 
 Skills-pack work includes:
 
@@ -25,10 +25,12 @@ Do not add core app runtime code under `skills-pack/**`. Do not add skills-pack 
 - `skills-pack/AGENTS.md` — maintainer guidance for pack source work
 - `skills-pack/pack/AGENTS.md` — source metadata guidance only; not installed
 - `skills-pack/skills/**` — source skill library copied/symlinked to `.agents/skills`
-- `skills-pack/docs/**` — source-checkout doctrine, references, and mechanics examples; not installed
-- `skills-pack/examples/akka-components/**` — source-checkout focused Akka Java reference examples; not installed
+- `skills-pack/docs/**` — pack doctrine, references, and mechanics examples copied/symlinked to `.agents/skills/docs`
+- `skills-pack/examples/**` — focused reference examples copied/symlinked to `.agents/skills/examples`
+- `skills-pack/templates/**` — pack templates copied/symlinked to `.agents/skills/templates`
+- `skills-pack/tools/**` — pack tools copied/symlinked to `.agents/skills/tools`
 - root `frontend/**` — core app frontend and source-checkout frontend workstream reference; not installed into `.agents`
-- `skills-pack/akka-context/**` — official Akka reference material for maintainers only; not installed
+- `skills-pack/akka-context/**` — official Akka reference material for maintainers only; not installed because standard Akka projects keep `akka-context/**` as an independently maintained top-level directory
 
 ## Source layout
 

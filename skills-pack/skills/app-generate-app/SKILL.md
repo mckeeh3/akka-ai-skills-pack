@@ -27,18 +27,18 @@ The skill should:
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/ai-first-saas-application-architecture.md`
+- `../docs/description-first-application-doctrine.md`
+- `../docs/ai-first-saas-application-architecture.md`
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation readiness before generation
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-readiness-assessment/SKILL.md`
 - `../ai-first-saas/SKILL.md` when delegated work, agents, decisions, governance, supervision, audit, or outcomes are in scope
 - any currently relevant app-description layer artifacts identified by the harness, including `15-operating-model/` when present or required
-- `../../docs/web-ui-style-guide.md` and `app-description/55-ui/style-guide.md` for mandatory generated full-stack SaaS web UI
+- `../docs/web-ui-style-guide.md` and `app-description/55-ui/style-guide.md` for mandatory generated full-stack SaaS web UI
 
 If the user asks to generate and run, read the current build and execution entry points for the target project before acting.
 
@@ -124,7 +124,7 @@ As applicable, generation may include:
 - AI-first substrate outputs when described: durable goals/plans, governed model bindings for LLM-backed workstream agents, policy/approval gates, decision cards, traces, outcome loops, agents/workflows/views/endpoints, and supervision UI surfaces
 - documentation or evaluation notes
 
-The exact realization set depends on the current repository and user request, but generated AI-first SaaS is full-stack. Route browser UI realization through `akka-web-ui-apps` and its focused companion skills rather than treating the UI as raw asset delivery or optional polish. Do not invent visual styling during generation; if `55-ui/style-guide.md` or the specs style guide is missing/unselected, stop web UI generation and add or ask the pending style-selection question described in `../../docs/web-ui-style-guide.md`.
+The exact realization set depends on the current repository and user request, but generated AI-first SaaS is full-stack. Route browser UI realization through `akka-web-ui-apps` and its focused companion skills rather than treating the UI as raw asset delivery or optional polish. Do not invent visual styling during generation; if `55-ui/style-guide.md` or the specs style guide is missing/unselected, stop web UI generation and add or ask the pending style-selection question described in `../docs/web-ui-style-guide.md`.
 
 For generated SaaS apps, route through `core-saas-foundation` before app-specific generation and stop or surface a blocking gap if the description lacks the mandatory foundation contract. The generation step must not decide that a protected route, agent-tool, data access path, workflow action, view query, stream, consumer side effect, timer action, or generated UI action is public or authorized by default. When AI-first behavior is in scope, route through `ai-first-saas` companion skills and the selected Akka substrate skills before generation. Stop or surface a blocking gap if `15-operating-model/` does not define the required delegated work, retained human authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or AI-first UI surfaces well enough to implement.
 

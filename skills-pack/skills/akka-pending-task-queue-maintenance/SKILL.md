@@ -49,11 +49,11 @@ Use `akka-change-request-to-spec-update` when a specific feature/bug/change need
 
 Read these first if present:
 - `../README.md`
-- `../../docs/pending-question-queue.md`
-- `../../docs/pending-task-queue.md`
-- `../../docs/solution-plan-to-implementation-queue.md`
-- `../../docs/ai-first-saas-application-architecture.md` when the queue contains or references delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
-- `../../docs/workstream-expertise-model.md` when the queue contains or references LLM-backed functional agents, workstream expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, or load traces
+- `../docs/pending-question-queue.md`
+- `../docs/pending-task-queue.md`
+- `../docs/solution-plan-to-implementation-queue.md`
+- `../docs/ai-first-saas-application-architecture.md` when the queue contains or references delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
+- `../docs/workstream-expertise-model.md` when the queue contains or references LLM-backed functional agents, workstream expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, or load traces
 - `../akka-do-next-pending-task/SKILL.md`
 - `../akka-backlog-to-pending-tasks/SKILL.md`
 - target project `specs/README.md` if present
