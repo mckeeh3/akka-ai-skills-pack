@@ -80,13 +80,9 @@ During packaging/deployment, the files under `src/main/resources/static-resource
 
 ## Akka static resource hosting
 
-The Akka endpoint responsible for serving the frontend is:
+Generated SaaS frontend source should live under the target project's `frontend/**` tree and build into `src/main/resources/static-resources/`. Do not copy the removed skills-pack static UI fixtures or use pack examples as generated-app UI structure.
 
-```text
-../examples/akka-components/src/main/java/com/example/api/StaticFrontendEndpoint.java
-```
-
-It exposes public static routes such as:
+A target app normally exposes public static routes such as:
 
 ```text
 /              -> index.html

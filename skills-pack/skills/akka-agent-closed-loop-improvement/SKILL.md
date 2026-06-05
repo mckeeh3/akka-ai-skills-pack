@@ -14,7 +14,7 @@ This skill covers the SaaS governance lifecycle around evaluation and self-impro
 Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/agent-coverage-matrix.md`
-- `../docs/examples/core-ai-first-saas-input/09-module-evaluation-closed-loop-improvement-prd.md`
+- `../docs/examples/ai-first-saas-core-app-domain/governance-policy-workstream/README.md`
 - `../core-saas-foundation/SKILL.md`
 - `../ai-first-saas-policy-governance/SKILL.md`
 - `../ai-first-saas-audit-trace/SKILL.md`

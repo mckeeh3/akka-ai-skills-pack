@@ -66,7 +66,7 @@ Use it with:
 
 ## Focused examples
 
-Use the current examples in `docs/examples/` for generated-SaaS planning mechanics and core foundation inputs. Keep examples domain-neutral or directly tied to executable skills-pack code; do not reintroduce historical domain-specific planning examples as generic guidance.
+Use the current examples in `docs/examples/` for generated-SaaS planning mechanics and core foundation inputs. Keep examples domain-neutral or directly tied to current focused pack examples; do not reintroduce historical domain-specific planning examples as generic guidance.
 
 ## Prompt pattern for a direct solution plan
 

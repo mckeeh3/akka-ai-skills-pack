@@ -88,6 +88,7 @@ The current installer copies or symlinks:
 
 - `skills-pack/skills/README.md`
 - `skills-pack/skills/references/**`
+- referenced pack assets under `skills-pack/docs/**`, `skills-pack/examples/**`, `skills-pack/templates/**`, and `skills-pack/tools/**`
 - every `skills-pack/skills/<skill-name>/SKILL.md` skill directory
 
 The installer writes `<target-skills-dir>/.akka-ai-skills-pack-install-manifest`. That manifest records pack-owned installed paths so `--prune` can remove retired skills and `--uninstall` can remove this pack without deleting unrelated harness skills.

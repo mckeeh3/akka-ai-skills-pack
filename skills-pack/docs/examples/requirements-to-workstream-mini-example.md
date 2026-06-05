@@ -1,6 +1,6 @@
 # Requirements-to-workstream mini example
 
-Use this compact example as the quickest source-checkout pattern for turning a broad PRD fragment into the required generated-SaaS planning chain. For target architecture, use this with `../requirements-to-workstream-development-process.md` and the target project `app-description/README.md` plus `../core-ai-first-saas-foundation.md`. Historical domain-specific planning examples have been removed; keep new examples domain-neutral or tied to current executable skills-pack code.
+Use this compact example as the quickest source-checkout pattern for turning a broad PRD fragment into the required generated-SaaS planning chain. For target architecture, use this with `../requirements-to-workstream-development-process.md` and the target project `app-description/README.md` plus `../core-ai-first-saas-foundation.md`. Historical domain-specific planning examples have been removed; keep new examples domain-neutral or tied to current focused pack examples.
 
 ## Input fragment
 

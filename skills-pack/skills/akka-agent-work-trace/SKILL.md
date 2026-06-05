@@ -24,7 +24,7 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/agent-coverage-matrix.md`
-- `../docs/examples/core-ai-first-saas-input/08-module-audit-work-trace-prd.md`
+- `../docs/examples/ai-first-saas-core-app-domain/audit-trace-workstream/README.md`
 - `../core-saas-foundation/SKILL.md`
 - `../ai-first-saas-audit-trace/SKILL.md`
 - `../akka-agents/SKILL.md`

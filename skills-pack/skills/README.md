@@ -422,7 +422,7 @@ Stage 3 family orchestrators are the capability handoff point. Focused companion
 For durable multi-session execution, materialize the work as `specs/pending-tasks.md` and use `akka-do-next-pending-task` to execute one task per fresh context.
 
 Decomposition is complete only when it enables focused implementation work with low ambiguity.
-Use the target project `app-description/README.md` and `docs/core-ai-first-saas-foundation.md` as the first references for generated SaaS foundation shape. Historical domain-specific planning examples have been removed; keep new examples domain-neutral or tied to current executable skills-pack code.
+Use the target project `app-description/README.md` and `docs/core-ai-first-saas-foundation.md` as the first references for generated SaaS foundation shape. Historical domain-specific planning examples have been removed; keep new examples domain-neutral or tied to current focused pack examples.
 For a lightweight template, see `docs/solution-plan-to-implementation-queue.md`.
 For the durable queue contract, see `docs/pending-task-queue.md`.
 
@@ -1530,13 +1530,9 @@ Testing examples:
 ### HTTP endpoints
 Core endpoint examples:
 
-For generated SaaS browser UI, these endpoint examples are delivery mechanics only. Use `docs/workstream-ui-reference-architecture.md` and the canonical root frontend reference `../../frontend/src/workstream/**` from this repository or a downstream fork; do not treat `WebUi*PageEndpoint` examples as page-first UI architecture. The harness install includes pack examples under `examples/**`, but it does not include root frontend application source.
+For generated SaaS browser UI, use `docs/workstream-ui-reference-architecture.md` and the canonical root frontend reference `../../frontend/src/workstream/**` from this repository or a downstream fork. Removed static UI page fixtures must not be restored as page-first UI architecture. The harness install includes pack examples under `examples/**`, but it does not include root frontend application source.
 
 - `examples/akka-components/src/main/java/com/example/api/GreetingEndpoint.java`
-- `examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `examples/akka-components/src/main/java/com/example/api/WebUiDataEndpoint.java`
-- `examples/akka-components/src/main/java/com/example/api/WebUiSsePageEndpoint.java`
-- `examples/akka-components/src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
 - `examples/akka-components/src/main/java/com/example/api/LowLevelHttpEndpoint.java`
 - `examples/akka-components/src/main/java/com/example/api/ProxyGreetingEndpoint.java`
 - `examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
@@ -1554,10 +1550,6 @@ For generated SaaS browser UI, these endpoint examples are delivery mechanics on
 
 Testing examples:
 - `examples/akka-components/src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
 - `examples/akka-components/src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
 - `examples/akka-components/src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
 - `examples/akka-components/src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`

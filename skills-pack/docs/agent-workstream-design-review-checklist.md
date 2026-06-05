@@ -92,4 +92,4 @@ secure SaaS foundation
 
 ## Pass condition
 
-A design artifact passes when it keeps application meaning in functional agents, role-specific dashboards, human surface graphs, internal workstream agent graphs, workstream expertise, governed-tools/capabilities, and mandatory security; treats browser UI and routes as realization details; and quarantines legacy page-first or static mechanics references.
+A design artifact passes when it keeps application meaning in functional agents, role-specific dashboards, human surface graphs, internal workstream agent graphs, workstream expertise, governed-tools/capabilities, and mandatory security; treats browser UI and routes as realization details; and excludes removed page-first or standalone static UI references from generated-app guidance.

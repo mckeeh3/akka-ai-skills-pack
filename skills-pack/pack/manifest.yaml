@@ -521,8 +521,6 @@ content:
     - docs/examples/README.md
     - docs/examples/requirements-to-workstream-mini-example.md
     - docs/examples/domain-workstream-surface-contract-example.md
-    - docs/examples/core-ai-first-saas-input/README.md
-    - docs/examples/core-ai-first-saas-input/10-canonical-core-app-prd.md
     - docs/workstream-ui-reference-architecture.md
     - templates/ai-first-saas-starter/app-description/README.md
     - templates/ai-first-saas-starter/app-description/12-workstreams/surfaces-index.md
@@ -542,7 +540,7 @@ bundles:
   - id: all
     description: Install the full skills library, shared skill references, and referenced pack assets into a harness skills directory.
     includeReferences: true
-    includeExamples: false
+    includeExamples: true
     skills:
       - app-description-auth-security
       - app-description-behavior-specification

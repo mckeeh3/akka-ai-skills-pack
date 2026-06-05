@@ -64,7 +64,7 @@ Canonical source-checkout workstream UI reference:
 - integrated shell example: `../../../frontend/src/main.tsx`
 - User Admin dashboard/list/detail-edit vertical pattern: test-only workstream fixtures and `../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 
-Use the core app baseline as the end-to-end generated-app baseline and these frontend files as reusable UI implementation examples. Test fixtures are contract references only and must not be importable as generated-app normal runtime. Do not use legacy `frontend/src/screens/**` or standalone static examples as the canonical app structure; keep them as mechanics or migration-drift references unless a task explicitly asks for legacy compatibility.
+Use the core app baseline as the end-to-end generated-app baseline and these frontend files as reusable UI implementation examples. Test fixtures are contract references only and must not be importable as generated-app normal runtime. Do not use legacy `frontend/src/screens/**` or removed standalone static UI fixtures as the canonical app structure.
 
 ## Use this skill when
 

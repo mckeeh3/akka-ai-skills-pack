@@ -119,14 +119,14 @@ Pattern notes:
 
 ### P1: AI-first web UI reference surface
 
-Status: **covered by the workstream UI reference and starter routing; standalone static UI remains mechanics-only**.
+Status: **covered by the workstream UI reference and starter routing; old standalone static UI fixtures removed**.
 
 References:
 - canonical UI architecture: `docs/workstream-ui-reference-architecture.md`
 - reusable frontend modules: `frontend/src/workstream/**`
 - core app baseline: this repository's runnable core app root
 
-Future breadth may add more vertical React/Vite workstream examples, but static resource examples are not canonical generated SaaS UI structure.
+Future breadth may add more vertical React/Vite workstream examples. Removed static UI fixtures must not be restored as canonical generated SaaS UI structure.
 
 ### P1: trace fanout and digest examples
 

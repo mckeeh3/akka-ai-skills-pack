@@ -37,18 +37,12 @@ Read these first if present:
 - `../docs/web-ui-style-guide.md`
 - `../docs/web-ui-frontend-project-integration.md`
 - `../docs/web-ui-quality-checklist.md`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiDataEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiSsePageEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java` for backend SSE mechanics when needed
+- `../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java` for backend WebSocket mechanics when needed
+- `../examples/akka-components/src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
 
-The `WebUi*PageEndpoint` examples are endpoint delivery mechanics references. They do not replace the canonical generated SaaS app structure under `frontend/src/workstream/**` or the User Admin workstream vertical reference.
+Old standalone static UI page fixtures were removed. Use this skill for route shape, static build hosting, and protected API/stream/socket boundaries; use `frontend/src/workstream/**` and the User Admin vertical as generated SaaS UI structure.
 
 ## Use this skill when
 
@@ -84,25 +78,20 @@ Then add focused frontend companions as needed:
 Use this when the browser UI has real user journeys, multiple states, forms, structured surfaces, functional-agent selection, stream state, navigation/deep links, or frontend application logic. Use `akka-web-ui-frontend-project` for full React/Vite or similar app projects.
 
 ### UI + JSON API
-Read first:
-- `../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiDataEndpoint.java`
 
-Use this when a browser surface should load JSON through `fetch`; for product UI work, keep the browser source in `frontend/src/**` and keep generated SaaS structure workstream-first.
+Use this when a browser surface should load JSON through `fetch`; for product UI work, keep the browser source in `frontend/src/**`, use `akka-web-ui-api-client` for typed browser clients, and keep generated SaaS structure workstream-first. Protect `/api/...` routes with JWT/request context, tenant/customer scoping, backend capability authorization, validation, redaction, and audit/work traces.
 
 ### UI + SSE
 Read first:
-- `../examples/akka-components/src/main/java/com/example/api/WebUiSsePageEndpoint.java`
 - `../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java`
 
 Use this when the browser needs server-to-client live updates; for product UI work, keep the browser source in `frontend/src/**` and model updates as workstream/surface events where generated SaaS semantics apply.
 
 ### UI + WebSocket
 Read first:
-- `../examples/akka-components/src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
 - `../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
 
-Use this when the browser needs two-way communication; for product UI work, keep the browser source in `frontend/src/**` and avoid treating socket demo pages as generated SaaS UI structure.
+Use this when the browser needs two-way communication; for product UI work, keep the browser source in `frontend/src/**` and avoid adding standalone socket demo pages as generated SaaS UI structure.
 
 ### Public vs protected/internal routes
 Read next as needed:
@@ -145,12 +134,12 @@ Keep those route families separate so a future agent can infer intent from the p
 
 ## Repository examples
 
-- `WebUiHomeEndpoint` + `WebUiDataEndpoint`
-  - generated app shell plus JSON API hosting pattern
-- `WebUiSsePageEndpoint` + `CounterStreamEndpoint`
-  - generated app shell consuming SSE
-- `WebUiWebSocketPageEndpoint` + `PingWebSocketEndpoint`
-  - generated app shell consuming a WebSocket
+- `CounterStreamEndpoint`
+  - backend SSE stream mechanics
+- `PingWebSocketEndpoint`
+  - backend WebSocket mechanics
+
+Static UI page fixtures were removed; generated app shells should come from the target project's frontend build output.
 
 ## Testing rule
 

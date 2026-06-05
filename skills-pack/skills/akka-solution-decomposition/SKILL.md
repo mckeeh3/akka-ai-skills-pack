@@ -81,7 +81,6 @@ In this repository, prefer these cross-component examples:
 - `../examples/akka-components/src/main/java/com/example/application/ActivityAgent.java`
 - `../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
 - `../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
 - `../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
 - `../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
 

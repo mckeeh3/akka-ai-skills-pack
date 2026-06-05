@@ -178,6 +178,13 @@ require_rg "docs/frontend-with-akka-backend.md" pack/manifest.yaml skills/akka-w
 require_rg "frontend/src/workstream" docs/workstream-ui-reference-architecture.md "$APP_ROOT/frontend/README.md" skills/akka-web-ui-apps/SKILL.md
 require_rg "install-skills" install-skills.sh "$APP_ROOT/install-skills.sh" README.md
 
+log "checking removed quarantined content is not reintroduced"
+forbid_rg "core-ai-first-saas-input|ai-first-app-description-gaps|agent-executable-examples-plan|agent-skill-expansion-plan|StaticFrontendEndpoint|WebUiHomeEndpoint|WebUiDataEndpoint|WebUiSsePageEndpoint|WebUiWebSocketPageEndpoint|FrontendReference|frontend-reference|web-ui-sse|web-ui-websocket|quarantined" \
+  docs \
+  skills \
+  examples \
+  pack/manifest.yaml
+
 log "checking retired distribution output is not used as guidance/template source"
 retired_output_pattern='skills-pack/'"dist"'|'"dist"'/akka-ai'
 forbid_rg "$retired_output_pattern" \

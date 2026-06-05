@@ -1,6 +1,6 @@
 # Java validation guide for skills-pack reference code
 
-This directory contains executable Java reference code for the skills pack. Treat it as examples and fixtures, not as downstream product source.
+This directory contains Java reference snippets for the skills pack. Treat them as examples and fixtures, not as downstream product source or as a standalone build module.
 
 ## Source sets
 
@@ -21,7 +21,7 @@ Use this before and after focused root Java edits:
 mvn -q -DskipTests compile
 ```
 
-For skills-pack Java examples, run from `skills-pack/examples/akka-components` when that example project is independently buildable, or validate them through the root build when they are included there.
+The current `skills-pack/examples/akka-components` tree is not independently buildable and is not included in the root app build. Validate it with path/reference audits unless a future task deliberately promotes a subset into a real build module.
 
 ## Focused test gate
 

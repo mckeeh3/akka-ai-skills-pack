@@ -9,4 +9,5 @@ Key paths:
 - `src/main/java/com/example/**` — component, endpoint, agent, workflow, entity, view, consumer, timed-action, MCP, and gRPC reference implementations
 - `src/test/java/com/example/**` — focused tests and integration tests for the reference examples
 - `src/main/proto/com/example/**` — gRPC example proto definitions
-- `src/main/web-ui/**` and `src/main/resources/static-resources/{frontend-reference,web-ui,web-ui-sse,web-ui-websocket}/**` — focused HTTP/static UI delivery references
+
+Static browser UI fixtures were removed from this examples tree. Use the root app `frontend/src/workstream/**` reference and `skills-pack/docs/workstream-ui-reference-architecture.md` for generated SaaS UI structure; use focused HTTP/SSE/WebSocket endpoint examples only for backend delivery mechanics.

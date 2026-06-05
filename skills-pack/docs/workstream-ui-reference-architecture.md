@@ -22,7 +22,7 @@ Current implementation references:
 - canonical User Admin UI vertical pattern: fixtures in `frontend/src/workstream/fixtures/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 - shell/surface/action/deep-link/realtime contract coverage: `frontend/src/workstream*.contract.test.mjs`, `frontend/src/frontend.contract.test.mjs`, and `frontend/src/seed-frontend-quality.contract.test.mjs`
 
-Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Test fixtures are contract/test references only; generated user-facing runtime must bind to real backend `/api/me`, workstream APIs, authorization, audit/work-trace, and realtime API paths rather than simulated data. Older `frontend/src/screens/**` files and static examples under `../examples/akka-components/src/main/resources/static-resources/frontend-reference/**`, `web-ui/**`, `web-ui-sse/**`, or `web-ui-websocket/**` are mechanics or legacy references only; do not promote them as canonical generated-app structure.
+Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Test fixtures are contract/test references only; generated user-facing runtime must bind to real backend `/api/me`, workstream APIs, authorization, audit/work-trace, and realtime API paths rather than simulated data. Static UI fixture examples were removed from the pack; generated SaaS UI should use the root workstream frontend reference, not standalone static pages.
 
 ## Core rule
 
@@ -421,9 +421,7 @@ Focused contract tests should verify:
 
 Do not hand-edit generated assets under `src/main/resources/static-resources/**` in component-library tasks. Replace generated Vite output only after the workstream source shell is ready to build.
 
-Do not delete `frontend/src/screens/**` until the replacement shell and reusable surfaces are in place and contract tests have moved to the workstream taxonomy.
-
-Do not promote legacy static examples under `../examples/akka-components/src/main/resources/static-resources/frontend-reference/**`, `web-ui/**`, `web-ui-sse/**`, or `web-ui-websocket/**` as canonical full-stack SaaS UI guidance. Keep them as quarantined mechanics references until later cleanup.
+Do not restore removed static UI fixtures as canonical full-stack SaaS UI guidance. If a task needs asset-serving mechanics, document the focused route shape in the target app and keep product UI source under `frontend/**`.
 
 ## Implementation handoff sequence
 
