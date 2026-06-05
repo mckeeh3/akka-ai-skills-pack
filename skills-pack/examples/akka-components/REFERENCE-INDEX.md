@@ -2,6 +2,8 @@
 
 Every file under `src/**` is either directly referenced by a skill/doc or retained as compact support context for a referenced pattern. This tree is not independently buildable and must not become a mirror of root `src/**`.
 
+Use **primary pattern reference** files first. Open **support context** only when a primary file depends on the type or when a skill explicitly asks for it. During maintenance, prune support-context files that are no longer needed by any primary pattern, skill, doc, or validator.
+
 ## Files
 
 - `src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java` — primary pattern reference.

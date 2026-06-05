@@ -50,30 +50,18 @@ For each reusable view example, cover at least:
 
 ## Repository examples
 
-### Event sourced view tests
-- `UserDirectoryViewIntegrationTest`
-  - publishes workstream events
-  - queries checked-out rows
-  - verifies delete event removes the row
-- `AdminAuditViewIntegrationTest`
-  - verifies logical delete event handling
-  - verifies `QueryStreamEffect` collection for current rows
+### Current curated view references
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserDirectoryView.java`
+  - user directory projection/query shape
+  - pair with target-project view integration tests for mocked updates and eventual consistency
+- `examples/akka-components/src/main/java/ai/first/application/foundation/audit/AdminAuditView.java`
+  - audit query/read-model shape
+  - pair with target-project tests for stream/delete/query behavior
 
-### Key value view tests
-- `UserDirectoryViewIntegrationTest`
-  - publishes draft workstream event state snapshots
-  - queries checked-out rows
-  - verifies paginated response mapping
-- `AdminAuditViewIntegrationTest`
-  - verifies logical delete via `@DeleteHandler`
-
-### Workflow view test
-- `ReviewRequestsByStatusViewIntegrationTest`
-  - publishes workflow state snapshots
-  - queries workflow-derived rows
+The current curated tree does not include standalone `*ViewIntegrationTest` classes. Treat event-sourced, key-value, and workflow view test bullets above as target-project test shapes, not repository class names.
 
 ### Topic view test
-- `AgentRuntimeTraceViewIntegrationTest`
+- target-project topic view integration test; the current curated tree does not include a standalone topic-view test class
   - publishes topic messages with `ce-subject` metadata
   - verifies ignored and deleted message behavior
 

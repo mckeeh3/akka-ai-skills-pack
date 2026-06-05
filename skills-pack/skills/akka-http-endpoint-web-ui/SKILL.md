@@ -73,11 +73,15 @@ Use this when a browser surface should load JSON through `fetch`; for product UI
 
 ### UI + SSE
 Read first:
+- `../akka-http-endpoint-sse/SKILL.md`
+- `../akka-web-ui-realtime/SKILL.md`
 
 Use this when the browser needs server-to-client live updates; for product UI work, keep the browser source in `frontend/src/**` and model updates as workstream/surface events where generated SaaS semantics apply.
 
 ### UI + WebSocket
 Read first:
+- `../akka-http-endpoint-websocket/SKILL.md`
+- `../akka-web-ui-realtime/SKILL.md`
 
 Use this when the browser needs two-way communication; for product UI work, keep the browser source in `frontend/src/**` and avoid adding standalone socket demo pages as generated SaaS UI structure.
 
@@ -119,12 +123,13 @@ Prefer clear route families:
 
 Keep those route families separate so a future agent can infer intent from the path alone. Avoid a broad `/**` SPA fallback when it overlaps `/assets/**`; use hash routing or explicit entry routes for deep links.
 
-## Repository examples
+## Examples and current boundaries
 
-- a domain-specific SSE endpoint
-  - backend SSE stream mechanics
-- a domain-specific WebSocket endpoint
-  - backend WebSocket mechanics
+The current curated core-app examples focus on HTTP API/workstream route shape, not standalone SSE/WebSocket demo endpoints. For SSE or WebSocket mechanics, load the focused endpoint skill and implement target-project tests against the named capability, tenant/customer scope, authorization, and work trace.
+
+Current curated references:
+- `examples/akka-components/src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java` for co-hosted workstream HTTP endpoint shape
+- `examples/akka-components/src/main/java/ai/first/api/foundation/security/MeEndpoint.java` for protected API/auth boundary shape
 
 Static UI page fixtures were removed; generated app shells should come from the target project's frontend build output.
 

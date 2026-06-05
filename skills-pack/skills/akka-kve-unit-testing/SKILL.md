@@ -16,6 +16,7 @@ Use `../references/generated-saas-input-contract.md` as the shared gate. For thi
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
+- `../docs/akka-entity-testing-shared-patterns.md`
 
 ## Test kit rules
 

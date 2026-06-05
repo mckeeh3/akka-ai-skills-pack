@@ -76,8 +76,8 @@ Use these as source material, but simplify aggressively for docs:
 - `WorkstreamEventAttentionConsumer` -> side effects outside entity
 - `WorkstreamEndpoint` -> SSE mapping
 - `AgentDefinitionEntityTest` -> unit test shape
-- `PromptDocumentEntityTest` -> multi-event test shape
-- `ExpiringAgentDefinitionEntityTest` -> TTL assertion shape
+- `GovernedDocumentEntityTest` -> governed document unit-test shape; use target-project tests for multi-event ESE snippets when needed
+- `AgentDefinitionEntityTest` -> entity test shape; use target-project TTL tests when the curated examples do not include an expiring entity
 
 ## What to trim out of docs
 

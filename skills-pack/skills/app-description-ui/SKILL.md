@@ -66,7 +66,7 @@ This is the canonical generated SaaS `55-ui/` file set and should remain consist
 
 Create only files justified by the app, but do not omit the UI layer for generated AI-first SaaS. For `full core` scope, do not omit the managed-agent UI files: `agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, and `edit-agent-proposals-and-traces.md`. They may be omitted or explicitly marked deferred only when `00-system/app-manifest.md`, `readiness-status.md`, and `generation-policy.md` label a narrower scope such as `Module 1-only / not full core`. For a very small full-core app, one `ui-index.md`, `workstream-shell.md`, `functional-agent-rail.md`, `workstream-panel-and-composer.md`, `structured-surface-rendering.md`, `routes-and-deep-links.md`, those managed-agent UI files, and `style-guide.md` may be enough.
 
-Use `screens-and-navigation.md` only as a legacy compatibility note when maintaining older app descriptions; new generated SaaS descriptions should use `routes-and-deep-links.md`. The `55-ui` prefix keeps UI authoritative while preserving the existing `60-generation` layer for realization metadata. Keep application meaning in `12-workstreams/`: functional agents, internal agents, durable workstreams, workstream icon descriptors (`WorkstreamIconDescriptor` semantics), surface contracts, reusable placement, action-to-capability mappings, traces, and tests. `55-ui/` owns browser realization and links back to `12-workstreams/`, `10-capabilities/`, security, observability, and test artifacts instead of redefining them.
+For retired/static/page-first UI boundaries, use `../docs/retired-content-boundaries.md`; new generated SaaS descriptions use `routes-and-deep-links.md`, not `screens-and-navigation.md`. The `55-ui` prefix keeps UI authoritative while preserving the existing `60-generation` layer for realization metadata. Keep application meaning in `12-workstreams/`: functional agents, internal agents, durable workstreams, surface contracts, action-to-capability mappings, traces, and tests. `55-ui/` owns browser realization and links back instead of redefining them.
 
 ## What to capture
 
@@ -86,7 +86,7 @@ When realization is requested, preserve the description-level functional-agent a
 
 Fixtures are contract/test references only. Generated user-facing SaaS UI must connect to real backend API/realtime endpoints and governed capabilities with authorization, audit/trace, failure, and local smoke/manual validation paths. Fixture-backed, frontend-only, or simulated data paths must not satisfy runtime completion for a named feature.
 
-Do not realize new generated SaaS UI as a primary `screens/**` or page-route tree. If older app descriptions contain `screens-and-navigation.md`, treat it as legacy compatibility and migrate meaning into `workstream-shell.md`, `functional-agent-rail.md`, `structured-surface-rendering.md`, and `routes-and-deep-links.md`.
+Do not realize new generated SaaS UI as a primary `screens/**` or page-route tree; see `../docs/retired-content-boundaries.md` for migration boundaries.
 
 When realization is requested, route UI work to:
 - `ai-first-saas-ui-surfaces` first when the UI is for delegation, supervision, decisions, governance, digests, audit, or outcomes

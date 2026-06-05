@@ -16,6 +16,7 @@ Use `../references/generated-saas-input-contract.md` as the shared gate. For thi
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
+- `../docs/akka-entity-testing-shared-patterns.md`
 
 ## Test harness rules
 
@@ -34,8 +35,8 @@ Use when validating HTTP behavior:
 - assert HTTP success or expected failure behavior
 
 Pattern references:
-- `WorkstreamLogIntegrationTest`
-- a domain-specific admin endpoint integration test
+- target-project endpoint integration tests for the key-value-backed API under test
+- current curated endpoint/service shape: `examples/akka-components/src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java` and `examples/akka-components/src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java`
 
 ## Consumer-driven flow pattern
 
@@ -45,8 +46,9 @@ Use when a state change from one entity triggers work in another component:
 - assert final state using `componentClient` or endpoint reads
 - account for asynchronous propagation
 
-Pattern reference:
-- `WorkstreamEventAttentionConsumerIntegrationTest`
+Pattern references:
+- target-project consumer-driven integration tests for the key-value state-change flow under test
+- current curated consumer/service shape: `examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java` and `examples/akka-components/src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java`
 
 ## Waiting strategy
 

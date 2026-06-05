@@ -43,16 +43,16 @@ Use `TestKitSupport` plus `Awaitility` when you want to verify that a timer actu
 For self-rescheduling handlers that call `timers()` inside the timed action, prefer end-to-end tests for the rescheduling path. `TimedActionTestkit` is still useful for terminal `done()` mappings such as not-found or already-completed outcomes.
 
 Pattern references:
-- `WorkstreamEndpointIntegrationTest#reservationExpiresAfterTimerFires`
-- `AttentionRefreshEndpointIntegrationTest#timedActionSelfSchedulesUntilMaxRemindersReached`
+- target-project endpoint/component integration test for timer expiry
+- target-project self-rescheduling integration test that runs until the modeled reminder/max-attempt boundary
 
 ### 3. Delete-or-confirm integration test
 Use `TestKitSupport` plus `Awaitility.during(...)` when you want to prove that confirmation prevented the later timer from changing state.
 
 Pattern references:
-- `WorkstreamEndpointIntegrationTest#confirmDeletesTimerAndKeepsReservationConfirmed`
-- `AttentionRefreshEndpointIntegrationTest#completeStopsFutureSelfRescheduling`
-- `ApprovalDeadlineWorkflowIntegrationTest#approveDeletesTimerAndWorkflowStaysApproved`
+- target-project endpoint/component integration test for timer cancellation/confirmation
+- target-project self-rescheduling cancellation test
+- target-project workflow approval/deadline cancellation test
 
 ## Assertions to favor
 

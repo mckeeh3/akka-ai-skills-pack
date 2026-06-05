@@ -26,8 +26,8 @@ Read these first if present:
 Use when the consumer is triggered by the real upstream component in the same service.
 
 Pattern references:
-- `WorkstreamEventAttentionConsumerIntegrationTest`
-- `WorkstreamEventAttentionConsumerIntegrationTest`
+- current curated consumer shape: `examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
+- current curated flow test shape: `examples/akka-components/src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java`
 
 Pattern:
 - trigger the upstream entity through `httpClient` or `componentClient`
@@ -38,7 +38,7 @@ Pattern:
 Use when the consumer source is a broker topic.
 
 Pattern reference:
-- `WorkstreamEventAttentionConsumerIntegrationTest`
+- target-project topic consumer integration test; the current curated tree does not include a broker-topic fixture class
 
 Pattern:
 - configure `withTopicIncomingMessages(...)`

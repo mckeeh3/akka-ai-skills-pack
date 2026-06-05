@@ -16,6 +16,7 @@ Use `../references/generated-saas-input-contract.md` as the shared gate. For thi
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
+- `../docs/akka-entity-testing-shared-patterns.md`
 
 ## Test kit rules
 
@@ -63,14 +64,16 @@ Use these `EventSourcedTestKit` capabilities:
   - delete
 
 ### Multi-event entity tests
-- `PromptDocumentEntityTest`
+- target-project ESE tests for commands that persist multiple events
   - one command persisting two events
   - no-op for missing item
   - strongly consistent read pattern
+- current curated governed-document tests: `examples/akka-components/src/test/java/ai/first/application/foundation/agent/GovernedDocumentEntityTest.java`
 
 ### TTL test
-- `ExpiringAgentDefinitionEntityTest`
-  - asserts `Optional.of(Duration.ofDays(30))` from `getExpireAfter()`
+- target-project TTL tests for entities that configure `expireAfter(...)`
+  - assert the expected `Optional<Duration>` from `getExpireAfter()`
+- the current curated tree does not include a dedicated expiring entity fixture
 
 ## Generated SaaS test set
 

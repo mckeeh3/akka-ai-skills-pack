@@ -52,7 +52,7 @@ Use `EventSourcedTestKit` and assert:
 - resulting state
 
 Pattern reference:
-- `ExpiringAgentDefinitionEntityTest`
+- target-project TTL entity tests; no dedicated expiring entity exists in the current curated examples
 
 ## Generated SaaS checks
 

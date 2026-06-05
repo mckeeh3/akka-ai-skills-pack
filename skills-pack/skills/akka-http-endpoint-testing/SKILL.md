@@ -71,8 +71,8 @@ HTTP endpoint tests should:
   - allowed impersonated service caller
 
 ### Component-calling endpoint tests
-- `WorkstreamEndpointIntegrationTest`
-- `AdminEndpointIntegrationTest`
+- `examples/akka-components/src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java` plus target-project endpoint integration tests
+- target-project admin endpoint integration tests
 - a domain-specific admin endpoint integration test
 
 These cover route-to-component behavior and HTTP response mapping.

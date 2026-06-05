@@ -39,7 +39,7 @@ Installed layout:
 
 ## Install model
 
-Each install copies or symlinks the full current skill library, shared references, and referenced pack docs/curated examples/templates/downstream-safe tools into the harness skills directory. There is no duplicate application baseline, automatic project-source generation, or bundled `akka-context` install.
+Each install copies or symlinks the full current skill library, shared references, and the current `docs/**`, curated `examples/**`, `templates/**`, and downstream-safe `tools/**` asset directories into the harness skills directory. `pack/manifest.yaml` is release/metadata documentation for that payload; the installer is the source of truth for the exact copied directories. There is no duplicate application baseline, automatic project-source generation, or bundled `akka-context` install.
 
 The ownership manifest records pack-owned entries. `--prune` removes manifest-owned entries that no longer exist in source, which covers retired skills. `--uninstall` removes all manifest-owned entries and the manifest. Unrelated skills in the target directory are not deleted.
 

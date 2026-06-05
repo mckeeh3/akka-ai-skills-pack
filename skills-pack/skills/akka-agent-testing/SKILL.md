@@ -43,9 +43,9 @@ Read these first if present:
 
 - `WorkstreamRuntimeAgentTest`
   - single agent, structured reply mapping
-- `AgentTeamWorkflowIntegrationTest`
+- target-project workflow orchestration test with two mocked agents
   - workflow orchestration with two mocked agents
-- `WorkstreamRuntimeAgentEndpointIntegrationTest`
+- target-project HTTP endpoint test over direct and streaming agent calls
   - HTTP endpoint over direct and streaming agent calls
 
 ## Governed runtime agent tests

@@ -77,70 +77,15 @@ Boundary rules:
 
 ## Companion skills
 
-Load the companion skill that matches the current task:
+Use the routing matrix above plus `../README.md` for the full catalog. Load only the smallest matching companion:
 
-- `../agent-workstream-apps/SKILL.md`
-  - functional/context-area agent versus internal-agent placement, workstream shell context, structured surfaces, and capability-first routing
-- `akka-agent-behavior-profiles`
-  - durable tenant-scoped AgentDefinition, lifecycle, owner/steward, functional/internal placement metadata, authority level, model references, tool permission boundaries, admin views, and runtime profile lookup
-- `../docs/agent-runtime-invocation-pattern.md`
-  - concrete runtime invocation sequence from AuthContext through active AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, Java Agent invocation, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission
-- `akka-agent-governed-documents`
-  - tenant-scoped governed prompts, skills, rubrics, policies, and examples with version history, immutable snapshots, review, activation, diff UI, and audit
-- `akka-agent-governed-documents`
-  - first-install/tenant-bootstrap governed setup of implementation-developed default AgentDefinition, prompt, skill, manifest, and tool-boundary records with provenance, upgrade behavior, and audit
-- `akka-agent-prompt-governance`
-  - runtime-managed agent system prompts with PromptDocument/PromptVersion, review, activation, diff/history UI, effective prompt assembly, PromptAssemblyTrace, and safe test consoles
-- `akka-agent-skill-governance`
-  - governed runtime skills with SkillDocument/SkillVersion, per-agent AgentSkillManifest, compact skill manifests, readSkill(skillId), SkillLoadTrace, and skill editor/test UI
-- `akka-agent-behavior-editing`
-  - AgentBehaviorEditorAgent flows for structured proposed diffs, draft versions, risk classification, review/approval routing, decision cards, and denial of unauthorized authority expansion
-- `akka-agent-work-trace`
-  - agent-specific audit/work traces for AgentDefinition, prompt/skill/model/tool/data/policy usage, authorization decisions, redaction, correlation, and trace timelines
-- `akka-agent-closed-loop-improvement`
-  - governed evaluation and self-improvement loops with EvaluationRubric, EvaluationRun, EvaluationFinding, ImprovementProposal, replay/simulation, approval, activation, monitoring, and rollback
-- `akka-agent-component`
-  - core agent class, single command handler, prompt shape, session strategy, and failure fallback
-- `akka-agent-structured-responses`
-  - `responseConformsTo(...)`, `responseAs(...)`, field descriptions, and fallback mapping
-- `akka-agent-tools`
-  - local `@FunctionTool` methods and external tool classes registered with `.tools(...)`
-- `akka-agent-tool-boundaries`
-  - backend-enforced `ToolPermissionBoundary` grants, tool registry/catalog, read-only vs side-effecting authority, component/MCP/readSkill tool permission, approval-required expansion, runtime denied-tool semantics, and tool invocation traces
-- `akka-agent-model-governance`
-  - governed `ModelConfigRef`, model policy, tenant/agent/task model selection, fallback model policy, provider secret boundaries, model config audit/work traces, and forbidden provider/secret-exposure tests
-- `akka-agent-component-tools`
-  - Views, entities, and workflows used as tools through `.tools(ComponentClass.class)`
-- `akka-agent-mcp-tools`
-  - remote MCP server tools added with `.mcpTools(...)`
-- `akka-agent-harness-skills`
-  - deploy-time packaged model-loadable internal guidance exposed through whitelisted `@FunctionTool` methods or MCP resources; use `akka-agent-skill-governance` for tenant-managed runtime skills
-- `akka-agent-multimodal`
-  - `UserMessage.from(...)`, image/PDF content, and `contentLoader(...)`
-- `akka-agent-memory`
-  - session ids, `MemoryProvider`, limited windows, `readOnly()`, and filtered memory reads
-- `akka-agent-streaming`
-  - `StreamEffect`, `tokenStream(...)`, streaming endpoints, and grouped token delivery
-- `ai-first-saas-agent-team-design`
-  - one governed skilled agent vs specialized agents vs workflow-supervised team vs evaluator decisions based on authority, tool boundary, model config, lifecycle, steward, memory, risk, audit, and approval needs
-- `akka-agent-orchestration`
-  - calling request-based agents from workflows, shared session ids, and multi-agent supervisor patterns
-- `akka-autonomous-agents`
-  - durable task-oriented internal/background model-driven work with typed tasks, task lifecycle, dependencies, notifications, and optional model-driven coordination
-- `akka-autonomous-agent-tasks`
-  - `Task`, `TaskTemplate`, `TaskAcceptance`, `TaskRule`, dependencies, attachments, and task client calls
-- `akka-autonomous-agent-coordination`
-  - delegation, handoff, TeamLeadership, Moderation, task dependencies, external input, and notification-aware coordination
-- `akka-autonomous-agent-testing`
-  - `TestModelProvider.AutonomousAgentTools`, Awaitility, typed task snapshots/results, notifications, and coordination scripts
-- `akka-agent-guardrails`
-  - runtime-enforced input/output validation and configuration-driven guardrail selection
-- `akka-agent-evaluation`
-  - evaluator agents and `EvaluationResult` patterns for LLM-as-judge flows; use `akka-agent-closed-loop-improvement` when evaluator results become governed proposals or activations
-- `akka-agent-runtime-state`
-  - built-in `PromptTemplate` and `SessionMemoryEntity` patterns, views, endpoints, and compaction flows
-- `akka-agent-testing`
-  - `TestModelProvider`, deterministic tests, and workflow or endpoint integration tests
+- runtime component mechanics: `akka-agent-component`, `akka-agent-tools`, `akka-agent-component-tools`, `akka-agent-mcp-tools`, `akka-agent-memory`, `akka-agent-streaming`, `akka-agent-structured-responses`, `akka-agent-testing`
+- governed runtime substrate: `akka-agent-behavior-profiles`, `akka-agent-governed-documents`, `akka-agent-prompt-governance`, `akka-agent-skill-governance`, `akka-agent-reference-governance`, `akka-agent-tool-boundaries`, `akka-agent-model-governance`, `akka-agent-work-trace`
+- change/evaluation loops: `akka-agent-behavior-editing`, `akka-agent-evaluation`, `akka-agent-closed-loop-improvement`
+- autonomous/background work: `akka-autonomous-agents`, `akka-autonomous-agent-tasks`, `akka-autonomous-agent-coordination`, `akka-autonomous-agent-testing`
+- workstream/team placement: `../agent-workstream-apps/SKILL.md`, `ai-first-saas-agent-team-design`, `akka-agent-orchestration`
+
+For the end-to-end governed invocation sequence, prefer `../docs/agent-runtime-invocation-pattern.md` instead of reloading multiple governance skills.
 
 ## Default package layout
 
