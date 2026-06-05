@@ -52,8 +52,10 @@ Recommended release flow:
 3. verify installed-skill references resolve inside `.agents/skills/**`, except `akka-context/**` references which must target the project/repository top-level
 4. update version references
 5. commit version changes
-6. create an annotated git tag
+6. create an annotated git tag with `pack/maintainer/tools/release.sh` when cutting a release
 7. push the release commit/tag when ready
+
+Keep maintainer backlog, gap lists, and release planning under `pack/maintainer/**` until converted into concrete installed docs, examples, tools, or skills.
 
 ## Installer UX
 

@@ -20,3 +20,9 @@ Maintenance rules:
 3. Remove examples that no longer teach or support an installed skill pattern.
 4. Keep examples current with the implementation patterns they are meant to teach.
 5. Prefer adding a focused doc snippet over adding a large dependency closure just to make this tree compile.
+
+Validation notes:
+
+- This tree is not independently buildable and is not included in the root app build.
+- Validate examples with path/reference audits unless a future task deliberately promotes a subset into a real build module.
+- Before deleting Java reference code, search for class/file references in `skills-pack/skills/**`, `skills-pack/docs/**`, active specs, root tests, and installed mirrors when in scope; then update inventories/docs and run the smallest relevant gate plus `git diff --check`.

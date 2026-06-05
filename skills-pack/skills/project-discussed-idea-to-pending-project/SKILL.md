@@ -38,9 +38,9 @@ Do not treat an installed `.agents/skills` support library as writable applicati
 Read only the smallest useful context:
 - `AGENTS.md` or equivalent repository guidance
 - `.agents/skills/README.md` or `skills/README.md` when present
-- installed/source pack `docs/pending-task-queue.md` or project `docs/pending-task-queue.md` for queue mechanics when present
-- installed/source pack `docs/pending-question-queue.md` or project `docs/pending-question-queue.md` when unresolved decisions may block tasks
-- installed/source pack `docs/ai-first-saas-application-architecture.md` / `docs/capability-first-backend-architecture.md` or project-local equivalents only when the initiative affects generated-app doctrine, agent workstreams, governed capabilities, security, UI, agents, audit, or runtime completion semantics
+- pack `../docs/pending-task-queue.md` (installed skill) or project `docs/pending-task-queue.md` for queue mechanics when present
+- pack `../docs/pending-question-queue.md` (installed skill) or project `docs/pending-question-queue.md` when unresolved decisions may block tasks
+- pack `../docs/ai-first-saas-application-architecture.md` / `../docs/capability-first-backend-architecture.md` (installed skill) or project-local equivalents only when the initiative affects generated-app doctrine, agent workstreams, governed capabilities, security, UI, agents, audit, or runtime completion semantics
 - the conversation notes, issue, prompt, draft spec, review finding, or source files named by the user
 - related existing `specs/*/README.md` and `specs/*/pending-tasks.md` as pattern references
 

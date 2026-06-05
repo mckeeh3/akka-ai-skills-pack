@@ -166,7 +166,7 @@ app-description/
     style-guide.md        # create when style is supplied; otherwise record unselected or queue a style question
 ```
 
-This `55-ui/` file set is the canonical generated SaaS bootstrap set and matches `docs/internal-app-description-architecture.md`, `app-description-ui`, and the current AI-first SaaS core app-description template. Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
+This `55-ui/` file set is the canonical generated SaaS bootstrap set and matches `../docs/internal-app-description-architecture.md`, `app-description-ui`, and the current AI-first SaaS core app-description template. Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
 
 ## Scope gates
 

@@ -153,7 +153,7 @@ Repository examples:
 - KVE-backed views may skip intermediate state transitions and reflect only the latest guaranteed state.
 - Topic-backed views rely on topic delivery and metadata such as `ce-subject`.
 - For multi-region scenarios, `updateContext().hasLocalOrigin()`, `originRegion()`, and `selfRegion()` can drive origin-aware filtering.
-- For service-to-service eventing sources, also use `docs/service-to-service-views.md` and `akka-context/sdk/consuming-producing.html.md`.
+- For service-to-service eventing sources, also use `../docs/service-to-service-views.md` and `akka-context/sdk/consuming-producing.html.md`.
 - `ORDER BY` is constrained by the View indexes inferred from the `WHERE` clause. If you need `ORDER BY lowestConsumablePercent, deviceId`, include conditions for both fields, such as `lowestConsumablePercent <= :maxPercent` and `deviceId >= :minDeviceId`.
 - Do not use `ORDER BY` on live view queries forwarded to SSE; create a separate unsorted `streamUpdates = true` query for SSE and keep sorted/paginated queries separate.
 - View schema/query changes must be treated carefully; incompatible changes may require a new `@Component(id = ...)` and a staged migration.

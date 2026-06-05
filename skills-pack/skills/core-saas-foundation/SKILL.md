@@ -104,7 +104,7 @@ For every new SaaS app, implement or specify the secure foundation before app-sp
 
 ### Slice 0: core app baseline readiness
 
-When the user asks for a minimum, core app, basic, or chatbot-like generated AI-first SaaS app, the valid first slice is the **five-core-workstream core app domain** — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — not a single-workstream admin core app, generic chatbot, or full-core readiness. Route this through `docs/minimum-ai-first-saas-app.md` and require all of the following before calling the core app ready:
+When the user asks for a minimum, core app, basic, or chatbot-like generated AI-first SaaS app, the valid first slice is the **five-core-workstream core app domain** — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — not a single-workstream admin core app, generic chatbot, or full-core readiness. Route this through `../docs/minimum-ai-first-saas-app.md` and require all of the following before calling the core app ready:
 
 - bootstrap-authorized human user only; no public self-registration and no prompt-, skill-, route-, or frontend-only privilege grant;
 - selected local `AuthContext` with account/user identity, bootstrap scope, roles/capabilities, tenant/customer boundary when applicable, and actor metadata;

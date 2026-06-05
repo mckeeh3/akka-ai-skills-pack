@@ -109,7 +109,7 @@ Use a standard frontend project for full apps.
 - build output goes to `src/main/resources/static-resources/`
 - build with the frontend project's script, for example `cd frontend && npm run build`
 - do not hand-edit generated files in `static-resources/`
-- read `docs/web-ui-frontend-project-integration.md`
+- read `../docs/web-ui-frontend-project-integration.md`
 
 Akka implementation and tests remain Java-based.
 
@@ -165,6 +165,6 @@ Before finishing, verify:
 - SSE and WebSocket routes remain explicit and separate
 - frontend source paths and served JavaScript/CSS asset paths are easy to correlate
 - integration tests fetch the generated app shell and CSS/JS asset routes through `httpClient`
-- non-trivial UI work has been reviewed against `docs/web-ui-quality-checklist.md`, the selected style guide, and the named-theme contract
+- non-trivial UI work has been reviewed against `../docs/web-ui-quality-checklist.md`, the selected style guide, and the named-theme contract
 - protected API, SSE, or WebSocket routes called by workstream surfaces, composer actions, or realtime subscriptions carry AuthContext, tenant/customer filtering, and forbidden-access tests
 - public static asset exposure has been reviewed so it cannot leak backend secrets or protected data

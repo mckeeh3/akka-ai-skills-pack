@@ -184,7 +184,7 @@ Read only:
 - the task's `task brief`, if present
 - focused skills listed under `skills`
 - the smallest AI-first doctrine or companion-skill context needed to preserve authority, governance, audit, supervision, or outcome constraints named by the task
-- `docs/workstream-expertise-model.md` or focused agent governance skills only when listed or directly needed by the selected task's workstream-expertise/reference-governance contract
+- `../docs/workstream-expertise-model.md` or focused agent governance skills only when listed or directly needed by the selected task's workstream-expertise/reference-governance contract
 - source files directly needed to modify or test the expected outputs
 
 Avoid broad context loading.

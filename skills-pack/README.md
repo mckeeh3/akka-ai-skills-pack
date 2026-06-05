@@ -18,3 +18,9 @@ Primary maintenance entry points:
 - `install-skills.sh` — skills-only harness install entrypoint
 
 The repository root is the canonical runnable secure AI-first SMB SaaS core app. Pack users clone or fork this repo, run the root app, and build business-specific domains and workstreams in the root app workspace rather than generating a separate parallel app. There is no separate full-pack installer and no installed duplicate baseline app; the install action makes the skills library and referenced pack assets (`docs/`, `examples/`, `templates/`, and downstream-safe `tools/`) available to an AI coding harness under `.agents/skills/**` or `~/.agents/skills/**`.
+
+## Target stack
+
+The pack targets one full-stack system: Akka Java SDK backend components plus a React/Vite/TypeScript frontend hosted by the Akka service when appropriate. Backend guidance should prefer explicit Akka write paths, read paths, event reactions, workflows, timers, endpoints, and governed agent/tool boundaries over generic CRUD. Frontend guidance should preserve typed API contracts, structured workstream surfaces, realtime state where needed, accessibility, responsive behavior, and production build output under `src/main/resources/static-resources/`.
+
+Use focused skills for implementation mechanics; this README is only the source map.

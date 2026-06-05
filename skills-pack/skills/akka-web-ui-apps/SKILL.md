@@ -140,7 +140,7 @@ Always pair with Akka hosting/API skills as needed:
 7. Build React/Vite/TypeScript frontend assets into `src/main/resources/static-resources/`; treat this as generated output for standard frontend projects.
 8. Add/extend endpoint integration tests for shell entry, assets, explicit SPA entry routes, and API route separation.
 9. Run frontend checks/build and backend tests.
-10. Review with `docs/structured-surface-contracts.md`, `docs/web-ui-quality-checklist.md`, and `docs/web-ui-ux-patterns.md`.
+10. Review with `../docs/structured-surface-contracts.md`, `../docs/web-ui-quality-checklist.md`, and `../docs/web-ui-ux-patterns.md`.
 
 ## Quality bar
 

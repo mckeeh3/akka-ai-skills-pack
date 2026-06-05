@@ -66,7 +66,7 @@ Read these first if present:
   - starts, reads, and streams workflow progress
 - a domain-specific approval workflow endpoint
   - starts, resumes, reads, and streams paused workflow progress
-- `docs/workflow-endpoint-pattern.md`
+- `../docs/workflow-endpoint-pattern.md`
   - tiny shared reference for workflow-specific route shapes and HTTP mappings
 
 ## Mapping rules

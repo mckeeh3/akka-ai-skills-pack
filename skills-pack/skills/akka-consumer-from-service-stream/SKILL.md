@@ -46,9 +46,9 @@ Read these first if present:
 
 - `WorkstreamEventAttentionConsumer`
   - producer-side example that exposes a public service stream
-- `docs/service-to-service-consumers.md`
+- `../docs/service-to-service-consumers.md`
   - dedicated publisher/subscriber reference
-- `docs/consumer-reference.md`
+- `../docs/consumer-reference.md`
   - short consumer overview linking to the dedicated reference
 
 ## Generated SaaS consumer contract

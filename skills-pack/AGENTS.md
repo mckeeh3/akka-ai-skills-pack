@@ -49,5 +49,6 @@ Use root app checks only when a task explicitly touches root app runtime/fronten
 
 - Pack source paths are relative to `skills-pack/`.
 - Installed-skill guidance may refer to pack docs/examples/templates/tools under `.agents/skills/**` and shared skill references under `.agents/skills/references/**`; it must not imply `.agents/docs`, `.agents/resources/examples`, manifests, application source, or `akka-context/**` are installed under `.agents`.
+- Keep source assets in their canonical top-level directories (`skills/`, `docs/`, `examples/`, `templates/`, `tools/`); do not add installed-layout symlinks inside `skills/`.
 - Root app guidance should remain in root `AGENTS.md`, `README.md`, `docs/**`, `app-description/**`, and runtime source paths.
 - Use `domain-specific` or the user's actual domain name for app-specific follow-up work; do not use historical placeholder names as generic labels.

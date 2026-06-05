@@ -43,6 +43,8 @@ Security is mandatory. Load `core-saas-foundation` early whenever generated-app 
 
 AI-first managed agents / governed runtime agent foundation is mandatory for model-backed workstream behavior: active `AgentDefinition` resolution, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, authorized Akka `@FunctionTool` `readSkill(skillId)` and `readReferenceDoc(referenceId)`, runtime registration with `effects().tools(runtimeTools)`, and first-install/tenant-bootstrap seed documents.
 
+Scope control: load only the smallest companion set needed for the current user request. Use the full foundation/admin path only when creating or changing secure SaaS foundation behavior, app-generation readiness, or model-backed workstream runtime. For narrow maintenance, documentation, isolated Akka component work, or domain-specific extension work, preserve the mandatory guardrails without expanding the task into unrelated foundation verticals.
+
 Canonical doctrine:
 
 - `../docs/ai-first-saas-application-architecture.md`

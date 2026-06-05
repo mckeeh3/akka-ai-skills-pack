@@ -126,13 +126,12 @@ Use `akka-consumer-from-service-stream`.
 
 Repository references:
 - `WorkstreamEventAttentionConsumer` for the producer side
-- `docs/consumer-reference.md` for the subscriber-side snippet
+- `../docs/consumer-reference.md` for the subscriber-side snippet
 
 ### 6. Event publication to topics or service streams
 Use `akka-consumer-producing`.
 
 Repository examples:
-- `WorkstreamEventAttentionConsumer`
 - `WorkstreamEventAttentionConsumer`
 - a domain-specific workflow topic consumer
 

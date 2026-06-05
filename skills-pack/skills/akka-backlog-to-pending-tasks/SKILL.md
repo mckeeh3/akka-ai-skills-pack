@@ -91,7 +91,7 @@ Do not create one queue task per class name unless the backlog explicitly frames
 ### AI-first context preservation
 
 When source artifacts classify work as AI-first or include delegated operations, agents, policy governance, approvals, exceptions, audit traces, supervision UI, or outcome loops:
-- include `docs/ai-first-saas-application-architecture.md` in required reads unless a more focused AI-first task brief already contains the needed context
+- include `../docs/ai-first-saas-application-architecture.md` in required reads unless a more focused AI-first task brief already contains the needed context
 - include the smallest relevant AI-first companion skill alongside component skills, such as `ai-first-saas-agent-team-design`, `ai-first-saas-policy-governance`, `ai-first-saas-decision-cards`, `ai-first-saas-audit-trace`, `ai-first-saas-ui-surfaces`, or `ai-first-saas-outcomes-metrics`
 - preserve authority, approval, policy, evidence, trace, and outcome constraints in task notes or done criteria when those constraints affect implementation
 - preserve workstream attention, role-specific dashboard, surface graph node/action, governed-tool, internal workstream agent graph delegation/result, AutonomousAgent task lifecycle, notification/projection, and audit/work trace context so the next harness run does not replan component-first
@@ -163,7 +163,7 @@ Each task should list the smallest useful reads, usually:
 - the source backlog file
 - the matching task brief when one exists
 - relevant cross-cutting spec files, including `specs/cross-cutting/00-common-domain-and-conventions.md` for Java base package/package-root conventions and `specs/cross-cutting/01-auth-tenancy-audit.md` for secure foundation, authorization, tenant/customer scope, audit, or tenant-isolation work, and AI-first operating-model, governance, audit, outcome, and UI-surface specs when they constrain the task
-- `docs/ai-first-saas-application-architecture.md` when the task must preserve AI-first semantics and the local specs do not fully capture them
+- `../docs/ai-first-saas-application-architecture.md` when the task must preserve AI-first semantics and the local specs do not fully capture them
 - relevant cross-cutting spec files, including `*ui-style-guide*.md` for browser UI tasks
 - relevant module and sprint specs when module-oriented planning is present
 - relevant slice spec only when needed

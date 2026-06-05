@@ -46,9 +46,9 @@ If the subscriber should trigger side effects or downstream writes instead of ma
 
 ## Repository references
 
-- `docs/service-to-service-views.md`
+- `../docs/service-to-service-views.md`
   - dedicated producer/subscriber view guidance
-- `docs/service-to-service-consumers.md`
+- `../docs/service-to-service-consumers.md`
   - compare against consumer subscribers when deciding between projection and side effects
 - `WorkstreamEventAttentionConsumer`
   - producer-side service-stream example
