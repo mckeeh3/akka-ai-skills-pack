@@ -28,10 +28,6 @@ Keep this example focused on the existing purchase request workflow unless a lat
 
 Do **not** force-fit this example into a full AI-first SaaS operating model. It lacks durable delegated goals, bounded agent/team execution, governed policy learning, decision-card evidence, work traces, and outcome loops by design.
 
-## Removed examples
-
-The former DCA app-description vertical was removed because it no longer provided unique reusable skills-pack value after the starter core app-description, core app baseline, workstream UI reference, and focused Akka implementation examples matured.
-
 ## Remaining gaps
 
 Remaining gaps are executable reference implementation and test gaps, not app-description baseline gaps. The target project `app-description/` tree is the planning/reference description for closing runnable core-app gaps. Track broader executable gaps in `../ai-first-examples-and-tests-gap-list.md`.

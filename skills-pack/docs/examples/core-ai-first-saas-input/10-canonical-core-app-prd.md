@@ -6,7 +6,7 @@ Canonical full-core PRD target within the older module-sequenced secure AI-first
 
 Use this document as the hard PRD input when generating from this older full-core sample. The module PRDs in this directory remain detailed progressive implementation inputs; this PRD defines the full target scope and the allowed narrower first-slice scope.
 
-The five-core starter is intentionally narrower than this full canonical PRD target. Treat the workstream-oriented core-app domain PRDs and five-core starter contracts as the current starter planning path; use this document for full-core/detail provenance unless a task explicitly selects the older module-sequenced rollout.
+The five-core starter is intentionally narrower than this full canonical PRD target. Treat the workstream-oriented core-app domain PRDs and five-core starter contracts as the current starter planning path; use this document as detailed full-core input only when a task explicitly selects the older module-sequenced rollout.
 
 Read first:
 

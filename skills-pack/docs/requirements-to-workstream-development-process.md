@@ -4,7 +4,7 @@
 
 Canonical process doctrine for generated secure AI-first SaaS app intake, PRD processing, app-description maintenance, decomposition, backlog generation, and implementation planning.
 
-Use this doc when broad product input must become a workstream-centered application model before Akka components are selected. It distills earlier exploration captured in `docs/workstream-dashboard-attention-event-backbone-provenance.md`; keep that provenance document as archived idea history, not as an operative rule source.
+Use this doc when broad product input must become a workstream-centered application model before Akka components are selected. It is the operative source for workstream-centered intake, planning, backlog, and implementation guidance.
 
 Related doctrine:
 - `docs/ai-first-saas-application-architecture.md`

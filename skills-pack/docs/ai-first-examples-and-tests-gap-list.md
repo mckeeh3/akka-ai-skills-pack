@@ -17,7 +17,7 @@ The repository already has strong focused examples for individual Akka substrate
 - Event Sourced Entities, Key Value Entities, Views, Consumers, Timed Actions, HTTP/gRPC/MCP endpoints, and Akka-hosted web UI delivery patterns;
 - a low-agentic purchase-request app-description reference under `docs/examples/purchase-request-app-description/` for description/planning mechanics only.
 
-The core app baseline is the canonical end-to-end implementation baseline. Former DCA/supplies domain-specific assets were removed because the core app, root app-description, workstream UI reference, governed-agent examples, and focused Akka substrate examples now cover the reusable skills-pack value without carrying a domain-specific vertical app.
+The core app baseline is the canonical end-to-end implementation baseline. Do not add domain-specific vertical examples unless they provide reusable skills-pack value that the core app, root app-description, workstream UI reference, governed-agent examples, and focused Akka substrate examples do not already cover.
 
 ## Priority key
 
@@ -70,7 +70,7 @@ Covered coverage:
 
 ### P0: first domain-neutral executable AI-first decision/work trace slice
 
-Status: **open after removal of the former domain-specific supplies slice**.
+Status: **open**.
 
 Need: a compact domain-neutral fixture that demonstrates durable evidence-backed decisions, retained human authority, policy gates, trace completeness, idempotency, and outcome linkage without depending on an app-specific vertical such as supplies, finance, procurement, or fleet operations.
 
