@@ -31,9 +31,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/mcp-endpoints.html.md`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartMcpEndpoint.java`
-- `../examples/akka-components/src/main/resources/mcp/checkout-guidelines.md`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartMcpEndpointTest.java`
 
 ## Resource patterns
 
@@ -41,7 +38,7 @@ Read these first if present:
 Use when the resource has a fixed URI and no parameters.
 
 Repository example:
-- `ShoppingCartMcpEndpoint#checkoutGuidelines`
+- `CoreAppMcpEndpoint#attentionGuidelines`
 
 Rules:
 - use `@McpResource(uri = ...)`
@@ -54,7 +51,7 @@ Rules:
 Use when the URI contains placeholders.
 
 Repository example:
-- `ShoppingCartMcpEndpoint#cartSummaryResource`
+- `CoreAppMcpEndpoint#workstream eventSummaryResource`
 
 Rules:
 - use `@McpResource(uriTemplate = ...)`
@@ -65,7 +62,7 @@ Rules:
 ## Prompt patterns
 
 Repository example:
-- `ShoppingCartMcpEndpoint#respondToCartQuestion`
+- `CoreAppMcpEndpoint#respondToCartQuestion`
 
 Rules:
 - use `@McpPrompt(...)`

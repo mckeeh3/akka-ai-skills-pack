@@ -22,9 +22,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ExpiringShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/ExpiringShoppingCart.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ExpiringShoppingCartEntityTest.java`
 
 ## Core pattern
 
@@ -45,7 +42,7 @@ Use TTL only on write commands that actually persist events.
 ## Repository example
 
 See:
-- `ExpiringShoppingCartEntity.addItem(...)`
+- `ExpiringAgentDefinitionEntity.addItem(...)`
 
 This shows:
 - validation error on blank input
@@ -62,7 +59,7 @@ Use `EventSourcedTestKit` and assert:
 - resulting state
 
 Repository example:
-- `ExpiringShoppingCartEntityTest`
+- `ExpiringAgentDefinitionEntityTest`
 
 ## Generated SaaS checks
 

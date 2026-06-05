@@ -80,7 +80,7 @@ For worker-style generated-app tasks, apply `../docs/autonomous-agent-worker-run
 - model policy and provider-secret boundaries;
 - approval gates for external completion/failure, high-risk handoff, or side effects;
 - audit/work traces for task creation, assignment, completion, failure, cancellation, dependency waits, and notification exposure;
-- v3 `worker.task.*` events, attention state, and structured backend-projected surfaces for visible worker progress/results;
+- typed `worker.task.*` workstream events, attention state, and structured backend-projected surfaces for visible worker progress/results;
 - provider/runtime fail-closed states and no fake success or model-less successful findings.
 
 ## Review checklist

@@ -23,9 +23,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ExpiringDraftCartSessionEntityTest.java`
 
 ## Test kit rules
 
@@ -63,21 +60,21 @@ Use these `KeyValueEntityTestKit` capabilities:
 ## Repository examples
 
 ### Standard entity tests
-- `DraftCartEntityTest`
+- `DurableIdentityRepositoryEntityTest`
   - success
   - validation error
   - no-op
   - delete
 
 ### Downstream/internal entity tests
-- `PurchaseOrderEntityTest`
+- `PurchasePromptDocumentEntityTest`
   - create
   - idempotent no-op
   - strongly consistent read pattern
   - replication filter command shape
 
 ### TTL test
-- `ExpiringDraftCartSessionEntityTest`
+- `DurableNotificationRepositoryEntityTest`
   - asserts `Optional.of(Duration.ofDays(30))` from `getExpireAfter()`
 
 ## Generated SaaS test set

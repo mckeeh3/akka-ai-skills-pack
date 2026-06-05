@@ -29,8 +29,8 @@ Do not add core app runtime code under `skills-pack/**`. Do not add skills-pack 
 - `skills-pack/examples/**` — focused reference examples copied/symlinked to `.agents/skills/examples`
 - `skills-pack/templates/**` — pack templates copied/symlinked to `.agents/skills/templates`
 - `skills-pack/tools/**` — pack tools copied/symlinked to `.agents/skills/tools`
-- root `frontend/**` — core app frontend and source-checkout frontend workstream reference; not installed into `.agents`
-- root `akka-context/**` — official Akka reference material for maintainers only; not installed because standard Akka projects keep `akka-context/**` as an independently maintained top-level directory
+- root `frontend/**` — core app frontend and source-attention frontend workstream reference; not installed into `.agents`
+- root `akka-context/**` — official Akka reference material kept as an independently maintained top-level directory; not installed into `.agents/skills`
 
 ## Source layout
 
@@ -84,7 +84,7 @@ When root app runtime or frontend files are touched, also run the relevant root 
 
 ## Installation model
 
-The installable resource pack is named `akka-ai-skills-pack`, but the repository checkout/tag is now the unit of installation. Normal use does not require a generated distribution archive.
+The installable resource pack is named `akka-ai-skills-pack`, but the repository attention/tag is now the unit of installation. Normal use does not require a generated distribution archive.
 
 The current installer copies or symlinks:
 

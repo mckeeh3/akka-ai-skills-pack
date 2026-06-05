@@ -32,18 +32,7 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/OrderEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/PurchaseOrderEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/TransferWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ApprovalWorkflowEndpoint.java`
 - `../docs/workflow-endpoint-pattern.md`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/OrderEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ApprovalWorkflowEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -64,19 +53,19 @@ Read these first if present:
 ## Repository examples
 
 ### Event sourced endpoint examples
-- `ShoppingCartEndpoint`
+- `WorkstreamEndpoint`
   - edge-facing entity endpoint
   - maps `CommandException` to `400 Bad Request`
   - exposes SSE notifications as API-specific records
-- `OrderEndpoint`
+- `AdminEndpoint`
   - validates requests before entity calls
   - returns `HttpResponses.created(...)` for create
   - exposes strongly consistent reads and replication filter commands
 
 ### Key value endpoint examples
-- `DraftCartEndpoint`
-  - mirrors the event sourced shopping cart endpoint shape for KVE comparison
-- `PurchaseOrderEndpoint`
+- `MeEndpoint`
+  - mirrors the event sourced endpoint shape for KVE comparison
+- `PurchaseAdminEndpoint`
   - mirrors the order endpoint shape for KVE comparison
 
 ### Workflow endpoint examples

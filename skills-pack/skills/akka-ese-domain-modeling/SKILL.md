@@ -12,16 +12,6 @@ Use this skill for the `domain` package of an Akka Java SDK event sourced entity
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/java/ai/first/domain/ShoppingCart.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/ShoppingCartValidator.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/ShoppingCartCommandHandler.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/ShoppingCartEventHandler.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/Order.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/OrderValidator.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/OrderCommandHandler.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/OrderReadyToShipBusinessLogic.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/OrderEventHandler.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/ExpiringShoppingCart.java`
 
 ## Mission
 
@@ -56,7 +46,7 @@ State should:
 - never know about Akka effects or entity APIs
 
 Good examples:
-- `ShoppingCart.State`
+- `WorkstreamEvent.State`
 - `Order.State`
 
 ## Command rules
@@ -71,7 +61,7 @@ Commands should:
 
 Examples:
 - `AddItem`
-- `Checkout`
+- `Attention`
 - `CreateOrder`
 - `LineItemReadyToShip`
 
@@ -84,7 +74,7 @@ Events should:
 - be stable, private service data rather than public API types
 
 Examples:
-- `ShoppingCart.Event.ItemAdded`
+- `WorkstreamEvent.Event.ItemAdded`
 - `Order.Event.OrderCreated`
 
 ## Validation pattern
@@ -98,7 +88,7 @@ Preferred style:
 - do not throw for normal business validation
 
 Examples:
-- `ShoppingCartValidator`
+- `WorkstreamEventValidator`
 - `OrderValidator`
 
 ## Command-to-event pattern
@@ -114,7 +104,7 @@ Rules:
 - no-op is represented by `Optional.empty()` or `List.of()`
 
 Examples:
-- `ShoppingCartCommandHandler`
+- `WorkstreamEventCommandHandler`
 - `OrderCommandHandler`
 
 ## Event application pattern
@@ -129,7 +119,7 @@ Rules:
 - always return the next state
 
 Examples:
-- `ShoppingCartEventHandler`
+- `WorkstreamEventEventHandler`
 - `OrderEventHandler`
 
 ## Multi-event decision pattern

@@ -24,8 +24,6 @@ Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/DraftCartCheckoutConsumer.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartCheckoutConsumerIntegrationTest.java`
 
 ## Source-specific semantics
 
@@ -47,9 +45,9 @@ Therefore:
 
 ## Repository example
 
-- `DraftCartCheckoutConsumer`
-  - reacts only when the cart is checked out
-  - uses the cart id from metadata or state
+- `WorkstreamEventAttentionConsumer`
+  - reacts only when the workstream event is checked out
+  - uses the workstream id from metadata or state
   - calls a downstream key value entity with an idempotent create command
   - includes `@DeleteHandler`
 

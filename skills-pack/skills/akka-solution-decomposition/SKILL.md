@@ -71,25 +71,13 @@ When requirements already suggest a likely component, also read the official Akk
 - `akka-context/sdk/agents.html.md`
 
 In this repository, prefer these cross-component examples:
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/DraftCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/TransferWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReviewRequestsByStatusView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/TransferWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartMcpEndpoint.java`
 
 ## What this skill must produce
 
 Before any coding, produce a component plan with these sections:
 1. Inputs
 2. Java base package for generated code
-3. Scope label (`minimum starter`, `full core`, `Module 1-only / not full core`, or another explicit narrower scope)
+3. Scope label (`core app baseline`, `full core`, `Module 1-only / not full core`, or another explicit narrower scope)
 4. AI-first interpretation
 5. Core secure SaaS foundation
 6. Workstream decomposition decision (one-workstream vs multi-workstream, affected workstreams, split/merge rationale)
@@ -111,7 +99,7 @@ Before any coding, produce a component plan with these sections:
 
 For section 2, use the fixed Java base package `ai.first`. Package selection is out of scope. Apply `ai.first` consistently to group id, package declarations, imports, tests, and source paths.
 
-For section 3, label scope before choosing components. `minimum starter` is allowed for minimum/starter/basic/chatbot-like generated SaaS requests and must be the five core workstream starter from `docs/minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; bootstrap authorization; selected AuthContext; durable workstream log; `markdown_response` system-message surfaces; backend capability boundary; audit/work trace substrate; markdown sanitization; starter tests; and explicit follow-up for full-core work. `full core` requires those five functional agents plus complete Invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, reference documents, skill/reference manifests, tool boundaries, prompt/skill/reference/work traces, authorized `readSkill`, and authorized `readReferenceDoc`); workstream UI; and acceptance/security/agent-governance/frontend tests. `Module 1-only / not full core` is allowed only when the plan explicitly defers User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/references/manifests/tool boundaries, unified audit/work trace UI, and governance loops. Any other narrower scope must be named and must list deferred full-core areas.
+For section 3, label scope before choosing components. `core app baseline` is allowed for minimum/core app/basic/chatbot-like generated SaaS requests and must be the five core workstream core app domain from `docs/minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; bootstrap authorization; selected AuthContext; durable workstream log; `markdown_response` system-message surfaces; backend capability boundary; audit/work trace substrate; markdown sanitization; core app tests; and explicit follow-up for full-core work. `full core` requires those five functional agents plus complete Invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, reference documents, skill/reference manifests, tool boundaries, prompt/skill/reference/work traces, authorized `readSkill`, and authorized `readReferenceDoc`); workstream UI; and acceptance/security/agent-governance/frontend tests. `Module 1-only / not full core` is allowed only when the plan explicitly defers User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/references/manifests/tool boundaries, unified audit/work trace UI, and governance loops. Any other narrower scope must be named and must list deferred full-core areas.
 
 Treat sections 7, 9, 10, 12, 14, 16, and 17 as the implementation handoff.
 The plan is not complete if it only names components.
@@ -135,7 +123,7 @@ Before planning work that will generate Java source files, record `ai.first` as 
 
 For every new app/PRD/spec handled by this skill, load `core-saas-foundation` and include a `Core secure SaaS foundation` section before app-specific capability decomposition unless the user explicitly asks for non-SaaS reference material.
 
-Do not silently narrow a full-core request to a minimum starter or Module 1-only foundation. If the user asks for full-core generated app readiness, the plan must carry My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, complete Invitation onboarding, governed runtime agents, workstream UI, and required tests through the capability summary, component mapping, implementation order, and required tests. If the plan intentionally covers only the minimum starter, label it `minimum starter`, include all five core workstream starter agents and their `markdown_response` surfaces, and list follow-up work for full User Admin, Agent Admin, Audit/Trace UI/search, invitation/onboarding, governed prompts/skills/references/manifests/tool boundaries, support access, billing boundary, full security coverage, and app-specific workstreams. If the plan claims app-specific readiness, it must include full-core readiness plus product/domain functional agents, capabilities, structured surfaces, tests, and operational reviews. If the plan intentionally covers only Module 1, label it `Module 1-only / not full core` and list the full-core areas deferred.
+Do not silently narrow a full-core request to a core app baseline or Module 1-only foundation. If the user asks for full-core generated app readiness, the plan must carry My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, complete Invitation onboarding, governed runtime agents, workstream UI, and required tests through the capability summary, component mapping, implementation order, and required tests. If the plan intentionally covers only the core app baseline, label it `core app baseline`, include all five core workstream core app domain agents and their `markdown_response` surfaces, and list follow-up work for full User Admin, Agent Admin, Audit/Trace UI/search, invitation/onboarding, governed prompts/skills/references/manifests/tool boundaries, support access, billing boundary, full security coverage, and app-specific workstreams. If the plan claims app-specific readiness, it must include full-core readiness plus product/domain functional agents, capabilities, structured surfaces, tests, and operational reviews. If the plan intentionally covers only Module 1, label it `Module 1-only / not full core` and list the full-core areas deferred.
 
 That section must cover SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, complete email-invite onboarding, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, governed runtime agent foundation objects (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`), and tenant-isolation tests. WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the supported production email service; missing WorkOS/Resend runtime setting values may become questions, but they must not erase local authorization, tenancy, managed-agent behavior, prompt/skill/reference governance, trace, or tool-boundary contracts. Route complete invitation onboarding work to `akka-saas-invitation-onboarding` for InvitationWorkflow, Resend email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, and lifecycle tests. Route reusable email service, future feature emails, and agent `@FunctionTool` email surfaces to `akka-resend-email-service`.
 
@@ -607,8 +595,8 @@ Use this exact response shape whenever the task starts from requirements:
 - package:
 
 ## Scope label
-- minimum starter | full core | Module 1-only / not full core | other narrower scope:
-- deferred full-core areas / minimum-starter follow-up, if not full core:
+- core app baseline | full core | Module 1-only / not full core | other narrower scope:
+- deferred full-core areas / core-baseline follow-up, if not full core:
 
 ## AI-first interpretation
 - operating model:
@@ -724,8 +712,8 @@ Avoid:
 
 Before moving from planning to coding, verify:
 - high-level input was explicitly classified as AI-first-applicable or clearly non-agentic
-- scope label is explicit, and any minimum starter, Module 1-only, or narrower plan lists deferred full-core areas rather than presenting itself as full core
-- minimum-starter plans include the five core workstream starter: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with `markdown_response` surfaces, backend capability boundaries, audit/work trace substrate, starter tests, and follow-up work for full User Admin, Agent Admin, Audit/Trace UI/search, invitations/onboarding, governed agent documents, and full security coverage
+- scope label is explicit, and any core app baseline, Module 1-only, or narrower plan lists deferred full-core areas rather than presenting itself as full core
+- core-baseline plans include the five core workstream core app domain: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with `markdown_response` surfaces, backend capability boundaries, audit/work trace substrate, core app tests, and follow-up work for full User Admin, Agent Admin, Audit/Trace UI/search, invitations/onboarding, governed agent documents, and full security coverage
 - full-core plans include My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, complete Invitation onboarding, governed runtime agents, workstream UI, and required tests in capability summary, component mapping, implementation order, and test plan
 - delegated work, retained human authority, policy, approval, audit, trace, mandatory UI surfaces, and outcome needs are reflected before CRUD/component decomposition for generated AI-first SaaS
 - generated SaaS plans include the one-workstream vs multi-workstream decision, functional agents, internal agents where needed, durable workstreams, attention categories, role-specific dashboard contracts, human surface graph nodes/edges, surface actions/events, and retained human authority before capability mapping

@@ -23,12 +23,6 @@ Read these first if present:
 - `akka-context/sdk/auth-with-jwts.html.md`
 - `akka-context/reference/jwts.html.md`
 - `../references/akka-grpc-jwt-patterns.md`
-- `../examples/akka-components/src/main/proto/ai/first/api/grpc/secure_greeting_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/proto/ai/first/api/grpc/pattern_secure_greeting_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/java/ai/first/api/SecureGreetingGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/ai/first/api/PatternSecureGreetingGrpcEndpointImpl.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SecureGreetingGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

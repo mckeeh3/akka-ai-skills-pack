@@ -50,57 +50,6 @@ Read these first if present:
 - `../docs/agent-runtime-invocation-pattern.md`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/ai/first/application/ActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ConfiguredModelActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/TemplateBackedActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/WeatherAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/WeatherForecastTools.java`
-- `../examples/akka-components/src/main/java/ai/first/application/CartInspectorAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/RemoteShoppingCartAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/DocumentAnalysisAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/WorkerMemorySummaryAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/StreamingActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/AgentTeamWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/DynamicAgentTeamWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SelectorAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/PlannerAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SummarizerAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertsConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryByComponentView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAuditConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/PromptTemplateHistoryView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ActivityAnswerEvaluatorAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/CompetitorMentionGuard.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ActivityAgentEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartToolsMcpEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ActivityPromptEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/PromptTemplateHistoryEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryViewEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryAlertStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/DynamicAgentTeamWorkflowEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ActivityAgentTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ActivityAgentGuardrailIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ConfiguredModelActivityAgentTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/CartInspectorAgentTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/RemoteShoppingCartAgentTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DocumentAnalysisAgentTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/WorkerMemorySummaryAgentTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/AgentTeamWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DynamicAgentTeamWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ActivityAgentEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ActivityPromptEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DynamicAgentTeamWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PromptTemplateHistoryViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PromptTemplateHistoryEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryViewEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryAlertStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryAlertsConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryByComponentViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryCompactionConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
 
 ## Agent governance routing matrix
 
@@ -292,14 +241,14 @@ Use `akka-autonomous-agents` instead of this request-based component path when t
 Use when one model interaction produces one reply.
 
 Repository example:
-- `ActivityAgent`
+- `WorkstreamRuntimeAgent`
 
 ### 11. Tool-using request-based agent
 Use when the model must call functions to fetch data, trigger actions, or load approved internal guidance for named capabilities. Agent tools are capability exposure surfaces, not the root design objects.
 
 Repository examples:
-- `WeatherAgent`
-- `WeatherForecastTools`
+- `UserAdminAccessReviewAutonomousAgent`
+- `UserAdminEvidenceTools`
 
 For protected or managed-agent tools, load `akka-agent-tool-boundaries` before exposing local, component, MCP, or `readSkill` tools so the implementation resolves `ToolPermissionBoundary`, denies ungranted tools, distinguishes read-only from side-effecting authority, requires approval for expansion, and emits tool invocation traces.
 
@@ -311,8 +260,8 @@ For model-loadable guidance that approximates harness skills inside an Akka serv
 Use when tokens should be returned incrementally to an endpoint or notification flow.
 
 Repository examples:
-- `StreamingActivityAgent`
-- `ActivityAgentEndpoint#stream`
+- `StreamingWorkstreamRuntimeAgent`
+- `WorkstreamRuntimeAgentEndpoint#stream`
 
 ### 13. Agent responsibility shape
 Use `ai-first-saas-agent-team-design` before creating multiple agent classes. Prefer a single governed skilled agent when responsibilities share authority, tool boundary, model config, lifecycle, steward, memory, risk, audit, and approval needs and differ only by governed skills in an `AgentSkillManifest`. Prefer specialized agents when those boundaries differ. Add an evaluator agent for independent quality, policy, completeness, or risk judgment. Use a workflow-supervised agent team when durable retries, handoffs, approvals, pauses, or progress visibility are required.
@@ -329,7 +278,6 @@ Use when output quality or runtime safety checks are a first-class concern.
 Repository examples:
 - `ActivityAnswerEvaluatorAgent`
 - `CompetitorMentionGuard`
-- `../examples/akka-components/src/main/resources/application.conf`
 
 ## Final review checklist
 

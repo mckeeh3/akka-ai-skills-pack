@@ -15,7 +15,7 @@ Canonical doctrine:
 
 Current implementation references:
 - full-core core app baseline source: this repository's runnable core app root
-- source-controlled app-description starter surface contracts: `templates/ai-first-saas-starter/app-description/**`
+- source-controlled app-description core app surface contracts: `templates/ai-first-saas-core-app/app-description/**`
 - reusable React/Vite/TypeScript modules: `frontend/src/workstream/**`
 - fixture API and realtime seams: `frontend/src/api/WorkstreamApiClient.ts`, `frontend/src/api/WorkstreamRealtimeClient.ts`
 - integrated shell example: `frontend/src/main.tsx`
@@ -393,7 +393,7 @@ The first implementation slice must include fixtures for:
 - selected `AuthContext` with tenant and optional customer scope
 - visible, denied, hidden, disabled, and attention-bearing functional agents
 - initial workstream items for user request, agent response, surface, capability result, workflow progress, decision, audit trace, action feedback, system-message surface, and system status
-- surface envelopes for every canonical surface type listed above, aligned to `templates/ai-first-saas-starter/app-description/12-workstreams/**` when implementing the starter core surfaces
+- surface envelopes for every canonical surface type listed above, aligned to `templates/ai-first-saas-core-app/app-description/12-workstreams/**` when implementing the core app core surfaces
 - surface actions covering read, command, proposal, approval, workflow, governance, and trace intents, each with browser-tool/governed-tool/capability ids and source/result surface graph behavior
 - action results for accepted, denied, validation error, approval required, conflict, no-op, and failed outcomes
 - realtime events for created, updated, accepted, denied, workflow progressed, stale, reconnected, duplicate/replay, out-of-order, malformed-safe, and cross-context-denied cases

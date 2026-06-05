@@ -21,8 +21,6 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../examples/akka-components/src/main/java/ai/first/api/ProxyGreetingEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ProxyGreetingEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

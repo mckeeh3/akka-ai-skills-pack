@@ -19,9 +19,6 @@ Prefer read-only evidence capabilities for remote MCP tool use. Side-effecting r
 
 Read these first if present:
 - `akka-context/sdk/agents/extending.html.md`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartToolsMcpEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/application/RemoteShoppingCartAgent.java`
-- `../examples/akka-components/src/test/java/ai/first/application/RemoteShoppingCartAgentTest.java`
 
 ## Use this pattern when
 
@@ -43,13 +40,13 @@ Read these first if present:
 
 ## Repository example
 
-- `ShoppingCartToolsMcpEndpoint`
-  - default-path MCP server exposing the read-only `cart.summary.inspect` capability through `getCartSummary`
+- `CoreAppToolsMcpEndpoint`
+  - default-path MCP server exposing the read-only `workstream event.summary.inspect` capability through `getCartSummary`
   - uses a service ACL to show the remote MCP boundary is selective rather than open by default
-  - returns a compact cart summary, not raw entity state
-- `RemoteShoppingCartAgent`
+  - returns a compact workstream event summary, not raw entity state
+- `RemoteCoreAppAgent`
   - connects to an explicit remote MCP server URL
-  - allows only `getCartSummary` for the `cart.summary.inspect` capability
+  - allows only `getCartSummary` for the `workstream event.summary.inspect` capability
 - `GovernedRefundMcpEndpoint`
   - exposes side-effecting `refund.request_consequential` through `request-governed-refund`
   - preserves service ACL, stable MCP tool id, `ToolPermissionBoundary`, tenant/customer scope, idempotency, approval-required behavior, and trace emission

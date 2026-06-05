@@ -23,12 +23,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/TransferWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/api/TransferWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ApprovalWorkflowEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ApprovalWorkflowEndpointIntegrationTest.java`
 
 ## Capability-first notification role
 

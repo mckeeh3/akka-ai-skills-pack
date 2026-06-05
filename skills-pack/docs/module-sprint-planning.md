@@ -210,7 +210,6 @@ Avoid:
 
 ## Related skills and examples
 
-- `examples/requirements-to-workstream-mini-example.md` — preferred generated-SaaS planning shape
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-slice-spec-to-backlog/SKILL.md`
 - `../akka-backlog-to-pending-tasks/SKILL.md`

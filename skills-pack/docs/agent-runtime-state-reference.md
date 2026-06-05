@@ -10,21 +10,7 @@ Primary official semantics:
 - `akka-context/sdk/consuming-producing.html.md`
 
 Local executable examples:
-- `../examples/akka-components/src/main/java/ai/first/application/TemplateBackedActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ActivityPromptEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/application/PromptTemplateHistoryView.java`
-- `../examples/akka-components/src/main/java/ai/first/api/PromptTemplateHistoryEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryByComponentView.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryViewEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertView.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryAlertStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertsConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAudit.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAuditConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAuditView.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryCompactionStreamEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/WorkstreamRuntimeAgent.java`
 
 ## Quick selection
 
@@ -42,7 +28,7 @@ Use these patterns when:
 
 ```java
 @Component(id = "template-backed-activity-agent")
-public class TemplateBackedActivityAgent extends Agent {
+public class TemplateBackedWorkstreamRuntimeAgent extends Agent {
   public static final String PROMPT_TEMPLATE_ID = "activity-agent-prompt";
 
   public Effect<String> suggest(String message) {
@@ -55,19 +41,18 @@ public class TemplateBackedActivityAgent extends Agent {
 ```
 
 Reference:
-- `../examples/akka-components/src/main/java/ai/first/application/TemplateBackedActivityAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/WorkstreamRuntimeAgent.java`
 
 ### 2. HTTP management of prompt templates
 
 ```java
 componentClient
-    .forEventSourcedEntity(TemplateBackedActivityAgent.PROMPT_TEMPLATE_ID)
+    .forEventSourcedEntity(TemplateBackedWorkstreamRuntimeAgent.PROMPT_TEMPLATE_ID)
     .method(PromptTemplate::update)
     .invoke(request.prompt());
 ```
 
 Reference:
-- `../examples/akka-components/src/main/java/ai/first/api/ActivityPromptEndpoint.java`
 
 ### 3. View over current prompt-template state
 
@@ -85,8 +70,6 @@ public class PromptTemplateHistoryView extends View {
 ```
 
 References:
-- `../examples/akka-components/src/main/java/ai/first/application/PromptTemplateHistoryView.java`
-- `../examples/akka-components/src/main/java/ai/first/api/PromptTemplateHistoryEndpoint.java`
 
 ### 4. View over `SessionMemoryEntity`
 
@@ -104,8 +87,6 @@ public class SessionMemoryByComponentView extends View {
 ```
 
 References:
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryByComponentView.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryViewEndpoint.java`
 
 ### 5. Threshold alert view + SSE endpoint
 
@@ -130,8 +111,6 @@ public HttpResponse alerts(String componentId) {
 ```
 
 References:
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertView.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryAlertStreamEndpoint.java`
 
 ### 6. Threshold alert consumer over session memory
 
@@ -143,7 +122,6 @@ public class SessionMemoryAlertsConsumer extends Consumer {}
 ```
 
 Reference:
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertsConsumer.java`
 
 ### 7. Compaction flow
 
@@ -166,8 +144,6 @@ componentClient
 ```
 
 References:
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionConsumer.java`
 
 ### 8. Topic audit after compaction
 
@@ -179,10 +155,6 @@ public class SessionMemoryCompactionAuditConsumer extends Consumer {}
 ```
 
 References:
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAudit.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAuditConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAuditView.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryCompactionStreamEndpoint.java`
 
 ## Testing reminders
 
@@ -193,10 +165,3 @@ Prefer:
 - `withTopicIncomingMessages("session-memory-compactions")` only when you intentionally test topic-backed runtime-state views
 
 Reference tests:
-- `../examples/akka-components/src/test/java/ai/first/application/ActivityPromptEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PromptTemplateHistoryViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PromptTemplateHistoryEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryViewEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryAlertStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryCompactionConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`

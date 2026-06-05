@@ -27,8 +27,6 @@ Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `../docs/service-to-service-views.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartPublicEventsConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReviewRequestsByStatusView.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Use this pattern when
@@ -59,7 +57,7 @@ If the subscriber should trigger side effects or downstream writes instead of ma
   - dedicated producer/subscriber view guidance
 - `docs/service-to-service-consumers.md`
   - compare against consumer subscribers when deciding between projection and side effects
-- `ShoppingCartPublicEventsConsumer`
+- `WorkstreamEventAttentionConsumer`
   - producer-side service-stream example
 - `ReviewRequestsByStatusView`
   - local reference for query wrappers and updater/query layout

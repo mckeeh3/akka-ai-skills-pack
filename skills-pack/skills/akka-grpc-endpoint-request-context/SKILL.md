@@ -22,9 +22,6 @@ Read these first if present:
 - `akka-context/sdk/grpc-endpoints.html.md`
 - `akka-context/sdk/access-control.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/proto/ai/first/api/grpc/internal_status_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/java/ai/first/api/InternalStatusGrpcEndpointImpl.java`
-- `../examples/akka-components/src/test/java/ai/first/application/InternalStatusGrpcEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

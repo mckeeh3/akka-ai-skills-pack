@@ -19,8 +19,8 @@ When a skill lists required reads such as `../../../AGENTS.md`, `../../../specs/
 Core-app-first routing:
 - the harness install remains a skills-library install model: `.agents/skills` is a guidance/reference library and application artifacts live in the cloned/forked repository workspace
 - for new secure AI-first SaaS apps where the user wants an implementation baseline, prefer fork-and-extend from this runnable core app repository root; do not expect the skills install to contain or render a duplicate full-app core app baseline
-- natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS must route to `docs/minimum-ai-first-saas-app.md`: a bootstrap-authorized five core workstream starter readiness target with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, not a generic public chatbot or page-first CRUD shell
-- the runnable core app repository root is the canonical generated-app implementation baseline; the minimum starter is a narrower readiness state than full-core SaaS and must record follow-up work to reach full-core readiness; focused Akka component examples are supporting references only when they directly match the selected skill/substrate pattern
+- natural-language requests for a “minimum AI-first app,” “core app,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS must route to `docs/minimum-ai-first-saas-app.md`: a bootstrap-authorized five core workstream core app domain readiness target with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, not a generic public chatbot or page-first CRUD shell
+- the runnable core app repository root is the canonical generated-app implementation baseline; the core app baseline is a narrower readiness state than full-core SaaS and must record follow-up work to reach full-core readiness; focused Akka component examples are supporting references only when they directly match the selected skill/substrate pattern
 - when extending the core app or generated-app foundation with durable internal/background agent work such as access-review investigations, admin-risk batches, audit summaries, evaluation/replay loops, monitoring/remediation, specialist follow-up, task dependencies, notifications, handoff, or team coordination, route to Akka `AutonomousAgent` and apply `docs/autonomous-agent-worker-runtime-pattern.md` for worker-style generated-app tasks; keep request-based Akka `Agent` as the default for the five core user-facing workstream request/response turns and other bounded `markdown_response` workstream interactions
 - when the user asks what comes next after the app runs, recommend the next milestone from actual readiness gaps, app-description state, or pending tasks; say `domain-specific` or use the user's actual domain name for later product features, and never say `DCA-specific` unless DCA is explicitly the user's domain
 - if a project has existing implementation artifacts, preserve the fixed `ai.first` Java base package, foundation, workstream UI, and queue history; update app-description/specs before adding implementation tasks
@@ -46,7 +46,7 @@ Mandatory secure SaaS, agent workstream, AI-first managed agents, and web UI fou
 
 Canonical doctrine:
 - `docs/ai-first-saas-application-architecture.md`
-- `docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS requests
+- `docs/minimum-ai-first-saas-app.md` for minimum/core app/basic/chatbot-like generated SaaS requests
 - `docs/requirements-to-workstream-development-process.md` for broad input/PRD/incremental change → affected workstreams → attention → role-specific dashboards → human surface graph → internal workstream agent graph → governed-tools in capability files/surface maps → governed capabilities/APIs → Akka substrate/exposure channels → Agents/AutonomousAgents/events/traces
 - `docs/agent-workstream-application-architecture.md`
 - `docs/domain-workstream-prd-structure.md`
@@ -80,7 +80,7 @@ AI-first companion skills:
 - `ai-first-saas-ui-surfaces` — select supervision, decision, governance, digest, goal-to-execution, and audit UI surfaces and route to web UI/API skills
 - `ai-first-saas-outcomes-metrics` — define outcome loops, metrics, decision/outcome links, feedback, replay, and validation surfaces
 
-Canonical generated-app handoff order: secure AI-first SaaS interpretation → agent workstream model → mandatory core SaaS foundation verticals within that workstream model → affected workstreams → role-specific dashboard attention model → human surface graph → internal workstream agent graph → governed-tools in capability files and surface/action maps → capability-first backend substrate → description/decomposition/planning path → focused implementation. Load `core-saas-foundation` early whenever foundation rules are needed, but do not let foundation object lists replace functional agents, workstreams, dashboards, surface graph nodes/actions, governed-tool mappings, or action-to-capability semantics. For minimum/starter/basic/chatbot-like generated SaaS prompts, the first runnable target is the five core workstream starter set with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy; still model backend behavior as governed capabilities and qualified governed-tools before choosing components or exposing browser-tools/agent-tools:
+Canonical generated-app handoff order: secure AI-first SaaS interpretation → agent workstream model → mandatory core SaaS foundation verticals within that workstream model → affected workstreams → role-specific dashboard attention model → human surface graph → internal workstream agent graph → governed-tools in capability files and surface/action maps → capability-first backend substrate → description/decomposition/planning path → focused implementation. Load `core-saas-foundation` early whenever foundation rules are needed, but do not let foundation object lists replace functional agents, workstreams, dashboards, surface graph nodes/actions, governed-tool mappings, or action-to-capability semantics. For minimum/core app/basic/chatbot-like generated SaaS prompts, the first runnable target is the five core workstream core app domain with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy; still model backend behavior as governed capabilities and qualified governed-tools before choosing components or exposing browser-tools/agent-tools:
 1. use `app-descriptions` when the user is maintaining or reviewing the authoritative app description before realization; functional agents, role-specific dashboards, surface graph, internal workstream agent graph, governed-tools, capability inventory, behavior, auth/security, UI, observability, readiness, and tests belong in the description layer
 2. use `akka-solution-decomposition` when the user wants direct Akka solution shaping and the component set is not yet known; derive governed capabilities and governed-tools from workstream attention, dashboard states, surface graph actions, request-based agents, internal worker agents, workflows, APIs, timers, and consumers before selecting Akka components
 3. use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlog, and pending-task artifacts; preserve functional-agent/dashboard/surface-graph context plus capability ids, governed-tool ids, auth/scope, side effects, approval, audit, exposure channels, and tests in generated tasks
@@ -97,7 +97,7 @@ Use companion skills only for the AI-first concerns that are actually in scope, 
 
 For generated Akka apps, a named feature is implemented only when it works at the stated scope through the intended local runtime surface. Akka local execution is production-like validation for these apps and should be used aggressively to prove feature readiness rather than avoided or replaced by paper checks. If a sprint or task says `user auth`, `sign-in`, `invitation onboarding`, `User Admin`, `Agent Admin`, a workstream agent, or an app-specific workstream is done, the required backend components, provider/configuration checks, endpoints, frontend/workstream UI, authorization, audit/trace behavior, tests, and local smoke/manual validation for that named feature must be present. Model-backed workstream agents are done only when normal message submission invokes a concrete Akka `Agent` component through the configuration-driven governed runtime path, including active managed configuration resolution, governed `readSkill`/`readReferenceDoc` loader tools, `ToolPermissionBoundary` enforcement, and `effects().tools(runtimeTools)` registration; direct service/provider calls that bypass the Agent component are incomplete even if they return plausible markdown.
 
-Normal runtime behavior must not be satisfied by deterministic/demo/mock/simulated/model-less substitutes. Workstream agents must use the real governed runtime path and configured provider boundary for model-backed behavior; auth, durability, protected capabilities, provider calls, authorization denials, and audit/work traces must execute through the same local Akka paths the app will use in production-like operation. Claimed workstream/foundation state must be backed by Akka components in normal runtime; fail-closed behavior is appropriate for missing external provider/security configuration or unbound pre-runtime setup, not as a replacement for internal Akka persistence. Missing provider or security configuration should fail closed with actionable errors, not silently fall back to canned responses. Generated-app AutonomousAgent workers must also follow `docs/autonomous-agent-worker-runtime-pattern.md`: task contract and governed capabilities first, v3 `worker.task.*` events, attention, structured surfaces, provider fail-closed behavior, and no fake success.
+Normal runtime behavior must not be satisfied by deterministic/demo/mock/simulated/model-less substitutes. Workstream agents must use the real governed runtime path and configured provider boundary for model-backed behavior; auth, durability, protected capabilities, provider calls, authorization denials, and audit/work traces must execute through the same local Akka paths the app will use in production-like operation. Claimed workstream/foundation state must be backed by Akka components in normal runtime; fail-closed behavior is appropriate for missing external provider/security configuration or unbound pre-runtime setup, not as a replacement for internal Akka persistence. Missing provider or security configuration should fail closed with actionable errors, not silently fall back to canned responses. Generated-app AutonomousAgent workers must also follow `docs/autonomous-agent-worker-runtime-pattern.md`: task contract and governed capabilities first, typed `worker.task.*` workstream events, attention, structured surfaces, provider fail-closed behavior, and no fake success.
 
 Fixtures, mocks, deterministic fakes, and test doubles are allowed only inside tests, local-only harness checks, or explicitly named test adapters. They must not be wired as the default user-facing runtime path, and passing fixture-only tests is not enough to mark a runtime feature implemented. Deferrals are allowed only when they explicitly narrow or rename the goal, mark affected work blocked/deferred, or are outside the selected scope. Do not use `explicitly deferred` to count missing required behavior as implemented.
 
@@ -438,7 +438,7 @@ If the substrate is not clear, read `docs/agent-component-selection-guide.md` be
 Then load the focused skill that matches the current task:
 
 ### Autonomous Agents
-Use when implementing durable task-oriented internal/background model-driven work with typed task lifecycle, dependencies, snapshots, cancellation/failure, notification streams, or coordination. Do not use as the default for user-facing request/response workstream turns. For generated-app worker tasks, apply `docs/autonomous-agent-worker-runtime-pattern.md` so the task contract, governed capabilities, v3 events, attention, surfaces, provider fail-closed behavior, and no fake success guardrails are preserved.
+Use when implementing durable task-oriented internal/background model-driven work with typed task lifecycle, dependencies, snapshots, cancellation/failure, notification streams, or coordination. Do not use as the default for user-facing request/response workstream turns. For generated-app worker tasks, apply `docs/autonomous-agent-worker-runtime-pattern.md` so the task contract, governed capabilities, typed workstream events, attention, surfaces, provider fail-closed behavior, and no fake success guardrails are preserved.
 - `akka-autonomous-agents`
 
 ### Autonomous Agent tasks
@@ -1352,237 +1352,71 @@ Load:
 
 ## Repository reference examples
 
-These Java examples are **Akka substrate references**, not generated-product architecture templates. Use them to copy component structure, APIs, tests, and edge patterns after secure AI-first SaaS foundation and operating-model decisions are already made. Do not use shopping-cart or other low-level examples to choose the product architecture. Paths under `ai.first` are bundled reference examples; use their component patterns and keep generated code in the fixed `ai.first` base package.
+These Java examples are copied from the current runnable core app implementation. They are **real core app examples**, not retired domain fixtures and not a second application baseline. Use them to inspect concrete Akka Java SDK structure, endpoint mappings, entity/view/repository patterns, governed agent runtime wiring, authorization, audit/work traces, and tests. Keep generated code in the fixed `ai.first` base package and adapt behavior through the target app's domain-specific extension zones.
 
-### Event sourced entities
-Core entities:
-- `examples/akka-components/src/main/java/ai/first/application/ShoppingCartEntity.java`
-- `examples/akka-components/src/main/java/ai/first/application/OrderEntity.java`
-- `examples/akka-components/src/main/java/ai/first/application/ExpiringShoppingCartEntity.java`
+### Foundation entities, views, repositories, and services
 
-Domain examples:
-- `examples/akka-components/src/main/java/ai/first/domain/ShoppingCart.java`
-- `examples/akka-components/src/main/java/ai/first/domain/Order.java`
-- `examples/akka-components/src/main/java/ai/first/domain/ExpiringShoppingCart.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/identity/DurableIdentityRepositoryEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/identity/AkkaIdentityRepository.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/identity/AuthContextResolver.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/identity/MeService.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/invitation/DurableInvitationRepositoryEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/invitation/InvitationView.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/attention/DurableAttentionRepositoryEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/audit/AdminAuditView.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/workstream/DurableWorkstreamLogEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/workstream/DurableWorkstreamEventRepositoryEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
 
-Testing examples:
-- `examples/akka-components/src/test/java/ai/first/application/ShoppingCartEntityTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/OrderEntityTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ExpiringShoppingCartEntityTest.java`
+### Governed managed-agent runtime
 
-### Key value entities
-Core entities:
-- `examples/akka-components/src/main/java/ai/first/application/DraftCartEntity.java`
-- `examples/akka-components/src/main/java/ai/first/application/PurchaseOrderEntity.java`
-- `examples/akka-components/src/main/java/ai/first/application/ExpiringDraftCartSessionEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/AgentDefinitionEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/PromptDocumentEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/SkillDocumentEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/ReferenceDocumentEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/AgentSkillManifestEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/AgentReferenceManifestEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/ToolPermissionBoundaryEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/AgentRuntimeService.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/AgentRuntimeLoaderTools.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/WorkstreamRuntimeAgent.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/DefaultWorkstreamAgentRuntimeInvoker.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/FailClosedWorkstreamAgentRuntimeInvoker.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/AgentRuntimeTraceEntity.java`
+- `examples/akka-components/src/main/java/ai/first/application/foundation/agent/AgentBehaviorSeedLoader.java`
 
-Domain examples:
-- `examples/akka-components/src/main/java/ai/first/domain/DraftCart.java`
-- `examples/akka-components/src/main/java/ai/first/domain/PurchaseOrder.java`
-- `examples/akka-components/src/main/java/ai/first/domain/ExpiringDraftCartSession.java`
+### Five core workstreams and autonomous workers
 
-Testing examples:
-- `examples/akka-components/src/test/java/ai/first/application/DraftCartEntityTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEntityTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ExpiringDraftCartSessionEntityTest.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/myaccount/MyAccountService.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/myaccount/MyAccountPersonalAttentionDigestAutonomousAgent.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserAdminService.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserDirectoryView.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewService.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewAutonomousAgent.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/agentadmin/AgentAdminService.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/agentadmin/AgentAdminPromptRiskAutonomousAgent.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/audit/AuditTraceSummaryService.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/audit/AuditTraceSummaryAutonomousAgent.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/governance/GovernancePolicyImpactService.java`
+- `examples/akka-components/src/main/java/ai/first/application/coreapp/governance/GovernancePolicyImpactAutonomousAgent.java`
 
-### Agents
-Routing references:
-- `akka-agent-behavior-profiles` for durable tenant-scoped AgentDefinition and runtime behavior profile design before implementation of managed agents
-- `akka-agent-governed-documents` for tenant-scoped governed prompts, skills, references, rubrics, policies, examples, and implementation-developed default AgentDefinition/manifest/tool-boundary records with immutable versions, provenance, review, activation, diff/history, upgrade behavior, and audit
-- `akka-agent-prompt-governance` for governed runtime-managed system prompts, PromptDocument/PromptVersion, effective prompt assembly, PromptAssemblyTrace, and prompt test consoles
-- `akka-agent-skill-governance` for governed runtime procedural skills, SkillDocument/SkillVersion, AgentSkillManifest, compact skill manifest prompt context, readSkill(skillId), and SkillLoadTrace
-- `akka-agent-reference-governance` for governed workstream references, ReferenceDocument/ReferenceVersion, AgentReferenceManifest, compact reference manifest prompt context, readReferenceDoc(referenceId), denied reference loads, redaction/access checks, and ReferenceLoadTrace
-- `akka-agent-behavior-editing` for AgentBehaviorEditorAgent proposal flows, proposed diffs, draft versions, review/approval routing, decision cards, and authority-expansion denial
-- `akka-agent-work-trace` for AgentWorkTrace and agent-specific prompt/skill/model/tool/data/policy usage traces, authorization basis, redaction, correlation, and timelines
-- `akka-agent-closed-loop-improvement` for EvaluationRun/Finding, ImprovementProposal, replay/simulation, approval, activation, monitoring, and rollback loops
+### HTTP endpoints and frontend hosting
 
-Core agent examples:
-- `examples/akka-components/src/main/java/ai/first/application/ActivityAgent.java`
-- `examples/akka-components/src/main/java/ai/first/application/TemplateBackedActivityAgent.java`
-- `examples/akka-components/src/main/java/ai/first/application/WeatherAgent.java`
-- `examples/akka-components/src/main/java/ai/first/application/WeatherForecastTools.java`
-- `examples/akka-components/src/main/java/ai/first/application/StreamingActivityAgent.java`
-- `examples/akka-components/src/main/java/ai/first/application/AgentTeamWorkflow.java`
-- `examples/akka-components/src/main/java/ai/first/application/DynamicAgentTeamWorkflow.java`
-- `examples/akka-components/src/main/java/ai/first/application/SelectorAgent.java`
-- `examples/akka-components/src/main/java/ai/first/application/PlannerAgent.java`
-- `examples/akka-components/src/main/java/ai/first/application/SummarizerAgent.java`
-- `examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertsConsumer.java`
-- `examples/akka-components/src/main/java/ai/first/application/SessionMemoryByComponentView.java`
-- `examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertView.java`
-- `examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAgent.java`
-- `examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionConsumer.java`
-- `examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAuditConsumer.java`
-- `examples/akka-components/src/main/java/ai/first/application/PromptTemplateHistoryView.java`
-- `examples/akka-components/src/main/java/ai/first/application/ActivityAnswerEvaluatorAgent.java`
-- `examples/akka-components/src/main/java/ai/first/application/CompetitorMentionGuard.java`
-- `examples/akka-components/src/main/java/ai/first/api/ActivityAgentEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/ActivityPromptEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/PromptTemplateHistoryEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/SessionMemoryViewEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/SessionMemoryAlertStreamEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/DynamicAgentTeamWorkflowEndpoint.java`
+- `examples/akka-components/src/main/java/ai/first/api/foundation/security/MeEndpoint.java`
+- `examples/akka-components/src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java`
+- `examples/akka-components/src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java`
 - `examples/akka-components/src/main/resources/application.conf`
 
-Testing examples:
-- `examples/akka-components/src/test/java/ai/first/application/ActivityAgentTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/AgentTeamWorkflowIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/DynamicAgentTeamWorkflowIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ActivityAgentEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ActivityPromptEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/DynamicAgentTeamWorkflowEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/PromptTemplateHistoryViewIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/PromptTemplateHistoryEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/SessionMemoryViewEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/SessionMemoryAlertStreamEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/SessionMemoryAlertsConsumerIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/SessionMemoryByComponentViewIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/SessionMemoryCompactionConsumerIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
+### Tests
 
-### Workflows
-Core workflow examples:
-- `examples/akka-components/src/main/java/ai/first/application/TransferWorkflow.java`
-- `examples/akka-components/src/main/java/ai/first/application/ApprovalWorkflow.java`
-- `examples/akka-components/src/main/java/ai/first/application/ReviewWorkflow.java`
-- `examples/akka-components/src/main/java/ai/first/application/WalletEntity.java`
-- `examples/akka-components/src/main/java/ai/first/api/TransferWorkflowEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/ApprovalWorkflowEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/domain/TransferState.java`
-- `examples/akka-components/src/main/java/ai/first/domain/ApprovalState.java`
-- `examples/akka-components/src/main/java/ai/first/domain/Wallet.java`
+- `examples/akka-components/src/test/java/ai/first/application/foundation/identity/MeServiceTest.java`
+- `examples/akka-components/src/test/java/ai/first/application/foundation/identity/FoundationRuntimeDurabilityBoundaryTest.java`
+- `examples/akka-components/src/test/java/ai/first/application/foundation/agent/AgentRuntimeServiceTest.java`
+- `examples/akka-components/src/test/java/ai/first/application/coreapp/useradmin/InvitationAndUserAdminServiceTest.java`
+- `examples/akka-components/src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java`
+- `examples/akka-components/src/test/java/ai/first/application/coreapp/audit/AuditTraceSummaryAutonomousAgentTest.java`
 
-Testing examples:
-- `examples/akka-components/src/test/java/ai/first/application/TransferWorkflowIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/TransferWorkflowEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ApprovalWorkflowIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ApprovalWorkflowEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/WalletEntityTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ReviewRequestsByStatusViewIntegrationTest.java`
+### gRPC and MCP notes
 
-### Timed actions
-Core timer examples:
-- `examples/akka-components/src/main/java/ai/first/domain/TicketReservation.java`
-- `examples/akka-components/src/main/java/ai/first/application/TicketReservationEntity.java`
-- `examples/akka-components/src/main/java/ai/first/application/TicketReservationTimedAction.java`
-- `examples/akka-components/src/main/java/ai/first/api/TicketReservationEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/domain/ReminderJob.java`
-- `examples/akka-components/src/main/java/ai/first/application/ReminderJobEntity.java`
-- `examples/akka-components/src/main/java/ai/first/application/ReminderJobTimedAction.java`
-- `examples/akka-components/src/main/java/ai/first/api/ReminderJobEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/domain/ApprovalDeadlineState.java`
-- `examples/akka-components/src/main/java/ai/first/application/ApprovalDeadlineWorkflow.java`
-- `examples/akka-components/src/main/java/ai/first/application/ApprovalDeadlineTimedAction.java`
-- `examples/akka-components/src/main/java/ai/first/api/ApprovalDeadlineWorkflowEndpoint.java`
-
-Testing examples:
-- `examples/akka-components/src/test/java/ai/first/application/TicketReservationEntityTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/TicketReservationTimedActionTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/TicketReservationEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ReminderJobEntityTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ReminderJobTimedActionTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ReminderJobEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineWorkflowIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineTimedActionTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
-
-### Consumers
-Core consumer examples:
-- `examples/akka-components/src/main/java/ai/first/application/ShoppingCartCheckoutConsumer.java`
-- `examples/akka-components/src/main/java/ai/first/application/DraftCartCheckoutConsumer.java`
-- `examples/akka-components/src/main/java/ai/first/application/ShoppingCartCommandsTopicConsumer.java`
-- `examples/akka-components/src/main/java/ai/first/application/ShoppingCartEventsToTopicConsumer.java`
-- `examples/akka-components/src/main/java/ai/first/application/ShoppingCartPublicEventsConsumer.java`
-- `examples/akka-components/src/main/java/ai/first/application/ReviewWorkflowTopicConsumer.java`
-- `docs/consumer-reference.md`
-- `docs/service-to-service-consumers.md`
-
-Testing examples:
-- `examples/akka-components/src/test/java/ai/first/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
-
-### Views
-Core view examples:
-- `examples/akka-components/src/main/java/ai/first/application/ShoppingCartsByCheckedOutView.java`
-- `examples/akka-components/src/main/java/ai/first/application/ShoppingCartAuditView.java`
-- `examples/akka-components/src/main/java/ai/first/application/DraftCartsByCheckedOutView.java`
-- `examples/akka-components/src/main/java/ai/first/application/DraftCartLifecycleView.java`
-- `examples/akka-components/src/main/java/ai/first/application/ReviewRequestsByStatusView.java`
-- `examples/akka-components/src/main/java/ai/first/application/ShoppingCartTopicView.java`
-- `docs/service-to-service-views.md`
-
-Testing examples:
-- `examples/akka-components/src/test/java/ai/first/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ShoppingCartAuditViewIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/DraftCartsByCheckedOutViewIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/DraftCartLifecycleViewIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ReviewRequestsByStatusViewIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ShoppingCartTopicViewIntegrationTest.java`
-
-### HTTP endpoints
-Core endpoint examples:
-
-For generated SaaS browser UI, use `docs/workstream-ui-reference-architecture.md` and the target-project canonical frontend reference `frontend/src/workstream/**` from this repository or a downstream fork. Resolve that frontend path from the project workspace, not from a global `~/.agents/skills` install. Removed static UI page fixtures must not be restored as page-first UI architecture. The harness install includes pack examples under `examples/**`, but it does not include root frontend application source.
-
-- `examples/akka-components/src/main/java/ai/first/api/GreetingEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/LowLevelHttpEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/ProxyGreetingEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/PingWebSocketEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/CounterStreamEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/DraftCartViewStreamEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/RequestHeadersEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/SecureGreetingEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/InternalStatusEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/ShoppingCartEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/DraftCartEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/OrderEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/PurchaseOrderEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/TransferWorkflowEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/ApprovalWorkflowEndpoint.java`
-
-Testing examples:
-- `examples/akka-components/src/test/java/ai/first/application/GreetingEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/LowLevelHttpEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ProxyGreetingEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/PingWebSocketEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/CounterStreamEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/DraftCartViewStreamEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/RequestHeadersEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/SecureGreetingEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/InternalStatusEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ShoppingCartIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/OrderEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/TransferWorkflowEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/ApprovalWorkflowEndpointIntegrationTest.java`
-
-### gRPC endpoints
-Core endpoint examples:
-- `examples/akka-components/src/main/proto/ai/first/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `examples/akka-components/src/main/proto/ai/first/api/grpc/internal_status_grpc_endpoint.proto`
-- `examples/akka-components/src/main/proto/ai/first/api/grpc/secure_greeting_grpc_endpoint.proto`
-- `examples/akka-components/src/main/proto/ai/first/api/grpc/pattern_secure_greeting_grpc_endpoint.proto`
-- `examples/akka-components/src/main/java/ai/first/api/ShoppingCartGrpcEndpointImpl.java`
-- `examples/akka-components/src/main/java/ai/first/api/InternalStatusGrpcEndpointImpl.java`
-- `examples/akka-components/src/main/java/ai/first/api/SecureGreetingGrpcEndpointImpl.java`
-- `examples/akka-components/src/main/java/ai/first/api/PatternSecureGreetingGrpcEndpointImpl.java`
-
-Testing examples:
-- `examples/akka-components/src/test/java/ai/first/application/ShoppingCartGrpcEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/InternalStatusGrpcEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/SecureGreetingGrpcEndpointIntegrationTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
-
-### MCP endpoints
-Core endpoint examples:
-- `examples/akka-components/src/main/java/ai/first/api/ShoppingCartMcpEndpoint.java`
-- `examples/akka-components/src/main/java/ai/first/api/SecureSupportMcpEndpoint.java`
-- `examples/akka-components/src/main/resources/mcp/checkout-guidelines.md`
-
-Testing examples:
-- `examples/akka-components/src/test/java/ai/first/application/ShoppingCartMcpEndpointTest.java`
-- `examples/akka-components/src/test/java/ai/first/application/SecureSupportMcpEndpointTest.java`
+The current core app does not carry gRPC or MCP runtime examples. Do not restore retired workstream-event gRPC/MCP fixtures. For gRPC or MCP implementation mechanics, use the focused skills with `akka-context/**` SDK reference material, then implement app-specific endpoints against the core app authorization, capability, and trace patterns above.

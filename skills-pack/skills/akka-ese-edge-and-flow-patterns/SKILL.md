@@ -12,11 +12,6 @@ Use this skill when deciding how an event sourced entity participates in a large
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/OrderEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/OrderEndpoint.java`
 
 ## Capability-first framing
 
@@ -41,8 +36,8 @@ Typical traits:
 - endpoint catches `CommandException`, maps to HTTP response, and records required audit/trace data
 
 Repository example:
-- `ShoppingCartEntity`
-- `ShoppingCartEndpoint`
+- `AgentDefinitionEntity`
+- `WorkstreamEndpoint`
 
 ### Downstream/internal entity
 
@@ -59,8 +54,8 @@ Typical traits:
 - command may emit zero, one, or many events as capability facts
 
 Repository example:
-- `OrderEntity`
-- `ShoppingCartCheckoutConsumer`
+- `PromptDocumentEntity`
+- `WorkstreamEventAttentionConsumer`
 
 ## Endpoint rules
 
@@ -75,8 +70,8 @@ For HTTP or gRPC endpoints that call entities:
 - use `HttpResponses.badRequest(...)` for business validation failures when returning `HttpResponse`
 
 Repository example:
-- `ShoppingCartEndpoint`
-- `OrderEndpoint`
+- `WorkstreamEndpoint`
+- `AdminEndpoint`
 
 ## Consumer and workflow rules
 
@@ -88,7 +83,7 @@ When another component reacts to entity events:
 - prefer idempotent downstream commands
 
 Repository example:
-- `ShoppingCartCheckoutConsumer`
+- `WorkstreamEventAttentionConsumer`
 
 ## No-op guidance
 

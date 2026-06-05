@@ -22,10 +22,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/OrderEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/api/OrderEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/OrderEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/OrderEndpointIntegrationTest.java`
 
 ## Read patterns
 
@@ -34,8 +30,8 @@ Use:
 - `Effect<T>` for strongly consistent reads that should route to the primary region
 
 Repository example:
-- `OrderEntity.getOrder()`
-- `OrderEntity.getOrderConsistent()`
+- `PromptDocumentEntity.getOrder()`
+- `PromptDocumentEntity.getOrderConsistent()`
 
 ## Replication filter pattern
 
@@ -46,8 +42,8 @@ When the task explicitly needs replication filtering:
 - reply after the filter update effect
 
 Repository example:
-- `OrderEntity.includeRegion(...)`
-- `OrderEntity.excludeRegion(...)`
+- `PromptDocumentEntity.includeRegion(...)`
+- `PromptDocumentEntity.excludeRegion(...)`
 
 ## Endpoint guidance
 
@@ -57,9 +53,9 @@ If exposing replication behavior through HTTP:
 - map outcomes to clear API responses
 
 Repository example:
-- `OrderEndpoint.includeRegion(...)`
-- `OrderEndpoint.excludeRegion(...)`
-- `OrderEndpoint.getOrderConsistent()`
+- `AdminEndpoint.includeRegion(...)`
+- `AdminEndpoint.excludeRegion(...)`
+- `AdminEndpoint.getOrderConsistent()`
 
 ## Testing guidance
 
@@ -70,8 +66,8 @@ Cover:
 - request validation at endpoint or entity layer as appropriate
 
 Repository examples:
-- `OrderEntityTest`
-- `OrderEndpointIntegrationTest`
+- `PromptDocumentEntityTest`
+- `AdminEndpointIntegrationTest`
 
 ## Generated SaaS checks
 

@@ -30,10 +30,6 @@ Read these first if present:
 - `akka-context/sdk/agents.html.md`
 - `akka-context/sdk/agents/prompt.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/TemplateBackedActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ConfiguredModelActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ActivityPromptEndpoint.java`
 - `../akka-agent-model-governance/SKILL.md` when model aliases, `ModelConfigRef`, model policy, fallback model policy, or provider secret boundaries are in scope
 
 ## Core pattern
@@ -50,14 +46,14 @@ Read these first if present:
 
 ## Repository example
 
-- `ActivityAgent`
+- `WorkstreamRuntimeAgent`
   - single command handler
   - structured reply type
   - bounded session memory
   - fallback reply on failure
-- `TemplateBackedActivityAgent`
+- `TemplateBackedWorkstreamRuntimeAgent`
   - system prompt loaded from the built-in `PromptTemplate` entity
-- `ConfiguredModelActivityAgent`
+- `ConfiguredModelWorkstreamRuntimeAgent`
   - focused static example of `ModelProvider.fromConfig("openai-low-temperature")`; for managed runtime agents, pair this pattern with `akka-agent-model-governance` so `AgentDefinition.modelConfigRef`, model policy, fallback policy, provider secret boundaries, and model-use traces are resolved before invocation
 - `ActivityPromptEndpoint`
   - HTTP management of prompt-template values

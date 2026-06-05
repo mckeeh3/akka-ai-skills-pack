@@ -20,8 +20,6 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/main/java/ai/first/api/LowLevelHttpEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/LowLevelHttpEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

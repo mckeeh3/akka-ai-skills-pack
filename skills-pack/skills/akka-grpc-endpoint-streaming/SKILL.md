@@ -21,10 +21,6 @@ When the same capability is also exposed through UI, HTTP, agent tools, workflow
 Read these first if present:
 - `akka-context/sdk/grpc-endpoints.html.md`
 - `akka-context/sdk/views.html.md`
-- `../examples/akka-components/src/main/proto/ai/first/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartsByCheckedOutView.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartGrpcEndpointIntegrationTest.java`
 
 ## Core rules
 
@@ -37,10 +33,10 @@ Read these first if present:
 
 ## Repository example
 
-- `ShoppingCartGrpcEndpointImpl#streamCheckedOutCarts`
+- `CoreAppGrpcEndpointImpl#streamCheckedOutRows`
   - forwards a streamed view query
   - maps each row to a protobuf `CartSummary`
-- `ShoppingCartsByCheckedOutView#streamCarts`
+- `UserDirectoryView#streamRows`
   - query-stream method used by the endpoint
 
 ## Testing pattern

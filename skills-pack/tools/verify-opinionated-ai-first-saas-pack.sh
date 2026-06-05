@@ -149,23 +149,23 @@ require_rg "agent detail" "$APP_ROOT/app-description"
 require_rg "unauthorized.*PromptDocument|unassigned skill denial|disabled-agent denial|authority expansion" "$APP_ROOT/app-description"
 
 log "checking source-controlled surface templates and validator"
-require_file "templates/ai-first-saas-starter/app-description/README.md"
-require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surfaces-index.md"
-require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/01-my-account-dashboard.md"
-require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md"
-require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md"
-require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md"
-require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/05-decision-card.md"
-require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/06-audit-trace-explorer.md"
-require_file "templates/ai-first-saas-starter/app-description/12-workstreams/surface-contracts/07-agent-governance-center.md"
-require_file "templates/ai-first-saas-starter/app-description/55-ui/structured-surface-rendering.md"
-require_file "templates/ai-first-saas-starter/app-description/70-traceability/surface-to-capability-map.md"
+require_file "templates/ai-first-saas-core-app/app-description/README.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surfaces-index.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/01-my-account-dashboard.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/05-decision-card.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/06-audit-trace-explorer.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/07-agent-governance-center.md"
+require_file "templates/ai-first-saas-core-app/app-description/55-ui/structured-surface-rendering.md"
+require_file "templates/ai-first-saas-core-app/app-description/70-traceability/surface-to-capability-map.md"
 require_file "tools/validate-surface-contracts.sh"
 require_file "docs/examples/domain-workstream-surface-contract-example.md"
-require_rg "templates/ai-first-saas-starter/app-description/12-workstreams/surfaces-index.md" pack/manifest.yaml docs/structured-surface-contracts.md
+require_rg "templates/ai-first-saas-core-app/app-description/12-workstreams/surfaces-index.md" pack/manifest.yaml docs/structured-surface-contracts.md
 require_rg "docs/examples/domain-workstream-surface-contract-example.md" pack/manifest.yaml docs/structured-surface-contracts.md skills/app-description-surface-modeling/SKILL.md
 require_rg "validate-surface-contracts" pack/manifest.yaml docs/structured-surface-contracts.md skills/app-description-surface-modeling/SKILL.md
-"$PACK_ROOT/tools/validate-surface-contracts.sh" "$PACK_ROOT/templates/ai-first-saas-starter/app-description"
+"$PACK_ROOT/tools/validate-surface-contracts.sh" "$PACK_ROOT/templates/ai-first-saas-core-app/app-description"
 
 log "checking pack docs, manifest, skills, and core app-description assets"
 require_rg "docs/core-ai-first-saas-foundation.md" pack/manifest.yaml
@@ -194,7 +194,7 @@ forbid_rg "$retired_output_pattern" \
   docs/agent-workstream-application-architecture.md \
   docs/structured-surface-contracts.md \
   skills/app-description-surface-modeling/SKILL.md \
-  templates/ai-first-saas-starter/app-description
+  templates/ai-first-saas-core-app/app-description
 
 log "checking forbidden optional-security phrasing in top-level routing files"
 forbid_rg "security.*optional|optional.*security|when security is in scope|only when security is in scope|JWT/internal security skills only when security is in scope|generic Akka app|ordinary Akka app|CRUD-first" \

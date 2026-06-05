@@ -23,11 +23,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/sdk/access-control.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEventsToTopicConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartPublicEventsConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReviewWorkflowTopicConsumer.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -60,11 +55,11 @@ For service streams and topics, do not leak internal state or policy-only events
 
 These are Akka substrate mechanics examples, not generated-product architecture templates.
 
-- `ShoppingCartEventsToTopicConsumer`
-  - republishes internal shopping-cart events to a topic
-  - preserves the cart id through `ce-subject`
-- `ShoppingCartPublicEventsConsumer`
-  - maps internal shopping-cart events to a public service-stream contract
+- `WorkstreamEventAttentionConsumer`
+  - republishes internal workstream-event events to a topic
+  - preserves the workstream id through `ce-subject`
+- `WorkstreamEventAttentionConsumer`
+  - maps internal workstream-event events to a public service-stream contract
   - ignores deletion events from the public stream
 - `ReviewWorkflowTopicConsumer`
   - publishes only completed workflow updates to a topic

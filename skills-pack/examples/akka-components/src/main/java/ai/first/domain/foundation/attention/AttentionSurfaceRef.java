@@ -1,0 +1,10 @@
+package ai.first.domain.foundation.attention;
+
+/** Authorized workstream/surface target used by open_attention_item. */
+public record AttentionSurfaceRef(
+    String targetFunctionalAgentId,
+    String targetSurfaceId,
+    String targetSurfaceType,
+    String targetItemId,
+    String defaultActionId,
+    String requiredCapabilityId) {}

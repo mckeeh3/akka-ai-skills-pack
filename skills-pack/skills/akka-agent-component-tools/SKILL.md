@@ -13,9 +13,6 @@ Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/agents/extending.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/CartInspectorAgent.java`
-- `../examples/akka-components/src/test/java/ai/first/application/CartInspectorAgentTest.java`
 
 ## Use this pattern when
 
@@ -54,13 +51,13 @@ If the agent-facing operation should compose multiple component calls, hide comp
 
 ## Repository example
 
-- `ShoppingCartEntity#inspectCartSummary`
-  - read-only EventSourcedEntity capability tool for `cart.inspect-summary`
+- `AgentDefinitionEntity#inspectCartSummary`
+  - read-only EventSourcedEntity capability tool for `workstream event.inspect-summary`
   - returns a curated `CartSummary` rather than raw entity state or event history
-  - generated schema adds `uniqueId` for the cart id
+  - generated schema adds `uniqueId` for the workstream id
 - `CartInspectorAgent`
-  - registers `ShoppingCartEntity.class` as a tool
-  - instructs the model to use `ShoppingCartEntity_inspectCartSummary`
+  - registers `AgentDefinitionEntity.class` as a tool
+  - instructs the model to use `AgentDefinitionEntity_inspectCartSummary`
 - `GovernedRefundAutonomousAgent` + `RefundApprovalWorkflow#requestFromGovernedTool`
   - side-effecting workflow component tool for `refund.request_consequential`
   - generated tool schema uses `uniqueId` as the refund workflow id and checks model-supplied tenant/customer/order/amount against backend context

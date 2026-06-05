@@ -31,18 +31,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/test/java/ai/first/application/GreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/LowLevelHttpEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ProxyGreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PingWebSocketEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/CounterStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartViewStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/RequestHeadersEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SecureGreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/InternalStatusEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/OrderEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEndpointIntegrationTest.java`
 
 ## Test harness rules
 
@@ -74,7 +62,7 @@ HTTP endpoint tests should:
 - `CounterStreamEndpointIntegrationTest`
   - uses `testKit.getSelfSseRouteTester()`
   - verifies initial events and resume-from-offset behavior
-- `DraftCartViewStreamEndpointIntegrationTest`
+- `WorkstreamLogViewStreamEndpointIntegrationTest`
   - combines mocked view source updates with `SseRouteTester`
   - verifies view-backed SSE emits initial rows and later updates
 
@@ -90,9 +78,9 @@ HTTP endpoint tests should:
   - allowed impersonated service caller
 
 ### Component-calling endpoint tests
-- `ShoppingCartIntegrationTest`
-- `OrderEndpointIntegrationTest`
-- `PurchaseOrderEndpointIntegrationTest`
+- `WorkstreamEndpointIntegrationTest`
+- `AdminEndpointIntegrationTest`
+- `PurchaseAdminEndpointIntegrationTest`
 
 These cover route-to-component behavior and HTTP response mapping.
 

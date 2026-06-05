@@ -124,13 +124,13 @@ The left rail may show compact workstream attention indicators. The count means:
 
 > There are N items in this workstream that currently require this user's attention, given their identity, tenant/customer context, memberships, roles, permissions, workstream availability, and authority.
 
-Counts must derive from governed backend state/projections, not frontend-only badge logic. In the AI-first SaaS starter, this is implemented by the v1 shared attention backbone and bounded v2 attention producers: backend state owns actionable `AttentionItem` lifecycle, while workstream dashboards, My Account, and left rail summaries read authorized backend projections. Frontend-only unseen-response badges are transient presentation state, not authoritative attention.
+Counts must derive from governed backend state/projections, not frontend-only badge logic. In the AI-first SaaS core app, this is implemented by the shared backend-owned attention backbone and bounded attention producers: backend state owns actionable `AttentionItem` lifecycle, while workstream dashboards, My Account, and left rail summaries read authorized backend projections. Frontend-only unseen-response badges are transient presentation state, not authoritative attention.
 
-Planning and implementation artifacts should distinguish current starter coverage from future work:
+Planning and implementation artifacts should distinguish current core app coverage from future work:
 
-- v1 backbone: shared backend-owned attention items, scoped reads, redaction, lifecycle operations, and traces;
-- v2 producers: bounded service/timer/task producers with stable producer ids, idempotency, upsert/resolve behavior, and backend-derived refresh/update delivery;
-- v3 event backbone: typed `WorkstreamEventEnvelope`/source refs, bounded starter invitation and access-review lifecycle event publication, idempotent event-to-attention consumption, and backend-derived projection-refresh hints;
+- attention backbone: shared backend-owned attention items, scoped reads, redaction, lifecycle operations, and traces;
+- bounded attention producers: bounded service/timer/task producers with stable producer ids, idempotency, upsert/resolve behavior, and backend-derived refresh/update delivery;
+- typed workstream event backbone: typed `WorkstreamEventEnvelope`/source refs, bounded core app invitation and access-review lifecycle event publication, idempotent event-to-attention consumption, and backend-derived projection-refresh hints;
 - future extensions: broader generated-app event coverage, enterprise notification preferences, digests, and real AutonomousAgent durable task notification/lifecycle streams over the governed runtime path.
 
 Initial summary shape:

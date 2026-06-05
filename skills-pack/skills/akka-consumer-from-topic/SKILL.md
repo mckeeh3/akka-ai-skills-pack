@@ -23,8 +23,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartCommandsTopicConsumer.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -59,10 +57,10 @@ For typed JSON messages, upstream publishers should provide:
 
 These are Akka substrate mechanics examples, not generated-product architecture templates.
 
-- `ShoppingCartCommandsTopicConsumer`
-  - consumes typed command messages from `shopping-cart-commands`
-  - uses `ce-subject` as the shopping-cart id
-  - forwards commands to `ShoppingCartEntity`
+- `WorkstreamEventAttentionConsumer`
+  - consumes typed command messages from `workstream-event-commands`
+  - uses `ce-subject` as the workstream-event id
+  - forwards commands to `AgentDefinitionEntity`
 
 ## Testing rules
 

@@ -146,7 +146,7 @@ Use this section in task briefs:
 
 For `specs/pending-tasks.md`, put the same content under the task's `notes` as a `vertical contract:` line or as equivalent bullet notes. A task may omit workstream/surface/action fields only when it explicitly says `internal-only`, `foundation-only`, `cross-cutting`, `docs-only`, or `non-runtime` and explains the non-attention/non-UI reason, capability/foundation scope, trace expectations, and validation path.
 
-Before implementation, use the pending-task validator when available. From a source checkout, run:
+Before implementation, use the pending-task validator when available. From a source attention, run:
 
 ```bash
 bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md

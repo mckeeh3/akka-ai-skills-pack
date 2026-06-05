@@ -8,7 +8,7 @@ It complements `docs/internal-app-description-architecture.md` by defining **how
 
 Reference examples:
 - canonical core app-description baseline: the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md`
-- starter templates under `templates/ai-first-saas-starter/app-description/**` for source-controlled cross-linking examples
+- core app templates under `templates/ai-first-saas-core-app/app-description/**` for source-controlled cross-linking examples
 
 ## Core interaction model
 
@@ -44,7 +44,7 @@ Use only when the user explicitly asks to realize outputs or accepts a harness r
 
 Prefer this default sequence:
 
-1. bootstrap the internal app-description tree if no usable root exists yet, creating the secure SaaS foundation capability, governed runtime agent foundation, AI-first operating model, behavior, tests, auth/security, observability, and mandatory UI surfaces; for minimum/starter/basic app requests, create a `minimum starter / not full core` five core workstream starter set (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) with `markdown_response`, bootstrap auth/security, durable workstream logs, trace substrate, capability boundaries, and explicit full-core follow-up gaps
+1. bootstrap the internal app-description tree if no usable root exists yet, creating the secure SaaS foundation capability, governed runtime agent foundation, AI-first operating model, behavior, tests, auth/security, observability, and mandatory UI surfaces; for minimum/core app/basic app requests, create a `core app baseline` five core workstream core app domain (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) with `markdown_response`, bootstrap auth/security, durable workstream logs, trace substrate, capability boundaries, and explicit full-core follow-up gaps
 2. normalize the user input when it is broad, mixed, or ambiguous
 3. intake and route the user input
 4. identify impacted description layers by reconciling against the existing workstream graph rather than generating parallel structures
@@ -68,7 +68,7 @@ Prefer this default sequence:
 When the user is not explicitly asking for realization, use this flow:
 
 ### Step 0. Bootstrap if needed
-Use `app-description-bootstrap` when no usable `app-description/` root exists yet. If the user asks for a minimum app, starter app, basic app, or initial chatbot-like generated SaaS, bootstrap a small authoritative tree for the five core workstream starter rather than requiring the full app-description tree up front. The tree may be minimum-starter ready only when it captures My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy `markdown_response` surfaces, selected AuthContext, bootstrap authorization, backend capability boundaries for actions/tools, durable workstream logs, audit/work traces, denial behavior, and follow-up gaps to full-core SaaS readiness.
+Use `app-description-bootstrap` when no usable `app-description/` root exists yet. If the user asks for a minimum app, core app, basic app, or initial chatbot-like generated SaaS, bootstrap a small authoritative tree for the five core workstream core app domain rather than requiring the full app-description tree up front. The tree may be core-baseline ready only when it captures My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy `markdown_response` surfaces, selected AuthContext, bootstrap authorization, backend capability boundaries for actions/tools, durable workstream logs, audit/work traces, denial behavior, and follow-up gaps to full-core SaaS readiness.
 
 ### Step 1. Normalize when needed
 Use `app-description-input-normalization` when the input is broad, mixed, or ambiguous.
@@ -179,7 +179,7 @@ Do not skip this step just because generation was requested.
 - if `ready-with-assumptions`, proceed only for a named narrowed scope whose assumptions are explicit, accepted, non-runtime, and do not affect protected capabilities, API/UI action wiring, agent/provider calls, audit/work traces, tests, or local validation
 - if `ready`, proceed
 
-When the current readiness scope is `minimum starter / not full core`, generation may proceed only for the starter slice and the generated planning output must preserve follow-up tasks for full User Admin, Agent Admin, Audit/Trace UI, invitations/onboarding, governed behavior documents, and security coverage. Do not summarize this state as full-core ready.
+When the current readiness scope is `core app baseline`, generation may proceed only for the core app slice and the generated planning output must preserve follow-up tasks for full User Admin, Agent Admin, Audit/Trace UI, invitations/onboarding, governed behavior documents, and security coverage. Do not summarize this state as full-core ready.
 
 ### Step 4. Generate
 Use `app-generate-app`.

@@ -25,7 +25,6 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 Read these first if present:
 - `akka-context/sdk/agents/llm_eval.html.md`
 - `akka-context/sdk/agents/memory.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ActivityAnswerEvaluatorAgent.java`
 
 ## Use this pattern when
 

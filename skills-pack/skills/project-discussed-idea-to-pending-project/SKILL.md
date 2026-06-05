@@ -233,7 +233,7 @@ Good task boundaries:
 - one frontend surface/component family plus typecheck/tests/build;
 - one review/audit task that produces findings and follow-up queue edits.
 
-Split or block tasks that are too broad, such as "fix all skills", "make starter production ready", "migrate all UI", or "implement the whole feature".
+Split or block tasks that are too broad, such as "fix all skills", "make core app production ready", "migrate all UI", or "implement the whole feature".
 
 Generated-app/reference-runtime tasks must preserve the target project runtime completion doctrine: do not mark feature work complete unless the real local runtime/API/UI path works at the stated scope, or the task is explicitly non-runtime/docs-only.
 

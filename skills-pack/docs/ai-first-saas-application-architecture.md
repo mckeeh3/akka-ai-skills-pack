@@ -2,7 +2,7 @@
 
 ## Status
 
-This is the canonical AI-first SaaS architecture doctrine for this skills pack. This document is the authority for source-checkout repository guidance and routing work.
+This is the canonical AI-first SaaS architecture doctrine for this skills pack. This document is the authority for source-attention repository guidance and routing work.
 
 ## Default target architecture
 
@@ -78,13 +78,13 @@ Required baseline:
 
 Use `core-ai-first-saas-foundation.md`, `core-saas-identity-tenancy-admin.md`, and `core-saas-owner-tenant-billing.md` as the product-agnostic baseline. App-specific requirements may extend this foundation but must not weaken it.
 
-## Minimum AI-first SaaS starter
+## AI-first SaaS core app baseline
 
-The smallest valid generated AI-first SaaS app is a bootstrap-authorized **five core workstream starter set**, not a generic chatbot. See `minimum-ai-first-saas-app.md` for the canonical minimum-app doctrine.
+The smallest valid generated AI-first SaaS app is a bootstrap-authorized **five core workstream core app domain**, not a generic chatbot. See `minimum-ai-first-saas-app.md` for the canonical minimum-app doctrine.
 
-Minimum starter readiness means the My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy workstreams work for bootstrap-authorized users with a selected `AuthContext`, backend role/capability checks, a durable workstream log, audit/work trace substrate, capability-first backend boundaries, and a `markdown_response` structured surface rendered as sanitized HTML. This starter may use a chat-like shell, but the application model remains workstream + surface + capability.
+Minimum core app readiness means the My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy workstreams work for bootstrap-authorized users with a selected `AuthContext`, backend role/capability checks, a durable workstream log, audit/work trace substrate, capability-first backend boundaries, and a `markdown_response` structured surface rendered as sanitized HTML. This core app may use a chat-like shell, but the application model remains workstream + surface + capability.
 
-Full-core SaaS readiness remains stricter than minimum starter readiness. Complete generated-core readiness still requires the full secure foundation: WorkOS/AuthKit user auth, local authorization, tenant/customer boundaries, `/api/me`, invitations/onboarding with Resend/outbox, complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, governed runtime agent artifacts, audit/trace search, support-access and billing boundaries where needed, security tests, and security review before app-specific work is considered ready.
+Full-core SaaS readiness remains stricter than core app baseline readiness. Complete generated-core readiness still requires the full secure foundation: WorkOS/AuthKit user auth, local authorization, tenant/customer boundaries, `/api/me`, invitations/onboarding with Resend/outbox, complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, governed runtime agent artifacts, audit/trace search, support-access and billing boundaries where needed, security tests, and security review before app-specific work is considered ready.
 
 ## Human operating roles
 
@@ -143,7 +143,7 @@ Foundation generated SaaS apps must include secure-operation functional agents, 
 
 When these concepts are maintained in an app-description tree, `12-workstreams/` owns functional agents, internal agents, durable workstreams, structured surface contracts, reusable surface placement, action-to-capability mappings, trace semantics, and surface/action tests. `55-ui/` owns browser realization: shell rendering, functional-agent rail, workstream panel, persistent composer, structured-surface rendering, routes/deep links, interactions/forms, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide. `55-ui/` links back to `12-workstreams/` and capability/security/test layers instead of redefining application meaning.
 
-For secure foundation shape, start with the target project `app-description/README.md` plus `core-ai-first-saas-foundation.md`. For executable full-core implementation guidance, use this repository's runnable core app root or a downstream fork. After the harness install, `.agents/skills` provides skill guidance plus referenced pack docs/examples/templates/tools; application source, app-description, and specs remain in the source checkout or target project, while `akka-context/**` remains a top-level project/repository directory. For UI composition and implementation routing, use `agent-workstream-application-architecture.md`, `../ai-first-saas-ui-surfaces/SKILL.md`, and the existing Akka web UI skills.
+For secure foundation shape, start with the target project `app-description/README.md` plus `core-ai-first-saas-foundation.md`. For executable full-core implementation guidance, use this repository's runnable core app root or a downstream fork. After the harness install, `.agents/skills` provides skill guidance plus referenced pack docs/examples/templates/tools; application source, app-description, and specs remain in the source attention or target project, while `akka-context/**` remains a top-level project/repository directory. For UI composition and implementation routing, use `agent-workstream-application-architecture.md`, `../ai-first-saas-ui-surfaces/SKILL.md`, and the existing Akka web UI skills.
 
 ## Akka + React/Vite/TypeScript substrate
 

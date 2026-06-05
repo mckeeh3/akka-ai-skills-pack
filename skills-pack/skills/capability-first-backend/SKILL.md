@@ -123,7 +123,7 @@ Use the shape to choose the Akka substrate later:
 - command governed-tool in a capability → entity/workflow command with validation, idempotency, auth, audit;
 - proposal governed-tool in a capability → agent or human drafts change without committing side effects;
 - approval governed-tool in a capability → human or policy-governed decision commits/rejects/delegates;
-- AutonomousAgent worker governed-tool in a capability → durable task-oriented internal/background model-driven work; apply `../docs/autonomous-agent-worker-runtime-pattern.md` so start/read/cancel/accept/reject style capabilities preserve task contract, v3 `worker.task.*` events, attention, structured surfaces, provider fail-closed behavior, and no fake success;
+- AutonomousAgent worker governed-tool in a capability → durable task-oriented internal/background model-driven work; apply `../docs/autonomous-agent-worker-runtime-pattern.md` so start/read/cancel/accept/reject style capabilities preserve task contract, typed `worker.task.*` workstream events, attention, structured surfaces, provider fail-closed behavior, and no fake success;
 - workflow governed-tool in a capability → long-running, retryable, approval-gated, or compensating process;
 - policy/governance governed-tool in a capability → versioned policy, prompt, skill, threshold, simulation, activation, rollback;
 - trace/audit governed-tool in a capability → record, search, explain, redact, or export history;

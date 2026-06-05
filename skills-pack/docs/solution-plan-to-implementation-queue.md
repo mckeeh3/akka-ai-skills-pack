@@ -128,7 +128,6 @@ Before starting code generation, verify that the solution plan already answers:
 - `intent-driven-usage-flow.md`
 - `prd-to-akka-flow.md`
 - `module-sprint-planning.md`
-- `examples/requirements-to-workstream-mini-example.md` — preferred generated-SaaS planning shape
 - `../README.md`
 - `../akka-solution-decomposition/SKILL.md`
 - `../akka-pending-question-generation/SKILL.md`

@@ -25,19 +25,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 ## Read first
 
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationTimedActionTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/ai/first/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/main/java/ai/first/api/TicketReservationEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobTimedActionTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReminderJobTimedAction.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ReminderJobEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineTimedActionTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ApprovalDeadlineTimedAction.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ApprovalDeadlineWorkflow.java`
 
 ## Test modes
 
@@ -63,15 +50,15 @@ Use `TestKitSupport` plus `Awaitility` when you want to verify that a timer actu
 For self-rescheduling handlers that call `timers()` inside the timed action, prefer end-to-end tests for the rescheduling path. `TimedActionTestkit` is still useful for terminal `done()` mappings such as not-found or already-completed outcomes.
 
 Repository examples:
-- `TicketReservationEndpointIntegrationTest#reservationExpiresAfterTimerFires`
-- `ReminderJobEndpointIntegrationTest#timedActionSelfSchedulesUntilMaxRemindersReached`
+- `WorkstreamEndpointIntegrationTest#reservationExpiresAfterTimerFires`
+- `AttentionRefreshEndpointIntegrationTest#timedActionSelfSchedulesUntilMaxRemindersReached`
 
 ### 3. Delete-or-confirm integration test
 Use `TestKitSupport` plus `Awaitility.during(...)` when you want to prove that confirmation prevented the later timer from changing state.
 
 Repository examples:
-- `TicketReservationEndpointIntegrationTest#confirmDeletesTimerAndKeepsReservationConfirmed`
-- `ReminderJobEndpointIntegrationTest#completeStopsFutureSelfRescheduling`
+- `WorkstreamEndpointIntegrationTest#confirmDeletesTimerAndKeepsReservationConfirmed`
+- `AttentionRefreshEndpointIntegrationTest#completeStopsFutureSelfRescheduling`
 - `ApprovalDeadlineWorkflowIntegrationTest#approveDeletesTimerAndWorkflowStaysApproved`
 
 ## Assertions to favor

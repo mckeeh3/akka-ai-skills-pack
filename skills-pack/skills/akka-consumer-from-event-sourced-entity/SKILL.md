@@ -24,11 +24,6 @@ Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEventsToTopicConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartPublicEventsConsumer.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -60,14 +55,14 @@ Rules:
 
 These are Akka substrate mechanics examples, not generated-product architecture templates.
 
-- `ShoppingCartCheckoutConsumer`
+- `WorkstreamEventAttentionConsumer`
   - filters to `CheckedOut`
-  - reads current cart state
+  - reads current workstream event state
   - creates a downstream order entity
-- `ShoppingCartEventsToTopicConsumer`
-  - republishes every shopping-cart event to a broker topic
+- `WorkstreamEventAttentionConsumer`
+  - republishes every workstream-event event to a broker topic
   - sets `ce-subject` metadata from the entity id
-- `ShoppingCartPublicEventsConsumer`
+- `WorkstreamEventAttentionConsumer`
   - transforms internal events into service-stream public events
   - uses `@Acl` because other services subscribe
 

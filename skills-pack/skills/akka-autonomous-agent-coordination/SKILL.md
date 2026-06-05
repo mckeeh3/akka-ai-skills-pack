@@ -65,7 +65,7 @@ Do not treat notifications as the source of truth for business correctness; use 
 
 ## Generated SaaS guardrails
 
-- Every coordination operation is a capability: delegation, handoff, team creation, moderation, task assignment, external completion, notification streaming, v3 `worker.task.*` event publication, attention updates, and structured worker surfaces when visible.
+- Every coordination operation is a capability: delegation, handoff, team creation, moderation, task assignment, external completion, notification streaming, typed `worker.task.*` event publication, attention updates, and structured worker surfaces when visible.
 - Handoff to higher-authority agents, side-effecting workers, or broader data scope requires approval or explicit bounded policy.
 - Preserve tenant/customer scope in task ids, instance ids, instructions, attachments, worker inputs, and notification filters.
 - Emit traces for delegation/handoff/team/moderation events, authorization denials, tool use, and external input decisions.

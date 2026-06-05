@@ -50,11 +50,6 @@ Read these first if present:
 - matching MCP endpoint tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartMcpEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SecureSupportMcpEndpoint.java`
-- `../examples/akka-components/src/main/resources/mcp/checkout-guidelines.md`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartMcpEndpointTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SecureSupportMcpEndpointTest.java`
 
 ## Companion skills
 
@@ -111,15 +106,15 @@ Choose one of these modes before coding:
 Use when the MCP endpoint should expose current entity or view state as LLM-friendly JSON.
 
 Repository example:
-- `ShoppingCartMcpEndpoint#getCartSummary`
+- `CoreAppMcpEndpoint#getCartSummary`
 
 ### 2. Resource and prompt endpoint
 Use when the main work is exposing static guidance, dynamic resources, or reusable prompt templates.
 
 Repository examples:
-- `ShoppingCartMcpEndpoint#checkoutGuidelines`
-- `ShoppingCartMcpEndpoint#cartSummaryResource`
-- `ShoppingCartMcpEndpoint#respondToCartQuestion`
+- `CoreAppMcpEndpoint#attentionGuidelines`
+- `CoreAppMcpEndpoint#workstream eventSummaryResource`
+- `CoreAppMcpEndpoint#respondToCartQuestion`
 
 ### 3. Request-context or JWT-aware endpoint
 Use when the endpoint behavior depends on headers, principals, or validated JWT claims.
@@ -131,7 +126,7 @@ Repository example:
 Use when you need to verify tool output, prompt construction, or context-aware behavior.
 
 Repository examples:
-- `ShoppingCartMcpEndpointTest`
+- `CoreAppMcpEndpointTest`
 - `SecureSupportMcpEndpointTest`
 
 ## Final review checklist

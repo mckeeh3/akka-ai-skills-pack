@@ -22,14 +22,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 - `akka-context/sdk/timed-actions.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/main/java/ai/first/application/TicketReservationEntity.java`
-- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationTimedActionTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReminderJobTimedAction.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReminderJobEntity.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobTimedActionTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobEndpointIntegrationTest.java`
 
 ## Component rules
 
@@ -80,7 +72,7 @@ public class MyTimedAction extends TimedAction {
 - Make duplicate timer delivery idempotent by using target commands with stable dedupe keys or no-op semantics.
 - If a timed action receives a stale, forbidden, or cross-tenant payload, return terminal `done()` after recording the required denial/no-op audit rather than retrying forever.
 - If the timed action needs to schedule another timer while handling one, use `timers()` inside the handler.
-- The self-rescheduling reference pattern in this repository is `ReminderJobTimedAction#sendReminder`.
+- The self-rescheduling reference pattern in this repository is `AttentionRefreshTimedAction#sendReminder`.
 - If a method used by timers must be renamed later, keep a legacy delegating method for compatibility.
 
 ## Generated SaaS timer contract

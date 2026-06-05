@@ -17,29 +17,6 @@ Read these first if present:
 - `akka-context/sdk/agents/testing.html.md`
 - `akka-context/sdk/views.html.md`
 - `akka-context/sdk/consuming-producing.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/TemplateBackedActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ActivityPromptEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/application/PromptTemplateHistoryView.java`
-- `../examples/akka-components/src/main/java/ai/first/api/PromptTemplateHistoryEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryByComponentView.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryViewEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertView.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryAlertStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertsConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAuditConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAuditView.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryCompactionStreamEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ActivityPromptEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PromptTemplateHistoryViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PromptTemplateHistoryEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryByComponentViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryViewEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryAlertStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryAlertsConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryCompactionConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -61,7 +38,7 @@ Read these first if present:
 
 ## Repository examples
 
-- `TemplateBackedActivityAgent`
+- `TemplateBackedWorkstreamRuntimeAgent`
   - prompt loaded from `PromptTemplate`
 - `ActivityPromptEndpoint`
   - update/read prompt-template state over HTTP

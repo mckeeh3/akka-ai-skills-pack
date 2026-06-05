@@ -23,12 +23,6 @@ Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
 - `../docs/timer-pattern-selection.md`
-- `../examples/akka-components/src/main/java/ai/first/application/TransferWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ApprovalDeadlineWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/TransferState.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/ApprovalState.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/ApprovalDeadlineState.java`
 
 ## Capability-first pattern
 

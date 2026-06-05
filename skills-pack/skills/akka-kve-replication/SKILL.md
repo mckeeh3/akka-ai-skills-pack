@@ -22,10 +22,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/PurchaseOrderEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/api/PurchaseOrderEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEndpointIntegrationTest.java`
 
 ## Read patterns
 
@@ -34,8 +30,8 @@ Use:
 - `Effect<T>` for strongly consistent reads that should route to the primary region
 
 Repository example:
-- `PurchaseOrderEntity.getOrder()`
-- `PurchaseOrderEntity.getOrderConsistent()`
+- `PurchasePromptDocumentEntity.getOrder()`
+- `PurchasePromptDocumentEntity.getOrderConsistent()`
 
 ## Replication filter pattern
 
@@ -46,8 +42,8 @@ When the task explicitly needs replication filtering:
 - reply after the filter update effect
 
 Repository example:
-- `PurchaseOrderEntity.includeRegion(...)`
-- `PurchaseOrderEntity.excludeRegion(...)`
+- `PurchasePromptDocumentEntity.includeRegion(...)`
+- `PurchasePromptDocumentEntity.excludeRegion(...)`
 
 ## Endpoint guidance
 
@@ -57,9 +53,9 @@ If exposing replication behavior through HTTP:
 - map outcomes to clear API responses
 
 Repository example:
-- `PurchaseOrderEndpoint.includeRegion(...)`
-- `PurchaseOrderEndpoint.excludeRegion(...)`
-- `PurchaseOrderEndpoint.getOrderConsistent()`
+- `PurchaseAdminEndpoint.includeRegion(...)`
+- `PurchaseAdminEndpoint.excludeRegion(...)`
+- `PurchaseAdminEndpoint.getOrderConsistent()`
 
 ## Testing guidance
 
@@ -70,8 +66,8 @@ Cover:
 - request validation at endpoint or entity layer as appropriate
 
 Repository examples:
-- `PurchaseOrderEntityTest`
-- `PurchaseOrderEndpointIntegrationTest`
+- `PurchasePromptDocumentEntityTest`
+- `PurchaseAdminEndpointIntegrationTest`
 
 ## Generated SaaS checks
 

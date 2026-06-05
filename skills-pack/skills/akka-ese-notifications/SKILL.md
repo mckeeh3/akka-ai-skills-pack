@@ -22,9 +22,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartEntityTest.java`
 
 ## Core pattern
 
@@ -41,9 +38,9 @@ Read these first if present:
 - Notifications are for live updates, not replay of history.
 
 Repository example:
-- `ShoppingCartEntity.notifications()`
-- `ShoppingCartEntity.persistAndReply(...)`
-- `ShoppingCartEntity.deleteAndReply(...)`
+- `AgentDefinitionEntity.notifications()`
+- `AgentDefinitionEntity.persistAndReply(...)`
+- `AgentDefinitionEntity.deleteAndReply(...)`
 
 ## Endpoint rules
 
@@ -54,15 +51,15 @@ When exposing notifications over HTTP:
 - do not leak internal event types directly outside the service unless explicitly intended
 
 Repository example:
-- `ShoppingCartEndpoint.notifications(...)`
-- `ShoppingCartEndpoint.toNotification(...)`
+- `WorkstreamEndpoint.notifications(...)`
+- `WorkstreamEndpoint.toNotification(...)`
 
 ## Testing guidance
 
 At minimum, test that published messages happen after successful command handling.
 
 Repository example:
-- `ShoppingCartEntityTest`
+- `AgentDefinitionEntityTest`
 
 This repository uses a stub `NotificationPublisher` to capture published events and assert them.
 

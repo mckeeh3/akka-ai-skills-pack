@@ -41,15 +41,6 @@ If these files exist, read them first:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/ai/first/application/DraftCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/PurchaseOrderEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ExpiringDraftCartSessionEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/DraftCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/PurchaseOrderEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ExpiringDraftCartSessionEntityTest.java`
 
 ## Companion skills
 
@@ -135,8 +126,8 @@ Typical behavior:
 - endpoint translates `CommandException` to HTTP response and records required audit/trace data
 
 Repository example:
-- `DraftCartEntity`
-- `DraftCartEndpoint`
+- `DurableIdentityRepositoryEntity`
+- `MeEndpoint`
 
 ### 2. Downstream/internal entity
 Use when a consumer or workflow drives the entity.
@@ -149,8 +140,8 @@ Typical behavior:
 - one command may replace the full current state in one update and trigger separate audit/trace recording when consequential
 
 Repository example:
-- `PurchaseOrderEntity`
-- `DraftCartCheckoutConsumer`
+- `PurchasePromptDocumentEntity`
+- `WorkstreamEventAttentionConsumer`
 
 ### 3. Focused doc/example snippet
 Use when teaching one concept only.
@@ -164,7 +155,7 @@ Prefer a minimal example per topic:
 - testing
 
 Repository example:
-- `ExpiringDraftCartSessionEntity`
+- `DurableNotificationRepositoryEntity`
 
 ## Final review checklist
 

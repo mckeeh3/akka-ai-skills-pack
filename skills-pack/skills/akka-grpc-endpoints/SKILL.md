@@ -50,16 +50,6 @@ Read these first if present:
 - matching gRPC endpoint tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/proto/ai/first/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/proto/ai/first/api/grpc/internal_status_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/ai/first/api/InternalStatusGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SecureGreetingGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/ai/first/api/PatternSecureGreetingGrpcEndpointImpl.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/InternalStatusGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SecureGreetingGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
 
 ## Companion skills
 
@@ -134,7 +124,7 @@ Repository example:
 Use when the endpoint translates protobuf requests into entity or view calls and maps replies back into protobuf.
 
 Repository example:
-- `ShoppingCartGrpcEndpointImpl`
+- `CoreAppGrpcEndpointImpl`
 
 ### 3. Request-context endpoint
 Use when endpoint logic depends on gRPC metadata, principals, JWT claims, or tracing.
@@ -146,13 +136,13 @@ Repository example:
 Use when a gRPC method should stream multiple replies.
 
 Repository example:
-- `ShoppingCartGrpcEndpointImpl#streamCheckedOutCarts`
+- `CoreAppGrpcEndpointImpl#streamCheckedOutRows`
 
 ### 5. Protocol-design task
 Use when the main work is protobuf layout, compatibility, common message types, or external proto imports.
 
 Repository examples:
-- `shopping_cart_grpc_endpoint.proto`
+- `workstream_event_grpc_endpoint.proto`
 - `internal_status_grpc_endpoint.proto`
 
 ## Final review checklist

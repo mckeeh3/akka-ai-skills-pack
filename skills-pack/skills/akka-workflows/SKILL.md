@@ -38,25 +38,7 @@ Read these first if present:
 - matching workflow tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/ai/first/application/TransferWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/RefundApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SupervisedExportWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReviewWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/WalletEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/TransferState.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/ApprovalState.java`
-- `../examples/akka-components/src/main/java/ai/first/api/TransferWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ApprovalWorkflowEndpoint.java`
 - `../docs/workflow-endpoint-pattern.md`
-- `../examples/akka-components/src/test/java/ai/first/application/TransferWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ApprovalWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ApprovalWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/RefundApprovalCapabilityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SupervisedExportWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReviewRequestsByStatusViewIntegrationTest.java`
 
 ## Companion skills
 

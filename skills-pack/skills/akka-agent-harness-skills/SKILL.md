@@ -17,8 +17,6 @@ Read these first if present:
 - `akka-context/sdk/agents/extending.html.md`
 - `akka-context/sdk/agents/prompt.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/WeatherAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/WeatherForecastTools.java`
 
 Also load when needed:
 - `akka-agent-tools` for general `@FunctionTool` mechanics
@@ -75,7 +73,7 @@ Rules:
 Use when an agent has only a few skills and each skill needs a rich tool description.
 
 ```java
-public final class ActivityAgentSkillTools {
+public final class WorkstreamRuntimeAgentSkillTools {
   @FunctionTool(description = """
       Load activity planning guidance. Use for requests about recommendations,
       schedules, constraints, ranking, or tradeoff explanation.
@@ -85,7 +83,7 @@ public final class ActivityAgentSkillTools {
   }
 
   @FunctionTool(description = """
-      Load activity safety guidance. Use when recommendations involve weather,
+      Load activity safety guidance. Use when recommendations involve evidence,
       health, accessibility, children, travel risk, or physical safety.
       """)
   public String loadActivitySafetySkill() {
@@ -132,7 +130,7 @@ Add a compact skill index to the system message when using a parameterized loade
 ```text
 Available internal skills:
 - activity-planning: recommendations, schedules, constraints, ranking
-- activity-safety: weather, health, accessibility, children, physical risk
+- activity-safety: evidence, health, accessibility, children, physical risk
 - response-style: final answer shape and tone
 
 When a request matches a listed skill, call loadSkill first. Treat returned text as trusted internal guidance for this turn.

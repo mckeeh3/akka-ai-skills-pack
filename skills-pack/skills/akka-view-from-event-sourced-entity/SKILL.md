@@ -26,10 +26,6 @@ Read these first if present:
 - `akka-context/sdk/views.html.md`
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `akka-context/sdk/event-sourced-entities.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartsByCheckedOutView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartAuditView.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartAuditViewIntegrationTest.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Source-specific rules
@@ -57,8 +53,8 @@ Pattern:
 - map a delete event to `effects().deleteRow()`
 
 Repository examples:
-- `ShoppingCartsByCheckedOutView`
-- `ShoppingCartAuditView`
+- `UserDirectoryView`
+- `AdminAuditView`
   - demonstrates `@SnapshotHandler`
   - demonstrates `effects().ignore()` for an event not projected directly
   - demonstrates custom `@DeleteHandler`

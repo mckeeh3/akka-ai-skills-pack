@@ -23,9 +23,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/sdk/workflows.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ReviewWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReviewWorkflowTopicConsumer.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 
 ## Use this pattern when
 

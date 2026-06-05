@@ -8,7 +8,7 @@ Primary official semantics:
 - `akka-context/sdk/running-locally.html.md`
 
 Local producer-side executable example:
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartPublicEventsConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
 
 ## Related references
 
@@ -39,24 +39,24 @@ Rules:
 Example:
 
 ```java
-@Component(id = "shopping-cart-public-events-consumer")
-@Consume.FromEventSourcedEntity(ShoppingCartEntity.class)
-@Produce.ServiceStream(id = "shopping_cart_public_events")
+@Component(id = "workstream-event-public-events-consumer")
+@Consume.FromEventSourcedEntity(AgentDefinitionEntity.class)
+@Produce.ServiceStream(id = "workstream_event_public_events")
 @Acl(allow = @Acl.Matcher(service = "*"))
-public class ShoppingCartPublicEventsConsumer extends Consumer {
+public class WorkstreamEventAttentionConsumer extends Consumer {
 
   public sealed interface PublicEvent {
     record ItemAdded(String productId, int quantity) implements PublicEvent {}
     record CheckedOut() implements PublicEvent {}
   }
 
-  public Effect onEvent(ShoppingCart.Event event) {
+  public Effect onEvent(WorkstreamEvent.Event event) {
     return switch (event) {
-      case ShoppingCart.Event.ItemAdded added ->
+      case WorkstreamEvent.Event.ItemAdded added ->
           effects().produce(new PublicEvent.ItemAdded(added.item().productId(), added.item().quantity()));
-      case ShoppingCart.Event.CheckedOut ignored -> effects().produce(new PublicEvent.CheckedOut());
-      case ShoppingCart.Event.ItemRemoved ignored -> effects().ignore();
-      case ShoppingCart.Event.Deleted ignored -> effects().ignore();
+      case WorkstreamEvent.Event.CheckedOut ignored -> effects().produce(new PublicEvent.CheckedOut());
+      case WorkstreamEvent.Event.ItemRemoved ignored -> effects().ignore();
+      case WorkstreamEvent.Event.Deleted ignored -> effects().ignore();
     };
   }
 }
@@ -75,23 +75,23 @@ Rules:
 Minimal subscriber example:
 
 ```java
-public sealed interface ShoppingCartPublicEvent {
-  record ItemAdded(String productId, int quantity) implements ShoppingCartPublicEvent {}
-  record CheckedOut() implements ShoppingCartPublicEvent {}
+public sealed interface WorkstreamEventPublicEvent {
+  record ItemAdded(String productId, int quantity) implements WorkstreamEventPublicEvent {}
+  record CheckedOut() implements WorkstreamEventPublicEvent {}
 }
 
-@Component(id = "shopping-cart-public-events-subscriber")
+@Component(id = "workstream-event-public-events-subscriber")
 @Consume.FromServiceStream(
-    service = "shopping-cart-service",
-    id = "shopping_cart_public_events")
-public class ShoppingCartPublicEventsSubscriberConsumer extends Consumer {
+    service = "workstream-event-service",
+    id = "workstream_event_public_events")
+public class WorkstreamEventPublicEventsSubscriberConsumer extends Consumer {
 
-  public Effect onEvent(ShoppingCartPublicEvent.ItemAdded event) {
+  public Effect onEvent(WorkstreamEventPublicEvent.ItemAdded event) {
     // write to another component, send a notification, or publish to another topic
     return effects().done();
   }
 
-  public Effect onEvent(ShoppingCartPublicEvent.CheckedOut event) {
+  public Effect onEvent(WorkstreamEventPublicEvent.CheckedOut event) {
     return effects().done();
   }
 }
@@ -141,9 +141,9 @@ If downstream routing or ordering depends on a stable subject, include it on the
 Example producer snippet:
 
 ```java
-public Effect onEvent(ShoppingCart.Event event) {
-  var cartId = messageContext().eventSubject().orElseThrow();
-  Metadata metadata = Metadata.EMPTY.add("ce-subject", cartId);
+public Effect onEvent(WorkstreamEvent.Event event) {
+  var workstreamId = messageContext().eventSubject().orElseThrow();
+  Metadata metadata = Metadata.EMPTY.add("ce-subject", workstreamId);
   return effects().produce(new PublicEvent.CheckedOut(), metadata);
 }
 ```
@@ -151,8 +151,8 @@ public Effect onEvent(ShoppingCart.Event event) {
 Example subscriber snippet:
 
 ```java
-public Effect onEvent(ShoppingCartPublicEvent.CheckedOut event) {
-  var cartId = messageContext().eventSubject().orElseThrow();
+public Effect onEvent(WorkstreamEventPublicEvent.CheckedOut event) {
+  var workstreamId = messageContext().eventSubject().orElseThrow();
   return effects().done();
 }
 ```

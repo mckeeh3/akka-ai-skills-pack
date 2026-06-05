@@ -35,8 +35,8 @@ Read these first if present:
 
 Prefer these local examples and references:
 - the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md` for secure AI-first SaaS foundation shape and current generated-app target architecture
-- `../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope
-- current target-project app-description files and starter templates for description-layer mechanics; do not depend on removed historical domain examples
+- `../docs/minimum-ai-first-saas-app.md` for minimum/core app/basic/chatbot-like generated SaaS scope
+- current target-project app-description files and core app templates for description-layer mechanics; do not depend on removed historical domain examples
 
 ## Use this skill when
 
@@ -121,7 +121,7 @@ Prefer this sequence unless the task is already narrowly scoped:
 
 1. apply `ai-first-saas` interpretation when broad input involves delegated work, agents, policy-bound decisions, approvals, supervision, audit, learning, or outcomes
 2. apply `core-saas-foundation` for every new SaaS app description so Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, admin, and tenant isolation are established before app-specific features
-3. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `12-workstreams/`, `15-operating-model/`, and `55-ui/` for generated full-stack AI-first SaaS apps; for minimum/starter/basic/chatbot-like app requests, bootstrap the `minimum starter / not full core` five core workstream starter set from `../docs/minimum-ai-first-saas-app.md` — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — with `markdown_response`, durable workstream logs, trace substrate, bootstrap auth/security, governed managed-agent/runtime boundary, capability boundary, and explicit full-core follow-up gaps
+3. bootstrap with `app-description-bootstrap` when no usable app-description tree exists yet, including `12-workstreams/`, `15-operating-model/`, and `55-ui/` for generated full-stack AI-first SaaS apps; for minimum/core app/basic/chatbot-like app requests, bootstrap the `core app baseline` five core workstream core app domain from `../docs/minimum-ai-first-saas-app.md` — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — with `markdown_response`, durable workstream logs, trace substrate, bootstrap auth/security, governed managed-agent/runtime boundary, capability boundary, and explicit full-core follow-up gaps
 4. normalize input with `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 5. route input with `app-description-intake-router`
 6. model role-authorized user-facing functional agents with `app-description-functional-agent-modeling` when work areas, left-rail agents, prompt intent, skills, reference documents, expertise manifests, tool boundaries/loaders, surfaces, callable capabilities, authority, traces, or tests changed

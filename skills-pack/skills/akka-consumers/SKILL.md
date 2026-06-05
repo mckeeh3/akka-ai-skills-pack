@@ -44,17 +44,7 @@ Read these first if present:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/DraftCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartCommandsTopicConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEventsToTopicConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartPublicEventsConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReviewWorkflowTopicConsumer.java`
 - `../docs/consumer-reference.md`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 
 ## Companion skills
 
@@ -109,15 +99,15 @@ Load the companion skill that matches the current task:
 Use `akka-consumer-from-event-sourced-entity`.
 
 Repository examples:
-- `ShoppingCartCheckoutConsumer`
-- `ShoppingCartEventsToTopicConsumer`
-- `ShoppingCartPublicEventsConsumer`
+- `WorkstreamEventAttentionConsumer`
+- `WorkstreamEventAttentionConsumer`
+- `WorkstreamEventAttentionConsumer`
 
 ### 2. Downstream reaction to key value state snapshots
 Use `akka-consumer-from-key-value-entity`.
 
 Repository example:
-- `DraftCartCheckoutConsumer`
+- `WorkstreamEventAttentionConsumer`
 
 ### 3. Downstream reaction to workflow progress
 Use `akka-consumer-from-workflow`.
@@ -129,31 +119,31 @@ Repository example:
 Use `akka-consumer-from-topic`.
 
 Repository example:
-- `ShoppingCartCommandsTopicConsumer`
+- `WorkstreamEventAttentionConsumer`
 
 ### 5. Service-to-service subscription from another Akka service
 Use `akka-consumer-from-service-stream`.
 
 Repository references:
-- `ShoppingCartPublicEventsConsumer` for the producer side
+- `WorkstreamEventAttentionConsumer` for the producer side
 - `docs/consumer-reference.md` for the subscriber-side snippet
 
 ### 6. Event publication to topics or service streams
 Use `akka-consumer-producing`.
 
 Repository examples:
-- `ShoppingCartEventsToTopicConsumer`
-- `ShoppingCartPublicEventsConsumer`
+- `WorkstreamEventAttentionConsumer`
+- `WorkstreamEventAttentionConsumer`
 - `ReviewWorkflowTopicConsumer`
 
 ### 7. Integration and eventing tests
 Use `akka-consumer-testing`.
 
 Repository examples:
-- `ShoppingCartCommandsTopicConsumerIntegrationTest`
+- `WorkstreamEventAttentionConsumerIntegrationTest`
 - `ReviewWorkflowTopicConsumerIntegrationTest`
-- `ShoppingCartCheckoutConsumerIntegrationTest`
-- `DraftCartCheckoutConsumerIntegrationTest`
+- `WorkstreamEventAttentionConsumerIntegrationTest`
+- `WorkstreamEventAttentionConsumerIntegrationTest`
 
 ## Final review checklist
 

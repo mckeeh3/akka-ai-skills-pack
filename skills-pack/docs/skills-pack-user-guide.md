@@ -24,7 +24,7 @@ For a new app with an implementation baseline, fork or clone this repository, th
 
 Current manifest version: `0.3.0`
 
-Clone or check out the desired release tag. This repository clone/fork is the source checkout for the runnable core app. Then copy or symlink the skills library, including referenced pack docs/examples/templates/tools, into your harness skills directory:
+Clone or check out the desired release tag. This repository clone/fork is the source attention for the runnable core app. Then copy or symlink the skills library, including referenced pack docs/examples/templates/tools, into your harness skills directory:
 
 ```bash
 git clone https://github.com/mckeeh3/akka-ai-skills-pack.git

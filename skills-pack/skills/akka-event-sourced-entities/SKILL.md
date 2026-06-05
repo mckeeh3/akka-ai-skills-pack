@@ -41,15 +41,6 @@ If these files exist, read them first:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/OrderEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ExpiringShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/OrderEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/OrderEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ExpiringShoppingCartEntityTest.java`
 
 ## Companion skills
 
@@ -135,8 +126,8 @@ Typical behavior:
 - endpoint translates `CommandException` to HTTP response and records required audit/trace data
 
 Repository example:
-- `ShoppingCartEntity`
-- `ShoppingCartEndpoint`
+- `AgentDefinitionEntity`
+- `WorkstreamEndpoint`
 
 ### 2. Downstream/internal entity
 Use when a consumer or workflow drives the entity.
@@ -149,8 +140,8 @@ Typical behavior:
 - one command may emit zero, one, or many audit-grade facts
 
 Repository example:
-- `OrderEntity`
-- `ShoppingCartCheckoutConsumer`
+- `PromptDocumentEntity`
+- `WorkstreamEventAttentionConsumer`
 
 ### 3. Focused doc/example snippet
 Use when teaching one concept only.
@@ -164,7 +155,7 @@ Prefer a minimal example per topic:
 - testing
 
 Repository example:
-- `ExpiringShoppingCartEntity`
+- `ExpiringAgentDefinitionEntity`
 
 ## Final review checklist
 

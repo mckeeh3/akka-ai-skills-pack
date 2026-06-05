@@ -28,7 +28,7 @@ Read these first if present:
 - existing `app-description/12-workstreams/**`
 - existing `app-description/55-ui/**`
 - existing `app-description/70-traceability/surface-to-capability-map.md`
-- `../templates/ai-first-saas-starter/app-description/README.md` and its `12-workstreams/**`, `55-ui/**`, and `70-traceability/**` files when bootstrapping or repairing starter surface contracts
+- `../templates/ai-first-saas-core-app/app-description/README.md` and its `12-workstreams/**`, `55-ui/**`, and `70-traceability/**` files when bootstrapping or repairing core app surface contracts
 - `../docs/examples/domain-workstream-surface-contract-example.md` when a domain-specific surface example is useful
 - `../tools/validate-surface-contracts.sh` when validating a target app-description surface layer
 
@@ -67,13 +67,13 @@ app-description/70-traceability/
 
 Create or update only the smallest files needed. Keep `12-workstreams/surface-contracts/**` authoritative for what a surface means; keep `12-workstreams/functional-agents.md` authoritative for workstream icon assignment and meaning; keep `55-ui/**` focused on rendering, interaction, route/deep-link, style, and frontend API realization details.
 
-When the target app has no usable starter surface layer, copy and adapt the source-controlled starter files from `../templates/ai-first-saas-starter/app-description/**` into the target project's `app-description/**`. Do not reference retired distribution output directories as template sources.
+When the target app has no usable core app surface layer, copy and adapt the source-controlled core app files from `../templates/ai-first-saas-core-app/app-description/**` into the target project's `app-description/**`. Do not reference retired distribution output directories as template sources.
 
 ## Canonical surface types
 
 Use these types unless the product intent requires a more specific typed surface:
 
-- `markdown_response` for the minimum five core workstream starter (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) and other low-ceremony explanatory replies that still require a typed payload, sanitized rendering, trace/correlation ids, explicit states, accessibility, and rendering/security tests; do not treat it as an informal chat blob or as a substitute for richer typed surfaces when decisions, approvals, forms, tables, settings, audit timelines, or workflow status are required;
+- `markdown_response` for the minimum five core workstream core app domain (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) and other low-ceremony explanatory replies that still require a typed payload, sanitized rendering, trace/correlation ids, explicit states, accessibility, and rendering/security tests; do not treat it as an informal chat blob or as a substitute for richer typed surfaces when decisions, approvals, forms, tables, settings, audit timelines, or workflow status are required;
 - `dashboard` / `attention-surface`;
 - `autonomous-task-progress` / `autonomous-task-result` / `notification-summary` for durable internal/background work surfaced through governed task lifecycle capabilities;
 - `form` / `guided-intake`;

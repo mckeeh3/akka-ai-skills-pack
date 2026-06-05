@@ -23,12 +23,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/TransferWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/WalletEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/TransferState.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/Wallet.java`
-- `../examples/akka-components/src/test/java/ai/first/application/TransferWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/WalletEntityTest.java`
 
 ## Capability-first compensation role
 

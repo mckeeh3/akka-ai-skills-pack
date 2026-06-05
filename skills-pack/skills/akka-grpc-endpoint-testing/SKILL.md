@@ -20,10 +20,6 @@ When the same capability is also exposed through UI, HTTP, agent tools, workflow
 
 Read these first if present:
 - `akka-context/sdk/grpc-endpoints.html.md`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/InternalStatusGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/ai/first/api/InternalStatusGrpcEndpointImpl.java`
 
 ## Test harness rules
 
@@ -37,12 +33,12 @@ gRPC endpoint tests should:
 ## Repository patterns
 
 ### Unary endpoint tests
-- `ShoppingCartGrpcEndpointIntegrationTest`
+- `WorkstreamEventGrpcEndpointIntegrationTest`
   - protobuf request-to-command mapping
   - `INVALID_ARGUMENT` assertion for rejected requests
 
 ### Streaming endpoint tests
-- `ShoppingCartGrpcEndpointIntegrationTest`
+- `WorkstreamEventGrpcEndpointIntegrationTest`
   - collects stream replies with `Sink.seq()` and `testKit.getMaterializer()`
   - waits for view consistency before consuming the gRPC stream
 

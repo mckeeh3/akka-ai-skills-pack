@@ -29,13 +29,6 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/main/java/ai/first/api/CounterStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/DraftCartViewStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/application/DraftCartsByCheckedOutView.java`
-- `../examples/akka-components/src/test/java/ai/first/application/CounterStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartViewStreamEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -64,13 +57,13 @@ Read these first if present:
   - tested with `SseRouteTester`
 
 ### Component-backed SSE examples
-- `ShoppingCartEndpoint#notifications`
+- `WorkstreamEndpoint#notifications`
   - maps event sourced entity notifications to API records
-- `DraftCartEndpoint#notifications`
+- `MeEndpoint#notifications`
   - maps key value entity notifications to API records
 
 ### View-backed SSE example
-- `DraftCartViewStreamEndpoint`
+- `WorkstreamLogViewStreamEndpoint`
   - streams a view query with `streamUpdates = true`
   - uses an SSE-specific view query with no `ORDER BY`
   - forwards `lastSeenSseEventId()` to the view stream offset

@@ -155,7 +155,7 @@ AuthKit access tokens may not include `email`. Generated backends must not const
 var identity = WorkosIdentityResolver.fromClaims(requestContext().getJwtClaims());
 ```
 
-The resolver should read subject from `subject()`/`sub`, email from `email`, `preferred_username`, or `username`, display name from `name`, `given_name`, or `nickname`, and when subject is present but email is missing fetch the WorkOS user-management profile server-side with backend-only `WORKOS_API_KEY` and optional `WORKOS_API_BASE_URL`. Cache successful local/starter lookups through Akka components. Never expose or log `WORKOS_API_KEY`.
+The resolver should read subject from `subject()`/`sub`, email from `email`, `preferred_username`, or `username`, display name from `name`, `given_name`, or `nickname`, and when subject is present but email is missing fetch the WorkOS user-management profile server-side with backend-only `WORKOS_API_KEY` and optional `WORKOS_API_BASE_URL`. Cache successful local/core app lookups through Akka components. Never expose or log `WORKOS_API_KEY`.
 
 Use `bearerTokenIssuers` and `staticClaims` when the WorkOS issuer/audience/claim contract is known:
 

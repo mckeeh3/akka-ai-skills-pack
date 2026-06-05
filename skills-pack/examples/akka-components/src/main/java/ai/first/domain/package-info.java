@@ -1,19 +1,8 @@
 /**
- * Pure domain code for the service.
+ * Pure domain models, validation, capability contracts, and immutable records.
  *
- * <p>This package contains AI-reference examples for both event sourced entities and key value
- * entities.
- *
- * <p>Use these patterns:
- *
- * <ul>
- *   <li>immutable state records</li>
- *   <li>commands grouped under descriptive domain types</li>
- *   <li>validators returning deterministic error lists</li>
- *   <li>event sourced helpers returning events</li>
- *   <li>key value helpers returning updated state or no-op decisions</li>
- * </ul>
- *
- * <p>Domain code must not return Akka effects.
+ * <p>Use {@code ai.first.domain.foundation.*} for reusable foundation records,
+ * {@code ai.first.domain.coreapp.*} for built-in core app workstream records, and
+ * {@code ai.first.domain.business.<area>} for user-owned business-specific domain models.
  */
 package ai.first.domain;

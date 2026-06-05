@@ -19,7 +19,7 @@ Read these first when using this skill:
 - `../docs/capability-first-backend-architecture.md`
 - `../docs/workstream-expertise-model.md` when LLM-backed workstreams, workstream help/explanation, governed skills/references, or user-facing workstream guidance are in scope
 
-For minimum, starter, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../docs/minimum-ai-first-saas-app.md` before applying the minimum starter routing rule.
+For minimum, core app, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../docs/minimum-ai-first-saas-app.md` before applying the core app baseline routing rule.
 
 For high-level product input, also read `../docs/ai-first-saas-application-architecture.md` and load `../ai-first-saas/SKILL.md` plus `../core-saas-foundation/SKILL.md`.
 
@@ -57,11 +57,11 @@ Functional agents and their surfaces are the vertical application slices. Akka e
 
 Do not make a conventional page tree, CRUD console, or chatbot-bolt-on design the primary architecture for authenticated consequential work. Routes and pages may exist for implementation, deep links, public/static content, and direct surface URLs.
 
-## Minimum starter routing
+## Minimum core app routing
 
-For natural-language requests such as “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or an initial chatbot-like generated SaaS, apply `../docs/minimum-ai-first-saas-app.md`.
+For natural-language requests such as “minimum AI-first app,” “core app,” “basic app,” “basic chatbot,” “smallest useful app,” or an initial chatbot-like generated SaaS, apply `../docs/minimum-ai-first-saas-app.md`.
 
-The correct first runnable target is the **five core workstream starter set**:
+The correct first runnable target is the **five core workstream core app domain**:
 - bootstrap-authorized user and selected AuthContext;
 - role-authorized functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with bounded bootstrap authority;
 - universal workstream icon metadata for visible shell workstreams, with My Account launched from the lower-left signed-in user tile rather than duplicated in the top rail;
@@ -69,7 +69,7 @@ The correct first runnable target is the **five core workstream starter set**:
 - first structured surface type `markdown_response`, rendered as sanitized HTML;
 - no public self-registration, autonomous privilege expansion, generic unauthenticated chatbot, or page-first CRUD admin app.
 
-Treat this as a narrower starter readiness state, not full-core SaaS readiness. Record follow-up work for richer My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed behavior documents, and security completeness. Even in the minimum slice, route every backend action, surface action, browser API, and agent-tool through capability-first modeling before selecting Akka components.
+Treat this as a narrower core app readiness state, not full-core SaaS readiness. Record follow-up work for richer My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed behavior documents, and security completeness. Even in the minimum slice, route every backend action, surface action, browser API, and agent-tool through capability-first modeling before selecting Akka components.
 
 ## Interpretation workflow
 
@@ -77,7 +77,7 @@ Treat this as a narrower starter readiness state, not full-core SaaS readiness. 
 
 For generated SaaS apps, keep `core-saas-foundation` mandatory: identity, AuthContext, tenant/customer scope, memberships, roles/capabilities, `/api/me`, invitations, admin audit, backend authorization, tenant isolation, and security tests.
 
-Full core app scope also requires complete My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents unless the user explicitly chooses a narrower deferred scope. The minimum starter is the accepted narrower scope: the five core workstream starter set first, each using `markdown_response`, with full-core foundation items kept as explicit follow-up/readiness gates.
+Full core app scope also requires complete My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents unless the user explicitly chooses a narrower deferred scope. The core app baseline is the accepted narrower scope: the five core workstream core app domain first, each using `markdown_response`, with full-core foundation items kept as explicit follow-up/readiness gates.
 
 ### 2. Identify vertical functional agents
 
@@ -97,7 +97,7 @@ Common foundation functional agents include My Account, User Admin, Agent Admin,
 
 ### 3. Distinguish internal agents
 
-Internal agents are not left-rail navigation units. Use them for bounded backend AI work such as classification, summarization, evaluation, routing, proposal drafting, governance review, extraction, replay, or escalation triage. Model them as nodes in the internal workstream agent graph: the functional agent or workflow owns the virtual dashboard view of work to be delegated, chooses bounded worker nodes, records delegation/result edges, and escalates unresolved or high-risk outcomes back to human surfaces. They still need governed `AgentDefinition`, prompts/skills/references, skill/reference manifests when expertise is loaded, governed-tool exposure as agent-tools/internal-tools, tool boundaries, model policy, AuthContext or service authority basis, traces, and tests. When the internal node is durable task-oriented/background work, route to `akka-autonomous-agents` and `../docs/autonomous-agent-worker-runtime-pattern.md`; require a task contract, governed capabilities, v3 `worker.task.*` events, attention, structured surfaces, provider fail-closed behavior, and no fake success.
+Internal agents are not left-rail navigation units. Use them for bounded backend AI work such as classification, summarization, evaluation, routing, proposal drafting, governance review, extraction, replay, or escalation triage. Model them as nodes in the internal workstream agent graph: the functional agent or workflow owns the virtual dashboard view of work to be delegated, chooses bounded worker nodes, records delegation/result edges, and escalates unresolved or high-risk outcomes back to human surfaces. They still need governed `AgentDefinition`, prompts/skills/references, skill/reference manifests when expertise is loaded, governed-tool exposure as agent-tools/internal-tools, tool boundaries, model policy, AuthContext or service authority basis, traces, and tests. When the internal node is durable task-oriented/background work, route to `akka-autonomous-agents` and `../docs/autonomous-agent-worker-runtime-pattern.md`; require a task contract, governed capabilities, typed `worker.task.*` workstream events, attention, structured surfaces, provider fail-closed behavior, and no fake success.
 
 ### 4. Define structured surfaces
 
@@ -160,7 +160,7 @@ When this skill is used for planning, hand downstream work a concise model conta
 - selected functional agents and their roles/capabilities;
 - workstream expertise skills/references needed to let the workstream agent explain role-specific dashboards, surface graph behavior, available governed-tools, denials, and examples of what users can do;
 - incremental-change reconciliation notes when the app already has workstreams, dashboards, surface graph nodes/edges, internal workstream agent graph delegations, governed-tools, or workstream expertise that must be updated rather than duplicated;
-- internal agents when applicable, clearly separated from left-rail functional agents; durable worker nodes should reference `../docs/autonomous-agent-worker-runtime-pattern.md` and preserve task contract, v3 events, attention, surfaces, provider fail-closed, and no fake success guardrails;
+- internal agents when applicable, clearly separated from left-rail functional agents; durable worker nodes should reference `../docs/autonomous-agent-worker-runtime-pattern.md` and preserve task contract, typed workstream events, attention, surfaces, provider fail-closed, and no fake success guardrails;
 - initial workstreams, universal workstream icon descriptors, and default surfaces;
 - structured surface contracts or required follow-up to create them;
 - surface action-to-capability mappings;

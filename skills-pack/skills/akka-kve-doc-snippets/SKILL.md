@@ -12,12 +12,6 @@ Use this skill when the task is to write documentation examples for key value en
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/DraftCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/PurchaseOrderEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ExpiringDraftCartSessionEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ExpiringDraftCartSessionEntityTest.java`
 - `../references/akka-entity-comparison.md`
 
 ## Mission
@@ -70,12 +64,12 @@ When rewriting or extending KVE documentation, prefer a separate snippet for eac
 ## Mapping to repository references
 
 Use these as source material, but simplify aggressively for docs:
-- `DraftCartEntity` -> edge-facing write/read/delete/notifications
-- `PurchaseOrderEntity` -> downstream/internal no-op, consistent read, replication
-- `ExpiringDraftCartSessionEntity` -> TTL
-- `DraftCartEndpoint` -> SSE mapping
-- `DraftCartEntityTest` -> unit test shape
-- `ExpiringDraftCartSessionEntityTest` -> TTL assertion shape
+- `DurableIdentityRepositoryEntity` -> edge-facing write/read/delete/notifications
+- `PurchasePromptDocumentEntity` -> downstream/internal no-op, consistent read, replication
+- `DurableNotificationRepositoryEntity` -> TTL
+- `MeEndpoint` -> SSE mapping
+- `DurableIdentityRepositoryEntityTest` -> unit test shape
+- `DurableNotificationRepositoryEntityTest` -> TTL assertion shape
 
 ## What to trim out of docs
 

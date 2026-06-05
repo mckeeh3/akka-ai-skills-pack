@@ -12,7 +12,7 @@ Companion docs:
 |---|---|
 | SaaS Owner | The platform operator that sells and operates the SaaS product. |
 | Tenant | The SaaS user organization that subscribes to the platform and uses it to serve its own customers. This is the canonical internal/architectural term for “SaaS user.” |
-| Customer | An organization served by a Tenant through app-specific online services. Customers always start as organizations in the starter model. |
+| Customer | An organization served by a Tenant through app-specific online services. Customers always start as organizations in the core app model. |
 | Account | A local Akka-owned authorization record linked to a WorkOS-authenticated human identity. |
 | User Profile | Human-facing account information and scoped profile attributes shown in the application, separate from authentication and authorization facts. |
 | User Settings | User-controlled preferences that affect application experience, such as UI appearance, without changing authorization. |
@@ -73,7 +73,7 @@ The same human/email may have separate local accounts or memberships at multiple
 
 ## AI-first expectations for the core foundation
 
-The starter foundation should validate the broader AI-first architecture by using core administrative work as real AI-first product behavior, not only as CRUD.
+The core app foundation should validate the broader AI-first architecture by using core administrative work as real AI-first product behavior, not only as CRUD.
 
 Core AI-first features must include:
 
@@ -113,9 +113,9 @@ Example AI-first core scenarios:
 
 ## Initial implementation slices
 
-### Slice 0: minimum starter
+### Slice 0: core app baseline
 
-Use Slice 0 only when the requested target is the smallest valid generated AI-first SaaS app, starter app, or chatbot-like bootstrap shell. Slice 0 is the **five core workstream starter** defined in `minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with `markdown_response` surfaces. It is not full-core readiness, a User-Admin-only slice, or a generic public chatbot.
+Use Slice 0 only when the requested target is the smallest valid generated AI-first SaaS app, core app, or chatbot-like bootstrap shell. Slice 0 is the **five core workstream core app domain** defined in `minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with `markdown_response` surfaces. It is not full-core readiness, a User-Admin-only slice, or a generic public chatbot.
 
 Slice 0 must include all of these together:
 

@@ -1,13 +1,13 @@
-# Focused Akka Component Examples
+# Core app Akka component examples
 
-This directory contains `ai.first` reference examples for installable skills-pack guidance.
+This directory contains a source snapshot of the current runnable core app Java examples from the repository root. The examples are copied here so installed skills can inspect concrete, working Akka Java SDK patterns without treating the target app's `src/**` directory as a skills-library reference path.
 
-These examples are not the runnable core app and are not a standalone build module. They are focused source fixtures read by skills and tests in downstream/generated projects. The repository root app uses the fixed `ai.first` package; keep focused Akka component fixtures here so root `src/` remains the canonical core application source.
+These files are reference examples, not a second app baseline and not an independent build module. Keep them synchronized with the real core app implementation when pack guidance needs concrete code examples.
 
-Key paths:
+Included content:
 
-- `src/main/java/ai/first/**` — component, endpoint, agent, workflow, entity, view, consumer, timed-action, MCP, and gRPC reference implementations
-- `src/test/java/ai/first/**` — focused tests and integration tests for the reference examples
-- `src/main/proto/ai/first/**` — gRPC example proto definitions
+- `src/main/java/ai/first/**` — current core app API, application, and domain examples
+- `src/test/java/ai/first/**` — current core app tests
+- `src/main/resources/application.conf` — current core app backend configuration example
 
-Static browser UI fixtures were removed from this examples tree. In a source checkout, use the root app `frontend/src/workstream/**` reference and `skills-pack/docs/workstream-ui-reference-architecture.md` for generated SaaS UI structure. From an installed skills library, use `.agents/skills/docs/workstream-ui-reference-architecture.md`; root frontend application source is not installed. Use focused HTTP/SSE/WebSocket endpoint examples only for backend delivery mechanics.
+Do not restore retired mechanics-only domain fixtures in this directory. New examples should come from the actual core app implementation or from narrowly scoped domain-specific follow-up work.

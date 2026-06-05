@@ -23,9 +23,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/OrderEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ExpiringShoppingCartEntityTest.java`
 
 ## Test kit rules
 
@@ -66,20 +63,20 @@ Use these `EventSourcedTestKit` capabilities:
 ## Repository examples
 
 ### Standard entity tests
-- `ShoppingCartEntityTest`
+- `AgentDefinitionEntityTest`
   - success
   - validation error
   - no-op
   - delete
 
 ### Multi-event entity tests
-- `OrderEntityTest`
+- `PromptDocumentEntityTest`
   - one command persisting two events
   - no-op for missing item
   - strongly consistent read pattern
 
 ### TTL test
-- `ExpiringShoppingCartEntityTest`
+- `ExpiringAgentDefinitionEntityTest`
   - asserts `Optional.of(Duration.ofDays(30))` from `getExpireAfter()`
 
 ## Generated SaaS test set

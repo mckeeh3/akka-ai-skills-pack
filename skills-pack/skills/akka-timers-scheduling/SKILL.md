@@ -22,15 +22,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 - `akka-context/sdk/timed-actions.html.md`
 - `akka-context/sdk/setup-and-dependency-injection.html.md`
-- `../examples/akka-components/src/main/java/ai/first/api/TicketReservationEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ReminderJobEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReminderJobTimedAction.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ApprovalDeadlineWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ApprovalDeadlineTimedAction.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineWorkflowIntegrationTest.java`
 
 ## Where timers may be scheduled
 
@@ -66,12 +57,12 @@ timerScheduler.createSingleTimer(
     5,
     componentClient
         .forTimedAction()
-        .method(TicketReservationTimedAction::expireReservation)
+        .method(AttentionProducerService::expireReservation)
         .deferred(reservationId));
 
 var state = componentClient
     .forKeyValueEntity(reservationId)
-    .method(TicketReservationEntity::reserve)
+    .method(DurableAttentionRepositoryEntity::reserve)
     .invoke(command);
 ```
 
@@ -87,7 +78,7 @@ timerScheduler.delete(timerName(reservationId));
 Use when an untracked business object is worse than an obsolete timer.
 
 Repository example:
-- `TicketReservationEndpoint#createReservation`
+- `WorkstreamEndpoint#createReservation`
 
 ### Schedule from a workflow command
 Use when a workflow owns the timeout or reminder lifecycle.
@@ -99,19 +90,19 @@ Repository example:
 Use when the timer is no longer needed but the target command remains safe if the timer still fires.
 
 Repository example:
-- `TicketReservationEndpoint#confirm`
+- `WorkstreamEndpoint#confirm`
 
 ### Reschedule by reusing the same name
 Use when the latest reminder or expiry time should replace the previous one.
 
 Repository example:
-- `ReminderJobTimedAction#sendReminder`
+- `AttentionRefreshTimedAction#sendReminder`
 
 ### Schedule from inside a timed action
 Use when each execution decides whether more work remains.
 
 Repository example:
-- `ReminderJobTimedAction#sendReminder`
+- `AttentionRefreshTimedAction#sendReminder`
 
 ## Generated SaaS timer contract
 

@@ -23,9 +23,6 @@ Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
 - `akka-context/sdk/agents/testing.html.md`
-- `../examples/akka-components/src/test/java/ai/first/application/TransferWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ApprovalWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/WalletEntityTest.java`
 
 ## Capability-first test role
 

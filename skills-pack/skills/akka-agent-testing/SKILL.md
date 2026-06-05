@@ -25,9 +25,6 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 Read these first if present:
 - `akka-context/sdk/agents/testing.html.md`
 - `akka-context/sdk/agents/llm_eval.html.md`
-- `../examples/akka-components/src/test/java/ai/first/application/ActivityAgentTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/AgentTeamWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ActivityAgentEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -50,11 +47,11 @@ Read these first if present:
 
 ## Repository examples
 
-- `ActivityAgentTest`
+- `WorkstreamRuntimeAgentTest`
   - single agent, structured reply mapping
 - `AgentTeamWorkflowIntegrationTest`
   - workflow orchestration with two mocked agents
-- `ActivityAgentEndpointIntegrationTest`
+- `WorkstreamRuntimeAgentEndpointIntegrationTest`
   - HTTP endpoint over direct and streaming agent calls
 
 ## Governed runtime agent tests

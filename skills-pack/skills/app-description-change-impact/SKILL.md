@@ -51,7 +51,7 @@ Prefer these current generated-SaaS references when present:
 - target project `app-description/70-traceability/behavior-to-tests-map.md`
 - target project `app-description/70-traceability/change-impact-map.md`
 
-Use current target-project app-description files and starter templates for traceability mechanics; do not depend on removed historical domain examples.
+Use current target-project app-description files and core app templates for traceability mechanics; do not depend on removed historical domain examples.
 
 ## Use this skill when
 

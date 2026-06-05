@@ -52,31 +52,6 @@ Read these first if present:
 - matching endpoint tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/ai/first/api/GreetingEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/LowLevelHttpEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ProxyGreetingEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/PingWebSocketEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/CounterStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/DraftCartViewStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/RequestHeadersEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SecureGreetingEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/InternalStatusEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/OrderEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/PurchaseOrderEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/GreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/LowLevelHttpEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ProxyGreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PingWebSocketEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/CounterStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartViewStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/RequestHeadersEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SecureGreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/InternalStatusEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/OrderEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEndpointIntegrationTest.java`
 
 ## Companion skills
 
@@ -156,10 +131,10 @@ Repository example:
 Use when the endpoint translates HTTP requests into entity or view calls and maps replies into API types.
 
 Repository examples:
-- `ShoppingCartEndpoint`
-- `DraftCartEndpoint`
-- `OrderEndpoint`
-- `PurchaseOrderEndpoint`
+- `WorkstreamEndpoint`
+- `MeEndpoint`
+- `AdminEndpoint`
+- `PurchaseAdminEndpoint`
 
 ### 3. Request-context endpoint
 Use when endpoint logic depends on query parameters, request headers, JWT claims, or SSE reconnect metadata.
@@ -185,9 +160,9 @@ Use when the endpoint must stream a sequence of updates and optionally resume fr
 
 Repository examples:
 - `CounterStreamEndpoint`
-- `DraftCartViewStreamEndpoint`
-- `ShoppingCartEndpoint#notifications`
-- `DraftCartEndpoint#notifications`
+- `WorkstreamLogViewStreamEndpoint`
+- `WorkstreamEndpoint#notifications`
+- `MeEndpoint#notifications`
 
 ### 7. WebSocket endpoint
 Use when the endpoint must support bidirectional streaming over a socket.

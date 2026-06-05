@@ -15,14 +15,14 @@ The repository already has strong focused examples for individual Akka substrate
 - agents, structured responses, tools, guardrails, evaluation, orchestration, memory/runtime state, and streaming;
 - workflows with approval, pause/resume, compensation-style flow, notifications, deadlines, and endpoint integration;
 - Event Sourced Entities, Key Value Entities, Views, Consumers, Timed Actions, HTTP/gRPC/MCP endpoints, and Akka-hosted web UI delivery patterns;
-- source-controlled starter app-description templates and current AI-first SaaS core app-description references for description/planning mechanics.
+- source-controlled core app app-description templates and current AI-first SaaS core app-description references for description/planning mechanics.
 
 The core app baseline is the canonical end-to-end implementation baseline. Do not add domain-specific vertical examples unless they provide reusable skills-pack value that the core app, root app-description, workstream UI reference, governed-agent examples, and focused Akka substrate examples do not already cover.
 
 ## Priority key
 
 - **P0 required**: needed for future agents to confidently generate AI-first SaaS apps without guessing core operating-model semantics.
-- **P1 important**: closes recurring implementation/test gaps once the starter path exists.
+- **P1 important**: closes recurring implementation/test gaps once the core app path exists.
 - **P2 breadth**: useful breadth examples, but not required before the first complete AI-first reference path.
 
 ## Completed canonical core app coverage
@@ -84,7 +84,7 @@ Suggested shape:
 
 ### P0: explicit AI-first acceptance/evaluation test patterns
 
-Status: **partially covered by starter foundation and governed-agent tests; domain-neutral decision acceptance tests remain open**.
+Status: **partially covered by core app foundation and governed-agent tests; domain-neutral decision acceptance tests remain open**.
 
 Needed patterns:
 
@@ -119,7 +119,7 @@ Pattern notes:
 
 ### P1: AI-first web UI reference surface
 
-Status: **covered by the workstream UI reference and starter routing; old standalone static UI fixtures removed**.
+Status: **covered by the workstream UI reference and core app routing; old standalone static UI fixtures removed**.
 
 References:
 - canonical UI architecture: `docs/workstream-ui-reference-architecture.md`

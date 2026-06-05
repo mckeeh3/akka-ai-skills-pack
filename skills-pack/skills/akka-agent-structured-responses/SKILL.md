@@ -23,9 +23,6 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 Read these first if present:
 - `akka-context/sdk/agents/structured.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ActivityAnswerEvaluatorAgent.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ActivityAgentTest.java`
 
 ## Use this pattern when
 
@@ -45,7 +42,7 @@ Read these first if present:
 
 ## Repository examples
 
-- `ActivityAgent`
+- `WorkstreamRuntimeAgent`
   - structured recommendation reply
   - `responseConformsTo(...)`
   - fallback value

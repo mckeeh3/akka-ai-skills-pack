@@ -22,9 +22,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/DraftCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartEntityTest.java`
 
 ## Core pattern
 
@@ -41,9 +38,9 @@ Read these first if present:
 - Notifications are for live updates, not historical replay.
 
 Repository example:
-- `DraftCartEntity.notifications()`
-- `DraftCartEntity.addItem(...)`
-- `DraftCartEntity.delete(...)`
+- `DurableIdentityRepositoryEntity.notifications()`
+- `DurableIdentityRepositoryEntity.addItem(...)`
+- `DurableIdentityRepositoryEntity.delete(...)`
 
 ## Endpoint rules
 
@@ -54,15 +51,15 @@ When exposing notifications over HTTP:
 - do not leak internal notification types directly outside the service unless explicitly intended
 
 Repository example:
-- `DraftCartEndpoint.notifications(...)`
-- `DraftCartEndpoint.toNotification(...)`
+- `MeEndpoint.notifications(...)`
+- `MeEndpoint.toNotification(...)`
 
 ## Testing guidance
 
 At minimum, test that published messages happen after successful command handling.
 
 Repository example:
-- `DraftCartEntityTest`
+- `DurableIdentityRepositoryEntityTest`
 
 This repository uses a stub `NotificationPublisher` to capture published messages and assert them.
 

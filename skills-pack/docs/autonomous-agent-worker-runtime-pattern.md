@@ -1,6 +1,6 @@
 # AutonomousAgent worker runtime pattern
 
-Use this pattern for generated secure AI-first SaaS workstreams that need durable internal/background model-driven work with a real Akka `AutonomousAgent` task lifecycle. It is extracted from the starter User Admin access-review worker, Agent Admin prompt-risk review worker, Audit/Trace summary worker, Governance/Policy impact-analysis worker, and My Account personal attention digest worker.
+Use this pattern for generated secure AI-first SaaS workstreams that need durable internal/background model-driven work with a real Akka `AutonomousAgent` task lifecycle. It is extracted from the core app User Admin access-review worker, Agent Admin prompt-risk review worker, Audit/Trace summary worker, Governance/Policy impact-analysis worker, and My Account personal attention digest worker.
 
 This is a runtime completion pattern, not only a design pattern: a worker is done only when the normal local runtime path starts and observes a concrete Akka `AutonomousAgent` task, projects backend-owned state, emits workstream events/attention, renders governed surfaces, and fails closed when provider or governed runtime configuration is missing.
 
@@ -24,8 +24,8 @@ Every generated-app worker task must preserve these contracts before coding star
 | Governed capabilities | Capability family for start/read/cancel/accept/reject or task-specific equivalents, governed-tool ids, actor/caller, `AuthContext`, tenant/customer scope, required roles/capabilities, idempotency key, policy/approval rules, audit/work traces, and exposure channels. |
 | Task contract | Typed task input, task name/description, instruction builder inputs, result schema, result rules, max iterations, evidence/tool references, forbidden effects, and browser-safe summary fields. |
 | Runtime boundary | ComponentClient start/read calls, governed managed-agent runtime resolution, model/provider/profile checks, `ToolPermissionBoundary` checks, authorized read-only evidence tools, `readSkill`/`readReferenceDoc` grants when needed, trace refs, and fail-closed adapter behavior. |
-| Durable projection | Starter/domain task id, optional Akka autonomous task id, status/progress/result/blocker fields, correlation/idempotency keys, source refs, and terminal human disposition. |
-| Events/attention/surfaces | v3 workstream events, shared `worker.task.*` events, attention upsert/resolve rules, structured progress/result surfaces, capability-backed actions, and frontend reload from backend projections. |
+| Durable projection | Core app/domain task id, optional Akka autonomous task id, status/progress/result/blocker fields, correlation/idempotency keys, source refs, and terminal human disposition. |
+| Events/attention/surfaces | typed workstream events, shared `worker.task.*` events, attention upsert/resolve rules, structured progress/result surfaces, capability-backed actions, and frontend reload from backend projections. |
 | Tests/checks | Unit/integration tests for lifecycle, authorization, idempotency, fail-closed states, typed result validation, event/attention projection, surface/API contracts, and focused scans for fake-success regressions. |
 
 ## Standard capability family
@@ -67,9 +67,9 @@ The normal adapter must:
 - resolve governed runtime context before task start, including model/provider/profile configuration, active managed-agent configuration where applicable, prompt/skill/reference traces, evidence tools, and tool-boundary grants;
 - register only authorized read-only tools/evidence loaders for the worker slice.
 
-The fail-closed adapter must produce a blocked provider/runtime state when `ComponentClient`, provider/model config, governed profile, tool grants, evidence access, or runtime binding is unavailable. The blocked state must include actionable browser-safe recovery text, correlation/trace refs, v3 events, and attention. It must not return a deterministic successful review or canned recommendations. For governance/policy impact analysis, deterministic simulation output may be cited only as scoped evidence; it is not a substitute for a real model-backed `AutonomousAgent` impact result and must never become fake success. For My Account personal attention digest, backend attention evidence may be collected deterministically and redacted before the task, but a normal successful digest summary must still come from the concrete model-backed `AutonomousAgent` path; collected evidence is not a canned/model-less digest result.
+The fail-closed adapter must produce a blocked provider/runtime state when `ComponentClient`, provider/model config, governed profile, tool grants, evidence access, or runtime binding is unavailable. The blocked state must include actionable browser-safe recovery text, correlation/trace refs, typed workstream events, and attention. It must not return a deterministic successful review or canned recommendations. For governance/policy impact analysis, deterministic simulation output may be cited only as scoped evidence; it is not a substitute for a real model-backed `AutonomousAgent` impact result and must never become fake success. For My Account personal attention digest, backend attention evidence may be collected deterministically and redacted before the task, but a normal successful digest summary must still come from the concrete model-backed `AutonomousAgent` path; collected evidence is not a canned/model-less digest result.
 
-## v3 events and shared worker-task events
+## typed workstream events and shared worker-task events
 
 Emit task lifecycle facts through the workstream event backbone so attention, dashboards, audit/traces, and realtime refresh can derive from backend facts.
 
@@ -84,7 +84,7 @@ Use these shared event names unless a future contract explicitly supersedes them
 - `worker.task.accepted`
 - `worker.task.rejected_result`
 
-Source refs should include the domain/starter task id, Akka autonomous task id when available, producing capability id, idempotency key, event id, tenant/customer scope, evidence refs, and prompt/skill/reference/model/tool/audit trace refs. Events and projections must be idempotent.
+Source refs should include the domain/core app task id, Akka autonomous task id when available, producing capability id, idempotency key, event id, tenant/customer scope, evidence refs, and prompt/skill/reference/model/tool/audit trace refs. Events and projections must be idempotent.
 
 ## Attention rules
 
@@ -135,7 +135,7 @@ A generated-app AutonomousAgent worker is incomplete if normal runtime success d
 - human accept/reject actions that directly perform separate protected mutations;
 - successful results when provider/model/governed runtime/tool/evidence configuration is missing.
 
-Missing authorization, disabled user, tenant/customer mismatch, provider/model config, governed runtime profile, tool grants, evidence access, or `ComponentClient` binding must fail closed with safe blocked/denied state, audit/work traces, v3 events when appropriate, and actionable recovery text.
+Missing authorization, disabled user, tenant/customer mismatch, provider/model config, governed runtime profile, tool grants, evidence access, or `ComponentClient` binding must fail closed with safe blocked/denied state, audit/work traces, typed workstream events when appropriate, and actionable recovery text.
 
 ## Required tests and validation scans
 
@@ -147,11 +147,11 @@ At minimum, test:
 - provider/model/runtime missing configuration maps to blocked provider/runtime state with event and attention;
 - typed task result validation and invalid-result rejection through `TaskRule`;
 - Akka task snapshots/results are the source of truth for completed findings;
-- v3 events and `worker.task.*` event payload/source refs;
+- typed workstream events and `worker.task.*` event payload/source refs;
 - attention upsert/resolve behavior;
 - structured surface/API contract, frontend secret boundary, and safe blocked/failed/review-required rendering;
 - no side effects from advisory accept/reject beyond the review disposition.
 
 Use `TestModelProvider.AutonomousAgentTools` only as test infrastructure. A passing test helper path does not by itself prove production-like local runtime completion; the normal runtime path must invoke the concrete Akka `AutonomousAgent` and fail closed when real provider/security configuration is absent.
 
-Focused repository checks for worker docs/skills should include searches proving coverage for: task contract, governed capabilities, v3 events, attention, surfaces, provider fail-closed, and no fake success.
+Focused repository checks for worker docs/skills should include searches proving coverage for: task contract, governed capabilities, typed workstream events, attention, surfaces, provider fail-closed, and no fake success.

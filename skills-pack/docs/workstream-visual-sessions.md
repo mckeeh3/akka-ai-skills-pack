@@ -13,7 +13,7 @@ A workstream visual session is browser/UI state for how a user is currently view
 
 Current repository readiness:
 - Phase 1 Akka component-backed visual sessions are implemented in the source frontend reference and synced into the AI-first SaaS core app baseline.
-- Phase 1.1 runtime UX remediation is verified in both source and starter: request anchoring targets the actual visible workstream scroll container, background responses do not switch the selected workstream, and the left rail shows accessible unseen-response indicators that clear on workstream selection.
+- Phase 1.1 runtime UX remediation is verified in both source and core app: request anchoring targets the actual visible workstream scroll container, background responses do not switch the selected workstream, and the left rail shows accessible unseen-response indicators that clear on workstream selection.
 - Contract coverage exists in root `frontend/src/workstream-visual-session.contract.test.mjs` and `frontend/src/workstream-shell.contract.test.mjs` for turn grouping, ordering, turn/surface caps, semantic snapshots, request anchoring, manual-scroll pause, per-workstream component-state restore, no background selection steal, and rail unseen-response indicators.
 - Phase 2 browser-local persistence and phase 3 backend-persisted visual sessions remain future work and must not be claimed by generated apps until implemented.
 

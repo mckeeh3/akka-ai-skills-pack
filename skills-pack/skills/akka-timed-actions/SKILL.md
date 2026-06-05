@@ -42,27 +42,6 @@ Read these first if present:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/ai/first/application/TicketReservationEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/main/java/ai/first/api/TicketReservationEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/TicketReservation.java`
-- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationTimedActionTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReminderJobEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReminderJobTimedAction.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ReminderJobEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/ReminderJob.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobEntityTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobTimedActionTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ApprovalDeadlineWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ApprovalDeadlineTimedAction.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ApprovalDeadlineWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/ApprovalDeadlineState.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineTimedActionTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
 
 ## Companion skills
 
@@ -103,20 +82,20 @@ If the timer flow is part of a broader component story, also load the relevant f
 Use when an endpoint or workflow should schedule one future call.
 
 Repository example:
-- `TicketReservationEndpoint`
+- `WorkstreamEndpoint`
 
 ### 2. Implement the timer handler
 Use when the timed action translates the scheduled call into a command on another component.
 
 Repository examples:
-- `TicketReservationTimedAction`
-- `ReminderJobTimedAction`
+- `AttentionProducerService`
+- `AttentionRefreshTimedAction`
 
 ### 3. Self-reschedule from inside the timed action
 Use when each timer execution decides whether to schedule the next one.
 
 Repository example:
-- `ReminderJobTimedAction#sendReminder`
+- `AttentionRefreshTimedAction#sendReminder`
 
 ### 4. Schedule a timer from a workflow command
 Use when a workflow start or resume command should register a timeout or reminder.
@@ -128,8 +107,8 @@ Repository example:
 Use when the entity or workflow must treat stale timer executions as successful no-ops or explicit terminal replies.
 
 Repository examples:
-- `TicketReservationEntity#expire`
-- `ReminderJobEntity#recordReminderSent`
+- `DurableAttentionRepositoryEntity#expire`
+- `AttentionRefreshEntity#recordReminderSent`
 - `ApprovalDeadlineWorkflow#markTimedOut`
 
 ## Final review checklist

@@ -12,14 +12,6 @@ Use this skill for the `domain` package of an Akka Java SDK key value entity.
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/java/ai/first/domain/DraftCart.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/DraftCartValidator.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/DraftCartCommandHandler.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/PurchaseOrder.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/PurchaseOrderValidator.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/PurchaseOrderCommandHandler.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/PurchaseOrderReadyToShipBusinessLogic.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/ExpiringDraftCartSession.java`
 
 ## Mission
 
@@ -53,8 +45,8 @@ State should:
 - never know about Akka effects or entity APIs
 
 Good examples:
-- `DraftCart.State`
-- `PurchaseOrder.State`
+- `WorkstreamLog.State`
+- `GovernancePolicy.State`
 
 ## Command rules
 
@@ -62,13 +54,13 @@ Commands should:
 - map to a named backend capability or an internal step of one
 - use imperative names
 - be records
-- be nested under a descriptive type such as `PurchaseOrder.Command`
+- be nested under a descriptive type such as `GovernancePolicy.Command`
 - represent caller intent, not persistence details
 - carry scoped identifiers, idempotency/correlation fields, and safe defaults required by the capability contract
 
 Examples:
 - `AddItem`
-- `Checkout`
+- `Attention`
 - `CreateOrder`
 - `LineItemReadyToShip`
 
@@ -83,8 +75,8 @@ Preferred style:
 - do not throw for normal business validation
 
 Examples:
-- `DraftCartValidator`
-- `PurchaseOrderValidator`
+- `WorkstreamLogValidator`
+- `GovernancePolicyValidator`
 
 ## Command-to-state pattern
 
@@ -99,8 +91,8 @@ Rules:
 - no-op is represented by `Optional.empty()` or a boolean decision
 
 Examples:
-- `DraftCartCommandHandler`
-- `PurchaseOrderCommandHandler`
+- `WorkstreamLogCommandHandler`
+- `GovernancePolicyCommandHandler`
 
 ## Business-decision helper pattern
 
@@ -110,7 +102,7 @@ When one command may cause a more complex full-state transition:
 - calculate the minimal state change needed, then let the entity replace the full state once
 
 Repository example:
-- `PurchaseOrderReadyToShipBusinessLogic`
+- `GovernancePolicyReadyToShipBusinessLogic`
 
 ## Hard rules
 

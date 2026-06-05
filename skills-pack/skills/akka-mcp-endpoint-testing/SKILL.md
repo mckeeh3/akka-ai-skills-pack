@@ -31,10 +31,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/mcp-endpoints.html.md`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartMcpEndpointTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SecureSupportMcpEndpointTest.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartMcpEndpoint.java`
-- `../examples/akka-components/src/main/java/ai/first/api/SecureSupportMcpEndpoint.java`
 
 ## Default test harness rules
 
@@ -46,7 +42,7 @@ Because there is no dedicated MCP test kit utility, prefer these test styles:
 ## Repository patterns
 
 ### Component-backed MCP endpoint tests
-- `ShoppingCartMcpEndpointTest`
+- `CoreAppMcpEndpointTest`
   - extends `TestKitSupport`
   - creates entity state through `componentClient`
   - instantiates the MCP endpoint directly

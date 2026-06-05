@@ -23,8 +23,6 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 
 Read these first if present:
 - `akka-context/sdk/views.html.md`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartsByCheckedOutViewIntegrationTest.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Test kit rules
@@ -59,20 +57,20 @@ For each reusable view example, cover at least:
 ## Repository examples
 
 ### Event sourced view tests
-- `ShoppingCartsByCheckedOutViewIntegrationTest`
-  - publishes shopping cart events
-  - queries checked-out carts
+- `UserDirectoryViewIntegrationTest`
+  - publishes workstream events
+  - queries checked-out rows
   - verifies delete event removes the row
-- `ShoppingCartAuditViewIntegrationTest`
+- `AdminAuditViewIntegrationTest`
   - verifies logical delete event handling
   - verifies `QueryStreamEffect` collection for current rows
 
 ### Key value view tests
-- `DraftCartsByCheckedOutViewIntegrationTest`
-  - publishes draft cart state snapshots
-  - queries checked-out carts
+- `UserDirectoryViewIntegrationTest`
+  - publishes draft workstream event state snapshots
+  - queries checked-out rows
   - verifies paginated response mapping
-- `DraftCartLifecycleViewIntegrationTest`
+- `AdminAuditViewIntegrationTest`
   - verifies logical delete via `@DeleteHandler`
 
 ### Workflow view test
@@ -81,7 +79,7 @@ For each reusable view example, cover at least:
   - queries workflow-derived rows
 
 ### Topic view test
-- `ShoppingCartTopicViewIntegrationTest`
+- `AgentRuntimeTraceViewIntegrationTest`
   - publishes topic messages with `ce-subject` metadata
   - verifies ignored and deleted message behavior
 

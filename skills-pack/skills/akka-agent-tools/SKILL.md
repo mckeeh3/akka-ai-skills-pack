@@ -13,11 +13,6 @@ Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/agents/extending.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/WeatherAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/WeatherForecastTools.java`
-- `../examples/akka-components/src/main/java/ai/first/application/CartCheckoutAdvisorAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/CartCheckoutAdvisorTools.java`
-- `../examples/akka-components/src/test/java/ai/first/application/CartCheckoutAdvisorAgentTest.java`
 
 If the main task is not local or external tool classes, load the focused companion skill instead:
 - `akka-agent-tool-boundaries` for backend-enforced ToolPermissionBoundary grants, tool registry/catalog, denied-tool semantics, approval-required expansion, and tool invocation traces
@@ -112,8 +107,8 @@ Rules:
 - component methods called internally through `ComponentClient` do not need `@FunctionTool`; annotate an underlying component method only when it is also intentionally exposed directly to the model as a component tool.
 
 Canonical example:
-- `CartCheckoutAdvisorAgent` injects `ComponentClient` and registers `new CartCheckoutAdvisorTools(componentClient)`.
-- `CartCheckoutAdvisorTools#adviseCheckout` is a read-only `cart.checkout-advice` facade that calls `ShoppingCartEntity#inspectCartSummary` and `ShoppingCartsByCheckedOutView#getCarts`, applies deterministic readiness logic, and returns a curated `CartCheckoutAdvice` result.
+- `CartAttentionAdvisorAgent` injects `ComponentClient` and registers `new CartAttentionAdvisorTools(componentClient)`.
+- `CartAttentionAdvisorTools#adviseAttention` is a read-only `workstream event.attention-advice` facade that calls `AgentDefinitionEntity#inspectCartSummary` and `UserDirectoryView#getRows`, applies deterministic readiness logic, and returns a curated `CartAttentionAdvice` result.
 
 ## Capability-first tool design
 
@@ -126,15 +121,15 @@ Canonical example:
 
 ## Repository examples
 
-- `WeatherAgent`
+- `UserAdminAccessReviewAutonomousAgent`
   - local `@FunctionTool` for current date
   - external tool registration with `.tools(forecastTools)`
-- `WeatherForecastTools`
+- `UserAdminEvidenceTools`
   - public external tool method with parameter descriptions
 - `RefundApprovalAgent` / `RefundProposalTools` / `RefundApprovalCapabilityTest`
   - consequential `refund.issue` capability exposed as a proposal-only tool; approval workflow or explicit bounded policy grant commits the side effect
-- `CartCheckoutAdvisorAgent` / `CartCheckoutAdvisorTools` / `CartCheckoutAdvisorAgentTest`
-  - non-component `cart.checkout-advice` facade tool backed by `ComponentClient`, combining entity and view evidence plus deterministic processing into one model-facing tool
+- `CartAttentionAdvisorAgent` / `CartAttentionAdvisorTools` / `CartAttentionAdvisorAgentTest`
+  - non-component `workstream event.attention-advice` facade tool backed by `ComponentClient`, combining entity and view evidence plus deterministic processing into one model-facing tool
 
 ## Review checklist
 

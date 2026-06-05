@@ -23,9 +23,6 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 Read these first if present:
 - `akka-context/sdk/agents/streaming.html.md`
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/StreamingActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/api/ActivityAgentEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ActivityAgentEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -44,9 +41,9 @@ Read these first if present:
 
 ## Repository examples
 
-- `StreamingActivityAgent`
+- `StreamingWorkstreamRuntimeAgent`
   - minimal token-streaming agent
-- `ActivityAgentEndpoint#stream`
+- `WorkstreamRuntimeAgentEndpoint#stream`
   - endpoint that bridges the token stream to `HttpResponses.streamText(...)`
 
 ## Review checklist

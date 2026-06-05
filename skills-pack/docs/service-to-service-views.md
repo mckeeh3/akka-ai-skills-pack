@@ -9,9 +9,8 @@ Primary official semantics:
 - `akka-context/sdk/running-locally.html.md`
 
 Local related examples:
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartPublicEventsConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReviewRequestsByStatusView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartTopicView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/AgentRuntimeTraceView.java`
 
 ## Related references
 
@@ -41,22 +40,22 @@ Rules:
 Example producer:
 
 ```java
-@Component(id = "shopping-cart-public-events-consumer")
-@Consume.FromEventSourcedEntity(ShoppingCartEntity.class)
-@Produce.ServiceStream(id = "shopping_cart_public_events")
+@Component(id = "workstream-event-public-events-consumer")
+@Consume.FromEventSourcedEntity(AgentDefinitionEntity.class)
+@Produce.ServiceStream(id = "workstream_event_public_events")
 @Acl(allow = @Acl.Matcher(service = "*"))
-public class ShoppingCartPublicEventsConsumer extends Consumer {
+public class WorkstreamEventAttentionConsumer extends Consumer {
 
   public sealed interface PublicEvent {
     record ItemAdded(String productId, int quantity) implements PublicEvent {}
     record CheckedOut() implements PublicEvent {}
   }
 
-  public Effect onEvent(ShoppingCart.Event event) {
+  public Effect onEvent(WorkstreamEvent.Event event) {
     return switch (event) {
-      case ShoppingCart.Event.ItemAdded added ->
+      case WorkstreamEvent.Event.ItemAdded added ->
           effects().produce(new PublicEvent.ItemAdded(added.item().productId(), added.item().quantity()));
-      case ShoppingCart.Event.CheckedOut ignored -> effects().produce(new PublicEvent.CheckedOut());
+      case WorkstreamEvent.Event.CheckedOut ignored -> effects().produce(new PublicEvent.CheckedOut());
       default -> effects().ignore();
     };
   }
@@ -77,42 +76,42 @@ Rules:
 Minimal subscriber example:
 
 ```java
-@Component(id = "shopping-cart-public-view")
-public class ShoppingCartPublicView extends View {
+@Component(id = "workstream-event-public-view")
+public class WorkstreamEventPublicView extends View {
 
-  public sealed interface ShoppingCartPublicEvent {
-    record ItemAdded(String productId, int quantity) implements ShoppingCartPublicEvent {}
-    record CheckedOut() implements ShoppingCartPublicEvent {}
+  public sealed interface WorkstreamEventPublicEvent {
+    record ItemAdded(String productId, int quantity) implements WorkstreamEventPublicEvent {}
+    record CheckedOut() implements WorkstreamEventPublicEvent {}
   }
 
-  public record CartSummary(String cartId, int itemCount, String status) {}
+  public record CartSummary(String workstreamId, int itemCount, String status) {}
   public record CartSummaries(List<CartSummary> entries) {}
   public record FindByStatus(String status, String minCartId) {}
 
   @Consume.FromServiceStream(
-      service = "shopping-cart-service",
-      id = "shopping_cart_public_events")
+      service = "workstream-event-service",
+      id = "workstream_event_public_events")
   public static class CartUpdater extends TableUpdater<CartSummary> {
 
-    public Effect<CartSummary> onEvent(ShoppingCartPublicEvent.ItemAdded event) {
-      var cartId = updateContext().eventSubject().orElse("");
-      var current = rowState() == null ? new CartSummary(cartId, 0, "ACTIVE") : rowState();
-      return effects().updateRow(new CartSummary(cartId, current.itemCount() + event.quantity(), "ACTIVE"));
+    public Effect<CartSummary> onEvent(WorkstreamEventPublicEvent.ItemAdded event) {
+      var workstreamId = updateContext().eventSubject().orElse("");
+      var current = rowState() == null ? new CartSummary(workstreamId, 0, "ACTIVE") : rowState();
+      return effects().updateRow(new CartSummary(workstreamId, current.itemCount() + event.quantity(), "ACTIVE"));
     }
 
-    public Effect<CartSummary> onEvent(ShoppingCartPublicEvent.CheckedOut event) {
+    public Effect<CartSummary> onEvent(WorkstreamEventPublicEvent.CheckedOut event) {
       var current = rowState();
-      return effects().updateRow(new CartSummary(current.cartId(), current.itemCount(), "CHECKED_OUT"));
+      return effects().updateRow(new CartSummary(current.workstreamId(), current.itemCount(), "CHECKED_OUT"));
     }
   }
 
   @Query(
       """
       SELECT * AS entries
-      FROM shopping_cart_public_view
+      FROM workstream_event_public_view
       WHERE status = :status
-        AND cartId >= :minCartId
-      ORDER BY cartId
+        AND workstreamId >= :minCartId
+      ORDER BY workstreamId
       """)
   public QueryEffect<CartSummaries> getByStatus(FindByStatus request) {
     return queryResult();
@@ -127,7 +126,7 @@ For service-stream views:
 - keep one handler per public message type when that is clearer
 - use `rowState()` for incremental projections
 - use a wrapper record such as `CartSummaries(List<CartSummary> entries)` for multi-row queries
-- include every `ORDER BY` column in the same query's `WHERE` conditions, for example `cartId >= :minCartId` when ordering by `cartId`
+- include every `ORDER BY` column in the same query's `WHERE` conditions, for example `workstreamId >= :minCartId` when ordering by `workstreamId`
 
 ## Contract rules
 
@@ -150,9 +149,9 @@ If each event belongs to a stable aggregate or business id, include `ce-subject`
 Producer snippet:
 
 ```java
-public Effect onEvent(ShoppingCart.Event event) {
-  var cartId = messageContext().eventSubject().orElseThrow();
-  Metadata metadata = Metadata.EMPTY.add("ce-subject", cartId);
+public Effect onEvent(WorkstreamEvent.Event event) {
+  var workstreamId = messageContext().eventSubject().orElseThrow();
+  Metadata metadata = Metadata.EMPTY.add("ce-subject", workstreamId);
   return effects().produce(new PublicEvent.CheckedOut(), metadata);
 }
 ```
@@ -160,10 +159,10 @@ public Effect onEvent(ShoppingCart.Event event) {
 Subscriber snippet:
 
 ```java
-public Effect<CartSummary> onEvent(ShoppingCartPublicEvent.CheckedOut event) {
-  var cartId = updateContext().eventSubject().orElseThrow();
-  var current = rowState() == null ? new CartSummary(cartId, 0, "ACTIVE") : rowState();
-  return effects().updateRow(new CartSummary(cartId, current.itemCount(), "CHECKED_OUT"));
+public Effect<CartSummary> onEvent(WorkstreamEventPublicEvent.CheckedOut event) {
+  var workstreamId = updateContext().eventSubject().orElseThrow();
+  var current = rowState() == null ? new CartSummary(workstreamId, 0, "ACTIVE") : rowState();
+  return effects().updateRow(new CartSummary(workstreamId, current.itemCount(), "CHECKED_OUT"));
 }
 ```
 

@@ -22,9 +22,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ExpiringDraftCartSessionEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/domain/ExpiringDraftCartSession.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ExpiringDraftCartSessionEntityTest.java`
 
 ## Core pattern
 
@@ -45,7 +42,7 @@ Use TTL only on commands that actually update state.
 ## Repository example
 
 See:
-- `ExpiringDraftCartSessionEntity.addItem(...)`
+- `DurableNotificationRepositoryEntity.addItem(...)`
 
 ## Testing guidance
 
@@ -56,7 +53,7 @@ Use `KeyValueEntityTestKit` and assert:
 - resulting state
 
 Repository example:
-- `ExpiringDraftCartSessionEntityTest`
+- `DurableNotificationRepositoryEntityTest`
 
 ## Generated SaaS checks
 

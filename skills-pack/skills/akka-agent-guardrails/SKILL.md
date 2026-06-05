@@ -23,8 +23,6 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 Read these first if present:
 - `akka-context/sdk/agents/guardrails.html.md`
 - `akka-context/sdk/sanitization.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/CompetitorMentionGuard.java`
-- `../examples/akka-components/src/main/resources/application.conf`
 
 ## Use this pattern when
 

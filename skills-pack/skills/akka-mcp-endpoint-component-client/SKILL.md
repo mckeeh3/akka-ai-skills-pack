@@ -21,8 +21,6 @@ Expose read-only scoped evidence capabilities more readily than side-effecting c
 Read these first if present:
 - `akka-context/sdk/mcp-endpoints.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartMcpEndpoint.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartMcpEndpointTest.java`
 
 ## Use this pattern when
 
@@ -42,11 +40,11 @@ Read these first if present:
 
 ## Repository examples
 
-- `ShoppingCartMcpEndpoint`
-  - `getCartSummary` calls `ShoppingCartEntity::getCart`
+- `CoreAppMcpEndpoint`
+  - `getCartSummary` calls `AgentDefinitionEntity::getCart`
   - adapts state to `CartSummary`
   - returns compact JSON for tool responses
-  - reuses the same mapping for `cartSummaryResource`
+  - reuses the same mapping for `workstream eventSummaryResource`
 - `GovernedRefundMcpEndpoint`
   - exposes `request-governed-refund` as a side-effecting MCP tool for `refund.request_consequential`
   - calls backend-governed boundary logic before any consequential refund action

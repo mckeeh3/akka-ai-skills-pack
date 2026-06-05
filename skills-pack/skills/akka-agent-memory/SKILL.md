@@ -23,18 +23,6 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 Read these first if present:
 - `akka-context/sdk/agents/calling.html.md`
 - `akka-context/sdk/agents/memory.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ActivityAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/AgentTeamWorkflow.java`
-- `../examples/akka-components/src/main/java/ai/first/application/WorkerMemorySummaryAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertsConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryByComponentView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAgent.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAuditConsumer.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryAlertsConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryByComponentViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryCompactionConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -56,7 +44,7 @@ Read these first if present:
 
 ## Repository examples
 
-- `ActivityAgent`
+- `WorkstreamRuntimeAgent`
   - bounded memory with `readLast(6)`
 - `AgentTeamWorkflow`
   - shared session id derived from `workflowId()`

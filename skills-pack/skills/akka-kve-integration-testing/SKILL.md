@@ -23,9 +23,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEndpointIntegrationTest.java`
 
 ## Test harness rules
 
@@ -44,8 +41,8 @@ Use when validating HTTP behavior:
 - assert HTTP success or expected failure behavior
 
 Repository examples:
-- `DraftCartIntegrationTest`
-- `PurchaseOrderEndpointIntegrationTest`
+- `WorkstreamLogIntegrationTest`
+- `PurchaseAdminEndpointIntegrationTest`
 
 ## Consumer-driven flow pattern
 
@@ -56,7 +53,7 @@ Use when a state change from one entity triggers work in another component:
 - account for asynchronous propagation
 
 Repository example:
-- `DraftCartCheckoutConsumerIntegrationTest`
+- `WorkstreamEventAttentionConsumerIntegrationTest`
 
 ## Waiting strategy
 

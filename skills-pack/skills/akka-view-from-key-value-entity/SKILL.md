@@ -26,10 +26,6 @@ Read these first if present:
 - `akka-context/sdk/views.html.md`
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `akka-context/sdk/key-value-entities.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/DraftCartsByCheckedOutView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/DraftCartLifecycleView.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartLifecycleViewIntegrationTest.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Source-specific rules
@@ -50,11 +46,11 @@ Prefer a transformed summary row when the view only needs a subset of fields.
 Pattern:
 - define a compact row record inside the view
 - compute that row from the latest state in `onUpdate(...)`
-- query using wrapper records such as `List<Row> carts`
+- query using wrapper records such as `List<Row> rows`
 
 Repository examples:
-- `DraftCartsByCheckedOutView`
-- `DraftCartLifecycleView`
+- `UserDirectoryView`
+- `AdminAuditView`
   - demonstrates `@DeleteHandler` for logical deletion
 
 ## Delete guidance

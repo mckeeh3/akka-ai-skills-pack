@@ -21,11 +21,6 @@ When the same capability is also exposed through UI, HTTP, agent tools, workflow
 Read these first if present:
 - `akka-context/sdk/grpc-endpoints.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../examples/akka-components/src/main/proto/ai/first/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartsByCheckedOutView.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartGrpcEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -46,7 +41,7 @@ Read these first if present:
 
 ## Repository example
 
-- `ShoppingCartGrpcEndpointImpl`
+- `CoreAppGrpcEndpointImpl`
   - unary protobuf-to-entity mapping
   - `CommandException` translated into `INVALID_ARGUMENT`
   - server-streaming reply backed by a view stream

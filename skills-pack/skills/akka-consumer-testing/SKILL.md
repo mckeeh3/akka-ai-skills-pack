@@ -26,10 +26,6 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 
 ## Test modes
 
@@ -37,8 +33,8 @@ Read these first if present:
 Use when the consumer is triggered by the real upstream component in the same service.
 
 Repository examples:
-- `ShoppingCartCheckoutConsumerIntegrationTest`
-- `DraftCartCheckoutConsumerIntegrationTest`
+- `WorkstreamEventAttentionConsumerIntegrationTest`
+- `WorkstreamEventAttentionConsumerIntegrationTest`
 
 Pattern:
 - trigger the upstream entity through `httpClient` or `componentClient`
@@ -49,7 +45,7 @@ Pattern:
 Use when the consumer source is a broker topic.
 
 Repository example:
-- `ShoppingCartCommandsTopicConsumerIntegrationTest`
+- `WorkstreamEventAttentionConsumerIntegrationTest`
 
 Pattern:
 - configure `withTopicIncomingMessages(...)`

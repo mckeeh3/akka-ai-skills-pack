@@ -26,8 +26,6 @@ Read these first if present:
 - `akka-context/sdk/views.html.md`
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `akka-context/sdk/consuming-producing.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartTopicView.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartTopicViewIntegrationTest.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Source-specific rules
@@ -41,7 +39,7 @@ Read these first if present:
 
 ## Repository example
 
-- `ShoppingCartTopicView`
+- `AgentRuntimeTraceView`
   - consumes topic messages with `ce-subject`
   - demonstrates `effects().ignore()`
   - stores origin information from `updateContext()` in the row

@@ -11,7 +11,7 @@ Runnable generated-app baseline:
 - this repository's runnable core app root — canonical local executable Akka Java + React/Vite/TypeScript baseline for fork-and-extend work.
 
 Focused example policy:
-- Keep examples aligned with current generated-SaaS doctrine, starter app-description templates, or focused Akka component references that are read by skills.
+- Keep examples aligned with current generated-SaaS doctrine, core app app-description templates, or focused Akka component references that are read by skills.
 - Do not add historical domain-specific planning examples as generic mechanics references; prefer domain-neutral examples or the user's actual domain.
 
 Review guardrails:

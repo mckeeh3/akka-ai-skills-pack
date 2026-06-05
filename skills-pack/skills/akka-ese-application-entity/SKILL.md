@@ -14,8 +14,6 @@ Use it after the entity's named capability contract is known: command/read purpo
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/ai/first/application/OrderEntity.java`
 
 Load companion skills when needed:
 - `akka-ese-ttl`
@@ -64,7 +62,7 @@ Use:
 - `Effect<T>` for strongly consistent reads in replicated deployments
 
 Repository example:
-- `OrderEntity.getOrderConsistent()`
+- `PromptDocumentEntity.getOrderConsistent()`
 
 ## Delete pattern
 
@@ -75,7 +73,7 @@ When deleting an entity:
 - do not persist more events afterward
 
 Repository example:
-- `ShoppingCartEntity.delete(...)`
+- `AgentDefinitionEntity.delete(...)`
 
 ## Agent tool exposure
 

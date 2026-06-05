@@ -45,21 +45,7 @@ Read these first if present:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartsByCheckedOutView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartAuditView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/DraftCartsByCheckedOutView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/DraftCartLifecycleView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/ReviewRequestsByStatusView.java`
-- `../examples/akka-components/src/main/java/ai/first/application/SupervisedExportEvidenceView.java` — capability-first scoped evidence view
-- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartTopicView.java`
 - `../docs/service-to-service-views.md`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartAuditViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/DraftCartLifecycleViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ReviewRequestsByStatusViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/SupervisedExportEvidenceViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartTopicViewIntegrationTest.java`
 
 ## Companion skills
 
@@ -137,7 +123,7 @@ Typical sources:
 - Workflow
 
 Repository examples:
-- `DraftCartsByCheckedOutView`
+- `UserDirectoryView`
 - `ReviewRequestsByStatusView`
 
 ### 2. Event-driven projection view
@@ -148,16 +134,16 @@ Typical sources:
 - Topic
 
 Repository examples:
-- `ShoppingCartsByCheckedOutView`
-- `ShoppingCartTopicView`
+- `UserDirectoryView`
+- `AgentRuntimeTraceView`
 
 ### 3. Query-shaping or streaming task
 Use when the main problem is result mapping, aliases, pagination, streaming current results, or streaming updates.
 
 Repository examples:
-- `DraftCartsByCheckedOutView#getCartsPage`
-- `DraftCartsByCheckedOutView#streamCarts`
-- `ShoppingCartAuditView#streamByDeleted`
+- `UserDirectoryView#getRowsPage`
+- `UserDirectoryView#streamRows`
+- `AdminAuditView#streamByDeleted`
 
 ## Advanced semantics to remember
 
@@ -181,7 +167,7 @@ Before finishing, verify:
 - the updater source annotation matches the source component type
 - ESE/Topic uses `onEvent(...)`, KVE/Workflow uses `onUpdate(...)`
 - query response records match the `SELECT` shape and aliases exactly
-- multi-row queries use a wrapper field alias such as `AS carts`
+- multi-row queries use a wrapper field alias such as `AS rows`
 - every non-SSE `ORDER BY` column appears in the same query's `WHERE` conditions
 - SSE-backed view queries do not contain `ORDER BY`
 - optional filters are split into separate query methods rather than `OR` branches
