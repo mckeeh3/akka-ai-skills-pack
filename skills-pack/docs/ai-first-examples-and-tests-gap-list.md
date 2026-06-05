@@ -10,8 +10,8 @@ Use it to avoid hiding coverage gaps behind broad doctrine or retrofitting domai
 
 The repository already has strong focused examples for individual Akka substrate families:
 
-- canonical full-core core app baseline source under the upstream runnable core app repository root for new generated secure AI-first SaaS apps;
-- reusable workstream UI reference modules under `frontend/src/workstream/**` and installed frontend examples for shell/surface mechanics;
+- canonical full-core core app baseline source under this repository's runnable core app root for new generated secure AI-first SaaS apps;
+- reusable workstream UI reference modules under root `frontend/src/workstream/**` for shell/surface mechanics;
 - agents, structured responses, tools, guardrails, evaluation, orchestration, memory/runtime state, and streaming;
 - workflows with approval, pause/resume, compensation-style flow, notifications, deadlines, and endpoint integration;
 - Event Sourced Entities, Key Value Entities, Views, Consumers, Timed Actions, HTTP/gRPC/MCP endpoints, and Akka-hosted web UI delivery patterns;
@@ -32,8 +32,8 @@ The core app baseline is the canonical end-to-end implementation baseline. Forme
 Status: **canonical implementation baseline, extended by downstream forks and validated through the local runtime path**.
 
 Reference:
-- source repository: the upstream runnable core app repository root
-- installed pack: skills, docs, Java examples, and frontend reference examples only; no duplicate full-app source is bundled
+- source repository and downstream forks: the runnable core app repository root
+- skills-only harness install: skills and shared skill references only; no docs/examples/frontend exports and no duplicate full-app source are installed
 
 Qualification: generated target projects are not complete until backend APIs, workstream endpoints, provider/security failure modes, tests, and the local Akka/API/UI smoke path are recorded for the selected scope.
 
@@ -44,9 +44,9 @@ Covered core app scope:
 - invitation/user-admin backend services, views/seams, captured outbox/Resend boundary, and tests;
 - governed agent records, seed import, prompt assembly, authorized `readSkill`, behavior-editing flow, and tests;
 - workstream backend API foundation for Access/Profile, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces;
-- React/Vite workstream frontend under root `frontend/**`, exported in installed packs as `resources/examples/frontend/**`.
+- React/Vite workstream frontend under root `frontend/**`; this remains a source-checkout reference and is not exported into `.agents` by the skills-only install.
 
-Canonical routing rule: for new full-core generated apps that need an implementation baseline, fork or copy the upstream runnable core app, then extend the target workspace. Use purchase-request, shopping-cart, and standalone static UI examples only for explicitly labeled mechanics after the core-app architecture is clear.
+Canonical routing rule: for new full-core generated apps that need an implementation baseline, fork or clone this repository, then extend the target workspace. Use purchase-request, shopping-cart, and standalone static UI examples only for explicitly labeled mechanics after the core-app architecture is clear.
 
 ## Completed app-description coverage
 
@@ -124,7 +124,7 @@ Status: **covered by the workstream UI reference and starter routing; standalone
 References:
 - canonical UI architecture: `docs/workstream-ui-reference-architecture.md`
 - reusable frontend modules: `frontend/src/workstream/**`
-- core app baseline baseline: the upstream runnable core app repository root
+- core app baseline: this repository's runnable core app root
 
 Future breadth may add more vertical React/Vite workstream examples, but static resource examples are not canonical generated SaaS UI structure.
 

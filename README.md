@@ -2,7 +2,7 @@
 
 This repository root is the canonical runnable **AI-first SaaS core app**. It provides the secure foundation and five core workstreams that downstream teams can fork, run, validate, and extend with their own domain-specific capabilities.
 
-The installable Akka AI skills pack that used to own the repository root now lives under [`skills-pack/`](skills-pack/). Use the root for core app runtime work; use `skills-pack/` for pack maintenance, installable skills, Akka reference examples, packaging, and release tooling.
+The Akka AI skills library that used to own the repository root now lives under [`skills-pack/`](skills-pack/). Use the root for core app runtime work; use `skills-pack/` for skills maintenance, Akka reference examples, metadata, and validation tooling. The only install action is copying/symlinking skills into a harness-accessible directory such as `.agents/skills`.
 
 ## What is in the root app
 
@@ -87,15 +87,15 @@ When domain behavior needs a core integration point, add the smallest stable reg
 
 ## Skills-pack maintenance
 
-The installable pack source is isolated under [`skills-pack/`](skills-pack/):
+The skills library source is isolated under [`skills-pack/`](skills-pack/):
 
-- `skills-pack/skills/` — skill routing and focused guidance
-- `skills-pack/docs/` — pack doctrine and references
-- `skills-pack/examples/` — focused Akka component examples
-- `skills-pack/pack/` — installed `.agents` guidance and manifest
+- `skills-pack/skills/` — skill routing and focused harness guidance
+- `skills-pack/docs/` — source-checkout doctrine and references
+- `skills-pack/examples/` — source-checkout focused Akka component examples
+- `skills-pack/pack/` — skills-only install metadata
 - `skills-pack/tools/` — release, validation, and audit tooling
 
-Use root [`install-skills.sh`](install-skills.sh) to install the skills into a harness skills directory such as `.agents/skills/`. Do not add pack-only docs, skills, examples, or packaging assets to root app source paths.
+Use root [`install-skills.sh`](install-skills.sh) to make the skills available to a harness in a directory such as `.agents/skills/`. This does not install docs, examples, templates, manifests, frontend/backend source, or another app baseline. Do not add pack-only docs, skills, examples, or metadata assets to root app source paths.
 
 ## App description and task queues
 

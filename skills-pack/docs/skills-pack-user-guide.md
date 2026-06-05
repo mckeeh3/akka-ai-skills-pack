@@ -1,8 +1,8 @@
 # Akka AI Skills Pack User Guide
 
-This guide is for developers using the installed Akka AI Skills Pack with an AI coding harness.
+This guide is for developers using this repository with an AI coding harness.
 
-The pack is a guidance, routing, and reference library. It does not provide a callable application framework and it no longer installs a duplicate full-app core app baseline. The default generated-product target remains full-stack secure AI-first SaaS on Akka, implemented through capability-first backend architecture and validated through real local Akka/API/UI paths.
+The repository contains both the runnable Akka full-stack core app and the Akka AI skills library. The skills library is guidance and routing for the harness; it does not provide a separate callable framework, full-pack installer, installed docs tree, installed examples tree, or duplicate app baseline. The default generated-product target remains full-stack secure AI-first SaaS on Akka, implemented through capability-first backend architecture and validated through real local Akka/API/UI paths.
 
 ## Core idea
 
@@ -16,15 +16,15 @@ src/                 # generated or maintained backend source
 frontend/            # generated or maintained browser app
 ```
 
-The installed `.agents/` directory is the harness support library. Do not treat it as application source.
+The installed `.agents/skills` directory is a harness support library. Do not treat it as application source, documentation storage, examples storage, or app-description/spec storage.
 
-For a new app with an implementation baseline, fork or copy from the upstream runnable core app repository root, then extend that workspace. For an existing app, install the pack and let the harness update the existing app-description/specs/source incrementally.
+For a new app with an implementation baseline, fork or clone this repository, then extend the root app workspace. For an existing app, install only the skills into that app's harness skills directory and let the harness update the existing app-description/specs/source incrementally.
 
-## Install the skills
+## Make the skills available to the harness
 
 Current manifest version: `0.3.0`
 
-Clone or check out the desired release tag, then install the skills into your harness skills directory:
+Clone or check out the desired release tag. This repository clone/fork is the source checkout for docs, examples, templates, and the runnable core app. Then copy or symlink only the skills into your harness skills directory:
 
 ```bash
 git clone https://github.com/mckeeh3/akka-ai-skills-pack.git
@@ -51,17 +51,17 @@ Dry run and check:
 ./install-skills.sh --target /path/to/project/.agents/skills --check
 ```
 
-The installer creates or updates only the harness skills directory. It writes `.akka-ai-skills-pack-install-manifest` in that directory so `--prune` can remove retired pack-owned skills and `--uninstall` can remove this pack without deleting unrelated skills.
+The skills installer creates or updates only the harness skills directory. It writes `.akka-ai-skills-pack-install-manifest` in that directory so `--prune` can remove retired pack-owned skills and `--uninstall` can remove this skills library without deleting unrelated skills. It does not install `.agents/AGENTS.md`, `.agents/docs`, `.agents/resources/examples`, templates, manifests, tools, backend source, frontend source, or a duplicate app baseline.
 
 ## Choose a starting mode
 
 ### Existing application or PRD-first app
 
-Use a skills-only install, put source input under `docs/input/`, then ask the harness to maintain `app-description/`, `specs/`, and `specs/pending-tasks.md` before coding. The harness should queue questions instead of guessing and execute one task per fresh session.
+Use the skills-only harness install, put source input under `docs/input/`, then ask the harness to maintain `app-description/`, `specs/`, and `specs/pending-tasks.md` before coding. The harness should queue questions instead of guessing and execute one task per fresh session.
 
 ### New app with baseline implementation
 
-Fork or copy the upstream runnable core app repository root as the baseline. Keep the default `ai.first` package unless you deliberately perform a product package rename. Add product/domain input under `docs/input/`, then ask the harness to reconcile it into the existing root `app-description/`, `specs/`, backend, and frontend. Extend with `domain-specific` packages and frontend/app-description extension zones rather than editing pack internals.
+Fork or clone this repository as the baseline. Keep the default `ai.first` package unless you deliberately perform a product package rename. Add product/domain input under `docs/input/`, then ask the harness to reconcile it into the existing root `app-description/`, `specs/`, backend, and frontend. Extend with `domain-specific` packages and frontend/app-description extension zones rather than editing skills-pack internals.
 
 ## Runtime validation expectations
 
@@ -80,19 +80,20 @@ Model-backed workstream agents must invoke a concrete Akka `Agent` component thr
     └── <skill-name>/SKILL.md
 ```
 
-Important files:
+Important installed files:
 
 - `.agents/skills/README.md` — routing map for selecting the smallest relevant skills
 - `.agents/skills/.akka-ai-skills-pack-install-manifest` — ownership manifest used by prune/uninstall
 - `.agents/skills/references/` — shared skill reference files
-- `.agents/resources/examples/frontend/` — React/Vite workstream UI reference source
+
+Important source-checkout references remain in the cloned/forked repository, not `.agents`: root `frontend/**`, root `src/**`, `app-description/**`, `specs/**`, `skills-pack/docs/**`, `skills-pack/examples/**`, and `skills-pack/templates/**`.
 
 ## Recommended harness prompts
 
 Planning from input:
 
 ```text
-First read .agents/AGENTS.md and .agents/skills/README.md.
+First read the repository root AGENTS.md and .agents/skills/README.md.
 Then read all files under docs/input/initial/.
 Bootstrap or update app-description, specs, pending questions, and pending tasks before coding.
 Queue questions instead of guessing. Do not mark runtime features complete without real local Akka/API/UI validation.
@@ -107,7 +108,7 @@ Execute only that one task, load only its required reads and listed skills, upda
 
 ## Pack vs app boundaries
 
-- Edit `.agents/` only when maintaining or upgrading the installed pack.
+- Edit `.agents/skills` only when refreshing the harness-visible skills copy/symlink.
 - Put product requirements and issue notes under `docs/input/`.
 - Put application source under the target project's `src/`, `frontend/`, `app-description/`, and `specs/`.
 - Use `domain-specific` or the user's actual domain name for app-specific follow-up work; do not use historical example names as generic placeholders.

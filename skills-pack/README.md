@@ -1,15 +1,18 @@
 # Skills Pack Source
 
-This directory contains the source for the installable Akka AI skills pack after the core-app-first repository refactor.
+This directory contains the source assets for the Akka AI skills pack inside the runnable core app repository.
 
 Primary maintenance entry points:
 
 - `AGENTS.md` — source-maintainer guidance for skills-pack work
-- `skills/README.md` — skill routing map
-- `pack/` — installed-pack guidance and manifest metadata
-- `docs/` — pack doctrine, routing, and reference docs
+- `skills/README.md` — skill routing map installed with the skills
+- `skills/*/SKILL.md` — focused harness guidance installed into `.agents/skills` or `~/.agents/skills`
+- `docs/` — source-checkout doctrine, routing, and reference docs
+- `examples/` — source-checkout Akka component examples
+- `templates/` — source-checkout starter app-description assets
 - `akka-context/` — vendored official Akka reference material for maintainers; not installed
+- `pack/` — source metadata for the skills-only install contract
 - `tools/` — release, validation, and audit tools
-- `install-skills.sh` — skills-only installer entrypoint
+- `install-skills.sh` — skills-only harness install entrypoint
 
-The repository root remains the canonical runnable core app. This directory owns installable skills and supporting guidance assets. The repo/tag is now the unit of installation; a distribution bundle is no longer required for normal use.
+The repository root is the canonical runnable full-stack Akka app. Pack users clone or fork this repo and build domain-specific workstreams in the root app workspace. There is no separate full-pack installer and no installed duplicate baseline app; the only install action is making the skills library available to an AI coding harness.

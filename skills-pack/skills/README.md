@@ -12,18 +12,18 @@ Java base package intake for generated code:
 - record the selected package in app-description/spec/generation artifacts and apply it consistently to group id, packages, imports, tests, and source paths
 
 This file serves both:
-- the **source repository**, where app-description trees under `docs/examples/` are reference assets for the pack itself
-- the **installed pack** in a real development project, where the project's maintained `app-description/` tree belongs in the project workspace rather than under `.agents/`, unless that project explicitly chooses another internal location
+- the **source repository**, where root `app-description/`, `specs/`, `frontend/`, `src/`, and `skills-pack/docs|examples|templates` are reference and runtime assets
+- the **skills-only harness install**, where this routing map and `SKILL.md` files are copied under `.agents/skills` while the project's maintained `app-description/` tree stays in the project workspace, not under `.agents/`
 
-Core-app-first routing for installed packs:
-- skills-only install remains the default: `.agents/` is a guidance/resource library and application artifacts live in the target workspace
-- for new secure AI-first SaaS apps where the user wants an implementation baseline, prefer fork-and-extend from the upstream runnable core app repository root; do not expect this installed pack to contain or render a duplicate full-app core app baseline
+Core-app-first routing:
+- skills-only install remains the only install model: `.agents/skills` is a guidance library and application artifacts live in the cloned/forked repository workspace
+- for new secure AI-first SaaS apps where the user wants an implementation baseline, prefer fork-and-extend from this runnable core app repository root; do not expect the skills install to contain or render a duplicate full-app core app baseline
 - natural-language requests for a “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS must route to `../docs/minimum-ai-first-saas-app.md`: a bootstrap-authorized five core workstream starter readiness target with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, not a generic public chatbot or page-first CRUD shell
 - the runnable core app repository root is the canonical generated-app implementation baseline; the minimum starter is a narrower readiness state than full-core SaaS and must record follow-up work to reach full-core readiness; purchase-request, shopping-cart, and standalone static UI examples are mechanics references only
 - when extending the core app or generated-app foundation with durable internal/background agent work such as access-review investigations, admin-risk batches, audit summaries, evaluation/replay loops, monitoring/remediation, specialist follow-up, task dependencies, notifications, handoff, or team coordination, route to Akka `AutonomousAgent` and apply `../docs/autonomous-agent-worker-runtime-pattern.md` for worker-style generated-app tasks; keep request-based Akka `Agent` as the default for the five core user-facing workstream request/response turns and other bounded `markdown_response` workstream interactions
 - when the user asks what comes next after the app runs, recommend the next milestone from actual readiness gaps, app-description state, or pending tasks; say `domain-specific` or use the user's actual domain name for later product features, and never say `DCA-specific` unless DCA is explicitly the user's domain
 - if a project has existing implementation artifacts, preserve its selected Java base package, foundation, workstream UI, and queue history; update app-description/specs before adding implementation tasks
-- for the upstream runnable core app and downstream forks that keep its merge-friendly layout, preserve the standard Akka Java layers and use `foundation`, `coreapp`, and `business.<area>` partitions inside them: reusable SaaS/platform code under `<base>.api|application|domain.foundation.*`, built-in five-core-workstream code under `<base>.api|application|domain.coreapp.*`, and user-owned CRM/ERP/procurement/domain extensions under `<base>.api|application|domain.business.<area>.*`
+- for this repository's runnable core app and downstream forks that keep its merge-friendly layout, preserve the standard Akka Java layers and use `foundation`, `coreapp`, and `business.<area>` partitions inside them: reusable SaaS/platform code under `<base>.api|application|domain.foundation.*`, built-in five-core-workstream code under `<base>.api|application|domain.coreapp.*`, and user-owned CRM/ERP/procurement/domain extensions under `<base>.api|application|domain.business.<area>.*`
 - do not place new product-specific Java code in legacy top-level `security`, `agentfoundation`, `admin`, or `workstream` packages when extending the core app; use stable foundation contracts and approved core app hooks from `business.<area>` packages instead
 - do not regenerate a parallel fresh app, replace the existing foundation files, or use `.agents/` resources as writable project source unless the user explicitly asks for destructive reset or pack maintenance
 
@@ -1186,7 +1186,7 @@ Load:
 - `akka-web-ui-testing`
 - `akka-http-endpoint-testing`
 
-For generated AI-first SaaS, this UI work is mandatory and should implement the agent workstream shell by default, not a page-first or chatbot-bolt-on app. In this source repository, use `../docs/workstream-ui-reference-architecture.md`, reusable modules under `../frontend/src/workstream/**`, and the User Admin vertical test `../frontend/src/workstream-user-admin-vertical.contract.test.mjs` as the canonical frontend reference; in an installed pack, use the exported frontend reference under `../resources/examples/frontend/**`. If no style guide or named-theme contract is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
+For generated AI-first SaaS, this UI work is mandatory and should implement the agent workstream shell by default, not a page-first or chatbot-bolt-on app. In this source repository and downstream forks, use `../docs/workstream-ui-reference-architecture.md`, root `../../frontend/src/workstream/**`, and the User Admin vertical test `../../frontend/src/workstream-user-admin-vertical.contract.test.mjs` as the canonical frontend reference. The skills-only install does not include an exported frontend example tree. If no style guide or named-theme contract is selected in the app-description or specs, first add or answer the pending UI style-selection question from `../docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
 
 Then add one or more focused frontend companions as needed:
 - `akka-web-ui-frontend-project`
@@ -1533,7 +1533,7 @@ Testing examples:
 ### HTTP endpoints
 Core endpoint examples:
 
-For generated SaaS browser UI, these endpoint examples are delivery mechanics only. Use `../docs/workstream-ui-reference-architecture.md` and the canonical frontend reference (`../frontend/src/workstream/**` in this source repository, or `../resources/examples/frontend/src/workstream/**` in an installed pack); do not treat `WebUi*PageEndpoint` examples as page-first UI architecture.
+For generated SaaS browser UI, these endpoint examples are delivery mechanics only. Use `../docs/workstream-ui-reference-architecture.md` and the canonical root frontend reference `../../frontend/src/workstream/**` from this repository or a downstream fork; do not treat `WebUi*PageEndpoint` examples as page-first UI architecture. The skills-only install does not include `resources/examples/frontend/**`.
 
 - `../src/main/java/com/example/api/GreetingEndpoint.java`
 - `../src/main/java/com/example/api/WebUiHomeEndpoint.java`

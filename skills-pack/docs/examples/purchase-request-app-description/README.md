@@ -28,4 +28,4 @@ The important part is the layer responsibility and cross-linking pattern.
 
 Repository/use distinction:
 - in this source repository, this directory is a packaged reference example for the skills pack
-- in a real development project using the installed pack, the actual maintained `app-description/` tree should live in that project workspace rather than inside `.agents/`, unless the project deliberately chooses another internal location
+- in a real development project using a skills-only harness install, the actual maintained `app-description/` tree should live in that project workspace rather than inside `.agents/`, unless the project deliberately chooses another internal location

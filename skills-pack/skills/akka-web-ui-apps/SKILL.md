@@ -55,10 +55,10 @@ Canonical frontend project integration reference:
 - `../../docs/frontend-with-akka-backend.md` (use web UI integration sections together with mandatory JWT/request-context and `/api/me` security boundaries for generated SaaS apps)
 
 Canonical full-core implementation reference:
-- source repository: the upstream runnable core app repository root
-- installed pack: use `../../resources/examples/frontend/**` as reusable frontend reference only; application source belongs in the target project
+- source checkout or downstream fork: use the runnable core app repository root
+- skills-only install: no frontend example tree is installed under `.agents`; application source belongs in the target project
 
-Canonical source-repository workstream UI reference:
+Canonical source-checkout workstream UI reference:
 - reusable implementation modules: `../../frontend/src/workstream/**`
 - runtime API contracts: `../../frontend/src/api/WorkstreamApiClient.ts` and `../../frontend/src/api/WorkstreamRealtimeClient.ts`
 - integrated shell example: `../../frontend/src/main.tsx`

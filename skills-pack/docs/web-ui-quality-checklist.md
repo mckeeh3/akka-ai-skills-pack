@@ -2,7 +2,7 @@
 
 Use this checklist before completing any non-trivial Akka-hosted browser UI.
 
-For generated AI-first SaaS work in this source repository, compare end-to-end behavior against the upstream runnable core app repository root, then compare UI architecture against `docs/workstream-ui-reference-architecture.md` and the reusable React/Vite reference under `frontend/src/workstream/**`. In an installed pack, use the same architecture doc under `docs/` and the exported frontend reference under `resources/examples/frontend/**`; application code belongs in the target project. The User Admin vertical contract test (`frontend/src/workstream-user-admin-vertical.contract.test.mjs`) is the canonical foundation-admin UI pattern. Legacy `frontend/src/screens/**` and standalone static examples are not canonical generated-app structure.
+For generated AI-first SaaS work in this source repository and downstream forks, compare end-to-end behavior against the runnable core app repository root, then compare UI architecture against `docs/workstream-ui-reference-architecture.md` and the reusable React/Vite reference under root `frontend/src/workstream/**`. The skills-only install does not export `resources/examples/frontend/**`; application code belongs in the target project. The User Admin vertical contract test (`frontend/src/workstream-user-admin-vertical.contract.test.mjs`) is the canonical foundation-admin UI pattern. Legacy `frontend/src/screens/**` and standalone static examples are not canonical generated-app structure.
 
 ## UX completeness
 

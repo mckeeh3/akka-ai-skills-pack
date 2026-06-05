@@ -4,7 +4,7 @@
 
 This is the canonical AI-first SaaS architecture doctrine for this skills pack.
 It distills temporary migration concept material retained only as source-repository provenance.
-Those archived source materials are not installed-pack guidance; this document is the authority for repository guidance and routing work.
+Those archived source materials are not installed-skill guidance; this document is the authority for source-checkout repository guidance and routing work.
 
 ## Default target architecture
 
@@ -145,7 +145,7 @@ Foundation generated SaaS apps must include secure-operation functional agents, 
 
 When these concepts are maintained in an app-description tree, `12-workstreams/` owns functional agents, internal agents, durable workstreams, structured surface contracts, reusable surface placement, action-to-capability mappings, trace semantics, and surface/action tests. `55-ui/` owns browser realization: shell rendering, functional-agent rail, workstream panel, persistent composer, structured-surface rendering, routes/deep links, interactions/forms, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide. `55-ui/` links back to `12-workstreams/` and capability/security/test layers instead of redefining application meaning.
 
-For secure foundation shape, start with the target project `app-description/README.md` plus `core-ai-first-saas-foundation.md`. For executable full-core implementation guidance, use the upstream runnable core app repository root. After pack installation, `.agents/` provides guidance and examples only; application source belongs in the target project. For UI composition and implementation routing, use `agent-workstream-application-architecture.md`, `../skills/ai-first-saas-ui-surfaces/SKILL.md`, and the existing Akka web UI skills.
+For secure foundation shape, start with the target project `app-description/README.md` plus `core-ai-first-saas-foundation.md`. For executable full-core implementation guidance, use this repository's runnable core app root or a downstream fork. After the skills-only harness install, `.agents/skills` provides skill guidance only; docs, examples, templates, application source, app-description, and specs remain in the source checkout or target project. For UI composition and implementation routing, use `agent-workstream-application-architecture.md`, `../skills/ai-first-saas-ui-surfaces/SKILL.md`, and the existing Akka web UI skills.
 
 ## Akka + React/Vite/TypeScript substrate
 

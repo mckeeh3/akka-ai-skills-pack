@@ -31,16 +31,16 @@ Create planning artifacts for the **current target project**, not for `.agents/`
 
 In the Akka AI skills-pack source repository, pack-maintenance mini-projects may concern source assets such as `skills-pack/skills/`, `skills-pack/docs/`, `skills-pack/pack/`, examples, tests, packaging, install scripts, or repository guidance.
 
-Do not treat an installed `.agents/` support library as writable application source unless the user explicitly asks for pack maintenance, installed-pack customization, or a destructive reset.
+Do not treat an installed `.agents/skills` support library as writable application source unless the user explicitly asks for skills maintenance, harness-skill customization, or a destructive reset.
 
 ## Required reading
 
 Read only the smallest useful context:
 - `AGENTS.md` or equivalent repository guidance
 - `.agents/skills/README.md` or `skills/README.md` when present
-- `.agents/docs/pending-task-queue.md` or `docs/pending-task-queue.md` for queue mechanics when present
-- `.agents/docs/pending-question-queue.md` or `docs/pending-question-queue.md` when unresolved decisions may block tasks
-- `.agents/docs/ai-first-saas-application-architecture.md` / `.agents/docs/capability-first-backend-architecture.md` or project-local equivalents only when the initiative affects generated-app doctrine, agent workstreams, governed capabilities, security, UI, agents, audit, or runtime completion semantics
+- `skills-pack/docs/pending-task-queue.md` or project `docs/pending-task-queue.md` for queue mechanics when present
+- `skills-pack/docs/pending-question-queue.md` or project `docs/pending-question-queue.md` when unresolved decisions may block tasks
+- `skills-pack/docs/ai-first-saas-application-architecture.md` / `skills-pack/docs/capability-first-backend-architecture.md` or project-local equivalents only when the initiative affects generated-app doctrine, agent workstreams, governed capabilities, security, UI, agents, audit, or runtime completion semantics
 - the conversation notes, issue, prompt, draft spec, review finding, or source files named by the user
 - related existing `specs/*/README.md` and `specs/*/pending-tasks.md` as pattern references
 

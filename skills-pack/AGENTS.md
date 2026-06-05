@@ -15,11 +15,13 @@ Work here when a task targets installable `.agents` assets:
 
 The repository root is the canonical runnable Akka Java SDK + React/Vite core app. Do not add core app runtime code under `skills-pack/**`. Do not move focused skills-pack examples back into root `src/**`.
 
-## Installed-pack model
+## Skills-only harness install model
 
-The pack installs guidance, skills, docs, manifests, and reference examples into `.agents/` or `~/.agents`. It no longer installs or renders a duplicate full-app core app baseline. Downstream teams that want an implementation baseline should fork or copy from the upstream runnable core app repository root, then extend their own workspace `app-description/`, `specs/`, backend, and frontend.
+This repository is the product baseline: pack users clone or fork this repo, run the root Akka full-stack app, and build their domain-specific workstreams in the root app workspace. There is no separate full-pack installer, generated distribution bundle, or installed duplicate app baseline.
 
-The installed `.agents/` directory is a support library, not the target application's source tree.
+The only install step copies or symlinks `skills-pack/skills/**` plus shared `skills-pack/skills/references/**` into a harness-accessible skills directory such as `.agents/skills` or `~/.agents/skills`. The installed `.agents/` directory is a support library for the harness, not the target application's source tree, documentation tree, examples tree, or app-description/spec storage location.
+
+Pack docs, examples, templates, `akka-context/**`, manifests, and tools remain source-checkout assets under `skills-pack/**` unless a future task explicitly changes the skills-only install contract.
 
 ## Runtime completion doctrine
 
@@ -44,6 +46,6 @@ Use root app checks only when a task explicitly touches root app runtime/fronten
 ## Path rules
 
 - Pack source paths are relative to `skills-pack/`.
-- Installed-pack guidance should refer to installed paths such as `.agents/skills`, `.agents/docs`, and `.agents/resources/examples`.
+- Installed-skill guidance may refer to `.agents/skills` for loaded skills and shared skill references only; it must not imply `.agents/docs`, `.agents/resources/examples`, templates, manifests, or application source are installed.
 - Root app guidance should remain in root `AGENTS.md`, `README.md`, `docs/**`, `app-description/**`, and runtime source paths.
 - Use `domain-specific` or the user's actual domain name for app-specific follow-up work; do not use historical placeholder names as generic labels.

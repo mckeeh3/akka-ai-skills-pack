@@ -8,7 +8,7 @@ Preferred current generated SaaS references:
 - `core-ai-first-saas-input/README.md` — canonical PRD/input documents for planning the progressive core seed. These are input artifacts, not the maintained app-description tree shape.
 
 Runnable generated-app baseline:
-- the upstream runnable core app repository root — canonical local executable Akka Java + React/Vite/TypeScript baseline for fork-and-extend work.
+- this repository's runnable core app root — canonical local executable Akka Java + React/Vite/TypeScript baseline for fork-and-extend work.
 
 Mechanics-only / conventional references:
 - `purchase-request-app-description/README.md` — compact low-agentic approval workflow for app-description mechanics and cross-linking only. Do not use it as generated AI-first SaaS target architecture.

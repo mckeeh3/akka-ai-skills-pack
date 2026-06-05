@@ -152,7 +152,7 @@ Before implementation, use the repository validator when available:
 bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md
 ```
 
-In an installed-pack or downstream project, run the copied script from wherever the pack tools are available, passing the target queue path. The validator is intentionally conservative: it checks for the presence of the required contract vocabulary, not semantic correctness. Passing the script does not replace reading the task brief; failing it means repair the backlog/task brief/queue before coding.
+In a downstream fork, run the script from the repository source checkout when available, passing the target queue path. The skills-only harness install does not copy `tools/**` into `.agents`. The validator is intentionally conservative: it checks for the presence of the required contract vocabulary, not semantic correctness. Passing the script does not replace reading the task brief; failing it means repair the backlog/task brief/queue before coding.
 
 ## Managed-agent and workstream expertise splitting guardrails
 

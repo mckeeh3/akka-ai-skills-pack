@@ -3,9 +3,9 @@ kind: ResourcePackManifestSchema
 name: akka-ai-skills-pack-manifest
 
 description: >-
-  Schema for a versioned Akka AI resource pack manifest. The manifest describes what the pack
-  installs, the full packaged content profile, where examples are exported, and which external docs are
-  intentionally excluded from the installed artifact.
+  Schema for the Akka AI skills library manifest. The manifest describes the
+  skills-only harness install contract, source-checkout reference files, and
+  external/source docs that are intentionally not installed into `.agents`.
 
 fields:
   apiVersion:
@@ -29,11 +29,11 @@ fields:
       version:
         type: string
         required: true
-        example: 0.1.5
+        example: 0.3.0
       sourceRepo:
         type: string
         required: true
-        example: https://github.com/example/akka-ai-skills-pack
+        example: https://github.com/mckeeh3/akka-ai-skills-pack
       description:
         type: string
         required: true
@@ -46,6 +46,18 @@ fields:
     type: map
     required: true
     fields:
+      unit:
+        type: string
+        required: true
+        example: repository-tag
+      installer:
+        type: string
+        required: true
+        example: install-skills.sh
+      ownershipManifest:
+        type: string
+        required: true
+        example: .akka-ai-skills-pack-install-manifest
       modes:
         type: map
         required: true
@@ -54,50 +66,30 @@ fields:
             type: map
             required: true
             fields:
-              rootDir:
-                type: string
-                required: true
-                example: '{projectRoot}/.agents'
               skillsDir:
                 type: string
                 required: true
                 example: '{projectRoot}/.agents/skills'
-              manifestsDir:
-                type: string
-                required: true
-                example: '{projectRoot}/.agents/manifests'
-              examplesDir:
-                type: string
-                required: true
-                example: '{projectRoot}/.agents/resources/examples/java'
-              frontendExamplesDir:
-                type: string
-                required: false
-                example: '{projectRoot}/.agents/resources/examples/frontend'
           global:
             type: map
             required: true
             fields:
-              rootDir:
-                type: string
-                required: true
-                example: ~/.agents
               skillsDir:
                 type: string
                 required: true
                 example: ~/.agents/skills
-              manifestsDir:
+          explicit:
+            type: map
+            required: true
+            fields:
+              skillsDir:
                 type: string
                 required: true
-                example: ~/.agents/manifests
-              examplesDir:
-                type: string
-                required: true
-                example: ~/.agents/resources/examples/java
-              frontendExamplesDir:
-                type: string
-                required: false
-                example: ~/.agents/resources/examples/frontend
+                example: '<target-skills-dir>'
+      options:
+        type: map
+        required: false
+        note: copy, symlink, prune, uninstall, and check options for skills-only installs.
 
   content:
     type: map
@@ -128,40 +120,15 @@ fields:
         type: list
         required: false
         itemType: string
+        note: Source-checkout reference files. Only skills/references/** is copied by install-skills.sh.
       examples:
         type: map
-        required: true
-        fields:
-          exportFrom:
-            type: list
-            required: true
-            itemType: string
-          installAs:
-            type: string
-            required: true
-            example: '{agentsRoot}/resources/examples/java'
-          includePom:
-            type: boolean
-            required: true
-          includeReadme:
-            type: boolean
-            required: true
+        required: false
+        note: Deprecated; examples are source-checkout assets and are not installed into `.agents`.
       frontendExamples:
         type: map
         required: false
-        fields:
-          exportFrom:
-            type: list
-            required: true
-            itemType: string
-          installAs:
-            type: string
-            required: true
-            example: '{agentsRoot}/resources/examples/frontend'
-          exclude:
-            type: list
-            required: false
-            itemType: string
+        note: Deprecated; frontend references are source-checkout assets and are not installed into `.agents`.
 
   bundles:
     type: list
@@ -184,6 +151,7 @@ fields:
       includeExamples:
         type: boolean
         required: true
+        note: Must be false for the current skills-only install contract.
 
   transforms:
     type: map
@@ -192,20 +160,11 @@ fields:
       rewriteExamplePaths:
         type: boolean
         required: true
+        note: Must be false for the current skills-only install contract.
       rewriteAkkaContextReferences:
         type: boolean
         required: true
-      examplePathRules:
-        type: list
-        required: false
-        itemType: map
-        itemFields:
-          from:
-            type: string
-            required: true
-          to:
-            type: string
-            required: true
+        note: Must be false for the current skills-only install contract.
       akkaContextRewriteMessage:
         type: string
         required: false
@@ -228,9 +187,6 @@ fields:
 
 validationRules:
   - metadata.name must be stable across releases
-  - install paths must stay within the supported cross-harness roots {projectRoot}/.agents or ~/.agents
-  - each content.skills[].path must exist in the source repo
-  - each bundle.skills[] entry must match a declared content.skills[].id
-  - if externalDocs.bundled is false, transforms.rewriteAkkaContextReferences must be true
-  - exported example paths must exist in the source repo
-  - no installed skill may retain a broken local akka-context path
+  - content.skills ids must match skills/*/SKILL.md directories
+  - bundles[].includeExamples must be false while install-skills.sh remains skills-only
+  - manifests must not define installed docs, templates, examples, frontend examples, or application source paths unless install-skills.sh is intentionally changed in the same release

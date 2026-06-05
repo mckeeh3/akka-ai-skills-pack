@@ -6,7 +6,7 @@ For user-facing installation and usage guidance, see [`skills-pack-user-guide.md
 
 ## Repository model
 
-The repository root is the canonical runnable Akka Java SDK + React/Vite core app. The installable skills pack source lives under `skills-pack/`.
+The repository root is the canonical runnable Akka Java SDK + React/Vite core app. The skills library source lives under `skills-pack/`; only `skills-pack/skills/**` and shared skill references are installed into a harness skills directory.
 
 Skills-pack work includes:
 
@@ -23,11 +23,11 @@ Do not add core app runtime code under `skills-pack/**`. Do not add skills-pack 
 
 - root `AGENTS.md` — contributor guidance for the runnable core app plus the skills-pack pointer
 - `skills-pack/AGENTS.md` — maintainer guidance for pack source work
-- `skills-pack/pack/AGENTS.md` — installed as `.agents/AGENTS.md` for downstream projects
-- `skills-pack/skills/**` — source skill library
-- `skills-pack/docs/**` — pack-facing doctrine, references, and mechanics examples
-- `skills-pack/examples/akka-components/**` — focused Akka Java reference examples
-- root `frontend/**` — core app frontend and exported frontend workstream reference
+- `skills-pack/pack/AGENTS.md` — source metadata guidance only; not installed
+- `skills-pack/skills/**` — source skill library copied/symlinked to `.agents/skills`
+- `skills-pack/docs/**` — source-checkout doctrine, references, and mechanics examples; not installed
+- `skills-pack/examples/akka-components/**` — source-checkout focused Akka Java reference examples; not installed
+- root `frontend/**` — core app frontend and source-checkout frontend workstream reference; not installed into `.agents`
 - `skills-pack/akka-context/**` — official Akka reference material for maintainers only; not installed
 
 ## Source layout
@@ -61,7 +61,7 @@ Maintain the pack so downstream harnesses:
 - validate runtime features through real local Akka/API/UI paths
 - use `domain-specific` or the user's actual domain name for app follow-up work
 
-The pack no longer owns a duplicate full-app core app baseline. Guidance for a new implementation baseline should point users to fork/copy the upstream runnable core app repository root, then extend their own workspace.
+The skills library no longer owns a duplicate full-app core app baseline. Guidance for a new implementation baseline should point users to fork or clone this repository and extend the runnable root app workspace.
 
 ## Common checks
 
