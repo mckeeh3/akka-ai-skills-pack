@@ -7,7 +7,7 @@ description: Classify flexible user input into description-maintenance or genera
 
 Use this as the front door when the user provides natural-language input about an application and the harness must decide how to respond.
 
-This skill exists for a **description-first operating model** where the application description is the source of truth and generated code is a downstream projection.
+This skill exists for a **description-first operating model** where the application description is the semantic source of truth and the maintained runnable implementation is kept consistent with it.
 
 ## Goal
 
@@ -45,7 +45,7 @@ If normalization has not yet occurred, this skill may perform lightweight extrac
 
 This skill is routing-only. It may name candidate deltas and the next focused skill, but it must not treat its own routing notes as authoritative app-description content. Long-lived meaning belongs in the focused owner layer: `12-workstreams/`, `10-capabilities/`, `15-operating-model/`, `20-behavior/`, `30-tests/`, `40-auth-security/`, `50-observability/`, or `55-ui/`.
 
-If the user does **not** explicitly ask to generate code, run the app, execute tests, or otherwise realize outputs, treat the input as:
+If the user does **not** explicitly ask to generate code, implement code, run the app, execute tests, or otherwise realize outputs, treat the input as:
 - **change only the app description**
 
 Before selecting a focused description skill for broad product input, check for AI-first signals: delegated operational work, agents, recommendations, policy-bound automation, approvals, exceptions, supervision, audit traces, learning, or outcome accountability. If present, route through AI-first interpretation and preserve `15-operating-model/` semantics instead of reducing the app to CRUD screens or a chatbot.
@@ -72,13 +72,14 @@ Route here when the user is:
 - refining observability expectations
 - asking conceptual questions about what the app should do
 
-### 2. Generate the app
+### 2. Realize or run the app
 Route here only when the user explicitly asks to realize outputs, such as:
-- generate the code
+- generate or implement the code
+- extend or repair the existing app
 - run the app
 - execute tests
 - prepare the app for manual evaluation
-- regenerate affected outputs from the current description
+- update affected outputs from the current description
 
 Example:
 - "ok, now generate the code and run the app"

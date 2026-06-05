@@ -18,7 +18,7 @@ export WORKOS_JWT_ISSUER="configured-workos-issuer" # when env-backed JWT config
 export WORKOS_JWT_AUDIENCE="configured-workos-audience" # when env-backed JWT config is used
 export APP_PUBLIC_BASE_URL="http://localhost:9000"
 export RESEND_API_KEY="re_xxxxxxxxx"
-export INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
+export INVITE_EMAIL_FROM="Your App <onboarding@example.com>"
 export INVITE_EMAIL_SUBJECT="Account access information"
 ```
 
@@ -286,7 +286,7 @@ Invite-email settings are backend-only and mandatory for production readiness. U
 
 ```bash
 export RESEND_API_KEY="re_xxxxxxxxx"
-export INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
+export INVITE_EMAIL_FROM="Your App <onboarding@example.com>"
 export INVITE_EMAIL_SUBJECT="Account access information"
 ```
 

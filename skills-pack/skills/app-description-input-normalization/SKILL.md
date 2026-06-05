@@ -260,7 +260,7 @@ Route onward as needed:
 - to `app-description-functional-agent-modeling` and `app-description-surface-modeling` before direct capability/UI routing when broad generated-SaaS input names work areas, dashboards, queues, command centers, approvals, decisions, audit timelines, workflow status, forms, tables, actions, or agent/chat areas; then route UI realization impacts to `app-description-ui`/`55-ui` only after surface/action meaning and capability backing are clear
 - to `app-description-capability-modeling` when capability scope, actors, AuthContext, schemas, side effects, idempotency, approval, audit, exposure surfaces, or intended outcomes are the dominant delta after workstream/surface context is preserved
 - to focused maintenance skills when normalization already isolates the dominant delta clearly, while preserving any linked workstream, attention, dashboard, surface action, autonomous task, event/notification/projection/trace, behavior, tests, auth/security, UI, observability, or readiness impacts
-- to `app-description-change-impact` when the input is explicitly asking about affected areas or regeneration scope
+- to `app-description-change-impact` when the input is explicitly asking about affected areas or realization scope
 - to `app-description-readiness-assessment` when the input explicitly asks whether generation is appropriate
 
 ## Clarification policy

@@ -7,7 +7,7 @@ description: Orchestrate description-first application work across intake, behav
 
 Use this as the top-level skill for description-first application work.
 
-This skill is for a harness operating model where the **application description is the source of truth** and generated code is a downstream projection.
+This skill is for a harness operating model where the **application description is the semantic source of truth** and the maintained runnable implementation is kept consistent with it.
 
 ## Goal
 
@@ -16,7 +16,7 @@ Maintain or realize an application from its internal app-description system in a
 - harness-optimized
 - explicit about behavior, tests, security, and observability
 - safe about readiness before generation
-- suitable for prompt/response review instead of direct file editing
+- suitable for prompt/response review, diff review, and focused file maintenance
 
 ## Required reading
 
@@ -71,7 +71,7 @@ Load the companion skill that matches the current task. Users do not need to nam
 - `app-description-test-specification`
   - update acceptance, regression, negative, idempotency, security, and operational verification expectations
 - `app-description-change-impact`
-  - determine which description layers, traceability artifacts, readiness state, and generated outputs are affected by a change
+  - determine which description layers, traceability artifacts, readiness state, implementation areas, and generated/derived outputs are affected by a change
 - `app-description-auth-security`
   - update identity, authorization, trust-boundary, sensitive-data, and denial-behavior rules
 - `app-description-observability`
@@ -81,7 +81,7 @@ Load the companion skill that matches the current task. Users do not need to nam
 - `app-description-readiness-assessment`
   - decide whether the current description is `not-ready`, `ready-with-assumptions`, or `ready`
 - `app-generate-app`
-  - realize the current app description as generated outputs
+  - realize the current app description as maintained runnable outputs
 - `app-description-change-summary`
   - summarize what changed after a revision request
 - `app-description-readiness-summary`
@@ -110,7 +110,7 @@ Use this ownership matrix to avoid loading every app-description skill for one c
 | Browser realization of workstream shell, surfaces, routes, APIs, states, style | `app-description-ui` | `12-workstreams/`, `10-capabilities/`, auth/security, tests, observability |
 | Cross-layer impact and regeneration locality | `app-description-change-impact` | all changed authoritative layers, traceability, readiness, specs/backlogs when present |
 | Generation readiness state | `app-description-readiness-assessment` | actual authoritative layers; it must not fill missing semantics |
-| Realized code/tests/assets | `app-generate-app` | readiness result and current description; generation must not invent missing meaning |
+| Realized code/tests/assets | `app-generate-app` | readiness result and current description; implementation/generation must not invent missing meaning |
 | Human review summaries | `app-description-change-summary`, `app-description-readiness-summary` | authoritative layers or latest assessment; summaries are derived, not source of truth |
 
 When a change crosses rows, update the primary owner first, then only the linked layers that the semantic change actually affects. Do not use readiness, summaries, UI routes, or generated output diffs to define application meaning that belongs in workstreams, capabilities, behavior, tests, security, or observability.
@@ -163,15 +163,15 @@ Use the architecture and maintenance-flow docs as the canonical reference for la
 2. Functional agents, workstream expert bundles, and structured surfaces in `12-workstreams/` are the primary generated-app verticals for authenticated consequential work; page/screen hierarchy is subordinate route/deep-link detail.
 3. For user-facing generated SaaS changes, verify functional agent ownership, workstream expertise ownership, structured surface contracts, surface actions, and action-to-capability traceability before treating `10-capabilities/`, `55-ui/`, readiness, or generation scope as complete.
 4. Capability inventory in `10-capabilities/` is the backend contract layer: record actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, selected exposure surfaces, and tests before choosing Akka components or tools.
-5. Generated code is a projection, not the definition of the app.
-6. Humans do not directly edit generated code or internal app-description artifacts.
+5. Code is maintained realization, not the sole definition of the app.
+6. Humans and harnesses may directly edit source, tests, specs, and app-description artifacts when edits are traceable to user input, selected tasks, or discovered implementation gaps.
 7. Tests are part of the app description, not only post-hoc verification.
 8. AI-first operating-model semantics are first-class for generated SaaS apps; the foundation itself includes delegated admin agents, governance, decisions, traces, and outcomes.
 9. The secure SaaS foundation is mandatory for generated apps: no route, agent tool, data access, workflow action, view query, stream, or generated UI is unauthenticated or unauthorized by default.
 10. Auth/security and observability are first-class description concerns.
 11. Browser UI style guides are first-class UI description concerns; do not invent them during generation.
 12. Readiness must be assessed before generation.
-13. Localized regeneration is an optimization, not a conceptual requirement.
+13. Localized extension/repair is the default for existing repositories; broad regeneration/replacement requires explicit scope and approval.
 14. Review should focus on semantic change, not only file churn.
 
 ## Decision guide

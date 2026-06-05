@@ -291,17 +291,15 @@ The harness should ask only the smallest clarifying question needed to avoid one
 - generating too early
 - treating a user review question as a generation request
 
-## Full vs localized regeneration rule
+## Broad vs localized realization rule
 
-When generation is requested, the harness should decide between:
-- full regeneration
-- localized regeneration
+When implementation or generation is requested, the harness should decide between:
+- localized extension/repair of the maintained runnable app
+- broad regeneration or replacement of a named generated scope
 
-Use localized regeneration only when the changed description area and affected outputs are sufficiently clear.
-Otherwise prefer full regeneration.
+Prefer localized extension/repair for existing repositories, especially this core-app-first baseline and downstream forks. Use broad regeneration only when the user explicitly requests it, the scope is named, and the affected app/foundation files are safe to replace.
 
-Localized regeneration is an optimization.
-It must never preserve stale behavior that conflicts with the current description.
+Localized realization must never preserve stale behavior that conflicts with the current description.
 
 ## Completion rule for a change request
 

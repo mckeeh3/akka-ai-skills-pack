@@ -58,11 +58,11 @@ Canonical full-core implementation reference:
 - source checkout or downstream fork: use the runnable core app repository root
 - skills-only install: root frontend application source is not installed under `.agents`; application source belongs in the target project, while pack examples remain under `.agents/skills/examples/**`
 
-Canonical source-checkout workstream UI reference:
-- reusable implementation modules: `../../../frontend/src/workstream/**`
-- runtime API contracts: `../../../frontend/src/api/WorkstreamApiClient.ts` and `../../../frontend/src/api/WorkstreamRealtimeClient.ts`
-- integrated shell example: `../../../frontend/src/main.tsx`
-- User Admin dashboard/list/detail-edit vertical pattern: test-only workstream fixtures and `../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+Canonical target-project workstream UI reference, resolved from the project workspace or source checkout (not from a global `~/.agents/skills` install):
+- reusable implementation modules: `frontend/src/workstream/**`
+- runtime API contracts: `frontend/src/api/WorkstreamApiClient.ts` and `frontend/src/api/WorkstreamRealtimeClient.ts`
+- integrated shell example: `frontend/src/main.tsx`
+- User Admin dashboard/list/detail-edit vertical pattern: test-only workstream fixtures and `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 
 Use the core app baseline as the end-to-end generated-app baseline and these frontend files as reusable UI implementation examples. Test fixtures are contract references only and must not be importable as generated-app normal runtime. Do not use legacy `frontend/src/screens/**` or removed standalone static UI fixtures as the canonical app structure.
 

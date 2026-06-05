@@ -1,6 +1,6 @@
 ---
 name: app-description-change-impact
-description: Determine which internal app-description layers, traceability artifacts, readiness state, and generated output areas are affected by a requested description change, and decide whether regeneration can stay localized or should broaden.
+description: Determine which internal app-description layers, traceability artifacts, readiness state, implementation areas, and generated/derived outputs are affected by a requested description change, and decide whether realization can stay localized or should broaden.
 ---
 
 # App Description Change Impact
@@ -8,7 +8,7 @@ description: Determine which internal app-description layers, traceability artif
 Use this skill when a description change has been proposed or applied and the harness needs to determine what else must move.
 
 This skill formalizes the change-impact pass described in the maintenance flow.
-It helps the harness keep the internal app-description system consistent and decide whether future realization can use localized regeneration safely.
+It helps the harness keep the internal app-description system consistent and decide whether future realization can use localized extension/repair safely.
 
 ## Goal
 
@@ -16,11 +16,11 @@ Analyze a requested or completed description change and produce an impact result
 - identifies impacted authoritative layers, including `12-workstreams/functional-agents.md`, `12-workstreams/surfaces-index.md`, `12-workstreams/surface-contracts/**`, `12-workstreams/workstream-expertise/`, `55-ui/`, and the required `15-operating-model/` for generated AI-first SaaS apps
 - identifies impacted traceability artifacts
 - identifies whether readiness must be reassessed
-- identifies likely affected generated output areas
+- identifies likely affected implementation areas and generated/derived output areas
 - treats role-specific dashboard attention, human surface graph nodes/edges, internal workstream agent graph delegation, workstream expertise, and governed-tool exposure mappings as first-class impact drivers
 - identifies whether existing specs, backlogs, task briefs, or pending tasks need reconciliation
-- recommends localized or broader regeneration scope
-- prevents stale description links, stale planning artifacts, or stale generated outputs from surviving a semantic change
+- recommends localized or broader realization scope
+- prevents stale description links, stale planning artifacts, stale implementation, or stale generated/derived outputs from surviving a semantic change
 
 ## Required reading
 
@@ -58,9 +58,9 @@ Use current target-project app-description files and starter templates for trace
 The task sounds like:
 - "what else does this change affect?"
 - "update change impact after this revision"
-- "can regeneration stay localized?"
+- "can realization stay localized?"
 - "which layers must be updated because of this behavior change?"
-- "what generated outputs are affected by this description change?"
+- "what implementation or generated/derived outputs are affected by this description change?"
 
 Use it after or alongside changes to:
 - capabilities
@@ -100,7 +100,7 @@ For each change, determine as applicable:
 - whether `00-system/readiness-status.md` must be updated
 - which generation surfaces are likely affected, including default prompt/skill/reference resources, manifest fixtures, governed-document import code, loader/tool-boundary implementation, frontend governance surfaces, and tests when workstream expertise changed
 - which specs/backlogs/task briefs/pending tasks are likely affected when they already exist
-- whether regeneration can remain localized or should broaden
+- whether realization can remain localized or should broaden
 
 ## Standard impact output shape
 
@@ -129,11 +129,11 @@ Use this response shape:
 - review summaries:
 - specs/backlogs/pending tasks:
 
-## Likely affected generated outputs
+## Likely affected implementation and derived outputs
 - ...
 
-## Regeneration recommendation
-- localized | broad | full
+## Realization recommendation
+- localized extension/repair | broad scoped realization | explicit replacement/regeneration
 - rationale:
 
 ## Required next updates
@@ -159,31 +159,32 @@ Behavior or operating-model changes may force security, observability, and UI up
 ### 5. Reassess readiness when meaning changed materially
 If the change alters core behavior, failure semantics, role-specific dashboard attention, human surface graph edges, internal workstream agent graph delegation, governed-tools, browser-tool/agent-tool/internal-tool exposure, delegated authority, workstream expert bundles, skill/reference manifests, tool boundaries, policies, approvals, decisions, traces, outcomes, production constraints, UI supervision surfaces, or test coverage expectations, readiness should usually be revisited.
 
-### 6. Prefer localized regeneration only when the dependency chain is clear
-If the harness cannot confidently bound the affected outputs, recommend broad or full regeneration instead.
+### 6. Prefer localized realization only when the dependency chain is clear
+If the harness cannot confidently bound the affected outputs, recommend a broader explicitly scoped realization plan instead of pretending the change is local.
 
 ### 7. Update traceability maps explicitly
 When capability-to-behavior, operating-model-to-behavior, behavior-to-tests, or change-impact maps are now stale, mark them for update.
 
-## Regeneration recommendation guide
+## Realization recommendation guide
 
-### Recommend `localized` when
+### Recommend `localized extension/repair` when
 - the changed semantic area is narrow
 - affected authoritative layers are clearly bounded
 - affected output surfaces are known
 - no broad architectural, authority, policy, decision, trace, outcome, or UI-supervision assumption shifted
 
-### Recommend `broad` when
+### Recommend `broad scoped realization` when
 - multiple authoritative layers changed in connected ways
 - the impact is larger than one bounded feature area
 - readiness or production concerns shifted meaningfully
 - functional-agent expertise, manifest, reference, tool-boundary, or trace requirements changed
 
-### Recommend `full` when
+### Recommend `explicit replacement/regeneration` only when
+- the user has approved that scope
 - the change affects foundational assumptions
 - traceability is incomplete or stale
 - the harness cannot safely preserve unaffected outputs
-- a clean regeneration is lower risk than partial preservation
+- a clean realization is lower risk than partial preservation
 
 ## Handoff rules
 
@@ -215,7 +216,7 @@ Avoid:
 - assuming no test impact because the user mentioned only behavior
 - assuming no security impact because the request did not mention auth explicitly
 - treating a workstream expertise change as prompt-only and skipping capability, governance, auth/security, observability, UI, generation, traceability, or test propagation
-- recommending localized regeneration without a clear dependency chain
+- recommending localized realization without a clear dependency chain
 - treating review summaries as authoritative instead of derived
 - leaving traceability maps stale after a material semantic change
 
@@ -225,8 +226,8 @@ Before finishing, verify:
 - impacted authoritative layers are named explicitly, including `10-capabilities/`, `12-workstreams/workstream-expertise/`, and `15-operating-model/` for generated AI-first SaaS apps
 - impacted derived layers are named explicitly
 - readiness impact is called out when relevant
-- likely generated outputs are named at a useful level
-- the regeneration recommendation is explicit and justified
+- likely implementation and generated/derived outputs are named at a useful level
+- the realization recommendation is explicit and justified
 - the next required updates are actionable
 
 ## Response style
@@ -234,5 +235,5 @@ Before finishing, verify:
 When answering:
 - summarize the change basis first
 - separate authoritative vs derived impact clearly
-- make regeneration scope recommendations explicit
+- make realization scope recommendations explicit
 - keep the result usable as a downstream maintenance and realization handoff

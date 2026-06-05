@@ -139,7 +139,7 @@ Invite-email delivery settings are backend-only and mandatory for production rea
 
 ```bash
 RESEND_API_KEY="re_xxxxxxxxx"
-INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
+INVITE_EMAIL_FROM="Your App <onboarding@example.com>"
 INVITE_EMAIL_SUBJECT="Account access information"
 ```
 

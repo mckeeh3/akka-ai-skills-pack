@@ -1,6 +1,6 @@
 # Skills Pack Tech Stack
 
-Applications produced with this skills pack target a full-stack architecture with **Akka on the backend** and **React/Vite/TypeScript on the frontend**. The stack is designed for AI agents that need to turn high-level product intent into durable application descriptions, implementation plans, and generated code across backend, frontend, tests, and operational concerns.
+Applications maintained with this skills pack target a full-stack architecture with **Akka on the backend** and **React/Vite/TypeScript on the frontend**. The stack is designed for AI agents that need to turn high-level product intent into durable application descriptions, implementation plans, and maintained implementation across backend, frontend, tests, and operational concerns.
 
 At the backend core is the **Akka SDK**, using Akka components as peer building blocks rather than treating the app as a single layered CRUD service. The supported backend shape includes:
 
@@ -56,4 +56,4 @@ For harness agents creating higher-level app-design skills, this means the targe
 7. React/Vite/TypeScript agent workstream shell, structured surfaces, and client contracts,
 8. tests and acceptance criteria across backend, frontend, and agent behavior.
 
-In short: this skills pack supports designing and generating **modern full-stack Akka applications**: event-driven, CQRS-friendly, workflow-capable, AI-agent-native, and integrated with TypeScript React frontends.
+In short: this skills pack supports designing, extending, and realizing **modern full-stack Akka applications**: event-driven, CQRS-friendly, workflow-capable, AI-agent-native, and integrated with TypeScript React frontends.

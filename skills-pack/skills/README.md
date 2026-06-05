@@ -120,12 +120,12 @@ Initial app-description skills:
 - `app-description-capability-modeling` — update the authoritative capability layer of the app description
 - `app-description-behavior-specification` — update the authoritative behavior layer of the app description
 - `app-description-test-specification` — update the authoritative test layer of the app description
-- `app-description-change-impact` — determine which layers, maps, readiness state, and generated outputs are affected by a change
+- `app-description-change-impact` — determine which layers, maps, readiness state, implementation areas, and generated/derived outputs are affected by a change
 - `app-description-auth-security` — update the authoritative auth/security layer of the app description
 - `app-description-observability` — update the authoritative observability layer of the app description
 - `app-description-ui` — update the authoritative frontend/UI realization layer of the app description after functional-agent/surface/capability meaning is clear, including mandatory `55-ui/style-guide.md` for generated full-stack AI-first SaaS apps
 - `app-description-readiness-assessment` — assess whether the current app description is sufficiently complete for generation
-- `app-generate-app` — realize the current app description as generated outputs
+- `app-generate-app` — realize the current app description as maintained runnable outputs
 - `app-description-change-summary` — summarize what changed after a revision request
 - `app-description-readiness-summary` — summarize why the description is or is not ready for generation
 
@@ -1181,7 +1181,7 @@ Load:
 - `akka-web-ui-testing`
 - `akka-http-endpoint-testing`
 
-For generated AI-first SaaS, this UI work is mandatory and should implement the agent workstream shell by default, not a page-first or chatbot-bolt-on app. In this source repository and downstream forks, use `docs/workstream-ui-reference-architecture.md`, root `../../frontend/src/workstream/**`, and the User Admin vertical test `../../frontend/src/workstream-user-admin-vertical.contract.test.mjs` as the canonical frontend reference. The harness install includes pack examples under `examples/**`, but it does not include root frontend application source. If no style guide or named-theme contract is selected in the app-description or specs, first add or answer the pending UI style-selection question from `docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
+For generated AI-first SaaS, this UI work is mandatory and should implement the agent workstream shell by default, not a page-first or chatbot-bolt-on app. In this source repository and downstream forks, use `docs/workstream-ui-reference-architecture.md`, target-project `frontend/src/workstream/**`, and target-project `frontend/src/workstream-user-admin-vertical.contract.test.mjs` as the canonical frontend reference. Resolve those frontend paths from the project workspace, not from a global `~/.agents/skills` install. The harness install includes pack examples under `examples/**`, but it does not include root frontend application source. If no style guide or named-theme contract is selected in the app-description or specs, first add or answer the pending UI style-selection question from `docs/web-ui-style-guide.md`; do not let web UI implementation choose implicitly.
 
 Then add one or more focused frontend companions as needed:
 - `akka-web-ui-frontend-project`
@@ -1527,7 +1527,7 @@ Testing examples:
 ### HTTP endpoints
 Core endpoint examples:
 
-For generated SaaS browser UI, use `docs/workstream-ui-reference-architecture.md` and the canonical root frontend reference `../../frontend/src/workstream/**` from this repository or a downstream fork. Removed static UI page fixtures must not be restored as page-first UI architecture. The harness install includes pack examples under `examples/**`, but it does not include root frontend application source.
+For generated SaaS browser UI, use `docs/workstream-ui-reference-architecture.md` and the target-project canonical frontend reference `frontend/src/workstream/**` from this repository or a downstream fork. Resolve that frontend path from the project workspace, not from a global `~/.agents/skills` install. Removed static UI page fixtures must not be restored as page-first UI architecture. The harness install includes pack examples under `examples/**`, but it does not include root frontend application source.
 
 - `examples/akka-components/src/main/java/ai/first/api/GreetingEndpoint.java`
 - `examples/akka-components/src/main/java/ai/first/api/LowLevelHttpEndpoint.java`

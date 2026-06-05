@@ -2,51 +2,49 @@
 
 ## Core thesis
 
-The application is not its source code.
+The application is the combination of its authoritative app description and its maintained runnable implementation.
 
-The application is the harness-maintained internal description of intended behavior, constraints, interfaces, tests, and operational requirements.
+The app description defines intended behavior, constraints, interfaces, tests, and operational requirements. In this repository and downstream forks, the root source tree is the canonical runnable implementation baseline that realizes and validates that description.
 
-Source code, tests, deployment assets, and other implementation artifacts are generated outputs derived from that description.
+Source code, tests, deployment assets, and other implementation artifacts must stay consistent with the description, but they are not disposable by default.
 
 ## Source of truth
 
-The sole source of truth is the internal application description maintained by the harness.
+The authoritative semantic source of truth is the internal application description maintained by the harness.
 
 This description is:
 - multi-layered
 - internally interconnected
-- optimized strictly for harness/model use
-- not intended for direct human authorship or maintenance
+- optimized for harness/model use
+- maintained through focused edits when requirements change
 
-Generated code is not authoritative.
-Generated tests are not authoritative unless incorporated into the internal description layer.
-Human understanding is not authoritative unless expressed as new input to the harness.
+The runnable implementation is the operational source of truth for what currently works locally. When code and description diverge, reconcile them deliberately: update the description when semantics changed, and update implementation/tests when realization is stale or incomplete.
 
 ## Repository goal
 
 The goal of this repository is to create sufficient skills for a harness to create, maintain, refine, validate, and realize application descriptions.
 
-These skills are not primarily for helping users hand-author source code.
+These skills are not primarily for ad hoc coding detached from the app description.
 They are for helping the harness:
 - interpret flexible user input
 - maintain the internal app description
 - determine what internal artifacts need to change
 - decide when the description is sufficiently complete
-- generate application outputs when requested or appropriate
+- extend or repair the canonical runnable app when requested or appropriate
 
 ## Primary principles
 
-### 1. Description is the app
-The internal description fully defines the app.
-If the description is complete, the app can be regenerated.
-If the app cannot be regenerated from the description, the description is incomplete.
+### 1. Description defines intended semantics
+The internal description defines intended app semantics.
+If the description is complete, the maintained runnable app can be extended, repaired, or realized from it without invention.
+If implementation work requires inventing semantics not present in the description, the description is incomplete for that scope.
 
 For AI-first SaaS apps, the description must define the operating model as well as domain behavior: durable goals, delegated work, retained human authority, agent/team responsibilities, role-specific dashboards, human surface graphs, internal workstream agent graphs, workstream expertise, governed-tools, policies, approvals, exceptions, evidence, traces, learning loops, and outcomes.
 
-### 2. Code is a disposable projection
-Source code is an output artifact, not the definition of the system.
-Regenerating all code from the current description is always valid in principle.
-Selective regeneration is an optimization, not a conceptual requirement.
+### 2. Code is maintained realization, not disposable output
+Source code is the maintained realization of the described system.
+Do not replace the canonical root app, foundation files, selected Java package, queue history, or user-owned implementation work unless the user explicitly requests a destructive reset.
+Localized extension and repair are the default for existing repositories; broad regeneration is an exceptional strategy that must be explicitly scoped and justified.
 
 ### 3. Tests are part of the description
 Well-articulated tests are a core part of app definition.
@@ -58,10 +56,10 @@ Internal documents, schemas, syntax, structure, and linkages should be optimized
 Human readability is secondary.
 There are no required human-oriented formats for internal documentation.
 
-### 5. Input, not manual editing
-Humans do not edit generated code.
-Humans do not edit internal application description artifacts.
-All changes to the app enter the system as external inputs to the harness:
+### 5. Input-driven focused editing
+Humans and harnesses may edit source, tests, specs, and app-description artifacts as part of normal repository maintenance.
+Those edits must be driven by explicit user input, selected tasks, or discovered implementation gaps, and they must preserve description/implementation consistency.
+All changes to the app should be traceable to external inputs to the harness:
 - PRDs
 - specs
 - feature requests
@@ -91,11 +89,10 @@ It is a layered, interconnected collection of internal artifacts that together d
 The goal is not necessarily identical code on every generation.
 The goal is behaviorally equivalent output that satisfies the same description, tests, constraints, and operational policies.
 
-### 8. Regeneration locality
-A change in the description does not inherently require full regeneration.
-Affected outputs should be regenerated selectively when possible.
-This is an optimization for speed, stability, and cost.
-It does not change the underlying rule that the whole app remains regenerable from the description.
+### 8. Realization locality
+A change in the description does not inherently require broad regeneration.
+Affected implementation, test, spec, or UI areas should be updated selectively when possible.
+This preserves mergeability, reviewability, queue history, and the canonical root app baseline.
 
 ## Production-readiness doctrine
 
@@ -150,8 +147,8 @@ Typical examples:
 - correct an edge case
 - clarify a testable behavior
 
-### 2. Generate the app
-The user explicitly asks the harness to realize the current app description as generated outputs.
+### 2. Realize or run the app
+The user explicitly asks the harness to realize, extend, repair, run, or validate the current app description in the runnable implementation.
 
 Typical examples:
 - generate the code
@@ -166,7 +163,7 @@ Example user intent:
 
 The harness may also proactively guide the user.
 If the harness determines that the app description has reached sufficient completeness, it may tell the user that the description appears ready for:
-- code generation
+- focused implementation or generation
 - test execution
 - manual testing
 - human evaluation
@@ -181,17 +178,16 @@ All app evolution occurs through input to the harness.
 The harness is responsible for:
 1. interpreting the requested change
 2. reconciling it against the existing workstream graph instead of creating parallel functional-agent, dashboard, surface, capability, or governed-tool structures
-3. updating the internal description system
+3. updating the internal description system when semantics change
 4. determining impact
-5. regenerating affected outputs when requested or appropriate
-6. validating consistency against the updated description
+5. updating affected implementation, tests, specs, or generated/derived outputs when requested or appropriate
+6. validating consistency against the updated description and runnable path
 
-A bug fix is not fundamentally a code patch.
-It is a correction to the authoritative description, plus regeneration of affected outputs.
+A bug fix may require code, test, spec, or app-description edits. If the bug exposes incorrect intended semantics, correct the authoritative description; if it exposes stale realization, repair the maintained runnable implementation.
 
 ## Review model
 
-Human review is prompt/response, not file editing.
+Human review may be prompt/response, diff review, or focused file review.
 
 Humans ask questions such as:
 - what changed?
@@ -200,16 +196,16 @@ Humans ask questions such as:
 - what outputs were regenerated?
 - what risks or ambiguities remain?
 
-The harness answers from its internal analysis of description changes and regenerated outputs.
+The harness answers from its analysis of description changes, implementation diffs, executed validation, and any generated or derived outputs.
 
 ## Non-goals
 
 This doctrine rejects the following assumptions:
-- source code is the ultimate definition of the app
-- humans should hand-maintain generated implementation artifacts
-- humans should hand-maintain internal app-description artifacts
+- source code alone is the ultimate definition of the app
+- generated implementation artifacts are disposable by default in existing core-app repositories
+- app-description artifacts should drift behind implementation changes
 - internal description artifacts should be optimized primarily for human reading
-- partial regeneration is required for conceptual correctness
+- full regeneration is required for conceptual correctness
 - production-readiness can be deferred until after implementation
 - agentic products can be fully described as CRUD screens plus a chatbot without durable goals, authority boundaries, policies, decisions, traces, and outcomes
 
@@ -218,11 +214,11 @@ This doctrine rejects the following assumptions:
 An application description is sufficiently complete when it is precise enough for the harness to reliably:
 - update and maintain the description
 - preserve role-specific dashboards, human surface graphs, internal workstream agent graphs, workstream expertise, and governed-tool mappings without generation-time invention
-- generate the app
-- generate and run validating tests
+- realize, extend, or repair the app
+- generate or update and run validating tests
 - explain the app’s behavior
 - apply requested changes
-- regenerate affected outputs
+- update affected implementation and derived outputs
 - preserve intended semantics across revisions
 
 ## Operating rule

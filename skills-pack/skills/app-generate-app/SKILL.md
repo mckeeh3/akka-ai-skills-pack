@@ -1,25 +1,25 @@
 ---
 name: app-generate-app
-description: Realize the current app description as generated code, tests, and runnable outputs while preserving description primacy, making regeneration scope explicit, and reporting what was generated, executed, and left uncertain.
+description: Realize the current app description as maintained code, tests, and runnable outputs while preserving description primacy, making implementation/generation scope explicit, and reporting what changed, executed, and remains uncertain.
 ---
 
 # App Generate App
 
-Use this skill when the user explicitly asks to realize the current application description as generated outputs, or when the harness has assessed the description as ready and generation has been accepted.
+Use this skill when the user explicitly asks to realize the current application description in runnable outputs, or when the harness has assessed the description as ready and implementation/generation has been accepted.
 
 This skill exists in a **description-first operating model**.
-It treats code, tests, and runnable assets as projections from the authoritative app description.
-It does not redefine the app.
+It treats code, tests, and runnable assets as maintained realizations of the authoritative app description.
+It does not redefine the app, and it does not replace an existing core app unless a destructive reset is explicit.
 
 ## Goal
 
-Consume the current app description and generate application outputs that are suitable for implementation evaluation, test execution, and app execution.
+Consume the current app description and realize application outputs that are suitable for implementation evaluation, test execution, and app execution.
 
 The skill should:
 - preserve description primacy
-- generate code and tests from the current description
-- choose full regeneration or localized regeneration deliberately
-- make assumptions and generation scope explicit
+- extend or repair code and tests from the current description
+- choose localized extension/repair by default for existing repositories and use broad regeneration only when explicitly scoped
+- make assumptions and implementation/generation scope explicit
 - support downstream running, testing, and manual evaluation
 - make clear whether the generated app was actually run locally and what visible/API/workstream behavior was validated
 - report clearly what changed and what remains uncertain
@@ -48,6 +48,8 @@ The input sounds like:
 - "generate the app"
 - "generate the code"
 - "regenerate from the current description"
+- "extend the app from the current description"
+- "repair the implementation to match the description"
 - "ok, now generate the code and run the app"
 - "realize the current description"
 
@@ -57,9 +59,9 @@ Use it only after the harness has either:
 
 ## Core operating rule
 
-Generation is a realization step, not the source-of-truth step.
+Generation or implementation is a realization step, not the source-of-truth step.
 
-If generation reveals a semantic gap, the fix belongs in the app description, not in hand-edited generated code.
+If realization reveals a semantic gap, the fix belongs in the app description. If it reveals stale or incomplete implementation, repair the maintained runnable code and tests without inventing semantics.
 For every generated SaaS app, never invent missing secure foundation semantics during generation: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, complete Invitation lifecycle, AuthContext, `/api/me`, backend authorization, audit, support-access, billing boundary, admin surfaces, AI-assisted admin offload, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap governed default behavior/reference setup, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`), agent governance UI, tenant-isolation, disabled-user, forbidden-access, role/scope-denial, and frontend secret-boundary tests must already be described or generation must stop/mark not-ready.
 For AI-first/delegated operations, never invent missing authority, policy, approval, decision, evidence, trace, outcome, or supervision semantics during generation. Also never invent role-specific dashboard attention, human surface graph edges, internal workstream agent graph delegation, workstream expertise, governed-tool contracts, or browser-tool/agent-tool/internal-tool exposure mappings during generation; return to description maintenance or narrow the scope instead.
 
@@ -84,33 +86,34 @@ When generating, this skill must:
 - block generation or return to readiness if Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, complete invitation onboarding, `/api/me`, backend authorization, audit, admin/support-access/billing-boundary semantics, AI-assisted admin offload, governed runtime agent foundation, tenant isolation, forbidden access, disabled-user, role/scope denial, or foundation tests are missing
 - block generation or return to readiness if `AgentDefinition`, governed model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited default), fallback/no-fallback policy, provider secret boundary, model-use trace facts, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, first-install/tenant-bootstrap governed setup of implementation-developed default behavior/reference documents, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, editing agent proposals, or agent catalog/detail/model/prompt/skill/reference/manifest/tool-permission UI surfaces are missing for generated AI-first SaaS
 - verify readiness did not ignore the required `15-operating-model/` for generated AI-first SaaS apps
-- identify whether generation is full or localized
+- identify whether realization is localized extension/repair or explicitly scoped broad regeneration/replacement
 - identify which outputs are in scope
 - identify the role-specific dashboard, human surface graph, internal workstream agent graph, governed-tool, browser-tool, agent-tool, and internal-tool contracts that generation must realize or explicitly exclude from the named scope
 - identify the local run, endpoint smoke, browser/workstream smoke, or manual-test path expected to prove the generated scope works
 - realize the generated scope as working runtime code with Akka component-backed normal runtime state for claimed workstream/foundation features, not as a mock/demo/simulated substitute; provider/security gaps must fail closed with actionable configuration errors, while missing internal Akka persistence must block or narrow the completion claim
 - realize outputs from the description
-- keep generated outputs consistent with the current description
-- avoid treating generated code as authoritative
+- keep implementation and generated/derived outputs consistent with the current description
+- avoid treating code-only drift as authoritative over the description
 - report failures or ambiguities back as description-level issues where appropriate
 
-## Regeneration scope rules
+## Realization scope rules
 
-### Full regeneration
+### Localized extension/repair
 Prefer when:
-- the app is early-stage or mostly disposable
-- the description changed broadly across many layers
-- prior outputs are unreliable or obsolete
-- a clean realization is cheaper and safer than targeted patching
-
-### Localized regeneration
-Prefer when:
+- the target repository already has implementation artifacts
+- the work extends this core-app-first baseline or a downstream fork
 - the description change is well-localized
-- the affected projections are clear
+- the affected implementation, test, UI, spec, or generated/derived areas are clear
 - preserving stable unaffected outputs reduces churn, cost, or review noise
 
-Localized regeneration is an optimization only.
-It must never override description correctness.
+### Broad regeneration/replacement
+Use only when:
+- the user explicitly asks for destructive reset, fresh realization, or broad regeneration
+- the scope label is named and the files safe to replace are clear
+- prior outputs are unreliable or obsolete enough that targeted repair is riskier
+- replacement will not discard the selected Java package, foundation behavior, queue history, or user-owned domain work without explicit approval
+
+Localized realization must never override description correctness.
 
 ## Output categories
 
@@ -144,8 +147,8 @@ Use this response shape when summarizing generation:
 - assumptions used:
 - Java base package:
 
-## Regeneration scope
-- full | localized
+## Realization scope
+- localized extension/repair | explicitly scoped broad regeneration/replacement
 - affected output areas:
 
 ## Generated or updated outputs
@@ -182,7 +185,7 @@ Ask only the smallest questions needed to avoid an obviously wrong realization s
 
 Examples:
 - "What Java base package should I use for generated code? Press Enter to use `ai.first`."
-- "Do you want full regeneration or should I localize regeneration to the changed description area if possible?"
+- "Should I localize the implementation change to the affected area, or are you explicitly asking for a broader regeneration/replacement?"
 - "Should I also run the available tests and start/smoke the local app path needed to prove this generated scope works?"
 - "Which named narrower scope should I generate now, and which missing runtime features should remain blocked outside that completion claim?"
 
@@ -191,8 +194,8 @@ Examples:
 Avoid:
 - generating code directly from a vague prompt without honoring readiness assessment
 - silently fixing generation issues by inventing semantics not present in the description
-- treating prior generated code as authoritative over the current description
-- performing manual-style code edits as if they were the correct response to semantic gaps
+- treating prior code as authoritative over the current description when semantics differ
+- using code-only edits to hide semantic gaps that belong in the app description
 - hiding assumptions used during `ready-with-assumptions` generation
 - generating AI-first apps from CRUD-only or chatbot-only descriptions when goals, authority, policies, decisions, traces, outcomes, or supervision surfaces are actually in scope
 - copying the reference-example package into generated application code without resolving the target project's selected package first
@@ -209,7 +212,7 @@ Before finishing, verify:
 - operating-model basis is explicit for generated AI-first SaaS
 - assumptions are explicit when used
 - Java base package is explicit and is not accidentally inherited from reference examples
-- regeneration scope is explicit
+- realization scope is explicit
 - outputs in scope are listed clearly
 - executed steps and results are reported clearly, including whether the app was run locally and what visible/API/workstream paths were validated
 - semantic gaps discovered during generation are surfaced as description issues, not buried in code changes
@@ -219,7 +222,7 @@ Before finishing, verify:
 
 When answering:
 - state the generation basis first
-- distinguish generation from description maintenance
-- make regeneration scope explicit
-- clearly separate generated outputs from executed validation steps
+- distinguish realization from description maintenance
+- make implementation/generation scope explicit
+- clearly separate changed outputs from executed validation steps
 - keep the summary suitable for prompt/response review

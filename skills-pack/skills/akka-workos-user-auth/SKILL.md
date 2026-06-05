@@ -58,7 +58,7 @@ WORKOS_JWT_ISSUER="configured-workos-issuer"
 WORKOS_JWT_AUDIENCE="configured-workos-audience"
 APP_PUBLIC_BASE_URL="http://localhost:9000"
 RESEND_API_KEY="re_xxxxxxxxx" # required for production invite email delivery
-INVITE_EMAIL_FROM="Acme <onboarding@example.com>" # or RESEND_FROM_EMAIL for shared sender config
+INVITE_EMAIL_FROM="Your App <onboarding@example.com>" # or RESEND_FROM_EMAIL for shared sender config
 INVITE_EMAIL_SUBJECT="Account access information"
 ```
 

@@ -355,7 +355,7 @@ Example:
 ```bash
 export ADMIN_USERS="jane@gmail.com:SAAS_OWNER_ADMIN:OWNER,joe@outlook.com:TENANT_ADMIN:tenant-123"
 export RESEND_API_KEY="re_xxxxxxxxx"
-export INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
+export INVITE_EMAIL_FROM="Your App <onboarding@example.com>"
 export INVITE_EMAIL_SUBJECT="Account access information"
 export APP_BASE_URL="http://localhost:9000"
 export WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"

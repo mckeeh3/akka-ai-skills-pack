@@ -357,8 +357,11 @@ if [[ "$CHECK" == true ]]; then
 fi
 
 run_cmd mkdir -p "$TARGET_DIR"
-report_retired_entries
-[[ "$PRUNE" == true ]] && prune_retired_entries
+if [[ "$PRUNE" == true ]]; then
+  prune_retired_entries
+else
+  report_retired_entries
+fi
 
 install_entry file README.md "$SOURCE_SKILLS_DIR/README.md"
 if [[ -d "$SOURCE_SKILLS_DIR/references" ]]; then
