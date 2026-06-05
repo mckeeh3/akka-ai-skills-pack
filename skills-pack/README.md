@@ -10,7 +10,7 @@ Primary maintenance entry points:
 - `docs/` — source-checkout doctrine, routing, and reference docs
 - `examples/` — source-checkout Akka component examples
 - `templates/` — source-checkout starter app-description assets
-- `akka-context/` — vendored official Akka reference material for maintainers; not installed
+- root `akka-context/` — official Akka reference material for maintainers; kept at repository top level and not installed
 - `pack/` — source metadata for the skills-only install contract
 - `tools/` — release, validation, and audit tools
 - `install-skills.sh` — skills-only harness install entrypoint

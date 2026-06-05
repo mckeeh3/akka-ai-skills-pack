@@ -14,7 +14,11 @@ import java.util.List;
 @Component(id = "shopping-cart-topic-view")
 public class ShoppingCartTopicView extends View {
 
-  public record FindByStatus(String status) {}
+  public record FindByStatus(String status, String minCartId) {
+    public FindByStatus(String status) {
+      this(status, "");
+    }
+  }
 
   public record CartEventSummary(
       String cartId,
@@ -70,6 +74,7 @@ public class ShoppingCartTopicView extends View {
       SELECT * AS entries
       FROM shopping_cart_topic_view
       WHERE status = :status
+        AND cartId >= :minCartId
       ORDER BY cartId
       """)
   public QueryEffect<CartEventSummaries> getByStatus(FindByStatus request) {

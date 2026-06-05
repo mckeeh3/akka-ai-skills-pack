@@ -59,7 +59,7 @@ Conversation can be an input and review channel, but consequential work should r
 
 ## Mandatory secure SaaS foundation
 
-The foundation is part of top-level product meaning and must be visible before component-specific routing or app-specific CRM/domain features.
+The foundation is part of top-level product meaning and must be visible before component-specific routing or app-specific domain-specific features.
 
 Required baseline:
 
@@ -145,7 +145,7 @@ Foundation generated SaaS apps must include secure-operation functional agents, 
 
 When these concepts are maintained in an app-description tree, `12-workstreams/` owns functional agents, internal agents, durable workstreams, structured surface contracts, reusable surface placement, action-to-capability mappings, trace semantics, and surface/action tests. `55-ui/` owns browser realization: shell rendering, functional-agent rail, workstream panel, persistent composer, structured-surface rendering, routes/deep links, interactions/forms, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide. `55-ui/` links back to `12-workstreams/` and capability/security/test layers instead of redefining application meaning.
 
-For secure foundation shape, start with the target project `app-description/README.md` plus `core-ai-first-saas-foundation.md`. For executable full-core implementation guidance, use this repository's runnable core app root or a downstream fork. After the harness install, `.agents/skills` provides skill guidance plus referenced pack docs/examples/templates/tools; application source, app-description, and specs remain in the source checkout or target project, while `akka-context/**` remains a top-level project/repository directory. For UI composition and implementation routing, use `agent-workstream-application-architecture.md`, `../skills/ai-first-saas-ui-surfaces/SKILL.md`, and the existing Akka web UI skills.
+For secure foundation shape, start with the target project `app-description/README.md` plus `core-ai-first-saas-foundation.md`. For executable full-core implementation guidance, use this repository's runnable core app root or a downstream fork. After the harness install, `.agents/skills` provides skill guidance plus referenced pack docs/examples/templates/tools; application source, app-description, and specs remain in the source checkout or target project, while `akka-context/**` remains a top-level project/repository directory. For UI composition and implementation routing, use `agent-workstream-application-architecture.md`, `../ai-first-saas-ui-surfaces/SKILL.md`, and the existing Akka web UI skills.
 
 ## Akka + React/Vite/TypeScript substrate
 
@@ -264,16 +264,16 @@ Before calling a generated design AI-first, verify:
 
 ## Routing implications for future tasks
 
-When high-level or incremental product input arrives, route first through secure AI-first SaaS interpretation and the mandatory foundation unless the task is explicitly repository-maintenance-only or non-SaaS reference material. Start with `../skills/ai-first-saas/SKILL.md`, apply the foundation docs, then follow `requirements-to-workstream-development-process.md`: identify or reconcile affected workstreams, role-specific dashboard attention, human surface graph changes, internal workstream agent graph changes, governed-tools within capabilities/surface maps, Akka substrate/exposure mapping, agent/AutonomousAgent worker roles, notifications, projections, traces, and validation before choosing among description-first maintenance, Akka solution decomposition, PRD/spec/backlog planning, or focused implementation skills. Use `agent-workstream-application-architecture.md` for the generated-app UI/application model and `capability-first-backend-architecture.md` for governed backend capabilities.
+When high-level or incremental product input arrives, route first through secure AI-first SaaS interpretation and the mandatory foundation unless the task is explicitly repository-maintenance-only or non-SaaS reference material. Start with `../ai-first-saas/SKILL.md`, apply the foundation docs, then follow `requirements-to-workstream-development-process.md`: identify or reconcile affected workstreams, role-specific dashboard attention, human surface graph changes, internal workstream agent graph changes, governed-tools within capabilities/surface maps, Akka substrate/exposure mapping, agent/AutonomousAgent worker roles, notifications, projections, traces, and validation before choosing among description-first maintenance, Akka solution decomposition, PRD/spec/backlog planning, or focused implementation skills. Use `agent-workstream-application-architecture.md` for the generated-app UI/application model and `capability-first-backend-architecture.md` for governed backend capabilities.
 
 Use the existing AI-first companion skills only for concerns that are actually in scope:
 
-- `../skills/ai-first-saas-object-model/SKILL.md` for durable goals, plans, policies, decisions, traces, outcomes, and related substrate objects.
-- `../skills/ai-first-saas-agent-team-design/SKILL.md` for bounded coordinator/specialist/evaluator agent teams, authority limits, tools, escalation rules, traces, and workflow supervision.
-- `../skills/ai-first-saas-policy-governance/SKILL.md` for policies, clauses, permissions, thresholds, approval gates, proposals, simulations, and human-governed commits.
-- `../skills/ai-first-saas-decision-cards/SKILL.md` for recommendation, approval, exception, and deviation review surfaces with evidence, risk, confidence, impact, alternatives, and actions.
-- `../skills/ai-first-saas-audit-trace/SKILL.md` for durable work, decision, policy, tool, data-access, approval, and outcome traces.
-- `../skills/ai-first-saas-ui-surfaces/SKILL.md` for supervision, decision, governance, digest, goal-to-execution, and audit UI surfaces.
-- `../skills/ai-first-saas-outcomes-metrics/SKILL.md` for outcome loops, metrics, decision/outcome links, feedback, replay, and validation surfaces.
+- `../ai-first-saas-object-model/SKILL.md` for durable goals, plans, policies, decisions, traces, outcomes, and related substrate objects.
+- `../ai-first-saas-agent-team-design/SKILL.md` for bounded coordinator/specialist/evaluator agent teams, authority limits, tools, escalation rules, traces, and workflow supervision.
+- `../ai-first-saas-policy-governance/SKILL.md` for policies, clauses, permissions, thresholds, approval gates, proposals, simulations, and human-governed commits.
+- `../ai-first-saas-decision-cards/SKILL.md` for recommendation, approval, exception, and deviation review surfaces with evidence, risk, confidence, impact, alternatives, and actions.
+- `../ai-first-saas-audit-trace/SKILL.md` for durable work, decision, policy, tool, data-access, approval, and outcome traces.
+- `../ai-first-saas-ui-surfaces/SKILL.md` for supervision, decision, governance, digest, goal-to-execution, and audit UI surfaces.
+- `../ai-first-saas-outcomes-metrics/SKILL.md` for outcome loops, metrics, decision/outcome links, feedback, replay, and validation surfaces.
 
 These skills route to the existing Akka substrate implementation skills; they do not replace component-specific guidance for request-based Agents, Autonomous Agents, workflows, entities, views, consumers, timed actions, endpoints, or web UI delivery. Use `agent-component-selection-guide.md` before selecting between request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`.

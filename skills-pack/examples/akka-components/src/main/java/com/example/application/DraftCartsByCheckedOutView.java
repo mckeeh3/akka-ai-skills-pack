@@ -18,9 +18,17 @@ import java.util.List;
 @Component(id = "draft-carts-by-checked-out")
 public class DraftCartsByCheckedOutView extends View {
 
-  public record FindByCheckedOut(boolean checkedOut) {}
+  public record FindByCheckedOut(boolean checkedOut, String minCartId) {
+    public FindByCheckedOut(boolean checkedOut) {
+      this(checkedOut, "");
+    }
+  }
 
-  public record FindPage(boolean checkedOut, int offset, int pageSize) {}
+  public record FindPage(boolean checkedOut, String minCartId, int offset, int pageSize) {
+    public FindPage(boolean checkedOut, int offset, int pageSize) {
+      this(checkedOut, "", offset, pageSize);
+    }
+  }
 
   public record DraftCartSummary(String cartId, int itemCount, boolean checkedOut) {}
 
@@ -42,6 +50,7 @@ public class DraftCartsByCheckedOutView extends View {
       SELECT * AS carts
       FROM draft_carts_by_checked_out
       WHERE checkedOut = :checkedOut
+        AND cartId >= :minCartId
       ORDER BY cartId
       """)
   public QueryEffect<DraftCartSummaries> getCarts(FindByCheckedOut request) {
@@ -53,6 +62,7 @@ public class DraftCartsByCheckedOutView extends View {
       SELECT * AS carts
       FROM draft_carts_by_checked_out
       WHERE checkedOut = :checkedOut
+        AND cartId >= :minCartId
       ORDER BY cartId
       OFFSET :offset
       LIMIT :pageSize
@@ -66,6 +76,7 @@ public class DraftCartsByCheckedOutView extends View {
       SELECT *
       FROM draft_carts_by_checked_out
       WHERE checkedOut = :checkedOut
+        AND cartId >= :minCartId
       ORDER BY cartId
       """)
   public QueryStreamEffect<DraftCartSummary> streamCarts(FindByCheckedOut request) {

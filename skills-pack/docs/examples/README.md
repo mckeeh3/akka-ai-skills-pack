@@ -4,7 +4,7 @@ Use this directory as a labeled reference set. Examples are not all equivalent t
 
 Preferred current generated SaaS references:
 - `requirements-to-workstream-mini-example.md` — compact input/PRD → workstreams → attention → dashboards → surfaces/actions → governed capabilities/APIs → Akka substrate → request-based Agents/AutonomousAgent candidates → events/notifications/projections → audit/work traces example. Use it as the quick process pattern for generated SaaS planning.
-- the target project `app-description/README.md` plus `../../docs/core-ai-first-saas-foundation.md` — canonical core app-description shape for secure AI-first SaaS generated apps: SaaS foundation, functional/context-area agents, `12-workstreams/`, split `55-ui/`, capability maps, Akka realization maps, and React/Vite workstream UI references. It is a description/reference contract, not bundled application source.
+- the target project `app-description/README.md` plus `../core-ai-first-saas-foundation.md` — canonical core app-description shape for secure AI-first SaaS generated apps: SaaS foundation, functional/context-area agents, `12-workstreams/`, split `55-ui/`, capability maps, Akka realization maps, and React/Vite workstream UI references. It is a description/reference contract, not bundled application source.
 - `core-ai-first-saas-input/README.md` — canonical PRD/input documents for planning the progressive core seed. These are input artifacts, not the maintained app-description tree shape.
 
 Runnable generated-app baseline:

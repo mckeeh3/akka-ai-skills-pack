@@ -16,4 +16,4 @@ Structured surfaces are the browser/user-visible contract for workstream state. 
 
 ## Domain-specific surfaces
 
-Add domain-specific surfaces here with stable ids and explicit action-to-capability links before implementation. Examples: `procurement-request-review`, `crm-opportunity-review`, `billing-invoice-workbench`, `operations-dispatch-board`.
+Add domain-specific surfaces here with stable ids and explicit action-to-capability links before implementation. Examples should use the user's actual domain vocabulary, such as `<domain>-request-review`, `<domain>-case-workbench`, or `<domain>-dispatch-board`.

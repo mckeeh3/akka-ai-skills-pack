@@ -170,9 +170,9 @@ To continue, ask:
 ## Related skills and docs
 
 - `web-ui-style-guide.md`
-- `../skills/akka-pending-question-generation/SKILL.md`
-- `../skills/akka-do-next-pending-question/SKILL.md`
-- `../skills/akka-pending-question-queue-maintenance/SKILL.md`
+- `../akka-pending-question-generation/SKILL.md`
+- `../akka-do-next-pending-question/SKILL.md`
+- `../akka-pending-question-queue-maintenance/SKILL.md`
 - `pending-task-queue.md`
 - `solution-plan-to-implementation-queue.md`
 - `intent-driven-usage-flow.md`

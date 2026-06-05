@@ -86,7 +86,7 @@ Do not introduce a separate top-level governed-tool inventory when an app-descri
 
 An agent-tool is one possible exposure channel for a capability's governed-tool. It is not the root abstraction.
 
-Official Akka agent tooling supports local `@FunctionTool` methods, external agent-tool classes, Akka component-tool exposure, and remote MCP-tools. See `../../../akka-context/sdk/agents/extending.html.md`, `../skills/akka-agent-tools/SKILL.md`, and `../skills/akka-agent-component-tools/SKILL.md`.
+Official Akka agent tooling supports local `@FunctionTool` methods, external agent-tool classes, Akka component-tool exposure, and remote MCP-tools. See `../../../akka-context/sdk/agents/extending.html.md`, `../akka-agent-tools/SKILL.md`, and `../akka-agent-component-tools/SKILL.md`.
 
 Capability-first interpretation of those tools:
 
@@ -200,4 +200,4 @@ Future skills and planning artifacts should use this doctrine as the backend sub
 - PRD/spec/backlog planning should preserve the requirements-to-workstream chain: workstream id, attention category, dashboard/surface/action, capability ids, auth/scope, side effects, approval, audit, exposure channels, AutonomousAgent task semantics where applicable, notifications/projections, and tests in generated tasks.
 - Component skills should frame entities, workflows, views, endpoints, agents, MCP, consumers, and timers as capability carriers or capability exposure channels.
 
-The top-level routing skill for this doctrine is `../skills/capability-first-backend/SKILL.md`. Use it with `../skills/README.md` and this document when modeling capability-first backend behavior before selecting Akka components or exposure channels.
+The top-level routing skill for this doctrine is `../capability-first-backend/SKILL.md`. Use it with `../README.md` and this document when modeling capability-first backend behavior before selecting Akka components or exposure channels.

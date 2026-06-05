@@ -30,7 +30,7 @@ Do not add core app runtime code under `skills-pack/**`. Do not add skills-pack 
 - `skills-pack/templates/**` — pack templates copied/symlinked to `.agents/skills/templates`
 - `skills-pack/tools/**` — pack tools copied/symlinked to `.agents/skills/tools`
 - root `frontend/**` — core app frontend and source-checkout frontend workstream reference; not installed into `.agents`
-- `skills-pack/akka-context/**` — official Akka reference material for maintainers only; not installed because standard Akka projects keep `akka-context/**` as an independently maintained top-level directory
+- root `akka-context/**` — official Akka reference material for maintainers only; not installed because standard Akka projects keep `akka-context/**` as an independently maintained top-level directory
 
 ## Source layout
 
@@ -47,8 +47,9 @@ skills-pack/
 ├── docs/
 ├── examples/
 │   └── akka-components/
-├── akka-context/
 └── tools/
+
+../akka-context/   # repository-top-level Akka reference material, not installed
 ```
 
 ## Maintaining skills and docs

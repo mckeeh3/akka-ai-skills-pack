@@ -30,20 +30,20 @@ Use this flow when a user provides a PRD, requirements doc, feature request, fix
    - Use `../docs/capability-first-backend-architecture.md` before selecting Akka components.
 
 6. **Choose the planning path**
-   - Use `../skills/app-descriptions/SKILL.md` when the user is maintaining or reviewing an authoritative app description before realization.
-   - Use `../skills/akka-solution-decomposition/SKILL.md` when the user wants direct Akka solution shaping and the component set is not yet known.
-   - Use `../skills/akka-prd-to-specs-backlog/SKILL.md` when the user wants durable `specs/`, backlog, and pending-task artifacts.
+   - Use `../app-descriptions/SKILL.md` when the user is maintaining or reviewing an authoritative app description before realization.
+   - Use `../akka-solution-decomposition/SKILL.md` when the user wants direct Akka solution shaping and the component set is not yet known.
+   - Use `../akka-prd-to-specs-backlog/SKILL.md` when the user wants durable `specs/`, backlog, and pending-task artifacts.
 
 7. **Queue unresolved decisions when needed**
-   - Use `../skills/akka-pending-question-generation/SKILL.md` when missing security, workstream, surface, capability, approval, audit, runtime, or delivery decisions would force guessing.
-   - Use `../skills/akka-do-next-pending-question/SKILL.md` and `../skills/akka-pending-question-queue-maintenance/SKILL.md` for one-at-a-time question handling and queue repair.
+   - Use `../akka-pending-question-generation/SKILL.md` when missing security, workstream, surface, capability, approval, audit, runtime, or delivery decisions would force guessing.
+   - Use `../akka-do-next-pending-question/SKILL.md` and `../akka-pending-question-queue-maintenance/SKILL.md` for one-at-a-time question handling and queue repair.
 
 8. **Generate implementation tasks only after vertical contracts exist**
    - Backlogs and pending tasks must preserve workstream, attention/surface/action, capability id/class, AuthContext/scope, selected substrate, API/frontend/realtime exposure, audit/work traces, and local validation path.
-   - Execute one implementation task per fresh context with `../skills/akka-do-next-pending-task/SKILL.md`.
+   - Execute one implementation task per fresh context with `../akka-do-next-pending-task/SKILL.md`.
 
 9. **Load focused implementation skills last**
-   - Use `../skills/README.md` to select only the Stage 3 skills needed for the accepted capability-aware plan.
+   - Use `../README.md` to select only the Stage 3 skills needed for the accepted capability-aware plan.
    - Implement component by component, but keep the workstream/surface/capability contract as the source of meaning.
 
 10. **Validate through the intended local runtime path**

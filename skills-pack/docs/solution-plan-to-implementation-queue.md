@@ -131,13 +131,13 @@ Before starting code generation, verify that the solution plan already answers:
 - `examples/requirements-to-workstream-mini-example.md` — preferred generated-SaaS planning shape
 - `examples/purchase-request-solution-plan.md` — conventional solution-plan mechanics only
 - `examples/purchase-request-pending-tasks.md` — conventional queue mechanics only
-- `../skills/README.md`
-- `../skills/akka-solution-decomposition/SKILL.md`
-- `../skills/akka-pending-question-generation/SKILL.md`
-- `../skills/akka-do-next-pending-question/SKILL.md`
-- `../skills/akka-pending-question-queue-maintenance/SKILL.md`
-- `../skills/akka-backlog-to-pending-tasks/SKILL.md`
-- `../skills/akka-change-request-to-spec-update/SKILL.md`
-- `../skills/akka-revised-prd-reconciliation/SKILL.md`
-- `../skills/akka-pending-task-queue-maintenance/SKILL.md`
-- `../skills/akka-do-next-pending-task/SKILL.md`
+- `../README.md`
+- `../akka-solution-decomposition/SKILL.md`
+- `../akka-pending-question-generation/SKILL.md`
+- `../akka-do-next-pending-question/SKILL.md`
+- `../akka-pending-question-queue-maintenance/SKILL.md`
+- `../akka-backlog-to-pending-tasks/SKILL.md`
+- `../akka-change-request-to-spec-update/SKILL.md`
+- `../akka-revised-prd-reconciliation/SKILL.md`
+- `../akka-pending-task-queue-maintenance/SKILL.md`
+- `../akka-do-next-pending-task/SKILL.md`

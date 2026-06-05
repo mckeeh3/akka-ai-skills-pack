@@ -16,7 +16,11 @@ import java.util.List;
 @Component(id = "shopping-cart-audit")
 public class ShoppingCartAuditView extends View {
 
-  public record FindByDeleted(boolean deleted) {}
+  public record FindByDeleted(boolean deleted, String minCartId) {
+    public FindByDeleted(boolean deleted) {
+      this(deleted, "");
+    }
+  }
 
   public record AuditRow(String cartId, int itemCount, boolean checkedOut, boolean deleted) {}
 
@@ -59,6 +63,7 @@ public class ShoppingCartAuditView extends View {
       SELECT * AS carts
       FROM shopping_cart_audit
       WHERE deleted = :deleted
+        AND cartId >= :minCartId
       ORDER BY cartId
       """)
   public QueryEffect<AuditRows> getByDeleted(FindByDeleted request) {
@@ -70,6 +75,7 @@ public class ShoppingCartAuditView extends View {
       SELECT *
       FROM shopping_cart_audit
       WHERE deleted = :deleted
+        AND cartId >= :minCartId
       ORDER BY cartId
       """)
   public QueryStreamEffect<AuditRow> streamByDeleted(FindByDeleted request) {

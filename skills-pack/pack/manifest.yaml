@@ -12,7 +12,7 @@ metadata:
     this repository for the runnable full-stack app; the harness install copies
     skills plus referenced pack docs, examples, templates, tools, and shared skill
     references into the target skills directory.
-  compatibleAkkaSdk: '3.5.x'
+  compatibleAkkaSdk: '3.6.x'
 
 install:
   unit: repository-tag

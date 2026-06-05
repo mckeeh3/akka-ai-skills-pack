@@ -12,7 +12,11 @@ import java.util.List;
 @Component(id = "session-memory-by-component")
 public class SessionMemoryByComponentView extends View {
 
-  public record FindByComponent(String componentId) {}
+  public record FindByComponent(String componentId, String minSessionId) {
+    public FindByComponent(String componentId) {
+      this(componentId, "");
+    }
+  }
 
   public record SessionRow(
       String sessionId, String lastComponentId, int messageCount, long historySizeInBytes) {}
@@ -72,6 +76,7 @@ public class SessionMemoryByComponentView extends View {
       SELECT * AS sessions
       FROM session_memory_by_component
       WHERE lastComponentId = :componentId
+        AND sessionId >= :minSessionId
       ORDER BY sessionId
       """)
   public QueryEffect<SessionRows> getByComponent(FindByComponent request) {

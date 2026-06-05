@@ -15,7 +15,11 @@ import java.util.List;
 @Component(id = "draft-cart-lifecycle")
 public class DraftCartLifecycleView extends View {
 
-  public record FindByDeleted(boolean deleted) {}
+  public record FindByDeleted(boolean deleted, String minCartId) {
+    public FindByDeleted(boolean deleted) {
+      this(deleted, "");
+    }
+  }
 
   public record LifecycleRow(String cartId, int itemCount, boolean deleted) {}
 
@@ -41,6 +45,7 @@ public class DraftCartLifecycleView extends View {
       SELECT * AS items
       FROM draft_cart_lifecycle
       WHERE deleted = :deleted
+        AND cartId >= :minCartId
       ORDER BY cartId
       """)
   public QueryEffect<LifecycleRows> getByDeleted(FindByDeleted request) {

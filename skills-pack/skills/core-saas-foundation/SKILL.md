@@ -7,7 +7,7 @@ description: Apply the mandatory secure SaaS foundation for every new AI-first S
 
 Use this skill for every new project, app, PRD, spec, backlog, app-description bootstrap, solution decomposition, and generation flow handled by this pack unless the user explicitly asks for repository-maintenance-only work or non-SaaS reference material.
 
-This is a mandatory foundation skill. It does not replace `ai-first-saas`, app-description skills, Akka decomposition, or component implementation skills. It supplies the secure SaaS baseline those paths must include before app-specific CRM/domain features are treated as generation-ready.
+This is a mandatory foundation skill. It does not replace `ai-first-saas`, app-description skills, Akka decomposition, or component implementation skills. It supplies the secure SaaS baseline those paths must include before app-specific domain-specific features are treated as generation-ready.
 
 ## Required reading
 
@@ -100,7 +100,7 @@ All broad planning and generation paths must include:
 
 ## First-slice implementation order
 
-For every new SaaS app, implement or specify the secure foundation before app-specific CRM/domain features. User-facing foundation work must be modeled as functional agents, structured surfaces, and surface actions mapped to governed capabilities before component selection. Do not start from object lists, CRUD screens, or Akka component families alone.
+For every new SaaS app, implement or specify the secure foundation before app-specific domain-specific features. User-facing foundation work must be modeled as functional agents, structured surfaces, and surface actions mapped to governed capabilities before component selection. Do not start from object lists, CRUD screens, or Akka component families alone.
 
 ### Slice 0: minimum starter readiness
 
@@ -119,7 +119,7 @@ Minimum starter readiness must always carry follow-up tasks/gates for full-core 
 
 ### Full-core foundation readiness
 
-Full-core readiness remains stricter than Slice 0. For full generated SaaS readiness, require the complete foundation sequence below before app-specific CRM/domain work:
+Full-core readiness remains stricter than Slice 0. For full generated SaaS readiness, require the complete foundation sequence below before app-specific domain-specific work:
 
 1. Foundation workstream contract: My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, Support Access, and Billing functional agents where relevant; default structured surfaces; action-to-capability mappings; AuthContext, tenant/customer scope, approval, audit/trace, and tests for each surface action.
 2. Common identity/tenancy types: IDs, scope enums, canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`), app-specific role-to-capability mappings, permissions/capabilities, AuthContext, audit metadata.
@@ -136,7 +136,7 @@ Full-core readiness remains stricter than Slice 0. For full generated SaaS readi
 13. AI-assisted admin offload responsibilities: a governed `UserAdminAgent` with an `AgentSkillManifest` of focused admin skills and an `AgentReferenceManifest` of admin policies/process references, or separate specialized agents such as AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, and AdminAuditSummaryAgent; include decision cards for risky admin recommendations, scoped tools, redaction, and audit/work-trace records.
 14. Mandatory foundation web UI shell for generated full-stack AI-first SaaS: role-authorized foundation functional-agent rail, sign-in, context selection, profile/settings, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, Tenant/Customer Settings, Agent Admin, Governance/Policy, admin-agent recommendation queues, decision cards, and capability-gated actions.
 15. Security baseline tests: tenant-isolation, forbidden access, disabled user, role/scope denial, `/api/me`, invite delivery/resend/revoke/expiry/acceptance, user and membership list/search, membership lifecycle, last-admin protection, audit, support-access expiry/revocation, admin-agent approval boundaries, governed runtime agent prompt/skill/reference/manifest/trace boundaries, billing-boundary, surface rendering/action authorization, and frontend secret-boundary tests.
-16. Security review before implementing app-specific CRM/domain slices.
+16. Security review before implementing app-specific domain-specific slices.
 
 Do not let uncertainty about WorkOS or Resend setup details block modeling the mandatory local authorization, tenancy, AuthContext, and audit contracts. WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the supported production email service, so do not ask provider-selection questions for user auth or email; queue only missing WorkOS/Resend runtime setting questions while preserving the local boundary model.
 
@@ -152,7 +152,7 @@ Every solution plan must include a `Core secure SaaS foundation` section before 
 
 ### PRD/spec/backlog planning
 
-Every app PRD must create `specs/cross-cutting/01-auth-tenancy-audit.md` and a first foundation sprint or slice unless the task is explicitly non-SaaS reference material. Pending tasks must start with foundation work before app-specific CRM/domain tasks, and first-slice tasks must be vertical foundation workstream increments or explicit foundation internals: functional agent, structured surface/action, governed capability, selected Akka substrate, browser/API/realtime work, auth/audit, and tests.
+Every app PRD must create `specs/cross-cutting/01-auth-tenancy-audit.md` and a first foundation sprint or slice unless the task is explicitly non-SaaS reference material. Pending tasks must start with foundation work before app-specific domain-specific tasks, and first-slice tasks must be vertical foundation workstream increments or explicit foundation internals: functional agent, structured surface/action, governed capability, selected Akka substrate, browser/API/realtime work, auth/audit, and tests.
 
 ### Generation
 

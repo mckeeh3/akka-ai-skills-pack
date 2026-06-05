@@ -12,7 +12,11 @@ import java.util.List;
 @Component(id = "session-memory-compaction-audit-view")
 public class SessionMemoryCompactionAuditView extends View {
 
-  public record FindBySessionId(String sessionId) {}
+  public record FindBySessionId(String sessionId, Instant minObservedAt) {
+    public FindBySessionId(String sessionId) {
+      this(sessionId, Instant.EPOCH);
+    }
+  }
 
   public record AuditRow(
       String sessionId,
@@ -44,6 +48,7 @@ public class SessionMemoryCompactionAuditView extends View {
       SELECT * AS items
       FROM session_memory_compaction_audit_view
       WHERE sessionId = :sessionId
+        AND observedAt >= :minObservedAt
       ORDER BY observedAt
       """)
   public QueryEffect<AuditRows> getBySessionId(FindBySessionId request) {

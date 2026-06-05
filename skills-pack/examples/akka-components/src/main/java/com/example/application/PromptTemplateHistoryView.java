@@ -12,7 +12,11 @@ import java.util.List;
 @Component(id = "prompt-template-history")
 public class PromptTemplateHistoryView extends View {
 
-  public record FindByDeleted(boolean deleted) {}
+  public record FindByDeleted(boolean deleted, String minTemplateId) {
+    public FindByDeleted(boolean deleted) {
+      this(deleted, "");
+    }
+  }
 
   public record PromptTemplateHistoryRow(
       String templateId, String currentPrompt, int updateCount, boolean deleted) {}
@@ -47,6 +51,7 @@ public class PromptTemplateHistoryView extends View {
       SELECT * AS items
       FROM prompt_template_history
       WHERE deleted = :deleted
+        AND templateId >= :minTemplateId
       ORDER BY templateId
       """)
   public QueryEffect<PromptTemplateHistoryRows> getByDeleted(FindByDeleted request) {

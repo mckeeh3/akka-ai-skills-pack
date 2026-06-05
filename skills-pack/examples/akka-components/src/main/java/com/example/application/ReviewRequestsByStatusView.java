@@ -13,7 +13,11 @@ import java.util.List;
 @Component(id = "review-requests-by-status")
 public class ReviewRequestsByStatusView extends View {
 
-  public record FindByStatus(String status) {}
+  public record FindByStatus(String status, String minWorkflowId) {
+    public FindByStatus(String status) {
+      this(status, "");
+    }
+  }
 
   public record ReviewRequestSummary(String workflowId, String requestId, String status) {}
 
@@ -33,6 +37,7 @@ public class ReviewRequestsByStatusView extends View {
       SELECT * AS entries
       FROM review_requests_by_status
       WHERE status = :status
+        AND workflowId >= :minWorkflowId
       ORDER BY workflowId
       """)
   public QueryEffect<ReviewRequestSummaries> getByStatus(FindByStatus request) {

@@ -19,7 +19,11 @@ import java.util.List;
 @Component(id = "shopping-carts-by-checked-out")
 public class ShoppingCartsByCheckedOutView extends View {
 
-  public record FindByCheckedOut(boolean checkedOut) {}
+  public record FindByCheckedOut(boolean checkedOut, String minCartId) {
+    public FindByCheckedOut(boolean checkedOut) {
+      this(checkedOut, "");
+    }
+  }
 
   public record ShoppingCartSummaries(List<ShoppingCart.State> carts) {}
 
@@ -43,6 +47,7 @@ public class ShoppingCartsByCheckedOutView extends View {
       SELECT * AS carts
       FROM shopping_carts_by_checked_out
       WHERE checkedOut = :checkedOut
+        AND cartId >= :minCartId
       ORDER BY cartId
       """)
   public QueryEffect<ShoppingCartSummaries> getCarts(FindByCheckedOut request) {
@@ -54,6 +59,7 @@ public class ShoppingCartsByCheckedOutView extends View {
       SELECT *
       FROM shopping_carts_by_checked_out
       WHERE checkedOut = :checkedOut
+        AND cartId >= :minCartId
       ORDER BY cartId
       """)
   public QueryStreamEffect<ShoppingCart.State> streamCarts(FindByCheckedOut request) {

@@ -1,6 +1,8 @@
-# Next steps after the web UI app delivery family
+# Archived next-step notes after the web UI app delivery family
 
-Purpose: define what this repository should cover next, after the React/Vite/TypeScript web UI app delivery work is complete.
+Status: provenance/roadmap notes only. Do not treat this file as current pack scope or operative generated-app doctrine; prefer `requirements-to-workstream-development-process.md`, `minimum-ai-first-saas-app.md`, and the current skill routing map installed as `.agents/skills/README.md`.
+
+Purpose: preserve historical notes about what this repository considered covering after the React/Vite/TypeScript web UI app delivery work.
 
 ## Working decision
 

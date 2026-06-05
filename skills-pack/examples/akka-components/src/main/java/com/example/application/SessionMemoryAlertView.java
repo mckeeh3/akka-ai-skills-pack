@@ -15,7 +15,11 @@ public class SessionMemoryAlertView extends View {
 
   static final long ALERT_THRESHOLD_BYTES = 500L;
 
-  public record FindByComponent(String componentId) {}
+  public record FindByComponent(String componentId, Instant minObservedAt) {
+    public FindByComponent(String componentId) {
+      this(componentId, Instant.EPOCH);
+    }
+  }
 
   public record AlertRow(
       String sessionId,
@@ -55,6 +59,7 @@ public class SessionMemoryAlertView extends View {
       SELECT * AS items
       FROM session_memory_alert_view
       WHERE componentId = :componentId
+        AND observedAt >= :minObservedAt
       ORDER BY observedAt
       """)
   public QueryEffect<AlertRows> getByComponent(FindByComponent request) {
