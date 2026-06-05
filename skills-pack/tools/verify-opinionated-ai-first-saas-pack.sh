@@ -35,6 +35,34 @@ forbid_rg() {
 
 cd "$PACK_ROOT"
 
+log "checking manifest content references exist"
+python3 - <<'PY'
+from pathlib import Path
+import re
+import sys
+
+root = Path('.')
+manifest = root / 'pack' / 'manifest.yaml'
+in_references = False
+missing = []
+for line_no, line in enumerate(manifest.read_text().splitlines(), 1):
+    if re.match(r'\s*references:\s*$', line):
+        in_references = True
+        continue
+    if in_references and re.match(r'\S', line):
+        break
+    if in_references:
+        match = re.match(r'\s*-\s+(.+?)\s*$', line)
+        if match:
+            ref = match.group(1).strip('"\'')
+            if not (root / ref).exists():
+                missing.append((line_no, ref))
+if missing:
+    for line_no, ref in missing:
+        print(f'missing manifest content reference at line {line_no}: {ref}', file=sys.stderr)
+    sys.exit(1)
+PY
+
 log "checking core foundation skill and manifest routing"
 require_file "skills/core-saas-foundation/SKILL.md"
 require_rg "id: core-saas-foundation" pack/manifest.yaml

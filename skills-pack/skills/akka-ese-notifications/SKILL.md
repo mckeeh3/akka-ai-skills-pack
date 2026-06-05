@@ -45,7 +45,7 @@ Repository example:
 ## Endpoint rules
 
 When exposing notifications over HTTP:
-- use `ComponentClient.notificationStream(...)`
+- subscribe through the typed component client, for example `componentClient.forEventSourcedEntity(id).notificationStream(Entity::notifications).source()`
 - map domain events to API records
 - return SSE via `HttpResponses.serverSentEvents(...)`
 - do not leak internal event types directly outside the service unless explicitly intended

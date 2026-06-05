@@ -86,17 +86,18 @@ Rules:
 2. Add `@Acl(...)` explicitly at class level.
 3. If bearer-token validation is required, add `@JWT(...)` at class level.
 4. MCP endpoint methods are public and focused: tools, resources, or prompts.
-5. Tool methods return `String`.
-6. Use `@Description` on tool and prompt parameters so the calling LLM can understand the contract.
-7. Prefer simple parameter lists for tools. If you need a richer input object, keep the fields simple and use `inputSchema` when automatic schema inference would be ambiguous.
-8. If a manual `inputSchema` is used, it must exactly match the JSON shape Jackson will parse into the Java parameter.
-9. Static resources use `uri`, zero parameters, and return `String`, `byte[]`, or JSON-serializable objects.
-10. Dynamic resources use `uriTemplate`; each placeholder must match a `String` parameter name.
-11. Prompt methods return `String`. Prefer required `String` parameters in repository examples; verify `Optional<String>` prompt parameters against the exact SDK version before relying on them.
-12. Extend `AbstractMcpEndpoint` only when request context access is needed.
-13. For generated SaaS MCP surfaces, resolve caller context and authorize every protected tool/resource/prompt against tenant/customer scope, allowed tool/resource grants, and required capability before calling components.
-14. Side-effecting tools must preserve the named capability's idempotency, approval/policy, and audit/work-trace semantics; prefer proposal or approval-request tools when authority is not explicitly granted.
-15. Default MCP testing is direct method invocation. Use raw MCP-over-HTTP payloads only when transport behavior itself is under test.
+5. Annotate every tool method with `@McpTool(...)`; set a clear `name`, `description`, and optional `inputSchema` when schema inference would be ambiguous.
+6. Tool methods return `String`.
+7. Use `@Description` on tool and prompt parameters so the calling LLM can understand the contract.
+8. Prefer simple parameter lists for tools. If you need a richer input object, keep the fields simple and use `inputSchema` when automatic schema inference would be ambiguous.
+9. If a manual `inputSchema` is used, it must exactly match the JSON shape Jackson will parse into the Java parameter.
+10. Static resources use `uri`, zero parameters, and return `String`, `byte[]`, or JSON-serializable objects.
+11. Dynamic resources use `uriTemplate`; each placeholder must match a `String` parameter name.
+12. Prompt methods return `String`. Prefer required `String` parameters in repository examples; verify `Optional<String>` prompt parameters against the exact SDK version before relying on them.
+13. Extend `AbstractMcpEndpoint` only when request context access is needed.
+14. For generated SaaS MCP surfaces, resolve caller context and authorize every protected tool/resource/prompt against tenant/customer scope, allowed tool/resource grants, and required capability before calling components.
+15. Side-effecting tools must preserve the named capability's idempotency, approval/policy, and audit/work-trace semantics; prefer proposal or approval-request tools when authority is not explicitly granted.
+16. Default MCP testing is direct method invocation. Use raw MCP-over-HTTP payloads only when transport behavior itself is under test.
 
 ## Decision guide
 
@@ -136,6 +137,7 @@ Before finishing, verify:
 - `@Acl` is present
 - no `@Component` annotation is used on the endpoint
 - class-level `@JWT` is used when token validation is required
+- every tool method has `@McpTool(...)`
 - tool descriptions are specific enough for an LLM to choose the right tool
 - tool inputs use `@Description` or an accurate manual schema
 - `uri` and `uriTemplate` usage matches the method signature

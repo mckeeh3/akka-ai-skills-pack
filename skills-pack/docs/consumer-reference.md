@@ -5,11 +5,7 @@ Small, agent-oriented reference for Akka Java SDK Consumers.
 Primary official semantics:
 - `akka-context/sdk/consuming-producing.html.md`
 
-Local executable examples:
-- `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
-- `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
+Local executable example:
 - `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
 
 ## Quick source selection
@@ -121,7 +117,5 @@ Prefer:
 - `withWorkflowIncomingMessages(...)` for workflow-driven consumers
 - end-to-end tests for same-service entity consumers
 
-Reference tests:
-- `../examples/akka-components/src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java`
-- `../examples/akka-components/src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java`
+Reference test:
 - `../examples/akka-components/src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java`

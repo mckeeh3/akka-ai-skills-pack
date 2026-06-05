@@ -11,7 +11,7 @@ Canonical doctrine:
 - `docs/structured-surface-contracts.md`
 - `docs/workstream-visual-sessions.md`
 - `docs/web-ui-frontend-decomposition.md`
-- `specs/workstream-ui-implementation-migration/frontend-stale-code-inventory.md`
+- source-checkout/root-only migration inventory: `specs/workstream-ui-implementation-migration/frontend-stale-code-inventory.md`
 
 Current implementation references:
 - full-core core app baseline source: this repository's runnable core app root

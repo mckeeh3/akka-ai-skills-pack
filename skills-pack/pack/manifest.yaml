@@ -521,9 +521,12 @@ content:
     - docs/description-first-application-doctrine.md
     - docs/domain-workstream-prd-structure.md
     - docs/examples/README.md
+    - docs/examples/ai-first-saas-core-app-domain/README.md
     - docs/examples/ai-first-saas-core-app-domain/agent-admin-workstream/README.md
     - docs/examples/ai-first-saas-core-app-domain/audit-trace-workstream/README.md
     - docs/examples/ai-first-saas-core-app-domain/governance-policy-workstream/README.md
+    - docs/examples/ai-first-saas-core-app-domain/my-account-workstream/README.md
+    - docs/examples/ai-first-saas-core-app-domain/user-admin-workstream/README.md
     - docs/examples/domain-workstream-surface-contract-example.md
     - docs/examples/requirements-to-workstream-mini-example.md
     - docs/frontend-with-akka-backend.md
@@ -553,9 +556,10 @@ content:
     - docs/workflow-endpoint-pattern.md
     - docs/workstream-expertise-model.md
     - docs/workstream-ui-reference-architecture.md
+    - docs/workstream-visual-sessions.md
     - templates/ai-first-saas-core-app/app-description/README.md
     - templates/ai-first-saas-core-app/app-description/12-workstreams/surfaces-index.md
-    - templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/01-my-account-dashboard.md
+    - templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/01-access-profile-dashboard.md
     - templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
     - templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
     - templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
