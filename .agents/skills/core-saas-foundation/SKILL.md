@@ -12,16 +12,16 @@ This is a mandatory foundation skill. It does not replace `ai-first-saas`, app-d
 ## Required reading
 
 Read these first when using this skill:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/core-ai-first-saas-foundation.md`
-- `../../docs/core-saas-identity-tenancy-admin.md`
-- `../../docs/core-saas-owner-tenant-billing.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/agent-workstream-application-architecture.md`
-- `../../docs/structured-surface-contracts.md`
+- `../docs/core-ai-first-saas-foundation.md`
+- `../docs/core-saas-identity-tenancy-admin.md`
+- `../docs/core-saas-owner-tenant-billing.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/agent-workstream-application-architecture.md`
+- `../docs/structured-surface-contracts.md`
 
-For minimum, starter, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../../docs/minimum-ai-first-saas-app.md` before applying Slice 0 readiness.
+For minimum, starter, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../docs/minimum-ai-first-saas-app.md` before applying Slice 0 readiness.
 
 Then load only the focused downstream skills needed for the selected path:
 - `ai-first-saas` for operating-model interpretation

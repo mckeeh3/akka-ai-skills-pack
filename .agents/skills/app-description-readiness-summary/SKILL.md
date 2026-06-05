@@ -21,12 +21,12 @@ Produce a concise readiness summary that explains:
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
+- `../docs/description-first-application-doctrine.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
 - `../app-description-readiness-assessment/SKILL.md`
 - `../ai-first-saas/SKILL.md` when delegated work, agents, decisions, governance, supervision, audit, or outcomes are in scope
 - the latest readiness-assessment result if available

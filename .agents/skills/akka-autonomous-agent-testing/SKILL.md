@@ -10,10 +10,10 @@ Use this skill when validating Autonomous Agent components, task lifecycles, tas
 ## Required reading
 
 Read before validating generated-app worker tasks:
-- `../../docs/autonomous-agent-worker-runtime-pattern.md`
+- `../docs/autonomous-agent-worker-runtime-pattern.md`
 
 Read when API details are needed:
-- `../../specs/autonomous-agents-integration/research-notes.md`
+- `../../../specs/autonomous-agents-integration/research-notes.md`
 - `akka-context/sdk/autonomous-agents/testing.html.md`
 - `akka-context/sdk/autonomous-agents/client.html.md`
 - `akka-context/sdk/autonomous-agents/notifications.html.md`
@@ -60,7 +60,7 @@ Coordination:
 
 ## Generated SaaS tests
 
-For generated-app autonomous work, and especially worker tasks covered by `../../docs/autonomous-agent-worker-runtime-pattern.md`, add tests for:
+For generated-app autonomous work, and especially worker tasks covered by `../docs/autonomous-agent-worker-runtime-pattern.md`, add tests for:
 - task start/query/result authorization and tenant isolation;
 - disabled user or disabled managed-agent denial;
 - model policy/provider-secret non-exposure and fail-closed missing config;

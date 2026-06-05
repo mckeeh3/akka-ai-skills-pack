@@ -14,8 +14,8 @@ Use it after the entity's named capability contract is known: command/read purpo
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
 
 Load companion skills when needed:
 - `akka-kve-ttl`

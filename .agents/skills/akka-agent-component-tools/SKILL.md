@@ -10,12 +10,12 @@ Use this skill when an agent should call selected Akka component command/query m
 ## Required reading
 
 Read these first if present:
-- `../../docs/capability-first-backend-architecture.md`
+- `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/agents/extending.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/CartInspectorAgent.java`
-- `../../examples/akka-components/src/test/java/com/example/application/CartInspectorAgentTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/CartInspectorAgent.java`
+- `../examples/akka-components/src/test/java/com/example/application/CartInspectorAgentTest.java`
 
 ## Use this pattern when
 

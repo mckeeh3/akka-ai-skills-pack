@@ -24,14 +24,14 @@ Create or update capability-oriented app-description artifacts that:
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/requirements-to-workstream-development-process.md` for workstream attention/dashboard/surface-action/autonomous task provenance before component selection
-- `../../docs/capability-first-backend-architecture.md`
+- `../docs/description-first-application-doctrine.md`
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/requirements-to-workstream-development-process.md` for workstream attention/dashboard/surface-action/autonomous task provenance before component selection
+- `../docs/capability-first-backend-architecture.md`
 - `../app-descriptions/SKILL.md`
 - `../app-description-input-normalization/SKILL.md`
 - `../app-description-bootstrap/SKILL.md`
@@ -48,9 +48,9 @@ Prefer these AI-first SaaS seed capability references when present:
 - target project `app-description/10-capabilities/05-managed-agent-foundation.md`
 
 Conventional mechanics-only references, not canonical generated AI-first SaaS target architecture:
-- `../../docs/examples/purchase-request-app-description/app-description/10-capabilities/capabilities-index.md`
-- `../../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
-- `../../docs/examples/purchase-request-app-description/app-description/70-traceability/capability-to-behavior-map.md`
+- `../docs/examples/purchase-request-app-description/app-description/10-capabilities/capabilities-index.md`
+- `../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
+- `../docs/examples/purchase-request-app-description/app-description/70-traceability/capability-to-behavior-map.md`
 
 ## Use this skill when
 

@@ -31,32 +31,32 @@ In AI-first SaaS implementations, use workflows as durable execution plans for l
 ## Required reading before coding
 
 Read these first if present:
-- `../../docs/capability-first-backend-architecture.md`
+- `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
 - existing project workflow examples under `src/main/java/**/application/*Workflow.java`
 - matching workflow tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/RefundApprovalWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/SupervisedExportWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ReviewWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/WalletEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/TransferState.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/ApprovalState.java`
-- `../../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
-- `../../docs/workflow-endpoint-pattern.md`
-- `../../examples/akka-components/src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/RefundApprovalCapabilityTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/SupervisedExportWorkflowIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/RefundApprovalWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/SupervisedExportWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/ReviewWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/WalletEntity.java`
+- `../examples/akka-components/src/main/java/com/example/domain/TransferState.java`
+- `../examples/akka-components/src/main/java/com/example/domain/ApprovalState.java`
+- `../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
+- `../docs/workflow-endpoint-pattern.md`
+- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/RefundApprovalCapabilityTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/SupervisedExportWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
 
 ## Companion skills
 
@@ -78,7 +78,7 @@ If the workflow drives or is consumed by other components, also load:
 - `akka-view-from-workflow`
 - `akka-http-endpoint-component-client` when exposing workflow commands through HTTP
 - `akka-autonomous-agents` and `akka-autonomous-agent-tasks` when a workflow starts, waits on, or supervises durable model-driven tasks
-- `../../docs/workflow-endpoint-pattern.md` for the shared HTTP workflow endpoint shape
+- `../docs/workflow-endpoint-pattern.md` for the shared HTTP workflow endpoint shape
 
 ## Default package layout
 

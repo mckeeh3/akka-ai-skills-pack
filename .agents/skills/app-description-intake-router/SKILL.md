@@ -24,17 +24,17 @@ Interpret flexible user input and produce a routing decision that:
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS routing to the five core workstream starter
-- `../../docs/requirements-to-workstream-development-process.md` for the canonical input/PRD → workstreams → attention → dashboards → surfaces/actions → capabilities → Akka substrate process
-- `../../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS workstream routing
-- `../../docs/structured-surface-contracts.md` for surface/action contract routing
-- `../../docs/capability-first-backend-architecture.md` for capability contract routing before behavior, surfaces, or components
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
+- `../docs/description-first-application-doctrine.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS routing to the five core workstream starter
+- `../docs/requirements-to-workstream-development-process.md` for the canonical input/PRD → workstreams → attention → dashboards → surfaces/actions → capabilities → Akka substrate process
+- `../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS workstream routing
+- `../docs/structured-surface-contracts.md` for surface/action contract routing
+- `../docs/capability-first-backend-architecture.md` for capability contract routing before behavior, surfaces, or components
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
 - `../app-description-input-normalization/SKILL.md`
 - `../ai-first-saas/SKILL.md` when input involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
 

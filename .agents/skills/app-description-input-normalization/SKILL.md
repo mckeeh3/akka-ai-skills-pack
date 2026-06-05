@@ -23,35 +23,35 @@ Produce a normalized input result that:
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/requirements-to-workstream-development-process.md` for the canonical input/PRD → workstreams → attention → dashboards → surfaces/actions → capabilities → Akka substrate process
-- `../../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope: five core workstream starter with `markdown_response`, not a generic chatbot or single-workstream slice
-- `../../docs/agent-workstream-application-architecture.md` for functional-agent workstream semantics
-- `../../docs/structured-surface-contracts.md` for surface/action contracts
-- `../../docs/capability-first-backend-architecture.md` for capability contract fields and exposure-surface semantics
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
+- `../docs/description-first-application-doctrine.md`
+- `../docs/requirements-to-workstream-development-process.md` for the canonical input/PRD → workstreams → attention → dashboards → surfaces/actions → capabilities → Akka substrate process
+- `../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope: five core workstream starter with `markdown_response`, not a generic chatbot or single-workstream slice
+- `../docs/agent-workstream-application-architecture.md` for functional-agent workstream semantics
+- `../docs/structured-surface-contracts.md` for surface/action contracts
+- `../docs/capability-first-backend-architecture.md` for capability contract fields and exposure-surface semantics
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
 - `../app-descriptions/SKILL.md`
 - `../app-description-bootstrap/SKILL.md`
 - `../app-description-intake-router/SKILL.md`
 
 Prefer these current generated-SaaS references when present:
-- the target project `app-description/README.md` plus `../../docs/core-ai-first-saas-foundation.md`
+- the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md`
 - target project `app-description/12-workstreams/functional-agents.md`
 - target project `app-description/12-workstreams/surfaces-index.md`
 - target project `app-description/10-capabilities/01-secure-tenant-user-foundation.md`
 - target project `app-description/55-ui/ui-index.md`
 
 Use these conventional mechanics references only when the task is specifically about normalization or cross-linking mechanics, not as the target generated-SaaS architecture:
-- `../../docs/examples/purchase-request-app-description/normalized-input-example.md`
-- `../../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
-- `../../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
-- `../../docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md`
-- `../../docs/examples/purchase-request-app-description/app-description/30-tests/acceptance/01-purchase-request-acceptance.md`
-- `../../docs/examples/purchase-request-app-description/app-description/40-auth-security/identity-and-authorization.md`
-- `../../docs/examples/purchase-request-app-description/app-description/50-observability/logs-metrics-traces-and-alerts.md`
+- `../docs/examples/purchase-request-app-description/normalized-input-example.md`
+- `../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
+- `../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
+- `../docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md`
+- `../docs/examples/purchase-request-app-description/app-description/30-tests/acceptance/01-purchase-request-acceptance.md`
+- `../docs/examples/purchase-request-app-description/app-description/40-auth-security/identity-and-authorization.md`
+- `../docs/examples/purchase-request-app-description/app-description/50-observability/logs-metrics-traces-and-alerts.md`
 
 ## Use this skill when
 

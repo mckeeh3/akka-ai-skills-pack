@@ -10,11 +10,11 @@ Use this skill when an Autonomous Agent coordinates with other agents, tasks, te
 ## Required reading
 
 Read before coordinating generated-app worker tasks:
-- `../../docs/autonomous-agent-worker-runtime-pattern.md`
+- `../docs/autonomous-agent-worker-runtime-pattern.md`
 
 Read when API details are needed:
-- `../../docs/agent-component-selection-guide.md`
-- `../../specs/autonomous-agents-integration/research-notes.md`
+- `../docs/agent-component-selection-guide.md`
+- `../../../specs/autonomous-agents-integration/research-notes.md`
 - `akka-context/sdk/autonomous-agents/coordination.html.md`
 - `akka-context/sdk/autonomous-agents/capabilities.html.md`
 - `akka-context/sdk/autonomous-agents/notifications.html.md`
@@ -78,5 +78,5 @@ Do not treat notifications as the source of truth for business correctness; use 
 - concurrency limits are set when fan-out can grow;
 - external input is modeled as tasks or Workflow pause/resume intentionally;
 - task/result DTOs and traces are tenant-scoped and redacted;
-- generated-app worker coordination follows `../../docs/autonomous-agent-worker-runtime-pattern.md`, including task contract, governed capabilities, provider fail-closed behavior, and no fake success;
+- generated-app worker coordination follows `../docs/autonomous-agent-worker-runtime-pattern.md`, including task contract, governed capabilities, provider fail-closed behavior, and no fake success;
 - tests script coordinator and worker model providers separately.

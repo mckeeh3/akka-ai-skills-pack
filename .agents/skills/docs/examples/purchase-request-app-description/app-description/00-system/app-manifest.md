@@ -1,0 +1,25 @@
+# App Manifest
+
+- app-id: purchase-request
+- status: description-maintenance-example-mechanics-only
+- generation-targets:
+  - generated application code
+  - generated tests
+  - runnable evaluation build
+- architecture note:
+  - mechanics-only conventional workflow example; not generated AI-first SaaS target doctrine
+  - does not model the mandatory agent workstream shell, functional agents, structured surfaces, secure SaaS foundation, or horizontal Akka maps
+  - use target project `app-description/` as the generated SaaS reference
+- top-level goals:
+  - allow employees to submit purchase requests
+  - require approval before high-value requests are fulfilled
+  - preserve auditability of submission and approval decisions
+- non-goals:
+  - supplier contract negotiation
+  - invoicing and payment settlement
+- primary linked artifacts:
+  - `../10-capabilities/01-submit-and-approve-purchase-requests.md`
+  - `../20-behavior/flows/01-submission-and-approval-flow.md`
+  - `../30-tests/acceptance/01-purchase-request-acceptance.md`
+  - `../40-auth-security/identity-and-authorization.md`
+  - `../50-observability/logs-metrics-traces-and-alerts.md`

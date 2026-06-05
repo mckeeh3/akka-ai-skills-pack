@@ -25,14 +25,14 @@ Analyze a requested or completed description change and produce an impact result
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/capability-first-backend-architecture.md` for tracing capability contract changes across linked layers and exposure surfaces
-- `../../docs/workstream-expertise-model.md` for tracing per-functional-agent expert bundle changes across skills, references, manifests, boundaries, traces, and tests
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
+- `../docs/description-first-application-doctrine.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/capability-first-backend-architecture.md` for tracing capability contract changes across linked layers and exposure surfaces
+- `../docs/workstream-expertise-model.md` for tracing per-functional-agent expert bundle changes across skills, references, manifests, boundaries, traces, and tests
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
 - `../app-descriptions/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 - `../app-description-test-specification/SKILL.md`
@@ -43,7 +43,7 @@ Read these first if present:
 - `../ai-first-saas/SKILL.md` when the change involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
 
 Prefer these current generated-SaaS references when present:
-- the target project `app-description/README.md` plus `../../docs/core-ai-first-saas-foundation.md`
+- the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md`
 - target project `app-description/60-generation/regeneration-map.md`
 - target project `app-description/70-traceability/functional-agent-to-capability-map.md`
 - target project `app-description/70-traceability/surface-to-capability-map.md`

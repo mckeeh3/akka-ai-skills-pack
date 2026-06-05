@@ -24,9 +24,9 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 
 Read these first if present:
 
-- `../../docs/workstream-expertise-model.md`
-- `../../docs/agent-runtime-invocation-pattern.md`
-- `../../docs/agent-coverage-matrix.md`
+- `../docs/workstream-expertise-model.md`
+- `../docs/agent-runtime-invocation-pattern.md`
+- `../docs/agent-coverage-matrix.md`
 - `../akka-agent-governed-documents/SKILL.md`
 - `../akka-agent-skill-governance/SKILL.md`
 - `../akka-agent-tool-boundaries/SKILL.md`

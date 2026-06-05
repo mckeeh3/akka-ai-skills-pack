@@ -17,8 +17,8 @@ Read these first if present:
 - `akka-context/reference/views/syntax/query.html.md`
 - `akka-context/reference/views/syntax/select.html.md`
 - `akka-context/reference/views/syntax/order-by.html.md`
-- `../../examples/akka-components/src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
-- `../../docs/capability-first-backend-architecture.md`
+- `../examples/akka-components/src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
+- `../docs/capability-first-backend-architecture.md`
 
 ## Core rules
 

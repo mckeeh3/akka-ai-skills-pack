@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.api.grpc";
+
+package com.example.api.grpc;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+message AuthenticatedCallerResponse {
+  string issuer = 1;
+  string subject = 2;
+  string role = 3;
+  string greeting = 4;
+  google.protobuf.StringValue audience = 5;
+}
+
+service SecureGreetingGrpcEndpoint {
+  rpc Me(google.protobuf.Empty) returns (AuthenticatedCallerResponse) {}
+}

@@ -21,14 +21,14 @@ If these are absent and the work is generated SaaS implementation, route back to
 ## Required reading
 
 Read these first if present:
-- `../../docs/capability-first-backend-architecture.md`
+- `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
-- `../../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/WalletEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/TransferState.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/Wallet.java`
-- `../../examples/akka-components/src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/WalletEntityTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/WalletEntity.java`
+- `../examples/akka-components/src/main/java/com/example/domain/TransferState.java`
+- `../examples/akka-components/src/main/java/com/example/domain/Wallet.java`
+- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/WalletEntityTest.java`
 
 ## Capability-first compensation role
 

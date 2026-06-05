@@ -12,10 +12,10 @@ This is a UI-surface and routing skill. It does not replace `akka-web-ui-*`, HTT
 ## Required reading
 
 Read first:
-- `../../docs/ai-first-saas-application-architecture.md`
+- `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
-Use canonical doctrine plus this skill for surface selection. Also use `../../docs/agent-workstream-application-architecture.md` and `../../docs/structured-surface-contracts.md` when deciding where a surface belongs in the agent workstream model. Use the upstream runnable core app repository root as the canonical full-core implementation baseline; in an installed pack, use `../../resources/examples/frontend/**` only as reusable frontend reference source for the target project. Archived inbox UI notes are provenance only, not operative guidance.
+Use canonical doctrine plus this skill for surface selection. Also use `../docs/agent-workstream-application-architecture.md` and `../docs/structured-surface-contracts.md` when deciding where a surface belongs in the agent workstream model. Use the runnable core app repository root as the canonical full-core implementation baseline and root `frontend/**` as the reusable frontend reference source. The skills-only install does not include `.agents/resources/examples/**`. Archived inbox UI notes are provenance only, not operative guidance.
 
 Then load focused downstream implementation skills only for the selected UI, API, realtime, and backing component scope.
 

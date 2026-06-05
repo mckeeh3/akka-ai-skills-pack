@@ -15,13 +15,13 @@ Read these first if present:
 - `akka-context/sdk/agents/calling.html.md`
 - `akka-context/sdk/agents/orchestrating.html.md`
 - `akka-context/sdk/workflows.html.md`
-- `../../examples/akka-components/src/main/java/com/example/application/AgentTeamWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/DynamicAgentTeamWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/SelectorAgent.java`
-- `../../examples/akka-components/src/main/java/com/example/application/PlannerAgent.java`
-- `../../examples/akka-components/src/main/java/com/example/application/SummarizerAgent.java`
-- `../../examples/akka-components/src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/DynamicAgentTeamWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/AgentTeamWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/DynamicAgentTeamWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/SelectorAgent.java`
+- `../examples/akka-components/src/main/java/com/example/application/PlannerAgent.java`
+- `../examples/akka-components/src/main/java/com/example/application/SummarizerAgent.java`
+- `../examples/akka-components/src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/DynamicAgentTeamWorkflowIntegrationTest.java`
 
 ## Use this pattern when
 

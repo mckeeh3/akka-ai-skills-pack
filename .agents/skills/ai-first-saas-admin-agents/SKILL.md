@@ -12,9 +12,9 @@ AI-assisted admin offload is mandatory foundation behavior for initial generated
 ## Required reading
 
 Read first:
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/core-ai-first-saas-foundation.md`
-- `../../docs/core-saas-identity-tenancy-admin.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/core-ai-first-saas-foundation.md`
+- `../docs/core-saas-identity-tenancy-admin.md`
 - `../core-saas-foundation/SKILL.md`
 - `../ai-first-saas-agent-team-design/SKILL.md`
 - `../ai-first-saas-decision-cards/SKILL.md`

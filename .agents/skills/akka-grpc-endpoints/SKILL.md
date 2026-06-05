@@ -50,16 +50,16 @@ Read these first if present:
 - matching gRPC endpoint tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../examples/akka-components/src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `../../examples/akka-components/src/main/proto/com/example/api/grpc/internal_status_grpc_endpoint.proto`
-- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../../examples/akka-components/src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
-- `../../examples/akka-components/src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
-- `../../examples/akka-components/src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
+- `../examples/akka-components/src/main/proto/com/example/api/grpc/internal_status_grpc_endpoint.proto`
+- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
+- `../examples/akka-components/src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
+- `../examples/akka-components/src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
+- `../examples/akka-components/src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
+- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
 
 ## Companion skills
 

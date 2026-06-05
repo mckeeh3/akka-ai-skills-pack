@@ -25,11 +25,11 @@ The summary should help the human understand the consequence of their requested 
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
+- `../docs/description-first-application-doctrine.md`
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
 - any relevant updated description-layer artifacts identified by the harness
 - any recent readiness or generation summaries if they exist
 

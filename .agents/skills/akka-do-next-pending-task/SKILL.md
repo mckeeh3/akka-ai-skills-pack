@@ -43,13 +43,13 @@ The skill must:
 
 Read these first if present:
 - `../README.md`
-- `../../docs/ai-first-saas-application-architecture.md` when the selected task or its listed skills include AI-first SaaS concerns
-- `../../docs/workstream-expertise-model.md` when the selected task includes LLM-backed functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, load traces, or expertise surfaces
-- `../../docs/pending-question-queue.md`
-- `../../docs/pending-task-queue.md`
-- `../../docs/intent-driven-usage-flow.md`
-- `../../docs/solution-plan-to-implementation-queue.md`
-- `../../docs/web-ui-style-guide.md` when selected task includes browser UI work
+- `../docs/ai-first-saas-application-architecture.md` when the selected task or its listed skills include AI-first SaaS concerns
+- `../docs/workstream-expertise-model.md` when the selected task includes LLM-backed functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, load traces, or expertise surfaces
+- `../docs/pending-question-queue.md`
+- `../docs/pending-task-queue.md`
+- `../docs/intent-driven-usage-flow.md`
+- `../docs/solution-plan-to-implementation-queue.md`
+- `../docs/web-ui-style-guide.md` when selected task includes browser UI work
 - the target project's implementation artifacts or legacy `specs/scaffold-report.md` if present, to detect existing-app extension mode and preserve selected package/path decisions
 - the target project's `specs/pending-questions.md` if it exists
 - the target project's `specs/pending-tasks.md`
@@ -146,11 +146,11 @@ If `specs/pending-questions.md` exists, verify that the selected task is not blo
 
 If the target already contains implementation artifacts or a legacy `specs/scaffold-report.md`, execute tasks as extensions of that existing core app baseline unless the task explicitly says otherwise. Preserve the selected Java package, foundation components, workstream UI baseline, and existing queue history; do not replace the app with a parallel generated app.
 
-If the selected task lacks or fails to inherit its vertical workstream contract, block it for queue/task-brief repair before coding. The repair target must name the affected workstream or internal/foundation scope, attention category or non-attention reason, role-specific dashboard purpose, human surface graph node/action edge or non-UI trigger, governed-tool id and qualified exposure (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP-tool), capability id/class, selected Akka substrate, internal workstream agent graph delegation/result surface when relevant, AuthContext, audit/work trace, and local validation path.
+If the selected task lacks or fails to inherit its vertical workstream contract, block it for queue/task-brief repair before coding. The repair target must name the affected workstream or internal/foundation scope, attention category or non-attention reason, role-specific dashboard purpose, human surface graph node/action edge or non-UI trigger, governed-tool id and qualified exposure (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP-tool), capability id/class, selected Akka substrate, internal workstream agent graph delegation/result surface when relevant, AuthContext, audit/work trace, and local validation path. When available, run `bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md` before marking the task `in-progress`; if the selected runnable task fails the validator and lacks an explicit internal/foundation/cross-cutting/docs-only/non-runtime exemption, repair or block the task instead of coding.
 
 If the selected task writes Java source and no selected Java base package is present in required reads, app-description, specs, Maven/Gradle configuration, legacy `specs/scaffold-report.md`, or existing source package roots, block the task and add/update the base-package pending question instead of defaulting to `com.example`. The question is: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`.
 
-If the selected task includes browser UI implementation and no selected style guide is present in required reads, app-description, or specs, block the task and add/update the style-selection pending question from `../../docs/web-ui-style-guide.md` instead of inventing visual styling.
+If the selected task includes browser UI implementation and no selected style guide is present in required reads, app-description, or specs, block the task and add/update the style-selection pending question from `../docs/web-ui-style-guide.md` instead of inventing visual styling.
 
 If a task is `in-progress` from a previous interrupted run:
 - inspect notes and changed files if needed

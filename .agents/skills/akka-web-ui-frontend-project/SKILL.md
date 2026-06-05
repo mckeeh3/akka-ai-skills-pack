@@ -24,9 +24,9 @@ If these are absent for generated SaaS implementation, route back to `akka-web-u
 ## Required reading
 
 Read these first if present:
-- `../../docs/web-ui-frontend-project-integration.md`
-- `../../docs/web-ui-frontend-decomposition.md`
-- `../../docs/web-ui-quality-checklist.md`
+- `../docs/web-ui-frontend-project-integration.md`
+- `../docs/web-ui-frontend-decomposition.md`
+- `../docs/web-ui-quality-checklist.md`
 - `../akka-http-endpoint-web-ui/SKILL.md`
 - project `frontend/package.json`
 - project `frontend/vite.config.ts` or equivalent frontend build config
@@ -35,7 +35,7 @@ Read these first if present:
 - matching Akka frontend hosting endpoint and endpoint tests
 
 Reference example document:
-- `../../docs/frontend-with-akka-backend.md` — use only the frontend layout, build output, Akka static hosting, route separation, and SPA-routing guidance. Do not import its auth/security content unless a security task explicitly asks for it.
+- `../docs/frontend-with-akka-backend.md` — use only the frontend layout, build output, Akka static hosting, route separation, and SPA-routing guidance. Do not import its auth/security content unless a security task explicitly asks for it.
 
 ## Use this skill when
 

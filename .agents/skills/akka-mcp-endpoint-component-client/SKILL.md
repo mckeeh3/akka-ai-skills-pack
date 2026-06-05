@@ -21,8 +21,8 @@ Expose read-only scoped evidence capabilities more readily than side-effecting c
 Read these first if present:
 - `akka-context/sdk/mcp-endpoints.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
+- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
+- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
 
 ## Use this pattern when
 

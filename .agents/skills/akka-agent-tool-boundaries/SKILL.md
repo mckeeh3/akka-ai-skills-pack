@@ -22,8 +22,8 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 ## Required reading
 
 Read these first if present:
-- `../../docs/capability-first-backend-architecture.md`
-- `../../docs/agent-runtime-invocation-pattern.md`
+- `../docs/capability-first-backend-architecture.md`
+- `../docs/agent-runtime-invocation-pattern.md`
 - `../akka-agent-behavior-profiles/SKILL.md`
 - `../akka-agent-tools/SKILL.md`
 - `../akka-agent-component-tools/SKILL.md`

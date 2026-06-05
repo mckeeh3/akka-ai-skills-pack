@@ -12,8 +12,8 @@ This skill defines the `AgentBehaviorEditorAgent` responsibility and proposal co
 ## Required reading
 
 Read these first if present:
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/agent-runtime-invocation-pattern.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/agent-runtime-invocation-pattern.md`
 - `../akka-agents/SKILL.md`
 - `../akka-agent-behavior-profiles/SKILL.md`
 - `../akka-agent-governed-documents/SKILL.md`

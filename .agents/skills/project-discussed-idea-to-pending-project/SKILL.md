@@ -1,14 +1,13 @@
 ---
 name: project-discussed-idea-to-pending-project
-description: Project-only skill for this akka-ai-skills-pack source repo. Create a self-contained specs/<initiative>/ mini-project with supporting docs and a pending-tasks.md queue when an idea, feature, concept, migration, or remediation for this repository has already been discussed and is ready to implement one task per fresh harness session.
+description: Create a self-contained specs/<initiative>/ mini-project with supporting docs and a pending-tasks.md queue when an idea, feature, concept, migration, remediation, or follow-up for the current project has already been discussed and is ready to implement one task per fresh harness session.
 ---
 
 # Project Discussed Idea to Pending Project
 
-This is a **project-only harness skill for the `akka-ai-skills-pack` source repository**.
-It is not part of the installable skills pack and must not be registered in `pack/manifest.yaml` or documented as a downstream generated-app skill.
+Use this skill when an idea, feature, concept, migration, remediation, review finding, or follow-up initiative for the current project has already been discussed enough to implement and should be captured as a durable mini-project under `specs/`.
 
-Use it when a repository-maintenance idea, feature, concept, migration, remediation, review finding, or follow-up initiative for this source repo has already been discussed enough to implement and should be captured as a durable mini-project under `specs/`.
+The target may be a downstream generated app, a fork of the secure AI-first SaaS core app, or the Akka AI skills-pack source repository itself. Preserve the target project's own source-of-truth app-description, specs, repository guidance, and runtime completion rules.
 
 The output is planning and queue materialization only. Do not implement the queued tasks in the same run unless the user explicitly asks to execute one task after the queue exists.
 
@@ -24,32 +23,24 @@ Use when the prompt sounds like:
 
 ## Project scope guardrail
 
-This repository develops the skills pack. The mini-project usually concerns source assets such as:
-- `skills/`
-- `docs/`
-- `pack/`
-- `templates/`
+Create planning artifacts for the **current target project**, not for `.agents/` itself unless the user explicitly asks for skills-pack maintenance. In downstream app projects, the mini-project usually concerns app-facing assets such as:
+- `app-description/`
 - `specs/`
-- examples, tests, packaging, install scripts, or repository guidance
+- backend and frontend source
+- docs, tests, tools, examples, or repository guidance
 
-Do not treat the repo-local mini-project as an end-user Akka application plan unless the user explicitly says it is an example app, starter template, or generated-app reference asset in this repository.
+In the Akka AI skills-pack source repository, pack-maintenance mini-projects may concern source assets such as `skills-pack/skills/`, `skills-pack/docs/`, `skills-pack/pack/`, examples, tests, packaging, install scripts, or repository guidance.
 
-Do not add this project-only skill to:
-- `skills/`
-- `skills/README.md`
-- `pack/manifest.yaml`
-- packaged `dist/` content
-
-Those are installable-pack assets intended for other projects.
+Do not treat an installed `.agents/skills` support library as writable application source unless the user explicitly asks for skills maintenance, harness-skill customization, or a destructive reset.
 
 ## Required reading
 
 Read only the smallest useful context:
-- `AGENTS.md`
-- `skills/README.md`
-- `docs/pending-task-queue.md` for queue mechanics
-- `docs/pending-question-queue.md` when unresolved decisions may block tasks
-- `docs/ai-first-saas-application-architecture.md` and `docs/capability-first-backend-architecture.md` only when the initiative affects generated-app doctrine, agent workstreams, governed capabilities, security, UI, agents, audit, or runtime completion semantics
+- `AGENTS.md` or equivalent repository guidance
+- `.agents/skills/README.md` or `skills/README.md` when present
+- `skills-pack/docs/pending-task-queue.md` or project `docs/pending-task-queue.md` for queue mechanics when present
+- `skills-pack/docs/pending-question-queue.md` or project `docs/pending-question-queue.md` when unresolved decisions may block tasks
+- `skills-pack/docs/ai-first-saas-application-architecture.md` / `skills-pack/docs/capability-first-backend-architecture.md` or project-local equivalents only when the initiative affects generated-app doctrine, agent workstreams, governed capabilities, security, UI, agents, audit, or runtime completion semantics
 - the conversation notes, issue, prompt, draft spec, review finding, or source files named by the user
 - related existing `specs/*/README.md` and `specs/*/pending-tasks.md` as pattern references
 
@@ -244,7 +235,7 @@ Good task boundaries:
 
 Split or block tasks that are too broad, such as "fix all skills", "make starter production ready", "migrate all UI", or "implement the whole feature".
 
-Generated-app/reference-runtime tasks in this repository must preserve the runtime completion doctrine: do not mark feature work complete unless the real local runtime/API/UI path works at the stated scope, or the task is explicitly non-runtime/docs-only.
+Generated-app/reference-runtime tasks must preserve the target project runtime completion doctrine: do not mark feature work complete unless the real local runtime/API/UI path works at the stated scope, or the task is explicitly non-runtime/docs-only.
 
 ## Status and commit rules
 

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Frontend reference dashboard</title>
+    <link rel="stylesheet" href="/ui/frontend-reference/app.css" />
+    <script type="module" src="/ui/frontend-reference/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="app-header">
+      <p class="eyebrow">Akka-hosted lightweight frontend</p>
+      <h1>Purchase request dashboard</h1>
+      <p>This reference UI demonstrates typed API calls, state rendering, forms, validation, and accessible responsive layout.</p>
+    </header>
+
+    <main id="main-content" class="app-shell" data-api-path="/api/frontend-reference/dashboard" data-submit-path="/api/frontend-reference/requests">
+      <section class="panel" aria-labelledby="summary-heading">
+        <h2 id="summary-heading">Request summary</h2>
+        <p id="connection-status" class="status" role="status">Loading dashboard…</p>
+        <div id="summary-region" class="summary-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="requests-heading">
+        <div class="section-header">
+          <div>
+            <h2 id="requests-heading">Requests</h2>
+            <p>Filter and review browser-rendered API data.</p>
+          </div>
+          <label class="filter-label" for="status-filter">Status</label>
+          <select id="status-filter">
+            <option value="all">All statuses</option>
+          </select>
+        </div>
+        <div id="requests-region" aria-live="polite"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="create-heading">
+        <h2 id="create-heading">Create request</h2>
+        <p id="form-status" class="status" role="status"></p>
+        <form id="request-form" novalidate>
+          <div class="form-field">
+            <label for="title">Title</label>
+            <input id="title" name="title" autocomplete="off" aria-describedby="title-error" />
+            <p id="title-error" class="field-error"></p>
+          </div>
+          <div class="form-field">
+            <label for="requester">Requester</label>
+            <input id="requester" name="requester" autocomplete="name" aria-describedby="requester-error" />
+            <p id="requester-error" class="field-error"></p>
+          </div>
+          <div class="form-field">
+            <label for="amount">Amount</label>
+            <input id="amount" name="amount" type="number" min="1" inputmode="numeric" aria-describedby="amount-error" />
+            <p id="amount-error" class="field-error"></p>
+          </div>
+          <button id="submit-button" type="submit">Submit request</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

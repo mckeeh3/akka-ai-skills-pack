@@ -37,32 +37,32 @@ Read these first if present:
 - `akka-context/sdk/timed-actions.html.md`
 - `akka-context/sdk/setup-and-dependency-injection.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../docs/timer-pattern-selection.md`
+- `../docs/timer-pattern-selection.md`
 - existing timer examples under `src/main/java/**/TimedAction*.java`, `*TimedAction.java`, or timer-scheduling endpoints
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../../examples/akka-components/src/main/java/com/example/application/TicketReservationEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../../examples/akka-components/src/main/java/com/example/api/TicketReservationEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/TicketReservation.java`
-- `../../examples/akka-components/src/test/java/com/example/application/TicketReservationEntityTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/TicketReservationTimedActionTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ReminderJobEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ReminderJobTimedAction.java`
-- `../../examples/akka-components/src/main/java/com/example/api/ReminderJobEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/ReminderJob.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ReminderJobEntityTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ReminderJobTimedActionTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
-- `../../examples/akka-components/src/main/java/com/example/api/ApprovalDeadlineWorkflowEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/ApprovalDeadlineState.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineTimedActionTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/TicketReservationEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
+- `../examples/akka-components/src/main/java/com/example/api/TicketReservationEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/domain/TicketReservation.java`
+- `../examples/akka-components/src/test/java/com/example/application/TicketReservationEntityTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/TicketReservationTimedActionTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/ReminderJobEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/ReminderJobTimedAction.java`
+- `../examples/akka-components/src/main/java/com/example/api/ReminderJobEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/domain/ReminderJob.java`
+- `../examples/akka-components/src/test/java/com/example/application/ReminderJobEntityTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ReminderJobTimedActionTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
+- `../examples/akka-components/src/main/java/com/example/api/ApprovalDeadlineWorkflowEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/domain/ApprovalDeadlineState.java`
+- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineTimedActionTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
 
 ## Companion skills
 

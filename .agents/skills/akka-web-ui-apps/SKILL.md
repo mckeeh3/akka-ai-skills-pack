@@ -37,32 +37,32 @@ Pair AI-first web UI work with `agent-workstream-apps` and `ai-first-saas-ui-sur
 ## Required reading
 
 Read these first if present:
-- `../../docs/workstream-ui-reference-architecture.md` for the canonical reusable `frontend/src/workstream/**` implementation shape and User Admin vertical reference
-- `../../docs/web-ui-frontend-decomposition.md`
-- `../../docs/web-ui-style-guide.md`
-- `../../docs/web-ui-ux-patterns.md`
-- `../../docs/web-ui-frontend-project-integration.md`
-- `../../docs/structured-surface-contracts.md`
-- `../../docs/web-ui-api-contract-patterns.md`
-- `../../docs/web-ui-quality-checklist.md`
-- `../../docs/web-ui-pattern-selection.md`
+- `../docs/workstream-ui-reference-architecture.md` for the canonical reusable `frontend/src/workstream/**` implementation shape and User Admin vertical reference
+- `../docs/web-ui-frontend-decomposition.md`
+- `../docs/web-ui-style-guide.md`
+- `../docs/web-ui-ux-patterns.md`
+- `../docs/web-ui-frontend-project-integration.md`
+- `../docs/structured-surface-contracts.md`
+- `../docs/web-ui-api-contract-patterns.md`
+- `../docs/web-ui-quality-checklist.md`
+- `../docs/web-ui-pattern-selection.md`
 - `../akka-http-endpoint-web-ui/SKILL.md`
 - existing `frontend/**`
 - existing `src/main/resources/static-resources/**`
 - matching endpoint and endpoint tests under `src/main/java/**/api` and `src/test/java/**`
 
 Canonical frontend project integration reference:
-- `../../docs/frontend-with-akka-backend.md` (use web UI integration sections together with mandatory JWT/request-context and `/api/me` security boundaries for generated SaaS apps)
+- `../docs/frontend-with-akka-backend.md` (use web UI integration sections together with mandatory JWT/request-context and `/api/me` security boundaries for generated SaaS apps)
 
 Canonical full-core implementation reference:
-- source repository: the upstream runnable core app repository root
-- installed pack: use `../../resources/examples/frontend/**` as reusable frontend reference only; application source belongs in the target project
+- source checkout or downstream fork: use the runnable core app repository root
+- skills-only install: no frontend example tree is installed under `.agents`; application source belongs in the target project
 
-Canonical source-repository workstream UI reference:
-- reusable implementation modules: `../../frontend/src/workstream/**`
-- runtime API contracts: `../../frontend/src/api/WorkstreamApiClient.ts` and `../../frontend/src/api/WorkstreamRealtimeClient.ts`
-- integrated shell example: `../../frontend/src/main.tsx`
-- User Admin dashboard/list/detail-edit vertical pattern: test-only workstream fixtures and `../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+Canonical source-checkout workstream UI reference:
+- reusable implementation modules: `../../../frontend/src/workstream/**`
+- runtime API contracts: `../../../frontend/src/api/WorkstreamApiClient.ts` and `../../../frontend/src/api/WorkstreamRealtimeClient.ts`
+- integrated shell example: `../../../frontend/src/main.tsx`
+- User Admin dashboard/list/detail-edit vertical pattern: test-only workstream fixtures and `../../../frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 
 Use the core app baseline as the end-to-end generated-app baseline and these frontend files as reusable UI implementation examples. Test fixtures are contract references only and must not be importable as generated-app normal runtime. Do not use legacy `frontend/src/screens/**` or standalone static examples as the canonical app structure; keep them as mechanics or migration-drift references unless a task explicitly asks for legacy compatibility.
 
@@ -79,7 +79,7 @@ Do not use this as the main skill for generated API documentation assets or raw 
 
 ## Planning output before coding
 
-Before implementing generated AI-first SaaS UI, verify that a selected style and named-theme contract exist in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or another authoritative UI spec. The contract must record available theme ids/names, default theme id, My Account selection behavior when in scope, and persistence scope. If style or named-theme selection is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../../docs/web-ui-style-guide.md` and stop web UI implementation for the affected tasks.
+Before implementing generated AI-first SaaS UI, verify that a selected style and named-theme contract exist in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or another authoritative UI spec. The contract must record available theme ids/names, default theme id, My Account selection behavior when in scope, and persistence scope. If style or named-theme selection is missing/unselected, add or update `specs/pending-questions.md` with the style-selection question from `../docs/web-ui-style-guide.md` and stop web UI implementation for the affected tasks.
 
 Before implementing, load `akka-web-ui-ux-design` for any non-trivial app and produce a frontend plan with:
 1. User goals and personas

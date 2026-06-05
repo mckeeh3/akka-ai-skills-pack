@@ -22,9 +22,9 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 ## Required reading
 
 Read these first if present:
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/agent-coverage-matrix.md`
-- `../../docs/examples/core-ai-first-saas-input/07-module-skill-governance-prd.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/agent-coverage-matrix.md`
+- `../docs/examples/core-ai-first-saas-input/07-module-skill-governance-prd.md`
 - `../core-saas-foundation/SKILL.md`
 - `../akka-agents/SKILL.md`
 - `../akka-agent-behavior-profiles/SKILL.md`

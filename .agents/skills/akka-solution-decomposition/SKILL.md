@@ -22,13 +22,13 @@ Generate or review an Akka solution plan that:
 ## Supported inputs
 
 For the canonical broad-input planning shape, see:
-- `../../docs/requirements-to-workstream-development-process.md`
-- `../../docs/examples/requirements-to-workstream-mini-example.md`
+- `../docs/requirements-to-workstream-development-process.md`
+- `../docs/examples/requirements-to-workstream-mini-example.md`
 
 Conventional mechanics-only examples, not canonical generated AI-first SaaS target architecture:
-- `../../docs/prd-to-akka-flow.md` conventional mechanics section
-- `../../docs/examples/purchase-request-prd.md`
-- `../../docs/examples/purchase-request-solution-plan.md`
+- `../docs/prd-to-akka-flow.md` conventional mechanics section
+- `../docs/examples/purchase-request-prd.md`
+- `../docs/examples/purchase-request-solution-plan.md`
 
 
 Use this skill when the input is one or more of:
@@ -49,45 +49,45 @@ If the user provides a filename or path:
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md` for authoritative project rules and Akka coding constraints
+- `../../../AGENTS.md` for authoritative project rules and Akka coding constraints
 - `../README.md` for local routing across skill families
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline every new app plan must include
 - `../akka-saas-invitation-onboarding/SKILL.md` when the foundation plan includes complete email-invite onboarding implementation details
-- `../../docs/ai-first-saas-application-architecture.md` for high-level product, PRD, feature, and operating-model inputs
-- `../../docs/agent-workstream-application-architecture.md` and `../agent-workstream-apps/SKILL.md` for generated full-stack SaaS functional-agent, workstream, and structured-surface modeling before backend capability design
-- `../../docs/structured-surface-contracts.md` when workstream surfaces, surface actions, browser UI actions, or surface events are in scope
-- `../../docs/capability-first-backend-architecture.md` and `../capability-first-backend/SKILL.md` for capability-first backend modeling before component selection
-- `../../docs/agent-coverage-matrix.md` when the task is agent-related
+- `../docs/ai-first-saas-application-architecture.md` for high-level product, PRD, feature, and operating-model inputs
+- `../docs/agent-workstream-application-architecture.md` and `../agent-workstream-apps/SKILL.md` for generated full-stack SaaS functional-agent, workstream, and structured-surface modeling before backend capability design
+- `../docs/structured-surface-contracts.md` when workstream surfaces, surface actions, browser UI actions, or surface events are in scope
+- `../docs/capability-first-backend-architecture.md` and `../capability-first-backend/SKILL.md` for capability-first backend modeling before component selection
+- `../docs/agent-coverage-matrix.md` when the task is agent-related
 - `../references/akka-entity-comparison.md`
-- `../../docs/workflow-endpoint-pattern.md`
-- `../../docs/timer-pattern-selection.md`
-- `../../akka-context/sdk/ai-coding-assistant-guidelines.html.md`
+- `../docs/workflow-endpoint-pattern.md`
+- `../docs/timer-pattern-selection.md`
+- `../../../akka-context/sdk/ai-coding-assistant-guidelines.html.md`
 
 When requirements already suggest a likely component, also read the official Akka doc for that area before coding:
-- `../../akka-context/sdk/event-sourced-entities.html.md`
-- `../../akka-context/sdk/key-value-entities.html.md`
-- `../../akka-context/sdk/workflows.html.md`
-- `../../akka-context/sdk/views.html.md`
-- `../../akka-context/sdk/consuming-producing.html.md`
-- `../../akka-context/sdk/timed-actions.html.md`
-- `../../akka-context/sdk/http-endpoints.html.md`
-- `../../akka-context/sdk/grpc-endpoints.html.md`
-- `../../akka-context/sdk/agents.html.md`
+- `../../../akka-context/sdk/event-sourced-entities.html.md`
+- `../../../akka-context/sdk/key-value-entities.html.md`
+- `../../../akka-context/sdk/workflows.html.md`
+- `../../../akka-context/sdk/views.html.md`
+- `../../../akka-context/sdk/consuming-producing.html.md`
+- `../../../akka-context/sdk/timed-actions.html.md`
+- `../../../akka-context/sdk/http-endpoints.html.md`
+- `../../../akka-context/sdk/grpc-endpoints.html.md`
+- `../../../akka-context/sdk/agents.html.md`
 
 In this repository, prefer these cross-component examples:
-- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ActivityAgent.java`
-- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
+- `../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
+- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
+- `../examples/akka-components/src/main/java/com/example/application/ReviewRequestsByStatusView.java`
+- `../examples/akka-components/src/main/java/com/example/application/ActivityAgent.java`
+- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
+- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
+- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
 
 ## What this skill must produce
 

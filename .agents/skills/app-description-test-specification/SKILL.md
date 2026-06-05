@@ -26,14 +26,14 @@ The output should:
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/capability-first-backend-architecture.md` for capability-level success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-surface test expectations
+- `../docs/description-first-application-doctrine.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/capability-first-backend-architecture.md` for capability-level success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-surface test expectations
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation verification expectations
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 

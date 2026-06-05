@@ -12,14 +12,14 @@ Use this skill for the `domain` package of an Akka Java SDK key value entity.
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../examples/akka-components/src/main/java/com/example/domain/DraftCart.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/DraftCartValidator.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/DraftCartCommandHandler.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/PurchaseOrder.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/PurchaseOrderValidator.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/PurchaseOrderCommandHandler.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/PurchaseOrderReadyToShipBusinessLogic.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/ExpiringDraftCartSession.java`
+- `../examples/akka-components/src/main/java/com/example/domain/DraftCart.java`
+- `../examples/akka-components/src/main/java/com/example/domain/DraftCartValidator.java`
+- `../examples/akka-components/src/main/java/com/example/domain/DraftCartCommandHandler.java`
+- `../examples/akka-components/src/main/java/com/example/domain/PurchaseOrder.java`
+- `../examples/akka-components/src/main/java/com/example/domain/PurchaseOrderValidator.java`
+- `../examples/akka-components/src/main/java/com/example/domain/PurchaseOrderCommandHandler.java`
+- `../examples/akka-components/src/main/java/com/example/domain/PurchaseOrderReadyToShipBusinessLogic.java`
+- `../examples/akka-components/src/main/java/com/example/domain/ExpiringDraftCartSession.java`
 
 ## Mission
 

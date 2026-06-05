@@ -12,7 +12,7 @@ This is an outcome-loop and routing skill. It does not replace entity, workflow,
 ## Required reading
 
 Read first:
-- `../../docs/ai-first-saas-application-architecture.md`
+- `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
 Then load focused downstream implementation skills only for the selected outcome records, projections, schedules, agents, APIs, and UI surfaces.

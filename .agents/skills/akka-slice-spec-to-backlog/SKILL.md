@@ -46,21 +46,21 @@ This skill should be used after:
 Read these first if present:
 - `../README.md`
 - `../akka-prd-to-specs-backlog/SKILL.md`
-- `../../specs/README.md`
-- `../../specs/backlog/README.md`
-- `../../specs/tasks/README.md`
-- `../../specs/pending-tasks.md` if it already exists
-- `../../docs/pending-task-queue.md`
-- `../../docs/ai-first-saas-application-architecture.md` when the slice or sprint includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
-- `../../docs/requirements-to-workstream-development-process.md` when the source increment includes generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent candidates, notifications/projections, or task queues
-- `../../app-description/15-operating-model/` or equivalent operating-model specs when present and relevant
-- `../../specs/templates/build-backlog-template.md`
-- `../../specs/templates/implementation-task-template.md`
-- the target slice spec file under `../../specs/slices/` or sprint spec file under `../../specs/sprints/`
-- the related module spec under `../../specs/modules/` when present
+- `../../../specs/README.md`
+- `../../../specs/backlog/README.md`
+- `../../../specs/tasks/README.md`
+- `../../../specs/pending-tasks.md` if it already exists
+- `../docs/pending-task-queue.md`
+- `../docs/ai-first-saas-application-architecture.md` when the slice or sprint includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
+- `../docs/requirements-to-workstream-development-process.md` when the source increment includes generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent candidates, notifications/projections, or task queues
+- `../../../app-description/15-operating-model/` or equivalent operating-model specs when present and relevant
+- `../../../specs/templates/build-backlog-template.md`
+- `../../../specs/templates/implementation-task-template.md`
+- the target slice spec file under `../../../specs/slices/` or sprint spec file under `../../../specs/sprints/`
+- the related module spec under `../../../specs/modules/` when present
 - any cross-cutting spec files referenced or obviously relevant to the slice or sprint
-- `../../specs/cross-cutting/*ui-style-guide*.md`, `../../app-description/55-ui/style-guide.md`, or equivalent style artifact when the slice or sprint includes browser UI work
-- `../../specs/akka-solution-plan.md`
+- `../../../specs/cross-cutting/*ui-style-guide*.md`, `../../../app-description/55-ui/style-guide.md`, or equivalent style artifact when the slice or sprint includes browser UI work
+- `../../../specs/akka-solution-plan.md`
 
 If a matching backlog file already exists:
 - read it first
@@ -113,9 +113,9 @@ When the target slice or sprint is the SaaS foundation, split the breakdown into
 
 Also split governed runtime agent foundation work into separate backlog and pending-task items by component/UI/test family: `AgentDefinition` lifecycle/profile and agent catalog/detail, `PromptDocument`/`PromptVersion` governance with prompt assembly and `PromptAssemblyTrace`, `SkillDocument`/`SkillVersion` governance, `ReferenceDocument`/`ReferenceVersion` governance, `AgentSkillManifest`/`AgentReferenceManifest`, authorized `readSkill(skillId)`/`readReferenceDoc(referenceId)` and `SkillLoadTrace`/`ReferenceLoadTrace`, `ToolPermissionBoundary`, `AgentWorkTrace`, behavior editing agents and proposed-diff approval, prompt/skill/reference/manifest/tool-boundary UI, trace UI, and security/admin/agent-governance tests. Do not produce one broad managed-agent or `agent governance` item that spans all of these.
 
-For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../../docs/pending-task-queue.md`. Each backlog and queue item must carry the relevant workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, source governed-tool ids, source capability ids, internal-agent delegation/result context, actor/caller, `AuthContext`, role/scope or permission checks, approval gates, selected Akka substrate/exposure channel, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace requirements, UI surface, concrete checks, and local/runtime validation path when the work implements app behavior rather than reducing the work to a vague implementation label.
+For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../docs/pending-task-queue.md`. Each backlog and queue item must carry the relevant workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, source governed-tool ids, source capability ids, internal-agent delegation/result context, actor/caller, `AuthContext`, role/scope or permission checks, approval gates, selected Akka substrate/exposure channel, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace requirements, UI surface, concrete checks, and local/runtime validation path when the work implements app behavior rather than reducing the work to a vague implementation label.
 If the slice or sprint goal names a feature such as sign-in, user auth, invitation onboarding, User Admin, Agent Admin, or an app-specific workflow, the backlog must include the backend, endpoint/API, frontend/workstream surface, authorization, audit/trace, tests, and local smoke/manual verification needed for that named feature to work at the stated scope. Deferrals that prevent that working state must narrow/rename the goal or block completion; they must not be counted as done.
-If a bounded item implements browser UI and style is unresolved, do not make it runnable; add/update a `specs/pending-questions.md` style-selection question using `../../docs/web-ui-style-guide.md` and mark only the affected UI task as blocked or defer it with an explicitly accepted default.
+If a bounded item implements browser UI and style is unresolved, do not make it runnable; add/update a `specs/pending-questions.md` style-selection question using `../docs/web-ui-style-guide.md` and mark only the affected UI task as blocked or defer it with an explicitly accepted default.
 Preserve existing task IDs and statuses when updating an existing queue.
 
 ## Mapping rules

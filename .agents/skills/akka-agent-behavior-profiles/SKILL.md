@@ -22,10 +22,10 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 ## Required reading
 
 Read these first if present:
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/agent-workstream-application-architecture.md`
-- `../../docs/agent-coverage-matrix.md`
-- `../../docs/agent-runtime-invocation-pattern.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/agent-workstream-application-architecture.md`
+- `../docs/agent-coverage-matrix.md`
+- `../docs/agent-runtime-invocation-pattern.md`
 - `../akka-agent-model-governance/SKILL.md` when model config policy, provider aliases, fallbacks, or provider secret boundaries are in scope
 - `../core-saas-foundation/SKILL.md`
 - `../ai-first-saas-audit-trace/SKILL.md`
@@ -142,7 +142,7 @@ Typical events:
 11. Tools are exposure surfaces for named capabilities. Do not grant a tool because a prompt/skill asks for it; require the capability contract and active `ToolPermissionBoundary` to allow it.
 12. Runtime flows must resolve the active behavior profile before invoking the Java `Agent` class.
 13. The resolved profile's `AgentSkillManifest` is per agent; User Admin and Agent Admin must not silently share a generic global skill list.
-14. Use `../../docs/agent-runtime-invocation-pattern.md` for the concrete `AgentRuntimeResolver` handoff: AuthContext validation, active AgentDefinition lookup, prompt assembly from the active prompt plus compact assigned-skill names/descriptions/hints, ToolPermissionBoundary, Java Agent invocation with Akka-registered tools including `readSkill(skillId)`, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission must happen before or around model invocation.
+14. Use `../docs/agent-runtime-invocation-pattern.md` for the concrete `AgentRuntimeResolver` handoff: AuthContext validation, active AgentDefinition lookup, prompt assembly from the active prompt plus compact assigned-skill names/descriptions/hints, ToolPermissionBoundary, Java Agent invocation with Akka-registered tools including `readSkill(skillId)`, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission must happen before or around model invocation.
 
 ## Admin API and UI surfaces
 
@@ -167,7 +167,7 @@ Pair these with tenant-isolation, forbidden-access, disabled-agent, archived-age
 5. Add protected endpoints and UI surfaces.
 6. Add audit/work-trace emission for lifecycle, placement, and authority changes.
 7. Integrate runtime lookup so workflows/endpoints refuse disabled, archived, unauthorized, or out-of-scope agents.
-8. Add an `AgentRuntimeResolver`-style application helper or service boundary that coordinates AuthContext, AgentDefinition, prompt versions, compact AgentSkillManifest, ToolPermissionBoundary, readSkill authorization, and trace ids according to `../../docs/agent-runtime-invocation-pattern.md`.
+8. Add an `AgentRuntimeResolver`-style application helper or service boundary that coordinates AuthContext, AgentDefinition, prompt versions, compact AgentSkillManifest, ToolPermissionBoundary, readSkill authorization, and trace ids according to `../docs/agent-runtime-invocation-pattern.md`.
 9. Only then route to prompt, skill, tools, memory, orchestration, or component implementation skills.
 
 ## Review checklist

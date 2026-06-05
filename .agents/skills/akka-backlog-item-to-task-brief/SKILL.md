@@ -53,18 +53,18 @@ Read these first if present:
 - `../README.md`
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-slice-spec-to-backlog/SKILL.md`
-- `../../specs/README.md`
-- `../../specs/backlog/README.md`
-- `../../specs/tasks/README.md`
-- `../../specs/pending-tasks.md` if it already exists
-- `../../docs/pending-task-queue.md`
-- `../../docs/ai-first-saas-application-architecture.md` when the backlog item includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
-- `../../docs/requirements-to-workstream-development-process.md` when the backlog item touches generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or trace-aware queue execution
-- `../../app-description/15-operating-model/` or equivalent operating-model specs when present and relevant
-- `../../specs/templates/implementation-task-template.md`
-- `../../specs/akka-solution-plan.md`
-- the target slice spec under `../../specs/slices/`
-- the target backlog file under `../../specs/backlog/`
+- `../../../specs/README.md`
+- `../../../specs/backlog/README.md`
+- `../../../specs/tasks/README.md`
+- `../../../specs/pending-tasks.md` if it already exists
+- `../docs/pending-task-queue.md`
+- `../docs/ai-first-saas-application-architecture.md` when the backlog item includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
+- `../docs/requirements-to-workstream-development-process.md` when the backlog item touches generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or trace-aware queue execution
+- `../../../app-description/15-operating-model/` or equivalent operating-model specs when present and relevant
+- `../../../specs/templates/implementation-task-template.md`
+- `../../../specs/akka-solution-plan.md`
+- the target slice spec under `../../../specs/slices/`
+- the target backlog file under `../../../specs/backlog/`
 - any cross-cutting spec files referenced by that slice or backlog item
 
 If a matching task brief already exists:
@@ -92,7 +92,7 @@ For generated secure AI-first SaaS, the brief must preserve the vertical workstr
 Each task brief must include:
 1. Purpose
 2. Reads
-3. Vertical context for generated SaaS: workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, governed-tool id/class, capability id/class, internal-agent delegation/result context, AuthContext/scope, selected substrate/exposure channel, notification/projection, audit/work trace, and AutonomousAgent task lifecycle/result semantics when applicable
+3. A dedicated `## Vertical workstream contract` section for generated SaaS, using the exact contract shape from `../docs/pending-task-queue.md`: workstream / functional agent or explicit internal/foundation/cross-cutting scope; attention category or non-attention reason; role-specific dashboard / surface; surface graph node/action edge or non-UI trigger; governed-tool id and qualified exposure; capability id; AuthContext / roles / tenant scope; Akka substrate; API / frontend / realtime path; audit/work trace requirements; local validation path; plus internal-agent delegation/result context, notification/projection, and AutonomousAgent task lifecycle/result semantics when applicable
 4. Scope
 5. Non-goals
 6. Akka components involved
@@ -101,6 +101,8 @@ Each task brief must include:
 9. Required tests
 10. Local/runtime validation path when the task implements app behavior
 11. Done criteria
+
+If the focused task is not user-facing workstream work, the vertical contract section must still say why by naming `internal-only`, `foundation-only`, `cross-cutting`, `docs-only`, or `non-runtime` scope and recording the non-attention/non-UI reason, relevant capability/foundation scope, trace expectations, and validation path. Do not let this section collapse to `N/A` for generated SaaS work.
 
 The matching `specs/pending-tasks.md` entry must include the task brief path, required reads, skills, expected outputs, required checks, local/runtime validation path when applicable, and done criteria from the brief. It must also preserve relevant workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, source governed-tool ids, source capability ids, internal-agent delegation/result context, actor/caller, `AuthContext`, required scope/permission checks, approval gates, selected Akka substrate/exposure channel, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace obligations, UI surfaces, style-guide status when UI is in scope, Java base package for generated source work, core-app-extension assumptions, and test/check expectations from the backlog item.
 
@@ -210,6 +212,8 @@ Before finishing, verify:
 - the listed skills match the task's component type
 - done criteria define a clear stopping point and do not call a named feature implemented when required backend/API/UI/auth/audit/test pieces are deferred
 - `specs/pending-tasks.md` has a matching entry or updated existing entry for this task brief
+- the task brief and queue entry both carry the required vertical workstream contract, or an explicit internal/foundation/cross-cutting/docs-only/non-runtime exemption with non-attention/non-UI reason, trace expectations, and validation path
+- `bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md` passes when the validator is available in the target workspace or pack source
 - existing queue task IDs and statuses are preserved
 
 ## Example invocation patterns

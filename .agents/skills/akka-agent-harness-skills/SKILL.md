@@ -17,8 +17,8 @@ Read these first if present:
 - `akka-context/sdk/agents/extending.html.md`
 - `akka-context/sdk/agents/prompt.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../../examples/akka-components/src/main/java/com/example/application/WeatherAgent.java`
-- `../../examples/akka-components/src/main/java/com/example/application/WeatherForecastTools.java`
+- `../examples/akka-components/src/main/java/com/example/application/WeatherAgent.java`
+- `../examples/akka-components/src/main/java/com/example/application/WeatherForecastTools.java`
 
 Also load when needed:
 - `akka-agent-tools` for general `@FunctionTool` mechanics

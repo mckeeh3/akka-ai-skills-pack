@@ -12,12 +12,12 @@ Use this skill when the task is to write documentation examples for key value en
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ExpiringDraftCartSessionEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../../examples/akka-components/src/test/java/com/example/application/DraftCartEntityTest.java`
-- `../../examples/akka-components/src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
+- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
+- `../examples/akka-components/src/main/java/com/example/application/ExpiringDraftCartSessionEntity.java`
+- `../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
+- `../examples/akka-components/src/test/java/com/example/application/DraftCartEntityTest.java`
+- `../examples/akka-components/src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
 - `../references/akka-entity-comparison.md`
 
 ## Mission

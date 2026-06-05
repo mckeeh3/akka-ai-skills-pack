@@ -12,11 +12,11 @@ Do **not** use Autonomous Agents as the default for user-facing workstream reque
 ## Required reading
 
 Read before implementing generated-app AutonomousAgent worker tasks:
-- `../../docs/autonomous-agent-worker-runtime-pattern.md`
+- `../docs/autonomous-agent-worker-runtime-pattern.md`
 
 Read when API details are needed:
-- `../../docs/agent-component-selection-guide.md`
-- `../../specs/autonomous-agents-integration/research-notes.md`
+- `../docs/agent-component-selection-guide.md`
+- `../../../specs/autonomous-agents-integration/research-notes.md`
 - `akka-context/sdk/autonomous-agents.html.md`
 - `akka-context/sdk/autonomous-agents/defining.html.md`
 - `akka-context/sdk/autonomous-agents/tasks.html.md`
@@ -33,7 +33,7 @@ Read when API details are needed:
 
 ## Generated SaaS contract
 
-Before implementation, the task/spec must supply the reusable worker contract from `../../docs/autonomous-agent-worker-runtime-pattern.md` when this is generated-app worker work:
+Before implementation, the task/spec must supply the reusable worker contract from `../docs/autonomous-agent-worker-runtime-pattern.md` when this is generated-app worker work:
 - internal/background or explicit functional placement; do not promote it to a left-rail workstream unless product intent says so;
 - task capability ids and governed-tool ids for starting, assigning, querying, completing/failing, suspending/resuming, terminating, and streaming notifications;
 - caller `AuthContext`, tenant/customer scope, roles/capabilities, model policy, tool boundary, approval gates, trace requirements, and provider-secret boundary;

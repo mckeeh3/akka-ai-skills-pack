@@ -22,9 +22,9 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/grpc-endpoints.html.md`
-- `../../examples/akka-components/src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `../../examples/akka-components/src/main/proto/com/example/api/grpc/internal_status_grpc_endpoint.proto`
-- `../../pom.xml`
+- `../examples/akka-components/src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
+- `../examples/akka-components/src/main/proto/com/example/api/grpc/internal_status_grpc_endpoint.proto`
+- `../../../pom.xml`
 
 ## Use this pattern when
 

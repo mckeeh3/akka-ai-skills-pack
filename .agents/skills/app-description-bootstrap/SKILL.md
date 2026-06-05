@@ -25,31 +25,31 @@ Create a minimum viable internal app-description tree that:
 ## Required reading
 
 Read these first if present:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
-- `../../docs/description-first-application-doctrine.md`
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/requirements-to-workstream-development-process.md` for the canonical input → workstreams → attention → dashboards → surfaces/actions → capabilities/APIs → Akka substrate → agent/autonomous task → notifications/projections/traces process
-- `../../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope: five core workstream starter with `markdown_response`, not a single-workstream or generic chatbot slice
+- `../docs/description-first-application-doctrine.md`
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/requirements-to-workstream-development-process.md` for the canonical input → workstreams → attention → dashboards → surfaces/actions → capabilities/APIs → Akka substrate → agent/autonomous task → notifications/projections/traces process
+- `../docs/minimum-ai-first-saas-app.md` for minimum/starter/basic/chatbot-like generated SaaS scope: five core workstream starter with `markdown_response`, not a single-workstream or generic chatbot slice
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation every new app-description must seed
-- `../../docs/internal-app-description-architecture.md`
-- `../../docs/app-description-maintenance-flow.md`
+- `../docs/internal-app-description-architecture.md`
+- `../docs/app-description-maintenance-flow.md`
 - `../app-descriptions/SKILL.md`
 - `../ai-first-saas/SKILL.md` when the initial app idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
-- the target project `app-description/README.md` plus `../../docs/core-ai-first-saas-foundation.md` for the preferred starter core app-description shape
-- `../../docs/examples/purchase-request-app-description/README.md` for description-layer mechanics only, not target architecture doctrine
+- the target project `app-description/README.md` plus `../docs/core-ai-first-saas-foundation.md` for the preferred starter core app-description shape
+- `../docs/examples/purchase-request-app-description/README.md` for description-layer mechanics only, not target architecture doctrine
 
 Prefer these example references for generated SaaS foundation bootstraps:
 - target project `app-description/00-system/app-manifest.md`
 - target project `app-description/10-capabilities/01-secure-tenant-user-foundation.md`
 
 Use purchase-request mechanics references only when the task is specifically about cross-linked description mechanics:
-- `../../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
-- `../../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
-- `../../docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md`
-- `../../docs/examples/purchase-request-app-description/app-description/30-tests/acceptance/01-purchase-request-acceptance.md`
-- `../../docs/examples/purchase-request-app-description/app-description/40-auth-security/identity-and-authorization.md`
-- `../../docs/examples/purchase-request-app-description/app-description/50-observability/logs-metrics-traces-and-alerts.md`
+- `../docs/examples/purchase-request-app-description/app-description/00-system/app-manifest.md`
+- `../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
+- `../docs/examples/purchase-request-app-description/app-description/20-behavior/flows/01-submission-and-approval-flow.md`
+- `../docs/examples/purchase-request-app-description/app-description/30-tests/acceptance/01-purchase-request-acceptance.md`
+- `../docs/examples/purchase-request-app-description/app-description/40-auth-security/identity-and-authorization.md`
+- `../docs/examples/purchase-request-app-description/app-description/50-observability/logs-metrics-traces-and-alerts.md`
 
 ## Use this skill when
 
@@ -173,7 +173,7 @@ app-description/
     style-guide.md        # create when style is supplied; otherwise record unselected or queue a style question
 ```
 
-This `55-ui/` file set is the canonical generated SaaS bootstrap set and matches `docs/internal-app-description-architecture.md`, `app-description-ui`, and the current AI-first SaaS starter core template. Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
+This `55-ui/` file set is the canonical generated SaaS bootstrap set and matches `docs/internal-app-description-architecture.md`, `app-description-ui`, and the current AI-first SaaS starter core template. Add deeper files only when the user's input already justifies them. For generated AI-first SaaS apps, the browser UI is mandatory: use `app-description-ui` to maintain the `55-ui` layer and `../docs/web-ui-style-guide.md` for `style-guide.md` structure. If style is not supplied, do not choose one silently; record the style as `unselected` and add or recommend a pending UI style-selection question before web UI generation.
 
 ## Scope gates
 

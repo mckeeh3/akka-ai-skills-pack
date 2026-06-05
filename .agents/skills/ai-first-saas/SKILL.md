@@ -32,15 +32,15 @@ Then choose the smallest downstream path that can implement or maintain that mod
 ## Required reading
 
 Read these first when using this skill:
-- `../../AGENTS.md`
+- `../../../AGENTS.md`
 - `../README.md`
 - `../core-saas-foundation/SKILL.md`
 - `../agent-workstream-apps/SKILL.md` for generated full-stack SaaS app routing
-- `../../docs/ai-first-saas-application-architecture.md`
-- `../../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app routing
-- `../../docs/structured-surface-contracts.md` when surfaces or surface actions need implementation-ready contracts
+- `../docs/ai-first-saas-application-architecture.md`
+- `../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app routing
+- `../docs/structured-surface-contracts.md` when surfaces or surface actions need implementation-ready contracts
 
-For minimum, starter, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../../docs/minimum-ai-first-saas-app.md` before applying the anti-chatbot and minimum starter rule.
+For minimum, starter, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../docs/minimum-ai-first-saas-app.md` before applying the anti-chatbot and minimum starter rule.
 
 For description-first work, also read the app-description docs named by `skills/README.md`.
 For generated SaaS foundations, also load `../ai-first-saas-admin-agents/SKILL.md` for mandatory AI-assisted admin offload. For direct Akka implementation, load only the focused Stage 3 skills after the functional-agent/workstream/surface model and capability contracts have selected the substrate components.
@@ -74,7 +74,7 @@ Do not treat an AI-first app as a chatbot bolted onto CRUD.
 
 Conversation can collect intent or explain status, but consequential work should resolve into durable, inspectable objects such as goals, plans, tasks, policies, decisions, approvals, traces, and outcomes.
 
-When the user asks for a “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS, load `../../docs/minimum-ai-first-saas-app.md` and route to a bootstrap-authorized **five core workstream starter** shell: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, each with the `markdown_response` structured surface. Do not start with a generic public chatbot, unauthenticated assistant, or page-first CRUD console unless the user explicitly asks for non-SaaS reference material. Preserve capability-first backend modeling before choosing Akka components or exposing browser actions/agent tools.
+When the user asks for a “minimum AI-first app,” “starter app,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS, load `../docs/minimum-ai-first-saas-app.md` and route to a bootstrap-authorized **five core workstream starter** shell: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, each with the `markdown_response` structured surface. Do not start with a generic public chatbot, unauthenticated assistant, or page-first CRUD console unless the user explicitly asks for non-SaaS reference material. Preserve capability-first backend modeling before choosing Akka components or exposing browser actions/agent tools.
 
 ## Interpretation workflow
 
