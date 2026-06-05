@@ -1362,35 +1362,35 @@ These Java examples are **Akka substrate references**, not generated-product arc
 
 ### Event sourced entities
 Core entities:
-- `../src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../src/main/java/com/example/application/OrderEntity.java`
-- `../src/main/java/com/example/application/ExpiringShoppingCartEntity.java`
+- `examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
+- `examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
+- `examples/akka-components/src/main/java/com/example/application/ExpiringShoppingCartEntity.java`
 
 Domain examples:
-- `../src/main/java/com/example/domain/ShoppingCart.java`
-- `../src/main/java/com/example/domain/Order.java`
-- `../src/main/java/com/example/domain/ExpiringShoppingCart.java`
+- `examples/akka-components/src/main/java/com/example/domain/ShoppingCart.java`
+- `examples/akka-components/src/main/java/com/example/domain/Order.java`
+- `examples/akka-components/src/main/java/com/example/domain/ExpiringShoppingCart.java`
 
 Testing examples:
-- `../src/test/java/com/example/application/ShoppingCartEntityTest.java`
-- `../src/test/java/com/example/application/OrderEntityTest.java`
-- `../src/test/java/com/example/application/ExpiringShoppingCartEntityTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ShoppingCartEntityTest.java`
+- `examples/akka-components/src/test/java/com/example/application/OrderEntityTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ExpiringShoppingCartEntityTest.java`
 
 ### Key value entities
 Core entities:
-- `../src/main/java/com/example/application/DraftCartEntity.java`
-- `../src/main/java/com/example/application/PurchaseOrderEntity.java`
-- `../src/main/java/com/example/application/ExpiringDraftCartSessionEntity.java`
+- `examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
+- `examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
+- `examples/akka-components/src/main/java/com/example/application/ExpiringDraftCartSessionEntity.java`
 
 Domain examples:
-- `../src/main/java/com/example/domain/DraftCart.java`
-- `../src/main/java/com/example/domain/PurchaseOrder.java`
-- `../src/main/java/com/example/domain/ExpiringDraftCartSession.java`
+- `examples/akka-components/src/main/java/com/example/domain/DraftCart.java`
+- `examples/akka-components/src/main/java/com/example/domain/PurchaseOrder.java`
+- `examples/akka-components/src/main/java/com/example/domain/ExpiringDraftCartSession.java`
 
 Testing examples:
-- `../src/test/java/com/example/application/DraftCartEntityTest.java`
-- `../src/test/java/com/example/application/PurchaseOrderEntityTest.java`
-- `../src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
+- `examples/akka-components/src/test/java/com/example/application/DraftCartEntityTest.java`
+- `examples/akka-components/src/test/java/com/example/application/PurchaseOrderEntityTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
 
 ### Agents
 Routing references:
@@ -1405,199 +1405,199 @@ Routing references:
 - `akka-agent-closed-loop-improvement` for EvaluationRun/Finding, ImprovementProposal, replay/simulation, approval, activation, monitoring, and rollback loops
 
 Core agent examples:
-- `../src/main/java/com/example/application/ActivityAgent.java`
-- `../src/main/java/com/example/application/TemplateBackedActivityAgent.java`
-- `../src/main/java/com/example/application/WeatherAgent.java`
-- `../src/main/java/com/example/application/WeatherForecastTools.java`
-- `../src/main/java/com/example/application/StreamingActivityAgent.java`
-- `../src/main/java/com/example/application/AgentTeamWorkflow.java`
-- `../src/main/java/com/example/application/DynamicAgentTeamWorkflow.java`
-- `../src/main/java/com/example/application/SelectorAgent.java`
-- `../src/main/java/com/example/application/PlannerAgent.java`
-- `../src/main/java/com/example/application/SummarizerAgent.java`
-- `../src/main/java/com/example/application/SessionMemoryAlertsConsumer.java`
-- `../src/main/java/com/example/application/SessionMemoryByComponentView.java`
-- `../src/main/java/com/example/application/SessionMemoryAlertView.java`
-- `../src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
-- `../src/main/java/com/example/application/SessionMemoryCompactionConsumer.java`
-- `../src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
-- `../src/main/java/com/example/application/PromptTemplateHistoryView.java`
-- `../src/main/java/com/example/application/ActivityAnswerEvaluatorAgent.java`
-- `../src/main/java/com/example/application/CompetitorMentionGuard.java`
-- `../src/main/java/com/example/api/ActivityAgentEndpoint.java`
-- `../src/main/java/com/example/api/ActivityPromptEndpoint.java`
-- `../src/main/java/com/example/api/PromptTemplateHistoryEndpoint.java`
-- `../src/main/java/com/example/api/SessionMemoryViewEndpoint.java`
-- `../src/main/java/com/example/api/SessionMemoryAlertStreamEndpoint.java`
-- `../src/main/java/com/example/api/DynamicAgentTeamWorkflowEndpoint.java`
-- `../src/main/resources/application.conf`
+- `examples/akka-components/src/main/java/com/example/application/ActivityAgent.java`
+- `examples/akka-components/src/main/java/com/example/application/TemplateBackedActivityAgent.java`
+- `examples/akka-components/src/main/java/com/example/application/WeatherAgent.java`
+- `examples/akka-components/src/main/java/com/example/application/WeatherForecastTools.java`
+- `examples/akka-components/src/main/java/com/example/application/StreamingActivityAgent.java`
+- `examples/akka-components/src/main/java/com/example/application/AgentTeamWorkflow.java`
+- `examples/akka-components/src/main/java/com/example/application/DynamicAgentTeamWorkflow.java`
+- `examples/akka-components/src/main/java/com/example/application/SelectorAgent.java`
+- `examples/akka-components/src/main/java/com/example/application/PlannerAgent.java`
+- `examples/akka-components/src/main/java/com/example/application/SummarizerAgent.java`
+- `examples/akka-components/src/main/java/com/example/application/SessionMemoryAlertsConsumer.java`
+- `examples/akka-components/src/main/java/com/example/application/SessionMemoryByComponentView.java`
+- `examples/akka-components/src/main/java/com/example/application/SessionMemoryAlertView.java`
+- `examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
+- `examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionConsumer.java`
+- `examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
+- `examples/akka-components/src/main/java/com/example/application/PromptTemplateHistoryView.java`
+- `examples/akka-components/src/main/java/com/example/application/ActivityAnswerEvaluatorAgent.java`
+- `examples/akka-components/src/main/java/com/example/application/CompetitorMentionGuard.java`
+- `examples/akka-components/src/main/java/com/example/api/ActivityAgentEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/ActivityPromptEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/PromptTemplateHistoryEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/SessionMemoryViewEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/SessionMemoryAlertStreamEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/DynamicAgentTeamWorkflowEndpoint.java`
+- `examples/akka-components/src/main/resources/application.conf`
 
 Testing examples:
-- `../src/test/java/com/example/application/ActivityAgentTest.java`
-- `../src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
-- `../src/test/java/com/example/application/DynamicAgentTeamWorkflowIntegrationTest.java`
-- `../src/test/java/com/example/application/ActivityAgentEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/ActivityPromptEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/DynamicAgentTeamWorkflowEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/PromptTemplateHistoryViewIntegrationTest.java`
-- `../src/test/java/com/example/application/PromptTemplateHistoryEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/SessionMemoryViewEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/SessionMemoryAlertStreamEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/SessionMemoryAlertsConsumerIntegrationTest.java`
-- `../src/test/java/com/example/application/SessionMemoryByComponentViewIntegrationTest.java`
-- `../src/test/java/com/example/application/SessionMemoryCompactionConsumerIntegrationTest.java`
-- `../src/test/java/com/example/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ActivityAgentTest.java`
+- `examples/akka-components/src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/DynamicAgentTeamWorkflowIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ActivityAgentEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ActivityPromptEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/DynamicAgentTeamWorkflowEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/PromptTemplateHistoryViewIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/PromptTemplateHistoryEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/SessionMemoryViewEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/SessionMemoryAlertStreamEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/SessionMemoryAlertsConsumerIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/SessionMemoryByComponentViewIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/SessionMemoryCompactionConsumerIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
 
 ### Workflows
 Core workflow examples:
-- `../src/main/java/com/example/application/TransferWorkflow.java`
-- `../src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../src/main/java/com/example/application/ReviewWorkflow.java`
-- `../src/main/java/com/example/application/WalletEntity.java`
-- `../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
-- `../src/main/java/com/example/domain/TransferState.java`
-- `../src/main/java/com/example/domain/ApprovalState.java`
-- `../src/main/java/com/example/domain/Wallet.java`
+- `examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
+- `examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
+- `examples/akka-components/src/main/java/com/example/application/ReviewWorkflow.java`
+- `examples/akka-components/src/main/java/com/example/application/WalletEntity.java`
+- `examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/domain/TransferState.java`
+- `examples/akka-components/src/main/java/com/example/domain/ApprovalState.java`
+- `examples/akka-components/src/main/java/com/example/domain/Wallet.java`
 
 Testing examples:
-- `../src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
-- `../src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
-- `../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/WalletEntityTest.java`
-- `../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
-- `../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/WalletEntityTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
 
 ### Timed actions
 Core timer examples:
-- `../src/main/java/com/example/domain/TicketReservation.java`
-- `../src/main/java/com/example/application/TicketReservationEntity.java`
-- `../src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../src/main/java/com/example/api/TicketReservationEndpoint.java`
-- `../src/main/java/com/example/domain/ReminderJob.java`
-- `../src/main/java/com/example/application/ReminderJobEntity.java`
-- `../src/main/java/com/example/application/ReminderJobTimedAction.java`
-- `../src/main/java/com/example/api/ReminderJobEndpoint.java`
-- `../src/main/java/com/example/domain/ApprovalDeadlineState.java`
-- `../src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
-- `../src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
-- `../src/main/java/com/example/api/ApprovalDeadlineWorkflowEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/domain/TicketReservation.java`
+- `examples/akka-components/src/main/java/com/example/application/TicketReservationEntity.java`
+- `examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
+- `examples/akka-components/src/main/java/com/example/api/TicketReservationEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/domain/ReminderJob.java`
+- `examples/akka-components/src/main/java/com/example/application/ReminderJobEntity.java`
+- `examples/akka-components/src/main/java/com/example/application/ReminderJobTimedAction.java`
+- `examples/akka-components/src/main/java/com/example/api/ReminderJobEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/domain/ApprovalDeadlineState.java`
+- `examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
+- `examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
+- `examples/akka-components/src/main/java/com/example/api/ApprovalDeadlineWorkflowEndpoint.java`
 
 Testing examples:
-- `../src/test/java/com/example/application/TicketReservationEntityTest.java`
-- `../src/test/java/com/example/application/TicketReservationTimedActionTest.java`
-- `../src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/ReminderJobEntityTest.java`
-- `../src/test/java/com/example/application/ReminderJobTimedActionTest.java`
-- `../src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
-- `../src/test/java/com/example/application/ApprovalDeadlineTimedActionTest.java`
-- `../src/test/java/com/example/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/TicketReservationEntityTest.java`
+- `examples/akka-components/src/test/java/com/example/application/TicketReservationTimedActionTest.java`
+- `examples/akka-components/src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ReminderJobEntityTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ReminderJobTimedActionTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineTimedActionTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
 
 ### Consumers
 Core consumer examples:
-- `../src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../src/main/java/com/example/application/ShoppingCartCommandsTopicConsumer.java`
-- `../src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
-- `../src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
-- `../src/main/java/com/example/application/ReviewWorkflowTopicConsumer.java`
+- `examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
+- `examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
+- `examples/akka-components/src/main/java/com/example/application/ShoppingCartCommandsTopicConsumer.java`
+- `examples/akka-components/src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
+- `examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
+- `examples/akka-components/src/main/java/com/example/application/ReviewWorkflowTopicConsumer.java`
 - `docs/consumer-reference.md`
 - `docs/service-to-service-consumers.md`
 
 Testing examples:
-- `../src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `../src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 
 ### Views
 Core view examples:
-- `../src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
-- `../src/main/java/com/example/application/ShoppingCartAuditView.java`
-- `../src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
-- `../src/main/java/com/example/application/DraftCartLifecycleView.java`
-- `../src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `../src/main/java/com/example/application/ShoppingCartTopicView.java`
+- `examples/akka-components/src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
+- `examples/akka-components/src/main/java/com/example/application/ShoppingCartAuditView.java`
+- `examples/akka-components/src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
+- `examples/akka-components/src/main/java/com/example/application/DraftCartLifecycleView.java`
+- `examples/akka-components/src/main/java/com/example/application/ReviewRequestsByStatusView.java`
+- `examples/akka-components/src/main/java/com/example/application/ShoppingCartTopicView.java`
 - `docs/service-to-service-views.md`
 
 Testing examples:
-- `../src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
-- `../src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
-- `../src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
-- `../src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
-- `../src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
-- `../src/test/java/com/example/application/ShoppingCartTopicViewIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ShoppingCartTopicViewIntegrationTest.java`
 
 ### HTTP endpoints
 Core endpoint examples:
 
-For generated SaaS browser UI, these endpoint examples are delivery mechanics only. Use `docs/workstream-ui-reference-architecture.md` and the canonical root frontend reference `../../frontend/src/workstream/**` from this repository or a downstream fork; do not treat `WebUi*PageEndpoint` examples as page-first UI architecture. The harness install includes pack examples under `examples/**`, but it does not include `resources/examples/frontend/**` or root frontend application source.
+For generated SaaS browser UI, these endpoint examples are delivery mechanics only. Use `docs/workstream-ui-reference-architecture.md` and the canonical root frontend reference `../../frontend/src/workstream/**` from this repository or a downstream fork; do not treat `WebUi*PageEndpoint` examples as page-first UI architecture. The harness install includes pack examples under `examples/**`, but it does not include root frontend application source.
 
-- `../src/main/java/com/example/api/GreetingEndpoint.java`
-- `../src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `../src/main/java/com/example/api/WebUiDataEndpoint.java`
-- `../src/main/java/com/example/api/WebUiSsePageEndpoint.java`
-- `../src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
-- `../src/main/java/com/example/api/LowLevelHttpEndpoint.java`
-- `../src/main/java/com/example/api/ProxyGreetingEndpoint.java`
-- `../src/main/java/com/example/api/PingWebSocketEndpoint.java`
-- `../src/main/java/com/example/api/CounterStreamEndpoint.java`
-- `../src/main/java/com/example/api/DraftCartViewStreamEndpoint.java`
-- `../src/main/java/com/example/api/RequestHeadersEndpoint.java`
-- `../src/main/java/com/example/api/SecureGreetingEndpoint.java`
-- `../src/main/java/com/example/api/InternalStatusEndpoint.java`
-- `../src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../src/main/java/com/example/api/OrderEndpoint.java`
-- `../src/main/java/com/example/api/PurchaseOrderEndpoint.java`
-- `../src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/GreetingEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/WebUiDataEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/WebUiSsePageEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/LowLevelHttpEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/ProxyGreetingEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/DraftCartViewStreamEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/RequestHeadersEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/SecureGreetingEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/InternalStatusEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/OrderEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/PurchaseOrderEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
 
 Testing examples:
-- `../src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/RequestHeadersEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/InternalStatusEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
-- `../src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/RequestHeadersEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/InternalStatusEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
 
 ### gRPC endpoints
 Core endpoint examples:
-- `../src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `../src/main/proto/com/example/api/grpc/internal_status_grpc_endpoint.proto`
-- `../src/main/proto/com/example/api/grpc/secure_greeting_grpc_endpoint.proto`
-- `../src/main/proto/com/example/api/grpc/pattern_secure_greeting_grpc_endpoint.proto`
-- `../src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
-- `../src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
-- `../src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
+- `examples/akka-components/src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
+- `examples/akka-components/src/main/proto/com/example/api/grpc/internal_status_grpc_endpoint.proto`
+- `examples/akka-components/src/main/proto/com/example/api/grpc/secure_greeting_grpc_endpoint.proto`
+- `examples/akka-components/src/main/proto/com/example/api/grpc/pattern_secure_greeting_grpc_endpoint.proto`
+- `examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
+- `examples/akka-components/src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
+- `examples/akka-components/src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
+- `examples/akka-components/src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
 
 Testing examples:
-- `../src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
-- `../src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
+- `examples/akka-components/src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
 
 ### MCP endpoints
 Core endpoint examples:
-- `../src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
-- `../src/main/java/com/example/api/SecureSupportMcpEndpoint.java`
-- `../src/main/resources/mcp/checkout-guidelines.md`
+- `examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
+- `examples/akka-components/src/main/java/com/example/api/SecureSupportMcpEndpoint.java`
+- `examples/akka-components/src/main/resources/mcp/checkout-guidelines.md`
 
 Testing examples:
-- `../src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
-- `../src/test/java/com/example/application/SecureSupportMcpEndpointTest.java`
+- `examples/akka-components/src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
+- `examples/akka-components/src/test/java/com/example/application/SecureSupportMcpEndpointTest.java`

@@ -207,9 +207,9 @@ Concerns to design before implementation:
 - exact scroll positions are viewport-dependent and should not be treated as authoritative;
 - backend session state must not become a substitute for audit/work trace history.
 
-## Future backlog stubs
+## Archived future ideas
 
-These are not implemented by phase 1. Materialize them as bounded pending tasks with task briefs before execution:
+These notes are non-operative roadmap ideas, not current implementation guidance. Materialize any selected idea as a bounded pending task with a task brief before execution:
 
 1. Phase 2 browser-local persistence: persist and restore semantic `WorkstreamVisualSessionSnapshot` records for same-browser continuity, with auth-context invalidation, safe fallback, and contract tests that prove no backend persistence is introduced.
 2. Phase 3 backend-persisted visual sessions: design and implement authorized server-side semantic resume state for cross-device continuity, including tenant/customer scope, role-change invalidation, retention/compaction behavior, audit/privacy constraints, API/realtime contracts, and local runtime validation.

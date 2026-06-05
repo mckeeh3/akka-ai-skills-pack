@@ -30,7 +30,7 @@ When the same capability is also exposed through workstream surface actions, age
 ## Required reading
 
 Read these first if present:
-- `../../../akka-context/sdk/http-endpoints.html.md`
+- `akka-context/sdk/http-endpoints.html.md`
 - `../docs/workstream-ui-reference-architecture.md` for the canonical generated SaaS frontend reference and reusable `frontend/src/workstream/**` modules
 - `../docs/web-ui-pattern-selection.md`
 - `../docs/web-ui-frontend-decomposition.md`

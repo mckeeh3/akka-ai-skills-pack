@@ -86,7 +86,7 @@ Do not introduce a separate top-level governed-tool inventory when an app-descri
 
 An agent-tool is one possible exposure channel for a capability's governed-tool. It is not the root abstraction.
 
-Official Akka agent tooling supports local `@FunctionTool` methods, external agent-tool classes, Akka component-tool exposure, and remote MCP-tools. See `../../../akka-context/sdk/agents/extending.html.md`, `../akka-agent-tools/SKILL.md`, and `../akka-agent-component-tools/SKILL.md`.
+Official Akka agent tooling supports local `@FunctionTool` methods, external agent-tool classes, Akka component-tool exposure, and remote MCP-tools. See `akka-context/sdk/agents/extending.html.md`, `../akka-agent-tools/SKILL.md`, and `../akka-agent-component-tools/SKILL.md`.
 
 Capability-first interpretation of those tools:
 

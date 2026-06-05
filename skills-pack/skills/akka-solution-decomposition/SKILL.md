@@ -61,18 +61,18 @@ Read these first if present:
 - `../references/akka-entity-comparison.md`
 - `../docs/workflow-endpoint-pattern.md`
 - `../docs/timer-pattern-selection.md`
-- `../../../akka-context/sdk/ai-coding-assistant-guidelines.html.md`
+- `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
 
 When requirements already suggest a likely component, also read the official Akka doc for that area before coding:
-- `../../../akka-context/sdk/event-sourced-entities.html.md`
-- `../../../akka-context/sdk/key-value-entities.html.md`
-- `../../../akka-context/sdk/workflows.html.md`
-- `../../../akka-context/sdk/views.html.md`
-- `../../../akka-context/sdk/consuming-producing.html.md`
-- `../../../akka-context/sdk/timed-actions.html.md`
-- `../../../akka-context/sdk/http-endpoints.html.md`
-- `../../../akka-context/sdk/grpc-endpoints.html.md`
-- `../../../akka-context/sdk/agents.html.md`
+- `akka-context/sdk/event-sourced-entities.html.md`
+- `akka-context/sdk/key-value-entities.html.md`
+- `akka-context/sdk/workflows.html.md`
+- `akka-context/sdk/views.html.md`
+- `akka-context/sdk/consuming-producing.html.md`
+- `akka-context/sdk/timed-actions.html.md`
+- `akka-context/sdk/http-endpoints.html.md`
+- `akka-context/sdk/grpc-endpoints.html.md`
+- `akka-context/sdk/agents.html.md`
 
 In this repository, prefer these cross-component examples:
 - `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
