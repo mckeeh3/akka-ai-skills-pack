@@ -198,7 +198,7 @@ Should include:
 Defines realization policy.
 Should include:
 - when generation is allowed
-- selected Java base package and the rule that `com.example` reference examples are not a generation default
+- selected Java base package and the rule that `ai.first` reference examples are not a generation default
 - default full vs localized regeneration preference
 - acceptable assumption policy that allows assumptions only for non-runtime or explicitly out-of-scope details
 - required local Akka/API/UI validation after generation; generated-app features are complete only when the real local runtime path works at the stated scope with auth, durability, provider/config handling, audit/work traces, and tests

@@ -115,8 +115,14 @@ if [[ -z "$TARGET_DIR" ]]; then
   if [[ "$LOCATION" == "global" ]]; then
     TARGET_DIR="$HOME/.agents/skills"
   else
-    mkdir -p "$PROJECT_ROOT"
-    PROJECT_ROOT="$(cd "$PROJECT_ROOT" && pwd)"
+    if [[ -d "$PROJECT_ROOT" ]]; then
+      PROJECT_ROOT="$(cd "$PROJECT_ROOT" && pwd)"
+    elif [[ "$DRY_RUN" == true ]]; then
+      PROJECT_ROOT="${PROJECT_ROOT%/}"
+    else
+      mkdir -p "$PROJECT_ROOT"
+      PROJECT_ROOT="$(cd "$PROJECT_ROOT" && pwd)"
+    fi
     TARGET_DIR="$PROJECT_ROOT/.agents/skills"
   fi
 fi
@@ -133,6 +139,11 @@ run_cmd() {
   fi
 }
 
+is_safe_rel() {
+  local rel="$1"
+  [[ -n "$rel" && "$rel" != /* && "$rel" != *'..'* && "$rel" != *$'\t'* ]]
+}
+
 is_manifest_owned() {
   local rel="$1"
   [[ -f "$MANIFEST_PATH" ]] || return 1
@@ -141,6 +152,7 @@ is_manifest_owned() {
 
 remove_target() {
   local rel="$1"
+  is_safe_rel "$rel" || fail "Refusing unsafe manifest path: $rel"
   local dest="$TARGET_DIR/$rel"
   if [[ -e "$dest" || -L "$dest" ]]; then
     log "Removing managed path: $dest"
@@ -241,7 +253,11 @@ current_rel_file() {
 manifest_rel_file() {
   local tmp="$1"
   if [[ -f "$MANIFEST_PATH" ]]; then
-    awk -F '\t' '$1 == "entry" { print $3 }' "$MANIFEST_PATH" | sort > "$tmp"
+    while IFS=$'\t' read -r kind type rel; do
+      [[ "$kind" == "entry" ]] || continue
+      is_safe_rel "$rel" || fail "Refusing unsafe manifest path: $rel"
+      printf '%s\n' "$rel"
+    done < "$MANIFEST_PATH" | sort > "$tmp"
   else
     : > "$tmp"
   fi

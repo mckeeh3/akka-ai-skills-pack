@@ -24,4 +24,4 @@ The installed skills directory contains skill guidance, shared skill references,
 
 If a skill or doc still points to `.agents/resources/examples/**` or `resources/examples/**`, treat that as stale content and update it to `.agents/skills/examples/**` or an installed-relative `../examples/**` path from a skill.
 
-Examples may use `com.example` package names. Treat those names as reference-only. For generated or domain-specific application code, keep the root app's `ai.first` package unless the product deliberately performs a package rename.
+Examples may use `ai.first` package names. Treat those names as reference examples, not as a package-selection signal. For generated or domain-specific application code, use the target project's selected Java base package; in this core-app-first repository and downstream forks that is normally `ai.first` unless the product deliberately performs a package rename.

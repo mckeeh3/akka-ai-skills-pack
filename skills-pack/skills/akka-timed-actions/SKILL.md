@@ -42,27 +42,27 @@ Read these first if present:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/application/TicketReservationEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/api/TicketReservationEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/domain/TicketReservation.java`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReminderJobEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReminderJobTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/api/ReminderJobEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ReminderJob.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/api/ApprovalDeadlineWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ApprovalDeadlineState.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/TicketReservationEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/application/TicketReservationTimedAction.java`
+- `../examples/akka-components/src/main/java/ai/first/api/TicketReservationEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/TicketReservation.java`
+- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationEntityTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationTimedActionTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ReminderJobEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ReminderJobTimedAction.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ReminderJobEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/ReminderJob.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobEntityTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobTimedActionTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ApprovalDeadlineWorkflow.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ApprovalDeadlineTimedAction.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ApprovalDeadlineWorkflowEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/ApprovalDeadlineState.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineTimedActionTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
 
 ## Companion skills
 

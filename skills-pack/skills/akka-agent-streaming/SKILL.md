@@ -23,9 +23,9 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 Read these first if present:
 - `akka-context/sdk/agents/streaming.html.md`
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/StreamingActivityAgent.java`
-- `../examples/akka-components/src/main/java/com/example/api/ActivityAgentEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/ActivityAgentEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/StreamingActivityAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ActivityAgentEndpoint.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ActivityAgentEndpointIntegrationTest.java`
 
 ## Use this pattern when
 

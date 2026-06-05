@@ -26,10 +26,10 @@ Read these first if present:
 - `akka-context/sdk/views.html.md`
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `akka-context/sdk/event-sourced-entities.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartAuditView.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartsByCheckedOutView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartAuditView.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartAuditViewIntegrationTest.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Source-specific rules

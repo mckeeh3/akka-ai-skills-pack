@@ -6,12 +6,12 @@ Primary official semantics:
 - `akka-context/sdk/consuming-producing.html.md`
 
 Local executable examples:
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCommandsTopicConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewWorkflowTopicConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartCheckoutConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/DraftCartCheckoutConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartCommandsTopicConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEventsToTopicConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartPublicEventsConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ReviewWorkflowTopicConsumer.java`
 
 ## Quick source selection
 
@@ -93,7 +93,7 @@ Dedicated reference:
 - `docs/service-to-service-consumers.md`
 
 Local producer-side executable example:
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartPublicEventsConsumer.java`
 
 ## Topic production with subject metadata
 
@@ -123,7 +123,7 @@ Prefer:
 - end-to-end tests for same-service entity consumers
 
 Reference tests:
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/DraftCartCheckoutConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ReviewWorkflowTopicConsumerIntegrationTest.java`

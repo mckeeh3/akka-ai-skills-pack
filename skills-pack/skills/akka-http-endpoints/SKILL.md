@@ -52,31 +52,31 @@ Read these first if present:
 - matching endpoint tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/api/GreetingEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/LowLevelHttpEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ProxyGreetingEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/DraftCartViewStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/RequestHeadersEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/SecureGreetingEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/InternalStatusEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/OrderEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/PurchaseOrderEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/RequestHeadersEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/InternalStatusEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/api/GreetingEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/LowLevelHttpEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ProxyGreetingEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/PingWebSocketEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/CounterStreamEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/DraftCartViewStreamEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/RequestHeadersEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/SecureGreetingEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/InternalStatusEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/DraftCartEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/OrderEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/PurchaseOrderEndpoint.java`
+- `../examples/akka-components/src/test/java/ai/first/application/GreetingEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/LowLevelHttpEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ProxyGreetingEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/PingWebSocketEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/CounterStreamEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/DraftCartViewStreamEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/RequestHeadersEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/SecureGreetingEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/InternalStatusEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/OrderEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEndpointIntegrationTest.java`
 
 ## Companion skills
 
@@ -111,7 +111,7 @@ Use this top-level skill plus the official docs when those are the main concern.
 
 ## Default package layout
 
-Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples may use `com.example`, but generated application code must not use template package placeholders or `com.example` unless explicitly selected.
+Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples use `ai.first`; generated application code must use the target project's selected package and must not infer that package solely from examples.
 
 Typical layer paths are:
 - `<base>.domain`

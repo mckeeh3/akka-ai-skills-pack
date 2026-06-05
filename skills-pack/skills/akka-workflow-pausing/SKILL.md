@@ -12,9 +12,9 @@ Use this skill when the workflow should stop processing until a later command re
 Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ApprovalState.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ApprovalWorkflow.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/ApprovalState.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ApprovalWorkflowIntegrationTest.java`
 
 ## Capability-first approval/supervision role
 

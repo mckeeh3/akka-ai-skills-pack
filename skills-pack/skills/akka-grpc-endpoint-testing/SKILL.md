@@ -20,10 +20,10 @@ When the same capability is also exposed through UI, HTTP, agent tools, workflow
 
 Read these first if present:
 - `akka-context/sdk/grpc-endpoints.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartGrpcEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/InternalStatusGrpcEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartGrpcEndpointImpl.java`
+- `../examples/akka-components/src/main/java/ai/first/api/InternalStatusGrpcEndpointImpl.java`
 
 ## Test harness rules
 

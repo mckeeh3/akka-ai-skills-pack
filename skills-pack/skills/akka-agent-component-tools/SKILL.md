@@ -13,9 +13,9 @@ Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/agents/extending.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/CartInspectorAgent.java`
-- `../examples/akka-components/src/test/java/com/example/application/CartInspectorAgentTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/application/CartInspectorAgent.java`
+- `../examples/akka-components/src/test/java/ai/first/application/CartInspectorAgentTest.java`
 
 ## Use this pattern when
 

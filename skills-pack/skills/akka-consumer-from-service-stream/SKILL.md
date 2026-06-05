@@ -23,7 +23,7 @@ If these are absent and the work is generated SaaS implementation, route back to
 Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/sdk/access-control.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartPublicEventsConsumer.java`
 - `../docs/service-to-service-consumers.md`
 - `../docs/consumer-reference.md`
 

@@ -27,8 +27,8 @@ Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `../docs/service-to-service-views.md`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewRequestsByStatusView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartPublicEventsConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ReviewRequestsByStatusView.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Use this pattern when

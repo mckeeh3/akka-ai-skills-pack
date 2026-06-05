@@ -50,57 +50,57 @@ Read these first if present:
 - `../docs/agent-runtime-invocation-pattern.md`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/application/ActivityAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/ConfiguredModelActivityAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/TemplateBackedActivityAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/WeatherAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/WeatherForecastTools.java`
-- `../examples/akka-components/src/main/java/com/example/application/CartInspectorAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/RemoteShoppingCartAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/DocumentAnalysisAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/WorkerMemorySummaryAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/StreamingActivityAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/AgentTeamWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/DynamicAgentTeamWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/SelectorAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/PlannerAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/SummarizerAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryAlertsConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryByComponentView.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryAlertView.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/PromptTemplateHistoryView.java`
-- `../examples/akka-components/src/main/java/com/example/application/ActivityAnswerEvaluatorAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/CompetitorMentionGuard.java`
-- `../examples/akka-components/src/main/java/com/example/api/ActivityAgentEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartToolsMcpEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ActivityPromptEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/PromptTemplateHistoryEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/SessionMemoryViewEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/SessionMemoryAlertStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/DynamicAgentTeamWorkflowEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/ActivityAgentTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ActivityAgentGuardrailIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ConfiguredModelActivityAgentTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/CartInspectorAgentTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/RemoteShoppingCartAgentTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DocumentAnalysisAgentTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/WorkerMemorySummaryAgentTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DynamicAgentTeamWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ActivityAgentEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ActivityPromptEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DynamicAgentTeamWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PromptTemplateHistoryViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PromptTemplateHistoryEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryViewEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryAlertStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryAlertsConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryByComponentViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryCompactionConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ActivityAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ConfiguredModelActivityAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/TemplateBackedActivityAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/WeatherAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/WeatherForecastTools.java`
+- `../examples/akka-components/src/main/java/ai/first/application/CartInspectorAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/RemoteShoppingCartAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/DocumentAnalysisAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/WorkerMemorySummaryAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/StreamingActivityAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/AgentTeamWorkflow.java`
+- `../examples/akka-components/src/main/java/ai/first/application/DynamicAgentTeamWorkflow.java`
+- `../examples/akka-components/src/main/java/ai/first/application/SelectorAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/PlannerAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/SummarizerAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertsConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryByComponentView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryAlertView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/SessionMemoryCompactionAuditConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/PromptTemplateHistoryView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ActivityAnswerEvaluatorAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/application/CompetitorMentionGuard.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ActivityAgentEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartToolsMcpEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ActivityPromptEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/PromptTemplateHistoryEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryViewEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/SessionMemoryAlertStreamEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/DynamicAgentTeamWorkflowEndpoint.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ActivityAgentTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ActivityAgentGuardrailIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ConfiguredModelActivityAgentTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/CartInspectorAgentTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/RemoteShoppingCartAgentTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/DocumentAnalysisAgentTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/WorkerMemorySummaryAgentTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/AgentTeamWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/DynamicAgentTeamWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ActivityAgentEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ActivityPromptEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/DynamicAgentTeamWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/PromptTemplateHistoryViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/PromptTemplateHistoryEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryViewEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryAlertStreamEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryAlertsConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryByComponentViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryCompactionConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
 
 ## Agent governance routing matrix
 
@@ -196,7 +196,7 @@ Load the companion skill that matches the current task:
 
 ## Default package layout
 
-Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples may use `com.example`, but generated application code must not use template package placeholders or `com.example` unless explicitly selected.
+Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples use `ai.first`; generated application code must use the target project's selected package and must not infer that package solely from examples.
 
 Typical layer paths are:
 - `<base>.domain`

@@ -38,25 +38,25 @@ Read these first if present:
 - matching workflow tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/RefundApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/SupervisedExportWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/WalletEntity.java`
-- `../examples/akka-components/src/main/java/com/example/domain/TransferState.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ApprovalState.java`
-- `../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/application/TransferWorkflow.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ApprovalWorkflow.java`
+- `../examples/akka-components/src/main/java/ai/first/application/RefundApprovalWorkflow.java`
+- `../examples/akka-components/src/main/java/ai/first/application/SupervisedExportWorkflow.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ReviewWorkflow.java`
+- `../examples/akka-components/src/main/java/ai/first/application/WalletEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/TransferState.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/ApprovalState.java`
+- `../examples/akka-components/src/main/java/ai/first/api/TransferWorkflowEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ApprovalWorkflowEndpoint.java`
 - `../docs/workflow-endpoint-pattern.md`
-- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/RefundApprovalCapabilityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SupervisedExportWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/TransferWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/TransferWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ApprovalWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ApprovalWorkflowEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/RefundApprovalCapabilityTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/SupervisedExportWorkflowIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ReviewRequestsByStatusViewIntegrationTest.java`
 
 ## Companion skills
 
@@ -82,7 +82,7 @@ If the workflow drives or is consumed by other components, also load:
 
 ## Default package layout
 
-Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples may use `com.example`, but generated application code must not use template package placeholders or `com.example` unless explicitly selected.
+Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples use `ai.first`; generated application code must use the target project's selected package and must not infer that package solely from examples.
 
 Typical layer paths are:
 - `<base>.domain`

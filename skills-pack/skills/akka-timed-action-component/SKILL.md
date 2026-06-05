@@ -22,14 +22,14 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 - `akka-context/sdk/timed-actions.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/application/TicketReservationEntity.java`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReminderJobTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReminderJobEntity.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/TicketReservationTimedAction.java`
+- `../examples/akka-components/src/main/java/ai/first/application/TicketReservationEntity.java`
+- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationTimedActionTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/TicketReservationEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ReminderJobTimedAction.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ReminderJobEntity.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobTimedActionTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ReminderJobEndpointIntegrationTest.java`
 
 ## Component rules
 

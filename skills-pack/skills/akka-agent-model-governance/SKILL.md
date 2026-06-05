@@ -20,8 +20,8 @@ Read these first if present:
 - `../akka-agent-behavior-profiles/SKILL.md`
 - `../akka-agent-component/SKILL.md`
 - `../akka-agent-work-trace/SKILL.md`
-- `../examples/akka-components/src/main/java/com/example/application/ConfiguredModelActivityAgent.java`
-- `../examples/akka-components/src/test/java/com/example/application/ConfiguredModelActivityAgentTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ConfiguredModelActivityAgent.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ConfiguredModelActivityAgentTest.java`
 
 ## Use when the request mentions
 

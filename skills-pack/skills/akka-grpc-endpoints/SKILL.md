@@ -50,16 +50,16 @@ Read these first if present:
 - matching gRPC endpoint tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/proto/com/example/api/grpc/internal_status_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/proto/ai/first/api/grpc/shopping_cart_grpc_endpoint.proto`
+- `../examples/akka-components/src/main/proto/ai/first/api/grpc/internal_status_grpc_endpoint.proto`
+- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartGrpcEndpointImpl.java`
+- `../examples/akka-components/src/main/java/ai/first/api/InternalStatusGrpcEndpointImpl.java`
+- `../examples/akka-components/src/main/java/ai/first/api/SecureGreetingGrpcEndpointImpl.java`
+- `../examples/akka-components/src/main/java/ai/first/api/PatternSecureGreetingGrpcEndpointImpl.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartGrpcEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/InternalStatusGrpcEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/SecureGreetingGrpcEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
 
 ## Companion skills
 
@@ -87,7 +87,7 @@ Use this top-level skill plus the official docs when those are the main concern.
 
 ## Default package layout
 
-Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples may use `com.example`, but generated application code must not use template package placeholders or `com.example` unless explicitly selected.
+Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples use `ai.first`; generated application code must use the target project's selected package and must not infer that package solely from examples.
 
 Typical layer paths are:
 - `<base>.domain`

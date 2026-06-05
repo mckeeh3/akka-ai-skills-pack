@@ -26,9 +26,9 @@ Read these first if present:
 - `akka-context/sdk/views.html.md`
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `akka-context/sdk/workflows.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ReviewWorkflow.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ReviewRequestsByStatusView.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ReviewRequestsByStatusViewIntegrationTest.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Source-specific rules

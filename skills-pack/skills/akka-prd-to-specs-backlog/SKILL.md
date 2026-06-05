@@ -379,7 +379,7 @@ The queue must:
 - include why each question matters and what artifacts or decisions it affects
 - avoid dumping a large interrogation list into the chat response
 
-If no Java base package exists in project configuration, `specs/cross-cutting/00-common-domain-and-conventions.md`, app-description system artifacts, or equivalent project convention, create a `category: generation` question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`. This blocks only Java source generation/scaffolding tasks. Never use `com.example` as the generated package unless the user explicitly selects it.
+If no Java base package exists in project configuration, `specs/cross-cutting/00-common-domain-and-conventions.md`, app-description system artifacts, or equivalent project convention, create a `category: generation` question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default if deferred: `ai.first`. This blocks only Java source generation/scaffolding tasks. Never use `ai.first` as the generated package unless the user explicitly selects it.
 
 If no selected style guide or named-theme contract exists in `specs/cross-cutting/*ui-style-guide*.md`, `app-description/55-ui/style-guide.md`, or equivalent UI spec for a generated AI-first SaaS app, create a `category: ui` style-selection question with the canonical AI-first style options from `../docs/web-ui-style-guide.md`: `ai-first-workstream-enterprise` with four initial named themes, or `custom` with a user-supplied style brief that preserves named-theme semantics. This blocks web UI implementation/generation tasks until style and named themes are selected.
 

@@ -31,18 +31,18 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/RequestHeadersEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/InternalStatusEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/GreetingEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/LowLevelHttpEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ProxyGreetingEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/PingWebSocketEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/CounterStreamEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/DraftCartViewStreamEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/RequestHeadersEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/SecureGreetingEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/InternalStatusEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/OrderEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEndpointIntegrationTest.java`
 
 ## Test harness rules
 

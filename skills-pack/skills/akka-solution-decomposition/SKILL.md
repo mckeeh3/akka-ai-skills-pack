@@ -71,18 +71,18 @@ When requirements already suggest a likely component, also read the official Akk
 - `akka-context/sdk/agents.html.md`
 
 In this repository, prefer these cross-component examples:
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `../examples/akka-components/src/main/java/com/example/application/ActivityAgent.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/application/DraftCartEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/application/TransferWorkflow.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ApprovalWorkflow.java`
+- `../examples/akka-components/src/main/java/ai/first/application/TicketReservationTimedAction.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartCheckoutConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ReviewRequestsByStatusView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ActivityAgent.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/TransferWorkflowEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartGrpcEndpointImpl.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartMcpEndpoint.java`
 
 ## What this skill must produce
 
@@ -109,7 +109,7 @@ Before any coding, produce a component plan with these sections:
 20. Recommended implementation order by vertical workstream/attention/dashboard/surface/governed-tool/capability increments
 21. Required tests
 
-For section 2, resolve the Java base package from existing project configuration or user input. If absent, ask: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Use `ai.first` only when accepted/deferred. Do not use `com.example` as the generated application package unless explicitly requested; `com.example` in local examples is only reference material.
+For section 2, resolve the Java base package from existing project configuration or user input. If absent, ask: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Use `ai.first` only when accepted/deferred. Do not infer the generated application package solely from local examples; use `ai.first` only when accepted/deferred as the selected default or explicitly requested.
 
 For section 3, label scope before choosing components. `minimum starter` is allowed for minimum/starter/basic/chatbot-like generated SaaS requests and must be the five core workstream starter from `docs/minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; bootstrap authorization; selected AuthContext; durable workstream log; `markdown_response` system-message surfaces; backend capability boundary; audit/work trace substrate; markdown sanitization; starter tests; and explicit follow-up for full-core work. `full core` requires those five functional agents plus complete Invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, reference documents, skill/reference manifests, tool boundaries, prompt/skill/reference/work traces, authorized `readSkill`, and authorized `readReferenceDoc`); workstream UI; and acceptance/security/agent-governance/frontend tests. `Module 1-only / not full core` is allowed only when the plan explicitly defers User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/references/manifests/tool boundaries, unified audit/work trace UI, and governance loops. Any other narrower scope must be named and must list deferred full-core areas.
 
@@ -135,7 +135,7 @@ Before planning work that will generate Java source files, determine the applica
 What Java base package should I use for generated code? Press Enter to use `ai.first`.
 ```
 
-Record the selected package in the solution plan and apply it consistently to group id, package declarations, imports, tests, and source paths. Never infer `com.example` from this repository's examples unless the user explicitly asks for `com.example`.
+Record the selected package in the solution plan and apply it consistently to group id, package declarations, imports, tests, and source paths. Never infer the package solely from this repository's examples; use `ai.first` only when accepted/deferred as the selected default or explicitly requested.
 
 ### 1. Apply core secure SaaS foundation
 

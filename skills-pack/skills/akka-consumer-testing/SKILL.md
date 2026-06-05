@@ -26,10 +26,10 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/DraftCartCheckoutConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 
 ## Test modes
 

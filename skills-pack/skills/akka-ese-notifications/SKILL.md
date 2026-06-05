@@ -22,9 +22,9 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartEntityTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartEndpoint.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartEntityTest.java`
 
 ## Core pattern
 

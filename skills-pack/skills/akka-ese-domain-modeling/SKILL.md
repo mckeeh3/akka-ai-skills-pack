@@ -12,16 +12,16 @@ Use this skill for the `domain` package of an Akka Java SDK event sourced entity
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/java/com/example/domain/ShoppingCart.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ShoppingCartValidator.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ShoppingCartCommandHandler.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ShoppingCartEventHandler.java`
-- `../examples/akka-components/src/main/java/com/example/domain/Order.java`
-- `../examples/akka-components/src/main/java/com/example/domain/OrderValidator.java`
-- `../examples/akka-components/src/main/java/com/example/domain/OrderCommandHandler.java`
-- `../examples/akka-components/src/main/java/com/example/domain/OrderReadyToShipBusinessLogic.java`
-- `../examples/akka-components/src/main/java/com/example/domain/OrderEventHandler.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ExpiringShoppingCart.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/ShoppingCart.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/ShoppingCartValidator.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/ShoppingCartCommandHandler.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/ShoppingCartEventHandler.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/Order.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/OrderValidator.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/OrderCommandHandler.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/OrderReadyToShipBusinessLogic.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/OrderEventHandler.java`
+- `../examples/akka-components/src/main/java/ai/first/domain/ExpiringShoppingCart.java`
 
 ## Mission
 

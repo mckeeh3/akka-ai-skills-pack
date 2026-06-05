@@ -60,4 +60,4 @@ Recommended release flow:
 - source/tag installs use `install-skills.sh --target <skills-dir>` or `install-skills.sh --location project|global`
 - `--mode copy` is the default; `--mode symlink` supports development installs
 - `--prune` removes retired pack-owned skills based on the manifest
-- generated application code should use the project's selected Java base package, defaulting to `ai.first` only when the user accepts or defers that choice; bundled `com.example` paths are reference examples only
+- generated application code should use the project's selected Java base package, defaulting to `ai.first` only when the user accepts or defers that choice; bundled `ai.first` paths are reference examples only

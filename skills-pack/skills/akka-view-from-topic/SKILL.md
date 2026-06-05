@@ -26,8 +26,8 @@ Read these first if present:
 - `akka-context/sdk/views.html.md`
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `akka-context/sdk/consuming-producing.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartTopicView.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartTopicViewIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartTopicView.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartTopicViewIntegrationTest.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Source-specific rules

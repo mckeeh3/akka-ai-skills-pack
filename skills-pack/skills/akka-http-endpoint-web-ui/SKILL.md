@@ -37,10 +37,10 @@ Read these first if present:
 - `../docs/web-ui-style-guide.md`
 - `../docs/web-ui-frontend-project-integration.md`
 - `../docs/web-ui-quality-checklist.md`
-- `../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java` for backend SSE mechanics when needed
-- `../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java` for backend WebSocket mechanics when needed
-- `../examples/akka-components/src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/api/CounterStreamEndpoint.java` for backend SSE mechanics when needed
+- `../examples/akka-components/src/main/java/ai/first/api/PingWebSocketEndpoint.java` for backend WebSocket mechanics when needed
+- `../examples/akka-components/src/test/java/ai/first/application/CounterStreamEndpointIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/PingWebSocketEndpointIntegrationTest.java`
 
 Old standalone static UI page fixtures were removed. Use this skill for route shape, static build hosting, and protected API/stream/socket boundaries; use `frontend/src/workstream/**` and the User Admin vertical as generated SaaS UI structure.
 
@@ -83,13 +83,13 @@ Use this when a browser surface should load JSON through `fetch`; for product UI
 
 ### UI + SSE
 Read first:
-- `../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/CounterStreamEndpoint.java`
 
 Use this when the browser needs server-to-client live updates; for product UI work, keep the browser source in `frontend/src/**` and model updates as workstream/surface events where generated SaaS semantics apply.
 
 ### UI + WebSocket
 Read first:
-- `../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/PingWebSocketEndpoint.java`
 
 Use this when the browser needs two-way communication; for product UI work, keep the browser source in `frontend/src/**` and avoid adding standalone socket demo pages as generated SaaS UI structure.
 
@@ -99,7 +99,7 @@ Read next as needed:
 - `../akka-http-endpoint-jwt/SKILL.md`
 - `../akka-http-endpoint-request-context/SKILL.md`
 - `../akka-http-endpoint-acl-internal/SKILL.md`
-- `../examples/akka-components/src/main/java/com/example/api/InternalStatusEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/InternalStatusEndpoint.java`
 
 Default generated SaaS route boundary:
 - public: static app shell/assets only, such as `/`, `/ui...`, `/assets/**`, and explicit deep-link entry routes that return the same static shell without embedding protected data

@@ -182,7 +182,7 @@ Do not allow a bootstrap to imply full-core readiness while omitting full User A
 
 From the initial user input, derive as applicable:
 - app identity or working name
-- Java base package for generated code; ask "What Java base package should I use for generated code? Press Enter to use `ai.first`." when absent, default to `ai.first` only if accepted/deferred, and never assume `com.example` from reference examples
+- Java base package for generated code; ask "What Java base package should I use for generated code? Press Enter to use `ai.first`." when absent, default to `ai.first` only if accepted/deferred, and never assume `ai.first` from reference examples
 - top-level goal
 - whether the app has AI-first/delegated operating-model semantics
 - delegated work versus retained human authority when applicable
@@ -230,7 +230,7 @@ For most fresh bootstraps, prefer:
 - or `ready-with-assumptions` only if the input is already unusually complete and remaining assumptions are non-runtime or explicitly outside the named scope
 
 ### 3. Establish generation policy
-Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, labels minimum-starter/full-core/narrower generation scope, blocks unlabeled omissions of full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, forbids using `com.example` for generated application code unless explicitly requested, and states that generated runtime features are complete only after real local Akka/API/UI validation with no mock/fixture/simulated normal-runtime substitute. For `minimum starter / not full core`, require the five core workstream starter set and follow-up tasks for richer My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces/capabilities, invitations/onboarding, governed behavior/reference documents, and security coverage.
+Create `00-system/generation-policy.md` with a conservative policy that preserves description primacy, records the selected Java base package, labels minimum-starter/full-core/narrower generation scope, blocks unlabeled omissions of full User Admin, Agent Admin, Invitation onboarding, governed runtime agents, workstream UI, and security tests, forbids inferring the generated Java package solely from bundled examples and records `ai.first` only when accepted/deferred as the selected default or explicitly requested, and states that generated runtime features are complete only after real local Akka/API/UI validation with no mock/fixture/simulated normal-runtime substitute. For `minimum starter / not full core`, require the five core workstream starter set and follow-up tasks for richer My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy surfaces/capabilities, invitations/onboarding, governed behavior/reference documents, and security coverage.
 
 ### 4. Create the first capability layer
 Create a `10-capabilities/` index and a mandatory `01-secure-tenant-user-foundation.md` capability covering SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, and tenant-isolation tests.

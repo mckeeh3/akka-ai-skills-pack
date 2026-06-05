@@ -75,7 +75,7 @@ When generating, this skill must:
 - identify the current description baseline
 - detect existing implementation artifacts or legacy `specs/scaffold-report.md` and treat generation as existing-app extension by default rather than fresh app replacement
 - identify the generation scope label (`minimum starter`, `full core`, `Module 1-only / not full core`, or another narrower scope) from the app description/specs/user instruction and report it in the summary
-- resolve the Java base package from existing project configuration, legacy `specs/scaffold-report.md`, the app description, or the initial package question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default to `ai.first` only when accepted/deferred; never use `com.example` for generated application code unless explicitly requested
+- resolve the Java base package from existing project configuration, legacy `specs/scaffold-report.md`, the app description, or the initial package question: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Default to `ai.first` only when accepted/deferred, and do not infer the generated package solely from bundled examples
 - verify readiness did not ignore the secure SaaS foundation required by `core-saas-foundation`
 - block full-core generation or return to readiness if User Admin, Agent Admin, complete invitation onboarding, full user administration, governed runtime agents, workstream UI, or required tests are missing without an explicit narrower-scope label
 - block full-core generation or return to readiness if User Admin cannot be proven through the fullstack `user-admin-dashboard` → `user-admin-user-list` search/filter → `user-admin-user-account` detail/action path, including scoped APIs, backend capability enforcement, UserAdminAgent behavior, audit/trace output, and negative checks for disabled actor, cross-tenant access, Customer Admin Tenant-level denial, SaaS Owner without support access, role escalation, and last-admin loss
@@ -195,7 +195,7 @@ Avoid:
 - performing manual-style code edits as if they were the correct response to semantic gaps
 - hiding assumptions used during `ready-with-assumptions` generation
 - generating AI-first apps from CRUD-only or chatbot-only descriptions when goals, authority, policies, decisions, traces, outcomes, or supervision surfaces are actually in scope
-- copying `com.example` from reference examples into generated application code unless the user explicitly selected it
+- copying the reference-example package into generated application code without resolving the target project's selected package first
 
 ## Final review checklist
 
@@ -208,7 +208,7 @@ Before finishing, verify:
 - missing foundation/security semantics block generation instead of becoming assumptions
 - operating-model basis is explicit for generated AI-first SaaS
 - assumptions are explicit when used
-- Java base package is explicit and is not accidentally inherited from `com.example` reference examples
+- Java base package is explicit and is not accidentally inherited from reference examples
 - regeneration scope is explicit
 - outputs in scope are listed clearly
 - executed steps and results are reported clearly, including whether the app was run locally and what visible/API/workstream paths were validated

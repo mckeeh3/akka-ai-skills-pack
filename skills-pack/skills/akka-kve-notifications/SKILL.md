@@ -22,9 +22,9 @@ If these are absent and the work is generated SaaS implementation, route back to
 
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartEntityTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/DraftCartEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/api/DraftCartEndpoint.java`
+- `../examples/akka-components/src/test/java/ai/first/application/DraftCartEntityTest.java`
 
 ## Core pattern
 

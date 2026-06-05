@@ -41,15 +41,15 @@ If these files exist, read them first:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/ExpiringDraftCartSessionEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/PurchaseOrderEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
+- `../examples/akka-components/src/main/java/ai/first/application/DraftCartEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/application/PurchaseOrderEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ExpiringDraftCartSessionEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/application/DraftCartCheckoutConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/api/DraftCartEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/PurchaseOrderEndpoint.java`
+- `../examples/akka-components/src/test/java/ai/first/application/DraftCartEntityTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/PurchaseOrderEntityTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ExpiringDraftCartSessionEntityTest.java`
 
 ## Companion skills
 
@@ -81,7 +81,7 @@ For ESE vs KVE choice questions, also read:
 
 ## Default package layout
 
-Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples may use `com.example`, but generated application code must not use template package placeholders or `com.example` unless explicitly selected.
+Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples use `ai.first`; generated application code must use the target project's selected package and must not infer that package solely from examples.
 
 Typical layer paths are:
 - `<base>.domain`

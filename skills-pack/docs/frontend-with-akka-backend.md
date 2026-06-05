@@ -19,7 +19,7 @@ This project is a full-stack Akka application where the Java/Akka backend hosts 
 └── src/
     └── main/
         ├── java/
-        │   └── com/example/...
+        │   └── ai/first/...
         └── resources/
             └── static-resources/
                 ├── index.html

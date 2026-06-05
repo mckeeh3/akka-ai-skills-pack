@@ -23,8 +23,8 @@ If these are absent for generated SaaS implementation, route back to `agent-work
 
 Read these first if present:
 - `akka-context/sdk/views.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/DraftCartsByCheckedOutViewIntegrationTest.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Test kit rules

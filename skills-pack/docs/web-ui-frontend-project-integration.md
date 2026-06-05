@@ -20,7 +20,7 @@ Prefer this separation:
 │       ├── main.tsx
 │       └── styles.css
 └── src/main/
-    ├── java/com/example/...
+    ├── java/ai/first/...
     └── resources/static-resources/
         ├── index.html
         └── assets/

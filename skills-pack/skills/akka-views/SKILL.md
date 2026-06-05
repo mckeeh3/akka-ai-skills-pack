@@ -45,21 +45,21 @@ Read these first if present:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartAuditView.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartLifecycleView.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `../examples/akka-components/src/main/java/com/example/application/SupervisedExportEvidenceView.java` — capability-first scoped evidence view
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartTopicView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartsByCheckedOutView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartAuditView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/DraftCartsByCheckedOutView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/DraftCartLifecycleView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/ReviewRequestsByStatusView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/SupervisedExportEvidenceView.java` — capability-first scoped evidence view
+- `../examples/akka-components/src/main/java/ai/first/application/ShoppingCartTopicView.java`
 - `../docs/service-to-service-views.md`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SupervisedExportEvidenceViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartTopicViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartAuditViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/DraftCartsByCheckedOutViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/DraftCartLifecycleViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ReviewRequestsByStatusViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/SupervisedExportEvidenceViewIntegrationTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartTopicViewIntegrationTest.java`
 
 ## Companion skills
 
@@ -90,7 +90,7 @@ If the source is another Akka service via service-to-service eventing, use this 
 
 ## Default package layout
 
-Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples may use `com.example`, but generated application code must not use template package placeholders or `com.example` unless explicitly selected.
+Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples use `ai.first`; generated application code must use the target project's selected package and must not infer that package solely from examples.
 
 Typical layer paths are:
 - `<base>.domain`

@@ -50,11 +50,11 @@ Read these first if present:
 - matching MCP endpoint tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/SecureSupportMcpEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/ShoppingCartMcpEndpoint.java`
+- `../examples/akka-components/src/main/java/ai/first/api/SecureSupportMcpEndpoint.java`
 - `../examples/akka-components/src/main/resources/mcp/checkout-guidelines.md`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SecureSupportMcpEndpointTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/ShoppingCartMcpEndpointTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/SecureSupportMcpEndpointTest.java`
 
 ## Companion skills
 
@@ -71,7 +71,7 @@ Load the companion skill that matches the current task:
 
 ## Default package layout
 
-Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples may use `com.example`, but generated application code must not use template package placeholders or `com.example` unless explicitly selected.
+Use the target project's selected Java base package. For this core-app-first repository and downstream forks, preserve the existing package when present; default to `ai.first` only when the user accepts or defers the package choice. Reference examples use `ai.first`; generated application code must use the target project's selected package and must not infer that package solely from examples.
 
 Typical layer paths are:
 - `<base>.domain`

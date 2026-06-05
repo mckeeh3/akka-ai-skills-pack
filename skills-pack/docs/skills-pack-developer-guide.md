@@ -42,11 +42,13 @@ skills-pack/
 ├── pack/
 │   ├── AGENTS.md
 │   ├── README.md
+│   ├── manifest.schema.yaml
 │   └── manifest.yaml
 ├── skills/
 ├── docs/
 ├── examples/
 │   └── akka-components/
+├── templates/
 └── tools/
 
 ../akka-context/   # repository-top-level Akka reference material, not installed

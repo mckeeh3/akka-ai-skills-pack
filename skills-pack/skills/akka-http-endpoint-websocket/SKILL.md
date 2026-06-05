@@ -20,8 +20,8 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
+- `../examples/akka-components/src/main/java/ai/first/api/PingWebSocketEndpoint.java`
+- `../examples/akka-components/src/test/java/ai/first/application/PingWebSocketEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
