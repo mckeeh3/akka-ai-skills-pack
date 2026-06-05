@@ -113,7 +113,7 @@ Repository example:
 Use `akka-consumer-from-workflow`.
 
 Repository example:
-- `ReviewWorkflowTopicConsumer`
+- a domain-specific workflow topic consumer
 
 ### 4. Command ingestion from a broker topic
 Use `akka-consumer-from-topic`.
@@ -134,14 +134,14 @@ Use `akka-consumer-producing`.
 Repository examples:
 - `WorkstreamEventAttentionConsumer`
 - `WorkstreamEventAttentionConsumer`
-- `ReviewWorkflowTopicConsumer`
+- a domain-specific workflow topic consumer
 
 ### 7. Integration and eventing tests
 Use `akka-consumer-testing`.
 
 Repository examples:
 - `WorkstreamEventAttentionConsumerIntegrationTest`
-- `ReviewWorkflowTopicConsumerIntegrationTest`
+- a domain-specific workflow topic consumer integration test
 - `WorkstreamEventAttentionConsumerIntegrationTest`
 - `WorkstreamEventAttentionConsumerIntegrationTest`
 

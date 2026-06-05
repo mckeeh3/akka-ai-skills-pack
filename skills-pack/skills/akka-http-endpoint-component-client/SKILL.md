@@ -65,13 +65,13 @@ Read these first if present:
 ### Key value endpoint examples
 - `MeEndpoint`
   - mirrors the event sourced endpoint shape for KVE comparison
-- `PurchaseAdminEndpoint`
+- a domain-specific admin endpoint
   - mirrors the order endpoint shape for KVE comparison
 
 ### Workflow endpoint examples
-- `TransferWorkflowEndpoint`
+- a domain-specific workflow endpoint
   - starts, reads, and streams workflow progress
-- `ApprovalWorkflowEndpoint`
+- a domain-specific approval workflow endpoint
   - starts, resumes, reads, and streams paused workflow progress
 - `docs/workflow-endpoint-pattern.md`
   - tiny shared reference for workflow-specific route shapes and HTTP mappings

@@ -41,12 +41,12 @@ Read these first if present:
 ## Repository examples
 
 - `CoreAppMcpEndpoint`
-  - `getCartSummary` calls `AgentDefinitionEntity::getCart`
-  - adapts state to `CartSummary`
+  - a domain-specific summary tool calls a domain-specific component read method
+  - adapts state to a domain-specific summary DTO
   - returns compact JSON for tool responses
   - reuses the same mapping for `workstream eventSummaryResource`
-- `GovernedRefundMcpEndpoint`
-  - exposes `request-governed-refund` as a side-effecting MCP tool for `refund.request_consequential`
+- a domain-specific governed MCP endpoint
+  - exposes a domain-specific governed action tool id as a side-effecting MCP tool for a domain-specific consequential capability
   - calls backend-governed boundary logic before any consequential refund action
   - returns safe `denied` or `approval_required` JSON and emits traces instead of relying on MCP tool descriptions for authorization
 

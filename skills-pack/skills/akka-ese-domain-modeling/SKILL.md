@@ -130,7 +130,7 @@ When one command can change multiple facts:
 - persist exactly the derived facts, nothing more
 
 Repository example:
-- `OrderReadyToShipBusinessLogic`
+- domain-specific business-decision helper
 
 ## Hard rules
 

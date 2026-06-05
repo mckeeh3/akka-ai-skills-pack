@@ -39,7 +39,7 @@ Read these first if present:
 
 ## Repository example
 
-- `LowLevelHttpEndpoint`
+- a domain-specific low-level HTTP endpoint
   - lower-level `HttpResponse.create()` response construction
   - manual JSON bytes via `JsonSupport.encodeToAkkaByteString(...)`
   - `HttpEntity.Strict` request handling with content-type validation

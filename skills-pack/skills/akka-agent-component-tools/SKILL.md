@@ -51,18 +51,14 @@ If the agent-facing operation should compose multiple component calls, hide comp
 
 ## Repository example
 
-- `AgentDefinitionEntity#inspectCartSummary`
-  - read-only EventSourcedEntity capability tool for `workstream event.inspect-summary`
-  - returns a curated `CartSummary` rather than raw entity state or event history
-  - generated schema adds `uniqueId` for the workstream id
-- `CartInspectorAgent`
-  - registers `AgentDefinitionEntity.class` as a tool
-  - instructs the model to use `AgentDefinitionEntity_inspectCartSummary`
-- `GovernedRefundAutonomousAgent` + `RefundApprovalWorkflow#requestFromGovernedTool`
-  - side-effecting workflow component tool for `refund.request_consequential`
-  - generated tool schema uses `uniqueId` as the refund workflow id and checks model-supplied tenant/customer/order/amount against backend context
-  - enforces `ToolPermissionBoundary`, idempotency, approval-required behavior, and trace emission before any refund side effect
-  - covered by `GovernedRefundToolBoundaryIntegrationTest` for approval-required, cross-tenant denial, and trace assertions
+The current copied core-app snapshot uses a safer facade pattern for governed runtime loader tools:
+
+- `AgentRuntimeLoaderTools`
+  - exposes request-scoped `@FunctionTool` methods such as governed skill/reference loading
+  - enforces tenant/customer scope, assigned manifests, active versions, `ToolPermissionBoundary`, and trace emission before returning model-visible content
+- `WorkstreamRuntimeAgent`
+  - registers resolved runtime tool instances with `effects().tools(runtimeTools)` instead of exposing broad component methods directly
+- Use direct Akka component tools only when the component method is already a narrow, model-safe capability. For side effects, prefer a facade/workflow that enforces permission, idempotency, approval-required behavior, and trace emission before any mutation.
 
 ## Review checklist
 

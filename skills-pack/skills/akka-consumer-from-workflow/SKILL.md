@@ -41,7 +41,7 @@ Read these first if present:
 
 ## Repository example
 
-- `ReviewWorkflowTopicConsumer`
+- a domain-specific workflow topic consumer
   - consumes workflow state updates
   - ignores non-completed states
   - publishes a compact `ReviewCompleted` message to a topic with `ce-subject`

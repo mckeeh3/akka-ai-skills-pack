@@ -62,7 +62,7 @@ Rules:
 ## Prompt patterns
 
 Repository example:
-- `CoreAppMcpEndpoint#respondToCartQuestion`
+- a domain-specific MCP prompt/resource responder
 
 Rules:
 - use `@McpPrompt(...)`

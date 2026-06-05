@@ -9,8 +9,10 @@ Primary official semantics:
 - `akka-context/sdk/views.html.md`
 - `akka-context/sdk/consuming-producing.html.md`
 
-Local executable examples:
+Current local executable agent example:
 - `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/WorkstreamRuntimeAgent.java`
+
+The built-in `PromptTemplate` and `SessionMemoryEntity` snippets below are patterns, not current copied core-app classes. The current core app primarily uses governed prompt/skill/reference documents plus durable runtime traces.
 
 ## Quick selection
 
@@ -27,9 +29,9 @@ Use these patterns when:
 ### 1. Agent loading its system prompt from `PromptTemplate`
 
 ```java
-@Component(id = "template-backed-activity-agent")
-public class TemplateBackedWorkstreamRuntimeAgent extends Agent {
-  public static final String PROMPT_TEMPLATE_ID = "activity-agent-prompt";
+@Component(id = "template-backed-domain-agent")
+public class DomainTemplateBackedAgent extends Agent {
+  public static final String PROMPT_TEMPLATE_ID = "domain-agent-prompt";
 
   public Effect<String> suggest(String message) {
     return effects()
@@ -47,7 +49,7 @@ Reference:
 
 ```java
 componentClient
-    .forEventSourcedEntity(TemplateBackedWorkstreamRuntimeAgent.PROMPT_TEMPLATE_ID)
+    .forEventSourcedEntity(DomainTemplateBackedAgent.PROMPT_TEMPLATE_ID)
     .method(PromptTemplate::update)
     .invoke(request.prompt());
 ```
@@ -57,8 +59,8 @@ Reference:
 ### 3. View over current prompt-template state
 
 ```java
-@Component(id = "prompt-template-history")
-public class PromptTemplateHistoryView extends View {
+@Component(id = "domain-prompt-template-history")
+public class DomainPromptTemplateProjection extends View {
 
   @Consume.FromEventSourcedEntity(PromptTemplate.class)
   public static class PromptTemplateHistoryUpdater extends TableUpdater<PromptTemplateHistoryRow> {

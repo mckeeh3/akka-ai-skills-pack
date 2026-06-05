@@ -35,7 +35,7 @@ Read these first if present:
 
 - `CoreAppGrpcEndpointImpl#streamCheckedOutRows`
   - forwards a streamed view query
-  - maps each row to a protobuf `CartSummary`
+  - maps each row to a protobuf a domain-specific summary DTO
 - `UserDirectoryView#streamRows`
   - query-stream method used by the endpoint
 

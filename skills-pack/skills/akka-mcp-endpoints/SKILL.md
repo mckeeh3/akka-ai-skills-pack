@@ -106,7 +106,7 @@ Choose one of these modes before coding:
 Use when the MCP endpoint should expose current entity or view state as LLM-friendly JSON.
 
 Repository example:
-- `CoreAppMcpEndpoint#getCartSummary`
+- a domain-specific MCP summary tool
 
 ### 2. Resource and prompt endpoint
 Use when the main work is exposing static guidance, dynamic resources, or reusable prompt templates.
@@ -114,7 +114,7 @@ Use when the main work is exposing static guidance, dynamic resources, or reusab
 Repository examples:
 - `CoreAppMcpEndpoint#attentionGuidelines`
 - `CoreAppMcpEndpoint#workstream eventSummaryResource`
-- `CoreAppMcpEndpoint#respondToCartQuestion`
+- a domain-specific MCP prompt/resource responder
 
 ### 3. Request-context or JWT-aware endpoint
 Use when the endpoint behavior depends on headers, principals, or validated JWT claims.

@@ -56,7 +56,7 @@ Repository examples:
 
 Repository examples:
 - `DurableIdentityRepositoryEntity`
-- `PurchasePromptDocumentEntity`
+- a domain-specific key value entity
 
 ## Important comparison points
 

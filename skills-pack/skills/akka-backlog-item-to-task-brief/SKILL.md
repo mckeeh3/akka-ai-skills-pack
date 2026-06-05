@@ -61,7 +61,7 @@ Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md` when the backlog item includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../docs/requirements-to-workstream-development-process.md` when the backlog item touches generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or trace-aware queue execution
 - `../../../app-description/15-operating-model/` or equivalent operating-model specs when present and relevant
-- `../../../specs/templates/implementation-task-template.md`
+- `../../../specs/templates/implementation-task-template.md` if the target project provides it; otherwise use the task-brief structure described in this skill
 - `../../../specs/akka-solution-plan.md`
 - the target slice spec under `../../../specs/slices/`
 - the target backlog file under `../../../specs/backlog/`

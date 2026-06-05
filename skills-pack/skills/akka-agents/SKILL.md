@@ -270,7 +270,7 @@ Use `ai-first-saas-agent-team-design` before creating multiple agent classes. Pr
 Use when AI calls need durable retries, shared sessions, or multi-step orchestration.
 
 Repository example:
-- `AgentTeamWorkflow`
+- a domain-specific agent-team workflow
 
 ### 15. Evaluated or governed request-based agent
 Use when output quality or runtime safety checks are a first-class concern.

@@ -38,7 +38,7 @@ Read these first if present:
 
 ## Repository example
 
-- `ProxyGreetingEndpoint`
+- a domain-specific HTTP-client endpoint (no current snapshot example)
   - uses `HttpClientProvider`
   - reads a base URL from a request header for a self-contained local example only
   - delegates to another HTTP route and remaps the response

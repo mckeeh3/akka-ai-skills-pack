@@ -61,7 +61,7 @@ Use:
 - `Effect<T>` for strongly consistent reads in replicated deployments
 
 Repository example:
-- `PurchasePromptDocumentEntity.getOrderConsistent()`
+- a domain-specific strongly consistent read method
 
 ## Delete pattern
 

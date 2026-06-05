@@ -75,7 +75,7 @@ Do not trust hidden frontend navigation, JWT presence, email domain, or mutable 
 
 ## Repository example
 
-- `SecureGreetingEndpoint`
+- JWT-secured generated-SaaS API endpoints such as `MeEndpoint` and protected `/api/...` routes
   - validates a bearer token issuer
   - requires a static claim
   - reads issuer, subject, and role from `requestContext().getJwtClaims()`

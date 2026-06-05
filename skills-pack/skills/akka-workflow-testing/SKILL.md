@@ -40,14 +40,14 @@ Workflow tests should usually:
 ## Repository patterns
 
 ### Straight-through and compensation flows
-- `TransferWorkflowIntegrationTest`
+- a domain-specific workflow integration test
   - creates supporting wallet entities first
   - starts the workflow through `componentClient.forWorkflow(...)`
   - waits for completion with `Awaitility`
   - asserts both successful completion and compensation behavior
 
 ### Pause/resume flows
-- `ApprovalWorkflowIntegrationTest`
+- a domain-specific approval workflow integration test
   - starts the workflow and verifies it is waiting
   - sends a later resume command
   - asserts the workflow ends in the approved state

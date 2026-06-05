@@ -107,8 +107,8 @@ Rules:
 - component methods called internally through `ComponentClient` do not need `@FunctionTool`; annotate an underlying component method only when it is also intentionally exposed directly to the model as a component tool.
 
 Canonical example:
-- `CartAttentionAdvisorAgent` injects `ComponentClient` and registers `new CartAttentionAdvisorTools(componentClient)`.
-- `CartAttentionAdvisorTools#adviseAttention` is a read-only `workstream event.attention-advice` facade that calls `AgentDefinitionEntity#inspectCartSummary` and `UserDirectoryView#getRows`, applies deterministic readiness logic, and returns a curated `CartAttentionAdvice` result.
+- a domain-specific attention-advisor agent injects `ComponentClient` and registers a domain-specific tool facade instance.
+- a domain-specific read-only attention-advice facade tool is a read-only `workstream event.attention-advice` facade that calls a domain-specific curated component read method and a domain-specific view query method, applies deterministic readiness logic, and returns a curated a domain-specific curated advice result result.
 
 ## Capability-first tool design
 
@@ -126,9 +126,9 @@ Canonical example:
   - external tool registration with `.tools(forecastTools)`
 - `UserAdminEvidenceTools`
   - public external tool method with parameter descriptions
-- `RefundApprovalAgent` / `RefundProposalTools` / `RefundApprovalCapabilityTest`
+- a domain-specific approval agent / domain-specific proposal tools / a domain-specific approval capability test
   - consequential `refund.issue` capability exposed as a proposal-only tool; approval workflow or explicit bounded policy grant commits the side effect
-- `CartAttentionAdvisorAgent` / `CartAttentionAdvisorTools` / `CartAttentionAdvisorAgentTest`
+- a domain-specific attention-advisor agent / domain-specific attention-advisor tools / a domain-specific attention-advisor agent test
   - non-component `workstream event.attention-advice` facade tool backed by `ComponentClient`, combining entity and view evidence plus deterministic processing into one model-facing tool
 
 ## Review checklist

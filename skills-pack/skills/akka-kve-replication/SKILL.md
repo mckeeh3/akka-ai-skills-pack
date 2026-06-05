@@ -30,8 +30,8 @@ Use:
 - `Effect<T>` for strongly consistent reads that should route to the primary region
 
 Repository example:
-- `PurchasePromptDocumentEntity.getOrder()`
-- `PurchasePromptDocumentEntity.getOrderConsistent()`
+- a domain-specific eventual read method
+- a domain-specific strongly consistent read method
 
 ## Replication filter pattern
 
@@ -42,8 +42,8 @@ When the task explicitly needs replication filtering:
 - reply after the filter update effect
 
 Repository example:
-- `PurchasePromptDocumentEntity.includeRegion(...)`
-- `PurchasePromptDocumentEntity.excludeRegion(...)`
+- a domain-specific replication include-region method
+- a domain-specific replication exclude-region method
 
 ## Endpoint guidance
 
@@ -53,9 +53,9 @@ If exposing replication behavior through HTTP:
 - map outcomes to clear API responses
 
 Repository example:
-- `PurchaseAdminEndpoint.includeRegion(...)`
-- `PurchaseAdminEndpoint.excludeRegion(...)`
-- `PurchaseAdminEndpoint.getOrderConsistent()`
+- a domain-specific admin include-region endpoint method
+- a domain-specific admin exclude-region endpoint method
+- a domain-specific admin strongly consistent read endpoint method
 
 ## Testing guidance
 
@@ -66,8 +66,8 @@ Cover:
 - request validation at endpoint or entity layer as appropriate
 
 Repository examples:
-- `PurchasePromptDocumentEntityTest`
-- `PurchaseAdminEndpointIntegrationTest`
+- a domain-specific key value entity test
+- a domain-specific admin endpoint integration test
 
 ## Generated SaaS checks
 

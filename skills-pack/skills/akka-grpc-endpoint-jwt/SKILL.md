@@ -42,11 +42,11 @@ Read these first if present:
 
 ## Repository example
 
-- `SecureGreetingGrpcEndpointImpl`
+- a domain-specific JWT-secured gRPC endpoint implementation
   - validates bearer token issuers
   - requires a static `role` claim
   - reads issuer, subject, role, and optional audience from `requestContext().getJwtClaims()`
-- `PatternSecureGreetingGrpcEndpointImpl`
+- a domain-specific pattern-based JWT gRPC endpoint implementation
   - validates regex-based claims with `@JWT.StaticClaim(pattern = ...)`
   - demonstrates role, UUID subject, and non-blank name validation
 

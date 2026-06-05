@@ -46,9 +46,9 @@ Read these first if present:
 
 - `WorkstreamRuntimeAgent`
   - bounded memory with `readLast(6)`
-- `AgentTeamWorkflow`
+- a domain-specific agent-team workflow
   - shared session id derived from `workflowId()`
-- `WorkerMemorySummaryAgent`
+- a domain-specific memory summary agent
   - read-only filtered memory that includes only worker-role messages and excludes `debug-agent`
 - `ActivityAnswerEvaluatorAgent`
   - memory disabled for evaluation

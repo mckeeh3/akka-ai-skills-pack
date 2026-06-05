@@ -54,7 +54,7 @@ Typical traits:
 - one command often results in one full-state replacement and separate audit/trace recording when consequential
 
 Repository example:
-- `PurchasePromptDocumentEntity`
+- a domain-specific key value entity
 - `WorkstreamEventAttentionConsumer`
 
 ## Endpoint rules
@@ -71,7 +71,7 @@ For HTTP or gRPC endpoints that call entities:
 
 Repository example:
 - `MeEndpoint`
-- `PurchaseAdminEndpoint`
+- a domain-specific admin endpoint
 
 ## Consumer and workflow rules
 

@@ -127,9 +127,9 @@ Keep those route families separate so a future agent can infer intent from the p
 
 ## Repository examples
 
-- `CounterStreamEndpoint`
+- a domain-specific SSE endpoint
   - backend SSE stream mechanics
-- `PingWebSocketEndpoint`
+- a domain-specific WebSocket endpoint
   - backend WebSocket mechanics
 
 Static UI page fixtures were removed; generated app shells should come from the target project's frontend build output.

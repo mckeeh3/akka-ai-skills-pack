@@ -57,7 +57,7 @@ Pattern:
 Use when isolating the consumer from workflow or entity change streams. If the upstream workflow/entity exists in the same generated service and the named feature depends on that reaction, also include an end-to-end local/TestKit path that triggers the real upstream component and observes the downstream result before calling the feature complete.
 
 Repository example:
-- `ReviewWorkflowTopicConsumerIntegrationTest`
+- a domain-specific workflow topic consumer integration test
 
 Pattern:
 - configure `withWorkflowIncomingMessages(...)`, `withEventSourcedEntityIncomingMessages(...)`, or `withKeyValueEntityIncomingMessages(...)`

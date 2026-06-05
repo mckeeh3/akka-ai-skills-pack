@@ -28,7 +28,7 @@ Use `@Query(..., streamUpdates = true)` plus `QueryStreamEffect<T>` and `querySt
 
 Repository examples:
 - `UserDirectoryView#continuousRows`
-- `WorkstreamLogViewStreamEndpoint`
+- a domain-specific workstream log stream endpoint
 
 ## Core rules
 

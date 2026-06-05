@@ -38,13 +38,13 @@ Read these first if present:
 
 ## Repository examples
 
-- `TemplateBackedWorkstreamRuntimeAgent`
+- `WorkstreamRuntimeAgent` with governed prompt/runtime loading
   - prompt loaded from `PromptTemplate`
-- `ActivityPromptEndpoint`
+- a governed prompt/runtime-state endpoint
   - update/read prompt-template state over HTTP
-- `PromptTemplateHistoryView`
+- agent behavior document/version views such as `PromptDocumentView`
   - query current prompt value and update count
-- `PromptTemplateHistoryEndpoint`
+- a governed prompt history endpoint
   - edge-facing API over the prompt-template history view
 - `SessionMemoryByComponentView`
   - query sessions by the component that most recently wrote memory

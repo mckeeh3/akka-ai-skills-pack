@@ -105,6 +105,6 @@ Avoid:
 
 ## Quick copy targets
 
-- fixed-value JWT example: `SecureGreetingGrpcEndpointImpl`
-- regex-based JWT example: `PatternSecureGreetingGrpcEndpointImpl`
-- test helper and header injection: `SecureGreetingGrpcEndpointIntegrationTest`, `PatternSecureGreetingGrpcEndpointIntegrationTest`
+- fixed-value JWT example: a domain-specific JWT-secured gRPC endpoint implementation
+- regex-based JWT example: a domain-specific pattern-based JWT gRPC endpoint implementation
+- test helper and header injection: a domain-specific JWT gRPC endpoint integration test, a domain-specific pattern-based JWT gRPC endpoint integration test

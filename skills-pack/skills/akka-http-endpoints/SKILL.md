@@ -125,7 +125,7 @@ Choose one of these modes before coding:
 Use when the endpoint mainly maps HTTP requests to API responses and does not need component calls.
 
 Repository example:
-- `GreetingEndpoint`
+- current snapshot examples: `MeEndpoint`, `WorkstreamEndpoint`, or `AdminEndpoint` as applicable
 
 ### 2. Component-calling endpoint
 Use when the endpoint translates HTTP requests into entity or view calls and maps replies into API types.
@@ -134,53 +134,52 @@ Repository examples:
 - `WorkstreamEndpoint`
 - `MeEndpoint`
 - `AdminEndpoint`
-- `PurchaseAdminEndpoint`
+- a domain-specific admin endpoint
 
 ### 3. Request-context endpoint
 Use when endpoint logic depends on query parameters, request headers, JWT claims, or SSE reconnect metadata.
 
 Repository examples:
-- `GreetingEndpoint`
-- `RequestHeadersEndpoint`
+- current snapshot examples: `MeEndpoint`, `WorkstreamEndpoint`, or `AdminEndpoint` as applicable
+- a domain-specific request-context endpoint (or `MeEndpoint` for auth context)
 
 ### 4. Low-level HTTP endpoint
 Use when the endpoint needs `HttpResponse`, `HttpEntity.Strict`, or other lower-level HTTP model control.
 
 Repository example:
-- `LowLevelHttpEndpoint`
+- a domain-specific low-level HTTP endpoint
 
 ### 5. HTTP client provider endpoint
 Use when the endpoint delegates to another HTTP service through `HttpClientProvider`.
 
 Repository example:
-- `ProxyGreetingEndpoint`
+- a domain-specific HTTP-client endpoint (no current snapshot example)
 
 ### 6. SSE endpoint
 Use when the endpoint must stream a sequence of updates and optionally resume from the last seen event id.
 
 Repository examples:
-- `CounterStreamEndpoint`
-- `WorkstreamLogViewStreamEndpoint`
-- `WorkstreamEndpoint#notifications`
-- `MeEndpoint#notifications`
+- a domain-specific SSE endpoint
+- a domain-specific workstream log stream endpoint
+- `WorkstreamEndpoint#events`
 
 ### 7. WebSocket endpoint
 Use when the endpoint must support bidirectional streaming over a socket.
 
 Repository example:
-- `PingWebSocketEndpoint`
+- a domain-specific WebSocket endpoint
 
 ### 8. JWT-secured endpoint
 Use when the endpoint requires bearer token validation and claim-aware behavior. This is the default for generated SaaS browser APIs under `/api/...`; pair JWT validation with local `/api/me`/membership authorization instead of treating token presence as permission.
 
 Repository example:
-- `SecureGreetingEndpoint`
+- JWT-secured generated-SaaS API endpoints such as `MeEndpoint` and protected `/api/...` routes
 
 ### 9. Internal-only ACL endpoint
 Use when the endpoint should be callable only by other services or needs class-level ACL defaults with method-level overrides.
 
 Repository example:
-- `InternalStatusEndpoint`
+- a domain-specific internal-only status endpoint
 
 ## Final review checklist
 

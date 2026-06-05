@@ -43,36 +43,36 @@ HTTP endpoint tests should:
 ## Repository patterns
 
 ### Pure endpoint tests
-- `GreetingEndpointIntegrationTest`
+- current endpoint integration tests for `MeEndpoint`, `WorkstreamEndpoint`, or `AdminEndpoint` when present in the target app
   - query parameter behavior
   - request body mapping
   - HTTP 400 mapping for invalid input
-- `LowLevelHttpEndpointIntegrationTest`
+- domain-specific low-level endpoint integration tests
   - low-level response and `HttpEntity.Strict` handling
-- `ProxyGreetingEndpointIntegrationTest`
+- domain-specific HTTP-client endpoint integration tests
   - endpoint-to-endpoint delegation through `HttpClientProvider`
-- `RequestHeadersEndpointIntegrationTest`
+- domain-specific request-context endpoint integration tests
   - request-header access through `requestContext()`
   - header validation mapped to HTTP 400
-- `SecureGreetingEndpointIntegrationTest`
+- JWT/protected-route endpoint integration tests for `MeEndpoint` or protected `/api/...` routes
   - bearer token injection through `Authorization` header
   - JWT claims available in the endpoint through `requestContext()`
 
 ### SSE endpoint tests
-- `CounterStreamEndpointIntegrationTest`
-  - uses `testKit.getSelfSseRouteTester()`
-  - verifies initial events and resume-from-offset behavior
-- `WorkstreamLogViewStreamEndpointIntegrationTest`
-  - combines mocked view source updates with `SseRouteTester`
-  - verifies view-backed SSE emits initial rows and later updates
+- domain-specific SSE endpoint integration tests
+  - use `testKit.getSelfSseRouteTester()`
+  - verify initial events, authorization, and resume-from-offset behavior
+- domain-specific view/workstream stream endpoint integration tests
+  - combine mocked source updates with `SseRouteTester`
+  - verify view-backed or workstream-backed SSE emits initial rows and later updates
 
 ### WebSocket endpoint tests
-- `PingWebSocketEndpointIntegrationTest`
-  - uses `testKit.getSelfWebSocketRouteTester()`
-  - verifies bidirectional text message exchange
+- domain-specific WebSocket endpoint integration tests
+  - use `testKit.getSelfWebSocketRouteTester()`
+  - verify bidirectional text message exchange
 
 ### ACL-focused endpoint tests
-- `InternalStatusEndpointIntegrationTest`
+- domain-specific internal-only endpoint integration tests
   - denied internet call for service-only route
   - allowed method-level ACL override
   - allowed impersonated service caller
@@ -80,7 +80,7 @@ HTTP endpoint tests should:
 ### Component-calling endpoint tests
 - `WorkstreamEndpointIntegrationTest`
 - `AdminEndpointIntegrationTest`
-- `PurchaseAdminEndpointIntegrationTest`
+- a domain-specific admin endpoint integration test
 
 These cover route-to-component behavior and HTTP response mapping.
 

@@ -43,14 +43,14 @@ Generated SaaS APIs should treat request context as the source for authenticated
 
 ## Repository examples
 
-- `GreetingEndpoint`
+- current snapshot examples: `MeEndpoint`, `WorkstreamEndpoint`, or `AdminEndpoint` as applicable
   - reads query parameters through `requestContext().queryParams()`
   - combines path parameters and request body parameters
   - returns `HttpResponses.badRequest(...)` for invalid edge input
-- `RequestHeadersEndpoint`
+- a domain-specific request-context endpoint (or `MeEndpoint` for auth context)
   - reads required and optional headers through `requestContext().requestHeader(...)`
   - inspects principals through `requestContext().getPrincipals()`
-- `SecureGreetingEndpoint`
+- JWT-secured generated-SaaS API endpoints such as `MeEndpoint` and protected `/api/...` routes
   - reads JWT claims through `requestContext().getJwtClaims()` after `@JWT` validation
 
 ## Common request-context uses

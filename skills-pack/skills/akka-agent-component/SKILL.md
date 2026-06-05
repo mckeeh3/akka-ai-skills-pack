@@ -51,11 +51,11 @@ Read these first if present:
   - structured reply type
   - bounded session memory
   - fallback reply on failure
-- `TemplateBackedWorkstreamRuntimeAgent`
+- `WorkstreamRuntimeAgent` with governed prompt/runtime loading
   - system prompt loaded from the built-in `PromptTemplate` entity
 - `ConfiguredModelWorkstreamRuntimeAgent`
   - focused static example of `ModelProvider.fromConfig("openai-low-temperature")`; for managed runtime agents, pair this pattern with `akka-agent-model-governance` so `AgentDefinition.modelConfigRef`, model policy, fallback policy, provider secret boundaries, and model-use traces are resolved before invocation
-- `ActivityPromptEndpoint`
+- a governed prompt/runtime-state endpoint
   - HTTP management of prompt-template values
 
 ## Review checklist

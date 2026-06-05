@@ -41,11 +41,11 @@ Before choosing workflow-supervised orchestration, apply the one-agent vs agent-
 
 ## Repository example
 
-- `AgentTeamWorkflow`
+- a domain-specific agent-team workflow
   - predefined two-agent workflow
   - workflow id is reused as the shared session id
   - workflow state stores intermediate evidence context and final answer
-- `DynamicAgentTeamWorkflow`
+- a domain-specific agent-team workflow
   - selector/planner/summarizer orchestration
   - uses `dynamicCall(agentId)` for worker-agent execution
   - summarizes accumulated worker responses into a final answer

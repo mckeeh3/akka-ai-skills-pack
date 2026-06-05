@@ -110,7 +110,7 @@ Repository references:
 
 Repository references:
 - ESE: `PromptDocumentEntity`
-- KVE: `PurchasePromptDocumentEntity`
+- KVE: a domain-specific key value entity
 
 ## Consumers and downstream flows
 

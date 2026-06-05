@@ -27,7 +27,7 @@ Use pause/resume when a capability must wait for human approval, additional evid
 
 ## Repository example
 
-- `ApprovalWorkflow`
+- a domain-specific approval workflow
   - pauses in `waitForApprovalStep()`
   - resumes only from `WAITING_FOR_APPROVAL`
   - applies the approval decision in a dedicated step before ending

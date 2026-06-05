@@ -39,7 +39,7 @@ Read these first if present:
 
 ## Repository example
 
-- `ReviewRequestsByStatusView`
+- a domain-specific workflow-status view
   - indexes workflow state by status
   - represents a queue/evidence read model rather than the workflow's authority to approve or execute
   - maps workflow id from `eventSubject()` into the view row

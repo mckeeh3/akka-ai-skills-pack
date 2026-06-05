@@ -76,7 +76,7 @@ Mental model:
 
 | Pattern | Best for | Main owner | Next run decided by | Repository example |
 |---|---|---|---|---|
-| Workflow pause timeout | timeout of a paused workflow wait | workflow pause step | workflow pause settings | `ApprovalWorkflow` |
+| Workflow pause timeout | timeout of a paused workflow wait | workflow pause step | workflow pause settings | a domain-specific approval workflow |
 | Workflow-triggered timer | explicit workflow-owned timeout/reminder | workflow + timed action | workflow command that creates/deletes timer | `ApprovalDeadlineWorkflow` |
 | Self-rescheduling timed action | repeated polling/reminders/maintenance loops | timed action | timed action handler | `AttentionRefreshTimedAction` |
 

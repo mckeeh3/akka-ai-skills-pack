@@ -106,33 +106,33 @@ Before implementation, identify:
 Use when the workflow coordinates a short series of durable steps.
 
 Repository example:
-- `TransferWorkflow`
+- a domain-specific workflow
 
 ### 2. Workflow with live notifications
 Use when clients should subscribe to workflow progress instead of polling.
 
 Repository examples:
-- `TransferWorkflow`
-- `TransferWorkflowEndpoint`
-- `ApprovalWorkflow`
-- `ApprovalWorkflowEndpoint`
+- a domain-specific workflow
+- a domain-specific workflow endpoint
+- a domain-specific approval workflow
+- a domain-specific approval workflow endpoint
 
 ### 3. Pause-and-resume workflow
 Use when a human or external signal must unblock the next step.
 
 Repository examples:
-- `ApprovalWorkflow`
-- `ApprovalWorkflowEndpoint`
-- `RefundApprovalWorkflow` — consequential proposal/approval capability; side effects wait for approval unless bounded policy grants autonomy
-- `SupervisedExportWorkflow` — workflow-backed customer data export capability; high-risk work pauses for supervision while preserving tenant/customer scope and audit trace
+- a domain-specific approval workflow
+- a domain-specific approval workflow endpoint
+- a domain-specific consequential approval workflow — consequential proposal/approval capability; side effects wait for approval unless bounded policy grants autonomy
+- a domain-specific supervised workflow — workflow-backed customer data export capability; high-risk work pauses for supervision while preserving tenant/customer scope and audit trace
 
 ### 4. Workflow as upstream source for views or consumers
 Use when other components react to workflow state snapshots.
 
 Repository examples:
-- `ReviewWorkflow`
-- `ReviewWorkflowTopicConsumer`
-- `ReviewRequestsByStatusView`
+- a domain-specific workflow
+- a domain-specific workflow topic consumer
+- a domain-specific workflow-status view
 
 ## Final review checklist
 

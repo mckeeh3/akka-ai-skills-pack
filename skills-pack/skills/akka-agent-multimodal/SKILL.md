@@ -40,7 +40,7 @@ Read these first if present:
 
 ## Repository example
 
-- `DocumentAnalysisAgent`
+- a domain-specific multimodal/document analysis agent
   - multimodal request with text, image, and PDF
   - per-request `ExampleContentLoader`
   - deterministic loader implementation for agent-oriented reference use

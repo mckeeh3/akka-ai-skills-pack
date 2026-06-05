@@ -84,24 +84,24 @@ public class WorkstreamEventPublicView extends View {
     record CheckedOut() implements WorkstreamEventPublicEvent {}
   }
 
-  public record CartSummary(String workstreamId, int itemCount, String status) {}
-  public record CartSummaries(List<CartSummary> entries) {}
-  public record FindByStatus(String status, String minCartId) {}
+  public record WorkstreamSummary(String workstreamId, int itemCount, String status) {}
+  public record WorkstreamSummaries(List<WorkstreamSummary> entries) {}
+  public record FindByStatus(String status, String minWorkstreamId) {}
 
   @Consume.FromServiceStream(
       service = "workstream-event-service",
       id = "workstream_event_public_events")
-  public static class CartUpdater extends TableUpdater<CartSummary> {
+  public static class WorkstreamUpdater extends TableUpdater<WorkstreamSummary> {
 
-    public Effect<CartSummary> onEvent(WorkstreamEventPublicEvent.ItemAdded event) {
+    public Effect<WorkstreamSummary> onEvent(WorkstreamEventPublicEvent.ItemAdded event) {
       var workstreamId = updateContext().eventSubject().orElse("");
-      var current = rowState() == null ? new CartSummary(workstreamId, 0, "ACTIVE") : rowState();
-      return effects().updateRow(new CartSummary(workstreamId, current.itemCount() + event.quantity(), "ACTIVE"));
+      var current = rowState() == null ? new WorkstreamSummary(workstreamId, 0, "ACTIVE") : rowState();
+      return effects().updateRow(new WorkstreamSummary(workstreamId, current.itemCount() + event.quantity(), "ACTIVE"));
     }
 
-    public Effect<CartSummary> onEvent(WorkstreamEventPublicEvent.CheckedOut event) {
+    public Effect<WorkstreamSummary> onEvent(WorkstreamEventPublicEvent.CheckedOut event) {
       var current = rowState();
-      return effects().updateRow(new CartSummary(current.workstreamId(), current.itemCount(), "CHECKED_OUT"));
+      return effects().updateRow(new WorkstreamSummary(current.workstreamId(), current.itemCount(), "CHECKED_OUT"));
     }
   }
 
@@ -110,10 +110,10 @@ public class WorkstreamEventPublicView extends View {
       SELECT * AS entries
       FROM workstream_event_public_view
       WHERE status = :status
-        AND workstreamId >= :minCartId
+        AND workstreamId >= :minWorkstreamId
       ORDER BY workstreamId
       """)
-  public QueryEffect<CartSummaries> getByStatus(FindByStatus request) {
+  public QueryEffect<WorkstreamSummaries> getByStatus(FindByStatus request) {
     return queryResult();
   }
 }
@@ -125,8 +125,8 @@ For service-stream views:
 - use `onEvent(...)` for event-style public stream messages
 - keep one handler per public message type when that is clearer
 - use `rowState()` for incremental projections
-- use a wrapper record such as `CartSummaries(List<CartSummary> entries)` for multi-row queries
-- include every `ORDER BY` column in the same query's `WHERE` conditions, for example `workstreamId >= :minCartId` when ordering by `workstreamId`
+- use a wrapper record such as `WorkstreamSummaries(List<WorkstreamSummary> entries)` for multi-row queries
+- include every `ORDER BY` column in the same query's `WHERE` conditions, for example `workstreamId >= :minWorkstreamId` when ordering by `workstreamId`
 
 ## Contract rules
 
@@ -159,10 +159,10 @@ public Effect onEvent(WorkstreamEvent.Event event) {
 Subscriber snippet:
 
 ```java
-public Effect<CartSummary> onEvent(WorkstreamEventPublicEvent.CheckedOut event) {
+public Effect<WorkstreamSummary> onEvent(WorkstreamEventPublicEvent.CheckedOut event) {
   var workstreamId = updateContext().eventSubject().orElseThrow();
-  var current = rowState() == null ? new CartSummary(workstreamId, 0, "ACTIVE") : rowState();
-  return effects().updateRow(new CartSummary(workstreamId, current.itemCount(), "CHECKED_OUT"));
+  var current = rowState() == null ? new WorkstreamSummary(workstreamId, 0, "ACTIVE") : rowState();
+  return effects().updateRow(new WorkstreamSummary(workstreamId, current.itemCount(), "CHECKED_OUT"));
 }
 ```
 

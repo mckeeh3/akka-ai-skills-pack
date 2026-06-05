@@ -151,7 +151,7 @@ require_rg "unauthorized.*PromptDocument|unassigned skill denial|disabled-agent 
 log "checking source-controlled surface templates and validator"
 require_file "templates/ai-first-saas-core-app/app-description/README.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surfaces-index.md"
-require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/01-my-account-dashboard.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/01-access-profile-dashboard.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md"

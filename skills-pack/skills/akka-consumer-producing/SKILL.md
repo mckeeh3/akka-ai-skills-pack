@@ -61,7 +61,7 @@ These are Akka substrate mechanics examples, not generated-product architecture 
 - `WorkstreamEventAttentionConsumer`
   - maps internal workstream-event events to a public service-stream contract
   - ignores deletion events from the public stream
-- `ReviewWorkflowTopicConsumer`
+- a domain-specific workflow topic consumer
   - publishes only completed workflow updates to a topic
 
 ## Generated SaaS consumer contract

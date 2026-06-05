@@ -65,7 +65,7 @@ When rewriting or extending KVE documentation, prefer a separate snippet for eac
 
 Use these as source material, but simplify aggressively for docs:
 - `DurableIdentityRepositoryEntity` -> edge-facing write/read/delete/notifications
-- `PurchasePromptDocumentEntity` -> downstream/internal no-op, consistent read, replication
+- a domain-specific key value entity -> downstream/internal no-op, consistent read, replication
 - `DurableNotificationRepositoryEntity` -> TTL
 - `MeEndpoint` -> SSE mapping
 - `DurableIdentityRepositoryEntityTest` -> unit test shape

@@ -41,16 +41,16 @@ Read these first if present:
 ## Repository example
 
 - `CoreAppToolsMcpEndpoint`
-  - default-path MCP server exposing the read-only `workstream event.summary.inspect` capability through `getCartSummary`
+  - default-path MCP server exposing the read-only a domain-specific read-only summary capability capability through a domain-specific summary tool
   - uses a service ACL to show the remote MCP boundary is selective rather than open by default
   - returns a compact workstream event summary, not raw entity state
 - `RemoteCoreAppAgent`
   - connects to an explicit remote MCP server URL
-  - allows only `getCartSummary` for the `workstream event.summary.inspect` capability
-- `GovernedRefundMcpEndpoint`
-  - exposes side-effecting `refund.request_consequential` through `request-governed-refund`
+  - allows only a domain-specific summary tool for the a domain-specific read-only summary capability capability
+- a domain-specific governed MCP endpoint
+  - exposes side-effecting a domain-specific consequential capability through a domain-specific governed action tool id
   - preserves service ACL, stable MCP tool id, `ToolPermissionBoundary`, tenant/customer scope, idempotency, approval-required behavior, and trace emission
-  - covered by `GovernedRefundToolBoundaryIntegrationTest` for ungranted MCP denial, approval-required result, duplicate idempotency behavior, and no direct side-effect execution
+  - covered by a domain-specific governed tool-boundary integration test for ungranted MCP denial, approval-required result, duplicate idempotency behavior, and no direct side-effect execution
 
 ## Review checklist
 

@@ -67,7 +67,7 @@ Use these `KeyValueEntityTestKit` capabilities:
   - delete
 
 ### Downstream/internal entity tests
-- `PurchasePromptDocumentEntityTest`
+- a domain-specific key value entity test
   - create
   - idempotent no-op
   - strongly consistent read pattern

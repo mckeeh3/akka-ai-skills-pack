@@ -39,7 +39,7 @@ Read these first if present:
 
 ## Repository example
 
-- `InternalStatusEndpoint`
+- a domain-specific internal-only status endpoint
   - class-level service-only ACL
   - method-level override exposing one public route
   - principal inspection via `requestContext().getPrincipals()`

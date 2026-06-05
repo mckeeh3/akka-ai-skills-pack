@@ -124,7 +124,7 @@ Typical sources:
 
 Repository examples:
 - `UserDirectoryView`
-- `ReviewRequestsByStatusView`
+- a domain-specific workflow-status view
 
 ### 2. Event-driven projection view
 Use when the source emits domain events and the view must rebuild row state incrementally.

@@ -42,7 +42,7 @@ Use when validating HTTP behavior:
 
 Repository examples:
 - `WorkstreamLogIntegrationTest`
-- `PurchaseAdminEndpointIntegrationTest`
+- a domain-specific admin endpoint integration test
 
 ## Consumer-driven flow pattern
 

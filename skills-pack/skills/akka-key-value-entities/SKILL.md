@@ -140,7 +140,7 @@ Typical behavior:
 - one command may replace the full current state in one update and trigger separate audit/trace recording when consequential
 
 Repository example:
-- `PurchasePromptDocumentEntity`
+- a domain-specific key value entity
 - `WorkstreamEventAttentionConsumer`
 
 ### 3. Focused doc/example snippet

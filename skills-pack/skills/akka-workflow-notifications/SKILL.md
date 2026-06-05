@@ -38,16 +38,16 @@ Use notifications as a selected exposure surface for workflow capability progres
 
 ## Repository example
 
-- `TransferWorkflow`
+- a domain-specific workflow
   - publishes progress notifications for withdraw success, completion, rejection, compensation, and unexpected failure
   - exposes `updates()` for subscribers
-- `ApprovalWorkflow`
+- a domain-specific approval workflow
   - publishes notifications when approval starts waiting and when approval is applied
   - exposes `updates()` for subscribers
-- `TransferWorkflowEndpoint`
+- a domain-specific workflow endpoint
   - adapts workflow notifications into API records
   - returns them as SSE over HTTP
-- `ApprovalWorkflowEndpoint`
+- a domain-specific approval workflow endpoint
   - adapts paused-workflow notifications into API records
   - returns them as SSE over HTTP
 

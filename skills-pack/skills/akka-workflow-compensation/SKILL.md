@@ -38,7 +38,7 @@ Use compensation for governed capabilities whose side effects may need safe reve
 
 ## Repository example
 
-- `TransferWorkflow`
+- a domain-specific workflow
   - withdraw succeeds first
   - deposit rejection updates workflow state to `DEPOSIT_REJECTED`
   - compensation deposits funds back to the source wallet

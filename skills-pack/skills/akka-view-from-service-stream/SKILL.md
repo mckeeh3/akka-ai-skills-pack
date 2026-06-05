@@ -59,7 +59,7 @@ If the subscriber should trigger side effects or downstream writes instead of ma
   - compare against consumer subscribers when deciding between projection and side effects
 - `WorkstreamEventAttentionConsumer`
   - producer-side service-stream example
-- `ReviewRequestsByStatusView`
+- a domain-specific workflow-status view
   - local reference for query wrappers and updater/query layout
 
 ## Design rules

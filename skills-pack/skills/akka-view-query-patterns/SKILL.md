@@ -62,17 +62,17 @@ Query:
 SELECT * AS rows
 FROM workstream_logs_by_checked_out
 WHERE checkedOut = :checkedOut
-  AND workstreamId >= :minCartId
+  AND workstreamId >= :minWorkstreamId
 ORDER BY workstreamId
 ```
 
 Java:
 ```java
-public record FindCheckedOutRows(boolean checkedOut, String minCartId) {}
+public record FindCheckedOutRows(boolean checkedOut, String minWorkstreamId) {}
 public record WorkstreamLogSummaries(List<WorkstreamLogSummary> rows) {}
 ```
 
-Call with `minCartId = ""` only when workstream ids are non-empty strings and lexicographic lower-bound behavior is correct.
+Call with `minWorkstreamId = ""` only when workstream ids are non-empty strings and lexicographic lower-bound behavior is correct.
 
 ### 2. Offset pagination wrapper
 
@@ -81,7 +81,7 @@ Query:
 SELECT * AS rows
 FROM workstream_logs_by_checked_out
 WHERE checkedOut = :checkedOut
-  AND workstreamId >= :minCartId
+  AND workstreamId >= :minWorkstreamId
 ORDER BY workstreamId
 OFFSET :offset
 LIMIT :pageSize
@@ -89,7 +89,7 @@ LIMIT :pageSize
 
 Java:
 ```java
-public record FindPage(boolean checkedOut, String minCartId, int offset, int pageSize) {}
+public record FindPage(boolean checkedOut, String minWorkstreamId, int offset, int pageSize) {}
 public record WorkstreamLogPage(List<WorkstreamLogSummary> rows) {}
 ```
 
@@ -105,13 +105,13 @@ Query:
 SELECT *
 FROM workstream_event_audit
 WHERE deleted = :deleted
-  AND workstreamId >= :minCartId
+  AND workstreamId >= :minWorkstreamId
 ORDER BY workstreamId
 ```
 
 Java:
 ```java
-public record FindByDeleted(boolean deleted, String minCartId) {}
+public record FindByDeleted(boolean deleted, String minWorkstreamId) {}
 
 public QueryStreamEffect<AuditRow> streamByDeleted(FindByDeleted request) {
   return queryStreamResult();
@@ -130,7 +130,7 @@ Query:
 SELECT * AS rows, total_count() AS totalCount
 FROM workstream_logs_by_checked_out
 WHERE checkedOut = :checkedOut
-  AND workstreamId >= :minCartId
+  AND workstreamId >= :minWorkstreamId
 ORDER BY workstreamId
 OFFSET :offset
 LIMIT :pageSize

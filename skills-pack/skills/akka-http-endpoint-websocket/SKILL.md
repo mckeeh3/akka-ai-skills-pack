@@ -37,7 +37,7 @@ Read these first if present:
 
 ## Repository example
 
-- `PingWebSocketEndpoint`
+- a domain-specific WebSocket endpoint
   - text WebSocket example
   - maps `ping` to `pong`
   - echoes any other text with a stable prefix

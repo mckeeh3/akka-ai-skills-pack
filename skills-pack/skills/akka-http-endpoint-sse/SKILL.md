@@ -50,20 +50,20 @@ Read these first if present:
 ## Repository examples
 
 ### Focused resumable SSE example
-- `CounterStreamEndpoint`
+- a domain-specific SSE endpoint
   - finite deterministic stream
   - uses `requestContext().lastSeenSseEventId()`
   - sets SSE ids and event type explicitly
   - tested with `SseRouteTester`
 
 ### Component-backed SSE examples
-- `WorkstreamEndpoint#notifications`
+- `WorkstreamEndpoint#events`
   - maps event sourced entity notifications to API records
-- `MeEndpoint#notifications`
+- a domain-specific authenticated notification stream
   - maps key value entity notifications to API records
 
 ### View-backed SSE example
-- `WorkstreamLogViewStreamEndpoint`
+- a domain-specific workstream log stream endpoint
   - streams a view query with `streamUpdates = true`
   - uses an SSE-specific view query with no `ORDER BY`
   - forwards `lastSeenSseEventId()` to the view stream offset

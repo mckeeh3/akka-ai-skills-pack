@@ -42,11 +42,11 @@ Workflow command handlers are capability entry/advance points. They should valid
 
 ## Repository examples
 
-- `TransferWorkflow`
+- a domain-specific workflow
   - start command updates state and transitions to a withdraw step
   - step-specific recovery overrides the default strategy
   - state keeps stable command ids for replay-safe downstream calls
-- `ApprovalWorkflow`
+- a domain-specific approval workflow
   - start command transitions to a pause step
   - read handler exposes current approval state
 - `ApprovalDeadlineWorkflow`
