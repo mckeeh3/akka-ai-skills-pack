@@ -503,21 +503,55 @@ content:
       category: component-suite
   references:
     - skills/README.md
-    - docs/minimum-ai-first-saas-app.md
+    - docs/agent-component-selection-guide.md
+    - docs/agent-coverage-matrix.md
+    - docs/agent-runtime-invocation-pattern.md
+    - docs/agent-runtime-state-reference.md
     - docs/agent-workstream-application-architecture.md
     - docs/agent-workstream-design-review-checklist.md
-    - docs/structured-surface-contracts.md
+    - docs/ai-first-saas-application-architecture.md
+    - docs/app-description-end-to-end-workflow-example.md
+    - docs/app-description-maintenance-flow.md
+    - docs/autonomous-agent-worker-runtime-pattern.md
     - docs/capability-first-backend-architecture.md
-    - docs/workstream-expertise-model.md
+    - docs/consumer-reference.md
     - docs/core-ai-first-saas-foundation.md
     - docs/core-saas-identity-tenancy-admin.md
     - docs/core-saas-owner-tenant-billing.md
-    - docs/requirements-to-workstream-development-process.md
-    - docs/prd-to-akka-flow.md
-    - docs/frontend-with-akka-backend.md
+    - docs/description-first-application-doctrine.md
+    - docs/domain-workstream-prd-structure.md
     - docs/examples/README.md
-    - docs/examples/requirements-to-workstream-mini-example.md
+    - docs/examples/ai-first-saas-core-app-domain/agent-admin-workstream/README.md
+    - docs/examples/ai-first-saas-core-app-domain/audit-trace-workstream/README.md
+    - docs/examples/ai-first-saas-core-app-domain/governance-policy-workstream/README.md
     - docs/examples/domain-workstream-surface-contract-example.md
+    - docs/examples/requirements-to-workstream-mini-example.md
+    - docs/frontend-with-akka-backend.md
+    - docs/intent-driven-usage-flow.md
+    - docs/internal-app-description-architecture.md
+    - docs/minimum-ai-first-saas-app.md
+    - docs/module-sprint-planning.md
+    - docs/pending-question-queue.md
+    - docs/pending-task-queue.md
+    - docs/prd-to-akka-flow.md
+    - docs/requirements-to-workstream-development-process.md
+    - docs/security-pattern-selection.md
+    - docs/security-review-checklist.md
+    - docs/security-workos-auth-and-admin.md
+    - docs/service-to-service-consumers.md
+    - docs/service-to-service-views.md
+    - docs/solution-plan-to-implementation-queue.md
+    - docs/structured-surface-contracts.md
+    - docs/timer-pattern-selection.md
+    - docs/web-ui-api-contract-patterns.md
+    - docs/web-ui-frontend-decomposition.md
+    - docs/web-ui-frontend-project-integration.md
+    - docs/web-ui-pattern-selection.md
+    - docs/web-ui-quality-checklist.md
+    - docs/web-ui-style-guide.md
+    - docs/web-ui-ux-patterns.md
+    - docs/workflow-endpoint-pattern.md
+    - docs/workstream-expertise-model.md
     - docs/workstream-ui-reference-architecture.md
     - templates/ai-first-saas-starter/app-description/README.md
     - templates/ai-first-saas-starter/app-description/12-workstreams/surfaces-index.md

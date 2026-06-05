@@ -2,6 +2,8 @@
 
 Purpose: map the official Akka agent topics to the local agent-optimized skills, executable examples, and tests in this repository.
 
+Maintenance note: rows that cite root app source paths such as `src/main/java/**`, `src/test/java/**`, or root `frontend/**` are source-checkout references, not installed skills-pack assets. Verify those path-specific rows against the runnable root app whenever core app packages or tests move; downstream projects may use their selected package path instead.
+
 Use this file when you need to answer:
 - which local skill should I load first?
 - what is the canonical example for this agent feature?

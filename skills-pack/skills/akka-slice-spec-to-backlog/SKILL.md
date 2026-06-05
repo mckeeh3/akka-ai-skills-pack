@@ -70,16 +70,16 @@ If a matching backlog file already exists:
 ## What this skill must produce
 
 For one target slice file such as:
-- `specs/slices/03-consumables-ordering.md`
+- `specs/slices/03-domain-specific-process.md`
 
 produce the matching backlog file:
-- `specs/backlog/03-consumables-ordering-build-backlog.md`
+- `specs/backlog/03-domain-specific-process-build-backlog.md`
 
 For one target sprint file such as:
-- `specs/sprints/03-consumables-ordering-sprint.md`
+- `specs/sprints/03-domain-specific-process-sprint.md`
 
 produce the matching backlog file:
-- `specs/backlog/03-consumables-ordering-build-backlog.md`
+- `specs/backlog/03-domain-specific-process-build-backlog.md`
 
 Also create or update:
 - `specs/pending-tasks.md`

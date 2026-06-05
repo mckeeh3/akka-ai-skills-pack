@@ -75,8 +75,8 @@ If a matching task brief already exists:
 ## What this skill must produce
 
 For one specific backlog item, produce one matching task brief such as:
-- source backlog: `specs/backlog/01-fleet-visibility-build-backlog.md`
-- target task brief: `specs/tasks/01-fleet-visibility-mvp/01-shared-foundations-and-tenant-settings.md`
+- source backlog: `specs/backlog/01-domain-specific-build-backlog.md`
+- target task brief: `specs/tasks/01-domain-specific/01-shared-foundations-and-tenant-settings.md`
 
 Also create or update the matching task entry in:
 - `specs/pending-tasks.md`
@@ -128,9 +128,9 @@ If any of these are required but unresolved, do not make the queue entry runnabl
 - use stable, short task filenames that describe the bounded work
 
 Examples:
-- `specs/tasks/01-fleet-visibility-mvp/01-shared-foundations-and-tenant-settings.md`
-- `specs/tasks/01-fleet-visibility-mvp/02-customer-and-site-kves.md`
-- `specs/tasks/03-consumables-ordering/03-order-workflow-core.md`
+- `specs/tasks/01-domain-specific/01-shared-foundations-and-tenant-settings.md`
+- `specs/tasks/01-domain-specific/02-core-entity-kves.md`
+- `specs/tasks/03-domain-specific-process/03-workflow-core.md`
 
 ### Scope preservation
 The task brief must not silently widen the backlog item or create a fresh parallel app/spec track. For existing apps, preserve core-app-extension assumptions, existing app-description/spec locations, queue IDs/statuses, Java base package, and style decisions unless the source backlog explicitly replaces them.
@@ -219,9 +219,9 @@ Before finishing, verify:
 ## Example invocation patterns
 
 Use prompts like:
-- "Read `specs/backlog/01-fleet-visibility-build-backlog.md` and turn task item 1 into a task brief under `specs/tasks/01-fleet-visibility-mvp/`."
-- "The `Ingestion endpoint` item in `specs/backlog/01-fleet-visibility-build-backlog.md` is still too large. Split it into one focused task brief."
-- "Create a `specs/tasks/...` brief for the `order workflow core` work in `specs/backlog/03-consumables-ordering-build-backlog.md`."
+- "Read `specs/backlog/01-domain-specific-build-backlog.md` and turn task item 1 into a task brief under `specs/tasks/01-domain-specific/`."
+- "The `Ingestion endpoint` item in `specs/backlog/01-domain-specific-build-backlog.md` is still too large. Split it into one focused task brief."
+- "Create a `specs/tasks/...` brief for the `workflow core` work in `specs/backlog/03-domain-specific-process-build-backlog.md`."
 - "Refine the existing task brief for `shared-foundations-and-tenant-settings` so it is implementable in one harness run."
 
 A good response should:
