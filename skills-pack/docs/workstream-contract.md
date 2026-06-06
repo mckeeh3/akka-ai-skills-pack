@@ -37,8 +37,8 @@ A workstream is not a page, route, CRUD module, chat session, Akka component, pr
 | Default surface | Initial dashboard, attention, briefing, or explicit deferred/system-message surface. |
 | Attention model | Workstream-local manifest category ids mapped to canonical `AttentionItem.category` values, severities, lifecycle, producers, idempotency, left-rail count effect, My Account aggregation effect, and tests; see `./workstream-attention-contracts.md`. |
 | Role-specific dashboards | Dashboard purpose and variants by role/AuthContext; the dashboard is the human surface graph trunk. |
-| Human surface graph | Nodes, edges, result surfaces, system-message surfaces, deep-link/surface-request behavior, stale/reconnect handling, and graph tests. |
-| Surface contracts | Stable surface ids/types/versions, payload summaries, states, actions, auth, redaction, traces, and tests under `12-workstreams/surface-contracts/**`. |
+| Human surface graph | Nodes, edges, result surfaces, deferred typed surfaces if any, system-message surfaces, deep-link/surface-request behavior, stale/reconnect handling, and graph tests. Recommended placement: `12-workstreams/surface-graph.md` plus `deferred-typed-surfaces.md` when first-slice fallbacks exist. |
+| Surface contracts | Stable surface ids/types/versions, exactly one owner functional agent, explicit reusable-by agents/workstreams, compact or full payload schemas, states, actions, auth, redaction, traces, and tests under `12-workstreams/surface-contracts/**`. |
 | Capability/governed-tool map | Every read/query/mutation/surface request/agent tool/internal action maps to a capability id, governed-tool id, exposure channel, schema, idempotency, policy, audit, and tests. The manifest carries lightweight `surfaceActionMappings` with surface id, action id, capability id, governed-tool id, exposure channel, auth basis, idempotency summary, result/system-message surface, and trace requirement; this mapping is required at `capability-ready` and above. |
 | Workstream expertise bundle | Required for LLM-backed functional agents: prompt intent, model binding, skills, references, manifests, loader tools, tool boundary, traces, governance owner, and tests. |
 | Internal workstream agent graph | Virtual dashboard agent, worker agents/AutonomousAgent tasks, delegation edges, progress/result/failure surfaces, escalation, authority basis, tool boundaries, traces, and tests when delegated/background model work exists. Manifest `internalWorkers` entries are structured when present; omit or use `[]` when no internal/background worker behavior is claimed. |
@@ -75,7 +75,7 @@ A product vertical such as `user-admin` may have many runtime instances, one per
 ## Ownership and reuse rules
 
 - Each workstream definition has exactly one owning functional agent.
-- A surface may be reusable across workstreams, but it has one owner and explicit `reusableByFunctionalAgentIds`.
+- A surface may be reusable across workstreams, but it has exactly one owner functional agent and explicit `reusableByFunctionalAgentIds`/reusable-by workstreams.
 - My Account may aggregate authorized attention across accessible workstreams, but it does not own the source workstreams or their source items.
 - Internal agents support a workstream through an internal graph; they are not left-rail workstreams unless they become user-facing responsibility boundaries.
 - Cross-workstream navigation is a governed surface-request edge such as `open_workstream` or `open_attention_item`; it does not create shared authority.
@@ -120,7 +120,9 @@ app-description/12-workstreams/
   workstreams-and-retention.md      # instance semantics, retention, redaction, durable log fields
   attention-and-dashboards.md       # attention categories, dashboard variants, My Account/rail aggregation
   internal-agents.md                # supporting internal agent graph candidates
-  surfaces-index.md                 # surface graph inventory
+  surfaces-index.md                 # surface inventory and shared/deferred/domain sections
+  surface-graph.md                  # explicit surface nodes and edges
+  deferred-typed-surfaces.md        # first-slice fallback/deferred result surfaces when present
   foundation-workstream-completeness.md # readiness/evidence/gap matrix for foundation workstreams
   surface-contracts/*.md            # structured surface contracts
   workstream-expertise/*.md         # one bundle per LLM-backed functional agent
@@ -138,7 +140,7 @@ A workstream contract is incomplete if any non-deferred item is missing:
 - [ ] exactly one owning functional agent is named;
 - [ ] role/AuthContext/tenant/customer authorization and hidden/denied states are specified;
 - [ ] attention categories and dashboard variants are specified;
-- [ ] surface graph nodes and edges map to structured surface contracts;
+- [ ] surface graph nodes and edges map to structured surface contracts, with exactly one owner per surface and explicit deferred typed surfaces where fallbacks remain;
 - [ ] every protected edge/action maps to a capability and governed-tool exposure channel, with manifest `surfaceActionMappings` required from `capability-ready` upward;
 - [ ] LLM-backed behavior has an expertise bundle and governed runtime path;
 - [ ] internal/background agent work has structured worker entries, graph, task lifecycle, authority, traces, and progress/result/failure surfaces;

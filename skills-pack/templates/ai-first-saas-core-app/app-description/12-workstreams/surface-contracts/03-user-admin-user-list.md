@@ -20,6 +20,17 @@ Payload must include:
 - pagination fields: `pageToken`, `nextPageToken`, `pageSize`, `sort`, stable query label;
 - state variants for loading, empty, error, forbidden, stale, conflict, and partial data.
 
+## Compact payload schema
+
+```ts
+type UserAdminUserListData = {
+  authContext: SurfaceAuthContext;
+  filters: { search?: string; accountStatus?: string; membershipStatus?: string; roleId?: string; invitationStatus?: string; riskLevel?: string; dashboardQueueId?: string };
+  rows: Array<{ rowId: string; accountId?: string; emailLabel: string; displayName?: string; membershipSummary: string; badges: string[]; riskFlags: string[]; redactionMarkers: string[]; rowTraceId: string }>;
+  pagination: { pageToken?: string; nextPageToken?: string; pageSize: number; sort: string; stableQueryLabel: string };
+};
+```
+
 ## Allowed actions
 
 | Action | Capability hint | Qualified exposure | Result surface |
@@ -37,6 +48,23 @@ Payload must include:
 | Open audit evidence | `admin.audit.read` / `audit.traces.view` | browser-tool | `audit-trace-explorer` |
 
 Allowed actions are display hints only; backend authorization remains authoritative.
+
+## Action mapping
+
+| actionId | browserToolId | governedToolId | capabilityId | exposure | resultSurfaceId | idempotency | traceRequired |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `user-admin.search-users` | `user-admin.users.search` | `useradmin.users.search` | `secure-tenant-user-foundation` | browser-tool, agent-tool | `user-admin-user-list` | query fingerprint | true |
+| `user-admin.open-user-account` | `user-admin.user.open` | `useradmin.users.detail.read` | `secure-tenant-user-foundation` | browser-tool, surface-request | `user-admin-user-account` | target account id | true |
+| `user-admin.create-invitation` | `user-admin.invitation.create` | `useradmin.invitation.create` | `secure-tenant-user-foundation` | browser-tool, agent-tool | deferred `invitation-draft-form`, row update, or `decision-card` | client-generated invitation request id | true |
+| `user-admin.resend-invitation` | `user-admin.invitation.resend` | `useradmin.invitation.resend` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list` or `system_message` | invitation id + client request id | true |
+| `user-admin.revoke-invitation` | `user-admin.invitation.revoke` | `useradmin.invitation.revoke` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list` or `system_message` | invitation id + client request id | true |
+| `user-admin.add-membership` | `user-admin.membership.add` | `useradmin.membership.add` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list` or `decision-card` | client-generated membership request id | true |
+| `user-admin.change-membership-status` | `user-admin.membership.change-status` | `useradmin.membership.change_status` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list`, `decision-card`, or `system_message` | membership id + requested status | true |
+| `user-admin.change-role` | `user-admin.role.change` | `useradmin.role.change` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list` or `decision-card` | membership id + target role + request id | true |
+| `user-admin.change-account-status` | `user-admin.account.change-status` | `useradmin.account.change_status` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list` or `system_message` | account id + requested status | true |
+| `user-admin.change-support-access` | `user-admin.support-access.change` | `useradmin.support_access.change` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list` or `decision-card` | support grant id + request id | true |
+| `user-admin.resolve-access-review` | `user-admin.access-review.resolve` | `useradmin.access_review.resolve` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list`, `user-admin-user-account`, or `decision-card` | review item id + decision id | true |
+| `user-admin.open-list-audit` | `user-admin.audit.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool | `audit-trace-explorer` | trace id | true |
 
 ## UI states
 

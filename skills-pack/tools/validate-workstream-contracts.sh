@@ -13,7 +13,7 @@ Default app-description-dir: app-description
 Checks:
   - core 12-workstreams files exist
   - machine-readable workstream-manifest.json exists and is internally consistent
-  - functional agents, workstream ids, attention/dashboard, retention, surfaces, and expertise are present
+  - functional agents, workstream ids, attention/dashboard, retention, surfaces, graph, deferred surface boundary, and expertise are present
   - surface and functional-agent traceability maps exist
   - each functional agent has a matching expertise bundle when workstream expertise is in scope
 EOF
@@ -49,6 +49,8 @@ require_file "$WORKSTREAM_DIR/workstreams-and-retention.md"
 require_file "$WORKSTREAM_DIR/attention-and-dashboards.md"
 require_file "$WORKSTREAM_DIR/internal-agents.md"
 require_file "$WORKSTREAM_DIR/surfaces-index.md"
+require_file "$WORKSTREAM_DIR/surface-graph.md"
+require_file "$WORKSTREAM_DIR/deferred-typed-surfaces.md"
 require_file "$WORKSTREAM_DIR/foundation-workstream-completeness.md"
 require_file "$WORKSTREAM_DIR/workstream-expertise/README.md"
 require_file "$TRACE_DIR/functional-agent-to-capability-map.md"
@@ -85,6 +87,10 @@ check_pattern "$WORKSTREAM_DIR/foundation-workstream-completeness.md" 'runtime-r
 
 check_pattern "$WORKSTREAM_DIR/surfaces-index.md" 'surface-contracts/' 'surface contract references'
 check_pattern "$WORKSTREAM_DIR/surfaces-index.md" 'system_message|markdown_response' 'base system/markdown surfaces'
+check_pattern "$WORKSTREAM_DIR/surfaces-index.md" 'Deferred typed surfaces|deferred-typed-surfaces' 'deferred typed surface section'
+check_pattern "$WORKSTREAM_DIR/surface-graph.md" 'edgeId|Foundation graph edges' 'surface graph edges'
+check_pattern "$WORKSTREAM_DIR/surface-graph.md" 'ownerFunctionalAgentId|owner functional agent' 'single-owner graph semantics'
+check_pattern "$WORKSTREAM_DIR/deferred-typed-surfaces.md" 'App-level cleanup boundary|app-development' 'app-level cleanup boundary'
 check_pattern "$TRACE_DIR/functional-agent-to-capability-map.md" 'Capability|capability' 'functional-agent capability traceability'
 check_pattern "$TRACE_DIR/surface-to-capability-map.md" 'Capability|capability' 'surface capability traceability'
 
@@ -98,6 +104,12 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [[ -f "$WORKSTREAM_DIR/workstream-manifest.json" ]]; then
   if ! "$SCRIPT_DIR/validate-workstream-manifest.py" "$ROOT"; then
+    failures=$((failures + 1))
+  fi
+fi
+
+if [[ -x "$SCRIPT_DIR/validate-surface-contracts.sh" ]]; then
+  if ! "$SCRIPT_DIR/validate-surface-contracts.sh" --mode implementation "$ROOT"; then
     failures=$((failures + 1))
   fi
 fi

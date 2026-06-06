@@ -21,12 +21,12 @@ Use this skill to update authoritative app-description surface contracts for age
 
 For each surface, define:
 
-- stable id, type, version, owning workstream definition, owning functional agent, reusable functional agents if any, and purpose
+- stable id, type, version, owning workstream definition, exactly one owning functional agent, reusable functional agents/workstreams if any, and purpose
 - actor roles/scopes and selected `AuthContext` requirements
 - payload schema summary with frontend-safe fields only
 - loading, empty, ready, submitting, success, validation-error, forbidden, conflict, stale/reconnect, partial-data, and failure states as applicable
 - visible and hidden/denied actions
-- browser action/tool id, governed backend capability/tool id, idempotency/correlation behavior, and approval gate for each consequential action
+- stable `actionId`, browser action/tool id, governed backend capability/tool id, idempotency/correlation behavior, result surface, and approval gate for each consequential action
 - target/result surface or typed `system_message`
 - trace/audit/work-trace links and redaction rules
 - accessibility/responsive expectations
@@ -39,6 +39,8 @@ For each surface, define:
 - Denials, approval-required results, validation failures, stale/reconnect, no-op, and background-work states are explicit structured outcomes.
 - Do not expose secrets, raw provider data, hidden roles, cross-tenant/customer identifiers, or privileged evidence in browser payloads.
 - Do not describe fixture/static/mock surfaces as normal generated-app runtime.
+- If a surface needs missing capability, governed-tool, action identity, authority, or result-surface semantics, ask or queue a blocking question instead of inventing stable implementation ids. Template examples may propose candidate ids only when clearly marked provisional.
+- Process/template baselines may list deferred typed surfaces and first-slice fallbacks; app-level implementation cleanup must replace consequential deferred surfaces before claiming capability readiness.
 
 ## Output contract
 
@@ -48,6 +50,6 @@ Update or propose updates to the app-description with:
 - affected capability/security/test/observability links
 - traceability map changes
 - assumptions and open questions
-- generation impact: localized UI/API change, backend capability change, or broader workstream redesign
+- generation impact: localized UI/API change, backend capability change, broader workstream redesign, or separate app-level surface implementation cleanup
 
 If a surface requires data, authority, or behavior not yet described, queue or ask the blocking question instead of inventing it.

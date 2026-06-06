@@ -18,6 +18,18 @@ Payload must include:
 - pagination/sort/filter metadata;
 - export and evidence-open action descriptors with capability ids, governed-tool ids, browser-tool ids, and denial categories.
 
+## Compact payload schema
+
+```ts
+type AuditTraceExplorerData = {
+  authContext: SurfaceAuthContext;
+  query: { text?: string; correlationId?: string; eventTypes: string[]; from?: string; to?: string; redactionProfile: string };
+  results: Array<{ traceId: string; eventType: string; actorLabel: string; sourceSurfaceId?: string; sourceActionId?: string; capabilityId?: string; occurredAt: string; outcome: string; omittedFieldKeys: string[] }>;
+  selectedTimeline?: Array<{ eventId: string; sequence?: number; label: string; evidenceRefs: string[]; redactionMarkers: string[] }>;
+  pagination: { pageToken?: string; nextPageToken?: string; pageSize: number; sort: string };
+};
+```
+
 ## Allowed actions
 
 | Action | Capability hint | Qualified exposure | Result surface |
@@ -28,6 +40,17 @@ Payload must include:
 | Open source surface | `workstream.surface.open` | browser-tool surface-request | source surface or denial |
 | Export scoped traces | `audit.traces.export` | browser-tool | export status/approval `system_message` |
 | Escalate anomaly | `audit.anomalies.escalate` | browser-tool | decision/exception card |
+
+## Action mapping
+
+| actionId | browserToolId | governedToolId | capabilityId | exposure | resultSurfaceId | idempotency | traceRequired |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `audit.search-traces` | `audit-trace.search` | `audit.traces.search` | `governance-decisions-audit` | browser-tool, agent-tool | `audit-trace-explorer` | query fingerprint | true |
+| `audit.open-trace-detail` | `audit-trace.detail.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool, agent-tool | `audit-trace-explorer` | trace id | true |
+| `audit.filter-by-correlation` | `audit-trace.correlation.filter` | `audit.traces.search` | `governance-decisions-audit` | browser-tool, surface-request | `audit-trace-explorer` | correlation id | true |
+| `audit.open-source-surface` | `audit-trace.source-surface.open` | `workstream.surface.open` | `frontend-shell-integration-patterns` | browser-tool, surface-request | source surface or `system_message` | source surface id + trace id | true |
+| `audit.export-scoped-traces` | `audit-trace.export` | `audit.traces.export` | `governance-decisions-audit` | browser-tool | deferred `trace-export-status`, `decision-card`, or `system_message` | export request id | true |
+| `audit.escalate-anomaly` | `audit-trace.anomaly.escalate` | `audit.anomalies.escalate` | `governance-decisions-audit` | browser-tool | `decision-card` or `system_message` | anomaly id + request id | true |
 
 ## UI states
 

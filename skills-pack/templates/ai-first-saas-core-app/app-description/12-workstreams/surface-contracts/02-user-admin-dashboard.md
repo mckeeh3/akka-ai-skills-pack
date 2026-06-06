@@ -19,6 +19,18 @@ Payload must include:
 - recent material changes with audit links;
 - action descriptors with browser-tool id, governed-tool id, capability id, confirmation/approval requirements, denial categories, and idempotency requirements.
 
+## Compact payload schema
+
+```ts
+type UserAdminDashboardData = {
+  authContext: SurfaceAuthContext;
+  attentionByCategory: Array<{ categoryId: string; count: number; highestSeverity: string; stale?: boolean }>;
+  summaryCards: Array<{ cardId: string; label: string; count: number; queueSurfaceId?: string; traceIds: string[] }>;
+  recentChanges: Array<{ changeId: string; label: string; occurredAt: string; auditTraceId: string; redactionMarkers: string[] }>;
+  riskFlags: Array<{ flagId: string; severity: string; relatedSurfaceId?: string; requiresDecision?: boolean }>;
+};
+```
+
 ## Allowed actions
 
 | Action | Capability hint | Qualified exposure | Result surface |
@@ -29,6 +41,17 @@ Payload must include:
 | Start access-risk investigation | `admin.access_review.investigate` | browser-tool, internal-tool | autonomous task progress/result surface or `system_message` SaaS Foundation App fallback |
 | Open audit evidence | `admin.audit.read` / `audit.traces.view` | browser-tool, agent-tool | `audit-trace-explorer` |
 | Draft invitation | `admin.invitations.draft` | browser-tool, agent-tool | invite form/decision card or `system_message` SaaS Foundation App fallback |
+
+## Action mapping
+
+| actionId | browserToolId | governedToolId | capabilityId | exposure | resultSurfaceId | idempotency | traceRequired |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `user-admin.refresh-dashboard` | `user-admin.dashboard.refresh` | `useradmin.dashboard.read` | `secure-tenant-user-foundation` | browser-tool, agent-tool | `user-admin-dashboard` | read-only request correlation id | true |
+| `user-admin.open-invitation-queue` | `user-admin.invitations.open-queue` | `useradmin.users.search` | `secure-tenant-user-foundation` | browser-tool, surface-request | `user-admin-user-list` | dashboard queue id | true |
+| `user-admin.open-access-review-queue` | `user-admin.access-review.open-queue` | `useradmin.access_review.read` | `secure-tenant-user-foundation` | browser-tool, surface-request | `user-admin-user-list` or `decision-card` | dashboard queue id | true |
+| `user-admin.start-access-risk-investigation` | `user-admin.access-risk.investigate` | `useradmin.access_review.investigate` | `secure-tenant-user-foundation` | browser-tool, internal-tool | deferred `task-progress-surface` or `system_message` | client-generated investigation request id | true |
+| `user-admin.open-audit-evidence` | `user-admin.audit.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool, agent-tool | `audit-trace-explorer` | trace id | true |
+| `user-admin.draft-invitation` | `user-admin.invitation.draft` | `useradmin.invitation.draft` | `secure-tenant-user-foundation` | browser-tool, agent-tool | deferred `invitation-draft-form`, `decision-card`, or `system_message` | client-generated draft id | true |
 
 ## UI states
 

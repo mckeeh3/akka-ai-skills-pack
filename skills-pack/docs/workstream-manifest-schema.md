@@ -8,7 +8,14 @@ Validate it with:
 tools/validate-workstream-manifest.py app-description
 ```
 
-`tools/validate-workstream-contracts.sh app-description` also invokes this manifest validator.
+`tools/validate-workstream-contracts.sh app-description` also invokes this manifest validator. Surface contracts have separate process/app modes:
+
+```bash
+tools/validate-surface-contracts.sh --mode template app-description
+tools/validate-surface-contracts.sh --mode implementation app-description
+```
+
+Implementation mode is readiness-aware. Workstreams at `capability-ready` and above must have complete `surfaceActionMappings` and must not rely on unresolved deferred result surfaces for their claimed scope.
 
 ## Required top-level shape
 

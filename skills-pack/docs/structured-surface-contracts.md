@@ -2,7 +2,7 @@
 
 Use this document when defining or implementing typed surfaces in an agent workstream application. It turns the surface guidance from `./agent-workstream-application-architecture.md`, the compact workstream fields in `./workstream-contract.md`, the attention contracts in `./workstream-attention-contracts.md`, and the requirements-to-workstream process in `./requirements-to-workstream-development-process.md` into an implementation contract for app descriptions, frontend code, HTTP APIs, realtime events, capability modeling, and tests.
 
-Source-controlled SaaS Foundation App assets live under `templates/ai-first-saas-core-app/app-description/**`. Use them as copy/adapt examples for the five-core workstream domain surface layer when a target project lacks an app-description surface baseline. Validate adapted target-project contracts with `tools/validate-surface-contracts.sh <app-description-dir>` when available.
+Source-controlled SaaS Foundation App assets live under `templates/ai-first-saas-core-app/app-description/**`. Use them as copy/adapt examples for the five-core workstream domain surface layer when a target project lacks an app-description surface baseline. Validate adapted target-project contracts with `tools/validate-surface-contracts.sh --mode template <app-description-dir>` for process/template baselines or `tools/validate-surface-contracts.sh --mode implementation <app-description-dir>` for app-level contracts. Implementation validation is readiness-aware; `capability-ready` and higher scopes must not rely on unresolved deferred result surfaces.
 
 A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear. All renderable system feedback in a workstream is also a surface, not an ad hoc UI string.
 
@@ -30,7 +30,7 @@ A workstream's surfaces form a **surface graph** rather than a flat page list. T
 
 Define the graph explicitly enough that implementation can preserve navigation, authority, and traceability:
 
-- **Nodes:** dashboard surfaces, attention-item surfaces, tables, forms, detail cards, decision/approval cards, workflow/task progress surfaces, audit/trace timelines, `markdown_response`, and `system_message` surfaces.
+- **Nodes:** dashboard surfaces, attention-item surfaces, tables, forms, detail cards, decision/approval cards, workflow/task progress surfaces, audit/trace timelines, `markdown_response`, and `system_message` surfaces. Each node has exactly one owner functional agent; reusable surfaces declare explicit reusable-by functional agents/workstreams.
 - **Edges:** surface actions, surface-request actions, deep links, prompt-entered requests, realtime refreshes, workflow/AutonomousAgent progress updates, and system-message results.
 - **Edge contract:** every edge maps to a governed backend capability and, when executable, to a governed-tool exposure such as a browser-tool, agent-tool, workflow-tool, timer-tool, consumer-tool, MCP-tool, or internal-tool.
 - **Result semantics:** an action should append a surface, update a surface, open another graph node, create a typed `system_message`, update dashboard attention, start/observe internal-agent work, or return a safe denial.
@@ -45,7 +45,7 @@ For each surface, define these fields before implementation:
 
 | Field | Required content |
 |---|---|
-| Surface identity | Stable `surfaceId`, display name, canonical type, semantic version, owner, lifecycle status. |
+| Surface identity | Stable `surfaceId`, display name, canonical type, semantic version, exactly one owner functional agent, explicit reusable-by agents/workstreams, lifecycle status. |
 | Placement | Owning functional agent, reusable functional agents, workstream entry point, embedded/drill-in/modal/side-panel/deep-link placement. |
 | Purpose | User outcome, business context, and when the surface should appear or refresh. |
 | Payload schema | Typed render payload, field formats, required/optional fields, nested records, pagination/sort/filter metadata, trace/correlation ids, version/stale markers. |
@@ -318,13 +318,13 @@ templates/ai-first-saas-core-app/app-description/
 
 Use that template for SaaS Foundation App surface shape and field density; copy only the files relevant to the target project and then adapt ids, roles, capabilities, tests, and domain-specific surfaces. The template is not a generated runtime baseline. For a compact non-core domain example, see `./examples/domain-workstream-surface-contract-example.md`.
 
-`tools/validate-surface-contracts.sh` performs lightweight structural checks for target app-description trees: index presence, referenced contract files, required contract fields, action/capability/governed-tool exposure details, auth/security, redaction, trace/correlation, tests, and traceability-map coverage. It is intentionally a guardrail, not a substitute for reviewing product semantics.
+`tools/validate-surface-contracts.sh` performs lightweight structural checks for target app-description trees. Use `--mode template` for process examples that may include compact mappings and deferred typed surfaces. Use `--mode implementation` for app-level contracts; it is readiness-aware and tightens checks for `capability-ready` and higher workstreams. Checks include index presence, referenced contract files, required contract fields, single-owner semantics, action/capability/governed-tool exposure details, auth/security, redaction, trace/correlation, tests, graph/map coverage, and deferred-surface handling. It is intentionally a guardrail, not a substitute for reviewing product semantics.
 
 ## Handoff checklist
 
 Before moving from surface design to code generation, verify:
 
-- [ ] Surface has stable identity, type, version, owner/reuse, placement, and purpose.
+- [ ] Surface has stable identity, type, version, exactly one owner functional agent, explicit reuse, placement, and purpose.
 - [ ] Payload schema is typed, scoped, redacted, traceable, and frontend-safe.
 - [ ] Every action, including surface-request/read actions, maps to a governed backend capability.
 - [ ] Backend authorization remains authoritative over UI visibility, prompt text, and tool descriptions.

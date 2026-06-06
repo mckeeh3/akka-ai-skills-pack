@@ -2,8 +2,8 @@
 
 - surface-id: `decision-card`
 - type/version: decision-card/v1
-- owner functional agents: User Admin, Agent Admin, Governance/Policy, or a domain-specific reviewer agent depending on the decision source
-- reusable surfaces: may be embedded in attention queues, approval flows, governance diff review, access review, and outcome review surfaces.
+- owner functional agent: `governance-policy-agent` (Governance/Policy)
+- reusable by: User Admin, Agent Admin, Audit/Trace, and domain-specific reviewer workstreams for approval, exception, access-review, behavior-change, and outcome-review gates.
 
 ## Placement and graph role
 
@@ -18,6 +18,20 @@ Payload must include:
 - redacted evidence bundle with source refs and omitted-field markers;
 - action descriptors for approve, reject, request changes, defer, escalate, request evidence, open source surface, and open audit trace.
 
+## Compact payload schema
+
+```ts
+type DecisionCardData = {
+  decisionId: string;
+  source: { workstreamId: string; surfaceId: string; actionId?: string; capabilityId?: string };
+  lifecycleStatus: string;
+  recommendation: { summary: string; confidence?: number; risk: string; impact: string; alternatives: string[] };
+  evidenceRefs: Array<{ refId: string; refType: string; label: string; redactionMarkers: string[] }>;
+  requiredReviewer: { roleOrCapability: string; approvalPolicyRef?: string };
+  dueAt?: string;
+};
+```
+
 ## Allowed actions
 
 | Action | Capability hint | Qualified exposure | Result surface |
@@ -29,6 +43,18 @@ Payload must include:
 | Escalate | `decisions.escalate` | browser-tool | target reviewer queue item |
 | Request more evidence | `decisions.evidence.request` | browser-tool, internal-tool | task progress/result surface |
 | Open trace/evidence | `audit.traces.view` | browser-tool | `audit-trace-explorer` |
+
+## Action mapping
+
+| actionId | browserToolId | governedToolId | capabilityId | exposure | resultSurfaceId | idempotency | traceRequired |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `decision.approve` | `decision-card.approve` | `decisions.approve` | `governance-decisions-audit` | browser-tool | `system_message`, source surface update, or deferred `task-progress-surface` | decision id + reviewer id + request id | true |
+| `decision.reject` | `decision-card.reject` | `decisions.reject` | `governance-decisions-audit` | browser-tool | source surface update or `system_message` | decision id + reviewer id + request id | true |
+| `decision.request-changes` | `decision-card.request-changes` | `decisions.request_changes` | `governance-decisions-audit` | browser-tool | deferred `behavior-diff-review` or `system_message` | decision id + reviewer id + request id | true |
+| `decision.defer` | `decision-card.defer` | `decisions.defer` | `governance-decisions-audit` | browser-tool | source attention update or `system_message` | decision id + defer reason + request id | true |
+| `decision.escalate` | `decision-card.escalate` | `decisions.escalate` | `governance-decisions-audit` | browser-tool | target reviewer queue item or `system_message` | decision id + target reviewer + request id | true |
+| `decision.request-evidence` | `decision-card.evidence.request` | `decisions.evidence.request` | `governance-decisions-audit` | browser-tool, internal-tool | deferred `task-progress-surface` or `system_message` | decision id + evidence request id | true |
+| `decision.open-trace` | `decision-card.trace.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool | `audit-trace-explorer` | trace id | true |
 
 ## UI states
 

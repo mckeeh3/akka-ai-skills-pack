@@ -2,8 +2,8 @@
 
 - surface-id: `agent-governance-center`
 - type/version: governance-workspace/v1
-- owner functional agents: `agent-admin-agent` and `governance-policy-agent`
-- reusable surfaces: behavior diff/proposal review, decision cards, audit trace explorer, prompt/skill/reference/version cards.
+- owner functional agent: `agent-admin-agent` (Agent Admin)
+- reusable by: `governance-policy-agent` for policy/approval review and by Audit/Trace for scoped evidence drill-ins.
 
 ## Placement and graph role
 
@@ -19,6 +19,18 @@ Payload must include:
 - prompt assembly, skill load, reference load, tool-boundary, model invocation, and work-trace links;
 - action descriptors with capability ids, governed-tool ids, browser-tool/agent-tool exposure labels, approval requirements, idempotency, and result surfaces.
 
+## Compact payload schema
+
+```ts
+type AgentGovernanceCenterData = {
+  authContext: SurfaceAuthContext;
+  governanceScope: { tenantId: string; selectedContextId: string; redactionProfile: string };
+  agentSummaries: Array<{ agentDefinitionId: string; displayName: string; lifecycleState: string; ownerSteward: string; authorityLevel: string; modelConfigRef?: string; riskFlags: string[] }>;
+  artifactSummaries: Array<{ artifactId: string; artifactType: string; activeVersion?: string; draftCount: number; reviewRequired: boolean; omittedFieldKeys: string[] }>;
+  proposalSummaries: Array<{ proposalId: string; proposalType: string; status: string; risk: string; decisionId?: string; traceIds: string[] }>;
+};
+```
+
 ## Allowed actions
 
 | Action | Capability hint | Qualified exposure | Result surface |
@@ -30,6 +42,18 @@ Payload must include:
 | Run safe test console | `agents.behavior.test` | browser-tool | test result surface and traces |
 | Open prompt/skill/reference version | `agents.documents.read` | browser-tool | version card/diff |
 | Open tool-boundary trace | `audit.traces.view` | browser-tool | `audit-trace-explorer` |
+
+## Action mapping
+
+| actionId | browserToolId | governedToolId | capabilityId | exposure | resultSurfaceId | idempotency | traceRequired |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `agent-governance.search-agents` | `agent-governance.agents.search` | `agents.catalog.search` | `managed-agent-foundation` | browser-tool, agent-tool | `agent-governance-center` | query fingerprint | true |
+| `agent-governance.open-agent-detail` | `agent-governance.agent.open` | `agents.detail.read` | `managed-agent-foundation` | browser-tool, surface-request | deferred `agent-detail-card` | agent definition id | true |
+| `agent-governance.propose-behavior-edit` | `agent-governance.behavior.propose` | `agents.behavior.propose` | `managed-agent-foundation` | browser-tool, agent-tool | deferred `behavior-diff-review` or `decision-card` | proposal request id | true |
+| `agent-governance.review-proposal` | `agent-governance.behavior.review` | `agents.behavior.review` | `governance-decisions-audit` | browser-tool | `decision-card` or `system_message` | proposal id + reviewer id + request id | true |
+| `agent-governance.run-safe-test` | `agent-governance.safe-test.run` | `agents.behavior.test` | `managed-agent-foundation` | browser-tool | deferred `safe-test-console-result` or `system_message` | test run request id | true |
+| `agent-governance.open-document-version` | `agent-governance.document-version.open` | `agents.documents.read` | `managed-agent-foundation` | browser-tool | deferred `agent-version-card` | document id + version id | true |
+| `agent-governance.open-tool-boundary-trace` | `agent-governance.tool-boundary-trace.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool | `audit-trace-explorer` | trace id | true |
 
 ## UI states
 

@@ -18,6 +18,19 @@ Payload must include:
 - action descriptors with browser-tool id, governed-tool id, capability id, input schema ref, confirmation/approval requirements, idempotency, denial categories, and result surface behavior;
 - freshness/stale marker tied to user directory and membership projections.
 
+## Compact payload schema
+
+```ts
+type UserAdminUserAccountData = {
+  authContext: SurfaceAuthContext;
+  target: { accountId?: string; hiddenNotFound?: boolean; redactionProfile: string };
+  accountProfile: { emailLabel?: string; displayName?: string; status?: string; omittedFieldKeys: string[] };
+  memberships: Array<{ membershipId: string; tenantId: string; customerId?: string; roleIds: string[]; status: string; lastAdminRisk?: boolean; supportAccessVisible?: boolean }>;
+  riskFlags: Array<{ flagId: string; severity: string; policyRef?: string; requiresDecision?: boolean }>;
+  recentAuditEvents: Array<{ traceId: string; label: string; occurredAt: string }>;
+};
+```
+
 ## Allowed actions
 
 | Action | Capability hint | Qualified exposure | Result surface |
@@ -29,6 +42,18 @@ Payload must include:
 | Grant/revoke/extend support access | `admin.support_access.*` | browser-tool | update detail or `decision-card` |
 | Resolve access-review item | `admin.access_review.resolve` | browser-tool | update detail, `decision-card`, or workflow status |
 | Open audit evidence | `admin.audit.read` / `audit.traces.view` | browser-tool | `audit-trace-explorer` |
+
+## Action mapping
+
+| actionId | browserToolId | governedToolId | capabilityId | exposure | resultSurfaceId | idempotency | traceRequired |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `user-admin.refresh-user-account` | `user-admin.user-detail.refresh` | `useradmin.users.detail.read` | `secure-tenant-user-foundation` | browser-tool, agent-tool | `user-admin-user-account` | target account id | true |
+| `user-admin.change-detail-membership` | `user-admin.user-detail.membership.change` | `useradmin.membership.change` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-account`, `decision-card`, or `system_message` | membership id + request id | true |
+| `user-admin.change-detail-role` | `user-admin.user-detail.role.change` | `useradmin.role.change` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-account` or `decision-card` | membership id + target role + request id | true |
+| `user-admin.change-detail-account-status` | `user-admin.user-detail.account.change-status` | `useradmin.account.change_status` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-account` or `system_message` | account id + requested status | true |
+| `user-admin.change-detail-support-access` | `user-admin.user-detail.support-access.change` | `useradmin.support_access.change` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-account` or `decision-card` | support grant id + request id | true |
+| `user-admin.resolve-detail-access-review` | `user-admin.user-detail.access-review.resolve` | `useradmin.access_review.resolve` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-account`, `decision-card`, or deferred `task-progress-surface` | review item id + decision id | true |
+| `user-admin.open-detail-audit` | `user-admin.user-detail.audit.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool | `audit-trace-explorer` | trace id | true |
 
 ## UI states
 

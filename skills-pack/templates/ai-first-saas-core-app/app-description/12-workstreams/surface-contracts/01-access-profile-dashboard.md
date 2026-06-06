@@ -19,6 +19,19 @@ Payload must include:
 - personal queue items with target workstream/surface ids, source trace ids, severity, lifecycle state, and redaction profile;
 - omitted-field markers for hidden memberships, support-only facts, disabled contexts, and forbidden workstreams.
 
+## Compact payload schema
+
+```ts
+type MyAccountDashboardData = {
+  authContext: SurfaceAuthContext;
+  availableContexts: Array<{ selectedContextId: string; label: string; tenantId: string; customerId?: string; disabledReason?: string }>;
+  accountSummary: { accountId: string; email: string; displayName?: string; membershipStatus: string; redactionMarkers: string[] };
+  profileSettingsSummary: { profileComplete: boolean; notificationStatus?: string; settingsWarnings: string[] };
+  attentionSummaries: WorkstreamAttentionSummary[];
+  personalQueueItems: Array<{ itemId: string; sourceWorkstreamId: string; targetSurfaceId?: string; severity: string; lifecycle: string; traceIds: string[] }>;
+};
+```
+
 ## Allowed actions
 
 | Action | Capability hint | Qualified exposure | Result surface |
@@ -32,6 +45,18 @@ Payload must include:
 | Open trace | `audit.traces.view` | browser-tool, agent-tool | `audit-trace-explorer` |
 
 Allowed actions are display hints only; backend authorization remains authoritative.
+
+## Action mapping
+
+| actionId | browserToolId | governedToolId | capabilityId | exposure | resultSurfaceId | idempotency | traceRequired |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `my-account.refresh-dashboard` | `my-account.dashboard.refresh` | `myaccount.dashboard.read` | `secure-tenant-user-foundation` | browser-tool, agent-tool | `my-account-dashboard` | read-only request correlation id | true |
+| `my-account.select-context` | `my-account.context.select` | `myaccount.context.select` | `secure-tenant-user-foundation` | browser-tool | `my-account-dashboard` or `system_message` | selectedContextId + accountId | true |
+| `my-account.open-profile` | `my-account.profile.open` | `myaccount.profile.read` | `secure-tenant-user-foundation` | browser-tool, surface-request | deferred `my-account-profile-card` or fallback | surface request correlation id | true |
+| `my-account.open-settings` | `my-account.settings.open` | `myaccount.settings.read` | `secure-tenant-user-foundation` | browser-tool, surface-request | deferred `my-account-settings-card` or fallback | surface request correlation id | true |
+| `my-account.open-attention-item` | `my-account.attention.open` | `workstream.attention.open` | `frontend-shell-integration-patterns` | browser-tool, surface-request | target workstream surface or `system_message` | source item id | true |
+| `my-account.open-workstream` | `my-account.workstream.open` | `workstream.open` | `frontend-shell-integration-patterns` | browser-tool, surface-request | target dashboard or `system_message` | target workstream id | true |
+| `my-account.open-trace` | `my-account.trace.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool, agent-tool | `audit-trace-explorer` | trace id | true |
 
 ## UI states
 
