@@ -33,8 +33,8 @@ tools/validate-workstream-manifest.py app-description
 | `readiness` | One of the readiness labels from `./workstream-contract.md`. |
 | `instanceScope` | Runtime instance key semantics. |
 | `authorizedActors` | Non-empty role/capability/AuthContext summary. |
-| `icon` | `iconId`, `visualHint`, `accentColorToken`, and `ariaLabel`. |
-| `attentionCategories` | List of category ids, or `[]` only with an explicit non-attention explanation in markdown. |
+| `icon` | `iconId`, `visualHint`, `accentColorToken`, `tooltip`, and `ariaLabel`. |
+| `attentionCategories` | Workstream-local category ids, or `[]` only with an explicit non-attention explanation in markdown. Each local id must be mapped in `attention-and-dashboards.md` producer contracts to a canonical `AttentionItem.category`, severity rules, producer, and lifecycle behavior. |
 | `surfaces` | Surface ids owned/reused by this workstream; must include `defaultSurfaceId`. |
 | `capabilities` | Capability family ids used by this workstream. |
 | `expertiseBundle` | Optional file name under `12-workstreams/workstream-expertise/`; required when LLM-backed behavior claims expertise readiness. |
@@ -85,7 +85,8 @@ When `attentionCategories` is non-empty, `12-workstreams/attention-and-dashboard
 producerId and version
 owning workstream and functional agent
 source family
-category/severity/lifecycle rules
+local manifest category id mapped to canonical AttentionItem.category
+severity/lifecycle rules using info | warning | urgent | blocked
 idempotency key strategy
 source/evidence refs
 visible roles/capabilities and redaction profile

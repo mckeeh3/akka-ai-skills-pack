@@ -43,7 +43,7 @@
 
 ### TASK-WCC-01-001: Align manifest required fields and attention vocabulary
 
-- status: pending
+- status: done
 - source: specs/workstream-contract-cleanup/conversation-capture.md decisions 1, 2, 3, 4, and 13
 - task brief: specs/workstream-contract-cleanup/tasks/01-contract-schema/01-align-manifest-required-fields.md
 - depends on:
@@ -80,6 +80,7 @@
   - checks pass and changes are committed
 - notes:
   - commit message: `skills-pack: align workstream manifest required fields`
+  - checks: `git diff --check`; `python3 skills-pack/tools/validate-workstream-manifest.py skills-pack/templates/ai-first-saas-core-app/app-description`; `bash skills-pack/tools/validate-workstream-contracts.sh skills-pack/templates/ai-first-saas-core-app/app-description`
 
 ### TASK-WCC-01-002: Add mapping, runtime evidence, and internal worker manifest contracts
 

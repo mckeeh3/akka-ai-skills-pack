@@ -181,7 +181,7 @@ type FunctionalAgentSummary = {
   icon?: string;
   defaultSurfaceType: string;
   requiredCapabilityIds: string[];
-  attention?: { count: number; severity: "info" | "warning" | "critical" };
+  attention?: { count: number; severity: "info" | "warning" | "urgent" | "blocked" };
   availability: "visible" | "hidden" | "denied" | "disabled";
   deniedReason?: string;
 };

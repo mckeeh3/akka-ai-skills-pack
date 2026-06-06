@@ -140,14 +140,14 @@ The count means: there are `N` open or escalated items in this workstream that c
 
 ## Producers and idempotency
 
-Every attention item is produced by a bounded backend producer, not by arbitrary UI logic.
+Every attention item is produced by a bounded backend producer, not by arbitrary UI logic. `workstream-manifest.json` uses workstream-local `attentionCategories` ids; producer contracts in `attention-and-dashboards.md` must map each local id to one canonical `AttentionItem.category`, the canonical severity vocabulary `info | warning | urgent | blocked`, lifecycle behavior, and producer ownership.
 
 A producer contract must define:
 
 - stable `producerId` and version;
 - source families consumed: domain events, workstream events, workflow state, AutonomousAgent task snapshots/results, timers, views, audit traces, policy outcomes, or external state;
 - target workstream and functional agent;
-- category/severity/lifecycle rules;
+- local manifest category id and canonical `AttentionItem.category` / severity / lifecycle rules;
 - actor/role assignment rules;
 - source refs and evidence refs;
 - idempotency key strategy;

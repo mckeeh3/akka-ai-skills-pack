@@ -29,12 +29,13 @@ A workstream is not a page, route, CRUD module, chat session, Akka component, pr
 | Display name and responsibility | User-facing name plus the durable business responsibility this workstream owns. |
 | Classification | `foundation` for SaaS Foundation App workstreams or `domain-specific` for business extensions. |
 | Owning functional/context-area agent | Exactly one user-facing functional agent id; internal agents may support but do not own the workstream. |
+| Managed agent definition id | Required tenant-governed managed-agent behavior record id for the owning functional agent; it may match `functionalAgentId` until separately named. |
 | Workstream icon metadata | Stable icon id, visual hint, accent token, tooltip, accessible label, and optional approved asset ref. |
 | Instance scope | Runtime instance key semantics such as `tenantId + selectedContextId + functionalAgentId`; optional customer/subthread keys only when explicitly created by capability contracts. |
 | Authorized actors | Roles, capability ids, membership status, support-access rules, service actors if any, and hidden/denied/disabled states. |
 | Selected AuthContext assumptions | Tenant/customer scope, account/member identity, role/capability snapshot, and support-access/redaction behavior. |
 | Default surface | Initial dashboard, attention, briefing, or explicit deferred/system-message surface. |
-| Attention model | Categories, severities, lifecycle, producers, idempotency, left-rail count effect, My Account aggregation effect, and tests; see `./workstream-attention-contracts.md`. |
+| Attention model | Workstream-local manifest category ids mapped to canonical `AttentionItem.category` values, severities, lifecycle, producers, idempotency, left-rail count effect, My Account aggregation effect, and tests; see `./workstream-attention-contracts.md`. |
 | Role-specific dashboards | Dashboard purpose and variants by role/AuthContext; the dashboard is the human surface graph trunk. |
 | Human surface graph | Nodes, edges, result surfaces, system-message surfaces, deep-link/surface-request behavior, stale/reconnect handling, and graph tests. |
 | Surface contracts | Stable surface ids/types/versions, payload summaries, states, actions, auth, redaction, traces, and tests under `12-workstreams/surface-contracts/**`. |

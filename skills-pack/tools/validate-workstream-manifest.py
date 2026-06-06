@@ -70,6 +70,7 @@ def main(argv: list[str]) -> int:
             "displayName",
             "classification",
             "functionalAgentId",
+            "managedAgentDefinitionId",
             "defaultSurfaceId",
             "readiness",
             "instanceScope",
@@ -87,6 +88,7 @@ def main(argv: list[str]) -> int:
 
         wid = str(ws.get("workstreamId", ""))
         agent = str(ws.get("functionalAgentId", ""))
+        managed_agent = str(ws.get("managedAgentDefinitionId", ""))
         default_surface = str(ws.get("defaultSurfaceId", ""))
         readiness = str(ws.get("readiness", ""))
         classification = str(ws.get("classification", ""))
@@ -99,6 +101,8 @@ def main(argv: list[str]) -> int:
 
         if not re.fullmatch(r"[-a-z0-9]+-agent", agent):
             fail(errors, f"{prefix}.functionalAgentId should be kebab-case and end with -agent: {agent!r}")
+        if not managed_agent:
+            fail(errors, f"{prefix}.managedAgentDefinitionId must be explicit; it may match functionalAgentId until separately named")
         if agent in seen_agents:
             fail(errors, f"functionalAgentId must own exactly one workstream in this manifest; duplicate: {agent}")
         seen_agents.add(agent)
@@ -109,8 +113,8 @@ def main(argv: list[str]) -> int:
             fail(errors, f"{prefix}.classification invalid: {classification!r}")
 
         icon = ws.get("icon")
-        if not isinstance(icon, dict) or not all(icon.get(k) for k in ["iconId", "visualHint", "accentColorToken", "ariaLabel"]):
-            fail(errors, f"{prefix}.icon must include iconId, visualHint, accentColorToken, ariaLabel")
+        if not isinstance(icon, dict) or not all(icon.get(k) for k in ["iconId", "visualHint", "accentColorToken", "tooltip", "ariaLabel"]):
+            fail(errors, f"{prefix}.icon must include iconId, visualHint, accentColorToken, tooltip, ariaLabel")
 
         actors = ws.get("authorizedActors")
         if not isinstance(actors, list) or not actors:
@@ -119,6 +123,18 @@ def main(argv: list[str]) -> int:
         attention = ws.get("attentionCategories")
         if attention != [] and (not isinstance(attention, list) or not all(isinstance(x, str) and x for x in attention)):
             fail(errors, f"{prefix}.attentionCategories must be [] or a list of strings")
+        if attention == []:
+            no_attention_evidence = (
+                mentions(attention_dashboards, f"`{wid}`")
+                and (
+                    mentions(attention_dashboards, "no actionable attention model")
+                    or mentions(attention_dashboards, "does not produce attention")
+                    or mentions(attention_dashboards, "does not produce actionable attention")
+                    or mentions(attention_dashboards, "intentionally does not produce attention")
+                )
+            )
+            if not no_attention_evidence:
+                fail(errors, f"{prefix}.attentionCategories is [] but attention-and-dashboards.md does not explain the non-attention model for {wid}")
 
         surfaces = ws.get("surfaces")
         if not isinstance(surfaces, list) or default_surface not in surfaces:
@@ -129,7 +145,7 @@ def main(argv: list[str]) -> int:
             surface_ids.update(surfaces)
 
         capabilities = ws.get("capabilities")
-        if not isinstance(capabilities, list) or not all(isinstance(c, str) and c for c in capabilities):
+        if not isinstance(capabilities, list) or not capabilities or not all(isinstance(c, str) and c for c in capabilities):
             fail(errors, f"{prefix}.capabilities must be a non-empty list of strings")
 
         expertise = ws.get("expertiseBundle")

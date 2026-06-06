@@ -22,6 +22,7 @@
         "displayName",
         "classification",
         "functionalAgentId",
+        "managedAgentDefinitionId",
         "defaultSurfaceId",
         "readiness",
         "instanceScope",
@@ -45,11 +46,12 @@
         "authorizedActors": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
         "icon": {
           "type": "object",
-          "required": ["iconId", "visualHint", "accentColorToken", "ariaLabel"],
+          "required": ["iconId", "visualHint", "accentColorToken", "tooltip", "ariaLabel"],
           "properties": {
             "iconId": { "type": "string", "minLength": 1 },
             "visualHint": { "type": "string", "minLength": 1 },
             "accentColorToken": { "type": "string", "minLength": 1 },
+            "tooltip": { "type": "string", "minLength": 1 },
             "ariaLabel": { "type": "string", "minLength": 1 },
             "assetRef": { "type": "string" }
           },
