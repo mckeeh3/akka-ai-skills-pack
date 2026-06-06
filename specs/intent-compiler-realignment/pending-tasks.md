@@ -74,7 +74,7 @@
 
 ### TASK-IC-02-001: Create canonical intent compiler docs
 
-- status: pending
+- status: done
 - source: specs/intent-compiler-realignment/backlog/01-intent-compiler-realignment-build-backlog.md
 - task brief: specs/intent-compiler-realignment/tasks/02-canonical-docs/01-create-canonical-intent-compiler-docs.md
 - depends on:

@@ -1,7 +1,17 @@
 # Intent Compiler Working Note
 
-Status: temporary working document  
-Scope: skills-pack direction for consuming, digesting, capturing, reacting to, and realizing incremental user intent.
+Status: superseded working document
+Scope: historical seed note for consuming, digesting, capturing, reacting to, and realizing incremental user intent.
+
+This note is superseded by the active canonical doc set:
+
+- [Intent Compiler](intent-compiler.md)
+- [Current Intent Model](current-intent-model.md)
+- [Incremental Intent Processing](incremental-intent-processing.md)
+- [Intent to Realization Flow](intent-to-realization-flow.md)
+- [Intent Compiler Skill Contracts](intent-compiler-skill-contracts.md)
+
+Keep this file only as temporary historical context until the legacy-doc archive task decides whether to replace it with a deprecation stub or move it into the archive.
 
 ## Core thesis
 
