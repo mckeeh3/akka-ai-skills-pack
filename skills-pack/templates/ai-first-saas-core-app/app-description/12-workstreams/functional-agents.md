@@ -14,13 +14,13 @@ This SaaS Foundation App description is modeled as a workstream application. Eac
 
 ## Workstream icon metadata
 
-| Workstream id | Icon id | Visual hint | Accent token | Accessible label |
-|---|---|---|---|---|
-| `my-account` | `account-user` | user/profile | `workstream.account` | My Account workstream |
-| `user-admin` | `users-shield` | users/shield | `workstream.user-admin` | User Admin workstream |
-| `agent-admin` | `agent-gear` | agent/gear | `workstream.agent-admin` | Agent Admin workstream |
-| `audit-trace` | `audit-search` | search/timeline | `workstream.audit` | Audit and Trace workstream |
-| `governance-policy` | `policy-shield` | shield/checklist | `workstream.governance` | Governance and Policy workstream |
+| Workstream id | Icon id | Visual hint | Accent token | Tooltip | Accessible label |
+|---|---|---|---|---|---|
+| `my-account` | `account-user` | user/profile | `workstream.account` | Manage profile, settings, context, and personal attention | My Account workstream |
+| `user-admin` | `users-shield` | users/shield | `workstream.user-admin` | Manage users, memberships, invitations, and access reviews | User Admin workstream |
+| `agent-admin` | `agent-gear` | agent/gear | `workstream.agent-admin` | Govern agent behavior, tools, prompts, and model readiness | Agent Admin workstream |
+| `audit-trace` | `audit-search` | search/timeline | `workstream.audit` | Investigate audit events, traces, decisions, and work evidence | Audit and Trace workstream |
+| `governance-policy` | `policy-shield` | shield/checklist | `workstream.governance` | Review policies, approvals, exceptions, and governance outcomes | Governance and Policy workstream |
 
 ## Functional-agent rules
 

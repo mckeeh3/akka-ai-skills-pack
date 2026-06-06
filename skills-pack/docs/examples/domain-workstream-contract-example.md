@@ -11,7 +11,8 @@ This example shows the expected shape for a non-foundation domain workstream. It
 | Responsibility | Help authorized sales users understand pipeline health, follow-up risk, opportunity exceptions, approval needs, and next best governed actions. |
 | Classification | `domain-specific` |
 | Owning functional/context-area agent | `sales-pipeline-agent` |
-| Icon metadata | `iconId: pipeline-chart`, `visualHint: rising-chart`, `accentColorToken: workstream.sales`, `ariaLabel: Sales Pipeline workstream` |
+| Managed agent definition id | `sales-pipeline-agent` until a separately named tenant-governed managed-agent record is introduced and mapped explicitly. |
+| Icon metadata | `iconId: pipeline-chart`, `visualHint: rising-chart`, `accentColorToken: workstream.sales`, `tooltip: Sales Pipeline`, `ariaLabel: Sales Pipeline workstream` |
 | Instance scope | `tenantId + selectedContextId + functionalAgentId`; customer scope only when selected customer context is active. |
 | Authorized actors | Sales Rep, Sales Manager, Revenue Ops, Auditor read-only; disabled users and cross-customer actors receive `system_message` denials. |
 | Default surface | `sales-pipeline-dashboard` |
@@ -19,12 +20,12 @@ This example shows the expected shape for a non-foundation domain workstream. It
 
 ## Attention categories
 
-| Category | Audience | Example source | Lifecycle | Aggregation |
-|---|---|---|---|---|
-| `overdue_item` | Sales Rep, Sales Manager | Opportunity follow-up due date passed. | open → acknowledged/resolved/escalated | Left rail and My Account for assigned actor. |
-| `approval` | Sales Manager | Discount exception requires approval. | open → approved/rejected/expired | Left rail and dashboard approvals count. |
-| `sla_risk` | Sales Rep, Manager | High-value opportunity idle for configured threshold. | open → resolved/dismissed/escalated | Dashboard risk card; My Account only for assigned owner. |
-| `audit_anomaly` | Revenue Ops, Auditor | Unusual stage change or policy conflict. | open → investigated/resolved | Audit/Trace cross-workstream link where authorized. |
+| Local manifest category id | Canonical `AttentionItem.category` | Audience | Example source | Severity rule | Lifecycle | Aggregation |
+|---|---|---|---|---|---|---|
+| `follow_up_overdue` | `overdue_item` | Sales Rep, Sales Manager | Opportunity follow-up due date passed. | `warning`; `urgent` when high-value or repeatedly overdue. | open → acknowledged/resolved/escalated | Left rail and My Account for assigned actor. |
+| `discount_approval` | `approval` | Sales Manager | Discount exception requires approval. | `info`; `urgent` when deadline or deal impact crosses policy threshold. | open → approved/rejected/expired | Left rail and dashboard approvals count. |
+| `pipeline_sla_risk` | `sla_risk` | Sales Rep, Manager | High-value opportunity idle for configured threshold. | `warning`; `blocked` when required evidence or human action is unavailable. | open → resolved/dismissed/escalated | Dashboard risk card; My Account only for assigned owner. |
+| `stage_audit_anomaly` | `audit_anomaly` | Revenue Ops, Auditor | Unusual stage change or policy conflict. | `warning` or `urgent` according to policy severity. | open → investigated/resolved | Audit/Trace cross-workstream link where authorized. |
 
 Producer contract example:
 

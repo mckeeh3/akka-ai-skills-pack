@@ -87,8 +87,9 @@ Use `./workstream-contract.md` as the compact field contract and `./workstream-m
 - `workstreamId`, display name, and responsibility;
 - whether this is the workstream definition/type or a runtime workstream instance/thread/log;
 - owner functional/context-area agent, exactly one per workstream definition;
+- required `managedAgentDefinitionId` for the tenant-governed managed-agent behavior record; it may match `functionalAgentId` until separately named;
 - authorized actors, roles, memberships, and tenant/customer scope;
-- workstream icon metadata;
+- workstream icon metadata including stable icon id, visual hint, accent token, tooltip, accessible label, and optional approved asset ref;
 - core-foundation vs domain-specific classification;
 - readiness level: `identified`, `described`, `surface-ready`, `capability-ready`, `expertise-ready`, `runtime-ready`, or `production-ready`.
 
@@ -97,9 +98,9 @@ Use `./workstream-contract.md` as the compact field contract and `./workstream-m
 Use `./workstream-attention-contracts.md` for the concrete `AttentionItem`, `WorkstreamAttentionSummary`, producer, idempotency, lifecycle, aggregation, and test contracts. Each workstream must answer the product question `what needs my attention?` for its authorized users.
 
 Record:
-- attention categories such as approval, decision, exception, policy conflict, blocked work, overdue item, failed action, SLA risk, audit anomaly, or outcome drift;
-- target audience for each category;
-- severity and lifecycle expectations: open, acknowledged, resolved, dismissed, expired, escalated;
+- workstream-local manifest attention category ids and their mapped canonical `AttentionItem.category` values such as approval, decision, exception, policy conflict, blocked work, overdue item, failed action, SLA risk, audit anomaly, or outcome drift;
+- target audience and producer for each local category;
+- severity rules using `info | warning | urgent | blocked`, plus lifecycle expectations: open, acknowledged, resolved, dismissed, expired, escalated;
 - whether the item contributes to left rail and My Account counts.
 
 Attention is not merely notification. It is a scoped, authorized, actionable signal that a human or participant may need to inspect, decide, approve, correct, retry, escalate, acknowledge, or learn from something.

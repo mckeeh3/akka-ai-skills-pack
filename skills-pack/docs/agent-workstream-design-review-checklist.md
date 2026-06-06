@@ -23,7 +23,7 @@ secure SaaS foundation
 ### Workstream decomposition and incremental inputs
 
 - [ ] Workstream definition/type, runtime workstream instance/thread/log, and browser workstream view/session terminology are not conflated.
-- [ ] Each workstream records the compact contract fields from `./workstream-contract.md`: id, responsibility, classification, exactly-one owning functional agent, icon metadata, instance scope, AuthContext, default surface, attention, surface graph, capability/governed-tool map, expertise, internal agent graph, retention, traces, tests, and readiness level.
+- [ ] Each workstream records the compact contract fields from `./workstream-contract.md`: id, responsibility, classification, exactly-one owning functional agent, required managed-agent definition id, icon metadata with tooltip, instance scope, AuthContext, default surface, attention, surface graph, capability/governed-tool map, expertise, internal agent graph, retention, traces, tests, and readiness level.
 - [ ] Broad PRDs first decide whether the requested functionality belongs in one workstream, multiple workstreams, core workstreams, app-specific workstreams, or shared foundation concerns.
 - [ ] Incremental feature requests, fixes, revised PRDs, manual test findings, and support issues reconcile against existing workstream graphs instead of creating parallel duplicate workstreams, surfaces, or governed-tools.
 - [ ] Authenticated consequential work areas are modeled first as role-authorized functional/context-area agents, not as pages, screens, CRUD modules, generic dashboards, or chat sessions.

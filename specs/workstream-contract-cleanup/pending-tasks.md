@@ -157,7 +157,7 @@
 
 ### TASK-WCC-01-004: Run focused workstream contract consistency sweep
 
-- status: pending
+- status: done
 - source: specs/workstream-contract-cleanup/backlog/01-workstream-contract-cleanup-build-backlog.md
 - task brief: specs/workstream-contract-cleanup/tasks/01-contract-schema/02-run-workstream-contract-consistency-sweep.md
 - depends on:
@@ -186,6 +186,7 @@
   - checks pass and changes are committed
 - notes:
   - commit message: `skills-pack: sweep workstream contract consistency`
+  - checks: `git diff --check`; `python3 skills-pack/tools/validate-workstream-manifest.py skills-pack/templates/ai-first-saas-core-app/app-description`; `bash skills-pack/tools/validate-workstream-contracts.sh skills-pack/templates/ai-first-saas-core-app/app-description`; `./skills-pack/install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune`; `./skills-pack/install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check`
 
 ### TASK-WCC-99-001: Verify workstream contract cleanup completion
 

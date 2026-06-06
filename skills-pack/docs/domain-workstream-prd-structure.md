@@ -98,15 +98,16 @@ It must state:
 
 - workstream id, display name, type-vs-runtime-instance semantics, purpose, and business responsibility;
 - backing functional/context-area agent; every workstream has exactly one;
+- required managed-agent definition id for the tenant-governed owning functional agent record; it may match the functional agent id until separately named;
 - authorized roles/capabilities and tenant/customer scope;
-- workstream icon metadata;
+- workstream icon metadata including icon id, visual hint, accent token, tooltip, accessible label, and optional asset ref;
 - default dashboard, attention, or briefing surface;
 - role-specific dashboards and the attention items each dashboard answers;
 - required surface graph nodes, edges, result surfaces, and system-message surfaces;
 - user intents the workstream agent must understand;
 - surface actions and surface-request actions;
-- capability inventory, governed-tool inventory, and exposure-channel summary;
-- internal workstream agent graph when background/delegated worker agents are part of the workstream;
+- capability inventory, governed-tool inventory, exposure-channel summary, and manifest `surfaceActionMappings` once the workstream claims `capability-ready` or higher;
+- internal workstream agent graph when background/delegated worker agents are part of the workstream, with structured worker ids, substrate, trigger, authority basis, capability/governed-tool ids, and progress/result/failure surfaces;
 - audit/work-trace behavior;
 - escalation, approval, denial, and exception behavior;
 - readiness level (`identified`, `described`, `surface-ready`, `capability-ready`, `expertise-ready`, `runtime-ready`, or `production-ready`) and not-ready conditions.

@@ -131,7 +131,7 @@ Avoid:
 
 Before finishing a functional-agent update, verify:
 
-- [ ] each user-facing functional agent has workstream id/responsibility, definition-vs-instance semantics, readiness level, purpose, authority, workstream icon metadata, attention/dashboard contract, surfaces, capabilities, and when LLM-enabled, a workstream expert bundle with prompt intent, explicit `ModelConfigRef`/`ModelPolicy` or inherited governed default model binding, skills, references, compact manifest, tool boundary/loaders, traces, and tests;
+- [ ] each user-facing functional agent has workstream id/responsibility, required managed-agent definition id, definition-vs-instance semantics, readiness level, purpose, authority, workstream icon metadata with tooltip, attention/dashboard contract, surfaces, capabilities, and when LLM-enabled, a workstream expert bundle with prompt intent, explicit `ModelConfigRef`/`ModelPolicy` or inherited governed default model binding, skills, references, compact manifest, tool boundary/loaders, traces, and tests;
 - [ ] functional agents are distinguished from internal agents;
 - [ ] every side-effecting action maps to a governed capability and backend authorization rule;
 - [ ] surfaces are typed and linked to capability-backed actions;

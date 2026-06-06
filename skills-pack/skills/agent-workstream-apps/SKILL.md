@@ -46,9 +46,9 @@ Routes and pages are implementation/deep-link details. Backend capabilities and 
 
 For each workstream/functional agent, define:
 
-- workstream id, responsibility, exactly-one owning functional agent, icon metadata, instance scope, and readiness level
+- workstream id, responsibility, exactly-one owning functional agent, required managed-agent definition id, icon metadata with tooltip, instance scope, and readiness level
 - actor roles, scopes, capabilities, hidden/denied states, and default selection
-- backend-owned attention categories, producers, lifecycle, My Account/rail aggregation, and dashboard variants
+- backend-owned workstream-local attention category ids, canonical category/severity mappings, producers, lifecycle, My Account/rail aggregation, and dashboard variants
 - prompt intent and bounded authority
 - allowed backend capabilities/tools and approval gates
 - dashboard/attention model and evidence freshness
