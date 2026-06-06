@@ -70,15 +70,16 @@ Covered coverage:
 
 ### P0: first domain-neutral executable AI-first decision/work trace slice
 
-Status: **planned; implementation shape captured**.
+Status: **acceptance-shape reference added; Java Akka fixture still open**.
 
 Planning reference: `docs/examples/domain-neutral-decision-work-trace-slice.md`.
+Executable acceptance reference: `examples/ai-first-semantic-slices/decision-work-trace/README.md`.
 
-Need: implement the compact domain-neutral fixture described there so future harnesses have executable coverage for durable evidence-backed decisions, retained human authority, policy gates, trace completeness, idempotency, and outcome linkage without depending on an app-specific vertical such as supplies, finance, procurement, or fleet operations.
+Need: implement the compact domain-neutral Java/Akka fixture described there when future work requires executable component code. The current semantic slice gives harnesses a concrete local Akka/API acceptance path for durable evidence-backed decisions, retained human authority, policy gates, trace completeness, idempotency, and outcome linkage without depending on an app-specific vertical such as supplies, finance, procurement, or fleet operations.
 
 ### P0: explicit AI-first acceptance/evaluation test patterns
 
-Status: **partially covered by core app foundation and governed-agent tests; domain-neutral decision acceptance tests remain open**.
+Status: **partially covered by core app foundation, governed-agent tests, and the domain-neutral decision/work-trace acceptance reference; Java Akka fixture tests remain open**.
 
 Needed patterns:
 

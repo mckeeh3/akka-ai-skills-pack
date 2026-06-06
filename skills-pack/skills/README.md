@@ -59,6 +59,7 @@ Canonical doctrine:
 - `../docs/core-saas-identity-tenancy-admin.md`
 - `../docs/full-core-foundation-readiness.md`
 - `../docs/core-saas-owner-tenant-billing.md`
+- `../docs/skill-consolidation-and-pruning.md` for pack-maintenance tightening, merge, and pruning policy
 
 Top-level entry skills:
 

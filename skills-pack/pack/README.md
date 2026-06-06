@@ -55,7 +55,7 @@ Recommended release flow:
 6. create an annotated git tag with `pack/maintainer/tools/release.sh` when cutting a release
 7. push the release commit/tag when ready
 
-Keep maintainer backlog, gap lists, and release planning under `pack/maintainer/**` until converted into concrete installed docs, examples, tools, or skills.
+Keep maintainer backlog, gap lists, and release planning under `pack/maintainer/**` until converted into concrete installed docs, examples, tools, or skills. Prefer `pack/maintainer/skill-routing-summary.md` before opening the long historical `pack/maintainer/skill-routing-reference.md`.
 
 ## Installer UX
 

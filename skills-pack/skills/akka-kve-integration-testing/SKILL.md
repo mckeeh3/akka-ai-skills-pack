@@ -5,91 +5,38 @@ description: Write integration tests for Akka key value entity flows using TestK
 
 # Akka KVE Integration Testing
 
-Use this skill for service-level tests involving key value entities.
+Use this skill for service-level tests involving Key Value Entities.
 
 ## Generated SaaS input contract
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
 
 ## Required reading
 
 Read these first if present:
+
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
 - `../docs/akka-entity-testing-shared-patterns.md`
+- `../references/akka-entity-integration-testing-patterns.md`
 
-## Test harness rules
+## Key-value specifics
 
-Integration tests should:
-- extend `TestKitSupport`
-- use `httpClient` for endpoint tests
-- use `componentClient` for internal component-to-component calls
-- verify externally visible behavior, not internal implementation details only
+Cover Key Value Entity behavior that can only be proven through persisted current state and state-change reactions:
 
-## Endpoint test pattern
-
-Use when validating HTTP behavior:
-- invoke endpoint routes with `httpClient`
-- send request bodies as API request records
-- deserialize responses as API response records
-- assert HTTP success or expected failure behavior
-
-Pattern references:
-- target-project endpoint integration tests for the key-value-backed API under test
-- current curated endpoint/service shape: `examples/akka-components/src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java` and `examples/akka-components/src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java`
-
-## Consumer-driven flow pattern
-
-Use when a state change from one entity triggers work in another component:
-- drive the flow through the edge component or endpoint
-- wait for the downstream state to appear
-- assert final state using `componentClient` or endpoint reads
-- account for asynchronous propagation
-
-Pattern references:
-- target-project consumer-driven integration tests for the key-value state-change flow under test
-- current curated consumer/service shape: `examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java` and `examples/akka-components/src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java`
-
-## Waiting strategy
-
-When the flow is asynchronous:
-- do not assume immediate consistency
-- poll or await until the expected state is visible
-- keep timeouts explicit and reasonable
-
-## What to cover
-
-Prefer these categories:
-1. endpoint round trip success
-2. validation failure mapped to HTTP behavior
-3. update flow changing persistent state
-4. end-to-end consumer or workflow driven interaction
-5. idempotent or repeated command behavior when important
-
-## Generated SaaS test set
-
-For generated SaaS entity work, derive tests from the capability contract, not only from entity mechanics:
-- authorized success with tenant/customer scoped identifiers or state;
-- validation failure and safe reply shape;
-- no-op/idempotent duplicate command behavior;
-- forbidden or cross-tenant attempts when the entity method is directly exposed or called by endpoints/tools/workflows;
-- audit/work-trace expectations for consequential commands, denials, and data access;
-- exposure parity for HTTP/gRPC/MCP/tool/surface flows when the entity backs those surfaces.
-
-
-## Anti-patterns
-
-Avoid:
-- using `componentClient` to test endpoint HTTP contracts
-- assuming consumer-driven flows are synchronous
-- exposing domain records as external API test payloads when endpoint-specific types exist
-- testing only happy paths
+1. endpoint or component command updates the expected durable state;
+2. read paths expose the latest authorized state, not direct fixture objects;
+3. duplicate/idempotent commands preserve state and do not trigger duplicate consequential side effects;
+4. consumers or views react to the intended state changes and handle delete/no-op behavior safely;
+5. authorization denials and validation failures avoid accidental state mutation;
+6. audit/work-trace expectations preserve correlation ids, policy/evidence refs, state-change summary, and actor scope when consequential.
 
 ## Review checklist
 
 Before finishing, verify:
-- test extends `TestKitSupport`
-- endpoint tests use `httpClient`
-- internal follow-up checks use `componentClient` where appropriate
-- async flows wait explicitly
-- validation failures are asserted, not ignored
+
+- shared patterns in `../references/akka-entity-integration-testing-patterns.md` are applied;
+- endpoint tests use `httpClient` and endpoint DTOs;
+- internal checks use `componentClient` where appropriate;
+- async projections/consumers wait explicitly;
+- state update, idempotency, validation, delete/no-op, and denial behavior are asserted.

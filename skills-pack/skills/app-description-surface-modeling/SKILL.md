@@ -176,4 +176,4 @@ Before finishing a surface update, verify:
 - [ ] surfaces can be reused across functional agents when appropriate;
 - [ ] UI rendering details are linked without making page/screen hierarchy primary;
 - [ ] surface-to-capability traceability is updated;
-- [ ] `tools/validate-surface-contracts.sh <app-description-dir>` passes when the target project includes a surface-contract layer and the tool is available.
+- [ ] `../tools/validate-surface-contracts.sh <app-description-dir>` passes when the target project includes a surface-contract layer and the tool is available.

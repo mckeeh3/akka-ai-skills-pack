@@ -139,7 +139,7 @@ Repository examples:
 Use `akka-consumer-testing`.
 
 Pattern references:
-- `examples/akka-components/src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java`
+- `../examples/akka-components/src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java`
 - target-project workflow/topic consumer integration tests when that source type is in scope
 
 ## Final review checklist

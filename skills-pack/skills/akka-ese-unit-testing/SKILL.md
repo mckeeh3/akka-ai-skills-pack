@@ -68,7 +68,7 @@ Use these `EventSourcedTestKit` capabilities:
   - one command persisting two events
   - no-op for missing item
   - strongly consistent read pattern
-- current curated governed-document tests: `examples/akka-components/src/test/java/ai/first/application/foundation/agent/GovernedDocumentEntityTest.java`
+- current curated governed-document tests: `../examples/akka-components/src/test/java/ai/first/application/foundation/agent/GovernedDocumentEntityTest.java`
 
 ### TTL test
 - target-project TTL tests for entities that configure `expireAfter(...)`

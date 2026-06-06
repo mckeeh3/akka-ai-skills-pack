@@ -128,8 +128,8 @@ Keep those route families separate so a future agent can infer intent from the p
 The current curated core-app examples focus on HTTP API/workstream route shape, not standalone SSE/WebSocket demo endpoints. For SSE or WebSocket mechanics, load the focused endpoint skill and implement target-project tests against the named capability, tenant/customer scope, authorization, and work trace.
 
 Current curated references:
-- `examples/akka-components/src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java` for co-hosted workstream HTTP endpoint shape
-- `examples/akka-components/src/main/java/ai/first/api/foundation/security/MeEndpoint.java` for protected API/auth boundary shape
+- `../examples/akka-components/src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java` for co-hosted workstream HTTP endpoint shape
+- `../examples/akka-components/src/main/java/ai/first/api/foundation/security/MeEndpoint.java` for protected API/auth boundary shape
 
 Static UI page fixtures were removed; generated app shells should come from the target project's frontend build output.
 

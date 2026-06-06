@@ -47,10 +47,21 @@ def main() -> None:
             print(f"stale_in_index: {path}", file=sys.stderr)
         fail("REFERENCE-INDEX.md does not match examples/akka-components/src")
 
-    if len(actual) > 120:
+    if len(actual) > 90:
         fail(f"curated examples too large ({len(actual)} files); do not mirror the root app")
 
-    print("curated_example_index=ok")
+    support_context = len(re.findall(r"— support context\.", text))
+    primary_patterns = len(re.findall(r"— primary pattern reference\.", text))
+    test_coverage = len(re.findall(r"— test/reference coverage\.", text))
+    if support_context > 20:
+        fail(f"too many support-context example files ({support_context}); prune or promote with a primary reference")
+    if primary_patterns > 60:
+        fail(f"too many primary example files ({primary_patterns}); split or prune the Java snapshot")
+
+    print(
+        "curated_example_index=ok "
+        f"files={len(actual)} primary={primary_patterns} support={support_context} tests={test_coverage}"
+    )
 
 
 if __name__ == "__main__":

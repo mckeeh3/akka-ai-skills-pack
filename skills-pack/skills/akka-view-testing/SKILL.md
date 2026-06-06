@@ -51,10 +51,10 @@ For each reusable view example, cover at least:
 ## Repository examples
 
 ### Current curated view references
-- `examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserDirectoryView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserDirectoryView.java`
   - user directory projection/query shape
   - pair with target-project view integration tests for mocked updates and eventual consistency
-- `examples/akka-components/src/main/java/ai/first/application/foundation/audit/AdminAuditView.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/audit/AdminAuditView.java`
   - audit query/read-model shape
   - pair with target-project tests for stream/delete/query behavior
 

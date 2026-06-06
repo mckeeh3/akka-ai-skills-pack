@@ -50,6 +50,11 @@ PROJECT_PLACEHOLDER_PREFIXES = (
 SKIP_MARKERS = ("://", "*", "<", ">", "...")
 INSTALLED_TOP_LEVEL_FILES = {"README.md"}
 INSTALLED_ASSET_DIRS = {"docs", "examples", "templates", "tools", "references"}
+# From inside an installed skill directory, pack asset references must step up
+# to the installed .agents/skills root. Bare examples/tools/templates/references
+# paths otherwise look valid in source but fail for agents resolving paths
+# relative to .agents/skills/<skill>/SKILL.md.
+BARE_ASSET_PREFIXES_FOR_SKILLS = ("examples/", "templates/", "tools/", "references/")
 
 
 def is_candidate(ref: str) -> bool:
@@ -118,10 +123,13 @@ def main() -> int:
         return 1
     checked = 0
     broken: list[tuple[Path, str, Path]] = []
+    bare_asset_refs: list[tuple[Path, str]] = []
 
     for audit_file in audit_files:
         for match in BACKTICK_RE.finditer(audit_file.read_text()):
             ref = match.group(1).strip()
+            if audit_file in skill_files and ref.startswith(BARE_ASSET_PREFIXES_FOR_SKILLS):
+                bare_asset_refs.append((audit_file.relative_to(repo_root), ref))
             if not is_candidate(ref):
                 continue
             target = resolve_ref(audit_file, ref, repo_root)
@@ -129,7 +137,10 @@ def main() -> int:
             if not installed_layout_exists(target, repo_root):
                 broken.append((audit_file.relative_to(repo_root), ref, target.relative_to(repo_root) if target.is_relative_to(repo_root) else target))
 
-    print(f"skill_files={len(skill_files)} reference_files={len(reference_files)} checked_refs={checked} broken_refs={len(broken)}")
+    print(
+        f"skill_files={len(skill_files)} reference_files={len(reference_files)} "
+        f"checked_refs={checked} broken_refs={len(broken)} bare_asset_refs={len(bare_asset_refs)}"
+    )
     if broken and not args.quiet:
         current = None
         for skill_file, ref, target in broken:
@@ -137,7 +148,11 @@ def main() -> int:
                 print(f"\n{skill_file}")
                 current = skill_file
             print(f"  {ref} -> {target}")
-    return 1 if broken else 0
+    if bare_asset_refs and not args.quiet:
+        print("\nBare installed-asset refs in skills (use ../examples, ../tools, ../templates, or ../references):")
+        for skill_file, ref in bare_asset_refs:
+            print(f"  {skill_file}: {ref}")
+    return 1 if broken or bare_asset_refs else 0
 
 
 if __name__ == "__main__":

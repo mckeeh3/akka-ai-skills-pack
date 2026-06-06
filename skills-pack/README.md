@@ -9,7 +9,7 @@ Primary maintenance entry points:
 - `AGENTS.md` — source-maintainer guidance for skills-pack work
 - `skills/README.md` — skill routing map installed with the skills
 - `skills/*/SKILL.md` — focused harness guidance installed into `.agents/skills` or `~/.agents/skills`
-- `docs/` — source-attention doctrine, routing, and reference docs; start with `docs/generated-saas-canonical-doctrine.md` for shared generated-app rules
+- `docs/` — source-attention doctrine, routing, and reference docs; start with `docs/generated-saas-canonical-doctrine.md` for shared generated-app rules and `docs/skill-consolidation-and-pruning.md` for pack-tightening policy
 - `examples/` — code examples used by installed skills as generation guidance for real Akka/core-app implementation patterns
 - `templates/` — source-attention core app-description assets
 - root `akka-context/` — official Akka reference material kept at repository top level and not installed
