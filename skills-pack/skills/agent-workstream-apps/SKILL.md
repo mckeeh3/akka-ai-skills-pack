@@ -10,6 +10,8 @@ Use this skill when a generated or extended SaaS app should be modeled as a set 
 ## Required reading
 
 - `../docs/agent-workstream-application-architecture.md`
+- `../docs/workstream-contract.md`
+- `../docs/workstream-attention-contracts.md`
 - `../docs/workstream-ui-reference-architecture.md`
 - `../docs/structured-surface-contracts.md`
 - `../docs/capability-first-backend-architecture.md`
@@ -21,7 +23,8 @@ Use this skill when a generated or extended SaaS app should be modeled as a set 
 A workstream app has:
 
 - authenticated shell and selected `AuthContext`
-- functional-agent rail with role/capability visibility and attention state
+- explicit workstream definition/type, runtime workstream instance/thread/log, browser view/session terminology, and readiness level
+- functional-agent rail with role/capability visibility and backend-owned attention state
 - continuous stream/composer for work history and requests
 - structured surfaces for dashboards, tables, forms, detail cards, decision cards, diffs, audit timelines, evidence bundles, and system messages
 - surface graph edges backed by browser actions, governed backend capabilities/tools, authorization, audit/work traces, and result surfaces
@@ -43,7 +46,9 @@ Routes and pages are implementation/deep-link details. Backend capabilities and 
 
 For each workstream/functional agent, define:
 
+- workstream id, responsibility, exactly-one owning functional agent, icon metadata, instance scope, and readiness level
 - actor roles, scopes, capabilities, hidden/denied states, and default selection
+- backend-owned attention categories, producers, lifecycle, My Account/rail aggregation, and dashboard variants
 - prompt intent and bounded authority
 - allowed backend capabilities/tools and approval gates
 - dashboard/attention model and evidence freshness

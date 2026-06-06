@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Use this checklist when reviewing generated full-stack AI-first SaaS doctrine, skills, app descriptions, specs, examples, SaaS Foundation Apps, and generation guidance. It is a compact guardrail for keeping design content aligned with the canonical workstream graph and governed-tool model.
+Use this checklist when reviewing generated full-stack AI-first SaaS doctrine, skills, app descriptions, specs, examples, SaaS Foundation Apps, and generation guidance. It is a compact guardrail for keeping design content aligned with `./workstream-contract.md`, `./workstream-attention-contracts.md`, the canonical workstream graph, and governed-tool model.
 
 Canonical model:
 
@@ -22,6 +22,8 @@ secure SaaS foundation
 
 ### Workstream decomposition and incremental inputs
 
+- [ ] Workstream definition/type, runtime workstream instance/thread/log, and browser workstream view/session terminology are not conflated.
+- [ ] Each workstream records the compact contract fields from `./workstream-contract.md`: id, responsibility, classification, exactly-one owning functional agent, icon metadata, instance scope, AuthContext, default surface, attention, surface graph, capability/governed-tool map, expertise, internal agent graph, retention, traces, tests, and readiness level.
 - [ ] Broad PRDs first decide whether the requested functionality belongs in one workstream, multiple workstreams, core workstreams, app-specific workstreams, or shared foundation concerns.
 - [ ] Incremental feature requests, fixes, revised PRDs, manual test findings, and support issues reconcile against existing workstream graphs instead of creating parallel duplicate workstreams, surfaces, or governed-tools.
 - [ ] Authenticated consequential work areas are modeled first as role-authorized functional/context-area agents, not as pages, screens, CRUD modules, generic dashboards, or chat sessions.
@@ -34,6 +36,7 @@ secure SaaS foundation
 - [ ] Dashboard behavior is role/AuthContext/tenant/customer scoped; different roles may see different attention items, allowed browser-tools, data visibility, and escalation obligations.
 - [ ] Dashboard attention items identify source, freshness, severity/lifecycle, evidence basis, authority basis, trace/correlation ids, and whether the source is a projection/view, computed source, internal-agent result, policy/evidence result, external state, or mixed source.
 - [ ] My Account and left-rail attention projections aggregate only authorized attention and do not replace per-workstream role-specific dashboards.
+- [ ] Attention items follow `./workstream-attention-contracts.md`: backend producer id/version, deterministic idempotency, lifecycle, source/evidence refs, redaction, trace ids, stale/recompute behavior, and authorized actions.
 
 ### Human surface graph
 
@@ -69,7 +72,7 @@ secure SaaS foundation
 
 ### App-description layer ownership
 
-- [ ] `12-workstreams/` owns the application model: functional agents, internal agents, role-specific dashboards, attention categories, human surface graph, internal workstream agent graph, workstream expertise links, surface index, surface contracts, reusable surface placement, action-to-governed-tool/capability mappings, trace semantics, and surface/action tests.
+- [ ] `12-workstreams/` owns the application model: functional agents, workstream definitions vs instance semantics, retention/redaction, attention categories, role-specific dashboards, internal agents, human surface graph, internal workstream agent graph, workstream expertise links, surface index, surface contracts, reusable surface placement, action-to-governed-tool/capability mappings, trace semantics, readiness labels, and surface/action tests.
 - [ ] `10-capabilities/` owns capability groupings and governed-tool definitions; governed-tools are not placed in a separate top-level app-description layer unless a later accepted decision changes that rule.
 - [ ] `55-ui/` owns browser realization: shell rendering, rail, panel/composer, surface rendering, routes/deep links, interactions/forms, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide.
 - [ ] `55-ui/` does not redefine the application model that belongs in `12-workstreams/` and `10-capabilities/`; it links back to functional agents, surfaces, governed-tools/capabilities, security, observability, and tests.
@@ -90,6 +93,11 @@ secure SaaS foundation
 - [ ] Historical domain-specific planning examples are not linked as generic description or queue mechanics.
 - [ ] Consolidated historical files are either migrated into `12-workstreams/` + `10-capabilities/` + split `55-ui/` ownership or removed.
 
+### Validation tooling
+
+- [ ] `tools/validate-workstream-contracts.sh <app-description-dir>` passes for app-description trees that claim workstream-contract completeness.
+- [ ] `tools/validate-surface-contracts.sh <app-description-dir>` passes for app-description trees that claim surface-contract completeness.
+
 ## Pass condition
 
-A design artifact passes when it keeps application meaning in functional agents, role-specific dashboards, human surface graphs, internal workstream agent graphs, workstream expertise, governed-tools/capabilities, and mandatory security; treats browser UI and routes as realization details; and excludes removed page-first or standalone static UI references from generated-app guidance.
+A design artifact passes when it keeps application meaning in functional agents, workstream definitions/instances, role-specific dashboards, backend-owned attention, human surface graphs, internal workstream agent graphs, workstream expertise, governed-tools/capabilities, readiness labels, and mandatory security; treats browser UI and routes as realization details; and excludes removed page-first or standalone static UI references from generated-app guidance.

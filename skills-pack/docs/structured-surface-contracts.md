@@ -1,6 +1,6 @@
 # Structured surface contracts
 
-Use this document when defining or implementing typed surfaces in an agent workstream application. It turns the surface guidance from `./agent-workstream-application-architecture.md` and the requirements-to-workstream process in `./requirements-to-workstream-development-process.md` into an implementation contract for app descriptions, frontend code, HTTP APIs, realtime events, capability modeling, and tests.
+Use this document when defining or implementing typed surfaces in an agent workstream application. It turns the surface guidance from `./agent-workstream-application-architecture.md`, the compact workstream fields in `./workstream-contract.md`, the attention contracts in `./workstream-attention-contracts.md`, and the requirements-to-workstream process in `./requirements-to-workstream-development-process.md` into an implementation contract for app descriptions, frontend code, HTTP APIs, realtime events, capability modeling, and tests.
 
 Source-controlled SaaS Foundation App assets live under `templates/ai-first-saas-core-app/app-description/**`. Use them as copy/adapt examples for the five-core workstream domain surface layer when a target project lacks an app-description surface baseline. Validate adapted target-project contracts with `tools/validate-surface-contracts.sh <app-description-dir>` when available.
 

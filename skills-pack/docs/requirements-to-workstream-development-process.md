@@ -9,6 +9,8 @@ Use this doc when broad product input must become a workstream-centered applicat
 Related doctrine:
 - `./ai-first-saas-application-architecture.md`
 - `./agent-workstream-application-architecture.md`
+- `./workstream-contract.md`
+- `./workstream-attention-contracts.md`
 - `./structured-surface-contracts.md`
 - `./capability-first-backend-architecture.md`
 - `./agent-component-selection-guide.md`
@@ -79,15 +81,18 @@ Artifacts may keep only the smallest subset relevant to their scope, but decompo
 
 ### Workstream identity
 
-Record:
+Use `./workstream-contract.md` as the compact field contract. Record:
 - `workstreamId`, display name, and responsibility;
-- owner functional/context-area agent;
+- whether this is the workstream definition/type or a runtime workstream instance/thread/log;
+- owner functional/context-area agent, exactly one per workstream definition;
 - authorized actors, roles, memberships, and tenant/customer scope;
-- core-foundation vs domain-specific classification.
+- workstream icon metadata;
+- core-foundation vs domain-specific classification;
+- readiness level: `identified`, `described`, `surface-ready`, `capability-ready`, `expertise-ready`, `runtime-ready`, or `production-ready`.
 
 ### Attention model
 
-Each workstream must answer the product question `what needs my attention?` for its authorized users.
+Use `./workstream-attention-contracts.md` for the concrete `AttentionItem`, `WorkstreamAttentionSummary`, producer, idempotency, lifecycle, aggregation, and test contracts. Each workstream must answer the product question `what needs my attention?` for its authorized users.
 
 Record:
 - attention categories such as approval, decision, exception, policy conflict, blocked work, overdue item, failed action, SLA risk, audit anomaly, or outcome drift;

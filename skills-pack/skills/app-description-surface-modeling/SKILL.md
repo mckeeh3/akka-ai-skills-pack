@@ -10,6 +10,8 @@ Use this skill to update authoritative app-description surface contracts for age
 ## Required reading
 
 - `../docs/structured-surface-contracts.md`
+- `../docs/workstream-contract.md`
+- `../docs/workstream-attention-contracts.md`
 - `../docs/workstream-ui-reference-architecture.md`
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/web-ui-style-guide.md` when visual guidance is in scope
@@ -19,7 +21,7 @@ Use this skill to update authoritative app-description surface contracts for age
 
 For each surface, define:
 
-- stable id, type, version, owning workstream/functional agent, and purpose
+- stable id, type, version, owning workstream definition, owning functional agent, reusable functional agents if any, and purpose
 - actor roles/scopes and selected `AuthContext` requirements
 - payload schema summary with frontend-safe fields only
 - loading, empty, ready, submitting, success, validation-error, forbidden, conflict, stale/reconnect, partial-data, and failure states as applicable

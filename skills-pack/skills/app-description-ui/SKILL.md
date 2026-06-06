@@ -19,6 +19,8 @@ Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/requirements-to-workstream-development-process.md` for attention/dashboard/surface-action/autonomous task notification/projection rules
 - `../docs/capability-first-backend-architecture.md` for selected capability exposure surfaces, browser action authority, frontend API contracts, audit, and denial semantics
+- `../docs/workstream-contract.md` for workstream definition/instance/view terminology and readiness labels
+- `../docs/workstream-attention-contracts.md` for backend-owned attention, My Account aggregation, and left-rail counts
 - `../docs/workstream-ui-reference-architecture.md` for the canonical generated-app workstream UI implementation reference under `frontend/src/workstream/**`
 - `../docs/web-ui-frontend-decomposition.md`
 - `../docs/web-ui-style-guide.md`
@@ -70,7 +72,7 @@ For retired/static/page-first UI boundaries, use `../docs/retired-content-bounda
 
 ## What to capture
 
-Use `../docs/app-description-skill-output-contracts.md` plus `../docs/workstream-ui-reference-architecture.md` for the detailed UI contract. Capture only the affected browser-realization meaning: workstream shell, functional-agent rail, structured surfaces, routes/deep links, personas/journeys, managed-agent governance UI, forms/interactions, API contracts, realtime/stale states, accessibility/responsive behavior, and style-guide selection. Link every protected action to backend capability/tool authority, AuthContext/scope, denial behavior, traces, and tests.
+Use `../docs/app-description-skill-output-contracts.md`, `../docs/workstream-contract.md`, `../docs/workstream-attention-contracts.md`, and `../docs/workstream-ui-reference-architecture.md` for the detailed UI contract. Capture only the affected browser-realization meaning: workstream shell, functional-agent rail, structured surfaces, routes/deep links, personas/journeys, managed-agent governance UI, forms/interactions, API contracts, realtime/stale states, accessibility/responsive behavior, and style-guide selection. Link every protected action to backend capability/tool authority, AuthContext/scope, denial behavior, traces, and tests.
 
 ## Change handling
 

@@ -31,4 +31,4 @@ A feature is complete only when it works through the real local Akka/API/UI path
 
 ## UI gate
 
-Use `./workstream-ui-reference-architecture.md` as the canonical generated-SaaS UI architecture. Browser routes and pages are realization details; the primary model is authenticated workstream shell, functional-agent rail, continuous stream/composer, structured surfaces, backend-backed actions, realtime/stale state, and accessible responsive rendering.
+Use `./workstream-contract.md` for compact workstream fields and readiness levels, `./workstream-attention-contracts.md` for backend-owned attention, and `./workstream-ui-reference-architecture.md` as the canonical generated-SaaS UI architecture. Browser routes and pages are realization details; the primary model is authenticated workstream shell, functional-agent rail, continuous stream/composer, structured surfaces, backend-backed actions, realtime/stale state, and accessible responsive rendering.

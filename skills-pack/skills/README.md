@@ -52,6 +52,8 @@ Canonical doctrine:
 - `docs/minimum-ai-first-saas-app.md`
 - `docs/requirements-to-workstream-development-process.md`
 - `docs/agent-workstream-application-architecture.md`
+- `docs/workstream-contract.md`
+- `docs/workstream-attention-contracts.md`
 - `docs/domain-workstream-prd-structure.md`
 - `docs/structured-surface-contracts.md`
 - `docs/capability-first-backend-architecture.md`

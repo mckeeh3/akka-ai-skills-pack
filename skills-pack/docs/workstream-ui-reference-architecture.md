@@ -8,6 +8,8 @@ It is a source-repository reference asset. It defines how future tasks should bu
 
 Canonical doctrine:
 - `./agent-workstream-application-architecture.md`
+- `./workstream-contract.md`
+- `./workstream-attention-contracts.md`
 - `./structured-surface-contracts.md`
 - `./workstream-visual-sessions.md`
 - `./web-ui-frontend-decomposition.md`

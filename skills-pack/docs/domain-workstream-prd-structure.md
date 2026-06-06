@@ -1,6 +1,6 @@
 # Domain workstream PRD structure
 
-Use this structure when capturing PRDs or reference descriptions for AI-first SaaS domains. It applies to the core SaaS app domain and to later domain-specific app domains.
+Use this structure when capturing PRDs or reference descriptions for AI-first SaaS domains. It applies to the core SaaS app domain and to later domain-specific app domains. Use `./workstream-contract.md` for compact workstream fields/readiness levels and `./workstream-attention-contracts.md` for attention item, producer, lifecycle, aggregation, and test contracts.
 
 The goal is to decompose product intent into fully functional workstreams before implementation:
 
@@ -96,9 +96,10 @@ The workstream README is the workstream-level PRD and the primary generation con
 
 It must state:
 
-- workstream purpose and business responsibility;
+- workstream id, display name, type-vs-runtime-instance semantics, purpose, and business responsibility;
 - backing functional/context-area agent; every workstream has exactly one;
 - authorized roles/capabilities and tenant/customer scope;
+- workstream icon metadata;
 - default dashboard, attention, or briefing surface;
 - role-specific dashboards and the attention items each dashboard answers;
 - required surface graph nodes, edges, result surfaces, and system-message surfaces;
@@ -108,7 +109,7 @@ It must state:
 - internal workstream agent graph when background/delegated worker agents are part of the workstream;
 - audit/work-trace behavior;
 - escalation, approval, denial, and exception behavior;
-- readiness and not-ready conditions.
+- readiness level (`identified`, `described`, `surface-ready`, `capability-ready`, `expertise-ready`, `runtime-ready`, or `production-ready`) and not-ready conditions.
 
 Required invariant text:
 

@@ -15,6 +15,8 @@ Read these first if present:
 - target project path: AGENTS.md
 - `../README.md`
 - `../docs/agent-workstream-application-architecture.md`
+- `../docs/workstream-contract.md` for compact workstream fields, type-vs-instance terminology, ownership/reuse rules, and readiness labels
+- `../docs/workstream-attention-contracts.md` for attention item, producer, lifecycle, aggregation, and tests
 - `../docs/requirements-to-workstream-development-process.md` for workstream → attention → dashboard → surfaces/actions → capabilities → autonomous task/notification/projection/trace semantics
 - `../docs/internal-app-description-architecture.md`
 - `../docs/app-description-maintenance-flow.md`
@@ -47,8 +49,8 @@ Prefer these app-description artifacts:
 ```text
 app-description/12-workstreams/
   functional-agents.md
-  attention-and-dashboards.md
   workstreams-and-retention.md
+  attention-and-dashboards.md
   internal-agents.md
   surfaces-index.md
   workstream-expertise/
@@ -73,8 +75,8 @@ Use `../docs/app-description-skill-output-contracts.md` for the detailed output 
 
 ## Modeling rules
 
-1. **Functional agents are verticals.** Model each as a role-authorized work area with attention needs, role-specific dashboard surfaces, a surface graph, capabilities/governed-tools, workstream expertise, internal workstream agent graph candidates, and workstream icon semantics. Do not model it as an Akka `Agent` class first.
-2. **Attention is first-class.** Each workstream must answer `what needs my attention?` for authorized users and define how counts/projections feed the dashboard, left rail, and My Account before UI badges or routes are described.
+1. **Functional agents are verticals.** Model each as a role-authorized work area with workstream id/responsibility, exactly-one functional-agent ownership, workstream definition vs runtime instance semantics, readiness level, attention needs, role-specific dashboard surfaces, a surface graph, capabilities/governed-tools, workstream expertise, internal workstream agent graph candidates, and workstream icon semantics. Do not model it as an Akka `Agent` class first.
+2. **Attention is first-class.** Each workstream must answer `what needs my attention?` for authorized users and define backend-owned attention items, producer idempotency, lifecycle, source/evidence refs, redaction, traces, stale/recompute behavior, and how counts/projections feed the dashboard, left rail, and My Account before UI badges or routes are described.
 3. **Backend capabilities remain authoritative.** A functional agent can call or expose capabilities/governed-tools, but prompt text, rail visibility, workstream expertise text, and tool descriptions never authorize work.
 4. **Surfaces are structured artifacts.** Prefer dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, evidence bundles, autonomous task progress/result cards, version cards, and outcome panels over free-text-only responses.
 5. **Autonomous task candidates stay governed.** Durable model-driven investigation, review, summary, monitoring/remediation, or specialist follow-up should be modeled as internal-agent/autonomous task candidates with lifecycle notifications and capability boundaries; request-based Akka `Agent` remains the default for immediate user-facing turns.
@@ -125,9 +127,10 @@ Avoid:
 
 Before finishing a functional-agent update, verify:
 
-- [ ] each user-facing functional agent has purpose, authority, workstream icon metadata, surfaces, capabilities, and when LLM-enabled, a workstream expert bundle with prompt intent, explicit `ModelConfigRef`/`ModelPolicy` or inherited governed default model binding, skills, references, compact manifest, tool boundary/loaders, traces, and tests;
+- [ ] each user-facing functional agent has workstream id/responsibility, definition-vs-instance semantics, readiness level, purpose, authority, workstream icon metadata, attention/dashboard contract, surfaces, capabilities, and when LLM-enabled, a workstream expert bundle with prompt intent, explicit `ModelConfigRef`/`ModelPolicy` or inherited governed default model binding, skills, references, compact manifest, tool boundary/loaders, traces, and tests;
 - [ ] functional agents are distinguished from internal agents;
 - [ ] every side-effecting action maps to a governed capability and backend authorization rule;
 - [ ] surfaces are typed and linked to capability-backed actions;
 - [ ] traceability maps link functional agents to capabilities, surfaces, UI, tests, and observability;
+- [ ] `tools/validate-workstream-contracts.sh <app-description-dir>` would pass for app-description trees claiming workstream-contract completeness;
 - [ ] no page-first or chatbot-bolt-on structure became the primary model.

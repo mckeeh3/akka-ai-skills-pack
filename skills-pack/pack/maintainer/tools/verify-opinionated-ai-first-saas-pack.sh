@@ -157,8 +157,21 @@ require_rg "agent catalog" "$APP_ROOT/app-description"
 require_rg "agent detail" "$APP_ROOT/app-description"
 require_rg "unauthorized.*PromptDocument|unassigned skill denial|disabled-agent denial|authority expansion" "$APP_ROOT/app-description"
 
-log "checking source-controlled surface templates and validator"
+log "checking source-controlled workstream/surface templates and validators"
+require_file "docs/workstream-contract.md"
+require_file "docs/workstream-attention-contracts.md"
+require_file "docs/examples/domain-workstream-contract-example.md"
 require_file "templates/ai-first-saas-core-app/app-description/README.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/functional-agents.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/workstreams-and-retention.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/attention-and-dashboards.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/internal-agents.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/workstream-expertise/README.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/workstream-expertise/my-account-agent.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/workstream-expertise/user-admin-agent.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/workstream-expertise/agent-admin-agent.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/workstream-expertise/audit-trace-agent.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/workstream-expertise/governance-policy-agent.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surfaces-index.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/01-access-profile-dashboard.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md"
@@ -168,10 +181,14 @@ require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/su
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/06-audit-trace-explorer.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/07-agent-governance-center.md"
 require_file "templates/ai-first-saas-core-app/app-description/55-ui/structured-surface-rendering.md"
+require_file "templates/ai-first-saas-core-app/app-description/70-traceability/functional-agent-to-capability-map.md"
 require_file "templates/ai-first-saas-core-app/app-description/70-traceability/surface-to-capability-map.md"
+require_file "tools/validate-workstream-contracts.sh"
 require_file "tools/validate-surface-contracts.sh"
 require_file "docs/examples/domain-workstream-surface-contract-example.md"
+require_rg "validate-workstream-contracts" docs/agent-workstream-design-review-checklist.md tools/validate-workstream-contracts.sh
 require_rg "validate-surface-contracts" docs/structured-surface-contracts.md skills/app-description-surface-modeling/SKILL.md
+"$PACK_ROOT/tools/validate-workstream-contracts.sh" "$PACK_ROOT/templates/ai-first-saas-core-app/app-description"
 "$PACK_ROOT/tools/validate-surface-contracts.sh" "$PACK_ROOT/templates/ai-first-saas-core-app/app-description"
 
 log "checking pack docs, manifest, skills, and core app-description assets"
@@ -244,7 +261,7 @@ forbid_rg "optional invite email|optionally sends invite|optionally send invite|
   skills/akka-saas-invitation-onboarding/SKILL.md
 
 log "checking shell syntax for pack scripts"
-for script in install-skills.sh "$APP_ROOT/install-skills.sh" tools/validate-pending-task-workstream-contract.sh tools/validate-surface-contracts.sh pack/maintainer/tools/release.sh pack/maintainer/tools/check-version-consistency.sh; do
+for script in install-skills.sh "$APP_ROOT/install-skills.sh" tools/validate-pending-task-workstream-contract.sh tools/validate-workstream-contracts.sh tools/validate-surface-contracts.sh pack/maintainer/tools/release.sh pack/maintainer/tools/check-version-consistency.sh; do
   bash -n "$script"
 done
 
