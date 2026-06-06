@@ -546,8 +546,8 @@ content:
     - docs/examples/ai-first-saas-core-app-domain/my-account-workstream/README.md
     - docs/examples/ai-first-saas-core-app-domain/user-admin-workstream/README.md
     - docs/examples/domain-workstream-surface-contract-example.md
-    - docs/examples/domain-neutral-decision-work-trace-slice.md
     - docs/examples/requirements-to-workstream-mini-example.md
+    - examples/ai-first-semantic-slices/decision-work-trace/README.md
     - docs/frontend-with-akka-backend.md
     - docs/generated-saas-canonical-doctrine.md
     - docs/governed-agent-substrate.md
