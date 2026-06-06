@@ -318,4 +318,5 @@ If a task discovers an unresolved design decision during execution, block the ta
 - `../akka-backlog-item-to-task-brief/SKILL.md`
 - `./module-sprint-planning.md`
 - `./solution-plan-to-implementation-queue.md`
-- `./intent-driven-usage-flow.md`
+- `./intent-compiler.md`
+- `./intent-to-realization-flow.md`

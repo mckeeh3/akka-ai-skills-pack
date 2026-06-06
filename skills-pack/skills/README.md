@@ -47,6 +47,11 @@ Scope control: load only the smallest companion set needed for the current user 
 
 Canonical doctrine:
 
+- `docs/intent-compiler.md`
+- `docs/current-intent-model.md`
+- `docs/incremental-intent-processing.md`
+- `docs/intent-to-realization-flow.md`
+- `docs/intent-compiler-skill-contracts.md`
 - `docs/generated-saas-canonical-doctrine.md`
 - `docs/ai-first-saas-application-architecture.md`
 - `docs/minimum-ai-first-saas-app.md`
@@ -54,7 +59,6 @@ Canonical doctrine:
 - `docs/agent-workstream-application-architecture.md`
 - `docs/workstream-contract.md`
 - `docs/workstream-attention-contracts.md`
-- `docs/domain-workstream-prd-structure.md`
 - `docs/structured-surface-contracts.md`
 - `docs/capability-first-backend-architecture.md`
 - `docs/core-ai-first-saas-foundation.md`

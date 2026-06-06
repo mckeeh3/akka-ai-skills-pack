@@ -125,8 +125,8 @@ Before starting code generation, verify that the solution plan already answers:
 
 - `./pending-question-queue.md`
 - `./pending-task-queue.md`
-- `./intent-driven-usage-flow.md`
-- `./prd-to-akka-flow.md`
+- `./intent-compiler.md`
+- `./intent-to-realization-flow.md`
 - `./module-sprint-planning.md`
 - `../README.md`
 - `../akka-solution-decomposition/SKILL.md`

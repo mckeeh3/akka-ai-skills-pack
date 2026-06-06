@@ -105,7 +105,7 @@
 
 ### TASK-IC-02-002: Archive or retire legacy intent docs
 
-- status: pending
+- status: done
 - source: specs/intent-compiler-realignment/backlog/01-intent-compiler-realignment-build-backlog.md
 - task brief: specs/intent-compiler-realignment/tasks/02-canonical-docs/02-archive-or-retire-legacy-docs.md
 - depends on:

@@ -175,4 +175,5 @@ To continue, ask:
 - `../akka-pending-question-queue-maintenance/SKILL.md`
 - `./pending-task-queue.md`
 - `./solution-plan-to-implementation-queue.md`
-- `./intent-driven-usage-flow.md`
+- `./intent-compiler.md`
+- `./incremental-intent-processing.md`

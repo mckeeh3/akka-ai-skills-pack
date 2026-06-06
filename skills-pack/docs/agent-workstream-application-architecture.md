@@ -370,6 +370,6 @@ Use `./workstream-expertise-model.md` with this doctrine when a functional agent
 
 When a target app-description already has or receives `12-workstreams/surface-contracts/**`, run `tools/validate-surface-contracts.sh <app-description-dir>` as a lightweight structural check before treating the surface layer as ready for implementation.
 
-Use `./domain-workstream-prd-structure.md` when capturing domain-level and workstream-level PRDs for the core SaaS app domain or app-specific domains. It defines the directory structure for domains, workstreams, workstream-agent prompts/skills, surfaces, capabilities, and tests.
+Use `./current-intent-model.md` when capturing domain-level and workstream-level intent for the core SaaS app domain or app-specific domains. It defines the current app/domain/workstream graph, global definitions, workstream bindings, realization mappings, and tests.
 
 This doctrine should be referenced by future app-description, web UI, agent, routing, and review tasks as the single generated-app UI/application architecture default.

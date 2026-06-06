@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Realign the Akka AI skills pack's user-intent processing layer around the **intent compiler** model developed in discussion and captured in `skills-pack/docs/intent-compiler-working-note.md`.
+Realign the Akka AI skills pack's user-intent processing layer around the **intent compiler** model developed in discussion and now captured in the canonical `skills-pack/docs/intent-compiler.md` doc set.
 
 The skills pack must consume, digest, capture, react to, and realize **Capturing Incremental Intent (CII)**. Incremental user intent should compile into two current-state outputs:
 
@@ -53,7 +53,7 @@ Execute one task per fresh harness context. Each task must read this README, `co
 4. `specs/intent-compiler-realignment/conversation-capture.md`
 5. `specs/intent-compiler-realignment/pending-tasks.md`
 6. selected sprint/backlog/task brief
-7. `skills-pack/docs/intent-compiler-working-note.md`
+7. canonical intent compiler docs under `skills-pack/docs/intent-compiler*.md`, `skills-pack/docs/current-intent-model.md`, `skills-pack/docs/incremental-intent-processing.md`, and `skills-pack/docs/intent-to-realization-flow.md`
 8. task-specific skill/doc files
 
 ## Sprint sequence
