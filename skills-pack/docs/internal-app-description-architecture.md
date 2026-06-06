@@ -42,7 +42,7 @@ app-description/
 The exact root name may vary by project, but the harness should prefer one stable root rather than scattering description artifacts arbitrarily.
 
 Reference examples:
-- canonical SaaS Foundation App description: the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md`
+- canonical SaaS Foundation App description: the target project `app-description/README.md` plus `./core-ai-first-saas-foundation.md`
 - SaaS Foundation App templates under `templates/ai-first-saas-core-app/app-description/**` for source-controlled cross-linking examples
 
 ## Architecture goals

@@ -94,8 +94,8 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
   - specs/akka-solution-plan.md
   - specs/backlog/01-<slice>-build-backlog.md
   - specs/tasks/01-<slice>/01-<task>.md
-  - docs/ai-first-saas-application-architecture.md when the task implements AI-first objects, authority, policies, decisions, traces, UI surfaces, or outcomes
-  - docs/workstream-expertise-model.md when the task implements or changes an LLM-backed functional agent's workstream expertise, model binding, skills, references, manifests, loaders, tool boundaries, traces, or expertise surfaces
+  - ./ai-first-saas-application-architecture.md when the task implements AI-first objects, authority, policies, decisions, traces, UI surfaces, or outcomes
+  - ./workstream-expertise-model.md when the task implements or changes an LLM-backed functional agent's workstream expertise, model binding, skills, references, manifests, loaders, tool boundaries, traces, or expertise surfaces
   - ../akka-agent-behavior-profiles/SKILL.md when the task implements AgentDefinition, lifecycle, authority, agent catalog, or agent detail
   - ../akka-agent-prompt-governance/SKILL.md when the task implements PromptDocument, PromptVersion, prompt assembly, PromptAssemblyTrace, or prompt governance UI
   - ../akka-agent-skill-governance/SKILL.md when the task implements SkillDocument, SkillVersion, AgentSkillManifest, readSkill, SkillLoadTrace, or skill/manifest/tool-boundary UI
@@ -316,6 +316,6 @@ If a task discovers an unresolved design decision during execution, block the ta
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-slice-spec-to-backlog/SKILL.md`
 - `../akka-backlog-item-to-task-brief/SKILL.md`
-- `module-sprint-planning.md`
-- `solution-plan-to-implementation-queue.md`
-- `intent-driven-usage-flow.md`
+- `./module-sprint-planning.md`
+- `./solution-plan-to-implementation-queue.md`
+- `./intent-driven-usage-flow.md`

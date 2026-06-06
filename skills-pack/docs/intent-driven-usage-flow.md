@@ -11,13 +11,13 @@ Use this flow when a user provides a PRD, requirements doc, feature request, fix
 2. **Apply the secure AI-first SaaS default**
    - For generated applications, begin from the mandatory secure SaaS foundation unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material.
    - Minimum/basic/SaaS Foundation App/chatbot-like generated SaaS requests mean the SaaS Foundation App domain: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
-   - Use `../docs/minimum-ai-first-saas-app.md`, `../docs/ai-first-saas-application-architecture.md`, and `../docs/agent-workstream-application-architecture.md` for foundation doctrine.
+   - Use `./minimum-ai-first-saas-app.md`, `./ai-first-saas-application-architecture.md`, and `./agent-workstream-application-architecture.md` for foundation doctrine.
 
 3. **Model the application as workstreams before pages or components**
    - Identify functional/context-area agents, core vs domain-specific workstreams, internal/background agents when justified, attention categories, role-specific dashboard surfaces, and retained human authority.
    - For incremental input, reconcile against the existing workstream graph: affected workstreams, changed dashboards/attention items, surface nodes/edges, internal agent graph delegations, governed-tools, expertise bundles, and pending tasks.
    - Do not start from page trees, CRUD modules, resource APIs, navigation bars, database tables, or Akka component lists.
-   - Use `../docs/requirements-to-workstream-development-process.md` for the canonical process.
+   - Use `./requirements-to-workstream-development-process.md` for the canonical process.
 
 4. **Define the human surface graph and internal agent graph**
    - Treat role-specific dashboards as graph trunks that answer what requires attention for each actor.
@@ -27,7 +27,7 @@ Use this flow when a user provides a PRD, requirements doc, feature request, fix
 
 5. **Model governed backend capabilities and governed-tools**
    - Record capability id/class, callers, AuthContext, tenant/customer scope, schemas, validation, idempotency, approval/policy, side effects, audit/work traces, exposure surfaces, and tests.
-   - Use `../docs/capability-first-backend-architecture.md` before selecting Akka components.
+   - Use `./capability-first-backend-architecture.md` before selecting Akka components.
 
 6. **Choose the planning path**
    - Use `../app-descriptions/SKILL.md` when the user is maintaining or reviewing an authoritative app description before realization.
@@ -55,9 +55,9 @@ Use this flow when a user provides a PRD, requirements doc, feature request, fix
 Preferred generated-SaaS planning example:
 
 Conventional planning mechanics only:
-- `prd-to-akka-flow.md`
+- `./prd-to-akka-flow.md`
 
-Use current domain-neutral examples or the user's actual domain; see `docs/retired-content-boundaries.md` for retired historical/example content boundaries.
+Use current domain-neutral examples or the user's actual domain; see `./retired-content-boundaries.md` for retired historical/example content boundaries.
 
 ## Rule of thumb
 

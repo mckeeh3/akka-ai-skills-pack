@@ -8,7 +8,7 @@ The current installer includes:
 
 - `skills/**` — AI-first SaaS routing, description-first, planning, and Akka implementation skills
 - `skills/README.md` — skill routing map
-- `skills/references/**` — shared skill reference files
+- `references/**` — shared skill reference files
 - `docs/**`, curated `examples/**`, `templates/**`, and downstream-safe `tools/**` — pack assets referenced by installed skills
 
 The source checkout also contains the runnable Akka full-stack core app and app-description/spec assets. Use those application files directly from a clone or fork of this repository. The installer does not copy manifests, application source, `akka-context/**`, repository-internal maintainer guidance, or duplicate full-app baselines. `akka-context/**` is expected as an independently maintained top-level project/repository directory.

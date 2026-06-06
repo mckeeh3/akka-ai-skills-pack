@@ -85,7 +85,7 @@ public class WorkstreamEventAttentionConsumer extends Consumer {
 Use this when one Akka service publishes a public event stream and another Akka service subscribes to it.
 
 Dedicated reference:
-- `docs/service-to-service-consumers.md`
+- `./service-to-service-consumers.md`
 
 Local producer-side executable example:
 - `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`

@@ -1,6 +1,6 @@
 # Agent Component Selection Guide
 
-Use this guide after secure AI-first SaaS, the requirements-to-workstream process, agent workstream, and capability-first modeling are clear enough to choose an Akka substrate. The canonical process is `requirements-to-workstream-development-process.md`: workstreams → attention/dashboard/surfaces/actions → capabilities/APIs → Akka substrate → request-based workstream Agents and AutonomousAgent task candidates → notifications/projections/traces.
+Use this guide after secure AI-first SaaS, the requirements-to-workstream process, agent workstream, and capability-first modeling are clear enough to choose an Akka substrate. The canonical process is `./requirements-to-workstream-development-process.md`: workstreams → attention/dashboard/surfaces/actions → capabilities/APIs → Akka substrate → request-based workstream Agents and AutonomousAgent task candidates → notifications/projections/traces.
 
 ## Default choices
 

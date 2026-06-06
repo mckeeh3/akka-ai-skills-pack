@@ -12,7 +12,7 @@ These focused pairs intentionally remain separate because Akka KVE and ESE APIs 
 
 | Family | Keep separate for | Tightening rule |
 |---|---|---|
-| `akka-ese-*` / `akka-kve-*` domain, entity, edge-flow, TTL, notification, replication, unit, integration, doc-snippet skills | different Akka component APIs and test kits | Keep only API-specific mechanics in the focused skill; put shared validation/idempotency/testing guidance in suite skills or references such as `../skills/references/akka-entity-integration-testing-patterns.md`. |
+| `akka-ese-*` / `akka-kve-*` domain, entity, edge-flow, TTL, notification, replication, unit, integration, doc-snippet skills | different Akka component APIs and test kits | Keep only API-specific mechanics in the focused skill; put shared validation/idempotency/testing guidance in suite skills or references such as `../references/akka-entity-integration-testing-patterns.md`. |
 | HTTP / gRPC / MCP endpoint component-client, JWT, request-context, streaming, testing skills | different endpoint APIs and request contexts | Keep transport-specific mapping only; route cross-cutting auth/audit/tenant rules to shared security and capability docs. |
 | Agent prompt/skill/reference/model/tool/work-trace governance skills | separate governed artifacts and runtime boundaries | Keep artifact-specific implementation contracts; avoid restating the full governed-agent substrate in every skill. |
 | Web UI forms/state/realtime/accessibility/API-client/testing skills | separate frontend implementation concerns | Keep implementation checklists compact and route architecture/style doctrine to canonical UI docs. |
@@ -37,7 +37,7 @@ Broad orchestrator skills should be short routing contracts. They may contain:
 - hard fail-closed/security/runtime-completion rules;
 - output/validation expectations.
 
-They should not copy long sections from canonical docs. If a broad skill grows beyond roughly 200 lines, first move repeated doctrine into `docs/**` or `skills/references/**` and leave a precise pointer.
+They should not copy long sections from canonical docs. If a broad skill grows beyond roughly 200 lines, first move repeated doctrine into `docs/**` or `references/**` and leave a precise pointer.
 
 ## Example pruning rules
 

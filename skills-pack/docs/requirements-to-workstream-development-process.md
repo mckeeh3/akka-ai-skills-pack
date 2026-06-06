@@ -7,12 +7,12 @@ Canonical process doctrine for generated secure AI-first SaaS app intake, PRD pr
 Use this doc when broad product input must become a workstream-centered application model before Akka components are selected. It is the operative source for workstream-centered intake, planning, backlog, and implementation guidance.
 
 Related doctrine:
-- `docs/ai-first-saas-application-architecture.md`
-- `docs/agent-workstream-application-architecture.md`
-- `docs/structured-surface-contracts.md`
-- `docs/capability-first-backend-architecture.md`
-- `docs/agent-component-selection-guide.md`
-- `docs/workstream-ui-reference-architecture.md`
+- `./ai-first-saas-application-architecture.md`
+- `./agent-workstream-application-architecture.md`
+- `./structured-surface-contracts.md`
+- `./capability-first-backend-architecture.md`
+- `./agent-component-selection-guide.md`
+- `./workstream-ui-reference-architecture.md`
 
 ## Core rule
 

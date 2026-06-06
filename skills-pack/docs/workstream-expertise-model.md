@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-This is the canonical doctrine for making a user-facing functional agent an expert in its workstream. It sits below `agent-workstream-application-architecture.md` and `capability-first-backend-architecture.md`, and above runtime agent, skill-governance, app-description, default-document setup, and testing guidance.
+This is the canonical doctrine for making a user-facing functional agent an expert in its workstream. It sits below `./agent-workstream-application-architecture.md` and `./capability-first-backend-architecture.md`, and above runtime agent, skill-governance, app-description, default-document setup, and testing guidance.
 
 A functional agent is not ready merely because it has a prompt, a chat surface, or a list of agent-tools/internal-tools. It is workstream-ready only when its expertise is explicit, governed, loadable, bounded, traceable, and tested.
 

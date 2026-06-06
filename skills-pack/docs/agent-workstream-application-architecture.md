@@ -5,7 +5,7 @@
 This is the canonical agent workstream application architecture doctrine for this skills pack.
 It defines the mandatory default UI/application model for generated full-stack secure AI-first SaaS applications.
 
-Use this doctrine below `ai-first-saas-application-architecture.md` and above detailed app-description, web UI, agent, and Akka component guidance. For broad input, PRD, app-description, planning, backlog, and implementation-readiness work, apply `requirements-to-workstream-development-process.md` before component selection. This document does not replace `capability-first-backend-architecture.md`: workstream UI actions, agent tools, workflow steps, APIs, timers, consumers, and internal calls still map to governed backend capabilities before Akka implementation is selected.
+Use this doctrine below `./ai-first-saas-application-architecture.md` and above detailed app-description, web UI, agent, and Akka component guidance. For broad input, PRD, app-description, planning, backlog, and implementation-readiness work, apply `./requirements-to-workstream-development-process.md` before component selection. This document does not replace `./capability-first-backend-architecture.md`: workstream UI actions, agent tools, workflow steps, APIs, timers, consumers, and internal calls still map to governed backend capabilities before Akka implementation is selected.
 
 For SaaS Foundation App description surface examples, use the source-controlled files under `templates/ai-first-saas-core-app/app-description/**`; do not depend on generated distribution output directories as template sources.
 
@@ -356,7 +356,7 @@ When this model is maintained in an app-description tree, keep ownership split b
 For high-level product input, apply this sequence:
 
 1. Preserve the mandatory secure AI-first SaaS foundation.
-2. Apply `requirements-to-workstream-development-process.md`: workstream inventory, attention categories, dashboard contracts, surfaces/actions, governed capabilities/APIs, Akka substrate, agent/AutonomousAgent workers, events/notifications/projections, traces, and tests.
+2. Apply `./requirements-to-workstream-development-process.md`: workstream inventory, attention categories, dashboard contracts, surfaces/actions, governed capabilities/APIs, Akka substrate, agent/AutonomousAgent workers, events/notifications/projections, traces, and tests.
 3. Interpret the product as an agent workstream application unless explicitly out of scope.
 4. Identify functional agents, internal agents, initial workstreams, structured surfaces, and retained human authority.
 5. Model governed backend capabilities for every surface action, tool, workflow step, API, timer, consumer, and internal operation.
@@ -364,10 +364,10 @@ For high-level product input, apply this sequence:
 7. Use web UI and agent skills to implement the workstream shell and governed agents.
 8. Use Akka component skills to implement the horizontal substrate from accepted capability contracts.
 
-Use `workstream-expertise-model.md` with this doctrine when a functional agent needs governed skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests that make it an expert in its workstream. Use `agent-component-selection-guide.md` before choosing whether supporting agent work should be a request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`.
+Use `./workstream-expertise-model.md` with this doctrine when a functional agent needs governed skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests that make it an expert in its workstream. Use `./agent-component-selection-guide.md` before choosing whether supporting agent work should be a request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`.
 
 When a target app-description already has or receives `12-workstreams/surface-contracts/**`, run `tools/validate-surface-contracts.sh <app-description-dir>` as a lightweight structural check before treating the surface layer as ready for implementation.
 
-Use `domain-workstream-prd-structure.md` when capturing domain-level and workstream-level PRDs for the core SaaS app domain or app-specific domains. It defines the directory structure for domains, workstreams, workstream-agent prompts/skills, surfaces, capabilities, and tests.
+Use `./domain-workstream-prd-structure.md` when capturing domain-level and workstream-level PRDs for the core SaaS app domain or app-specific domains. It defines the directory structure for domains, workstreams, workstream-agent prompts/skills, surfaces, capabilities, and tests.
 
 This doctrine should be referenced by future app-description, web UI, agent, routing, and review tasks as the single generated-app UI/application architecture default.

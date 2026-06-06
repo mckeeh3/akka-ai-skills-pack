@@ -21,14 +21,14 @@ Generated full-stack apps are secure AI-first SaaS workstream applications by de
 
 ## Implementation input gate
 
-Before generated SaaS runtime implementation, apply `skills/references/generated-saas-input-contract.md`. The task/app-description/spec/backlog must identify or explicitly defer the functional agent or internal trigger, capability, selected Akka substrate, AuthContext/scope, DTOs, side effects, idempotency, audit/work traces, and tests.
+Before generated SaaS runtime implementation, apply `../references/generated-saas-input-contract.md`. The task/app-description/spec/backlog must identify or explicitly defer the functional agent or internal trigger, capability, selected Akka substrate, AuthContext/scope, DTOs, side effects, idempotency, audit/work traces, and tests.
 
 If those inputs are absent, repair the task brief or route back to description/capability/decomposition skills instead of guessing from component mechanics alone.
 
 ## Completion gate
 
-A feature is complete only when it works through the real local Akka/API/UI path at the stated scope. Apply `skills/references/generated-saas-runtime-completion.md` for provider fail-closed behavior, governed Akka `Agent` invocation, trace requirements, and fixture/mock boundaries.
+A feature is complete only when it works through the real local Akka/API/UI path at the stated scope. Apply `../references/generated-saas-runtime-completion.md` for provider fail-closed behavior, governed Akka `Agent` invocation, trace requirements, and fixture/mock boundaries.
 
 ## UI gate
 
-Use `docs/workstream-ui-reference-architecture.md` as the canonical generated-SaaS UI architecture. Browser routes and pages are realization details; the primary model is authenticated workstream shell, functional-agent rail, continuous stream/composer, structured surfaces, backend-backed actions, realtime/stale state, and accessible responsive rendering.
+Use `./workstream-ui-reference-architecture.md` as the canonical generated-SaaS UI architecture. Browser routes and pages are realization details; the primary model is authenticated workstream shell, functional-agent rail, continuous stream/composer, structured surfaces, backend-backed actions, realtime/stale state, and accessible responsive rendering.

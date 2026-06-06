@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PACK_ROOT="$SCRIPT_DIR"
 SOURCE_SKILLS_DIR="$PACK_ROOT/skills"
+SOURCE_REFERENCES_DIR="$PACK_ROOT/references"
 INSTALL_ASSET_DIRS=(docs examples templates tools)
 PROJECT_ROOT="$(pwd)"
 TARGET_DIR=""
@@ -216,7 +217,7 @@ write_manifest() {
     printf 'mode\t%s\n' "$MODE"
     printf 'installed_at\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
     printf 'entry\tfile\tREADME.md\n'
-    [[ -d "$SOURCE_SKILLS_DIR/references" ]] && printf 'entry\tdir\treferences\n'
+    [[ -d "$SOURCE_REFERENCES_DIR" ]] && printf 'entry\tdir\treferences\n'
     local asset_dir
     for asset_dir in "${INSTALL_ASSET_DIRS[@]}"; do
       [[ -d "$PACK_ROOT/$asset_dir" ]] && printf 'entry\tdir\t%s\n' "$asset_dir"
@@ -259,7 +260,7 @@ current_rel_file() {
   local tmp="$1"
   {
     printf 'README.md\n'
-    [[ -d "$SOURCE_SKILLS_DIR/references" ]] && printf 'references\n'
+    [[ -d "$SOURCE_REFERENCES_DIR" ]] && printf 'references\n'
     local asset_dir
     for asset_dir in "${INSTALL_ASSET_DIRS[@]}"; do
       [[ -d "$PACK_ROOT/$asset_dir" ]] && printf '%s\n' "$asset_dir"
@@ -352,8 +353,8 @@ check_install() {
   }
 
   check_entry_matches README.md "$SOURCE_SKILLS_DIR/README.md"
-  if [[ -d "$SOURCE_SKILLS_DIR/references" ]]; then
-    check_entry_matches references "$SOURCE_SKILLS_DIR/references"
+  if [[ -d "$SOURCE_REFERENCES_DIR" ]]; then
+    check_entry_matches references "$SOURCE_REFERENCES_DIR"
   fi
   local asset_dir
   for asset_dir in "${INSTALL_ASSET_DIRS[@]}"; do
@@ -403,8 +404,8 @@ else
 fi
 
 install_entry file README.md "$SOURCE_SKILLS_DIR/README.md"
-if [[ -d "$SOURCE_SKILLS_DIR/references" ]]; then
-  install_entry dir references "$SOURCE_SKILLS_DIR/references"
+if [[ -d "$SOURCE_REFERENCES_DIR" ]]; then
+  install_entry dir references "$SOURCE_REFERENCES_DIR"
 fi
 for asset_dir in "${INSTALL_ASSET_DIRS[@]}"; do
   if [[ -d "$PACK_ROOT/$asset_dir" ]]; then

@@ -3,11 +3,11 @@
 Use this doc when an Akka-hosted browser UI must be more than technically correct. For generated full-stack AI-first SaaS, apply UX planning to the agent workstream shell before route or visual-component details.
 
 Pair with:
-- `docs/workstream-ui-reference-architecture.md`
-- `docs/structured-surface-contracts.md`
-- `docs/web-ui-frontend-decomposition.md`
-- `docs/web-ui-style-guide.md`
-- `docs/web-ui-quality-checklist.md`
+- `./workstream-ui-reference-architecture.md`
+- `./structured-surface-contracts.md`
+- `./web-ui-frontend-decomposition.md`
+- `./web-ui-style-guide.md`
+- `./web-ui-quality-checklist.md`
 - `../akka-web-ui-ux-design/SKILL.md`
 
 ## UX principles

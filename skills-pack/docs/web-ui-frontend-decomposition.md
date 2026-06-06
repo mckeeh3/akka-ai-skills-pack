@@ -6,9 +6,9 @@ The goal is to make the frontend as intentionally designed as the backend. For g
 
 For product UIs, use a standard frontend project such as React/Vite and route implementation through the full web app skill path.
 
-Read `docs/web-ui-style-guide.md` before implementation when no app-specific style guide is already selected.
+Read `./web-ui-style-guide.md` before implementation when no app-specific style guide is already selected.
 
-For this source repository and downstream forks, use `docs/workstream-ui-reference-architecture.md` and the reusable implementation under root `frontend/src/workstream/**` as the canonical frontend reference. The harness install includes pack examples under `.agents/skills/examples/**`, but root frontend application source is not exported into `.agents`. The foundation-admin vertical fixtures and root `frontend/src/workstream-user-admin-vertical.contract.test.mjs` demonstrate structured surface flow through dashboard, attention queue, scoped search results, member detail cards, invitation actions, system messages, and trace links. Do not use legacy `frontend/src/screens/**` or page-route tests as the primary generated SaaS UI model.
+For this source repository and downstream forks, use `./workstream-ui-reference-architecture.md` and the reusable implementation under root `frontend/src/workstream/**` as the canonical frontend reference. The harness install includes pack examples under `.agents/skills/examples/**`, but root frontend application source is not exported into `.agents`. The foundation-admin vertical fixtures and root `frontend/src/workstream-user-admin-vertical.contract.test.mjs` demonstrate structured surface flow through dashboard, attention queue, scoped search results, member detail cards, invitation actions, system messages, and trace links. Do not use legacy `frontend/src/screens/**` or page-route tests as the primary generated SaaS UI model.
 
 ## Required output
 
@@ -140,7 +140,7 @@ If the UI needs live updates, define:
 ### 8. Style guide
 
 Define:
-- selected AI-first style id/name from `docs/web-ui-style-guide.md`, a custom style guide, or `unselected`
+- selected AI-first style id/name from `./web-ui-style-guide.md`, a custom style guide, or `unselected`
 - source reference and mode policy: light-only, dark-only, or system with both token sets
 - typography, spacing, radius, elevation, color, chart, and status tokens
 - layout density and shell/navigation treatment

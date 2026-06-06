@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-This is the canonical capability-first backend doctrine for this skills pack. It extends the secure AI-first SaaS doctrine in `ai-first-saas-application-architecture.md` without replacing it.
+This is the canonical capability-first backend doctrine for this skills pack. It extends the secure AI-first SaaS doctrine in `./ai-first-saas-application-architecture.md` without replacing it.
 
 Default generated-application interpretation:
 
@@ -17,13 +17,13 @@ product intent
 → Akka component realization
 ```
 
-Use `requirements-to-workstream-development-process.md` for broad input, PRD, app-description, planning, backlog, and implementation-readiness work. It discovers capabilities through workstream attention, dashboard, surface, and action semantics before selecting APIs or Akka components.
+Use `./requirements-to-workstream-development-process.md` for broad input, PRD, app-description, planning, backlog, and implementation-readiness work. It discovers capabilities through workstream attention, dashboard, surface, and action semantics before selecting APIs or Akka components.
 
 A capability is the product-level backend ability or grouping. A capability owns one or more governed-tools: semantic executable operations or queries with actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. Agent workstream actions, Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent-tools are implementation or exposure choices for those governed-tools.
 
 ## Non-negotiable foundation
 
-Capability-first design does **not** weaken the mandatory secure SaaS foundation from `ai-first-saas-application-architecture.md`, `core-ai-first-saas-foundation.md`, `core-saas-identity-tenancy-admin.md`, and `core-saas-owner-tenant-billing.md`.
+Capability-first design does **not** weaken the mandatory secure SaaS foundation from `./ai-first-saas-application-architecture.md`, `./core-ai-first-saas-foundation.md`, `./core-saas-identity-tenancy-admin.md`, and `./core-saas-owner-tenant-billing.md`.
 
 Every protected capability must mechanically enforce:
 
@@ -146,7 +146,7 @@ For broad product input or implementation planning:
 5. Build a capability inventory before selecting Akka components.
 6. For each capability, define schemas, auth/scope, side effects, idempotency, policy/approval, audit/trace, and tests.
 7. Decide which exposure channels expose the capability, if any.
-8. Select Akka components that realize the capability semantics. Use `agent-component-selection-guide.md` when a capability could be a request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, or Workflow + AutonomousAgent.
+8. Select Akka components that realize the capability semantics. Use `./agent-component-selection-guide.md` when a capability could be a request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, or Workflow + AutonomousAgent.
 9. Generate code/tests component by component while preserving the capability contract.
 
 Do not jump from a product request directly to an entity, endpoint, or agent-tool unless the capability contract is already clear enough.

@@ -14,11 +14,11 @@ It is a **process example**. It demonstrates how the harness should:
 - answer review questions without prematurely generating code.
 
 Use this together with:
-- `docs/description-first-application-doctrine.md`
-- `docs/internal-app-description-architecture.md`
-- `docs/app-description-maintenance-flow.md`
-- the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md`
-- `docs/requirements-to-workstream-development-process.md`
+- `./description-first-application-doctrine.md`
+- `./internal-app-description-architecture.md`
+- `./app-description-maintenance-flow.md`
+- the target project `app-description/README.md` plus `./core-ai-first-saas-foundation.md`
+- `./requirements-to-workstream-development-process.md`
 
 Historical domain-specific app-description examples have been removed; use current target-project app-description files and SaaS Foundation App templates for cross-linking mechanics.
 

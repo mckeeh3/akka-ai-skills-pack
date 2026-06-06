@@ -3,9 +3,9 @@
 Use this doc when a browser UI calls Akka HTTP endpoints. For generated full-stack AI-first SaaS apps, browser APIs transport the agent workstream shell, structured surfaces, surface actions, system messages, realtime events, and capability results. They are not the source of product meaning.
 
 Pair with:
-- `docs/structured-surface-contracts.md`
-- `docs/workstream-ui-reference-architecture.md`
-- `docs/capability-first-backend-architecture.md`
+- `./structured-surface-contracts.md`
+- `./workstream-ui-reference-architecture.md`
+- `./capability-first-backend-architecture.md`
 
 ## Core rule
 

@@ -1,6 +1,6 @@
 # Frontend Integration with the Akka Backend
 
-> Legacy combined reference: for new frontend-project integration work, prefer `web-ui-frontend-project-integration.md`. Use this document only when maintaining older guidance that needs the historical frontend + backend + auth/security combination; otherwise route auth/security details to `security-workos-auth-and-admin.md` and the security-specific skills.
+> Legacy combined reference: for new frontend-project integration work, prefer `./web-ui-frontend-project-integration.md`. Use this document only when maintaining older guidance that needs the historical frontend + backend + auth/security combination; otherwise route auth/security details to `./security-workos-auth-and-admin.md` and the security-specific skills.
 
 This project is a full-stack Akka application where the Java/Akka backend hosts both the secured backend APIs and the production React frontend assets. The frontend source code is developed independently in the `frontend/` directory, while the built/deployed frontend files are copied into Akka's static resource directory.
 

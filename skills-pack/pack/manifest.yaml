@@ -588,11 +588,11 @@ content:
     - tools/validate-pending-task-workstream-contract.sh
     - tools/validate-repository-example-references.py
     - tools/validate-surface-contracts.sh
-    - skills/references/akka-entity-comparison.md
-    - skills/references/akka-entity-integration-testing-patterns.md
-    - skills/references/akka-grpc-jwt-patterns.md
-    - skills/references/generated-saas-input-contract.md
-    - skills/references/generated-saas-runtime-completion.md
+    - references/akka-entity-comparison.md
+    - references/akka-entity-integration-testing-patterns.md
+    - references/akka-grpc-jwt-patterns.md
+    - references/generated-saas-input-contract.md
+    - references/generated-saas-runtime-completion.md
 bundles:
   - id: all
     description: Install the full skills library, shared skill references, and referenced pack assets into a harness skills directory.

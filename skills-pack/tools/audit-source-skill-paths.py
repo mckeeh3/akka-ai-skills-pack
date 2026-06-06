@@ -2,7 +2,7 @@
 """Audit source skill/reference file path references using the installed layout.
 
 This is a lightweight hygiene check for references in skills/*/SKILL.md and
-skills/references/*.md that should resolve after installation under
+references/*.md that should resolve after installation under
 .agents/skills. It intentionally ignores target-project paths such as specs/*,
 app-description/*, frontend/*, src/*, and external top-level akka-context/*
 references.
@@ -69,8 +69,6 @@ def source_to_installed_path(source_file: Path, repo_root: Path) -> Path:
     """Map a source checkout file path to its installed .agents/skills path."""
     rel = source_file.relative_to(repo_root)
     if rel.parts[0] == "skills" and len(rel.parts) >= 2:
-        if rel.parts[1] == "references":
-            return repo_root / "references" / Path(*rel.parts[2:])
         return repo_root / Path(*rel.parts[1:])
     return repo_root / rel
 
@@ -98,8 +96,6 @@ def installed_layout_exists(installed_target: Path, repo_root: Path) -> bool:
     if not rel.parts:
         return repo_root.exists()
     first = rel.parts[0]
-    if first == "references":
-        return (repo_root / "skills" / rel).exists()
     if first in INSTALLED_ASSET_DIRS or first in INSTALLED_TOP_LEVEL_FILES:
         return (repo_root / rel).exists()
     if first in {"pom.xml", "AGENTS.md", "install-skills.sh"}:
@@ -114,7 +110,7 @@ def main() -> int:
     args = parser.parse_args()
 
     repo_root = Path(args.repo_root).resolve()
-    reference_files = sorted((repo_root / "skills" / "references").glob("*.md"))
+    reference_files = sorted((repo_root / "references").glob("*.md"))
     skill_files = sorted((repo_root / "skills").glob("*/SKILL.md"))
     audit_files = skill_files + reference_files
     if not skill_files:

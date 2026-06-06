@@ -52,7 +52,7 @@ Every app UI style guide should define:
 ## Selection
 - selected style: <ai-first-workstream-enterprise | custom | unselected>
 - style name: <name>
-- source reference: <docs/web-ui-style-guide.md | custom brief path | user answer>
+- source reference: <./web-ui-style-guide.md | custom brief path | user answer>
 - status: <selected | pending-question | deferred-with-default>
 
 ## Theme model

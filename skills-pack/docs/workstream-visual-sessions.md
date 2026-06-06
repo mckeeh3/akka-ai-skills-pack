@@ -5,9 +5,9 @@
 This document captures the target UX and phased implementation plan for workstream visual sessions in generated AI-first SaaS applications.
 
 Canonical related docs:
-- `docs/agent-workstream-application-architecture.md`
-- `docs/workstream-ui-reference-architecture.md`
-- `docs/structured-surface-contracts.md`
+- `./agent-workstream-application-architecture.md`
+- `./workstream-ui-reference-architecture.md`
+- `./structured-surface-contracts.md`
 
 A workstream visual session is browser/UI state for how a user is currently viewing a durable workstream. It does not replace durable workstream history, audit/work traces, authorization, or backend capability semantics.
 

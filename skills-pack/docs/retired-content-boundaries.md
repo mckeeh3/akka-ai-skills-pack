@@ -13,9 +13,9 @@ Use this note to keep normal skills concise. Do not repeat long retired-content 
 
 ## Current replacements
 
-- UI architecture: `docs/workstream-ui-reference-architecture.md` and target/root `frontend/src/workstream/**`.
+- UI architecture: `./workstream-ui-reference-architecture.md` and target/root `frontend/src/workstream/**`.
 - Surface contracts/templates: `templates/ai-first-saas-core-app/app-description/**`.
-- Generated-app doctrine: `docs/generated-saas-canonical-doctrine.md`.
+- Generated-app doctrine: `./generated-saas-canonical-doctrine.md`.
 - Akka mechanics: focused Akka skills plus external top-level `akka-context/**` docs when present.
 - Examples: curated `examples/akka-components/**` snippets for pattern lookup only; adapt behavior into the target project's root app workspace.
 

@@ -14,7 +14,7 @@ Local related examples:
 
 ## Related references
 
-- `docs/service-to-service-consumers.md` — use when the subscriber should trigger side effects instead of building a query model
+- `./service-to-service-consumers.md` — use when the subscriber should trigger side effects instead of building a query model
 - `../akka-view-from-service-stream/SKILL.md` — focused routing for service-stream view subscribers
 - `../akka-consumer-from-service-stream/SKILL.md` — focused routing for service-stream consumer subscribers
 

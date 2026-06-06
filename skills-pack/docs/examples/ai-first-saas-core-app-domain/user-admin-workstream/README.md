@@ -50,7 +50,7 @@ The agent may draft or recommend side-effecting changes, but commit requires exp
 
 ## Surface style expectations
 
-These surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered cards, blue/indigo accent, sparse semantic status colors, accessible focus states, and strong numeric/table hierarchy. Style clarifies authority, risk, evidence, and auditability; it must not change surface inventory, capability mappings, authorization, routes, or audit behavior.
+These surfaces inherit `ai-first-workstream-enterprise` from `../../../web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered cards, blue/indigo accent, sparse semantic status colors, accessible focus states, and strong numeric/table hierarchy. Style clarifies authority, risk, evidence, and auditability; it must not change surface inventory, capability mappings, authorization, routes, or audit behavior.
 
 - Dashboard: render as a mission-control briefing with a KPI strip for admin health, pending invites, failed deliveries, disabled users, and admin counts; keep attention queues for failed delivery, last-admin, approval-required, and stale access-review items visually above routine reports.
 - Users and invitations lists: use dense enterprise table/search layouts with clear scoped filters, sortable columns, status badges with text, row-level trace links where allowed, and empty/error states that do not leak cross-tenant existence.

@@ -7,10 +7,10 @@ This is the target implementation architecture for reusable generated-app **agen
 It is a source-repository reference asset. It defines how future tasks should build reusable React/Vite/TypeScript modules under `frontend/src/workstream/**`, while preserving useful generic seams from the current frontend (`api/**`, `design-system/**`, `styles/**`) and replacing `screens/**` as the canonical UI taxonomy.
 
 Canonical doctrine:
-- `docs/agent-workstream-application-architecture.md`
-- `docs/structured-surface-contracts.md`
-- `docs/workstream-visual-sessions.md`
-- `docs/web-ui-frontend-decomposition.md`
+- `./agent-workstream-application-architecture.md`
+- `./structured-surface-contracts.md`
+- `./workstream-visual-sessions.md`
+- `./web-ui-frontend-decomposition.md`
 - source-checkout/root-only migration inventory: `specs/workstream-ui-implementation-migration/frontend-stale-code-inventory.md`
 
 Current implementation references:
@@ -22,7 +22,7 @@ Current implementation references:
 - canonical User Admin UI vertical pattern: `frontend/src/workstream-user-admin-vertical.contract.test.mjs` plus shared test fixtures under `frontend/src/__tests__/fixtures/**` when needed
 - shell/surface/action/deep-link/realtime contract coverage: `frontend/src/workstream*.contract.test.mjs`, `frontend/src/frontend.contract.test.mjs`, and `frontend/src/seed-frontend-quality.contract.test.mjs`
 
-Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Test fixtures are contract/test references only; generated user-facing runtime must bind to real backend `/api/me`, workstream APIs, authorization, audit/work-trace, and realtime API paths rather than simulated data. For non-canonical retired UI structures, use `docs/retired-content-boundaries.md`.
+Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Test fixtures are contract/test references only; generated user-facing runtime must bind to real backend `/api/me`, workstream APIs, authorization, audit/work-trace, and realtime API paths rather than simulated data. For non-canonical retired UI structures, use `./retired-content-boundaries.md`.
 
 ## Core rule
 
@@ -219,7 +219,7 @@ type WorkstreamItem = {
 
 The stream supports grouped history, stable item ids, append/update semantics, trace links, and action-feedback items for non-chat navigation/actions.
 
-Every new user request is acknowledged as a request surface before the agent response surfaces are shown. This applies to direct composer prompts, prompt-entered shell commands such as `show users list`, the standard composer **Show dashboard** shell button, indirect requests raised by existing surface actions, My Account panels, rail selection, and deep-link entry. The stream uses traditional chat ordering: older turn groups remain above and newer turn groups append below them. When the request item is appended, the workstream scrolls that request surface to the top of the visible panel; any resulting markdown or structured response surfaces append below the request so the user sees the prompt/action first and the agent-selected response surfaces in order. The Show dashboard button is handled directly by the shell rather than routed through the workstream agent: it appends a `Show dashboard` request surface and then the selected workstream's dashboard surface. Workstream-switch request items are appended only in the new target workstream. Use `docs/workstream-visual-sessions.md` for turn-group, anchor, per-workstream session, and phased persistence guidance.
+Every new user request is acknowledged as a request surface before the agent response surfaces are shown. This applies to direct composer prompts, prompt-entered shell commands such as `show users list`, the standard composer **Show dashboard** shell button, indirect requests raised by existing surface actions, My Account panels, rail selection, and deep-link entry. The stream uses traditional chat ordering: older turn groups remain above and newer turn groups append below them. When the request item is appended, the workstream scrolls that request surface to the top of the visible panel; any resulting markdown or structured response surfaces append below the request so the user sees the prompt/action first and the agent-selected response surfaces in order. The Show dashboard button is handled directly by the shell rather than routed through the workstream agent: it appends a `Show dashboard` request surface and then the selected workstream's dashboard surface. Workstream-switch request items are appended only in the new target workstream. Use `./workstream-visual-sessions.md` for turn-group, anchor, per-workstream session, and phased persistence guidance.
 
 Shell request normalization contract:
 
@@ -244,7 +244,7 @@ Default prompt resolution is current-workstream scoped. Authorized cross-workstr
 
 ### Surface envelopes
 
-Use the envelope from `docs/structured-surface-contracts.md` as the canonical frontend contract:
+Use the envelope from `./structured-surface-contracts.md` as the canonical frontend contract:
 
 ```ts
 type SurfaceEnvelope<TData, TAction extends SurfaceAction = SurfaceAction> = {

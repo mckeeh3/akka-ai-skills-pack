@@ -80,7 +80,7 @@ For this workstream, read/evidence capabilities may be exposed to the My Account
 
 ## Surface style expectations
 
-My Account surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md` and the core domain overview. Keep the dashboard as a personal operating hub rendered with enterprise workstream surface patterns: profile/context summary cards, a concise personal attention queue, compact workstream status panels, capability/evidence affordances, and typed system-message cards for denial or recovery feedback.
+My Account surfaces inherit `ai-first-workstream-enterprise` from `../../../web-ui-style-guide.md` and the core domain overview. Keep the dashboard as a personal operating hub rendered with enterprise workstream surface patterns: profile/context summary cards, a concise personal attention queue, compact workstream status panels, capability/evidence affordances, and typed system-message cards for denial or recovery feedback.
 
 The Settings surface should expose named theme selection. Users choose one available named theme by label; the saved value is the stable theme id in `preferredThemeId`. Initial available ids are `aurora-light`, `cobalt-light`, `obsidian-dark`, `midnight-dark`, and `dark-night`. The UI may use each theme's light/dark tone for contrast testing, but it must not present `system`, `light`, or `dark` as the primary user preference. Changing `preferredThemeId` only changes visual tokens and must not alter workstream visibility, capability grants, authorization, audit behavior, routes, or surface contracts.
 

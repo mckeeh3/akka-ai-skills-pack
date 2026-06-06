@@ -2,7 +2,7 @@
 
 Use this checklist before completing any non-trivial Akka-hosted browser UI.
 
-For generated AI-first SaaS work in this source repository and downstream forks, compare end-to-end behavior against the runnable SaaS Foundation App repository root, then compare UI architecture against `docs/workstream-ui-reference-architecture.md` and the reusable React/Vite reference under root `frontend/src/workstream/**`. The harness install includes pack examples under `.agents/skills/examples/**`, but application code belongs in the target project and root frontend source is not exported into `.agents`. The User Admin vertical contract test (`frontend/src/workstream-user-admin-vertical.contract.test.mjs`) is the canonical foundation-admin UI pattern. Legacy `frontend/src/screens/**` and removed standalone static UI fixtures are not canonical generated-app structure.
+For generated AI-first SaaS work in this source repository and downstream forks, compare end-to-end behavior against the runnable SaaS Foundation App repository root, then compare UI architecture against `./workstream-ui-reference-architecture.md` and the reusable React/Vite reference under root `frontend/src/workstream/**`. The harness install includes pack examples under `.agents/skills/examples/**`, but application code belongs in the target project and root frontend source is not exported into `.agents`. The User Admin vertical contract test (`frontend/src/workstream-user-admin-vertical.contract.test.mjs`) is the canonical foundation-admin UI pattern. Legacy `frontend/src/screens/**` and removed standalone static UI fixtures are not canonical generated-app structure.
 
 ## UX completeness
 
@@ -28,7 +28,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 
 ## API contracts
 
-- [ ] Structured surfaces, when used, have explicit payload, action, event, auth, trace/audit, and rendering-test contracts per `structured-surface-contracts.md`.
+- [ ] Structured surfaces, when used, have explicit payload, action, event, auth, trace/audit, and rendering-test contracts per `./structured-surface-contracts.md`.
 - [ ] Every surface action maps to a governed backend capability, including read/query and surface-request actions; frontend visibility, disabled controls, prompt text, and route names are not treated as authorization.
 - [ ] Browser-facing DTOs are intentional and not accidental domain leaks.
 - [ ] API routes use clear `/api/...` paths.

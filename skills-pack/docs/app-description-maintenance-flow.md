@@ -4,10 +4,10 @@
 
 This document defines the default harness operating flow for maintaining the internal app-description artifact system.
 
-It complements `docs/internal-app-description-architecture.md` by defining **how** the layers should be updated over time.
+It complements `./internal-app-description-architecture.md` by defining **how** the layers should be updated over time.
 
 Reference examples:
-- canonical SaaS Foundation App description: the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md`
+- canonical SaaS Foundation App description: the target project `app-description/README.md` plus `./core-ai-first-saas-foundation.md`
 - SaaS Foundation App templates under `templates/ai-first-saas-core-app/app-description/**` for source-controlled cross-linking examples
 
 ## Core interaction model
@@ -248,7 +248,7 @@ The harness should reassess readiness after material description changes, especi
 
 ## UI style-selection rule
 
-For generated full-stack AI-first SaaS, the app description or specs must contain a selected web UI style guide before web UI implementation or generation starts. If style is missing, add or update a `category: ui` entry in `specs/pending-questions.md` using `docs/web-ui-style-guide.md` rather than silently choosing visual styling. This blocks web UI work until answered; unrelated backend description or implementation work can continue.
+For generated full-stack AI-first SaaS, the app description or specs must contain a selected web UI style guide before web UI implementation or generation starts. If style is missing, add or update a `category: ui` entry in `specs/pending-questions.md` using `./web-ui-style-guide.md` rather than silently choosing visual styling. This blocks web UI work until answered; unrelated backend description or implementation work can continue.
 
 ## Regeneration rule
 
@@ -335,8 +335,8 @@ Avoid:
 ## Recommended next-doc usage
 
 Use this document together with:
-- `docs/description-first-application-doctrine.md`
-- `docs/internal-app-description-architecture.md`
+- `./description-first-application-doctrine.md`
+- `./internal-app-description-architecture.md`
 
 The doctrine defines the why.
 The architecture doc defines the artifact structure.

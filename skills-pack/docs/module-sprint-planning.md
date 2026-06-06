@@ -213,5 +213,5 @@ Avoid:
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-slice-spec-to-backlog/SKILL.md`
 - `../akka-backlog-to-pending-tasks/SKILL.md`
-- `pending-task-queue.md`
-- `pending-question-queue.md`
+- `./pending-task-queue.md`
+- `./pending-question-queue.md`

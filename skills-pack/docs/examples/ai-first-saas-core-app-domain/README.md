@@ -18,7 +18,7 @@ The document intentionally prioritizes deterministic decomposition over human na
 
 ## Shared UI style and theme contract
 
-Core workstream surfaces inherit the canonical style contract from `docs/web-ui-style-guide.md`:
+Core workstream surfaces inherit the canonical style contract from `../../web-ui-style-guide.md`:
 
 - **Selected style:** `ai-first-workstream-enterprise` — a calm enterprise workstream interface for delegated agent work, evidence, decisions, governance, audit, and outcomes.
 - **Theme model:** named-theme selection, not mode-first `light`/`dark`/`system` preferences.
@@ -91,7 +91,7 @@ Required objects/concepts:
 
 ## Shared surface type baseline
 
-These surface types inherit the shared UI style and named-theme contract above. Surface files may use generic type names such as `dashboard` or `data_table`, but their generated appearance should follow the AI-first enterprise workstream patterns in `docs/web-ui-style-guide.md`.
+These surface types inherit the shared UI style and named-theme contract above. Surface files may use generic type names such as `dashboard` or `data_table`, but their generated appearance should follow the AI-first enterprise workstream patterns in `../../web-ui-style-guide.md`.
 
 Every core workstream may use:
 

@@ -8,7 +8,7 @@ Use this doc when an Akka service needs a browser-facing React/Vite/TypeScript a
 
 Use this for real web apps. Generated SaaS apps should implement the agent workstream shell: role-authorized functional-agent left rail, continuous main workstream panel, persistent bottom composer, context/authority indicators, and structured surfaces.
 
-Canonical UI architecture lives in `docs/workstream-ui-reference-architecture.md`. The source repository/root app provides reusable implementation references under `frontend/src/workstream/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`; installed pack examples remain guidance only. For retired UI/source boundaries, use `docs/retired-content-boundaries.md`.
+Canonical UI architecture lives in `./workstream-ui-reference-architecture.md`. The source repository/root app provides reusable implementation references under `frontend/src/workstream/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`; installed pack examples remain guidance only. For retired UI/source boundaries, use `./retired-content-boundaries.md`.
 
 - frontend source and tooling: `frontend/**`
 - production build output: `src/main/resources/static-resources/**`
@@ -20,7 +20,7 @@ The frontend build owns generated files under `static-resources/`. Edit `fronten
 
 | Need | Use | First example |
 | --- | --- | --- |
-| Full React/Vite/TypeScript agent workstream app with functional-agent rail, stream panel, composer, structured surfaces, state, forms, typed API clients, accessibility, responsive behavior, and a standard frontend build | Frontend project web app pattern | `docs/workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, `frontend/src/workstream-user-admin-vertical.contract.test.mjs`, `../akka-web-ui-apps/SKILL.md`, and `../akka-web-ui-frontend-project/SKILL.md` |
+| Full React/Vite/TypeScript agent workstream app with functional-agent rail, stream panel, composer, structured surfaces, state, forms, typed API clients, accessibility, responsive behavior, and a standard frontend build | Frontend project web app pattern | `./workstream-ui-reference-architecture.md`, `frontend/src/workstream/**`, `frontend/src/workstream-user-admin-vertical.contract.test.mjs`, `../akka-web-ui-apps/SKILL.md`, and `../akka-web-ui-frontend-project/SKILL.md` |
 | Co-hosted frontend app calling JSON endpoints | UI + JSON API pattern | `../akka-http-endpoint-web-ui/SKILL.md`, `../akka-web-ui-api-client/SKILL.md`, and protected `/api/...` endpoint guidance |
 | Route exposure and backend access boundaries | Apply the mandatory secure SaaS foundation for protected APIs; public static asset routes are the exception | `../core-saas-foundation/SKILL.md`, `../akka-http-endpoint-jwt/SKILL.md`, and `../akka-http-endpoint-acl-internal/SKILL.md` |
 
@@ -38,11 +38,11 @@ Use a standard React/Vite/TypeScript frontend project when the browser app has p
 Akka components, endpoints, and backend tests stay in Java. The frontend project owns browser source and generated production assets. Conventional route/page navigation is an implementation/deep-link detail for generated SaaS apps, not the primary decomposition. Route/page existence tests are not enough for generated SaaS UI; include shell, functional-agent rail, composer, structured-surface, action, deep-link, realtime/stale, and User Admin vertical contract coverage.
 
 Read next:
-- `docs/workstream-ui-reference-architecture.md` for canonical UI architecture
-- `docs/web-ui-frontend-project-integration.md` for build/hosting mechanics
-- `docs/web-ui-style-guide.md` for styling choices
-- `docs/web-ui-api-contract-patterns.md` for typed API contracts
-- `docs/web-ui-quality-checklist.md` for review gates
+- `./workstream-ui-reference-architecture.md` for canonical UI architecture
+- `./web-ui-frontend-project-integration.md` for build/hosting mechanics
+- `./web-ui-style-guide.md` for styling choices
+- `./web-ui-api-contract-patterns.md` for typed API contracts
+- `./web-ui-quality-checklist.md` for review gates
 
 ## Recommended route shape
 
@@ -69,7 +69,7 @@ Generated API documentation assets are not a browser UI implementation path. If 
 
 Start with:
 
-- `docs/web-ui-style-guide.md` for style-guide selection when browser UI styling is not yet selected
+- `./web-ui-style-guide.md` for style-guide selection when browser UI styling is not yet selected
 - `../akka-web-ui-apps/SKILL.md` for complete frontend apps
 - `../akka-web-ui-frontend-project/SKILL.md` for standard frontend project integration
 - `../akka-http-endpoint-web-ui/SKILL.md` for Akka hosting and web UI delivery

@@ -3,8 +3,8 @@
 Use this doc to model the product-agnostic billing foundation for AI-first SaaS applications.
 
 Related docs:
-- `core-ai-first-saas-foundation.md`
-- `core-saas-identity-tenancy-admin.md`
+- `./core-ai-first-saas-foundation.md`
+- `./core-saas-identity-tenancy-admin.md`
 
 ## Scope
 

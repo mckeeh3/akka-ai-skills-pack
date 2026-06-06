@@ -51,7 +51,7 @@ The workstream agent must handle:
 
 ## Surface style expectations
 
-These surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered surfaces, blue/indigo AI accent, sparse semantic status colors, accessible focus states, strong version/table hierarchy, and prominent evidence/authority/trust cues. Style is a UI realization layer only; it must not change functional-agent semantics, managed-agent governance, prompt/skill/reference authority, tool-boundary enforcement, capability mappings, approval rules, routes, or trace behavior.
+These surfaces inherit `ai-first-workstream-enterprise` from `../../../web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered surfaces, blue/indigo AI accent, sparse semantic status colors, accessible focus states, strong version/table hierarchy, and prominent evidence/authority/trust cues. Style is a UI realization layer only; it must not change functional-agent semantics, managed-agent governance, prompt/skill/reference authority, tool-boundary enforcement, capability mappings, approval rules, routes, or trace behavior.
 
 - Dashboard: render as an agent-governance briefing with KPI cards for active/disabled agents, pending proposals, failed tests, recent traces, and authority-expansion risk; put proposal and trace attention queues above routine catalog summaries.
 - Agent catalog and detail: use dense catalog rows/cards and layered detail panels showing lifecycle, owner/steward, model policy, prompt, manifests, tool boundary, status, and recent trace links with explicit disabled/read-only states.

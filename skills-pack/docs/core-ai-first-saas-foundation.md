@@ -3,8 +3,8 @@
 Use this document set when designing or implementing the common backend foundation for generated AI-first SaaS applications. These features are product-agnostic: they exist before the app-specific business domain is added.
 
 Companion docs:
-- `core-saas-identity-tenancy-admin.md` — actors, tenant/customer organization model, WorkOS identity, account administration, data isolation, support-access pattern.
-- `core-saas-owner-tenant-billing.md` — SaaS Owner to Tenant subscription management and billing boundaries.
+- `./core-saas-identity-tenancy-admin.md` — actors, tenant/customer organization model, WorkOS identity, account administration, data isolation, support-access pattern.
+- `./core-saas-owner-tenant-billing.md` — SaaS Owner to Tenant subscription management and billing boundaries.
 
 ## Canonical vocabulary
 
@@ -115,7 +115,7 @@ Example AI-first core scenarios:
 
 ### SaaS Foundation App domain
 
-Use the SaaS Foundation App domain when the requested target is the repository's out-of-the-box foundation app, a starter/basic generated SaaS app, or a chatbot-like bootstrap shell. The domain is defined in `minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. It is not a User-Admin-only slice, a generic public chatbot, or a separate parallel baseline app.
+Use the SaaS Foundation App domain when the requested target is the repository's out-of-the-box foundation app, a starter/basic generated SaaS app, or a chatbot-like bootstrap shell. The domain is defined in `./minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. It is not a User-Admin-only slice, a generic public chatbot, or a separate parallel baseline app.
 
 The SaaS Foundation App domain must include all of these together:
 

@@ -2,7 +2,7 @@
 
 Use this lightweight template after Stage 1 decomposition is accepted.
 
-For durable multi-session execution with task status, use `pending-question-queue.md` for unresolved decisions and `pending-task-queue.md` for implementation work. Materialize them as `specs/pending-questions.md` and `specs/pending-tasks.md`.
+For durable multi-session execution with task status, use `./pending-question-queue.md` for unresolved decisions and `./pending-task-queue.md` for implementation work. Materialize them as `specs/pending-questions.md` and `specs/pending-tasks.md`.
 
 Purpose:
 - turn unresolved design decisions into a durable clarification queue when needed
@@ -123,11 +123,11 @@ Before starting code generation, verify that the solution plan already answers:
 
 ## Related docs
 
-- `pending-question-queue.md`
-- `pending-task-queue.md`
-- `intent-driven-usage-flow.md`
-- `prd-to-akka-flow.md`
-- `module-sprint-planning.md`
+- `./pending-question-queue.md`
+- `./pending-task-queue.md`
+- `./intent-driven-usage-flow.md`
+- `./prd-to-akka-flow.md`
+- `./module-sprint-planning.md`
 - `../README.md`
 - `../akka-solution-decomposition/SKILL.md`
 - `../akka-pending-question-generation/SKILL.md`

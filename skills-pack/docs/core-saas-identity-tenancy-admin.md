@@ -3,9 +3,9 @@
 Use this doc to implement the product-agnostic identity and administration foundation for AI-first SaaS applications.
 
 Related docs:
-- `core-ai-first-saas-foundation.md`
-- `core-saas-owner-tenant-billing.md`
-- `security-workos-auth-and-admin.md`
+- `./core-ai-first-saas-foundation.md`
+- `./core-saas-owner-tenant-billing.md`
+- `./security-workos-auth-and-admin.md`
 
 ## Design intent
 

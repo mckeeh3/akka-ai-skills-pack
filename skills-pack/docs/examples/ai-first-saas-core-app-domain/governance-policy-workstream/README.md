@@ -52,7 +52,7 @@ The agent may draft and analyze governance changes but cannot activate high-impa
 
 ## Surface style expectations
 
-These surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered surfaces, blue/indigo AI accent, sparse semantic status colors, accessible focus states, strong version/table hierarchy, and prominent governance, authority, evidence, simulation, and decision cues. Style is a UI realization layer only; it must not change policy semantics, approval authority, capability mappings, activation/rollback rules, routes, simulations, or audit behavior.
+These surfaces inherit `ai-first-workstream-enterprise` from `../../../web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered surfaces, blue/indigo AI accent, sparse semantic status colors, accessible focus states, strong version/table hierarchy, and prominent governance, authority, evidence, simulation, and decision cues. Style is a UI realization layer only; it must not change policy semantics, approval authority, capability mappings, activation/rollback rules, routes, simulations, or audit behavior.
 
 - Dashboard: render as a governance command center with KPI cards for pending proposals, active policies, exceptions, simulations, risky changes, and approval SLA; place proposal/exception attention queues and high-impact change alerts above routine catalog summaries.
 - Policy list and detail: use dense catalog rows/cards and layered version detail panels showing scope, owner, clauses, authority boundary, active/draft status, history, simulation readiness, and audit links with explicit read-only or unauthorized states.
