@@ -13,7 +13,7 @@ This skill is about web UI project integration only. Defer authentication, autho
 
 ## Generated SaaS input contract
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
@@ -28,8 +28,11 @@ Read these first if present:
 - project `src/main/resources/static-resources/**` for current built assets
 - matching Akka frontend hosting endpoint and endpoint tests
 
-Reference example document:
-- `../docs/frontend-with-akka-backend.md` — use only the frontend layout, build output, Akka static hosting, route separation, and SPA-routing guidance. Do not import its auth/security content unless a security task explicitly asks for it.
+Canonical integration document:
+- `../docs/web-ui-frontend-project-integration.md` — use this for frontend layout, build output, Akka static hosting, route separation, and SPA-routing guidance.
+
+Legacy combined reference:
+- `../docs/frontend-with-akka-backend.md` — consult only when maintaining older pack guidance that already cites it; for new frontend work, route auth/security to `../docs/security-workos-auth-and-admin.md` and security-specific skills.
 
 ## Use this skill when
 

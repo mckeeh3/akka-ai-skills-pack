@@ -78,7 +78,7 @@ Before model invocation, the runtime resolver must verify:
 6. Provider secrets are resolved only by backend runtime configuration and are never returned to the model, browser, trace views, or agent tools.
 7. `AgentWorkTrace` records the `ModelConfigRef`, policy decision, fallback decision when used, and safe provider/model alias summary.
 
-For a static Java example of configured model aliases, use `ConfiguredModelWorkstreamRuntimeAgent`, which demonstrates `ModelProvider.fromConfig("openai-low-temperature")`. In managed agents, prefer resolving the approved `ModelConfigRef` before invoking the Java `Agent` or passing a known-safe alias into the invocation wrapper.
+For static Java agents that use configured model aliases such as `ModelProvider.fromConfig("openai-low-temperature")`, treat the alias as a safe deployment-configured reference only. In managed agents, resolve the approved `ModelConfigRef` before invoking the Java `Agent` or passing a known-safe alias into the invocation wrapper.
 
 ## Akka component mapping
 
@@ -111,7 +111,7 @@ Plan tests for:
 - provider secret boundary: no API key/secret in frontend API responses, traces, prompts, skills, or model-visible context;
 - model config change audit and runtime `AgentWorkTrace` model reference;
 - prompt/skill attempts to request unauthorized model/provider do not change backend selection;
-- deterministic static model-alias tests with `TestModelProvider`, as shown by `ConfiguredModelWorkstreamRuntimeAgentTest`.
+- deterministic static model-alias tests with `TestModelProvider`, covering the configured alias path without exposing provider secrets.
 
 ## Review checklist
 

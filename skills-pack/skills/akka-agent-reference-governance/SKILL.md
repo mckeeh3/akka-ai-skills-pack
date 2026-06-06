@@ -11,7 +11,7 @@ References are not procedural skills by default. Use `akka-agent-skill-governanc
 
 ## Generated SaaS input contract
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
@@ -245,60 +245,10 @@ Prefer:
 - Capability contracts and `ToolPermissionBoundary` remain authoritative even if a reference says an action is allowed.
 - Reference assignment in a manifest means the model may consult or cite that reference; it does not mean the user may view every underlying source field outside authorized surfaces.
 
-## Admin UI surfaces
+## Admin UI, tests, and review checklist
 
-Provide protected UI for:
+Keep protected surfaces compact: catalog, editor/validation/redaction classification, review/approve/reject with rationale, version diff/history, per-agent or expert-bundle manifest management, compact expertise manifest preview, reference-loading test console, evidence/trace/denied-load links, usage counts, and editing-agent proposal queue.
 
-- reference catalog by type/status/tag/steward/customer scope/access level;
-- reference editor with validation, secret-like content warnings, and redaction classification;
-- review/approve/reject surface with rationale;
-- version history and side-by-side diff;
-- agent reference manifest management from agent or expert-bundle detail;
-- compact expertise manifest preview with skill and reference sections;
-- reference-loading test console;
-- evidence surface links, denied-load history, ReferenceLoadTrace links, and usage counts;
-- editing-agent proposal queue for reference text, manifest, version-pin, redaction, or access-level changes.
+Plan tests for compact-manifest-only prompt assembly, allowed assigned loads, unassigned/inactive/cross-tenant/wrong-customer/missing-boundary/redaction/oversized denials without existence leakage, load trace linkage to `AgentWorkTrace`, reference text not granting authority, protected admin/evidence surfaces, and interim `documentKind: reference` separation when used.
 
-## Test requirements
-
-Plan tests for:
-
-- compact expertise manifest includes assigned reference ids/hints only, not full reference bodies;
-- `readReferenceDoc(referenceId)` allows an assigned active reference;
-- unassigned reference denial returns safe model-visible text and emits trace;
-- inactive/deprecated/unapproved reference denial;
-- cross-tenant and wrong-customer denial without existence leakage;
-- missing `read_reference` tool-boundary grant denial;
-- redaction/access-level denial and oversized/token-limit denial;
-- allowed and denied loads create `ReferenceLoadTrace` or `DocumentLoadTrace(documentKind=reference)` linked to `AgentWorkTrace`;
-- reference text cannot grant forbidden tools, capabilities, roles, tenant/customer scope, approval authority, or side effects;
-- admin/catalog/evidence surfaces enforce tenant/customer authorization;
-- interim `documentKind: reference` representation preserves separate manifest, loader, trace, and boundary semantics.
-
-## Rules
-
-1. References are tenant-scoped governed documents and may also be customer-scoped.
-2. Use stable reference ids/slugs, not paths, URLs, resource names, or free-form searches.
-3. Agents can load only active approved references assigned in their active reference manifest.
-4. Prompt assembly renders compact reference entries only.
-5. Full reference content is loaded only by an authorized reference loader.
-6. All allowed and denied reference loads emit trace records.
-7. `read_reference` authority is separate from `read_skill` authority.
-8. Reference content is guidance/evidence, not a security boundary or authority grant.
-9. Disabled or archived agents cannot load references except in authorized inspection/replay modes.
-10. Cross-tenant/customer reference loads must be denied and traced without existence leakage.
-
-## Review checklist
-
-Before finishing, verify:
-
-- `ReferenceDocument`/`ReferenceVersion` or a constrained interim representation is explicit;
-- `AgentReferenceManifest` is tenant-scoped and tied to `AgentDefinition` and preferably a workstream expert bundle;
-- prompt assembly includes compact skill and reference sections only;
-- `readReferenceDoc(referenceId)` enforces tenant/customer, agent, bundle, manifest, status, version, mode, redaction, token, and boundary checks;
-- denied reference loads are safe and audited;
-- trace records include manifest, reference id/version, decision, denial reason, redaction, and correlation fields;
-- references are related to but not collapsed into `SkillDocument`;
-- reference text cannot override mechanical authorization;
-- reference catalog/review/diff/manifest/evidence/test UI is protected by backend authorization;
-- tenant isolation, wrong-customer denial, unassigned-reference denial, missing-boundary denial, redaction denial, and trace tests are planned.
+Before finishing, verify the document/version representation, tenant/customer-scoped `AgentReferenceManifest`, compact skill/reference prompt sections, full `readReferenceDoc` authorization/status/version/mode/redaction/token/boundary checks, safe audited denials, trace fields, skill/reference separation, protected UI, tenant isolation tests, and no authority grants from reference text.

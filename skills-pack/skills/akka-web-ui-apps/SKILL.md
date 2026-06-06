@@ -52,7 +52,8 @@ Read these first if present:
 - matching endpoint and endpoint tests under `src/main/java/**/api` and `src/test/java/**`
 
 Canonical frontend project integration reference:
-- `../docs/frontend-with-akka-backend.md` (use web UI integration sections together with mandatory JWT/request-context and `/api/me` security boundaries for generated SaaS apps)
+- `../docs/web-ui-frontend-project-integration.md` for React/Vite project layout, build output, Akka static hosting, route separation, and SPA routing.
+- Use `../docs/security-workos-auth-and-admin.md` and security-specific skills for JWT/request-context, `/api/me`, and secret-boundary details; do not treat `../docs/frontend-with-akka-backend.md` as the canonical integration source for new frontend work.
 
 Canonical full-core implementation reference:
 - source attention or downstream fork: use the runnable core app repository root

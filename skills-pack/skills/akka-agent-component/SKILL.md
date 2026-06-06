@@ -14,7 +14,7 @@ If the internal/background work needs a durable typed task, task id, lifecycle, 
 
 ## Generated SaaS input contract
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
@@ -47,8 +47,8 @@ Read these first if present:
   - fallback reply on failure
 - `WorkstreamRuntimeAgent` with governed prompt/runtime loading
   - system prompt loaded from the built-in `PromptTemplate` entity
-- `ConfiguredModelWorkstreamRuntimeAgent`
-  - focused static example of `ModelProvider.fromConfig("openai-low-temperature")`; for managed runtime agents, pair this pattern with `akka-agent-model-governance` so `AgentDefinition.modelConfigRef`, model policy, fallback policy, provider secret boundaries, and model-use traces are resolved before invocation
+- configured model alias pattern
+  - when a static Java agent uses `ModelProvider.fromConfig("openai-low-temperature")`, treat the alias as a safe deployment-configured reference only; for managed runtime agents, pair this pattern with `akka-agent-model-governance` so `AgentDefinition.modelConfigRef`, model policy, fallback policy, provider secret boundaries, and model-use traces are resolved before invocation
 - a governed prompt/runtime-state endpoint
   - HTTP management of prompt-template values
 

@@ -11,7 +11,7 @@ This is the governed runtime skill pattern for AI-first SaaS apps. For generated
 
 ## Generated SaaS input contract
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. For this skill, require the task/app-description/spec/backlog to name or explicitly defer the relevant functional agent/internal trigger, capability, AuthContext/scope, DTOs, side effects, audit/work traces, and tests before implementing generated SaaS runtime code. If those inputs are absent, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
@@ -251,55 +251,10 @@ Before approval or activation:
 - classify redaction/access level;
 - require reviewer rationale for consequential skills.
 
-## Admin UI surfaces
+## Admin UI, test console, and review checklist
 
-Provide protected UI for:
-- skill catalog by status/tag/steward/assigned-agent count;
-- skill editor with validation and secret-like content warnings;
-- review/approve/reject surface with rationale;
-- version history and side-by-side diff;
-- agent skill manifest management from agent detail;
-- compact manifest preview;
-- skill-loading test console;
-- skill lifecycle, manifest, and load trace links;
-- editing-agent proposal queue for skill text, manifest, version-pin, and tool-boundary changes with proposed diff, rationale, risk flags, and approval/denial actions.
+Keep surfaces protected and compact: catalog, editor/validation, review/approve/reject with rationale, version diff/history, per-agent manifest management, compact manifest preview, skill-loading test console, lifecycle/trace links, and editing-agent proposal queue.
 
-## Test console rules
+The test console requires a dedicated capability, runs against tenant-scoped active AgentDefinitions unless explicitly in draft/replay mode, shows the compact manifest, demonstrates allowed and denied loads, traces prompt assembly/skill-load decisions, and avoids external side effects by default.
 
-A skill-loading test console should:
-- require `skills.test` or equivalent capability;
-- run only against active tenant-scoped AgentDefinitions unless explicitly testing draft mode;
-- show compact manifest before execution;
-- demonstrate allowed skill load and unassigned skill denial;
-- trace prompt assembly and skill load decisions;
-- avoid real external side effects unless explicitly enabled and authorized.
-
-## Rules
-
-1. Skills are tenant-scoped governed documents.
-2. Use stable skill ids/slugs, not paths.
-3. Agents can load only active approved skills assigned in their active manifest.
-4. Skill text is model-visible tool-result context, not system-priority policy.
-5. Skill text does not grant tool permissions, data access, role capabilities, or approval authority.
-6. Full skill content is loaded only by `readSkill(skillId)` or equivalent approved MCP/resource tool.
-7. All allowed and denied skill loads emit audit/work trace events.
-8. Manifest changes are consequential governance changes and should be audited.
-9. Disabled or archived agents cannot load skills except in authorized inspection/replay modes.
-10. Cross-tenant skill loads must be denied and traced.
-11. A skill manifest assignment does not imply reference-document access; use `AgentReferenceManifest` plus `readReferenceDoc(referenceId)` for references.
-
-## Review checklist
-
-Before finishing, verify:
-- SkillDocument/SkillVersion follow the governed document/version pattern
-- implementation-developed default skills and manifests are created in governed storage with provenance, idempotency, audit, and customization-preserving upgrade behavior
-- AgentSkillManifest is tenant-scoped and tied to AgentDefinition
-- prompt assembly includes compact skill manifest only, or a compact expertise manifest with separate skill/reference sections when references are in scope
-- `readSkill(skillId)` enforces tenant, agent, manifest, status, version, and mode checks
-- denied skill loads are safe and audited
-- skill content cannot override mechanical authorization
-- skill editor/review/diff/manifest/test UI is protected by backend authorization
-- version pinning or active-version policy is explicit
-- tenant isolation, unassigned-skill denial, disabled-agent denial, and audit tests are planned
-- AgentBehaviorEditorAgent skill/manifest proposals, draft version creation, review/approval, activation, rejection, and audit paths are planned
-- unauthorized authority expansion through skill text, manifest assignment, or tool-boundary change is denied and traced
+Before finishing, verify the durable document/version pattern, idempotent default seeding, tenant-scoped manifests, compact prompt assembly, `readSkill` authorization/status/version/mode checks, safe audited denials, protected UI, explicit version policy, tenant isolation tests, behavior-editor proposal paths, and authority-expansion denial/tracing. Skill text is model-visible guidance only; it never grants tools, data access, role capabilities, or approval authority.

@@ -121,107 +121,25 @@ Rules:
 
 ## Decision guide
 
-### 0. Functional/context-area agent or internal agent
-Use `agent-workstream-apps` before implementation when the agent belongs to a generated full-stack SaaS app.
+Use this routing matrix instead of loading broad historical agent guidance:
 
-Choose a **functional/context-area agent** when the agent is a user-facing work area in the left rail or equivalent shell, has a durable workstream, renders structured surfaces, accepts composer input, and exposes business capabilities to authorized users.
+| Need | Load next |
+|---|---|
+| User-facing left-rail/workstream agent with composer input, structured surfaces, capabilities, and UI tests | `agent-workstream-apps`, then focused component/UI/capability skills |
+| Bounded backend model call behind workflow, timer, consumer, tool, endpoint, or service | `akka-agent-component`; keep it internal unless product intent promotes it to a functional agent |
+| Durable typed background task with task id, lifecycle, dependencies, failure/cancellation, snapshots, notifications, delegation/handoff/team/moderation | `akka-autonomous-agents` |
+| Tenant-scoped managed agent lifecycle, owner/steward, authority, model config refs, prompt/skill refs, tool boundaries, or admin UI | `akka-agent-behavior-profiles`, then `../docs/agent-runtime-invocation-pattern.md` |
+| Governed prompts, skills, references, rubrics, policies, examples, defaults, or runtime lookup | `akka-agent-governed-documents` plus the focused prompt/skill/reference/model/tool/trace skill |
+| Admin/steward asks an agent to draft behavior changes | `akka-agent-behavior-editing`, affected governance skill, `akka-agent-structured-responses`, and decision-card routing when risk/approval is involved |
+| Trace, redaction, model/tool/data references, authorization basis, investigation timeline | `akka-agent-work-trace` and `ai-first-saas-audit-trace` |
+| Evaluator output should drive findings, proposals, approval, activation, monitoring, or rollback | `akka-agent-closed-loop-improvement` and `akka-agent-evaluation` |
+| Tool use for data/action/guidance | `akka-agent-tools`, `akka-agent-component-tools`, `akka-agent-mcp-tools`, `akka-agent-tool-boundaries`, and capability docs |
+| Tenant/agent/task/mode-specific model selection | `akka-agent-model-governance` |
+| Token streaming | `akka-agent-streaming` |
+| Multi-agent responsibility split | `ai-first-saas-agent-team-design`; prefer one governed skilled agent unless authority/tool/model/lifecycle/risk boundaries differ |
+| Durable retries, handoffs, approvals, pauses, or progress visibility around model calls | `akka-agent-orchestration` and workflow skills |
 
-Choose an **internal agent** when the agent performs bounded backend work behind a workflow, functional agent, timer, consumer, tool, or service call and should not be a primary navigation/workstream context.
-
-For either placement, tools are selected exposure surfaces for named capabilities. Do not start from a tool list; start from capability contracts and then decide whether a tool exposure is appropriate.
-
-### 1. AI-first operational worker
-Use when the model performs a bounded responsibility within a durable goal, plan, approval, exception, policy, audit, or outcome loop.
-
-Before implementation, identify:
-- functional/context-area or internal-agent placement
-- delegated work and retained human authority
-- caller AuthContext, tenant/customer scope, and active membership requirements
-- policies, permissions/capabilities, evidence, and risk thresholds that bound the agent
-- tool/data access allowed per scope and forbidden-access behavior
-- approval gates for consequential actions or high-risk recommendations
-- trace records needed for prompts, tools, data access, recommendations, evaluations, denials, approvals, and outcomes
-- whether a workflow must supervise retries, approvals, or multi-step execution
-
-### 2. Durable behavior profile / managed runtime agent
-Use when the app manages agents as tenant-scoped runtime actors with lifecycle, owner/steward, authority, model configuration references, prompt/skill references, tool permission boundaries, or admin UI.
-
-Load `akka-agent-behavior-profiles` before prompt, skill, tool, orchestration, or Java agent implementation details. For managed runtime invocation handoff, read `../docs/agent-runtime-invocation-pattern.md` and use an `AgentRuntimeResolver`-style helper to resolve AuthContext, active AgentDefinition, prompt assembly, compact AgentSkillManifest, ToolPermissionBoundary, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace before model invocation.
-
-### 3. Governed behavior documents
-Use when prompts, skills, rubrics, policies, or examples need tenant-scoped version history, review, approval, activation, immutable snapshots, diff/history UI, or audit.
-
-Load `akka-agent-governed-documents` before focused prompt governance, skill governance, policy governance, evaluation-rubric, default-document setup, or runtime document lookup implementation.
-
-### 4. Governed runtime prompts
-Use when agent system prompts need tenant-scoped review, approval, activation, version history, diff/history UI, effective prompt assembly, prompt assembly trace, or a safe prompt test console.
-
-Load `akka-agent-prompt-governance`. Use `akka-agent-runtime-state` / built-in `PromptTemplate` instead for simple runtime-editable prompt text without governance workflow.
-
-### 5. Governed runtime skills
-Use when agents need tenant-scoped shared skills, skill versions, per-agent skill manifests, compact manifest prompt context, `readSkill(skillId)`, SkillLoadTrace, skill editor/review/diff UI, or a skill-loading test console.
-
-Load `akka-agent-skill-governance`. Use `akka-agent-harness-skills` instead only for small deploy-time packaged skill resources.
-
-### 6. Behavior editing agent
-Use when admins or stewards ask an `AgentBehaviorEditorAgent` to draft changes to prompts, skills, manifests, tool boundaries, policies, rubrics, or examples.
-
-Load `akka-agent-behavior-editing` with `akka-agent-structured-responses`, the affected governance skill, and `ai-first-saas-decision-cards` when risk, approval, or authority expansion is involved.
-
-### 7. Agent work trace
-Use when agent activity needs audit/work trace events, prompt/skill/model/tool/data references, authorization basis, redaction, correlation ids, trace search, or investigation timelines.
-
-Load `akka-agent-work-trace` together with `ai-first-saas-audit-trace`.
-
-### 8. Closed-loop improvement
-Use when evaluator output or trace analysis should produce EvaluationRuns, findings, improvement proposals, replay/simulation evidence, human approvals, activation, monitoring, or rollback.
-
-Load `akka-agent-closed-loop-improvement`. Load `akka-agent-evaluation` too when implementing evaluator agents that return `EvaluationResult`.
-
-### 9. Durable autonomous task agent
-Use `akka-autonomous-agents` instead of this request-based component path when the work is a durable internal/background task with a typed result, task id, lifecycle, dependencies, failure/cancellation, snapshots, notifications, or model-driven delegation/handoff/team/moderation. Do not use Autonomous Agents as the default for user-facing workstream turns or immediate streamed replies; use `Workflow + AutonomousAgent` when a deterministic business process launches or waits on a durable model-driven investigation.
-
-### 10. Single-purpose request/reply agent
-Use when one model interaction produces one reply.
-
-Repository example:
-- `WorkstreamRuntimeAgent`
-
-### 11. Tool-using request-based agent
-Use when the model must call functions to fetch data, trigger actions, or load approved internal guidance for named capabilities. Agent tools are capability exposure surfaces, not the root design objects.
-
-Repository examples:
-- `UserAdminAccessReviewAutonomousAgent`
-- `UserAdminEvidenceTools`
-
-For protected or managed-agent tools, load `akka-agent-tool-boundaries` before exposing local, component, MCP, or `readSkill` tools so the implementation resolves `ToolPermissionBoundary`, denies ungranted tools, distinguishes read-only from side-effecting authority, requires approval for expansion, and emits tool invocation traces.
-
-For tenant-, agent-, task-, or mode-specific model selection, load `akka-agent-model-governance` so the implementation resolves `ModelConfigRef`, enforces model policy and fallback model policy, keeps provider secrets out of frontend/model-visible context, and emits model config/use traces before invocation.
-
-For model-loadable guidance that approximates harness skills inside an Akka service, load `akka-agent-harness-skills` in addition to `akka-agent-tools`.
-
-### 12. Streaming request-based agent
-Use when tokens should be returned incrementally to an endpoint or notification flow.
-
-Pattern references:
-- `StreamingWorkstreamRuntimeAgent`
-- `WorkstreamRuntimeAgentEndpoint#stream`
-
-### 13. Agent responsibility shape
-Use `ai-first-saas-agent-team-design` before creating multiple agent classes. Prefer a single governed skilled agent when responsibilities share authority, tool boundary, model config, lifecycle, steward, memory, risk, audit, and approval needs and differ only by governed skills in an `AgentSkillManifest`. Prefer specialized agents when those boundaries differ. Add an evaluator agent for independent quality, policy, completeness, or risk judgment. Use a workflow-supervised agent team when durable retries, handoffs, approvals, pauses, or progress visibility are required.
-
-### 14. Workflow-supervised request-based agent team
-Use when AI calls need durable retries, shared sessions, or multi-step orchestration.
-
-Repository example:
-- a domain-specific agent-team workflow
-
-### 15. Evaluated or governed request-based agent
-Use when output quality or runtime safety checks are a first-class concern.
-
-Pattern references:
-- a domain-specific evaluator agent returning `EvaluationResult`
-- a domain-specific `TextGuardrail` implementation
+Repository/pattern references: `WorkstreamRuntimeAgent`, `StreamingWorkstreamRuntimeAgent`, `WorkstreamRuntimeAgentEndpoint#stream`, `UserAdminAccessReviewAutonomousAgent`, `UserAdminEvidenceTools`, domain-specific evaluator/guardrail/workflow examples.
 
 ## Final review checklist
 

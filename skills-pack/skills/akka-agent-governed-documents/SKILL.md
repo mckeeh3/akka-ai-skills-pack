@@ -222,40 +222,10 @@ Reject the lookup when:
 - the document or version is archived/deprecated for the requested purpose
 - runtime use requests an unapproved or inactive version without explicit test/replay authority
 
-## Admin UI surfaces
+## Admin UI, implementation order, and review checklist
 
-Provide protected surfaces for:
-- document catalog by type/status/steward/tag
-- editor with validation and secret-like content warnings
-- version history and side-by-side diff
-- review queue with approval/rejection rationale
-- active version and rollback controls
-- runtime usage trace links
-- impacted agent definitions and workflows
-- editing-agent proposal queue with proposed diff, rationale, risk flags, affected documents, and decision-card links
+Provide protected catalog, editor/validation, diff/history, review, active-version/rollback, runtime-trace, impacted-agent, and editing-agent proposal surfaces.
 
-## Implementation order
+Implement in this order: confirm tenant scope/capabilities, define lifecycle permissions, model document events and immutable version snapshots, add catalog/history/active/review/diff views, add protected endpoints/UI, emit audit/work traces, then integrate active versions with agent profiles, prompt assembly, skill/reference manifests, policies, or evaluation runs.
 
-1. Confirm tenant scope, document types, and governance capabilities with `core-saas-foundation`.
-2. Define lifecycle statuses, command permissions, and approval/activation rules.
-3. Model `BehaviorDocumentEntity` events and replay rules.
-4. Add immutable `BehaviorDocumentVersionEntity` snapshots populated from document events.
-5. Add views for catalogs, history, active lookup, review queues, and diff inputs.
-6. Add protected endpoints and web UI surfaces.
-7. Emit audit/work traces for lifecycle changes and runtime version usage.
-8. Integrate selected active versions with agent behavior profiles, prompt assembly, skill manifests, policy checks, or evaluation runs.
-
-## Review checklist
-
-Before finishing, verify:
-- tenant/customer isolation is enforced for all commands, queries, and runtime lookups
-- lifecycle transitions prevent unapproved runtime activation
-- immutable version snapshots are created and checksumed
-- secret-like content is blocked or flagged before activation
-- diff/history/review surfaces are authorization-protected
-- editing-agent proposals, draft versions, review/approval outcomes, activations, and denials are tested
-- unauthorized authority expansion through prompt, skill, manifest, or tool-boundary text is denied and audited
-- activation, deprecation, rollback, and archive actions emit audit events
-- runtime agents pin or resolve explicit versions rather than reading mutable draft content
-- governed document text does not grant tool/data permissions by itself
-- reference documents remain distinguishable from procedural skills in manifests, loaders, traces, and tool-boundary grants
+Before finishing, verify tenant/customer isolation, approval-before-activation, immutable checksummed versions, secret-like content checks, protected diff/history/review surfaces, editing-agent proposal tests, authority-expansion denial/audit, lifecycle audit events, explicit runtime version resolution, and separation between governed text and mechanical tool/data permissions.

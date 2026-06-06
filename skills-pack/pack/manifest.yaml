@@ -555,6 +555,7 @@ content:
     - docs/security-review-checklist.md
     - docs/security-workos-auth-and-admin.md
     - docs/service-to-service-consumers.md
+    - docs/skill-consolidation-and-pruning.md
     - docs/skills-pack-user-guide.md
     - docs/service-to-service-views.md
     - docs/solution-plan-to-implementation-queue.md
@@ -588,6 +589,7 @@ content:
     - tools/validate-repository-example-references.py
     - tools/validate-surface-contracts.sh
     - skills/references/akka-entity-comparison.md
+    - skills/references/akka-entity-integration-testing-patterns.md
     - skills/references/akka-grpc-jwt-patterns.md
     - skills/references/generated-saas-input-contract.md
     - skills/references/generated-saas-runtime-completion.md
