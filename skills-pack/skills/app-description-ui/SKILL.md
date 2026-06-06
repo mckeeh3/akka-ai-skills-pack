@@ -1,21 +1,24 @@
 ---
 name: app-description-ui
-description: Maintain authoritative frontend/UI descriptions for description-first Akka apps, including agent workstream shell semantics, functional-agent surfaces, typed surface contracts, routes/deep links, interactions, frontend API contracts, accessibility, and responsive behavior.
+description: Maintain authoritative frontend/UI realization and workstream surface bindings in the app-description current-intent graph for Akka apps, including agent workstream shell semantics, functional-agent surfaces, typed surface contracts, routes/deep links, interactions, frontend API contracts, accessibility, and responsive behavior.
 ---
 
 # App Description UI
 
-Use this skill for the mandatory browser frontend of generated full-stack AI-first SaaS apps, and for any description-first work that changes UI meaning.
+Use this skill for the mandatory browser frontend of generated full-stack AI-first SaaS apps, and for any current-intent work that changes UI meaning.
 
 This skill keeps UI requirements authoritative before realization so generated Akka apps are fully capable on both backend and frontend. The web UI is not optional for generated AI-first SaaS. The default UI/application architecture is the agent workstream shell: role-authorized functional-agent rail, continuous workstream panel, persistent composer, context/authority indicators, per-workstream role-specific dashboard/attention summaries, and structured surfaces connected as a human surface graph. Preserve supervision, decision, governance, digest, audit, autonomous task progress/result, and goal-to-execution surfaces; do not turn generated SaaS UI work into a primary page/screen hierarchy.
 
-High-visibility guardrail: `55-ui/` must not create application meaning that is not already owned by `12-workstreams/` functional agents, workstreams, role-specific dashboard/attention contracts, workstream icon descriptors, human surface graph nodes/edges, structured surfaces, surface actions, autonomous task/result surfaces, internal workstream agent graph effects, and `10-capabilities/` governed contracts. UI changes that create or alter user-facing work areas, attention indicators, workstream icon assignments, surfaces, surface graph edges, browser-tool actions, or governed-tool exposure must first update or verify `12-workstreams/` and `10-capabilities/`; `55-ui/` may then add browser rendering, routes/deep links, frontend API, state/realtime, accessibility, responsive, and style details.
+High-visibility guardrail: UI realization files must not create application meaning that is not already owned by `domains/<domain>/workstreams/<workstream>/**` functional agents, workstreams, role-specific dashboard/attention contracts, workstream icon descriptors, human surface graph nodes/edges, structured surfaces, surface actions, autonomous task/result surfaces, internal workstream agent graph effects, and `domains/<domain>/capabilities/**` governed contracts. UI changes that create or alter user-facing work areas, attention indicators, workstream icon assignments, surfaces, surface graph edges, browser-tool actions, or governed-tool exposure must first update or verify the workstream and capability nodes; UI realization artifacts may then add browser rendering, routes/deep links, frontend API, state/realtime, accessibility, responsive, and style details.
 
 ## Required reading
 
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-description-skill-output-contracts.md`
 Read these first if present:
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/requirements-to-workstream-development-process.md` for attention/dashboard/surface-action/autonomous task notification/projection rules
 - `../docs/capability-first-backend-architecture.md` for selected capability exposure surfaces, browser action authority, frontend API contracts, audit, and denial semantics
@@ -29,7 +32,9 @@ Read these first if present:
 - `../app-description-functional-agent-modeling/SKILL.md` for role-authorized functional-agent rail, workstream, surface, capability, prompt/skill/tool, trace, and test semantics
 - `../app-description-surface-modeling/SKILL.md` for structured workstream surface contracts, typed payloads, reusable functional-agent placement, capability-backed actions, rendering states, traces, and tests
 - `../ai-first-saas-ui-surfaces/SKILL.md` for generated AI-first SaaS supervision, decision, governance, digest, audit, and goal-to-execution UI surfaces
-- existing `app-description/55-ui/**`
+- existing `app-description/domains/<domain>/workstreams/<workstream>/surfaces/**`
+- existing `app-description/domains/<domain>/workstreams/<workstream>/realization/frontend-routes.md`
+- existing `app-description/global/surfaces/**`
 
 ## Use this skill when
 
@@ -39,36 +44,22 @@ Read these first if present:
 - the app-description needs UI readiness for generation
 - a change request affects forms, navigation, frontend validation, realtime browser updates, accessibility, or responsive behavior
 
-## Authoritative UI layer
+## Authoritative UI graph targets
 
 Prefer this structure for generated full-stack AI-first SaaS apps:
 
 ```text
-app-description/55-ui/
-  ui-index.md
-  workstream-shell.md
-  functional-agent-rail.md
-  workstream-panel-and-composer.md
-  structured-surface-rendering.md
-  routes-and-deep-links.md
-  personas-and-journeys.md
-  ai-first-surfaces.md
-  agent-catalog-and-detail.md
-  prompt-and-skill-governance.md
-  skill-manifests-and-tool-permissions.md
-  edit-agent-proposals-and-traces.md
-  interactions-and-forms.md
-  frontend-api-contracts.md
-  states-and-realtime.md
-  accessibility-and-responsive.md
-  style-guide.md
+app-description/global/surfaces/<surface-pattern>.md
+app-description/domains/<domain>/workstreams/<workstream>/surfaces/<surface-binding>.md
+app-description/domains/<domain>/workstreams/<workstream>/realization/frontend-routes.md
+app-description/domains/<domain>/workstreams/<workstream>/realization/api-contracts.md
 ```
 
-This is the canonical generated SaaS `55-ui/` file set and should remain consistent with `../docs/internal-app-description-architecture.md`, `app-description-bootstrap`, and the current SaaS Foundation App description template.
+Global surface artifacts define reusable surface patterns. Workstream surface bindings define where the surface appears, which functional agent owns or reuses it, which capability/tool actions it exposes, how denials/stale states render, and which tests/traces prove it. Frontend realization files own browser rendering, route/deep-link, frontend API, realtime, accessibility, responsive, and style details for the workstream.
 
-Create only files justified by the app, but do not omit the UI layer for generated AI-first SaaS. For SaaS Foundation App scope, managed-agent UI files such as `agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, and `edit-agent-proposals-and-traces.md` belong to the foundation domain unless a task explicitly narrows or removes that area. For a very small description tree, one `ui-index.md`, `workstream-shell.md`, `functional-agent-rail.md`, `workstream-panel-and-composer.md`, `structured-surface-rendering.md`, `routes-and-deep-links.md`, the relevant managed-agent UI files, and `style-guide.md` may be enough.
+Create only files justified by the app, but do not omit UI realization for generated AI-first SaaS. For SaaS Foundation App scope, managed-agent UI surfaces such as agent catalog/detail, prompt and skill governance, skill manifests and tool permissions, and edit-agent proposals/traces belong to the foundation domain unless a task explicitly narrows or removes that area.
 
-For retired/static/page-first UI boundaries, use `../docs/retired-content-boundaries.md`; new generated SaaS descriptions use `routes-and-deep-links.md`, not `screens-and-navigation.md`. The `55-ui` prefix keeps UI authoritative while preserving the existing `60-generation` layer for realization metadata. Keep application meaning in `12-workstreams/`: functional agents, internal agents, durable workstreams, surface contracts, action-to-capability mappings, traces, and tests. `55-ui/` owns browser realization and links back instead of redefining them.
+For retired/static/page-first UI boundaries, use `../docs/retired-content-boundaries.md`; new generated SaaS descriptions use frontend route/deep-link realization under the owning workstream, not `screens-and-navigation.md`. Keep application meaning in workstream access/behavior/surface/agent/tool/policy/trace/test nodes; frontend realization owns browser mechanics and links back instead of redefining them.
 
 ## What to capture
 

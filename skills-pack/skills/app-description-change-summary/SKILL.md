@@ -27,10 +27,12 @@ The summary should help the human understand the consequence of their requested 
 Read these first if present:
 - target project path: AGENTS.md
 - `../README.md`
-- `../docs/description-first-application-doctrine.md`
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
-- any relevant updated description-layer artifacts identified by the harness
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-description-skill-output-contracts.md`
+- any relevant updated current-intent graph artifacts identified by the harness
 - any recent readiness or generation summaries if they exist
 
 ## Use this skill when
@@ -99,9 +101,9 @@ Use this response shape:
 ### 1. Lead with meaning
 Start with what changed in app behavior or policy, not with file-level activity.
 
-### 2. Separate layers clearly
+### 2. Separate graph concerns clearly
 Do not merge behavior, tests, security, and observability into one vague paragraph.
-Show each affected layer distinctly.
+Show each affected app/global/domain/workstream concern distinctly.
 
 ### 3. Include unchanged critical areas only when useful
 If a critical area did not change, do not pad the summary.
@@ -144,6 +146,6 @@ Before finishing, verify:
 When answering:
 - be concise but semantically specific
 - emphasize what changed in the app's meaning
-- organize by layer
+- organize by current-intent graph concern
 - avoid file-editing language unless it is specifically useful
 - keep the summary suitable for natural prompt/response review

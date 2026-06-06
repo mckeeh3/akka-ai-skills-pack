@@ -166,7 +166,7 @@
 
 ### TASK-IC-03-002: Realign app-description capture skills
 
-- status: pending
+- status: done
 - source: specs/intent-compiler-realignment/backlog/01-intent-compiler-realignment-build-backlog.md
 - task brief: specs/intent-compiler-realignment/tasks/03-skills-replacement/02-realign-app-description-capture-skills.md
 - depends on:

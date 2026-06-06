@@ -1,6 +1,6 @@
 ---
 name: app-description-test-specification
-description: Update the authoritative test layer of the app description by turning intended behavior into explicit acceptance, regression, edge-case, negative, idempotency, security, and observability expectations without generating code.
+description: Update authoritative workstream test nodes in the app-description current-intent graph by turning intended behavior into explicit acceptance, regression, edge-case, negative, idempotency, security, and observability expectations without generating code.
 ---
 
 # App Description Test Specification
@@ -11,7 +11,7 @@ This skill treats tests as part of the **authoritative application description**
 
 ## Goal
 
-Create or update the test layer of the app description so that behavior becomes more unambiguous through explicit verification expectations.
+Create or update `domains/<domain>/workstreams/<workstream>/tests/**` and linked domain/global verification expectations so that behavior becomes more unambiguous through explicit verification expectations.
 
 The output should:
 - define acceptance behavior clearly
@@ -28,12 +28,14 @@ The output should:
 Read these first if present:
 - target project path: AGENTS.md
 - `../README.md`
-- `../docs/description-first-application-doctrine.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-description-skill-output-contracts.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/capability-first-backend-architecture.md` for capability-level success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-surface test expectations
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation verification expectations
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 
@@ -122,7 +124,7 @@ When delegated work or agentic judgment is in scope, define how to prove:
 
 ## Standard output shape
 
-Use the delta modeling contract in `../docs/app-description-skill-output-contracts.md`. For this test skill, report the requested change, authoritative layer/file targets, in-scope and out-of-scope behavior, authority/scope, DTOs or payloads where relevant, side effects/idempotency/denials/traces/tests, linked layers, assumptions, and next handoff. Avoid repeating the full app-description layer model.
+Use the delta modeling contract in `../docs/app-description-skill-output-contracts.md`. For this test skill, report the requested change, affected graph nodes/file targets, in-scope and out-of-scope behavior, authority/scope, DTOs or payloads where relevant, side effects/idempotency/denials/traces/tests, linked graph nodes, assumptions, and next handoff. Avoid repeating the full app-description graph model.
 
 ## Test authoring rules
 

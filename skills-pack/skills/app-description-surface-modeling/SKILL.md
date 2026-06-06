@@ -5,22 +5,28 @@ description: Model structured workstream surfaces in app descriptions, including
 
 # App Description Surface Modeling
 
-Use this skill to update authoritative app-description surface contracts for agent workstream apps. A surface is a typed, backend-backed user interaction unit, not a static mockup.
+Use this skill to update authoritative app-description surface definitions and workstream surface bindings for agent workstream apps. A surface is a typed, backend-backed user interaction unit, not a static mockup.
 
 ## Required reading
 
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-description-skill-output-contracts.md`
 - `../docs/structured-surface-contracts.md`
 - `../docs/workstream-contract.md`
 - `../docs/workstream-attention-contracts.md`
 - `../docs/workstream-ui-reference-architecture.md`
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/web-ui-style-guide.md` when visual guidance is in scope
-- current `app-description/**` workstream, capability, UI, auth/security, tests, and traceability files
+- current `app-description/global/surfaces/**`, `global/tools/**`, `global/traces/**`, domain capability files, and workstream surface/access/tool/trace/test/realization bindings
 
 ## Surface contract fields
 
 For each surface, define:
 
+- whether this is a reusable global surface pattern or a workstream-specific surface binding
 - stable id, type, version, owning workstream definition, exactly one owning functional agent, reusable functional agents/workstreams if any, and purpose
 - actor roles/scopes and selected `AuthContext` requirements
 - payload schema summary with frontend-safe fields only
@@ -48,7 +54,7 @@ Update or propose updates to the app-description with:
 
 - new/changed surface contracts
 - affected capability/security/test/observability links
-- traceability map changes
+- traceability map or graph-link changes
 - assumptions and open questions
 - generation impact: localized UI/API change, backend capability change, broader workstream redesign, or separate app-level surface implementation cleanup
 

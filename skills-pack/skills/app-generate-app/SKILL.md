@@ -9,8 +9,13 @@ Use this skill when the authoritative app-description/spec artifacts are ready t
 
 ## Required reading
 
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-description-skill-output-contracts.md`
 - target `AGENTS.md`
-- current `app-description/**`, especially readiness/generation policy files
+- current `app-description/**`, especially `app.md`, global definitions, domain capabilities/data-state, workstream access/behavior/surface/agent/tool/policy/trace/test bindings, and workstream realization files
 - relevant `specs/**`, backlog, pending-task, and task brief files
 - `../docs/generated-saas-canonical-doctrine.md`
 - `../docs/minimum-ai-first-saas-app.md`
@@ -23,7 +28,7 @@ Use this skill when the authoritative app-description/spec artifacts are ready t
 
 Before editing, state:
 
-- source description/spec files and exact slice being realized
+- source current-intent graph nodes/spec files and exact slice being realized
 - target runtime paths: Java packages, frontend folders, app-description/spec extensions, docs, tests
 - what is in scope, explicitly deferred, blocked, or assumed
 - validation evidence required before claiming completion
@@ -38,7 +43,7 @@ Model-backed workstream behavior must invoke a concrete Akka `Agent` through the
 
 ## Implementation routing
 
-Route from the selected description slice to the smallest focused skill set:
+Route from the selected current-intent graph slice to the smallest focused skill set:
 
 - app/security foundation: `core-saas-foundation`, `akka-workos-user-auth`, `akka-basic-user-admin`, `akka-saas-invitation-onboarding`, `akka-resend-email-service`
 - backend capability/component work: `capability-first-backend`, `akka-solution-decomposition`, then entity/workflow/view/consumer/timer/endpoint skills

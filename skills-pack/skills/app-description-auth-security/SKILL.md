@@ -1,13 +1,13 @@
 ---
 name: app-description-auth-security
-description: Update the authoritative auth/security layer of the app description by capturing authentication, authorization, trust boundaries, sensitive-data rules, and forbidden access behavior without generating code.
+description: Update authoritative auth/security nodes and workstream access bindings in the app-description current-intent graph by capturing authentication, authorization, trust boundaries, sensitive-data rules, and forbidden access behavior without generating code.
 ---
 
 # App Description Auth/Security
 
 Use this skill when the user introduces or revises security requirements in the application description.
 
-This skill maintains the **auth/security layer** of the internal app description.
+This skill maintains reusable auth/security definitions under `app-description/global/**` and workstream-specific `access.md`, policy/tool bindings, capability authorization, and denial semantics under `domains/<domain>/workstreams/<workstream>/**`.
 It does not generate code.
 It defines the access-control and trust semantics that downstream generation must honor.
 
@@ -28,12 +28,14 @@ Create or update auth/security-oriented app-description artifacts that:
 Read these first if present:
 - target project path: AGENTS.md
 - `../README.md`
-- `../docs/description-first-application-doctrine.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-description-skill-output-contracts.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/capability-first-backend-architecture.md` for protected capability AuthContext, permission, scope, exposure, and audit semantics
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation semantics
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 - `../app-description-test-specification/SKILL.md`
@@ -102,11 +104,11 @@ For each requested change, identify and describe as applicable:
 - forbidden access patterns
 - unauthorized and forbidden response behavior
 - explicit default-deny rule for every route, agent tool, data access path, workflow action, view query, stream, consumer side effect, timer action, and generated UI action unless deliberately public static assets
-- dependencies on behavior, test, and observability layers
+- dependencies on behavior, test, and observability graph nodes
 
 ## Standard auth/security output shape
 
-Use the delta modeling contract in `../docs/app-description-skill-output-contracts.md`. For this auth/security skill, report the requested change, authoritative layer/file targets, in-scope and out-of-scope behavior, authority/scope, DTOs or payloads where relevant, side effects/idempotency/denials/traces/tests, linked layers, assumptions, and next handoff. Avoid repeating the full app-description layer model.
+Use the delta modeling contract in `../docs/app-description-skill-output-contracts.md`. For this auth/security skill, report the requested change, affected graph nodes/file targets, reusable global definitions versus workstream access/policy/tool bindings, in-scope and out-of-scope behavior, authority/scope, DTOs or payloads where relevant, side effects/idempotency/denials/traces/tests, linked graph nodes, assumptions, and next handoff. Avoid repeating the full app-description graph model.
 
 ## Security modeling rules
 

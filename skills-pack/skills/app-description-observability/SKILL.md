@@ -1,13 +1,13 @@
 ---
 name: app-description-observability
-description: Update the authoritative observability layer of the app description by capturing logging, metrics, traces, audit events, health signals, alerts, and diagnosability expectations without generating code.
+description: Update authoritative observability and trace nodes in the app-description current-intent graph by capturing logging, metrics, traces, audit events, health signals, alerts, and diagnosability expectations without generating code.
 ---
 
 # App Description Observability
 
 Use this skill when the user introduces or revises observability requirements in the application description.
 
-This skill maintains the **observability layer** of the internal app description.
+This skill maintains reusable trace definitions under `app-description/global/traces/**` and workstream-specific trace/audit/diagnosability bindings under `domains/<domain>/workstreams/<workstream>/traces/**`.
 It does not generate code.
 It defines what operational evidence and visibility the realized app must provide.
 
@@ -27,11 +27,13 @@ Create or update observability-oriented app-description artifacts that:
 Read these first if present:
 - target project path: AGENTS.md
 - `../README.md`
-- `../docs/description-first-application-doctrine.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-description-skill-output-contracts.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/capability-first-backend-architecture.md` for capability audit/trace, data-access, approval, side-effect, and exposure-surface evidence requirements
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 - `../app-description-test-specification/SKILL.md`
@@ -84,11 +86,11 @@ For each requested change, identify and describe as applicable:
 - diagnosability expectations for failures or stuck work
 - actor, tenant, agent, goal, plan, decision, policy version, tool, data resource, or correlation context needed for diagnosis
 - sensitive-data constraints on observability output
-- dependencies on behavior, security, and test layers
+- dependencies on behavior, security, and test graph nodes
 
 ## Standard observability output shape
 
-Use `../docs/app-description-skill-output-contracts.md` for the detailed output contract. Return only the actionable summary, affected artifacts/layers, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
+Use `../docs/app-description-skill-output-contracts.md` for the detailed output contract. Return only the actionable summary, affected graph nodes/artifacts, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
 
 ## Observability modeling rules
 

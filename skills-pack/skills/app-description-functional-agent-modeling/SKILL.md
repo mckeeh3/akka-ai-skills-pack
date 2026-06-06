@@ -1,11 +1,11 @@
 ---
 name: app-description-functional-agent-modeling
-description: Model user-facing role-authorized functional/context-area agents in an app-description workstream layer, including authority, prompt intent, skills, tools, surfaces, capabilities, traces, and tests.
+description: Model user-facing role-authorized functional/context-area agents as workstream agent bindings in the app-description current-intent graph, including authority, prompt intent, skills, tools, surfaces, capabilities, traces, and tests.
 ---
 
 # App Description Functional-Agent Modeling
 
-Use this skill when maintaining the app-description `12-workstreams/functional-agents.md` layer or equivalent artifacts for generated full-stack AI-first SaaS apps.
+Use this skill when maintaining app-description workstream agent bindings such as `domains/<domain>/workstreams/<workstream>/agents/<agent-binding>.md` plus related global agent definitions for generated full-stack AI-first SaaS apps.
 
 Functional agents are the user-facing vertical application areas in the authenticated workstream shell. They are not Akka components, chat sessions, pages, or generic assistants. Each functional agent owns or reuses structured surfaces, starts from role-specific dashboard surfaces, maintains a human surface graph, and invokes governed backend capabilities through explicit authority rules. Normalize UI nouns such as dashboard, portal, admin screen, command center, work queue, approval area, or agent/chat space into functional-agent ownership plus reusable surface contracts before route/page details.
 
@@ -14,14 +14,17 @@ Functional agents are the user-facing vertical application areas in the authenti
 Read these first if present:
 - target project path: AGENTS.md
 - `../README.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-description-skill-output-contracts.md`
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/workstream-contract.md` for compact workstream fields, type-vs-instance terminology, ownership/reuse rules, id taxonomy, and readiness labels
-- `../docs/workstream-manifest-schema.md` for the machine-readable `12-workstreams/workstream-manifest.json` index
+- `../docs/workstream-manifest-schema.md` for any target-project machine-readable workstream index when present
 - `../docs/minimum-implementable-workstream-slice.md` for one-slice implementation/task briefs
 - `../docs/workstream-attention-contracts.md` for attention item, producer, lifecycle, aggregation, and tests
 - `../docs/requirements-to-workstream-development-process.md` for workstream → attention → dashboard → surfaces/actions → capabilities → autonomous task/notification/projection/trace semantics
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/capability-first-backend-architecture.md`
 - `../app-descriptions/SKILL.md`
@@ -29,8 +32,9 @@ Read these first if present:
 - `../app-description-capability-modeling/SKILL.md`
 - `../app-description-surface-modeling/SKILL.md`
 - `../app-description-ui/SKILL.md`
-- existing `app-description/12-workstreams/**`
-- existing `app-description/70-traceability/functional-agent-to-capability-map.md`
+- existing `app-description/domains/<domain>/workstreams/<workstream>/**`
+- existing `app-description/global/agents/**`, `global/tools/**`, `global/surfaces/**`, and `global/traces/**`
+- existing realization and traceability files when present
 
 ## Use this skill when
 
@@ -42,40 +46,34 @@ The task asks to:
 - capture workstream expertise skills/references, prompt intent, governed prompt documents, governed-tool permissions, or behavior boundaries for a user-facing agent;
 - update app-description artifacts before implementation of agent workstream UI or Akka agents.
 
-Do not use this as the main skill for internal-only classifier/summarizer/evaluator agents. Model those in `12-workstreams/internal-agents.md` and route to agent implementation skills only after capability and authority semantics are clear.
+Do not use this as the main skill for internal-only classifier/summarizer/evaluator agents. Model those as local/internal agent bindings under the supporting workstream, or as reusable global agent definitions plus explicit internal workstream bindings, and route to agent implementation skills only after capability and authority semantics are clear.
 
 ## Artifact targets
 
 Prefer these app-description artifacts:
 
 ```text
-app-description/12-workstreams/
-  workstream-manifest.json
-  functional-agents.md
-  workstreams-and-retention.md
-  attention-and-dashboards.md
-  internal-agents.md
-  surfaces-index.md
-  foundation-workstream-completeness.md
-  workstream-expertise/
-    README.md
-    <functional-agent-id>.md
-
-app-description/55-ui/
-  workstream-shell.md
-  functional-agent-rail.md
-  workstream-panel-and-composer.md
-
-app-description/70-traceability/
-  functional-agent-to-capability-map.md
-  surface-to-capability-map.md
+app-description/global/agents/<agent-definition>.md
+app-description/global/tools/<tool-definition>.md
+app-description/global/surfaces/<surface-pattern>.md
+app-description/global/traces/<trace-pattern>.md
+app-description/domains/<domain>/domain.md
+app-description/domains/<domain>/capabilities/<capability>.md
+app-description/domains/<domain>/workstreams/<workstream>/workstream.md
+app-description/domains/<domain>/workstreams/<workstream>/access.md
+app-description/domains/<domain>/workstreams/<workstream>/agents/<agent-binding-or-local-agent>.md
+app-description/domains/<domain>/workstreams/<workstream>/surfaces/<surface-binding>.md
+app-description/domains/<domain>/workstreams/<workstream>/tools/<tool-binding>.md
+app-description/domains/<domain>/workstreams/<workstream>/traces/<trace-binding>.md
+app-description/domains/<domain>/workstreams/<workstream>/tests/<test-expectation>.md
+app-description/domains/<domain>/workstreams/<workstream>/realization/frontend-routes.md
 ```
 
-Create or update only the smallest files needed. Keep `12-workstreams/workstream-manifest.json` as the machine-readable workstream/agent/surface/capability index, keep `12-workstreams/functional-agents.md` authoritative for the functional-agent catalog, and keep `12-workstreams/workstream-expertise/<functional-agent-id>.md` authoritative for that functional agent's workstream expert bundle when LLM behavior is in scope.
+Create or update only the smallest files needed. Global agent definitions answer what an agent is; workstream agent bindings answer why and how that agent is used in a specific workstream. Keep each workstream's agent binding authoritative for its expert bundle when LLM behavior is in scope.
 
 ## Functional-agent contract
 
-Use `../docs/app-description-skill-output-contracts.md` for the detailed output contract. Return only the actionable summary, affected artifacts/layers, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
+Use `../docs/app-description-skill-output-contracts.md` for the detailed output contract. Return only the actionable summary, affected graph nodes/artifacts, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
 
 ## Modeling rules
 
@@ -93,11 +91,11 @@ Use `../docs/app-description-skill-output-contracts.md` for the detailed output 
 
 When a functional-agent change adds or changes:
 
-- a callable operation/query, update `10-capabilities/` via `app-description-capability-modeling`;
-- surfaces, browser actions, or controls that open surfaces/workstreams, update `12-workstreams/surfaces-index.md` and `surface-contracts/**` via `app-description-surface-modeling`, plus `55-ui/**` and surface-to-capability traceability; treat buttons, links, rows, cards, and icons that open protected workstreams/surfaces as surface-request actions such as `open_workstream`;
-- model binding, provider alias, fallback, or model policy, update `15-operating-model/governed-runtime-agents.md`, model-governance artifacts, readiness state, tests, and trace expectations;
-- prompt intent, skills, tools, or behavior documents, update `15-operating-model/governed-runtime-agents.md` and relevant agent governance artifacts;
-- approval, policy, escalation, or autonomy, update operating-model, behavior, auth/security, tests, and observability layers;
+- a callable operation/query, update `domains/<domain>/capabilities/**` via `app-description-capability-modeling`;
+- surfaces, browser actions, or controls that open surfaces/workstreams, update `domains/<domain>/workstreams/<workstream>/surfaces/**` via `app-description-surface-modeling`, plus workstream realization files and surface-to-capability traceability; treat buttons, links, rows, cards, and icons that open protected workstreams/surfaces as surface-request actions such as `open_workstream`;
+- model binding, provider alias, fallback, or model policy, update the relevant global agent/model policy definition and workstream agent binding, readiness state, tests, and trace expectations;
+- prompt intent, skills, tools, or behavior documents, update global governed-document definitions and relevant workstream agent/tool bindings;
+- approval, policy, escalation, or autonomy, update policy definitions/bindings, behavior, auth/security, tests, and observability graph nodes;
 - roles, permissions, or scope, update auth/security and `/api/me`/capability exposure expectations;
 - traces or audits, update observability and traceability artifacts.
 

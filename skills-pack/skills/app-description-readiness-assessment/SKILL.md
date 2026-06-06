@@ -28,15 +28,17 @@ The result should tell the harness and the user whether to:
 Read these first if present:
 - target project path: AGENTS.md
 - `../README.md`
-- `../docs/description-first-application-doctrine.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-description-skill-output-contracts.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/requirements-to-workstream-development-process.md` for readiness gates across workstreams, attention, dashboards, surface actions, autonomous tasks, notifications/projections, and traces
 - `../docs/capability-first-backend-architecture.md` for capability contract completeness criteria
 - `../docs/agent-workstream-application-architecture.md` for functional-agent, workstream shell, and structured-surface readiness gates
 - `../docs/workstream-expertise-model.md` for per-functional-agent workstream expert bundle readiness gates
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS foundation readiness criteria
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 - `../app-description-functional-agent-modeling/SKILL.md`
 - `../app-description-surface-modeling/SKILL.md`
@@ -98,12 +100,12 @@ Use this concise report shape from `../docs/app-description-skill-output-contrac
 
 1. overall state: `ready`, `ready-with-assumptions`, `not-ready`, or `blocked`;
 2. declared scope label: SaaS Foundation App maintenance/extension, business-domain extension, app-specific feature, or another named scope;
-3. blocking gaps by layer;
+3. blocking gaps by current-intent graph area;
 4. acceptable assumptions;
 5. unsafe assumptions/questions;
 6. recommendation and next skill sequence.
 
-Do not paste long layer inventories into the response unless the user asks for a detailed audit.
+Do not paste long graph inventories into the response unless the user asks for a detailed audit.
 
 ## Assessment rules
 
@@ -126,9 +128,9 @@ If an assumption would change whether a user-visible/API/workstream feature work
 
 For browser UI generation, a missing style guide is a blocking UI readiness gap unless the user explicitly defers it with an accepted default recorded in `specs/pending-questions.md` and the affected app-description/spec style-guide artifact.
 
-For generated full-stack AI-first SaaS apps, missing `12-workstreams/` functional-agent, attention/dashboard, workstream-expertise, and structured-surface semantics are blocking when generation would otherwise invent consequential work areas, expert skills/references/manifests/boundaries, left-rail authorization, workstream behavior, attention counts, surface payloads/actions/states, autonomous task progress/result surfaces, notifications, or User Admin / Agent Admin boundaries. Readiness is also blocked when the frontend plan uses legacy `frontend/src/screens/**`, page-first route tests, or static-resource mechanics as the generated SaaS UI model instead of the canonical `frontend/src/workstream/**` reference and User Admin vertical. User Admin dashboard/list/detail behavior is incomplete if it is fixture-only, API-only, or UI-only instead of fullstack through `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` backed by scoped backend capabilities and tests.
+For generated full-stack AI-first SaaS apps, missing workstream functional-agent, attention/dashboard, expertise, and structured-surface semantics under `domains/<domain>/workstreams/<workstream>/**` are blocking when generation would otherwise invent consequential work areas, expert skills/references/manifests/boundaries, left-rail authorization, workstream behavior, attention counts, surface payloads/actions/states, autonomous task progress/result surfaces, notifications, or User Admin / Agent Admin boundaries. Readiness is also blocked when the frontend plan uses legacy `frontend/src/screens/**`, page-first route tests, or static-resource mechanics as the generated SaaS UI model instead of the canonical `frontend/src/workstream/**` reference and User Admin vertical. User Admin dashboard/list/detail behavior is incomplete if it is fixture-only, API-only, or UI-only instead of fullstack through `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` backed by scoped backend capabilities and tests.
 
-For AI-first/delegated operations, missing `15-operating-model/` semantics are blocking when generation would otherwise invent authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
+For AI-first/delegated operations, missing global/domain/workstream operating-model semantics are blocking when generation would otherwise invent authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 
 ### 4. Treat manual evaluation as a runtime target, not a lower bar
 If the user wants an early evaluation build, narrow the scope aggressively but still require the selected scope to run through real local Akka/API/UI paths with Akka component-backed normal runtime state and fail-closed provider/security handling. Do not use mock, fixture, deterministic, simulated, frontend-only, provider-bypass behavior, or missing internal Akka persistence as the normal runtime substitute for a named generated-app feature. Missing runtime behavior remains `not-ready`, blocked, or explicitly outside the narrowed scope.
