@@ -58,15 +58,18 @@ Options:
   --help               Show this help text
 
 Manifest:
-  The installer writes <target>/.akka-ai-skills-pack-install-manifest. Prune and
-  uninstall only remove paths recorded in that manifest, so unrelated harness
-  skills or local files in the same directory are not deleted.
+  The installer writes <target>/.akka-ai-skills-pack-install-manifest. It records
+  pack-owned top-level entries: README.md, shared asset/reference directories,
+  and installed skill directories. Prune and uninstall only remove paths recorded
+  in that manifest, so unrelated harness skills or local files in the same
+  directory are not deleted.
 
 Installed content:
-  The installer copies/symlinks skill directories plus pack docs, examples,
-  templates, tools, and shared references needed by installed skills. It does not
-  install akka-context; standard Akka projects keep that independently maintained
-  directory at the project root.
+  The installer copies/symlinks skill directories plus curated pack docs,
+  examples, templates, tools, and shared references needed by installed skills.
+  These asset directories are curated as whole directories, not selected from a
+  per-file installer allowlist. It does not install akka-context; standard Akka
+  projects keep that independently maintained directory at the project root.
 EOF
 }
 

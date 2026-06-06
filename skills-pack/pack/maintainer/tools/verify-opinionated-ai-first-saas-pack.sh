@@ -35,33 +35,14 @@ forbid_rg() {
 
 cd "$PACK_ROOT"
 
-log "checking manifest content references exist"
-python3 - <<'PY'
-from pathlib import Path
-import re
-import sys
-
-root = Path('.')
-manifest = root / 'pack' / 'manifest.yaml'
-in_references = False
-missing = []
-for line_no, line in enumerate(manifest.read_text().splitlines(), 1):
-    if re.match(r'\s*references:\s*$', line):
-        in_references = True
-        continue
-    if in_references and re.match(r'\S', line):
-        break
-    if in_references:
-        match = re.match(r'\s*-\s+(.+?)\s*$', line)
-        if match:
-            ref = match.group(1).strip('"\'')
-            if not (root / ref).exists():
-                missing.append((line_no, ref))
-if missing:
-    for line_no, ref in missing:
-        print(f'missing manifest content reference at line {line_no}: {ref}', file=sys.stderr)
-    sys.exit(1)
-PY
+log "checking manifest directory-level install contract"
+require_rg "installedDirectories:" pack/manifest.yaml
+require_rg "- references" pack/manifest.yaml
+require_rg "- docs" pack/manifest.yaml
+require_rg "- examples" pack/manifest.yaml
+require_rg "- templates" pack/manifest.yaml
+require_rg "- tools" pack/manifest.yaml
+require_rg "- skills/\*" pack/manifest.yaml
 
 log "checking core foundation skill and manifest routing"
 require_file "skills/core-saas-foundation/SKILL.md"
@@ -190,19 +171,17 @@ require_file "templates/ai-first-saas-core-app/app-description/55-ui/structured-
 require_file "templates/ai-first-saas-core-app/app-description/70-traceability/surface-to-capability-map.md"
 require_file "tools/validate-surface-contracts.sh"
 require_file "docs/examples/domain-workstream-surface-contract-example.md"
-require_rg "templates/ai-first-saas-core-app/app-description/12-workstreams/surfaces-index.md" pack/manifest.yaml docs/structured-surface-contracts.md
-require_rg "docs/examples/domain-workstream-surface-contract-example.md" pack/manifest.yaml docs/structured-surface-contracts.md skills/app-description-surface-modeling/SKILL.md
-require_rg "validate-surface-contracts" pack/manifest.yaml docs/structured-surface-contracts.md skills/app-description-surface-modeling/SKILL.md
+require_rg "validate-surface-contracts" docs/structured-surface-contracts.md skills/app-description-surface-modeling/SKILL.md
 "$PACK_ROOT/tools/validate-surface-contracts.sh" "$PACK_ROOT/templates/ai-first-saas-core-app/app-description"
 
 log "checking pack docs, manifest, skills, and core app-description assets"
-require_rg "docs/core-ai-first-saas-foundation.md" pack/manifest.yaml
-require_rg "docs/core-saas-identity-tenancy-admin.md" pack/manifest.yaml
-require_rg "docs/core-saas-owner-tenant-billing.md" pack/manifest.yaml
-require_rg "docs/workstream-ui-reference-architecture.md" pack/manifest.yaml
-require_rg "docs/agent-workstream-design-review-checklist.md" pack/manifest.yaml
-require_rg "docs/examples/README.md" pack/manifest.yaml
-require_rg "docs/frontend-with-akka-backend.md" pack/manifest.yaml skills/akka-web-ui-apps/SKILL.md skills/akka-web-ui-frontend-project/SKILL.md skills/akka-workos-user-auth/SKILL.md
+require_file "docs/core-ai-first-saas-foundation.md"
+require_file "docs/core-saas-identity-tenancy-admin.md"
+require_file "docs/core-saas-owner-tenant-billing.md"
+require_file "docs/workstream-ui-reference-architecture.md"
+require_file "docs/agent-workstream-design-review-checklist.md"
+require_file "docs/examples/README.md"
+require_rg "docs/frontend-with-akka-backend.md" skills/akka-web-ui-apps/SKILL.md skills/akka-web-ui-frontend-project/SKILL.md skills/akka-workos-user-auth/SKILL.md
 require_rg "frontend/src/workstream" docs/workstream-ui-reference-architecture.md "$APP_ROOT/frontend/README.md" skills/akka-web-ui-apps/SKILL.md
 require_rg "install-skills" install-skills.sh "$APP_ROOT/install-skills.sh" README.md
 

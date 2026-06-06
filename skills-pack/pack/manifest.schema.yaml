@@ -4,8 +4,8 @@ name: akka-ai-skills-pack-manifest
 
 description: >-
   Schema for the Akka AI skills library manifest. The manifest describes the
-  harness skills-library install contract, installed pack reference files, and
-  external Akka SDK docs that are intentionally not installed into `.agents/skills`.
+  harness skills-library install contract at directory level and external Akka
+  SDK docs that are intentionally not installed into `.agents/skills`.
 
 fields:
   apiVersion:
@@ -116,11 +116,18 @@ fields:
             type: list
             required: false
             itemType: string
-      references:
-        type: list
-        required: false
-        itemType: string
-        note: Pack reference files installed under the target skills directory when present, except akka-context which remains external.
+      installedDirectories:
+        type: map
+        required: true
+        note: Directory-level install contract; skills-pack assets are curated in source as whole directories, not by per-file allowlist.
+        fields:
+          purpose:
+            type: string
+            required: true
+          paths:
+            type: list
+            required: true
+            itemType: string
       examples:
         type: map
         required: false
@@ -188,5 +195,6 @@ fields:
 validationRules:
   - metadata.name must be stable across releases
   - content.skills ids must match skills/*/SKILL.md directories
+  - content.installedDirectories.paths must match the directory-level payload managed by install-skills.sh
   - bundles[].includeExamples is metadata only; install-skills.sh installs pack examples when present
   - manifests must not define installed application source paths or bundled akka-context paths unless install-skills.sh is intentionally changed in the same release

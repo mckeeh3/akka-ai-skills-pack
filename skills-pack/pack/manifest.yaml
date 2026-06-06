@@ -516,94 +516,22 @@ content:
       aiFirstSemanticSlices:
         path: examples/ai-first-semantic-slices
         purpose: Compact domain-neutral semantic acceptance shapes for AI-first SaaS behavior.
-  references:
-    - skills/README.md
-    - docs/agent-component-selection-guide.md
-    - docs/agent-coverage-matrix.md
-    - docs/agent-runtime-invocation-pattern.md
-    - docs/agent-runtime-state-reference.md
-    - docs/agent-workstream-application-architecture.md
-    - docs/akka-entity-testing-shared-patterns.md
-    - docs/agent-workstream-design-review-checklist.md
-    - docs/ai-first-saas-application-architecture.md
-    - docs/app-description-end-to-end-workflow-example.md
-    - docs/app-description-maintenance-flow.md
-    - docs/app-description-skill-output-contracts.md
-    - docs/autonomous-agent-worker-runtime-pattern.md
-    - docs/autonomous-agents-api-notes.md
-    - docs/capability-first-backend-architecture.md
-    - docs/consumer-reference.md
-    - docs/core-ai-first-saas-foundation.md
-    - docs/core-saas-identity-tenancy-admin.md
-    - docs/core-saas-owner-tenant-billing.md
-    - docs/description-first-application-doctrine.md
-    - docs/domain-workstream-prd-structure.md
-    - docs/examples/README.md
-    - docs/examples/ai-first-saas-core-app-domain/README.md
-    - docs/examples/ai-first-saas-core-app-domain/agent-admin-workstream/README.md
-    - docs/examples/ai-first-saas-core-app-domain/audit-trace-workstream/README.md
-    - docs/examples/ai-first-saas-core-app-domain/governance-policy-workstream/README.md
-    - docs/examples/ai-first-saas-core-app-domain/my-account-workstream/README.md
-    - docs/examples/ai-first-saas-core-app-domain/user-admin-workstream/README.md
-    - docs/examples/domain-workstream-surface-contract-example.md
-    - docs/examples/requirements-to-workstream-mini-example.md
-    - examples/ai-first-semantic-slices/decision-work-trace/README.md
-    - docs/frontend-with-akka-backend.md
-    - docs/generated-saas-canonical-doctrine.md
-    - docs/governed-agent-substrate.md
-    - docs/full-core-foundation-readiness.md
-    - docs/intent-driven-usage-flow.md
-    - docs/internal-app-description-architecture.md
-    - docs/minimum-ai-first-saas-app.md
-    - docs/module-sprint-planning.md
-    - docs/pending-question-queue.md
-    - docs/pending-task-queue.md
-    - docs/planning-skill-output-contracts.md
-    - docs/prd-to-akka-flow.md
-    - docs/requirements-to-workstream-development-process.md
-    - docs/retired-content-boundaries.md
-    - docs/security-pattern-selection.md
-    - docs/security-review-checklist.md
-    - docs/security-workos-auth-and-admin.md
-    - docs/service-to-service-consumers.md
-    - docs/skill-consolidation-and-pruning.md
-    - docs/skills-pack-user-guide.md
-    - docs/service-to-service-views.md
-    - docs/solution-plan-to-implementation-queue.md
-    - docs/structured-surface-contracts.md
-    - docs/timer-pattern-selection.md
-    - docs/web-ui-api-contract-patterns.md
-    - docs/web-ui-frontend-decomposition.md
-    - docs/web-ui-frontend-project-integration.md
-    - docs/web-ui-pattern-selection.md
-    - docs/web-ui-quality-checklist.md
-    - docs/web-ui-style-guide.md
-    - docs/web-ui-ux-patterns.md
-    - docs/workflow-endpoint-pattern.md
-    - docs/workstream-expertise-model.md
-    - docs/workstream-ui-reference-architecture.md
-    - docs/workstream-visual-sessions.md
-    - templates/ai-first-saas-core-app/app-description/README.md
-    - templates/ai-first-saas-core-app/app-description/12-workstreams/surfaces-index.md
-    - templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/01-access-profile-dashboard.md
-    - templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
-    - templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
-    - templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
-    - templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/05-decision-card.md
-    - templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/06-audit-trace-explorer.md
-    - templates/ai-first-saas-core-app/app-description/12-workstreams/surface-contracts/07-agent-governance-center.md
-    - templates/ai-first-saas-core-app/app-description/55-ui/structured-surface-rendering.md
-    - templates/ai-first-saas-core-app/app-description/70-traceability/surface-to-capability-map.md
-    - tools/audit-source-skill-paths.py
-    - tools/validate-curated-example-index.py
-    - tools/validate-pending-task-workstream-contract.sh
-    - tools/validate-repository-example-references.py
-    - tools/validate-surface-contracts.sh
-    - references/akka-entity-comparison.md
-    - references/akka-entity-integration-testing-patterns.md
-    - references/akka-grpc-jwt-patterns.md
-    - references/generated-saas-input-contract.md
-    - references/generated-saas-runtime-completion.md
+  installedDirectories:
+    purpose: >-
+      Directory-level install contract for the curated skills-pack payload. The
+      source-controlled skills-pack keeps docs, examples, templates, tools, and
+      shared references curated as whole directories; the installer records and
+      manages these directory entries rather than maintaining a per-file asset
+      allowlist.
+    paths:
+      - README.md
+      - references
+      - docs
+      - examples
+      - templates
+      - tools
+      - skills/*
+
 bundles:
   - id: all
     description: Install the full skills library, shared skill references, and referenced pack assets into a harness skills directory.
