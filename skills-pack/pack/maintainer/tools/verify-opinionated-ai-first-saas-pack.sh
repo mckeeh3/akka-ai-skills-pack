@@ -167,6 +167,8 @@ require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/wo
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/attention-and-dashboards.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/internal-agents.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/workstream-expertise/README.md"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/workstream-manifest.json"
+require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/foundation-workstream-completeness.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/workstream-expertise/my-account-agent.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/workstream-expertise/user-admin-agent.md"
 require_file "templates/ai-first-saas-core-app/app-description/12-workstreams/workstream-expertise/agent-admin-agent.md"
@@ -184,6 +186,7 @@ require_file "templates/ai-first-saas-core-app/app-description/55-ui/structured-
 require_file "templates/ai-first-saas-core-app/app-description/70-traceability/functional-agent-to-capability-map.md"
 require_file "templates/ai-first-saas-core-app/app-description/70-traceability/surface-to-capability-map.md"
 require_file "tools/validate-workstream-contracts.sh"
+require_file "tools/validate-workstream-manifest.py"
 require_file "tools/validate-surface-contracts.sh"
 require_file "docs/examples/domain-workstream-surface-contract-example.md"
 require_rg "validate-workstream-contracts" docs/agent-workstream-design-review-checklist.md tools/validate-workstream-contracts.sh
@@ -196,6 +199,9 @@ require_file "docs/core-ai-first-saas-foundation.md"
 require_file "docs/core-saas-identity-tenancy-admin.md"
 require_file "docs/core-saas-owner-tenant-billing.md"
 require_file "docs/workstream-ui-reference-architecture.md"
+require_file "docs/workstream-manifest-schema.md"
+require_file "docs/workstream-manifest.schema.json"
+require_file "docs/minimum-implementable-workstream-slice.md"
 require_file "docs/agent-workstream-design-review-checklist.md"
 require_file "docs/examples/README.md"
 require_rg "docs/frontend-with-akka-backend.md" skills/akka-web-ui-apps/SKILL.md skills/akka-web-ui-frontend-project/SKILL.md skills/akka-workos-user-auth/SKILL.md
@@ -264,5 +270,6 @@ log "checking shell syntax for pack scripts"
 for script in install-skills.sh "$APP_ROOT/install-skills.sh" tools/validate-pending-task-workstream-contract.sh tools/validate-workstream-contracts.sh tools/validate-surface-contracts.sh pack/maintainer/tools/release.sh pack/maintainer/tools/check-version-consistency.sh; do
   bash -n "$script"
 done
+python3 -m py_compile tools/validate-workstream-manifest.py
 
 log "verification passed"

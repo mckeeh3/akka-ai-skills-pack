@@ -12,6 +12,7 @@ Default app-description-dir: app-description
 
 Checks:
   - core 12-workstreams files exist
+  - machine-readable workstream-manifest.json exists and is internally consistent
   - functional agents, workstream ids, attention/dashboard, retention, surfaces, and expertise are present
   - surface and functional-agent traceability maps exist
   - each functional agent has a matching expertise bundle when workstream expertise is in scope
@@ -42,15 +43,18 @@ check_pattern() {
   fi
 }
 
+require_file "$WORKSTREAM_DIR/workstream-manifest.json"
 require_file "$WORKSTREAM_DIR/functional-agents.md"
 require_file "$WORKSTREAM_DIR/workstreams-and-retention.md"
 require_file "$WORKSTREAM_DIR/attention-and-dashboards.md"
 require_file "$WORKSTREAM_DIR/internal-agents.md"
 require_file "$WORKSTREAM_DIR/surfaces-index.md"
+require_file "$WORKSTREAM_DIR/foundation-workstream-completeness.md"
 require_file "$WORKSTREAM_DIR/workstream-expertise/README.md"
 require_file "$TRACE_DIR/functional-agent-to-capability-map.md"
 require_file "$TRACE_DIR/surface-to-capability-map.md"
 
+check_pattern "$WORKSTREAM_DIR/workstream-manifest.json" 'workstream-manifest/v1' 'workstream manifest version'
 check_pattern "$WORKSTREAM_DIR/functional-agents.md" 'functional agent|functional/context-area agent' 'functional-agent terminology'
 check_pattern "$WORKSTREAM_DIR/functional-agents.md" 'workstream id|workstreamId' 'workstream id mapping'
 check_pattern "$WORKSTREAM_DIR/functional-agents.md" 'authorized|roles|capabilities|AuthContext' 'authority mapping'
@@ -74,6 +78,10 @@ check_pattern "$WORKSTREAM_DIR/internal-agents.md" 'internal agent|worker' 'inte
 check_pattern "$WORKSTREAM_DIR/internal-agents.md" 'AutonomousAgent|Agent' 'agent substrate guidance'
 check_pattern "$WORKSTREAM_DIR/internal-agents.md" 'capability|governed-tool|ToolPermissionBoundary' 'governed internal authority'
 check_pattern "$WORKSTREAM_DIR/internal-agents.md" 'progress|result|surface' 'progress/result surface behavior'
+check_pattern "$WORKSTREAM_DIR/internal-agents.md" 'workerId|Worker id|worker id' 'internal worker id template'
+
+check_pattern "$WORKSTREAM_DIR/foundation-workstream-completeness.md" 'Runtime evidence|Current gap' 'foundation completeness runtime/gap matrix'
+check_pattern "$WORKSTREAM_DIR/foundation-workstream-completeness.md" 'runtime-ready' 'readiness promotion rule'
 
 check_pattern "$WORKSTREAM_DIR/surfaces-index.md" 'surface-contracts/' 'surface contract references'
 check_pattern "$WORKSTREAM_DIR/surfaces-index.md" 'system_message|markdown_response' 'base system/markdown surfaces'
@@ -85,6 +93,13 @@ if [[ -f "$WORKSTREAM_DIR/functional-agents.md" && -d "$WORKSTREAM_DIR/workstrea
   for agent_id in "${agent_ids[@]}"; do
     [[ -f "$WORKSTREAM_DIR/workstream-expertise/$agent_id.md" ]] || fail "missing expertise bundle for $agent_id: $WORKSTREAM_DIR/workstream-expertise/$agent_id.md"
   done
+fi
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ -f "$WORKSTREAM_DIR/workstream-manifest.json" ]]; then
+  if ! "$SCRIPT_DIR/validate-workstream-manifest.py" "$ROOT"; then
+    failures=$((failures + 1))
+  fi
 fi
 
 if [[ "$failures" -gt 0 ]]; then

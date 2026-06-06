@@ -33,6 +33,14 @@ type WorkstreamAttentionSummary = {
 
 Each attention producer must define stable producer id/version, source family, target workstream, category/severity rules, lifecycle, source refs, evidence refs, idempotency key, redaction, traces, and replay behavior. Duplicate source events update/no-op the same item rather than creating duplicates.
 
+| producerId | Target workstream | Source family | Categories | Idempotency key strategy | My Account / rail effect | Required trace/tests |
+| --- | --- | --- | --- | --- | --- | --- |
+| `my-account-attention-summary-producer.v1` | `my-account` | authorized source workstream attention projections, profile/settings/context state | personal queue, context/profile/settings issues, accessible-workstream summaries | `my-account:<tenantId>:<accountId>:<sourceWorkstreamId>:<sourceItemId|state>` | My Account aggregate panels only; source workstream ownership preserved. | Trace source refs; test hidden-workstream non-enumeration and cross-tenant denial. |
+| `user-admin-attention-producer.v1` | `user-admin` | invitation lifecycle, access-review tasks, support-access expiry, membership/role risk signals | failed action, overdue item, security review, manual review | `user-admin:<tenantId>:<customerId|none>:<sourceId>:<category>:<stable-state>` | Left rail/User Admin dashboard counts; My Account only for assigned actor. | Test duplicate source no-op, tenant isolation, support/auditor redaction. |
+| `agent-admin-attention-producer.v1` | `agent-admin` | governed AgentDefinition/prompt/skill/reference/manifest/tool-boundary proposals, provider readiness checks | approval, policy conflict, provider blocked, manual review | `agent-admin:<tenantId>:<artifactId>:<category>:<proposal-or-version>` | Count only review/provider items visible to steward/reviewer. | Test authority-expansion denial, inactive artifact redaction, trace links. |
+| `audit-trace-attention-producer.v1` | `audit-trace` | audit anomaly, denied access investigation, correlation gaps, export review state | audit anomaly, security review, manual review | `audit-trace:<tenantId>:<correlationOrTraceId>:<category>:<stable-state>` | Investigation items only, not every audit event. | Test scoped search visibility, support grant redaction, replay. |
+| `governance-policy-attention-producer.v1` | `governance-policy` | policy proposal, simulation/replay finding, approval, rollback/outcome drift state | approval, policy conflict, decision, outcome drift | `governance-policy:<tenantId>:<policyOrProposalId>:<category>:<stable-state>` | Count items assigned to allowed owners/reviewers. | Test approval authority, rollback denial, policy trace evidence. |
+
 ## Lifecycle operations
 
 - `open_attention_item` opens the owning workstream/surface through governed authorization.

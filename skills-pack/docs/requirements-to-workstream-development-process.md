@@ -10,6 +10,8 @@ Related doctrine:
 - `./ai-first-saas-application-architecture.md`
 - `./agent-workstream-application-architecture.md`
 - `./workstream-contract.md`
+- `./workstream-manifest-schema.md`
+- `./minimum-implementable-workstream-slice.md`
 - `./workstream-attention-contracts.md`
 - `./structured-surface-contracts.md`
 - `./capability-first-backend-architecture.md`
@@ -81,7 +83,7 @@ Artifacts may keep only the smallest subset relevant to their scope, but decompo
 
 ### Workstream identity
 
-Use `./workstream-contract.md` as the compact field contract. Record:
+Use `./workstream-contract.md` as the compact field contract and `./workstream-manifest-schema.md` as the machine-readable index for app-description trees. For one harness-sized implementation task, use `./minimum-implementable-workstream-slice.md` instead of copying the full contract. Record:
 - `workstreamId`, display name, and responsibility;
 - whether this is the workstream definition/type or a runtime workstream instance/thread/log;
 - owner functional/context-area agent, exactly one per workstream definition;

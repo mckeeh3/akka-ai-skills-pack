@@ -7,6 +7,8 @@ The template is intentionally app-description-only. It is not a runnable app bas
 Use with companion pack guidance. From an installed skills directory, resolve these paths under `.agents/skills/`; from a source checkout, resolve them under `skills-pack/`:
 
 - `docs/workstream-contract.md`
+- `docs/workstream-manifest-schema.md`
+- `docs/minimum-implementable-workstream-slice.md`
 - `docs/workstream-attention-contracts.md`
 - `docs/agent-workstream-application-architecture.md`
 - `docs/requirements-to-workstream-development-process.md`
@@ -18,11 +20,13 @@ Use with companion pack guidance. From an installed skills directory, resolve th
 
 ```text
 12-workstreams/
+  workstream-manifest.json
   functional-agents.md
   workstreams-and-retention.md
   attention-and-dashboards.md
   internal-agents.md
   surfaces-index.md
+  foundation-workstream-completeness.md
   surface-contracts/*.md
   workstream-expertise/*.md
 55-ui/
@@ -34,7 +38,7 @@ Use with companion pack guidance. From an installed skills directory, resolve th
 
 ## Rules
 
-- Keep `12-workstreams/**` authoritative for functional agents, workstream definitions, instance/retention semantics, attention, dashboard purpose, surface meaning, payloads, graph role, actions, auth, traces, and tests.
+- Keep `12-workstreams/workstream-manifest.json` as the machine-readable index and `12-workstreams/**` markdown authoritative for functional agents, workstream definitions, instance/retention semantics, attention, dashboard purpose, surface meaning, payloads, graph role, actions, auth, traces, and tests.
 - Keep `55-ui/**` focused on browser realization of those contracts.
 - Keep `70-traceability/**` current whenever a surface or action changes.
 - Every protected surface action maps to a governed backend capability and qualified governed-tool exposure.

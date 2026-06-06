@@ -15,7 +15,9 @@ Read these first if present:
 - target project path: AGENTS.md
 - `../README.md`
 - `../docs/agent-workstream-application-architecture.md`
-- `../docs/workstream-contract.md` for compact workstream fields, type-vs-instance terminology, ownership/reuse rules, and readiness labels
+- `../docs/workstream-contract.md` for compact workstream fields, type-vs-instance terminology, ownership/reuse rules, id taxonomy, and readiness labels
+- `../docs/workstream-manifest-schema.md` for the machine-readable `12-workstreams/workstream-manifest.json` index
+- `../docs/minimum-implementable-workstream-slice.md` for one-slice implementation/task briefs
 - `../docs/workstream-attention-contracts.md` for attention item, producer, lifecycle, aggregation, and tests
 - `../docs/requirements-to-workstream-development-process.md` for workstream → attention → dashboard → surfaces/actions → capabilities → autonomous task/notification/projection/trace semantics
 - `../docs/internal-app-description-architecture.md`
@@ -48,11 +50,13 @@ Prefer these app-description artifacts:
 
 ```text
 app-description/12-workstreams/
+  workstream-manifest.json
   functional-agents.md
   workstreams-and-retention.md
   attention-and-dashboards.md
   internal-agents.md
   surfaces-index.md
+  foundation-workstream-completeness.md
   workstream-expertise/
     README.md
     <functional-agent-id>.md
@@ -67,7 +71,7 @@ app-description/70-traceability/
   surface-to-capability-map.md
 ```
 
-Create or update only the smallest files needed. Keep `12-workstreams/functional-agents.md` authoritative for the functional-agent catalog, and keep `12-workstreams/workstream-expertise/<functional-agent-id>.md` authoritative for that functional agent's workstream expert bundle when LLM behavior is in scope.
+Create or update only the smallest files needed. Keep `12-workstreams/workstream-manifest.json` as the machine-readable workstream/agent/surface/capability index, keep `12-workstreams/functional-agents.md` authoritative for the functional-agent catalog, and keep `12-workstreams/workstream-expertise/<functional-agent-id>.md` authoritative for that functional agent's workstream expert bundle when LLM behavior is in scope.
 
 ## Functional-agent contract
 

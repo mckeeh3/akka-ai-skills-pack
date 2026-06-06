@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-This is the compact canonical contract for workstreams in generated secure AI-first SaaS applications. Use it as the schema-style source below `./agent-workstream-application-architecture.md` and alongside `./requirements-to-workstream-development-process.md`, `./structured-surface-contracts.md`, `./workstream-attention-contracts.md`, and `./workstream-expertise-model.md`.
+This is the compact canonical contract for workstreams in generated secure AI-first SaaS applications. Use it as the schema-style source below `./agent-workstream-application-architecture.md` and alongside `./requirements-to-workstream-development-process.md`, `./structured-surface-contracts.md`, `./workstream-attention-contracts.md`, and `./workstream-expertise-model.md`. Use `./workstream-manifest-schema.md` for the machine-readable app-description index and `./minimum-implementable-workstream-slice.md` for one-slice implementation tasks.
 
 A **workstream definition** is the design-time product vertical for authenticated consequential work. A **workstream instance** is the durable runtime timeline/log for one workstream definition in a selected tenant/customer/AuthContext scope. A **workstream view/session** is the browser's current rendering of an instance. Keep these terms separate when writing app descriptions, specs, APIs, and tests.
 
@@ -96,15 +96,31 @@ Use these labels in app descriptions, specs, backlogs, and review summaries inst
 
 Do not claim `runtime-ready` from static fixtures, mock-only responses, deterministic provider bypasses, frontend-only badges, or service-only model calls outside the governed Akka Agent path.
 
+## ID taxonomy
+
+Do not silently substitute one id family for another. Map ids explicitly when implementation examples, frontend adapters, governed managed-agent records, or Akka component names differ.
+
+| ID | Example | Meaning |
+|---|---|---|
+| `workstreamId` | `user-admin` | Product vertical/workstream definition id. |
+| `functionalAgentId` | `user-admin-agent` | Exactly-one user-facing workstream owner. |
+| `managedAgentDefinitionId` | `user-admin-agent` or `agent.user-admin` | Tenant-governed managed-agent behavior record id. |
+| Akka component class/name | `WorkstreamRuntimeAgent` | Java runtime implementation detail. |
+| `surfaceId` | `user-admin-dashboard` | Structured surface contract id. |
+| `capabilityId` | `secure-tenant-user-foundation` | Backend authority family. |
+| `governedToolId` | `useradmin.invitation.create` | Executable semantic operation inside a capability. |
+
 ## Minimum app-description placement
 
 ```text
 app-description/12-workstreams/
+  workstream-manifest.json          # machine-readable workstream/agent/surface/capability index
   functional-agents.md              # workstream catalog and exactly-one functional-agent ownership
   workstreams-and-retention.md      # instance semantics, retention, redaction, durable log fields
   attention-and-dashboards.md       # attention categories, dashboard variants, My Account/rail aggregation
   internal-agents.md                # supporting internal agent graph candidates
   surfaces-index.md                 # surface graph inventory
+  foundation-workstream-completeness.md # readiness/evidence/gap matrix for foundation workstreams
   surface-contracts/*.md            # structured surface contracts
   workstream-expertise/*.md         # one bundle per LLM-backed functional agent
 app-description/10-capabilities/**  # capability and governed-tool definitions
