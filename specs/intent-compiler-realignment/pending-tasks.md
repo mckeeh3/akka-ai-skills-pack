@@ -43,7 +43,7 @@
 
 ### TASK-IC-01-001: Inventory intent-processing artifacts and archive strategy
 
-- status: pending
+- status: done
 - source: specs/intent-compiler-realignment/backlog/01-intent-compiler-realignment-build-backlog.md
 - task brief: specs/intent-compiler-realignment/tasks/01-inventory-archive/01-inventory-intent-processing-artifacts.md
 - depends on:
