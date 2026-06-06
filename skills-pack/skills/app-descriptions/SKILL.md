@@ -1,154 +1,173 @@
 ---
 name: app-descriptions
-description: Orchestrate description-first application work across intake, behavior, tests, auth/security, observability, readiness, generation, and review summaries. Use when the task spans more than one app-description concern.
+description: Orchestrate intent-compiler app-description work across intake, current-intent graph editing, impact/readiness, generation, and review summaries when a request spans more than one app-description concern.
 ---
 
 # App Descriptions
 
-Use this as the top-level skill for description-first application work.
+Use this as the top-level skill for app-description intent work.
 
-This skill is for a harness operating model where the **application description is the semantic source of truth** and the maintained runnable implementation is kept consistent with it.
+This skill is for a harness operating model where the app description is the file-backed **current-intent graph** for the application. The maintained runnable implementation should stay consistent with that graph.
 
 ## Goal
 
-Maintain or realize an application from its internal app-description system in a way that is:
-- description-first
-- harness-optimized
-- explicit about behavior, tests, security, and observability
+Compile incremental user intent into current app-description artifacts, plans, code, tests, and validation evidence in a way that is:
+
+- current-intent first
+- workstream-centered for user-facing SaaS behavior
+- explicit about app/global/domain/workstream graph nodes
+- clear about behavior, tests, security, observability, and realization
 - safe about readiness before generation
 - suitable for prompt/response review, diff review, and focused file maintenance
 
 ## Required reading
 
-Read these first if present:
-- target project path: AGENTS.md
-- `../README.md`
-- `../docs/description-first-application-doctrine.md`
-- `../docs/ai-first-saas-application-architecture.md`
-- `../docs/capability-first-backend-architecture.md` for governed capability inventory fields before Akka components or exposure surfaces
-- `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation that every new app description, readiness review, and generation flow must preserve
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
-- `../docs/app-description-end-to-end-workflow-example.md` only as description-maintenance mechanics; do not treat its sample scenario as generated SaaS target architecture
-- `../ai-first-saas/SKILL.md` when product intent involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
-- `../docs/web-ui-style-guide.md` for mandatory generated SaaS browser UI style selection
+Read only the smallest set needed for the request:
 
-Prefer these local examples and references:
-- the target project path: app-description/README.md plus `../docs/core-ai-first-saas-foundation.md` for secure AI-first SaaS foundation shape and current generated-app target architecture
-- `../docs/minimum-ai-first-saas-app.md` for SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS scope
-- current target-project app-description files and SaaS Foundation App templates for description-layer mechanics; do not depend on removed historical domain examples
+- target project path: `AGENTS.md`, when present
+- `../README.md`, when present
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/intent-to-realization-flow.md` when planning, generation, code, tests, or validation are requested
+- `../docs/ai-first-saas-application-architecture.md` and `../ai-first-saas/SKILL.md` only when product intent involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
+- `../core-saas-foundation/SKILL.md` when starting or assessing generated SaaS foundation scope
+- `../docs/web-ui-style-guide.md` when generated SaaS browser UI style or implementation is in scope
+- current target-project `app-description/**`, `specs/**`, and queues when needed for maintenance, impact, readiness, planning, or realization
 
 ## Use this skill when
 
-Use this top-level skill when the task spans more than one description concern, such as:
-- a new app idea that needs description-first maintenance
-- a broad product prompt that may need AI-first operating-model interpretation before normal description updates
-- a feature request that affects behavior, tests, and security together
-- a bug fix that requires behavior correction plus regression coverage
-- a request to assess readiness and possibly generate the app
-- a review question asking what changed or whether the description is ready
+Use this top-level skill when the task spans more than one app-description concern, such as:
 
-If the task is already clearly narrowed to one description concern, load the focused companion skill directly.
+- a new app idea that needs a current-intent graph
+- a broad product prompt that may need AI-first operating-model interpretation before graph updates
+- a feature request that affects behavior, tests, and security together
+- a bug or validation finding that requires drift repair between intent, specs, code, and tests
+- a request to assess readiness and possibly generate the app
+- a review question asking what changed or whether the app is ready
+
+If the task is already clearly narrowed to one concern, load the focused companion skill directly.
 
 ## Companion skills
 
-Load the companion skill that matches the current task. Users do not need to name these skills; infer them from ordinary product language. For generated full-stack AI-first SaaS apps, requests for a dashboard, admin console, portal, workspace, workflow view, queue, form, table, approval surface, audit timeline, or agent/chat area should route first through functional-agent and structured-surface modeling, then capability modeling, before `55-ui/` browser realization or routes are discussed.
+Load the companion skill that matches the current compiler step. Users do not need to name these skills; infer them from ordinary product language.
 
-- `app-description-bootstrap`
-  - create the initial internal app-description tree for a new app or sparse early app idea
 - `app-description-input-normalization`
-  - convert flexible user input into a structured app-description delta envelope before routing or maintenance
+  - convert flexible user input into a current-intent delta envelope
 - `app-description-intake-router`
-  - classify flexible input into description-change, generation, mixed, or review intent
+  - classify incremental intent and route to the smallest safe compiler skill
+- `app-description-bootstrap`
+  - create the initial app/global/domain/workstream graph for a new app or sparse app idea
 - `app-description-functional-agent-modeling`
-  - define or revise role-authorized user-facing functional/context-area agents, including prompt intent, skills, tools, surfaces, callable capabilities, authority, traces, and tests
+  - define or revise role-authorized workstream agents, authority, prompts, skills, tools, surfaces, traces, and tests
 - `app-description-surface-modeling`
-  - define or revise structured workstream surfaces, typed payloads, reusable functional-agent placement, capability-backed actions, states, traces, and rendering tests
+  - define or revise structured workstream surfaces, typed payloads, reusable surface bindings, actions, states, traces, and rendering tests
 - `app-description-capability-modeling`
-  - define or revise business capabilities, scope boundaries, actors, outcomes, and links to downstream layers
+  - define or revise domain capabilities, actors, outcomes, authorization, and downstream realization links
 - `app-description-behavior-specification`
   - update behavior rules, transitions, invariants, forbidden behavior, and no-op semantics
 - `app-description-test-specification`
   - update acceptance, regression, negative, idempotency, security, and operational verification expectations
-- `app-description-change-impact`
-  - determine which description layers, traceability artifacts, readiness state, implementation areas, and generated/derived outputs are affected by a change
 - `app-description-auth-security`
   - update identity, authorization, trust-boundary, sensitive-data, and denial-behavior rules
 - `app-description-observability`
   - update logs, metrics, traces, audit events, health signals, alerts, and diagnosability expectations
 - `app-description-ui`
-  - update functional-agent workstream UI, structured surfaces, surface actions, route/deep-link details, frontend API contracts, realtime states, accessibility, responsive behavior, and style guide; for AI-first apps, prioritize supervision, decision, governance, digest, and audit surfaces
+  - update workstream UI, structured surfaces, surface actions, routes/deep links, frontend API contracts, realtime states, accessibility, responsive behavior, and style guide
+- `app-description-change-impact`
+  - determine affected graph nodes, specs, tasks, implementation areas, generated outputs, and validation paths
 - `app-description-readiness-assessment`
-  - decide whether the current description is `not-ready`, `ready-with-assumptions`, or `ready`
+  - decide whether current intent is `not-ready`, `ready-with-assumptions`, or `ready`
 - `app-generate-app`
-  - realize the current app description as maintained runnable outputs
+  - realize current intent as maintained runnable outputs with tests and validation
 - `app-description-change-summary`
-  - summarize what changed after a revision request
+  - summarize current-intent changes after a revision request
 - `app-description-readiness-summary`
-  - summarize why the description is or is not ready for generation
+  - summarize why current intent is or is not ready for generation
 
-## Generated SaaS workstream ownership invariant
+## Workstream graph ownership invariant
 
-For generated full-stack SaaS, do not change `10-capabilities/`, `55-ui/`, readiness, generation scope, or implementation planning for a user-facing request without first checking whether `12-workstreams/functional-agents.md`, `12-workstreams/workstream-expertise/**`, `12-workstreams/surfaces-index.md`, and relevant `12-workstreams/surface-contracts/**` must change. `12-workstreams/` owns functional agent placement, workstream expert bundle contracts, surface meaning, surface actions, and surface-to-capability traceability. `10-capabilities/` owns governed backend contracts. `55-ui/` owns browser realization only.
+For generated full-stack SaaS, do not change capabilities, UI, readiness, generation scope, or implementation planning for a user-facing request without checking the relevant workstream graph nodes first.
 
-## Companion boundary matrix
-
-Use `../docs/app-description-skill-output-contracts.md` for the detailed output contract. Return only the actionable summary, affected artifacts/layers, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
+Workstreams bind together access, surfaces, agents, tools, policies, traces, tests, capabilities, realization files, and validation expectations. Global artifacts define reusable contracts; workstream files define why and how those contracts are used in a specific workstream.
 
 ## Decision guide
 
 ### 1. The user is starting a new app description
+
 Start with:
-- `ai-first-saas` first when the idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
-- `core-saas-foundation` for the mandatory foundation contract
+
+- `ai-first-saas` when the idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
+- `core-saas-foundation` when secure SaaS foundation scope is in play
 - `app-description-bootstrap`
 - then `app-description-intake-router`
 
 ### 2. The user is revising app meaning
+
 Start with:
+
 - `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 - `app-description-intake-router`
-- then `app-description-functional-agent-modeling` when the request changes a user-facing work area, admin/operations portal, command center, work queue, or agent/chat area
-- then `app-description-surface-modeling` when the request changes dashboards, forms, tables, charts, approvals, decisions, audit timelines, workflow status, or other renderable workstream artifacts
-- then `app-description-capability-modeling` when capability scope, operations, queries, authority, side effects, or exposure surfaces are changing
-- then `app-description-behavior-specification`
-- then `app-description-test-specification`
+- then workstream/agent/surface/capability/behavior/test/security/observability companion skills in the smallest order that preserves traceability
+
+For user-facing generated-SaaS requests, route through functional-agent and structured-surface modeling before capability/UI realization when the input names work areas, admin/operations portals, command centers, queues, approvals, decisions, audit timelines, workflow status, forms, tables, actions, or agent/chat areas.
 
 ### 3. The user is tightening production concerns
+
 Start with:
+
 - `app-description-input-normalization` when the request is broad, mixed, or ambiguous
 - `app-description-intake-router`
-- then `app-description-auth-security` and/or `app-description-observability`
+- then `app-description-auth-security`, `app-description-observability`, `app-description-test-specification`, or policy/tool-boundary companion skills as applicable
 
 ### 4. The user asks whether the app is ready
+
 Start with:
+
 - `app-description-readiness-assessment`
 - then `app-description-readiness-summary`
 
-### 5. The user asks to generate the app
+### 5. The user asks to plan or generate the app
+
 Start with:
-- `app-description-readiness-assessment`
-- then `app-generate-app` if appropriate
+
+- readiness/impact assessment if current intent completeness is uncertain
+- planning skills when the user needs specs/backlogs/tasks
+- `app-generate-app` only after current intent and realization scope are clear
 
 ### 6. The user asks what changed
+
 Start with:
+
 - `app-description-change-summary`
+
+## Current-intent editing rules
+
+- Edit the smallest complete set of app/global/domain/workstream files.
+- Use global definitions plus workstream-specific bindings for reusable surfaces, agents, tools, policies, and traces.
+- Replace superseded statements rather than appending conversation chronology.
+- Preserve links from workstream nodes to capabilities, realization files, tests, and traces.
+- Treat unresolved authority, policy, data, trace, acceptance, or runtime-validation ambiguity as pending-question material.
 
 ## Final review checklist
 
 Before finishing, verify:
-- the current task is routed to the smallest suitable companion skill
-- operating-model, behavior, tests, security, UI, and observability are kept separate when they change separately
+
+- the request is routed to the smallest suitable companion skill
+- current-intent graph nodes are identified or the reason they cannot be identified is explicit
 - broad AI-first product input is interpreted before CRUD/component decomposition
-- the secure SaaS foundation is present or the gap is treated as blocking readiness/generation
+- workstream bindings are preserved for user-facing generated-SaaS changes
+- behavior, tests, security, UI, observability, and realization are kept separate when they change separately
+- secure SaaS foundation and runtime-completion doctrine are preserved when in scope
 - readiness is not skipped before generation
-- generation summaries are clearly distinguished from description changes
-- review answers focus on app meaning and readiness rather than internal editing mechanics
+- review answers distinguish current-intent changes from generated/runtime changes
 
 ## Response style
 
 When answering:
-- identify whether the task is description maintenance, readiness, generation, or review
+
+- identify whether the task is intake, normalization, current-intent maintenance, readiness, planning, generation, drift repair, or review
 - load only the smallest relevant companion skills
 - keep the interaction natural and prompt/response oriented
-- preserve description primacy throughout
+- preserve current-intent primacy throughout

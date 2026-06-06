@@ -136,7 +136,7 @@
 
 ### TASK-IC-03-001: Realign intake and normalization skills
 
-- status: pending
+- status: done
 - source: specs/intent-compiler-realignment/backlog/01-intent-compiler-realignment-build-backlog.md
 - task brief: specs/intent-compiler-realignment/tasks/03-skills-replacement/01-realign-intake-normalization-skills.md
 - depends on:
