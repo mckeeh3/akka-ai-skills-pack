@@ -5,6 +5,15 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PACK_ROOT="$SCRIPT_DIR"
 SOURCE_SKILLS_DIR="$PACK_ROOT/skills"
 SOURCE_REFERENCES_DIR="$PACK_ROOT/references"
+
+# Intentional install boundary:
+# skills-pack/ is the source-controlled "brain" that is lifted into the AI
+# harness skills directory. Its skills plus associated docs, examples, templates,
+# tools, and shared references all serve one purpose: helping the harness build
+# and maintain secure AI-first SaaS applications on the runnable Akka SaaS
+# Foundation App. Future installer changes should preserve that source-to-harness
+# contract: install the support library into .agents/skills/**, but do not create
+# a duplicate app baseline or install independently maintained akka-context docs.
 INSTALL_ASSET_DIRS=(docs examples templates tools)
 PROJECT_ROOT="$(pwd)"
 TARGET_DIR=""
@@ -24,7 +33,12 @@ fail() { printf '[install-skills][error] %s\n' "$*" >&2; exit 1; }
 
 print_help() {
   cat <<'EOF'
-Install Akka AI skills pack skills and referenced pack assets into a harness-discoverable skills directory.
+Install the Akka AI skills-pack source brain into a harness-discoverable skills directory.
+
+The installed library is the harness-level guidance, references, templates, tools,
+and examples used to implement and maintain secure AI-first SaaS applications on
+Akka. It is not a generated application, duplicate app baseline, or Akka SDK docs
+bundle.
 
 Usage:
   ./install-skills.sh [options]

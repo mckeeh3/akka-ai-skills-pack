@@ -502,9 +502,20 @@ content:
       path: skills/akka-workflows
       category: component-suite
   examples:
-    installedPath: examples/akka-components
-    purpose: Curated read-only Akka/core-app source references; not a buildable module or duplicate app baseline.
-    primaryIndex: examples/akka-components/REFERENCE-INDEX.md
+    installedPath: examples
+    purpose: >-
+      Installed skills-pack examples that support the single secure AI-first SaaS
+      implementation purpose of the pack. These are harness guidance assets, not
+      a buildable module, target-application source tree, duplicate app baseline,
+      or copy-whole application template.
+    categories:
+      akkaComponents:
+        path: examples/akka-components
+        purpose: Curated read-only Akka/core-app Java source references for current implementation patterns.
+        primaryIndex: examples/akka-components/REFERENCE-INDEX.md
+      aiFirstSemanticSlices:
+        path: examples/ai-first-semantic-slices
+        purpose: Compact domain-neutral semantic acceptance shapes for AI-first SaaS behavior.
   references:
     - skills/README.md
     - docs/agent-component-selection-guide.md

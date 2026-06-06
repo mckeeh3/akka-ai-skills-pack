@@ -2,6 +2,8 @@
 
 This directory contains the source assets for the Akka AI skills pack inside the runnable SaaS Foundation App repository.
 
+`skills-pack/` is the source-controlled brain that is lifted into an AI harness under `.agents/skills/**` or `~/.agents/skills/**`. All skills and associated pack content share one purpose: guide harness agents to implement and maintain secure AI-first SaaS applications on the Akka SaaS Foundation App.
+
 The repository has a two-fold purpose: maintain the harness skills library and provide a working SaaS Foundation App that users clone or fork. This skills pack supports both by giving AI coding harnesses the guidance, referenced docs, templates, tools, and code examples needed to maintain the SaaS Foundation App and add business-specific SaaS domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests.
 
 Primary maintenance entry points:
