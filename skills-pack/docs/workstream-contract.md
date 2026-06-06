@@ -39,10 +39,10 @@ A workstream is not a page, route, CRUD module, chat session, Akka component, pr
 | Role-specific dashboards | Dashboard purpose and variants by role/AuthContext; the dashboard is the human surface graph trunk. |
 | Human surface graph | Nodes, edges, result surfaces, system-message surfaces, deep-link/surface-request behavior, stale/reconnect handling, and graph tests. |
 | Surface contracts | Stable surface ids/types/versions, payload summaries, states, actions, auth, redaction, traces, and tests under `12-workstreams/surface-contracts/**`. |
-| Capability/governed-tool map | Every read/query/mutation/surface request/agent tool/internal action maps to a capability id, governed-tool id, exposure channel, schema, idempotency, policy, audit, and tests. |
+| Capability/governed-tool map | Every read/query/mutation/surface request/agent tool/internal action maps to a capability id, governed-tool id, exposure channel, schema, idempotency, policy, audit, and tests. The manifest carries lightweight `surfaceActionMappings` with surface id, action id, capability id, governed-tool id, exposure channel, auth basis, idempotency summary, result/system-message surface, and trace requirement; this mapping is required at `capability-ready` and above. |
 | Workstream expertise bundle | Required for LLM-backed functional agents: prompt intent, model binding, skills, references, manifests, loader tools, tool boundary, traces, governance owner, and tests. |
-| Internal workstream agent graph | Virtual dashboard agent, worker agents/AutonomousAgent tasks, delegation edges, progress/result surfaces, escalation, authority basis, tool boundaries, traces, and tests when delegated/background model work exists. |
-| Runtime realization | Selected Akka substrate and participants, HTTP/gRPC/MCP/API/frontend/realtime paths, provider fail-closed behavior, and local validation. |
+| Internal workstream agent graph | Virtual dashboard agent, worker agents/AutonomousAgent tasks, delegation edges, progress/result/failure surfaces, escalation, authority basis, tool boundaries, traces, and tests when delegated/background model work exists. Manifest `internalWorkers` entries are structured when present; omit or use `[]` when no internal/background worker behavior is claimed. |
+| Runtime realization | Selected Akka substrate and participants, HTTP/gRPC/MCP/API/frontend/realtime paths, provider fail-closed behavior, and local validation. At `runtime-ready` and `production-ready`, manifest `readinessEvidence` must name local commands, an API/UI smoke path, provider/security fail-closed check, and trace evidence from the real governed runtime path. |
 | Retention and redaction | Durable workstream log, summaries, audit-grade trace retention, actor labeling, deleted/disabled-account handling, frontend-safe and agent-safe redaction. |
 | Observability | AdminAuditEvent, PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, DecisionTrace, PolicyInvocation, ToolInvocation, DataAccessEvent, correlation/causation ids. |
 | Tests/readiness | Authorization, tenant/customer isolation, surface rendering, action-to-capability behavior, tool-boundary denial, attention lifecycle, traces, provider fail-closed, API/UI runtime validation, and readiness level. |
@@ -139,8 +139,8 @@ A workstream contract is incomplete if any non-deferred item is missing:
 - [ ] role/AuthContext/tenant/customer authorization and hidden/denied states are specified;
 - [ ] attention categories and dashboard variants are specified;
 - [ ] surface graph nodes and edges map to structured surface contracts;
-- [ ] every protected edge/action maps to a capability and governed-tool exposure channel;
+- [ ] every protected edge/action maps to a capability and governed-tool exposure channel, with manifest `surfaceActionMappings` required from `capability-ready` upward;
 - [ ] LLM-backed behavior has an expertise bundle and governed runtime path;
-- [ ] internal/background agent work has graph, task lifecycle, authority, traces, and result surfaces;
+- [ ] internal/background agent work has structured worker entries, graph, task lifecycle, authority, traces, and progress/result/failure surfaces;
 - [ ] retention, redaction, audit/work traces, and tests are linked;
-- [ ] readiness level is honest and local validation path is stated.
+- [ ] readiness level is honest; local validation is stated, and `runtime-ready`/`production-ready` claims include explicit runtime evidence rather than planned checks.

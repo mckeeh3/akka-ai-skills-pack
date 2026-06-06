@@ -84,7 +84,7 @@
 
 ### TASK-WCC-01-002: Add mapping, runtime evidence, and internal worker manifest contracts
 
-- status: pending
+- status: done
 - source: specs/workstream-contract-cleanup/conversation-capture.md decisions 5, 6, 10, 11, and 12
 - task brief: specs/workstream-contract-cleanup/tasks/02-runtime-evidence/01-add-mapping-evidence-internal-worker-contracts.md
 - depends on:
@@ -119,6 +119,7 @@
   - checks pass and changes are committed
 - notes:
   - commit message: `skills-pack: add workstream readiness mapping contracts`
+  - checks: `git diff --check`; `python3 skills-pack/tools/validate-workstream-manifest.py skills-pack/templates/ai-first-saas-core-app/app-description`; `bash skills-pack/tools/validate-workstream-contracts.sh skills-pack/templates/ai-first-saas-core-app/app-description`
 
 ### TASK-WCC-01-003: Add installed-layout reference validation
 

@@ -15,6 +15,72 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "surfaceActionMapping": {
+      "type": "object",
+      "required": [
+        "surfaceId",
+        "actionId",
+        "capabilityId",
+        "governedToolId",
+        "exposureChannel",
+        "authBasis",
+        "idempotency",
+        "resultSurfaceId",
+        "traceRequired"
+      ],
+      "properties": {
+        "surfaceId": { "$ref": "#/$defs/nonEmptyString" },
+        "actionId": { "$ref": "#/$defs/nonEmptyString" },
+        "capabilityId": { "$ref": "#/$defs/nonEmptyString" },
+        "governedToolId": { "$ref": "#/$defs/nonEmptyString" },
+        "exposureChannel": {
+          "enum": ["browser-tool", "agent-tool", "workflow-tool", "timer-tool", "consumer-tool", "MCP-tool", "internal-tool", "api", "surface-request"]
+        },
+        "authBasis": { "$ref": "#/$defs/nonEmptyString" },
+        "idempotency": { "$ref": "#/$defs/nonEmptyString" },
+        "resultSurfaceId": { "$ref": "#/$defs/nonEmptyString" },
+        "traceRequired": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "readinessEvidence": {
+      "type": "object",
+      "required": ["localCommands", "apiUiSmokePath", "providerSecurityFailClosedCheck", "traceEvidence"],
+      "properties": {
+        "localCommands": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "apiUiSmokePath": { "$ref": "#/$defs/nonEmptyString" },
+        "providerSecurityFailClosedCheck": { "$ref": "#/$defs/nonEmptyString" },
+        "traceEvidence": { "$ref": "#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "internalWorker": {
+      "type": "object",
+      "required": [
+        "workerId",
+        "substrate",
+        "trigger",
+        "authorityBasis",
+        "capabilityId",
+        "governedToolId",
+        "progressSurfaceId",
+        "resultSurfaceId",
+        "failureSurfaceId"
+      ],
+      "properties": {
+        "workerId": { "$ref": "#/$defs/nonEmptyString" },
+        "substrate": { "$ref": "#/$defs/nonEmptyString" },
+        "trigger": { "$ref": "#/$defs/nonEmptyString" },
+        "authorityBasis": { "$ref": "#/$defs/nonEmptyString" },
+        "capabilityId": { "$ref": "#/$defs/nonEmptyString" },
+        "governedToolId": { "$ref": "#/$defs/nonEmptyString" },
+        "progressSurfaceId": { "$ref": "#/$defs/nonEmptyString" },
+        "resultSurfaceId": { "$ref": "#/$defs/nonEmptyString" },
+        "failureSurfaceId": { "$ref": "#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
     "workstream": {
       "type": "object",
       "required": [
@@ -36,35 +102,47 @@
       ],
       "properties": {
         "workstreamId": { "type": "string", "pattern": "^[-a-z0-9]+$" },
-        "displayName": { "type": "string", "minLength": 1 },
+        "displayName": { "$ref": "#/$defs/nonEmptyString" },
         "classification": { "enum": ["foundation", "domain-specific"] },
         "functionalAgentId": { "type": "string", "pattern": "^[-a-z0-9]+-agent$" },
-        "managedAgentDefinitionId": { "type": "string", "minLength": 1 },
-        "defaultSurfaceId": { "type": "string", "minLength": 1 },
+        "managedAgentDefinitionId": { "$ref": "#/$defs/nonEmptyString" },
+        "defaultSurfaceId": { "$ref": "#/$defs/nonEmptyString" },
         "readiness": { "enum": ["identified", "described", "surface-ready", "capability-ready", "expertise-ready", "runtime-ready", "production-ready"] },
-        "instanceScope": { "type": "string", "minLength": 1 },
-        "authorizedActors": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "instanceScope": { "$ref": "#/$defs/nonEmptyString" },
+        "authorizedActors": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonEmptyString" } },
         "icon": {
           "type": "object",
           "required": ["iconId", "visualHint", "accentColorToken", "tooltip", "ariaLabel"],
           "properties": {
-            "iconId": { "type": "string", "minLength": 1 },
-            "visualHint": { "type": "string", "minLength": 1 },
-            "accentColorToken": { "type": "string", "minLength": 1 },
-            "tooltip": { "type": "string", "minLength": 1 },
-            "ariaLabel": { "type": "string", "minLength": 1 },
+            "iconId": { "$ref": "#/$defs/nonEmptyString" },
+            "visualHint": { "$ref": "#/$defs/nonEmptyString" },
+            "accentColorToken": { "$ref": "#/$defs/nonEmptyString" },
+            "tooltip": { "$ref": "#/$defs/nonEmptyString" },
+            "ariaLabel": { "$ref": "#/$defs/nonEmptyString" },
             "assetRef": { "type": "string" }
           },
           "additionalProperties": false
         },
-        "attentionCategories": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "surfaces": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "capabilities": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "attentionCategories": { "type": "array", "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "surfaces": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "capabilities": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "surfaceActionMappings": { "type": "array", "items": { "$ref": "#/$defs/surfaceActionMapping" } },
+        "readinessEvidence": { "$ref": "#/$defs/readinessEvidence" },
         "expertiseBundle": { "type": "string" },
-        "internalWorkers": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "traceability": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "localValidation": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+        "internalWorkers": { "type": "array", "items": { "$ref": "#/$defs/internalWorker" } },
+        "traceability": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "localValidation": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonEmptyString" } }
       },
+      "allOf": [
+        {
+          "if": { "properties": { "readiness": { "enum": ["capability-ready", "expertise-ready", "runtime-ready", "production-ready"] } }, "required": ["readiness"] },
+          "then": { "required": ["surfaceActionMappings"], "properties": { "surfaceActionMappings": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "readiness": { "enum": ["runtime-ready", "production-ready"] } }, "required": ["readiness"] },
+          "then": { "required": ["readinessEvidence"] }
+        }
+      ],
       "additionalProperties": false
     }
   }

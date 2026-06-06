@@ -17,15 +17,54 @@
       "defaultSurfaceId": "my-account-dashboard",
       "readiness": "surface-ready",
       "instanceScope": "tenantId + selectedContextId + functionalAgentId + accountId",
-      "authorizedActors": ["active signed-in member for own account and permitted contexts"],
-      "icon": {"iconId": "account-user", "visualHint": "user/profile", "accentColorToken": "workstream.account", "tooltip": "Manage profile, settings, context, and personal attention", "ariaLabel": "My Account workstream"},
-      "attentionCategories": ["personal_queue", "context_profile_settings_issue", "accessible_workstream_summary"],
-      "surfaces": ["my-account-dashboard", "markdown_response", "system_message"],
-      "capabilities": ["secure-tenant-user-foundation", "frontend-shell-integration-patterns", "governance-decisions-audit"],
+      "authorizedActors": [
+        "active signed-in member for own account and permitted contexts"
+      ],
+      "icon": {
+        "iconId": "account-user",
+        "visualHint": "user/profile",
+        "accentColorToken": "workstream.account",
+        "tooltip": "Manage profile, settings, context, and personal attention",
+        "ariaLabel": "My Account workstream"
+      },
+      "attentionCategories": [
+        "personal_queue",
+        "context_profile_settings_issue",
+        "accessible_workstream_summary"
+      ],
+      "surfaces": [
+        "my-account-dashboard",
+        "markdown_response",
+        "system_message"
+      ],
+      "capabilities": [
+        "secure-tenant-user-foundation",
+        "frontend-shell-integration-patterns",
+        "governance-decisions-audit"
+      ],
       "expertiseBundle": "my-account-agent.md",
-      "internalWorkers": ["personal-attention-digest-worker"],
-      "traceability": ["70-traceability/functional-agent-to-capability-map.md", "70-traceability/surface-to-capability-map.md"],
-      "localValidation": ["validate-workstream-contracts", "validate-surface-contracts", "api/ui runtime smoke before runtime-ready"]
+      "internalWorkers": [
+        {
+          "workerId": "personal-attention-digest-worker",
+          "substrate": "AutonomousAgent task or workflow-backed worker, finalized during runtime implementation",
+          "trigger": "my-account-dashboard action, attention producer, or scheduled signal defined in internal-agents.md",
+          "authorityBasis": "service actor constrained to secure-tenant-user-foundation within selected tenant/AuthContext scope",
+          "capabilityId": "secure-tenant-user-foundation",
+          "governedToolId": "myaccount.personal_attention.digest",
+          "progressSurfaceId": "system_message",
+          "resultSurfaceId": "my-account-dashboard",
+          "failureSurfaceId": "system_message"
+        }
+      ],
+      "traceability": [
+        "70-traceability/functional-agent-to-capability-map.md",
+        "70-traceability/surface-to-capability-map.md"
+      ],
+      "localValidation": [
+        "validate-workstream-contracts",
+        "validate-surface-contracts",
+        "api/ui runtime smoke before runtime-ready"
+      ]
     },
     {
       "workstreamId": "user-admin",
@@ -36,15 +75,73 @@
       "defaultSurfaceId": "user-admin-dashboard",
       "readiness": "surface-ready",
       "instanceScope": "tenantId + selectedContextId + functionalAgentId; optional customerId when customer context is selected",
-      "authorizedActors": ["Tenant Admin", "Customer Admin within scope", "SaaS Owner support role with explicit support grant", "Auditor read-only where permitted"],
-      "icon": {"iconId": "users-shield", "visualHint": "users/shield", "accentColorToken": "workstream.user-admin", "tooltip": "Manage users, memberships, invitations, and access reviews", "ariaLabel": "User Admin workstream"},
-      "attentionCategories": ["failed_action", "overdue_item", "security_review", "manual_review"],
-      "surfaces": ["user-admin-dashboard", "user-admin-user-list", "user-admin-user-account", "decision-card", "audit-trace-explorer", "markdown_response", "system_message"],
-      "capabilities": ["secure-tenant-user-foundation", "managed-agent-foundation", "governance-decisions-audit"],
+      "authorizedActors": [
+        "Tenant Admin",
+        "Customer Admin within scope",
+        "SaaS Owner support role with explicit support grant",
+        "Auditor read-only where permitted"
+      ],
+      "icon": {
+        "iconId": "users-shield",
+        "visualHint": "users/shield",
+        "accentColorToken": "workstream.user-admin",
+        "tooltip": "Manage users, memberships, invitations, and access reviews",
+        "ariaLabel": "User Admin workstream"
+      },
+      "attentionCategories": [
+        "failed_action",
+        "overdue_item",
+        "security_review",
+        "manual_review"
+      ],
+      "surfaces": [
+        "user-admin-dashboard",
+        "user-admin-user-list",
+        "user-admin-user-account",
+        "decision-card",
+        "audit-trace-explorer",
+        "markdown_response",
+        "system_message"
+      ],
+      "capabilities": [
+        "secure-tenant-user-foundation",
+        "managed-agent-foundation",
+        "governance-decisions-audit"
+      ],
       "expertiseBundle": "user-admin-agent.md",
-      "internalWorkers": ["access-review-triage-worker", "invitation-delivery-investigation-worker"],
-      "traceability": ["70-traceability/functional-agent-to-capability-map.md", "70-traceability/surface-to-capability-map.md"],
-      "localValidation": ["validate-workstream-contracts", "validate-surface-contracts", "api/ui runtime smoke before runtime-ready"]
+      "internalWorkers": [
+        {
+          "workerId": "access-review-triage-worker",
+          "substrate": "AutonomousAgent task or workflow-backed worker, finalized during runtime implementation",
+          "trigger": "user-admin-dashboard action, attention producer, or scheduled signal defined in internal-agents.md",
+          "authorityBasis": "service actor constrained to secure-tenant-user-foundation within selected tenant/AuthContext scope",
+          "capabilityId": "secure-tenant-user-foundation",
+          "governedToolId": "useradmin.internal_worker.run",
+          "progressSurfaceId": "system_message",
+          "resultSurfaceId": "user-admin-dashboard",
+          "failureSurfaceId": "system_message"
+        },
+        {
+          "workerId": "invitation-delivery-investigation-worker",
+          "substrate": "AutonomousAgent task or workflow-backed worker, finalized during runtime implementation",
+          "trigger": "user-admin-dashboard action, attention producer, or scheduled signal defined in internal-agents.md",
+          "authorityBasis": "service actor constrained to secure-tenant-user-foundation within selected tenant/AuthContext scope",
+          "capabilityId": "secure-tenant-user-foundation",
+          "governedToolId": "useradmin.internal_worker.run",
+          "progressSurfaceId": "system_message",
+          "resultSurfaceId": "user-admin-dashboard",
+          "failureSurfaceId": "system_message"
+        }
+      ],
+      "traceability": [
+        "70-traceability/functional-agent-to-capability-map.md",
+        "70-traceability/surface-to-capability-map.md"
+      ],
+      "localValidation": [
+        "validate-workstream-contracts",
+        "validate-surface-contracts",
+        "api/ui runtime smoke before runtime-ready"
+      ]
     },
     {
       "workstreamId": "agent-admin",
@@ -55,15 +152,60 @@
       "defaultSurfaceId": "agent-governance-center",
       "readiness": "surface-ready",
       "instanceScope": "tenantId + selectedContextId + functionalAgentId",
-      "authorizedActors": ["Agent Steward", "Tenant Admin", "Policy Owner", "Reviewer", "Auditor read-only where permitted"],
-      "icon": {"iconId": "agent-gear", "visualHint": "agent/gear", "accentColorToken": "workstream.agent-admin", "tooltip": "Govern agent behavior, tools, prompts, and model readiness", "ariaLabel": "Agent Admin workstream"},
-      "attentionCategories": ["approval", "policy_conflict", "provider_blocked", "manual_review"],
-      "surfaces": ["agent-governance-center", "decision-card", "audit-trace-explorer", "markdown_response", "system_message"],
-      "capabilities": ["managed-agent-foundation", "governance-decisions-audit"],
+      "authorizedActors": [
+        "Agent Steward",
+        "Tenant Admin",
+        "Policy Owner",
+        "Reviewer",
+        "Auditor read-only where permitted"
+      ],
+      "icon": {
+        "iconId": "agent-gear",
+        "visualHint": "agent/gear",
+        "accentColorToken": "workstream.agent-admin",
+        "tooltip": "Govern agent behavior, tools, prompts, and model readiness",
+        "ariaLabel": "Agent Admin workstream"
+      },
+      "attentionCategories": [
+        "approval",
+        "policy_conflict",
+        "provider_blocked",
+        "manual_review"
+      ],
+      "surfaces": [
+        "agent-governance-center",
+        "decision-card",
+        "audit-trace-explorer",
+        "markdown_response",
+        "system_message"
+      ],
+      "capabilities": [
+        "managed-agent-foundation",
+        "governance-decisions-audit"
+      ],
       "expertiseBundle": "agent-admin-agent.md",
-      "internalWorkers": ["behavior-change-risk-worker"],
-      "traceability": ["70-traceability/functional-agent-to-capability-map.md", "70-traceability/surface-to-capability-map.md"],
-      "localValidation": ["validate-workstream-contracts", "validate-surface-contracts", "api/ui runtime smoke before runtime-ready"]
+      "internalWorkers": [
+        {
+          "workerId": "behavior-change-risk-worker",
+          "substrate": "AutonomousAgent task or workflow-backed worker, finalized during runtime implementation",
+          "trigger": "agent-governance-center action, attention producer, or scheduled signal defined in internal-agents.md",
+          "authorityBasis": "service actor constrained to managed-agent-foundation within selected tenant/AuthContext scope",
+          "capabilityId": "managed-agent-foundation",
+          "governedToolId": "agentadmin.behavior_change.risk_review",
+          "progressSurfaceId": "system_message",
+          "resultSurfaceId": "agent-governance-center",
+          "failureSurfaceId": "system_message"
+        }
+      ],
+      "traceability": [
+        "70-traceability/functional-agent-to-capability-map.md",
+        "70-traceability/surface-to-capability-map.md"
+      ],
+      "localValidation": [
+        "validate-workstream-contracts",
+        "validate-surface-contracts",
+        "api/ui runtime smoke before runtime-ready"
+      ]
     },
     {
       "workstreamId": "audit-trace",
@@ -74,15 +216,58 @@
       "defaultSurfaceId": "audit-trace-explorer",
       "readiness": "surface-ready",
       "instanceScope": "tenantId + selectedContextId + functionalAgentId; support grants may narrow visible trace evidence",
-      "authorizedActors": ["Auditor", "Tenant Admin", "scoped Supervisor", "SaaS Owner support role with explicit support grant"],
-      "icon": {"iconId": "audit-search", "visualHint": "search/timeline", "accentColorToken": "workstream.audit", "tooltip": "Investigate audit events, traces, decisions, and work evidence", "ariaLabel": "Audit and Trace workstream"},
-      "attentionCategories": ["audit_anomaly", "security_review", "manual_review"],
-      "surfaces": ["audit-trace-explorer", "decision-card", "markdown_response", "system_message"],
-      "capabilities": ["governance-decisions-audit", "secure-tenant-user-foundation", "managed-agent-foundation"],
+      "authorizedActors": [
+        "Auditor",
+        "Tenant Admin",
+        "scoped Supervisor",
+        "SaaS Owner support role with explicit support grant"
+      ],
+      "icon": {
+        "iconId": "audit-search",
+        "visualHint": "search/timeline",
+        "accentColorToken": "workstream.audit",
+        "tooltip": "Investigate audit events, traces, decisions, and work evidence",
+        "ariaLabel": "Audit and Trace workstream"
+      },
+      "attentionCategories": [
+        "audit_anomaly",
+        "security_review",
+        "manual_review"
+      ],
+      "surfaces": [
+        "audit-trace-explorer",
+        "decision-card",
+        "markdown_response",
+        "system_message"
+      ],
+      "capabilities": [
+        "governance-decisions-audit",
+        "secure-tenant-user-foundation",
+        "managed-agent-foundation"
+      ],
       "expertiseBundle": "audit-trace-agent.md",
-      "internalWorkers": ["trace-correlation-summarizer"],
-      "traceability": ["70-traceability/functional-agent-to-capability-map.md", "70-traceability/surface-to-capability-map.md"],
-      "localValidation": ["validate-workstream-contracts", "validate-surface-contracts", "api/ui runtime smoke before runtime-ready"]
+      "internalWorkers": [
+        {
+          "workerId": "trace-correlation-summarizer",
+          "substrate": "AutonomousAgent task or workflow-backed worker, finalized during runtime implementation",
+          "trigger": "audit-trace-explorer action, attention producer, or scheduled signal defined in internal-agents.md",
+          "authorityBasis": "service actor constrained to governance-decisions-audit within selected tenant/AuthContext scope",
+          "capabilityId": "governance-decisions-audit",
+          "governedToolId": "audittrace.correlation.summarize",
+          "progressSurfaceId": "system_message",
+          "resultSurfaceId": "audit-trace-explorer",
+          "failureSurfaceId": "system_message"
+        }
+      ],
+      "traceability": [
+        "70-traceability/functional-agent-to-capability-map.md",
+        "70-traceability/surface-to-capability-map.md"
+      ],
+      "localValidation": [
+        "validate-workstream-contracts",
+        "validate-surface-contracts",
+        "api/ui runtime smoke before runtime-ready"
+      ]
     },
     {
       "workstreamId": "governance-policy",
@@ -93,15 +278,59 @@
       "defaultSurfaceId": "agent-governance-center",
       "readiness": "surface-ready",
       "instanceScope": "tenantId + selectedContextId + functionalAgentId",
-      "authorizedActors": ["Policy Owner", "Reviewer/Approver", "Tenant Admin", "Auditor read-only where permitted"],
-      "icon": {"iconId": "policy-shield", "visualHint": "shield/checklist", "accentColorToken": "workstream.governance", "tooltip": "Review policies, approvals, exceptions, and governance outcomes", "ariaLabel": "Governance and Policy workstream"},
-      "attentionCategories": ["approval", "policy_conflict", "decision", "outcome_drift"],
-      "surfaces": ["agent-governance-center", "decision-card", "audit-trace-explorer", "markdown_response", "system_message"],
-      "capabilities": ["governance-decisions-audit", "managed-agent-foundation"],
+      "authorizedActors": [
+        "Policy Owner",
+        "Reviewer/Approver",
+        "Tenant Admin",
+        "Auditor read-only where permitted"
+      ],
+      "icon": {
+        "iconId": "policy-shield",
+        "visualHint": "shield/checklist",
+        "accentColorToken": "workstream.governance",
+        "tooltip": "Review policies, approvals, exceptions, and governance outcomes",
+        "ariaLabel": "Governance and Policy workstream"
+      },
+      "attentionCategories": [
+        "approval",
+        "policy_conflict",
+        "decision",
+        "outcome_drift"
+      ],
+      "surfaces": [
+        "agent-governance-center",
+        "decision-card",
+        "audit-trace-explorer",
+        "markdown_response",
+        "system_message"
+      ],
+      "capabilities": [
+        "governance-decisions-audit",
+        "managed-agent-foundation"
+      ],
       "expertiseBundle": "governance-policy-agent.md",
-      "internalWorkers": ["policy-impact-simulation-worker"],
-      "traceability": ["70-traceability/functional-agent-to-capability-map.md", "70-traceability/surface-to-capability-map.md"],
-      "localValidation": ["validate-workstream-contracts", "validate-surface-contracts", "api/ui runtime smoke before runtime-ready"]
+      "internalWorkers": [
+        {
+          "workerId": "policy-impact-simulation-worker",
+          "substrate": "AutonomousAgent task or workflow-backed worker, finalized during runtime implementation",
+          "trigger": "agent-governance-center action, attention producer, or scheduled signal defined in internal-agents.md",
+          "authorityBasis": "service actor constrained to governance-decisions-audit within selected tenant/AuthContext scope",
+          "capabilityId": "governance-decisions-audit",
+          "governedToolId": "governance.policy.simulate_impact",
+          "progressSurfaceId": "system_message",
+          "resultSurfaceId": "agent-governance-center",
+          "failureSurfaceId": "system_message"
+        }
+      ],
+      "traceability": [
+        "70-traceability/functional-agent-to-capability-map.md",
+        "70-traceability/surface-to-capability-map.md"
+      ],
+      "localValidation": [
+        "validate-workstream-contracts",
+        "validate-surface-contracts",
+        "api/ui runtime smoke before runtime-ready"
+      ]
     }
   ]
 }

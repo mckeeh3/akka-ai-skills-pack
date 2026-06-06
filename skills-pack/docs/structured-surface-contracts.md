@@ -281,7 +281,7 @@ Event rules:
 
 ## Capability mapping requirements
 
-For every surface action and payload-producing query, the capability inventory must specify:
+For every surface action and payload-producing query, the capability inventory must specify the details below. For workstreams at `capability-ready` or higher, also add the lightweight `surfaceActionMappings` entry in `12-workstreams/workstream-manifest.json` so validators can check the surface/action/capability/governed-tool link without duplicating this full contract.
 
 - capability id and class (`read/evidence`, `command`, `proposal`, `approval`, `workflow`, `autonomous task`, `governance`, `trace/audit`, `scheduled`, or `reactive`);
 - actors/callers, including human roles, functional agents, internal agents, workflows, services, timers, consumers, or support roles;

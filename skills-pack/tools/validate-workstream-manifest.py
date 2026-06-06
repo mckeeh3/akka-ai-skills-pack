@@ -17,6 +17,19 @@ ALLOWED_READINESS = {
     "production-ready",
 }
 ALLOWED_CLASSIFICATION = {"foundation", "domain-specific"}
+MAPPING_REQUIRED_READINESS = {"capability-ready", "expertise-ready", "runtime-ready", "production-ready"}
+EVIDENCE_REQUIRED_READINESS = {"runtime-ready", "production-ready"}
+ALLOWED_EXPOSURE_CHANNELS = {
+    "browser-tool",
+    "agent-tool",
+    "workflow-tool",
+    "timer-tool",
+    "consumer-tool",
+    "MCP-tool",
+    "internal-tool",
+    "api",
+    "surface-request",
+}
 
 
 def fail(errors: list[str], message: str) -> None:
@@ -147,6 +160,99 @@ def main(argv: list[str]) -> int:
         capabilities = ws.get("capabilities")
         if not isinstance(capabilities, list) or not capabilities or not all(isinstance(c, str) and c for c in capabilities):
             fail(errors, f"{prefix}.capabilities must be a non-empty list of strings")
+        surface_refs = surfaces if isinstance(surfaces, list) else []
+        capability_refs = capabilities if isinstance(capabilities, list) else []
+
+        mappings = ws.get("surfaceActionMappings")
+        if readiness in MAPPING_REQUIRED_READINESS and (not isinstance(mappings, list) or not mappings):
+            fail(errors, f"{prefix}.surfaceActionMappings must be non-empty at readiness {readiness}")
+        if mappings is not None:
+            if not isinstance(mappings, list):
+                fail(errors, f"{prefix}.surfaceActionMappings must be a list when present")
+            else:
+                for j, mapping in enumerate(mappings):
+                    mapping_prefix = f"{prefix}.surfaceActionMappings[{j}]"
+                    if not isinstance(mapping, dict):
+                        fail(errors, f"{mapping_prefix} must be an object")
+                        continue
+                    required_mapping = [
+                        "surfaceId",
+                        "actionId",
+                        "capabilityId",
+                        "governedToolId",
+                        "exposureChannel",
+                        "authBasis",
+                        "idempotency",
+                        "resultSurfaceId",
+                        "traceRequired",
+                    ]
+                    for key in required_mapping:
+                        if key not in mapping:
+                            fail(errors, f"{mapping_prefix} missing required field: {key}")
+                    surface_id = mapping.get("surfaceId")
+                    result_surface_id = mapping.get("resultSurfaceId")
+                    capability_id = mapping.get("capabilityId")
+                    channel = mapping.get("exposureChannel")
+                    if surface_id not in surface_refs:
+                        fail(errors, f"{mapping_prefix}.surfaceId must reference this workstream's surfaces: {surface_id!r}")
+                    if result_surface_id not in surface_refs:
+                        fail(errors, f"{mapping_prefix}.resultSurfaceId must reference this workstream's surfaces: {result_surface_id!r}")
+                    if capability_id not in capability_refs:
+                        fail(errors, f"{mapping_prefix}.capabilityId must reference this workstream's capabilities: {capability_id!r}")
+                    if channel not in ALLOWED_EXPOSURE_CHANNELS:
+                        fail(errors, f"{mapping_prefix}.exposureChannel invalid: {channel!r}")
+                    for key in ["actionId", "governedToolId", "authBasis", "idempotency"]:
+                        if not isinstance(mapping.get(key), str) or not mapping.get(key):
+                            fail(errors, f"{mapping_prefix}.{key} must be a non-empty string")
+                    if not isinstance(mapping.get("traceRequired"), bool):
+                        fail(errors, f"{mapping_prefix}.traceRequired must be true or false")
+
+        evidence = ws.get("readinessEvidence")
+        if readiness in EVIDENCE_REQUIRED_READINESS and not isinstance(evidence, dict):
+            fail(errors, f"{prefix}.readinessEvidence must be present at readiness {readiness}")
+        if evidence is not None:
+            if not isinstance(evidence, dict):
+                fail(errors, f"{prefix}.readinessEvidence must be an object when present")
+            else:
+                commands = evidence.get("localCommands")
+                if not isinstance(commands, list) or not commands or not all(isinstance(c, str) and c for c in commands):
+                    fail(errors, f"{prefix}.readinessEvidence.localCommands must be a non-empty list of strings")
+                for key in ["apiUiSmokePath", "providerSecurityFailClosedCheck", "traceEvidence"]:
+                    if not isinstance(evidence.get(key), str) or not evidence.get(key):
+                        fail(errors, f"{prefix}.readinessEvidence.{key} must be a non-empty string")
+
+        internal_workers = ws.get("internalWorkers")
+        if internal_workers is not None:
+            if not isinstance(internal_workers, list):
+                fail(errors, f"{prefix}.internalWorkers must be a list when present")
+            else:
+                for j, worker in enumerate(internal_workers):
+                    worker_prefix = f"{prefix}.internalWorkers[{j}]"
+                    if not isinstance(worker, dict):
+                        fail(errors, f"{worker_prefix} must be a structured object, not a string id")
+                        continue
+                    required_worker = [
+                        "workerId",
+                        "substrate",
+                        "trigger",
+                        "authorityBasis",
+                        "capabilityId",
+                        "governedToolId",
+                        "progressSurfaceId",
+                        "resultSurfaceId",
+                        "failureSurfaceId",
+                    ]
+                    for key in required_worker:
+                        if key not in worker:
+                            fail(errors, f"{worker_prefix} missing required field: {key}")
+                    if worker.get("capabilityId") not in capability_refs:
+                        fail(errors, f"{worker_prefix}.capabilityId must reference this workstream's capabilities: {worker.get('capabilityId')!r}")
+                    for key in ["progressSurfaceId", "resultSurfaceId", "failureSurfaceId"]:
+                        if worker.get(key) not in surface_refs:
+                            fail(errors, f"{worker_prefix}.{key} must reference this workstream's surfaces: {worker.get(key)!r}")
+                    for key in ["workerId", "substrate", "trigger", "authorityBasis", "governedToolId"]:
+                        if not isinstance(worker.get(key), str) or not worker.get(key):
+                            fail(errors, f"{worker_prefix}.{key} must be a non-empty string")
 
         expertise = ws.get("expertiseBundle")
         if expertise:
