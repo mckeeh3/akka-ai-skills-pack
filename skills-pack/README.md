@@ -16,8 +16,8 @@ Primary maintenance entry points:
 - `templates/` — source-attention SaaS Foundation App description assets
 - root `akka-context/` — official Akka reference material kept at repository top level and not installed
 - `pack/` — source metadata for the skills-only install contract and maintainer-only release assets
-- `tools/` — downstream-safe validation/audit tools referenced by installed skills
-- `install-skills.sh` — skills-only harness install entrypoint
+- `tools/` — downstream-safe validation/audit tools referenced by installed skills, including installed-layout reference validation for `SKILL.md` links
+- `install-skills.sh` — skills-only harness install entrypoint; `--check` validates copied content and installed-layout `../docs/...`, `../references/...`, `../examples/...`, `../templates/...`, and `../tools/...` references
 
 The repository root is the canonical runnable SaaS Foundation App. Pack users clone or fork this repo, run the root app, and build business-specific domains and workstreams in the root app workspace rather than generating a separate parallel app. There is no separate full-pack installer and no installed duplicate baseline app; the install action makes the skills library and referenced pack assets (`docs/`, `examples/`, `templates/`, and downstream-safe `tools/`) available to an AI coding harness under `.agents/skills/**` or `~/.agents/skills/**`.
 

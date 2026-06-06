@@ -53,7 +53,8 @@ Options:
   --force              Replace existing non-manifest-owned targets
   --prune              Remove previously installed pack-owned skills that no longer exist in source
   --uninstall          Remove all entries owned by this installer manifest
-  --check              Verify installed pack content matches current source and report retired managed entries
+  --check              Verify installed pack content matches current source, validate installed-layout
+                       SKILL.md references, and report retired managed entries
   --dry-run            Show planned actions without writing files
   --help               Show this help text
 
@@ -385,6 +386,14 @@ check_install() {
   done < <(find "$SOURCE_SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d ! -name references | sort)
 
   report_retired_entries
+  if [[ -f "$PACK_ROOT/tools/validate-installed-skill-references.py" ]]; then
+    if ! python3 "$PACK_ROOT/tools/validate-installed-skill-references.py" "$TARGET_DIR"; then
+      failed=true
+    fi
+  else
+    warn "Missing installed-layout reference validator: $PACK_ROOT/tools/validate-installed-skill-references.py"
+    failed=true
+  fi
   [[ "$failed" == false ]] || fail "Install check failed"
   log "Install check passed: $TARGET_DIR"
 }

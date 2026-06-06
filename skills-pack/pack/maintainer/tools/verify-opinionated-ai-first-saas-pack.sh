@@ -211,8 +211,13 @@ require_rg "install-skills" install-skills.sh "$APP_ROOT/install-skills.sh" READ
 log "checking repository example references"
 require_file "tools/validate-repository-example-references.py"
 require_file "tools/validate-curated-example-index.py"
+require_file "tools/validate-installed-skill-references.py"
 python3 tools/validate-repository-example-references.py
 python3 tools/validate-curated-example-index.py
+installed_reference_check_dir="$(mktemp -d)"
+trap 'rm -rf "$installed_reference_check_dir"' EXIT
+./install-skills.sh --target "$installed_reference_check_dir/.agents/skills" --prune
+python3 tools/validate-installed-skill-references.py "$installed_reference_check_dir/.agents/skills"
 example_java_count="$(find examples/akka-components/src -name '*.java' | wc -l | tr -d ' ')"
 if [[ "$example_java_count" -gt 120 ]]; then
   fail "Curated akka-components examples are too large ($example_java_count Java files); do not reinstall a duplicate app baseline"
@@ -270,6 +275,6 @@ log "checking shell syntax for pack scripts"
 for script in install-skills.sh "$APP_ROOT/install-skills.sh" tools/validate-pending-task-workstream-contract.sh tools/validate-workstream-contracts.sh tools/validate-surface-contracts.sh pack/maintainer/tools/release.sh pack/maintainer/tools/check-version-consistency.sh; do
   bash -n "$script"
 done
-python3 -m py_compile tools/validate-workstream-manifest.py
+python3 -m py_compile tools/validate-workstream-manifest.py tools/validate-installed-skill-references.py
 
 log "verification passed"

@@ -123,7 +123,7 @@
 
 ### TASK-WCC-01-003: Add installed-layout reference validation
 
-- status: pending
+- status: done
 - source: specs/workstream-contract-cleanup/conversation-capture.md decisions 7, 8, and 9
 - task brief: specs/workstream-contract-cleanup/tasks/03-installed-reference-check/01-add-installed-layout-reference-validation.md
 - depends on:
@@ -153,6 +153,7 @@
   - checks pass and changes are committed
 - notes:
   - commit message: `skills-pack: validate installed skill references`
+  - checks: `git diff --check`; `./skills-pack/install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune`; `./skills-pack/install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check`; `bash skills-pack/pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh`
 
 ### TASK-WCC-01-004: Run focused workstream contract consistency sweep
 
