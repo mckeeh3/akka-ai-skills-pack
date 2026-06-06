@@ -226,7 +226,7 @@
 
 ### TASK-IC-04-001: Realign router skills, examples, and templates
 
-- status: pending
+- status: done
 - source: specs/intent-compiler-realignment/backlog/01-intent-compiler-realignment-build-backlog.md
 - task brief: specs/intent-compiler-realignment/tasks/04-reference-migration/01-realign-router-examples-and-templates.md
 - depends on:

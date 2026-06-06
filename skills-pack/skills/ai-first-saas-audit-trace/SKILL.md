@@ -12,6 +12,9 @@ This is a trace modeling and routing skill. It does not replace observability, l
 ## Required reading
 
 Read first:
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/intent-to-realization-flow.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 

@@ -5,10 +5,13 @@ description: Interpret generated full-stack AI-first SaaS apps as role-authorize
 
 # Agent Workstream Apps
 
-Use this skill when a generated or extended SaaS app should be modeled as a set of role-authorized functional/context-area agents with continuous workstreams and structured surfaces, rather than as a page-first CRUD console or generic chatbot.
+Use this skill when a generated or extended SaaS app should be modeled as a set of role-authorized functional/context-area agents with continuous workstreams and structured surfaces, rather than as a page-first CRUD console or generic chatbot. In the intent compiler model, this skill defines or reviews the workstream bindings that connect global agents, surfaces, tools, policies, and traces to domain capabilities and realization artifacts.
 
 ## Required reading
 
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/intent-to-realization-flow.md`
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/workstream-contract.md`
 - `../docs/workstream-attention-contracts.md`
@@ -34,7 +37,7 @@ Routes and pages are implementation/deep-link details. Backend capabilities and 
 
 ## Routing
 
-- product/description changes: `app-descriptions`, `app-description-functional-agent-modeling`, `app-description-surface-modeling`, `app-description-ui`
+- product/current-intent graph changes: `app-descriptions`, `app-description-functional-agent-modeling`, `app-description-surface-modeling`, `app-description-ui`
 - backend capability modeling: `capability-first-backend`
 - Akka component decomposition: `akka-solution-decomposition`
 - request-based agents/governance/tools/traces: `akka-agents` and focused `akka-agent-*` skills
@@ -46,6 +49,7 @@ Routes and pages are implementation/deep-link details. Backend capabilities and 
 
 For each workstream/functional agent, define:
 
+- current-intent graph paths for the domain/workstream plus any reused global agent/surface/tool/policy/trace definitions
 - workstream id, responsibility, exactly-one owning functional agent, required managed-agent definition id, icon metadata with tooltip, instance scope, and readiness level
 - actor roles, scopes, capabilities, hidden/denied states, and default selection
 - backend-owned workstream-local attention category ids, canonical category/severity mappings, producers, lifecycle, My Account/rail aggregation, and dashboard variants

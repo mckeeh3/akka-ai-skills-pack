@@ -7,7 +7,7 @@ description: Decompose high-level requirements, prompts, or specification files 
 
 Context-budget rule: do not load every focused Akka component skill up front. Classify scope, derive capabilities, choose component candidates, then load only the focused downstream skills needed for the selected substrates.
 
-Use this as the top-level starting skill when the task begins from high-level intent rather than from a fixed Akka component type.
+Use this as the top-level starting skill when the task begins from accepted current intent or high-level intent rather than from a fixed Akka component type. For broad or changing product input, first treat the input as an intent compiler increment and preserve traceability to current app/global/domain/workstream nodes before selecting Akka components.
 
 ## Goal
 
@@ -26,9 +26,12 @@ Use this skill for high-level prompts, PRDs, feature requests, UI/API briefs, ch
 
 For broad generated-app input, use these by reference instead of restating their contents:
 
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-to-realization-flow.md`
 - `../docs/requirements-to-workstream-development-process.md`
 - `../docs/examples/requirements-to-workstream-mini-example.md`
-- `../docs/prd-to-akka-flow.md`
 
 Do not reintroduce removed historical domain-specific planning examples as generic guidance.
 
@@ -39,6 +42,7 @@ Read first when present/relevant:
 - target project path: AGENTS.md for authoritative project rules and coding constraints;
 - `../README.md` for current skill routing;
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS scope;
+- `../docs/intent-compiler.md`, `../docs/current-intent-model.md`, and `../docs/intent-to-realization-flow.md` when input needs current-intent provenance or workstream binding before component selection;
 - `../docs/full-core-foundation-readiness.md` for canonical SaaS Foundation App inventory; summarize it, do not paste it;
 - `../docs/minimum-ai-first-saas-app.md` for minimum/core/basic/chatbot-like generated SaaS requests;
 - `../docs/ai-first-saas-application-architecture.md`;
@@ -74,7 +78,7 @@ Before coding, produce a component plan with these sections. Keep each concise; 
 18. Vertical implementation order
 19. Required tests
 
-A plan is incomplete if it names components without saying which functional agent, workstream, surface, capability, authority boundary, trace, and tests each increment belongs to.
+A plan is incomplete if it names components without saying which current-intent graph nodes, functional agent, workstream, surface, capability, authority boundary, trace, and tests each increment belongs to.
 
 ## Decomposition workflow
 
@@ -171,7 +175,7 @@ Each increment should identify the next focused skills to load.
 
 ## Open questions policy
 
-Ask only questions that materially block safe component choice or implementation. For generated AI-first SaaS, unresolved authority boundaries, approval gates, policy/risk thresholds, evidence, trace visibility, supervision UI, model binding, skill/reference governance, tool boundaries, or outcome metrics block only the affected slice.
+Ask only questions that materially block safe component choice or implementation. For generated AI-first SaaS, unresolved current-intent graph ownership, authority boundaries, approval gates, policy/risk thresholds, evidence, trace visibility, supervision UI, model binding, skill/reference governance, tool boundaries, or outcome metrics block only the affected slice.
 
 ## Anti-patterns
 

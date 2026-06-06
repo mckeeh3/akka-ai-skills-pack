@@ -12,6 +12,9 @@ AI-assisted admin offload is mandatory foundation behavior for initial generated
 ## Required reading
 
 Read first:
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/intent-to-realization-flow.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/core-ai-first-saas-foundation.md`
 - `../docs/core-saas-identity-tenancy-admin.md`

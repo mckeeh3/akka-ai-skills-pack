@@ -5,7 +5,7 @@ description: Apply the mandatory secure SaaS foundation for every new AI-first S
 
 # Core SaaS Foundation
 
-Use this skill for every new project, app, PRD, spec, backlog, app-description bootstrap, solution decomposition, and generation flow handled by this pack unless the user explicitly asks for repository-maintenance-only work or non-SaaS reference material.
+Use this skill for every new project, app, PRD, spec, backlog, app-description bootstrap, solution decomposition, and generation flow handled by this pack unless the user explicitly asks for repository-maintenance-only work or non-SaaS reference material. In the intent compiler model, this skill seeds and protects the global and foundation-domain current-intent baseline that app-specific work extends.
 
 This skill supplies the secure SaaS baseline. In this repository that baseline is the **SaaS Foundation App**: a runnable out-of-the-box domain with five workstreams that users clone/fork and extend.
 
@@ -15,6 +15,9 @@ Read these first when using this skill:
 
 - target project path: `AGENTS.md`
 - `../README.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/intent-to-realization-flow.md`
 - `../docs/minimum-ai-first-saas-app.md`
 - `../docs/full-core-foundation-readiness.md`
 - `../docs/core-ai-first-saas-foundation.md`
@@ -77,7 +80,7 @@ Do not start from object lists, CRUD screens, or Akka component families alone.
 
 ### App-description paths
 
-Bootstrap and maintain secure SaaS foundation files in workstreams, surface contracts, capabilities, behavior, tests, auth/security, observability, and UI layers. For SaaS Foundation App work, describe the built-in foundation domain and any modifications in place. For business-specific work, add domain/workstream extensions without replacing foundation semantics.
+Bootstrap and maintain secure SaaS foundation files in the current-intent graph: app/global actors, roles, policies, surfaces, agents, tools, traces, plus foundation domain workstreams, surface contracts, capabilities, behavior, tests, auth/security, observability, and realization files. For SaaS Foundation App work, describe the built-in foundation domain and any modifications in place. For business-specific work, add domain/workstream extensions without replacing foundation semantics.
 
 ### Akka solution decomposition
 
@@ -85,7 +88,7 @@ Every solution plan must include a secure SaaS foundation section before app-spe
 
 ### PRD/spec/backlog planning
 
-Every app PRD must include foundation implications and first implementation work that preserves or extends the SaaS Foundation App. Pending tasks should be vertical increments: functional agent, structured surface/action, governed capability, selected Akka substrate, browser/API/realtime work, auth/audit, and tests.
+Every app PRD or incremental product intent must compile foundation implications into current-intent graph updates and first implementation work that preserves or extends the SaaS Foundation App. Pending tasks should be vertical increments: functional agent, structured surface/action, governed capability, selected Akka substrate, browser/API/realtime work, auth/audit, and tests.
 
 ### Generation
 

@@ -7,7 +7,7 @@ description: Interpret high-level product intent as an AI-first SaaS operating m
 
 Use this as the top-level interpretation skill when a product, PRD, feature request, or architecture prompt involves delegated operational work, autonomous or semi-autonomous decisions, agent teams, human supervision, policy controls, approvals, exceptions, audit traces, or outcome accountability.
 
-This is a routing and framing skill. It does not replace `core-saas-foundation`, `agent-workstream-apps`, app-description skills, Akka solution decomposition, web UI skills, or focused component implementation skills. For every generated SaaS app, preserve this handoff order: secure AI-first SaaS interpretation → `agent-workstream-apps` for functional agents, workstreams, and structured surfaces → `core-saas-foundation` for mandatory foundation verticals inside that workstream model → `capability-first-backend` for governed operation/query contracts → the selected description, decomposition, PRD/backlog, or focused implementation path.
+This is a routing and framing skill. It does not replace `core-saas-foundation`, `agent-workstream-apps`, app-description skills, Akka solution decomposition, web UI skills, or focused component implementation skills. Treat broad product input as an incremental source intent for the intent compiler: preserve only the accepted current intent, bind reusable global artifacts into concrete workstreams, then route to description, specs/backlogs, decomposition, or implementation. For every generated SaaS app, preserve this handoff order: secure AI-first SaaS interpretation → `agent-workstream-apps` for functional agents, workstreams, and structured surfaces → `core-saas-foundation` for mandatory foundation verticals inside that workstream model → `capability-first-backend` for governed operation/query contracts → the selected app-description/current-intent, decomposition, specs/backlog, or focused implementation path.
 
 ## Goal
 
@@ -36,13 +36,16 @@ Read these first when using this skill:
 - `../README.md`
 - `../core-saas-foundation/SKILL.md`
 - `../agent-workstream-apps/SKILL.md` for generated full-stack SaaS app routing
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md` when interpreting a revision, correction, PRD, or feature request as a current-intent delta
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app routing
 - `../docs/structured-surface-contracts.md` when surfaces or surface actions need implementation-ready contracts
 
 For minimum, SaaS Foundation App, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../docs/minimum-ai-first-saas-app.md` before applying the anti-chatbot and SaaS Foundation App rule.
 
-For description-first work, also read the app-description docs named by `skills/README.md`.
+For app-description/current-intent graph work, also read the relevant compiler and app-description skills named by `skills/README.md`.
 For generated SaaS foundations, also load `../ai-first-saas-admin-agents/SKILL.md` for mandatory AI-assisted admin offload. For direct Akka implementation, load only the focused Stage 3 skills after the functional-agent/workstream/surface model and capability contracts have selected the substrate components.
 
 ## Use when
@@ -127,7 +130,7 @@ Prefer mechanically enforced permissions and versioned policy records over promp
 
 For generated full-stack SaaS apps, load or apply `agent-workstream-apps` before downstream description, decomposition, PRD/backlog, capability, or implementation work so the handoff contains an explicit inventory of functional agents, any internal agents, initial workstreams, structured surfaces, surface action-to-capability candidates, and downstream skills to load. Load `core-saas-foundation` alongside that model to ensure Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline work is represented as mandatory foundation verticals rather than as optional object lists. For SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS requests, that inventory starts with the SaaS Foundation App domain—My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy—with bounded authority, structured surfaces, durable workstream log, audit/work trace substrate, and explicit extension seams. When core user administration is in scope for a generated SaaS app, load `ai-first-saas-admin-agents` so AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and approval boundaries are planned before domain work. Then route based on what the user is asking for:
 
-- Use `app-descriptions` when the user wants to describe, review, revise, or maintain the authoritative application description before generation, preserving functional agents, surfaces, capabilities, and horizontal Akka implementation notes.
+- Use `app-descriptions` when the user wants to describe, review, revise, or maintain the authoritative app-description/current-intent graph before generation, preserving global definitions, workstream bindings, functional agents, surfaces, capabilities, and horizontal Akka implementation notes.
 - Use `capability-first-backend` when surface actions, governed-tools, agent-tools, browser-tools, workflow steps, APIs, timers, consumers, or internal operations need governed backend contracts.
 - Use `akka-solution-decomposition` when the user wants a direct Akka solution shape from the accepted workstream/capability model and the component set is not yet known.
 - Use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlogs, and pending-task artifacts that preserve the functional-agent/workstream/surface/capability structure.
