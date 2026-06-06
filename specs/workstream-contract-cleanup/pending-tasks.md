@@ -190,7 +190,7 @@
 
 ### TASK-WCC-99-001: Verify workstream contract cleanup completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/workstream-contract-cleanup/tasks/99-verification/01-verify-workstream-contract-cleanup.md
 - depends on:
@@ -224,3 +224,6 @@
   - checks pass and changes are committed
 - notes:
   - commit message: `specs: verify workstream contract cleanup`
+  - verification: compared completed TASK-WCC-01-001 through TASK-WCC-01-004 changes against all accepted decisions and README done state; no material gaps or blockers remain.
+  - checks: `git diff --check`; `python3 skills-pack/tools/validate-workstream-manifest.py skills-pack/templates/ai-first-saas-core-app/app-description`; `bash skills-pack/tools/validate-workstream-contracts.sh skills-pack/templates/ai-first-saas-core-app/app-description`; `./skills-pack/install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune`; `./skills-pack/install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check`; `bash skills-pack/pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh`
+  - completion: mini-project is complete; no follow-up tasks appended.
