@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-This is the target implementation architecture for reusable generated-app **agent workstream shell** UI modules. This repository's runnable core app root is the canonical end-to-end implementation baseline; this document remains the canonical UI architecture contract and reusable frontend reference.
+This is the target implementation architecture for reusable generated-app **agent workstream shell** UI modules. This repository's runnable SaaS Foundation App root is the canonical end-to-end implementation baseline; this document remains the canonical UI architecture contract and reusable frontend reference.
 
 It is a source-repository reference asset. It defines how future tasks should build reusable React/Vite/TypeScript modules under `frontend/src/workstream/**`, while preserving useful generic seams from the current frontend (`api/**`, `design-system/**`, `styles/**`) and replacing `screens/**` as the canonical UI taxonomy.
 
@@ -14,8 +14,8 @@ Canonical doctrine:
 - source-checkout/root-only migration inventory: `specs/workstream-ui-implementation-migration/frontend-stale-code-inventory.md`
 
 Current implementation references:
-- runnable core app baseline source: this repository's runnable core app root
-- source-controlled app-description core app surface contracts: `templates/ai-first-saas-core-app/app-description/**`
+- runnable SaaS Foundation App source: this repository's runnable SaaS Foundation App root
+- source-controlled app-description SaaS Foundation App surface contracts: `templates/ai-first-saas-core-app/app-description/**`
 - reusable React/Vite/TypeScript modules: `frontend/src/workstream/**`
 - fixture API and realtime seams: `frontend/src/api/WorkstreamApiClient.ts`, `frontend/src/api/WorkstreamRealtimeClient.ts`
 - integrated shell example: `frontend/src/main.tsx`
@@ -393,7 +393,7 @@ The first implementation slice must include fixtures for:
 - selected `AuthContext` with tenant and optional customer scope
 - visible, denied, hidden, disabled, and attention-bearing functional agents
 - initial workstream items for user request, agent response, surface, capability result, workflow progress, decision, audit trace, action feedback, system-message surface, and system status
-- surface envelopes for every canonical surface type listed above, aligned to `templates/ai-first-saas-core-app/app-description/12-workstreams/**` when implementing core app surfaces
+- surface envelopes for every canonical surface type listed above, aligned to `templates/ai-first-saas-core-app/app-description/12-workstreams/**` when implementing SaaS Foundation App surfaces
 - surface actions covering read, command, proposal, approval, workflow, governance, and trace intents, each with browser-tool/governed-tool/capability ids and source/result surface graph behavior
 - action results for accepted, denied, validation error, approval required, conflict, no-op, and failed outcomes
 - realtime events for created, updated, accepted, denied, workflow progressed, stale, reconnected, duplicate/replay, out-of-order, malformed-safe, and cross-context-denied cases

@@ -75,9 +75,9 @@ This skill should resist premature generation when important agent workstream, r
 Use `../docs/app-description-skill-output-contracts.md` as the shared readiness contract. Assess semantic completeness for the declared scope across secure SaaS foundation, functional-agent workstreams, structured surfaces, capabilities/governed-tools, behavior, tests, auth/security, observability/traces, frontend/UI, realization maps, assumptions, and pending questions.
 
 Apply these gates strictly:
-- `core app baseline` readiness is limited to the five-core-workstream bootstrap scope and must list full-core follow-ups.
-- `full core` readiness is blocked unless My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitation onboarding, user administration, governed runtime agents, workstream UI, and acceptance/security/agent-governance/frontend tests are present.
-- narrower scopes must name omitted full-core areas and cannot report those areas ready.
+- `SaaS Foundation App` readiness means the built-in foundation domain and its five workstreams are sufficiently described for the requested maintenance or extension scope.
+- Business-domain extension readiness requires clear extension seams back to the SaaS Foundation App: AuthContext, roles/capabilities, tenant/customer scope, workstream placement, governed capabilities/tools, traces, UI surfaces, and tests.
+- Narrower scopes must name omitted areas and cannot report those omitted areas ready.
 
 ## Allowed outcomes
 
@@ -97,7 +97,7 @@ Use when the description is sufficiently complete for reliable generation, local
 Use this concise report shape from `../docs/app-description-skill-output-contracts.md`:
 
 1. overall state: `ready`, `ready-with-assumptions`, `not-ready`, or `blocked`;
-2. declared scope label and whether full-core gates apply;
+2. declared scope label: SaaS Foundation App maintenance/extension, business-domain extension, app-specific feature, or another named scope;
 3. blocking gaps by layer;
 4. acceptable assumptions;
 5. unsafe assumptions/questions;
@@ -126,7 +126,7 @@ If an assumption would change whether a user-visible/API/workstream feature work
 
 For browser UI generation, a missing style guide is a blocking UI readiness gap unless the user explicitly defers it with an accepted default recorded in `specs/pending-questions.md` and the affected app-description/spec style-guide artifact.
 
-For generated full-stack AI-first SaaS apps, missing `12-workstreams/` functional-agent, attention/dashboard, workstream-expertise, and structured-surface semantics are blocking when generation would otherwise invent consequential work areas, expert skills/references/manifests/boundaries, left-rail authorization, workstream behavior, attention counts, surface payloads/actions/states, autonomous task progress/result surfaces, notifications, or User Admin / Agent Admin boundaries. Readiness is also blocked when the frontend plan uses legacy `frontend/src/screens/**`, page-first route tests, or static-resource mechanics as the generated SaaS UI model instead of the canonical `frontend/src/workstream/**` reference and User Admin vertical. Full-core readiness is blocked if User Admin dashboard/list/detail behavior is fixture-only, API-only, or UI-only instead of fullstack through `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` backed by scoped backend capabilities and tests.
+For generated full-stack AI-first SaaS apps, missing `12-workstreams/` functional-agent, attention/dashboard, workstream-expertise, and structured-surface semantics are blocking when generation would otherwise invent consequential work areas, expert skills/references/manifests/boundaries, left-rail authorization, workstream behavior, attention counts, surface payloads/actions/states, autonomous task progress/result surfaces, notifications, or User Admin / Agent Admin boundaries. Readiness is also blocked when the frontend plan uses legacy `frontend/src/screens/**`, page-first route tests, or static-resource mechanics as the generated SaaS UI model instead of the canonical `frontend/src/workstream/**` reference and User Admin vertical. User Admin dashboard/list/detail behavior is incomplete if it is fixture-only, API-only, or UI-only instead of fullstack through `user-admin-dashboard`, `user-admin-user-list`, and `user-admin-user-account` backed by scoped backend capabilities and tests.
 
 For AI-first/delegated operations, missing `15-operating-model/` semantics are blocking when generation would otherwise invent authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 
@@ -176,15 +176,15 @@ Avoid:
 
 Before finishing, verify:
 - the result uses one of the three allowed states
-- scope label and full-core gate were assessed before readiness state selection
-- core app baseline readiness, when used, is labeled separately as five-core-workstream core app domain and records follow-up work for full User Admin, Agent Admin, Audit/Trace UI/search, Governance/Policy depth, invitations/onboarding, governed agent documents/references/manifests/tool boundaries, and full security coverage
-- full-core omissions of User Admin, Agent Admin, Invitation onboarding, workstream expert bundles, governed model bindings, governed runtime agents, workstream UI, or required tests blocked readiness unless the output explicitly labeled a narrower scope
+- scope label was assessed before readiness state selection
+- SaaS Foundation App maintenance/extension, when used, names affected foundation workstreams and records explicit follow-up work for any deferred behavior
+- business-domain extension readiness preserves AuthContext, capabilities, tenant/customer scope, traces, workstream/surface placement, and tests
 - core secure SaaS foundation completeness was assessed explicitly for generated SaaS apps
 - missing foundation/security blocks generation or marks the description `not-ready`
 - agent workstream application completeness was assessed explicitly for generated full-stack AI-first SaaS apps
 - workstream attention, dashboard, notification/projection, and autonomous task surface semantics were assessed explicitly
 - missing functional agents, attention/dashboard contracts, workstream expert bundles, or structured surfaces for authenticated consequential work blocks generation or marks the description `not-ready`
-- missing User Admin or Agent Admin blocks full core SaaS generation unless narrower scope is explicit
+- missing User Admin or Agent Admin blocks SaaS Foundation App generation/maintenance unless narrower scope is explicit
 - AI-first operating-model completeness was assessed explicitly for generated AI-first SaaS
 - behavior completeness was assessed explicitly
 - test completeness was assessed explicitly

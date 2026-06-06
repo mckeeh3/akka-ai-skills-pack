@@ -39,7 +39,7 @@ Read first when present/relevant:
 - target project path: AGENTS.md for authoritative project rules and coding constraints;
 - `../README.md` for current skill routing;
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS scope;
-- `../docs/full-core-foundation-readiness.md` for canonical full-core inventory; summarize it, do not paste it;
+- `../docs/full-core-foundation-readiness.md` for canonical SaaS Foundation App inventory; summarize it, do not paste it;
 - `../docs/minimum-ai-first-saas-app.md` for minimum/core/basic/chatbot-like generated SaaS requests;
 - `../docs/ai-first-saas-application-architecture.md`;
 - `../agent-workstream-apps/SKILL.md` and `../docs/agent-workstream-application-architecture.md` when generated full-stack SaaS workstreams are in scope;
@@ -56,7 +56,7 @@ Before coding, produce a component plan with these sections. Keep each concise; 
 
 1. Inputs
 2. Java base package: fixed `ai.first`
-3. Scope label: `core app baseline`, `full core`, `Module 1-only / not full core`, or another explicit narrower scope
+3. Scope label: `SaaS Foundation App maintenance/extension`, `business-domain extension`, `app-specific feature`, or another explicit narrower scope
 4. AI-first interpretation
 5. Core secure SaaS foundation obligations
 6. Workstream decomposition decision
@@ -80,11 +80,12 @@ A plan is incomplete if it names components without saying which functional agen
 
 ### 1. Record fixed package and scope
 
-Use `ai.first`; do not ask the user to choose a Java package. Classify requested readiness with `../docs/full-core-foundation-readiness.md`:
+Use `ai.first`; do not ask the user to choose a Java package. Classify the requested work with `../docs/minimum-ai-first-saas-app.md` and `../docs/full-core-foundation-readiness.md`:
 
-- `core app baseline`: five-core-workstream shell from `../docs/minimum-ai-first-saas-app.md`; explicitly not full-core-ready and must list follow-up gates.
-- `full core`: carry the canonical full-core foundation, workstream UI, governed runtime agents, invitation/user-admin/admin/audit/governance surfaces, and required tests through the plan.
-- narrower scope: name it and list deferred full-core areas.
+- `SaaS Foundation App maintenance/extension`: modify the built-in foundation domain in place.
+- `business-domain extension`: add domain-specific workstreams, surfaces, agents, capabilities, components, frontend/app-description/spec/doc/test assets while preserving foundation semantics.
+- `app-specific feature`: a focused increment in an existing foundation or business domain.
+- narrower scope: name it and list intentionally deferred areas.
 
 ### 2. Apply secure SaaS foundation
 

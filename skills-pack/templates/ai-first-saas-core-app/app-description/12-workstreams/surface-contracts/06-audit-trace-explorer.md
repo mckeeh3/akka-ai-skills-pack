@@ -49,6 +49,6 @@ Payload must include:
 
 - Tenant Admin, auditor, support-access, and forbidden variants show correct redactions and actions.
 - Search, detail, export, source-surface, and escalation actions carry capability/governed-tool/browser-tool ids.
-- Trace links from all core app surfaces open through shell request routing.
+- Trace links from all SaaS Foundation App surfaces open through shell request routing.
 - Malformed/missing trace ids produce safe system-message surfaces.
 - Sensitive-read, export denial, and investigation actions produce audit/work traces.

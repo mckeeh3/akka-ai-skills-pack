@@ -55,8 +55,8 @@ Canonical frontend project integration reference:
 - `../docs/web-ui-frontend-project-integration.md` for React/Vite project layout, build output, Akka static hosting, route separation, and SPA routing.
 - Use `../docs/security-workos-auth-and-admin.md` and security-specific skills for JWT/request-context, `/api/me`, and secret-boundary details; do not treat `../docs/frontend-with-akka-backend.md` as the canonical integration source for new frontend work.
 
-Canonical full-core implementation reference:
-- source attention or downstream fork: use the runnable core app repository root
+Canonical SaaS Foundation App implementation reference:
+- source attention or downstream fork: use the runnable SaaS Foundation App repository root
 - skills-only install: root frontend application source is not installed under `.agents`; application source belongs in the target project, while pack examples remain under `.agents/skills/examples/**`
 
 Canonical target-project workstream UI reference, resolved from the project workspace or source attention (not from a global `~/.agents/skills` install):
@@ -65,7 +65,7 @@ Canonical target-project workstream UI reference, resolved from the project work
 - integrated shell example: `frontend/src/main.tsx`
 - User Admin dashboard/list/detail-edit vertical pattern: test-only workstream fixtures and `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 
-Use the core app baseline as the end-to-end generated-app baseline and these frontend files as reusable UI implementation examples. Test fixtures are contract references only and must not be importable as generated-app normal runtime. Do not use legacy `frontend/src/screens/**` or removed standalone static UI fixtures as the canonical app structure.
+Use the SaaS Foundation App as the end-to-end generated-app baseline and these frontend files as reusable UI implementation examples. Test fixtures are contract references only and must not be importable as generated-app normal runtime. Do not use legacy `frontend/src/screens/**` or removed standalone static UI fixtures as the canonical app structure.
 
 ## Use this skill when
 

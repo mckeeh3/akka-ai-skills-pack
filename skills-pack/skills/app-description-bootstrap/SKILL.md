@@ -18,8 +18,8 @@ Create a minimum viable internal app-description tree that:
 - establishes authoritative layers for role-authorized functional-agent workstreams, workstream boundary/count decisions, per-workstream attention breakdowns, role-specific dashboard contracts, human surface graphs, governed surface actions, capability-contained governed-tools, AI-first operating model, behavior, tests, auth/security, observability, and required web UI for generated full-stack AI-first SaaS apps
 - records internal workstream agent graph candidates, internal worker delegations, autonomous task candidates, notification/projection implications, and trace expectations when durable internal/background agent work may be needed
 - records an initial readiness posture
-- defines a generation policy that labels scope as `core app baseline`, `full core`, `Module 1-only / not full core`, or another explicit narrower scope
-- for core app/basic/minimum/chatbot-like generated SaaS requests, represents the five-core-workstream core app domain — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — with `markdown_response`, bootstrap auth/security, durable workstream logs, trace substrate, backend capability boundaries, and explicit follow-up gaps to full core
+- defines a generation policy that labels scope as `SaaS Foundation App maintenance/extension`, `business-domain extension`, app-specific feature, or another explicit narrower scope
+- for SaaS Foundation App/basic/minimum/chatbot-like generated SaaS requests, represents the SaaS Foundation App domain — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — with structured surfaces, auth/security, durable workstream logs, trace substrate, backend capability boundaries, and extension seams
 - creates enough cross-linking that later changes can stay localized and traceable
 
 ## Required reading
@@ -30,19 +30,19 @@ Read these first if present:
 - `../docs/description-first-application-doctrine.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/requirements-to-workstream-development-process.md` for the canonical input → workstreams → attention → dashboards → surfaces/actions → capabilities/APIs → Akka substrate → agent/autonomous task → notifications/projections/traces process
-- `../docs/minimum-ai-first-saas-app.md` for minimum/core app/basic/chatbot-like generated SaaS scope: five-core-workstream core app domain with `markdown_response`, not a single-workstream or generic chatbot slice
+- `../docs/minimum-ai-first-saas-app.md` for SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS scope: SaaS Foundation App domain with `markdown_response`, not a single-workstream or generic chatbot slice
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS foundation every new app-description must establish
 - `../docs/internal-app-description-architecture.md`
 - `../docs/app-description-maintenance-flow.md`
 - `../app-descriptions/SKILL.md`
 - `../ai-first-saas/SKILL.md` when the initial app idea includes delegated work, agents, decisions, governance, supervision, audit, or outcomes
-- the target project path: app-description/README.md plus `../docs/core-ai-first-saas-foundation.md` for the preferred core app-description shape
+- the target project path: app-description/README.md plus `../docs/core-ai-first-saas-foundation.md` for the preferred SaaS Foundation App description shape
 
 Prefer these example references for generated SaaS foundation bootstraps:
 - target project path: app-description/00-system/app-manifest.md
 - target project path: app-description/10-capabilities/01-secure-tenant-user-foundation.md
 
-Use current target-project app-description files and core app templates for cross-linking mechanics; do not depend on removed historical domain examples.
+Use current target-project app-description files and SaaS Foundation App templates for cross-linking mechanics; do not depend on removed historical domain examples.
 
 ## Use this skill when
 
@@ -82,7 +82,7 @@ If the repository already has a different stable internal root for app descripti
 
 Use `../docs/app-description-skill-output-contracts.md` for the shared bootstrap contract. Create only the smallest truthful `app-description/**` tree for the declared scope, normally covering system metadata/readiness/generation policy, capabilities, workstreams/surfaces, operating model, behavior, tests, auth/security, observability, UI, realization, and traceability.
 
-For generated SaaS, start from target-project `app-description/**` when present or `../templates/ai-first-saas-core-app/app-description/**` for initial structure. Record explicit deferrals instead of inventing full-core details.
+For generated SaaS, start from target-project `app-description/**` when present or `../templates/ai-first-saas-core-app/app-description/**` for initial structure. Record explicit deferrals instead of inventing SaaS Foundation App details.
 
 ## Scope gates
 

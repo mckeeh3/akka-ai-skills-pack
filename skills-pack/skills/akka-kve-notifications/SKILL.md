@@ -31,7 +31,7 @@ Read these first if present:
 - Notifications are for live updates, not historical replay.
 
 Current repository note:
-- The core app example snapshot does not currently include a KeyValueEntity notification stream. Use the Akka SDK docs as the source of truth and add target-project examples only when a feature needs live KVE updates.
+- The SaaS Foundation App example snapshot does not currently include a KeyValueEntity notification stream. Use the Akka SDK docs as the source of truth and add target-project examples only when a feature needs live KVE updates.
 
 ## Endpoint rules
 
@@ -42,14 +42,14 @@ When exposing notifications over HTTP:
 - do not leak internal notification types directly outside the service unless explicitly intended
 
 Current repository note:
-- The core app example snapshot does not currently expose KVE notifications through an HTTP endpoint. Keep any SSE/API mapping target-specific and return browser-safe DTOs only.
+- The SaaS Foundation App example snapshot does not currently expose KVE notifications through an HTTP endpoint. Keep any SSE/API mapping target-specific and return browser-safe DTOs only.
 
 ## Testing guidance
 
 At minimum, test that published messages happen after successful command handling.
 
 Testing note:
-- Add a focused target-project test that captures a stub `NotificationPublisher` and asserts messages are published only after successful state changes. The current core app example snapshot does not include this KVE notification test.
+- Add a focused target-project test that captures a stub `NotificationPublisher` and asserts messages are published only after successful state changes. The current SaaS Foundation App example snapshot does not include this KVE notification test.
 
 ## Generated SaaS checks
 

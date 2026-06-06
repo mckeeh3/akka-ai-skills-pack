@@ -2,7 +2,7 @@
 
 This directory contains AI-focused skills for creating and extending full-stack secure AI-first SaaS applications on Akka. It is an **internal routing layer for the harness**: users describe intent in natural language, and the harness loads the smallest relevant skill set.
 
-In this repository, the skills serve the two-fold project purpose: maintain the secure AI-first SMB SaaS core app and help users of cloned/forked repos add business-specific domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests.
+In this repository, the skills serve the two-fold project purpose: maintain the SaaS Foundation App and help users of cloned/forked repos add business-specific domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests.
 
 The previous long-form routing matrix has been moved to maintainer-only pack history. Do not load historical routing by default; prefer this quick map plus the smallest focused skill that matches the current task.
 
@@ -10,14 +10,14 @@ The previous long-form routing matrix has been moved to maintainer-only pack his
 
 This file serves both:
 
-- the **source repository**, where root `app-description/`, `specs/`, `frontend/`, `src/`, and `skills-pack/docs|examples|templates` are reference and runtime assets for the secure AI-first SMB SaaS core app;
+- the **source repository**, where root `app-description/`, `specs/`, `frontend/`, `src/`, and `skills-pack/docs|examples|templates` are reference and runtime assets for the SaaS Foundation App;
 - the **harness skills-library install**, where this routing map, `SKILL.md` files, and referenced pack docs/examples/templates/tools are copied under `.agents/skills` while the target project's maintained `app-description/`, `specs/`, source, and frontend stay in the project workspace.
 
 When a skill lists required reads as target-project paths such as `AGENTS.md`, `specs/**`, `app-description/**`, `frontend/**`, or `src/**`, resolve them in the current target project workspace, not relative to a global `~/.agents/skills` install. Relative `docs/**`, `examples/**`, `templates/**`, `tools/**`, and `references/**` paths are installed pack assets when referenced from this routing map. Skill-local references from `SKILL.md` files usually use `../docs/**` because each skill lives one directory below this file.
 
 Java base package for generated code:
 
-- always use the fixed base package `ai.first` for this core app baseline and downstream generated code;
+- always use the fixed base package `ai.first` for this SaaS Foundation App and downstream generated code;
 - do not ask users to choose a Java package and do not create pending questions about the Java base package;
 - record `ai.first` in app-description/spec/generation artifacts and apply it consistently.
 
@@ -25,15 +25,15 @@ Use `domain-specific` or the user's actual domain name for later product feature
 
 ## Core-app-first routing
 
-For new secure AI-first SaaS apps where the user wants an implementation baseline, prefer fork-and-extend from this runnable secure AI-first SMB SaaS core app repository root. Do not expect the skills install to contain or render a duplicate full-app baseline.
+For new secure AI-first SaaS apps where the user wants an implementation baseline, prefer fork-and-extend from this runnable SaaS Foundation App repository root. Do not expect the skills install to contain or render a duplicate full-app baseline.
 
-For this repository's runnable core app and downstream forks that keep its merge-friendly layout, preserve the standard Akka Java layers and use `foundation`, `coreapp`, and `business.<area>` partitions inside them:
+For this repository's runnable SaaS Foundation App and downstream forks that keep its merge-friendly layout, preserve the standard Akka Java layers and use `foundation`, `coreapp`, and `business.<area>` partitions inside them:
 
 - reusable SaaS/platform code under `<base>.api|application|domain.foundation.*`;
 - built-in five-core-workstream code under `<base>.api|application|domain.coreapp.*`;
 - user-owned domain-specific extensions under `<base>.api|application|domain.business.<area>.*`.
 
-Do not place new product-specific Java code in legacy top-level `security`, `agentfoundation`, `admin`, or `workstream` packages when extending the core app. Users extend the root app workspace with business-specific domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests. Do not regenerate a parallel fresh app, replace existing foundation files, or use `.agents/` resources as writable project source unless explicitly requested.
+Do not place new product-specific Java code in legacy top-level `security`, `agentfoundation`, `admin`, or `workstream` packages when extending the SaaS Foundation App. Users extend the root app workspace with business-specific domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests. Do not regenerate a parallel fresh app, replace existing foundation files, or use `.agents/` resources as writable project source unless explicitly requested.
 
 ## AI-first SaaS entry routing
 
@@ -93,7 +93,7 @@ Use companion skills only for concerns actually in scope, except foundation/admi
 
 Secure AI-first SaaS interpretation → agent workstream model → mandatory core SaaS foundation verticals → affected workstreams → role-specific dashboard attention model → human surface graph → internal workstream agent graph → governed-tools in capability files and surface/action maps → capability-first backend substrate → description/decomposition/planning path → focused implementation.
 
-For minimum/core app/basic/chatbot-like generated SaaS prompts, the first runnable target is the five-core-workstream core app domain with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. It is not a generic public chatbot or page-first CRUD shell.
+For SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS prompts, the first runnable target is the SaaS Foundation App domain with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. It is not a generic public chatbot or page-first CRUD shell.
 
 ## Implementation completion standard
 

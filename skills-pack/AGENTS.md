@@ -1,8 +1,8 @@
 # Skills-Pack Maintainer Guidance
 
-This directory is the source area for the installable Akka AI skills pack inside the secure AI-first SMB SaaS core app repository.
+This directory is the source area for the installable Akka AI skills pack inside the SaaS Foundation App repository.
 
-The repository has a two-fold purpose: maintain the harness skills library and provide the runnable core app that users clone or fork. The skills pack supports both purposes by giving harness agents focused guidance, referenced docs, templates, tools, and code examples for maintaining the core app and adding downstream business-specific SaaS domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests.
+The repository has a two-fold purpose: maintain the harness skills library and provide the runnable SaaS Foundation App that users clone or fork. The skills pack supports both purposes by giving harness agents focused guidance, referenced docs, templates, tools, and code examples for maintaining the SaaS Foundation App and adding downstream business-specific SaaS domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests.
 
 ## Scope
 
@@ -15,7 +15,7 @@ Work here when a task targets installable `.agents` assets:
 - `skills-pack/tools/**`
 - `skills-pack/install-skills.sh`
 
-The repository root is the canonical runnable secure AI-first SMB SaaS core app: an Akka Java SDK + React/Vite application with the built-in five core workstreams. Do not add core app runtime code under `skills-pack/**`. Do not move focused skills-pack examples back into root `src/**`.
+The repository root is the canonical runnable SaaS Foundation App: an Akka Java SDK + React/Vite application with the built-in five core workstreams. Do not add SaaS Foundation App runtime code under `skills-pack/**`. Do not move focused skills-pack examples back into root `src/**`.
 
 ## Harness install model
 

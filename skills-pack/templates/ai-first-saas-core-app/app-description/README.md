@@ -1,8 +1,8 @@
-# AI-first SaaS core app-description template
+# SaaS Foundation App description template
 
-This template is a source-controlled core app for workstream surface modeling in generated secure AI-first SaaS apps. Copy the smallest relevant files into a target project's `app-description/` tree when bootstrapping or repairing surface contracts.
+This template is source-controlled SaaS Foundation App description guidance for workstream surface modeling in generated secure AI-first SaaS apps. Copy the smallest relevant files into a target project's `app-description/` tree when bootstrapping or repairing surface contracts.
 
-The template is intentionally app-description-only. It is not a runnable app baseline and does not replace the upstream core app implementation.
+The template is intentionally app-description-only. It is not a runnable app baseline and does not replace the upstream SaaS Foundation App implementation.
 
 Use with companion pack guidance. From an installed skills directory, resolve these paths under `.agents/skills/`; from a source checkout, resolve them under `skills-pack/`:
 
@@ -11,7 +11,7 @@ Use with companion pack guidance. From an installed skills directory, resolve th
 - `docs/structured-surface-contracts.md`
 - `app-description-surface-modeling/SKILL.md`
 
-## Included core app layers
+## Included SaaS Foundation App layers
 
 ```text
 12-workstreams/

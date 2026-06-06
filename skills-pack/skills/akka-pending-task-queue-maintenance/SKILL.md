@@ -82,7 +82,7 @@ If a queue does not yet document `superseded`, update its local queue rules to i
 
 Use `../docs/planning-skill-output-contracts.md` for the shared queue/task/reconciliation contract. Preserve existing ids, statuses, dependencies, implementation history, capability/workstream/surface/agent context, AuthContext/scope, authorization, traces, idempotency, tests, acceptance checks, and explicit out-of-scope items.
 
-For full-core/foundation planning, keep required coverage for invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail in the relevant task sequence.
+For SaaS Foundation App planning, keep required coverage for invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail in the relevant task sequence.
 
 ## Anti-patterns
 

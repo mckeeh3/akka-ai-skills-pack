@@ -35,8 +35,8 @@ Read these first if present:
 
 Prefer these local examples and references:
 - the target project path: app-description/README.md plus `../docs/core-ai-first-saas-foundation.md` for secure AI-first SaaS foundation shape and current generated-app target architecture
-- `../docs/minimum-ai-first-saas-app.md` for minimum/core app/basic/chatbot-like generated SaaS scope
-- current target-project app-description files and core app templates for description-layer mechanics; do not depend on removed historical domain examples
+- `../docs/minimum-ai-first-saas-app.md` for SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS scope
+- current target-project app-description files and SaaS Foundation App templates for description-layer mechanics; do not depend on removed historical domain examples
 
 ## Use this skill when
 

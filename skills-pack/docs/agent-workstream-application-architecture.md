@@ -7,7 +7,7 @@ It defines the mandatory default UI/application model for generated full-stack s
 
 Use this doctrine below `ai-first-saas-application-architecture.md` and above detailed app-description, web UI, agent, and Akka component guidance. For broad input, PRD, app-description, planning, backlog, and implementation-readiness work, apply `requirements-to-workstream-development-process.md` before component selection. This document does not replace `capability-first-backend-architecture.md`: workstream UI actions, agent tools, workflow steps, APIs, timers, consumers, and internal calls still map to governed backend capabilities before Akka implementation is selected.
 
-For core app-description surface examples, use the source-controlled files under `templates/ai-first-saas-core-app/app-description/**`; do not depend on generated distribution output directories as template sources.
+For SaaS Foundation App description surface examples, use the source-controlled files under `templates/ai-first-saas-core-app/app-description/**`; do not depend on generated distribution output directories as template sources.
 
 ## Default generated-app architecture
 
@@ -48,11 +48,11 @@ Default dashboard scoping is workstream-local and role-specific: a dashboard sho
 
 AutonomousAgent task progress/result surfaces are part of the workstream model when durable internal/background model-driven work exists. Task lifecycle events, notifications, snapshots, blocked states, rejected results, failures, and completion recommendations should update dashboards, attention items, traces, and governed surface actions; the task machinery never grants authority by itself.
 
-## Minimum initial core workstream set
+## SaaS Foundation App workstream set
 
-The smallest generated AI-first SaaS core app is a bootstrap-authorized **five-core-workstream core app domain**, not a generic chatbot. Use this interpretation for prompts such as "minimum AI-first app," "core app," "basic app," or "initial chatbot" unless the user explicitly asks for non-SaaS reference material.
+The repository ships the **SaaS Foundation App** out of the box. It is not a generic chatbot or throwaway starter; it is the built-in foundation domain that downstream users extend. Use this interpretation for prompts such as "starter app," "minimum AI-first app," "core app," "basic app," or "initial chatbot" unless the user explicitly asks for non-SaaS reference material.
 
-The minimum initial shell contains these role-authorized functional agents for the bootstrap operator:
+The foundation shell contains these role-authorized functional agents:
 
 1. **My Account Agent** — opened only from the signed-in user tile/email at the bottom of the left rail, not listed with the top workstream buttons.
 2. **User Admin Agent**
@@ -60,18 +60,16 @@ The minimum initial shell contains these role-authorized functional agents for t
 4. **Audit/Trace Agent**
 5. **Governance/Policy Agent**
 
-Each core workstream is intentionally narrow, but each must still use the same shell model:
+Each foundation workstream uses the same shell model:
 
-- **Left rail** — exposes role-authorized core functional agents for the bootstrap operator. User Admin, Agent Admin, Audit/Trace, and Governance/Policy appear in the top workstream rail when allowed. My Account is still one of the five core workstreams, but its only launcher is the signed-in user tile/email in the bottom rail user region. Unavailable richer full-core actions or surfaces are represented as explicit deferred/denied behavior, not hidden readiness claims.
+- **Left rail** — exposes role-authorized core functional agents for the bootstrap operator. User Admin, Agent Admin, Audit/Trace, and Governance/Policy appear in the top workstream rail when allowed. My Account is still one of the five core workstreams, but its only launcher is the signed-in user tile/email in the bottom rail user region. Unavailable richer SaaS Foundation App actions or surfaces are represented as explicit deferred/denied behavior, not hidden readiness claims.
 - **Main workstream panel** — renders a durable request/response timeline for the selected core workstream with capability results, denials, trace references, and the first structured surface type: `markdown_response`.
 - **Persistent composer** — accepts natural-language bootstrap requests for the selected core functional agent; it is an input channel, not an authorization boundary.
 - **Context and authority indicators** — show selected AuthContext, bootstrap role/capability basis, available capabilities, denied/deferred actions, and trace links.
 
-The first renderable surface for each core workstream is `markdown_response`: model-authored markdown in a versioned surface payload, rendered as sanitized HTML with trace/correlation ids and explicit loading, success, error, forbidden, and empty states. It is a real structured surface contract, not an informal chat blob; richer surfaces such as profile/settings cards, user tables, access-review queues, agent behavior diffs, audit timelines, and policy/approval cards can be added after the core app slice.
+`markdown_response` is the lowest-ceremony structured surface available to these workstreams: model-authored markdown in a versioned surface payload, rendered as sanitized HTML with trace/correlation ids and explicit loading, success, error, forbidden, and empty states. It is a real structured surface contract, not an informal chat blob. The same workstream model also supports richer surfaces such as profile/settings cards, user tables, access-review queues, agent behavior diffs, audit timelines, policy/approval cards, forms, and other SaaS-style screens.
 
-Audit/work trace recording starts in this first slice for identity basis, AuthContext selection, capability checks, prompt/tool use, denials, and rendered responses. The Audit/Trace workstream is present from the first runnable core app, but it may initially explain and link to the trace substrate through `markdown_response` before richer search and investigation surfaces are implemented.
-
-Full-core generated SaaS readiness remains stricter than this core app baseline. The five-core-workstream core app domain is a valid first runnable slice only when follow-up work remains explicit for complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed runtime agent documents, tenant isolation, and full security coverage.
+Audit/work trace recording is part of normal SaaS Foundation App behavior for identity basis, AuthContext selection, capability checks, prompt/tool use, denials, and rendered responses. When extending or modifying the foundation domain, preserve those traces instead of treating them as optional hardening.
 
 A workstream is not production-ready just because fixture items render, a deterministic placeholder response exists, or a service directly calls a provider without the workstream Akka Agent. Named model-backed workstream behavior must pass through the real local Akka runtime path: selected AuthContext, backend authorization, durable workstream entries, governed prompt/runtime assembly, active managed configuration resolution, governed `readSkill`/`readReferenceDoc` loader tools, `ToolPermissionBoundary` enforcement, invocation of a concrete Akka `Agent` component for the functional agent with resolved tools registered through `effects().tools(runtimeTools)`, configured model/provider invocation from that Agent path, trace emission, API response, and frontend rendering. Workstream/foundation state claimed as implemented must be backed by Akka components in normal runtime. Provider/configuration failures should become safe system-message surfaces and traces. Mocks, fixtures, deterministic fakes, service-only provider bypasses, and test doubles are allowed only in tests or explicitly test-only adapters; they are not normal runtime substitutes.
 
@@ -214,7 +212,7 @@ Surfaces are structured renderable results, not just text. They are associated w
 
 Canonical surface types:
 
-- `markdown_response` for sanitized model-authored markdown in the minimum five-core-workstream core app domain and other intentionally text-first responses;
+- `markdown_response` for sanitized model-authored markdown in the minimum SaaS Foundation App domain and other intentionally text-first responses;
 - `system_message` for typed system feedback, denial, warning, success, validation, approval-required, deferred, stale, background-work, and recovery messages;
 - dashboard / attention surface;
 - form or guided intake;
@@ -302,7 +300,7 @@ Do not present these as equivalent defaults for generated AI-first SaaS apps:
 - agent tools as the backend design root;
 - ungoverned prompt-only automation;
 - unaudited agents that can act without backend-enforced authority;
-- optional user administration or optional agent administration for a full generated core SaaS app.
+- optional user administration or optional agent administration when the SaaS Foundation App/domain scope requires them.
 
 Allowed exceptions are narrow: public marketing/legal/static pages, direct deep links to surfaces, implementation routes, non-SaaS reference material, or repository-maintenance tasks explicitly outside generated-app architecture.
 
@@ -333,7 +331,7 @@ Before treating a generated full-stack AI-first SaaS app as architecture-ready, 
 - [ ] Left rail entries select role-authorized workstreams/functional agents from backend capabilities and selected AuthContext.
 - [ ] Each workstream/functional agent has purpose, authority, supported user intents, surfaces, capability mappings, traces, and tests.
 - [ ] Each LLM-backed functional agent is an AI-first managed agent with a workstream expert bundle or explicit deferral covering skills, reference documents, manifests, loader authorization, `ToolPermissionBoundary`, `effects().tools(runtimeTools)` registration, traces, and tests.
-- [ ] User Admin and Agent Admin functional agents are present for full core SaaS scope, or the narrower scope explicitly defers them.
+- [ ] User Admin and Agent Admin functional agents are present for SaaS Foundation App scope, or the narrower scope explicitly defers them.
 - [ ] Internal agents are distinguished from functional agents and have governed behavior, tool boundaries, and traces.
 - [ ] Surfaces are typed renderable artifacts with schemas, allowed actions, states, and rendering tests.
 - [ ] System messages are modeled as typed surfaces, not ad hoc strings.

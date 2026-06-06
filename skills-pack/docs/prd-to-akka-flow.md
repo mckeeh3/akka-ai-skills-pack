@@ -71,7 +71,7 @@ Use the current examples in `docs/examples/` for generated-SaaS planning mechani
 
 ```text
 Read <requirements-file> and produce an Akka solution plan that starts from:
-- mandatory secure AI-first SaaS foundation and five-core app implications where applicable
+- mandatory secure AI-first SaaS foundation and five-SaaS Foundation App implications where applicable
 - one-workstream vs multi-workstream decision, affected workstreams, functional agents, attention categories, and role-specific dashboard surfaces
 - human surface graph nodes/edges, internal workstream agent graph, and governed capabilities/governed-tools with AuthContext, policy, audit/work traces, and tests
 - selected Akka substrate only after capability contracts are clear

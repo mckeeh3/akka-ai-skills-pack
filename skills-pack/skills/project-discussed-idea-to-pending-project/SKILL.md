@@ -7,7 +7,7 @@ description: Create a self-contained specs/<initiative>/ mini-project with suppo
 
 Use this skill when an idea, feature, concept, migration, remediation, review finding, or follow-up initiative for the current project has already been discussed enough to implement and should be captured as a durable mini-project under `specs/`.
 
-The target may be a downstream generated app, a fork of the secure AI-first SaaS core app, or the Akka AI skills-pack source repository itself. Preserve the target project's own source-of-truth app-description, specs, repository guidance, and runtime completion rules.
+The target may be a downstream generated app, a fork of the secure SaaS Foundation App, or the Akka AI skills-pack source repository itself. Preserve the target project's own source-of-truth app-description, specs, repository guidance, and runtime completion rules.
 
 The output is planning and queue materialization only. Do not implement the queued tasks in the same run unless the user explicitly asks to execute one task after the queue exists.
 
@@ -48,7 +48,7 @@ Prefer source artifacts that capture the actual discussion. Do not reread the wh
 
 ## Output directory shape
 
-Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Preserve generated-SaaS/full-core context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
+Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
 ## Verification loop
 
@@ -84,7 +84,7 @@ Good task boundaries:
 - one frontend surface/component family plus typecheck/tests/build;
 - one review/audit task that produces findings and follow-up queue edits.
 
-Split or block tasks that are too broad, such as "fix all skills", "make core app production ready", "migrate all UI", or "implement the whole feature".
+Split or block tasks that are too broad, such as "fix all skills", "make SaaS Foundation App production ready", "migrate all UI", or "implement the whole feature".
 
 Generated-app/reference-runtime tasks must preserve the target project runtime completion doctrine: do not mark feature work complete unless the real local runtime/API/UI path works at the stated scope, or the task is explicitly non-runtime/docs-only.
 

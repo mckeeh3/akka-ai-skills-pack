@@ -4,7 +4,7 @@ Use this as the short shared doctrine for generated secure AI-first SaaS work. F
 
 ## Source and install model
 
-- The repository root is the runnable secure AI-first SaaS core app baseline.
+- The repository root is the runnable secure SaaS Foundation App.
 - The skills install creates a harness support library under `.agents/skills/**` or `~/.agents/skills/**`.
 - Installed skills/docs/examples/templates/tools are read-only guidance for the harness; they are not target application source, app-description storage, specs, or a duplicate baseline app.
 - Target app code, `app-description/**`, `specs/**`, `frontend/**`, and `src/**` stay in the current project workspace.

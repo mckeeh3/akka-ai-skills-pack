@@ -12,8 +12,8 @@ Canonical related docs:
 A workstream visual session is browser/UI state for how a user is currently viewing a durable workstream. It does not replace durable workstream history, audit/work traces, authorization, or backend capability semantics.
 
 Current repository readiness:
-- Phase 1 Akka component-backed visual sessions are implemented in the source frontend reference and synced into the AI-first SaaS core app baseline.
-- Phase 1.1 runtime UX remediation is verified in both source and core app: request anchoring targets the actual visible workstream scroll container, background responses do not switch the selected workstream, and the left rail shows accessible unseen-response indicators that clear on workstream selection.
+- Phase 1 Akka component-backed visual sessions are implemented in the source frontend reference and synced into the SaaS Foundation App.
+- Phase 1.1 runtime UX remediation is verified in both source and SaaS Foundation App: request anchoring targets the actual visible workstream scroll container, background responses do not switch the selected workstream, and the left rail shows accessible unseen-response indicators that clear on workstream selection.
 - Contract coverage exists in root `frontend/src/workstream-visual-session.contract.test.mjs` and `frontend/src/workstream-shell.contract.test.mjs` for turn grouping, ordering, turn/surface caps, semantic snapshots, request anchoring, manual-scroll pause, per-workstream component-state restore, no background selection steal, and rail unseen-response indicators.
 - Phase 2 browser-local persistence and phase 3 backend-persisted visual sessions remain future work and must not be claimed by generated apps until implemented.
 
@@ -124,7 +124,7 @@ When limits are reached:
 
 ### Phase 1: basic Akka component-backed visual sessions
 
-Status: implemented for the source frontend reference and core app baseline.
+Status: implemented for the source frontend reference and SaaS Foundation App.
 
 Goal: get the basic UX correct without overbuilding persistence.
 
@@ -148,13 +148,13 @@ Out of scope for phase 1:
 - history compaction/summarization beyond simple turn/surface caps.
 
 Readiness notes:
-- State helpers live under `frontend/src/workstream/visual-session/**` and are exported through `frontend/src/workstream/index.ts`; the core app baseline mirrors this layout.
+- State helpers live under `frontend/src/workstream/visual-session/**` and are exported through `frontend/src/workstream/index.ts`; the SaaS Foundation App mirrors this layout.
 - The stream preserves traditional chat order and anchors the latest request item with reduced-motion-safe scrolling while response surfaces append below it.
-- Request anchoring was reverified after remediation in both the source frontend and core app baseline: composer success/error, surface-open, and surface-action flows keep the request item as the scroll target while correlated response/result surfaces append below it.
+- Request anchoring was reverified after remediation in both the source frontend and SaaS Foundation App: composer success/error, surface-open, and surface-action flows keep the request item as the scroll target while correlated response/result surfaces append below it.
 - Manual wheel, touch, and keyboard scroll input pauses automatic anchoring for the active request.
 - In-memory restore is keyed by account, selected auth context, functional agent, and workstream id where available.
 - The snapshot helper is semantic and Akka component-backed only; it intentionally does not call `localStorage`, `sessionStorage`, IndexedDB, fetch, or beacon APIs.
-- Phase 1.1 runtime UX checks are verified in the source frontend and core app baseline: the actual workstream panel is the explicit scroll container for request top anchoring, async responses for non-selected workstreams update background state without stealing focus, and role-authorized left-rail workstream entries show visual-only accessible unseen-response indicators that clear when selected.
+- Phase 1.1 runtime UX checks are verified in the source frontend and SaaS Foundation App: the actual workstream panel is the explicit scroll container for request top anchoring, async responses for non-selected workstreams update background state without stealing focus, and role-authorized left-rail workstream entries show visual-only accessible unseen-response indicators that clear when selected.
 
 ### Phase 2: browser-local persistence
 

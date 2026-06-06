@@ -1,146 +1,121 @@
-# Minimum AI-First SaaS App
+# SaaS Foundation App
 
 ## Status and purpose
 
-This is the canonical doctrine for the smallest generated AI-first SaaS core app that this skills pack may treat as a valid first implementation slice.
+This is the canonical doctrine for the **SaaS Foundation App** that ships with this repository.
 
-The core app baseline is **not a generic chatbot**. It is a bootstrap-authorized **five-core-workstream core app domain** inside the agent workstream application model. Each core workstream starts with the same first renderable response surface, `markdown_response`, usually model-authored markdown rendered as sanitized HTML.
+The SaaS Foundation App is not a throwaway starter, a demo, a generic chatbot, or a lesser readiness tier. It is the out-of-the-box runnable secure AI-first SaaS application that users clone or fork and then extend. It contains the built-in SaaS foundation domain with five role-authorized workstreams: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
 
-Use this doctrine when routing prompts such as “minimum AI-first app,” “core app,” “basic app,” “initial chatbot,” or “smallest useful generated SaaS app.” The correct interpretation is a minimal five-core workstream shell, not a casual chat application and not a full production-ready core SaaS foundation.
+Keep this file name for compatibility with existing skill references, but treat the current concept as **SaaS Foundation App**, not a legacy staging concept.
 
-## Core app baseline shape
+## Product model
 
-The core app baseline must include these parts together:
+The repository starts with a fully functional foundation domain. Downstream product work extends that app by adding business-specific domains, workstreams, surfaces, agents, governed capabilities, Akka components, frontend extensions, app-description extensions, specs, docs, and tests. The foundation domain can also be modified when the product needs it; it is simply the domain that comes out of the box.
 
 ```text
-bootstrap-authorized human user
-+ selected AuthContext
-+ role-authorized five-core-workstream core app domain
-+ bounded AI-first managed functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy
-+ configuration-driven runtime resolution, governed loader tools, ToolPermissionBoundary, and runtimeTools registration
-+ request/response timeline for each visible core workstream
-+ markdown_response structured surface
-+ durable workstream log
-+ capability boundary for backend actions and agent tools
-+ audit/work trace substrate
+SaaS Foundation App
+  built-in SaaS foundation domain
+    My Account workstream
+    User Admin workstream
+    Agent Admin workstream
+    Audit/Trace workstream
+    Governance/Policy workstream
+  + business-specific domains added by users
+    domain workstreams
+    surfaces
+    agents and tools
+    Akka components
+    frontend/app-description/spec/doc/test extensions
 ```
 
-The app shell may look chat-like: a left rail, main workstream timeline, and persistent composer. That visual shape does not make the app a chatbot. The left rail exposes role-authorized workstreams; the main panel renders durable requests, responses, capability results, traces, and structured surfaces; the composer is an input channel for the selected functional agent. My Account is one of the five required workstreams, but its launcher is the signed-in user tile/email at the bottom of the left rail; it must not be duplicated in the top workstream list.
+Users should not generate a separate parallel baseline app. They should extend the runnable repository root or a fork using merge-friendly package and extension zones.
 
-## First workstreams: five-core-workstream core app set
+## Workstream shell and surfaces
 
-The first functional agents are the **five core workstream agents**, scoped to bootstrap operation of the generated SaaS foundation:
+The app shell may look chat-like: a role-authorized workstream rail, main workstream timeline, and persistent composer. That visual shape does not make the app a chatbot.
 
-| Workstream | core app responsibility |
+A workstream is a durable interaction space owned by a functional/context-area agent. User requests, agent replies, capability results, system messages, forms, tables, decision cards, trace timelines, policy diffs, workflow status cards, and other UI payloads are rendered as **surfaces**. Surface types range from model-authored `markdown_response` to SaaS-style interactive forms, lists, detail screens, and review cards.
+
+My Account is one of the five foundation workstreams, but its launcher is the signed-in user tile/email at the bottom of the rail; it should not be duplicated as a normal top-rail workstream.
+
+## Foundation workstreams
+
+| Workstream | Responsibility |
 |---|---|
-| My Account | Explain current account, selected AuthContext, profile/settings scope, sign-out path, and safe self-service next steps. |
-| User Admin | Explain bootstrap user administration, current access, roles/capabilities, invitation/readiness gaps, and safe next steps. |
-| Agent Admin | Explain governed agent definitions, prompts, skills, manifests, model refs, tool boundaries, and deferred full-core behavior-management work. |
-| Audit/Trace | Explain available audit/work trace substrate, trace links, correlation ids, denial traces, and deferred search/investigation surfaces. |
-| Governance/Policy | Explain policy/permission concepts, approval/governance boundaries, behavior-change controls, and deferred full-core governance surfaces. |
+| My Account | Current account, selected AuthContext, profile/settings, notifications/attention, sign-out, and safe self-service. |
+| User Admin | User, membership, role, invitation, access-review, support-access, and admin-audit operations within authority boundaries. |
+| Agent Admin | Governed agent definitions, prompts, skills, references, manifests, model refs, tool boundaries, behavior editing, test consoles, and lifecycle operations. |
+| Audit/Trace | Searchable/explainable audit and work traces for identity, authz, data access, tool use, decisions, workflows, agents, denials, and investigations. |
+| Governance/Policy | Policy/permission concepts, proposals, simulations, approvals, activation/rollback, improvement governance, and outcome evidence. |
 
-In the core app each workstream may be intentionally narrow, but each must still be a real functional-agent workstream backed by an AI-first managed agent. If the workstream claims model-backed behavior, message submission must run through the governed prompt/runtime path, resolve active `AgentDefinition`/prompt/manifest/`ToolPermissionBoundary` configuration, expose governed `readSkill` and `readReferenceDoc` loader tools where assigned, register resolved tool objects with `effects().tools(runtimeTools)`, invoke a concrete Akka `Agent` component for the selected workstream, and use a configured provider boundary; service-only provider calls that bypass the Akka Agent component are not complete workstream-agent runtime. Missing provider configuration must produce a safe blocked/error surface and trace, not a deterministic canned reply. Deterministic/demo/mock/model-less workstream replies are acceptable only as explicitly named test doubles or fixture-mode development aids, never as the normal runtime path used to call the core app functional.
+Each workstream must remain role-authorized, tenant/customer scoped where applicable, traceable, and backed by backend capability checks. Prompt text, hidden frontend state, and route names cannot grant authority.
 
-Minimum responsibilities across the five core app agents:
+## Prescriptive component architecture
 
-- answer bootstrap questions within the selected workstream's known scope;
-- explain current bootstrap access, selected AuthContext, roles, visible capabilities, and unavailable/deferred capabilities;
-- guide the operator through safe next steps for completing full User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations, and full security readiness;
-- expose only established backend capabilities or read-only evidence tools;
-- deny or defer actions that require full-core features not yet implemented;
-- emit durable workstream entries and audit/work traces for requests, responses, tool use, capability checks, and denials.
+The skills pack uses an opinionated component architecture. It is intentionally prescriptive: feature intent is translated into governed capabilities and then into the defined Akka component set. This is **the way** the pack implements apps, rather than one option among many.
 
-Minimum authority:
+Use the eleven Akka component families deliberately:
 
-- bootstrap-only access, not public self-registration;
-- explicit role/capability checks for the bootstrap user and selected core workstream;
-- no autonomous privilege expansion;
-- no silent creation of tenant/customer users outside accepted bootstrap policy;
-- no prompt- or frontend-only authorization.
+1. Event Sourced Entity
+2. Key Value Entity
+3. Workflow
+4. request-based Agent
+5. Autonomous Agent
+6. View
+7. Consumer
+8. Timed Action
+9. HTTP Endpoint
+10. gRPC Endpoint
+11. MCP Endpoint
 
-## `markdown_response` as the first surface
+Capabilities and governed-tools are the bridge between product intent and components. The same components implement both business functionality and agent tools. Agents use tools only through explicit, backend-authorized capability/tool boundaries with durable traces.
 
-The core app baseline's first structured surface is `markdown_response` for **each** of the five core workstreams.
+## Required runtime semantics
 
-It is a real surface contract, not an informal chat blob. At minimum it needs:
+The SaaS Foundation App and its extensions must validate through the real local Akka/API/UI path at the stated scope.
 
-- stable surface type: `markdown_response`;
-- versioned payload containing markdown content and optional title/summary metadata;
-- rendering as sanitized HTML with unsafe HTML, scripts, event handlers, and untrusted links blocked or transformed according to the UI security policy;
-- association with workstream entry id, agent id, AuthContext, correlation id, and trace ids;
-- explicit loading, success, error, forbidden, and empty states;
-- accessibility expectations for headings, links, lists, code blocks, focus behavior, and screen-reader flow;
-- tests for sanitization, safe rendering, forbidden responses, trace links, and redaction.
-
-Richer app behavior should add typed surfaces such as tables, forms, decision cards, audit timelines, settings cards, access-review queues, policy diffs, behavior-test results, and workflow status cards. Those richer surfaces grow from the same workstream/surface/capability model rather than replacing it with page-first CRUD.
-
-## Required backend semantics
-
-A core app baseline remains a secure SaaS slice. It may defer complete full-core features, but it must not defer the backend security model.
-
-Required from the first slice:
+Required semantics:
 
 - authenticated or bootstrap-authorized identity basis;
-- local `AuthContext` with account/user identity, selected scope, roles, capabilities, and actor metadata;
-- backend authorization checks for protected workstream, surface, API, component, and tool actions;
-- tenant/customer boundary model where applicable, even if only a bootstrap tenant exists initially;
+- selected `AuthContext` with account/user identity, selected scope, roles, capabilities, and actor metadata;
+- backend authorization checks for protected workstream, surface, API, component, stream, and tool actions;
+- tenant/customer boundary model where applicable;
 - durable workstream log for requests, responses, tool/capability results, denials, and trace references;
-- audit/work trace substrate for identity, authorization, agent prompt/skill/tool use, capability checks, data access, and denials;
+- audit/work trace substrate for identity, authorization, agent prompt/skill/reference/model/tool use, capability checks, data access, and denials;
 - capability-first backend modeling before exposing browser actions, agent tools, workflows, timers, consumers, or APIs;
-- tests for allowed bootstrap access, forbidden access, disabled or missing authority where modeled, trace creation, markdown sanitization, five-core workstream availability, My Account bottom-user-tile launch behavior with no duplicate top-rail entry, and frontend secret boundaries.
+- model-backed workstream agents invoke concrete Akka `Agent` components through governed runtime configuration, active prompts/manifests/tool boundaries, registered runtime tools, provider boundary, and traces;
+- missing provider or security configuration fails closed with an actionable blocked/error surface, not a deterministic canned success;
+- test fixtures and fakes are isolated to tests or explicitly named fixture modes.
 
-Akka local execution is the production-like validation path for the core app. Minimum core app readiness requires local backend/API/UI smoke or manual validation that exercises the real runtime behavior with Akka component-backed workstream/foundation state, not only fixture rendering or mocked unit tests. Fail-closed behavior is for missing external provider/security configuration or unbound pre-runtime setup, not for replacing internal Akka persistence. Test fixtures and fakes should be named as such and isolated to tests.
+## Extension path
 
-Prompt instructions, loaded skill text, hidden UI state, and route names cannot grant authority. The backend capability contract remains authoritative.
-
-## Readiness levels
-
-Do not collapse these states.
-
-| Readiness state | Meaning | Required follow-up |
-|---|---|---|
-| Core app baseline ready | Five core workstream domain set works for bootstrap-authorized users with `markdown_response`, selected AuthContext, backend capability boundary, durable workstream log, and audit/work trace substrate. | Complete richer User Admin, Agent Admin, Audit/Trace, Governance/Policy, and My Account surfaces; invitations/onboarding; governed agent documents; and security coverage. |
-| Full core SaaS ready | The secure generated-app foundation is complete: WorkOS/AuthKit, local authorization, tenant/customer boundaries, `/api/me`, invitations with Resend/outbox, complete User Admin, Agent Admin, Audit/Trace, Governance/Policy, My Account, governed runtime agent artifacts, audit/trace search, support access, billing boundary where needed, and full security tests. | Add app-specific domain workstreams, capabilities, surfaces, and outcomes. |
-| App-specific ready | Full core SaaS foundation plus product/domain functional agents, capabilities, components, UI surfaces, tests, and operational reviews. | Continue iterative feature delivery and governed improvement. |
-
-Minimum core app readiness is intentionally useful but narrower than full-core SaaS readiness. Full-core readiness remains stricter and must not be weakened to match the core app.
-
-## Growth path
-
-Use this sequence for iterative generation:
+Use this sequence for product work:
 
 ```text
-five-core-workstream core app domain
-  bootstrap auth + markdown_response + workstream log + trace substrate
-→ fuller My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy structured surfaces and capabilities
-→ invitations/onboarding, support access, security completeness
-→ app-specific functional agents, surfaces, capabilities, and outcomes
+understand feature intent
+→ classify affected domain/workstream/surface/agent/capability
+→ define governed capability and tool boundaries
+→ select the required Akka component family or families
+→ implement backend state, behavior, endpoints/tools, traces, and tests
+→ implement or extend workstream surfaces in the shell
+→ validate through local Akka/API/UI runtime
 ```
 
-Each step must preserve capability-first backend semantics, backend authorization, audit/work traces, and tenant/customer isolation.
-
-A new app-specific workstream follows the same extension loop:
+For a new business domain:
 
 ```text
-new PRD
-→ new functional agent/workstream core app
-→ markdown_response shell
-→ prompt/skills/model refs
-→ governed capabilities
-→ richer structured surfaces
-→ Akka components/tests
+business PRD or prompt
+→ business domain model
+→ role-authorized workstreams and functional agents
+→ initial surface contracts, often markdown_response plus required structured surfaces
+→ governed capabilities and tools
+→ Akka components and tests
+→ frontend workstream shell extensions
+→ app-description/spec/doc updates
 ```
 
-Internal/background work that grows out of these workstreams should not be hidden in the request/response turn. Keep the visible workstream agent request-based for bounded user-facing responses, and launch or surface durable background work through governed capabilities backed by Akka `AutonomousAgent` when the work needs typed task lifecycle, dependencies, notifications, model-driven investigation, delegation/handoff/team coordination, evaluation/replay loops, monitoring/remediation, or cancellation/failure state. The workstream should render a typed `system_message`, progress, decision, or trace surface for the started task rather than pretending the background task completed inside the immediate `markdown_response`.
+Internal/background model-driven work should not be hidden inside an immediate request/response turn. Keep user-facing workstream turns request-based, and launch durable background work through governed capabilities backed by Akka `AutonomousAgent` when task lifecycle, dependencies, notifications, model-driven investigation, delegation/handoff/team coordination, evaluation/replay, monitoring/remediation, cancellation, or failure state matter.
 
 ## Routing implications
 
-When a user asks for the smallest useful AI-first SaaS app, route as follows:
-
-1. Apply secure AI-first SaaS interpretation.
-2. Apply this core app baseline doctrine when the request is for a core app/minimum/basic app or an initial chatbot-like shell.
-3. Treat the first runnable core app as the five-core-workstream core app domain with `markdown_response`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
-4. Model capabilities before selecting Akka components or exposing agent tools/browser actions.
-5. Record follow-up tasks for full-core SaaS readiness instead of pretending the core app baseline is complete production foundation.
-
-Do not generate a standalone chatbot, public unauthenticated assistant, or page-first CRUD admin app unless the user explicitly asks for non-SaaS reference material outside this generated-app default.
+When a user asks for a SaaS Foundation App, starter, baseline, minimum app, basic app, or chatbot-like generated SaaS shell, interpret that as the **SaaS Foundation App** unless they explicitly ask for non-SaaS reference material. The correct response is not to create a generic chatbot or parallel blank app; it is to maintain or extend the built-in five-workstream SaaS foundation domain and then add business-specific domains/workstreams as needed.

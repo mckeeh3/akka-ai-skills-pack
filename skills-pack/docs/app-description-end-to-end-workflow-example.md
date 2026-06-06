@@ -20,11 +20,11 @@ Use this together with:
 - the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md`
 - `docs/requirements-to-workstream-development-process.md`
 
-Historical domain-specific app-description examples have been removed; use current target-project app-description files and core app templates for cross-linking mechanics.
+Historical domain-specific app-description examples have been removed; use current target-project app-description files and SaaS Foundation App templates for cross-linking mechanics.
 
 ## Example context
 
-Assume the maintained `app-description/` already follows the core app-description shape and includes the five-core-workstream core app domain:
+Assume the maintained `app-description/` already follows the SaaS Foundation App description shape and includes the SaaS Foundation App domain:
 
 - `my_account` — current user's profile, context, settings, and cross-workstream attention.
 - `user_admin` — users, memberships, invitations, access review, support access, and admin audit.

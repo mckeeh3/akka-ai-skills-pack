@@ -1,15 +1,15 @@
-# AI-First SaaS Core App Domain PRD
+# AI-First SaaS SaaS Foundation App Domain PRD
 
 ## PRD role
 
-This is the machine-consumable domain PRD for the reusable AI-first SaaS core app domain. It is source input for skills-pack consumption, app-description generation, core app realization, backlog planning, and implementation review.
+This is the machine-consumable domain PRD for the reusable SaaS Foundation App domain. It is source input for skills-pack consumption, app-description generation, SaaS Foundation App realization, backlog planning, and implementation review.
 
 The document intentionally prioritizes deterministic decomposition over human narrative.
 
 ## Domain identity
 
 - **Domain id:** `ai_first_saas_core_app`
-- **Domain name:** AI-First SaaS Core App Domain
+- **Domain name:** AI-First SaaS SaaS Foundation App Domain
 - **Domain type:** mandatory generated-app foundation domain
 - **Applies to:** every generated full-stack secure AI-first SaaS app unless explicitly out of scope
 - **Primary architecture:** workstream-first authenticated application shell
@@ -57,9 +57,9 @@ Rules:
 | Workstream id | Directory | Backing functional agent | Required by | Purpose |
 |---|---|---|---|---|
 | `my_account` | `my-account-workstream/` | `functional_agent.my_account` | all generated apps | signed-in user's own account, context, profile, settings, sign out, and capability visibility |
-| `user_admin` | `user-admin-workstream/` | `functional_agent.user_admin` | all full-core generated apps; core app baseline may begin here as core app scope | users, invitations, memberships, roles/capabilities, disabled access, access review, support-access visibility |
+| `user_admin` | `user-admin-workstream/` | `functional_agent.user_admin` | all SaaS Foundation App/downstream apps; SaaS Foundation App may begin here as SaaS Foundation App scope | users, invitations, memberships, roles/capabilities, disabled access, access review, support-access visibility |
 | `agent_admin` | `agent-admin-workstream/` | `functional_agent.agent_admin` | all AI-first generated apps with governed agents | agent definitions, prompts, skills, references, manifests, tool boundaries, behavior proposals, approvals, traces |
-| `audit_trace` | `audit-trace-workstream/` | `functional_agent.audit_trace` | all full-core generated apps | searchable audit/work traces for identity, authz, data access, tool use, decisions, workflows, governance, outcomes |
+| `audit_trace` | `audit-trace-workstream/` | `functional_agent.audit_trace` | all SaaS Foundation App/downstream apps | searchable audit/work traces for identity, authz, data access, tool use, decisions, workflows, governance, outcomes |
 | `governance_policy` | `governance-policy-workstream/` | `functional_agent.governance_policy` | generated apps with policies, prompts, thresholds, approval gates, or behavior changes | policies, approval rules, simulations, proposals, learning, governed activation/rollback |
 
 ## Shared actors and authority

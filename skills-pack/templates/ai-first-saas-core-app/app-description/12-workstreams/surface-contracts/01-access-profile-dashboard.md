@@ -25,8 +25,8 @@ Payload must include:
 |---|---|---|---|
 | Refresh dashboard | `account.dashboard.read` | browser-tool, agent-tool | update `my-account-dashboard` |
 | Select AuthContext | `account.context.select` | browser-tool | dashboard refresh or `system_message` denial |
-| Open profile | `account.profile.read` | browser-tool surface-request | profile/settings surface or `markdown_response` core app fallback |
-| Open settings | `account.settings.read` | browser-tool surface-request | settings surface or `markdown_response` core app fallback |
+| Open profile | `account.profile.read` | browser-tool surface-request | profile/settings surface or `markdown_response` SaaS Foundation App fallback |
+| Open settings | `account.settings.read` | browser-tool surface-request | settings surface or `markdown_response` SaaS Foundation App fallback |
 | Open attention item | `workstream.attention.open` | browser-tool surface-request | target workstream/surface item |
 | Open target workstream | `workstream.open` | browser-tool surface-request | target dashboard or denial `system_message` |
 | Open trace | `audit.traces.view` | browser-tool, agent-tool | `audit-trace-explorer` |

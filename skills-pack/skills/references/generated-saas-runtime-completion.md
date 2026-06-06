@@ -1,6 +1,6 @@
 # Generated SaaS runtime completion doctrine
 
-A generated-app or core-app feature is complete only when the real local runtime path works at the stated scope.
+A generated-app or SaaS Foundation App feature is complete only when the real local runtime path works at the stated scope.
 
 For model-backed workstream behavior, normal message submission must invoke a concrete Akka `Agent` component through the governed runtime path:
 

@@ -34,7 +34,7 @@ Read these first if present:
 - activation, deprecation, archival, rollback, or immutable snapshots
 - approved prompt version, approved skill version, policy version, rubric version, or reference-example version
 - content checksum, provenance, author/reviewer, secret scanning, or change rationale
-- default-content provenance, default first versions, first-install document setup, tenant bootstrap, core app prompts/skills, or implementation-defined behavior defaults
+- default-content provenance, default first versions, first-install document setup, tenant bootstrap, SaaS Foundation App prompts/skills, or implementation-defined behavior defaults
 - agent-mediated prompt, skill, manifest, tool-boundary, policy, rubric, or example maintenance
 - an `AgentBehaviorEditorAgent`, editing agent, proposed diff, draft version, or review/approval flow for behavior changes
 

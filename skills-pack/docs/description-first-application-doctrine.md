@@ -202,7 +202,7 @@ The harness answers from its analysis of description changes, implementation dif
 
 This doctrine rejects the following assumptions:
 - source code alone is the ultimate definition of the app
-- generated implementation artifacts are disposable by default in existing core-app repositories
+- generated implementation artifacts are disposable by default in existing SaaS Foundation App repositories
 - app-description artifacts should drift behind implementation changes
 - internal description artifacts should be optimized primarily for human reading
 - full regeneration is required for conceptual correctness

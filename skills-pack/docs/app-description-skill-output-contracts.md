@@ -6,7 +6,7 @@ Use this shared reference to keep app-description skills short. Focused skills s
 
 A bootstrap output creates the smallest authoritative `app-description/**` tree that can be maintained safely. For generated SaaS, it should include or explicitly defer:
 
-- `00-system/app-manifest.md`, `readiness-status.md`, and `generation-policy.md` with scope label (`core app baseline`, `full core`, `Module 1-only / not full core`, or named narrower scope);
+- `00-system/app-manifest.md`, `readiness-status.md`, and `generation-policy.md` with scope label (`SaaS Foundation App maintenance/extension`, `business-domain extension`, app-specific feature, or named narrower scope);
 - `10-capabilities/**` with secure SaaS foundation plus primary app capabilities;
 - `12-workstreams/**` with functional agents, attention/dashboard model, internal-agent candidates, surfaces index, and surface contracts;
 - `15-operating-model/**` for goals, authority, policies, decisions, traces, and outcomes when AI-first operation is in scope;
@@ -19,14 +19,14 @@ Use `templates/ai-first-saas-core-app/app-description/**` and the target project
 
 A readiness assessment must report:
 
-- scope label and whether full-core gates apply;
+- scope label: SaaS Foundation App maintenance/extension, business-domain extension, app-specific feature, or named narrower scope;
 - overall state: `ready`, `ready-with-assumptions`, `not-ready`, or `blocked`;
 - blocking gaps by layer: foundation/security, workstreams/surfaces, capabilities/tools, behavior, tests, observability/traces, UI, realization map;
 - assumptions that are acceptable for the declared scope;
 - unsafe assumptions that must become pending questions or description updates;
 - recommended next skill or action.
 
-Full-core readiness is blocked unless the description covers My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitation onboarding, user administration, governed runtime agents, workstream UI, and acceptance/security/agent-governance/frontend tests. Narrower scopes must name every omitted full-core area.
+SaaS Foundation App readiness requires the built-in foundation domain semantics needed for the requested change: My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitation/onboarding, user administration, governed runtime agents, workstream UI, and acceptance/security/agent-governance/frontend tests where those areas are in scope. Narrower scopes must name every omitted area and must not claim omitted behavior is ready.
 
 ## Delta modeling contract
 

@@ -51,7 +51,7 @@ If the agent-facing operation should compose multiple component calls, hide comp
 
 ## Repository example
 
-The current curated core-app examples use a safer facade pattern for governed runtime loader tools:
+The current curated SaaS Foundation App examples use a safer facade pattern for governed runtime loader tools:
 
 - `AgentRuntimeLoaderTools`
   - exposes request-scoped `@FunctionTool` methods such as governed skill/reference loading

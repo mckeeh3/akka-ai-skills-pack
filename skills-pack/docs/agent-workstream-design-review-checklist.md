@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Use this checklist when reviewing generated full-stack AI-first SaaS doctrine, skills, app descriptions, specs, examples, core app baselines, and generation guidance. It is a compact guardrail for keeping design content aligned with the canonical workstream graph and governed-tool model.
+Use this checklist when reviewing generated full-stack AI-first SaaS doctrine, skills, app descriptions, specs, examples, SaaS Foundation Apps, and generation guidance. It is a compact guardrail for keeping design content aligned with the canonical workstream graph and governed-tool model.
 
 Canonical model:
 
@@ -26,7 +26,7 @@ secure SaaS foundation
 - [ ] Incremental feature requests, fixes, revised PRDs, manual test findings, and support issues reconcile against existing workstream graphs instead of creating parallel duplicate workstreams, surfaces, or governed-tools.
 - [ ] Authenticated consequential work areas are modeled first as role-authorized functional/context-area agents, not as pages, screens, CRUD modules, generic dashboards, or chat sessions.
 - [ ] First use defines the alias `functional/context-area agent`; later use may shorten to `functional agent`.
-- [ ] Full core SaaS scope includes My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, and required governance/admin surfaces, or explicitly records a narrower deferred scope.
+- [ ] SaaS Foundation App scope includes My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, and required governance/admin surfaces, or explicitly records a narrower deferred scope.
 
 ### Role-specific dashboard surfaces and attention
 

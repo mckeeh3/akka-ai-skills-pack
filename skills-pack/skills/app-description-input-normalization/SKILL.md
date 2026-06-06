@@ -27,7 +27,7 @@ Read these first if present:
 - `../README.md`
 - `../docs/description-first-application-doctrine.md`
 - `../docs/requirements-to-workstream-development-process.md` for the canonical input/PRD → workstreams → attention → dashboards → surfaces/actions → capabilities → Akka substrate process
-- `../docs/minimum-ai-first-saas-app.md` for minimum/core app/basic/chatbot-like generated SaaS scope: five-core-workstream core app domain with `markdown_response`, not a generic chatbot or single-workstream slice
+- `../docs/minimum-ai-first-saas-app.md` for SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS scope: SaaS Foundation App domain with `markdown_response`, not a generic chatbot or single-workstream slice
 - `../docs/agent-workstream-application-architecture.md` for functional-agent workstream semantics
 - `../docs/structured-surface-contracts.md` for surface/action contracts
 - `../docs/capability-first-backend-architecture.md` for capability contract fields and exposure-surface semantics
@@ -44,7 +44,7 @@ Prefer these current generated-SaaS references when present:
 - target project path: app-description/10-capabilities/01-secure-tenant-user-foundation.md
 - target project path: app-description/55-ui/ui-index.md
 
-Use current target-project app-description files and core app templates for normalization or cross-linking mechanics; do not depend on removed historical domain examples.
+Use current target-project app-description files and SaaS Foundation App templates for normalization or cross-linking mechanics; do not depend on removed historical domain examples.
 
 ## Use this skill when
 

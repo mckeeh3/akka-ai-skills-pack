@@ -31,7 +31,7 @@ Read these first if present:
 - Notifications are for live updates, not replay of history.
 
 Current repository note:
-- The core app example snapshot does not currently include an EventSourcedEntity notification stream. Use the Akka SDK docs as the source of truth and add target-project examples only when a feature needs live ESE updates.
+- The SaaS Foundation App example snapshot does not currently include an EventSourcedEntity notification stream. Use the Akka SDK docs as the source of truth and add target-project examples only when a feature needs live ESE updates.
 
 ## Endpoint rules
 
@@ -49,7 +49,7 @@ Related repository example:
 At minimum, test that published messages happen after successful command handling.
 
 Testing note:
-- Add a focused target-project test that captures a stub `NotificationPublisher` and asserts events are published only after successful persistence. The current core app example snapshot does not include this ESE notification test.
+- Add a focused target-project test that captures a stub `NotificationPublisher` and asserts events are published only after successful persistence. The current SaaS Foundation App example snapshot does not include this ESE notification test.
 
 ## Generated SaaS checks
 

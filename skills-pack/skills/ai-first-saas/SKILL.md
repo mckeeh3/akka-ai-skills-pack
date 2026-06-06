@@ -40,7 +40,7 @@ Read these first when using this skill:
 - `../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app routing
 - `../docs/structured-surface-contracts.md` when surfaces or surface actions need implementation-ready contracts
 
-For minimum, core app, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../docs/minimum-ai-first-saas-app.md` before applying the anti-chatbot and core app baseline rule.
+For minimum, SaaS Foundation App, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../docs/minimum-ai-first-saas-app.md` before applying the anti-chatbot and SaaS Foundation App rule.
 
 For description-first work, also read the app-description docs named by `skills/README.md`.
 For generated SaaS foundations, also load `../ai-first-saas-admin-agents/SKILL.md` for mandatory AI-assisted admin offload. For direct Akka implementation, load only the focused Stage 3 skills after the functional-agent/workstream/surface model and capability contracts have selected the substrate components.
@@ -68,13 +68,13 @@ Do not force every AI-first pattern when the task is clearly:
 
 Even when this skill is used, apply only the AI-first patterns justified by the product intent, while keeping the `core-saas-foundation` mandatory for generated SaaS apps.
 
-## Anti-chatbot and core app baseline rule
+## Anti-chatbot and SaaS Foundation App rule
 
 Do not treat an AI-first app as a chatbot bolted onto CRUD.
 
 Conversation can collect intent or explain status, but consequential work should resolve into durable, inspectable objects such as goals, plans, tasks, policies, decisions, approvals, traces, and outcomes.
 
-When the user asks for a “minimum AI-first app,” “core app,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS, load `../docs/minimum-ai-first-saas-app.md` and route to a bootstrap-authorized **five-core-workstream core app domain** shell: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, each with the `markdown_response` structured surface. Do not start with a generic public chatbot, unauthenticated assistant, or page-first CRUD console unless the user explicitly asks for non-SaaS reference material. Preserve capability-first backend modeling before choosing Akka components or exposing browser actions/agent tools.
+When the user asks for a “minimum AI-first app,” “SaaS Foundation App,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS, load `../docs/minimum-ai-first-saas-app.md` and route to a bootstrap-authorized **SaaS Foundation App domain** shell: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, each with the `markdown_response` structured surface. Do not start with a generic public chatbot, unauthenticated assistant, or page-first CRUD console unless the user explicitly asks for non-SaaS reference material. Preserve capability-first backend modeling before choosing Akka components or exposing browser actions/agent tools.
 
 ## Interpretation workflow
 
@@ -125,7 +125,7 @@ Prefer mechanically enforced permissions and versioned policy records over promp
 
 ### 5. Choose the downstream operating path
 
-For generated full-stack SaaS apps, load or apply `agent-workstream-apps` before downstream description, decomposition, PRD/backlog, capability, or implementation work so the handoff contains an explicit inventory of functional agents, any internal agents, initial workstreams, structured surfaces, surface action-to-capability candidates, and downstream skills to load. Load `core-saas-foundation` alongside that model to ensure Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline work is represented as mandatory foundation verticals rather than as optional object lists. For minimum/core app/basic/chatbot-like generated SaaS requests, that inventory starts with the five-core-workstream core app domain—My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy—with bounded bootstrap authority, `markdown_response`, durable workstream log, audit/work trace substrate, and follow-up gates for full-core readiness. When core user administration is in scope for a generated SaaS app, load `ai-first-saas-admin-agents` so AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and approval boundaries are planned before domain work. Then route based on what the user is asking for:
+For generated full-stack SaaS apps, load or apply `agent-workstream-apps` before downstream description, decomposition, PRD/backlog, capability, or implementation work so the handoff contains an explicit inventory of functional agents, any internal agents, initial workstreams, structured surfaces, surface action-to-capability candidates, and downstream skills to load. Load `core-saas-foundation` alongside that model to ensure Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline work is represented as mandatory foundation verticals rather than as optional object lists. For SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS requests, that inventory starts with the SaaS Foundation App domain—My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy—with bounded authority, structured surfaces, durable workstream log, audit/work trace substrate, and explicit extension seams. When core user administration is in scope for a generated SaaS app, load `ai-first-saas-admin-agents` so AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and approval boundaries are planned before domain work. Then route based on what the user is asking for:
 
 - Use `app-descriptions` when the user wants to describe, review, revise, or maintain the authoritative application description before generation, preserving functional agents, surfaces, capabilities, and horizontal Akka implementation notes.
 - Use `capability-first-backend` when surface actions, governed-tools, agent-tools, browser-tools, workflow steps, APIs, timers, consumers, or internal operations need governed backend contracts.

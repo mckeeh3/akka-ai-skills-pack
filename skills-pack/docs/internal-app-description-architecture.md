@@ -42,8 +42,8 @@ app-description/
 The exact root name may vary by project, but the harness should prefer one stable root rather than scattering description artifacts arbitrarily.
 
 Reference examples:
-- canonical core app-description baseline: the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md`
-- core app templates under `templates/ai-first-saas-core-app/app-description/**` for source-controlled cross-linking examples
+- canonical SaaS Foundation App description: the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md`
+- SaaS Foundation App templates under `templates/ai-first-saas-core-app/app-description/**` for source-controlled cross-linking examples
 
 ## Architecture goals
 
@@ -187,11 +187,11 @@ Should include:
 Stores the current readiness posture.
 Should include:
 - current state: `not-ready`, `ready-with-assumptions`, or `ready`
-- readiness scope when relevant: `core app baseline`, `full core`, `app-specific`, or another accepted narrower scope
+- readiness scope when relevant: `SaaS Foundation App`, `business-domain extension`, `app-specific`, or another accepted narrower scope
 - decisive reasons
 - blocking gaps
 - accepted assumptions
-- explicit follow-up gaps when a core app baseline is ready but full-core SaaS readiness is not yet complete
+- explicit follow-up gaps when any requested foundation-domain or business-domain behavior is intentionally deferred
 - last readiness update basis
 
 ### `generation-policy.md`
@@ -206,7 +206,7 @@ Should include:
 ## `10-capabilities/`
 Business capability inventory and governed backend capability contracts.
 
-For generated SaaS apps, the first capability must be `01-secure-tenant-user-foundation.md`, covering Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary, and tenant/customer isolation before app-specific capabilities. For `core app baseline`, this capability may be intentionally narrow but must still include bootstrap-authorized identity, selected AuthContext, backend authorization checks, five-core-workstream core app domain capability boundaries for read/explain/deny behavior, durable workstream log requirements, audit/work trace substrate, and explicit full-core follow-up gaps.
+For generated SaaS apps, the first capability is the secure tenant/user foundation: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary where relevant, and tenant/customer isolation before app-specific capabilities. In this repository that foundation is represented by the SaaS Foundation App domain and may be extended or modified in place; app-description changes must preserve selected AuthContext, backend authorization checks, capability boundaries, durable workstream logs, audit/work traces, and explicit follow-up gaps for deferred behavior.
 
 This layer answers:
 - what business or user-visible capabilities exist?
@@ -353,7 +353,7 @@ This layer answers:
 - what accessibility and responsive behavior is required
 - which visual style guide is selected, including light/dark policy, CSS tokens, layout density, component styling, and brand adaptations for generated HTML/CSS/TypeScript
 
-Canonical generated SaaS `55-ui/` files are the file set shown in the default directory layout above. They mirror the current core app-description template and the `app-description-ui` skill. `12-workstreams/` remains authoritative for functional agents, internal agents, durable workstreams, surface contracts, placement, capability mappings, traces, and tests; `55-ui/` must link to those artifacts rather than redefining them. Managed-agent browser files (`agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, and `edit-agent-proposals-and-traces.md`) are mandatory for `full core` generated SaaS scope. They may be omitted or marked deferred only when `00-system/app-manifest.md`, `readiness-status.md`, and `generation-policy.md` explicitly label a narrower scope such as `Module 1-only / not full core`.
+Canonical generated SaaS `55-ui/` files are the file set shown in the default directory layout above. They mirror the current SaaS Foundation App description template and the `app-description-ui` skill. `12-workstreams/` remains authoritative for functional agents, internal agents, durable workstreams, surface contracts, placement, capability mappings, traces, and tests; `55-ui/` must link to those artifacts rather than redefining them. Managed-agent browser files (`agent-catalog-and-detail.md`, `prompt-and-skill-governance.md`, `skill-manifests-and-tool-permissions.md`, and `edit-agent-proposals-and-traces.md`) belong to the SaaS Foundation App domain unless a task explicitly narrows or removes that managed-agent surface area.
 
 ## `60-generation/`
 Realization policy and output mapping.
@@ -607,23 +607,23 @@ app-description/
     workstream-panel-and-composer.md
     structured-surface-rendering.md
     routes-and-deep-links.md
-    agent-catalog-and-detail.md          # required for full core; explicit deferral allowed only for narrower scope
-    prompt-and-skill-governance.md       # required for full core; explicit deferral allowed only for narrower scope
-    skill-manifests-and-tool-permissions.md # required for full core; explicit deferral allowed only for narrower scope
-    edit-agent-proposals-and-traces.md   # required for full core; explicit deferral allowed only for narrower scope
+    agent-catalog-and-detail.md          # required for SaaS Foundation App; explicit deferral allowed only for narrower scope
+    prompt-and-skill-governance.md       # required for SaaS Foundation App; explicit deferral allowed only for narrower scope
+    skill-manifests-and-tool-permissions.md # required for SaaS Foundation App; explicit deferral allowed only for narrower scope
+    edit-agent-proposals-and-traces.md   # required for SaaS Foundation App; explicit deferral allowed only for narrower scope
     style-guide.md
 ```
 
 Then expand into the full structure as complexity grows. For generated AI-first SaaS, even a very small project is full-stack and must include a browser UI description.
 
-For the canonical `core app baseline`, the small tree must additionally make these semantics explicit, even if they live in the compact files above rather than in many separate files:
-- `12-workstreams/functional-agents.md` names the five-core-workstream core app domain functional agents — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — not a generic chatbot or single-workstream substitute.
-- `12-workstreams/surfaces-index.md` and/or `surface-contracts/01-markdown-response.md` define `markdown_response` as a typed, sanitized, trace-linked structured surface, and identify any role-specific dashboard surface semantics used by the core app.
-- `12-workstreams/` records the initial human surface graph and any intentionally deferred internal workstream agent graph or workstream expertise details instead of leaving them implicit.
-- `20-behavior/flows/01-secure-foundation-access-flow.md` or equivalent records bootstrap auth, selected AuthContext, request/response timeline, denials, and follow-up handoff behavior.
-- `40-auth-security/` records bootstrap-only access, no public self-registration, backend authorization for every protected workstream/API/tool/action, and no prompt- or frontend-only authority.
+For the canonical `SaaS Foundation App`, the tree must additionally make these semantics explicit, even if they live in compact files rather than many separate files:
+- `12-workstreams/functional-agents.md` names the SaaS Foundation App domain functional agents — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — not a generic chatbot or single-workstream substitute.
+- `12-workstreams/surfaces-index.md` and/or `surface-contracts/01-markdown-response.md` define `markdown_response` as a typed, sanitized, trace-linked structured surface, and identify any role-specific dashboard surface semantics used by the SaaS Foundation App.
+- `12-workstreams/` records the human surface graph, internal workstream agent graph, workstream expertise, and any explicitly deferred behavior instead of leaving them implicit.
+- `20-behavior/flows/01-secure-foundation-access-flow.md` or equivalent records auth, selected AuthContext, request/response timeline, denials, and follow-up handoff behavior.
+- `40-auth-security/` records backend authorization for every protected workstream/API/tool/action and no prompt- or frontend-only authority.
 - `50-observability/` records durable workstream log and audit/work trace expectations for requests, responses, tool/capability checks, denials, and trace references.
-- `00-system/readiness-status.md` and `generation-policy.md` state that the core app can be core-baseline ready while still not full-core ready, and list the deferred full User Admin, Agent Admin, Audit/Trace UI, invitations/onboarding, governed behavior documents, and security coverage work.
+- `00-system/readiness-status.md` and `generation-policy.md` state the current SaaS Foundation App scope and list any intentionally deferred foundation-domain or business-domain work.
 
 ## Operating rule
 

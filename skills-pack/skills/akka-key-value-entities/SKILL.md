@@ -70,7 +70,7 @@ For ESE vs KVE choice questions, also read:
 
 ## Default package layout
 
-Use the fixed Java base package `ai.first` for this core-app-first repository and downstream generated code. Keep package declarations, imports, tests, and source paths under `ai.first`; do not infer package names from examples.
+Use the fixed Java base package `ai.first` for this SaaS Foundation App repository and downstream generated code. Keep package declarations, imports, tests, and source paths under `ai.first`; do not infer package names from examples.
 
 Typical layer paths are:
 - `<base>.domain`

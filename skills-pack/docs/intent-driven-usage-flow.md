@@ -10,7 +10,7 @@ Use this flow when a user provides a PRD, requirements doc, feature request, fix
 
 2. **Apply the secure AI-first SaaS default**
    - For generated applications, begin from the mandatory secure SaaS foundation unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material.
-   - Minimum/basic/core app/chatbot-like generated SaaS requests mean the five-core-workstream core app domain: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
+   - Minimum/basic/SaaS Foundation App/chatbot-like generated SaaS requests mean the SaaS Foundation App domain: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
    - Use `../docs/minimum-ai-first-saas-app.md`, `../docs/ai-first-saas-application-architecture.md`, and `../docs/agent-workstream-application-architecture.md` for foundation doctrine.
 
 3. **Model the application as workstreams before pages or components**

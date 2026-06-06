@@ -1,6 +1,6 @@
 # AutonomousAgent worker runtime pattern
 
-Use this pattern for generated secure AI-first SaaS workstreams that need durable internal/background model-driven work with a real Akka `AutonomousAgent` task lifecycle. It is extracted from the core app User Admin access-review worker, Agent Admin prompt-risk review worker, Audit/Trace summary worker, Governance/Policy impact-analysis worker, and My Account personal attention digest worker.
+Use this pattern for generated secure AI-first SaaS workstreams that need durable internal/background model-driven work with a real Akka `AutonomousAgent` task lifecycle. It is extracted from the SaaS Foundation App User Admin access-review worker, Agent Admin prompt-risk review worker, Audit/Trace summary worker, Governance/Policy impact-analysis worker, and My Account personal attention digest worker.
 
 This is a runtime completion pattern, not only a design pattern: a worker is done only when the normal local runtime path starts and observes a concrete Akka `AutonomousAgent` task, projects backend-owned state, emits workstream events/attention, renders governed surfaces, and fails closed when provider or governed runtime configuration is missing.
 
@@ -24,7 +24,7 @@ Every generated-app worker task must preserve these contracts before coding star
 | Governed capabilities | Capability family for start/read/cancel/accept/reject or task-specific equivalents, governed-tool ids, actor/caller, `AuthContext`, tenant/customer scope, required roles/capabilities, idempotency key, policy/approval rules, audit/work traces, and exposure channels. |
 | Task contract | Typed task input, task name/description, instruction builder inputs, result schema, result rules, max iterations, evidence/tool references, forbidden effects, and browser-safe summary fields. |
 | Runtime boundary | ComponentClient start/read calls, governed managed-agent runtime resolution, model/provider/profile checks, `ToolPermissionBoundary` checks, authorized read-only evidence tools, `readSkill`/`readReferenceDoc` grants when needed, trace refs, and fail-closed adapter behavior. |
-| Durable projection | Core app/domain task id, optional Akka autonomous task id, status/progress/result/blocker fields, correlation/idempotency keys, source refs, and terminal human disposition. |
+| Durable projection | SaaS Foundation App/domain task id, optional Akka autonomous task id, status/progress/result/blocker fields, correlation/idempotency keys, source refs, and terminal human disposition. |
 | Events/attention/surfaces | typed workstream events, shared `worker.task.*` events, attention upsert/resolve rules, structured progress/result surfaces, capability-backed actions, and frontend reload from backend projections. |
 | Tests/checks | Unit/integration tests for lifecycle, authorization, idempotency, fail-closed states, typed result validation, event/attention projection, surface/API contracts, and focused scans for fake-success regressions. |
 
@@ -84,7 +84,7 @@ Use these shared event names unless a future contract explicitly supersedes them
 - `worker.task.accepted`
 - `worker.task.rejected_result`
 
-Source refs should include the domain/core app task id, Akka autonomous task id when available, producing capability id, idempotency key, event id, tenant/customer scope, evidence refs, and prompt/skill/reference/model/tool/audit trace refs. Events and projections must be idempotent.
+Source refs should include the domain/SaaS Foundation App task id, Akka autonomous task id when available, producing capability id, idempotency key, event id, tenant/customer scope, evidence refs, and prompt/skill/reference/model/tool/audit trace refs. Events and projections must be idempotent.
 
 ## Attention rules
 

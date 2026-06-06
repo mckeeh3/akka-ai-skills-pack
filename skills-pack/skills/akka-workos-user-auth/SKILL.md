@@ -151,7 +151,7 @@ The resolver must:
 - read email from `email`, `preferred_username`, or `username` when present;
 - read display name from `name`, `given_name`, or `nickname` when present;
 - when subject exists but email is missing, call the WorkOS user-management API server-side with backend-only `WORKOS_API_KEY` and optional `WORKOS_API_BASE_URL`;
-- cache successful local/core app profile lookups through Akka components;
+- cache successful local/SaaS Foundation App profile lookups through Akka components;
 - never expose or log `WORKOS_API_KEY`;
 - return only resolved identity data, leaving local Akka account/membership/invitation checks authoritative.
 

@@ -32,7 +32,7 @@ gRPC endpoint tests should:
 
 ## Target-project patterns
 
-The current curated core-app examples do not include gRPC runtime fixtures. Do not cite retired workstream-event gRPC classes as current repository examples. Implement these shapes in the target project when gRPC is in scope.
+The current curated SaaS Foundation App examples do not include gRPC runtime fixtures. Do not cite retired workstream-event gRPC classes as current repository examples. Implement these shapes in the target project when gRPC is in scope.
 
 ### Unary endpoint tests
 - protobuf request-to-command mapping

@@ -86,7 +86,7 @@ Recommended fields:
 
 ### Invoice / Payment Reference
 
-The core app may store provider references and summary status, while the payment provider remains the financial system of record.
+The SaaS Foundation App may store provider references and summary status, while the payment provider remains the financial system of record.
 
 Recommended fields:
 - `invoiceId`

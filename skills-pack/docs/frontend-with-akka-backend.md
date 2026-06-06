@@ -203,7 +203,7 @@ http://localhost:9000/#/admin/users
 
 where each route returns `index.html`, or
 
-3. keep navigation state inside the SPA, as the core app does.
+3. keep navigation state inside the SPA, as the SaaS Foundation App does.
 
 The current frontend uses internal React state for navigation rather than browser path routing.
 

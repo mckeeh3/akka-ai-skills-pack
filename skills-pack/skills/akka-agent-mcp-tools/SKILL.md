@@ -40,7 +40,7 @@ Read these first if present:
 
 ## Repository example status
 
-The current core app example snapshot does not include MCP runtime examples. Do not cite retired MCP fixture class names as current repository examples.
+The current SaaS Foundation App example snapshot does not include MCP runtime examples. Do not cite retired MCP fixture class names as current repository examples.
 
 When implementing this pattern in a target project, create target-specific examples that:
 - expose only the selected read-only summary or governed action tool ids;

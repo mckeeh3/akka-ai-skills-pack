@@ -82,7 +82,7 @@ If the user provided a PRD/requirements file, read it completely before writing 
 
 ## Extraction order for PRD input
 
-Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Preserve generated-SaaS/full-core context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
+Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
 ## Sizing rules
 
@@ -117,7 +117,7 @@ For generated-app implementation tasks, link `../references/generated-saas-runti
 
 - Writing specs before reading the PRD and existing queue state.
 - Component-first or page-first plans that skip workstreams/surfaces/capabilities.
-- Collapsing full-core into a vague “foundation” task.
+- Collapsing SaaS Foundation App into a vague “foundation” task.
 - Creating giant backlog items that cannot be executed in one harness session.
 - Regenerating queues and losing IDs/status/history.
 - Treating `.agents/skills` assets as writable application source.

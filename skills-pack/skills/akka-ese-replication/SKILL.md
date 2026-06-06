@@ -23,7 +23,7 @@ Use:
 - `Effect<T>` for strongly consistent reads that should route to the primary region
 
 Current repository note:
-- The core app example snapshot does not currently include a replicated EventSourcedEntity read-consistency example. Use the Akka SDK docs as the source of truth and name any new example from the target project after adding it.
+- The SaaS Foundation App example snapshot does not currently include a replicated EventSourcedEntity read-consistency example. Use the Akka SDK docs as the source of truth and name any new example from the target project after adding it.
 
 ## Replication filter pattern
 
@@ -34,7 +34,7 @@ When the task explicitly needs replication filtering:
 - reply after the filter update effect
 
 Current repository note:
-- The core app example snapshot does not currently include replication-filter handlers. Add target-project examples only when the task explicitly needs multi-region filtering.
+- The SaaS Foundation App example snapshot does not currently include replication-filter handlers. Add target-project examples only when the task explicitly needs multi-region filtering.
 
 ## Endpoint guidance
 
@@ -44,7 +44,7 @@ If exposing replication behavior through HTTP:
 - map outcomes to clear API responses
 
 Current repository note:
-- The core app example snapshot does not currently expose replication-filter HTTP endpoints. Keep endpoint names target-specific and document the consistency/filtering behavior in the capability contract.
+- The SaaS Foundation App example snapshot does not currently expose replication-filter HTTP endpoints. Keep endpoint names target-specific and document the consistency/filtering behavior in the capability contract.
 
 ## Testing guidance
 
@@ -55,7 +55,7 @@ Cover:
 - request validation at endpoint or entity layer as appropriate
 
 Testing note:
-- The core app example snapshot does not currently include replication-specific tests. Add focused target-project tests for strongly consistent read command shape, region validation, and endpoint mapping when implementing this pattern.
+- The SaaS Foundation App example snapshot does not currently include replication-specific tests. Add focused target-project tests for strongly consistent read command shape, region validation, and endpoint mapping when implementing this pattern.
 
 ## Generated SaaS checks
 

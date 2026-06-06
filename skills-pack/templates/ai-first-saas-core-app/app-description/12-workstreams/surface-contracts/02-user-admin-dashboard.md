@@ -26,9 +26,9 @@ Payload must include:
 | Refresh dashboard | `admin.users.dashboard.read` | browser-tool, agent-tool | update `user-admin-dashboard` |
 | Open invitation queue | `admin.users.search` | browser-tool surface-request | `user-admin-user-list[filter=invitations]` |
 | Open access review queue | `admin.access_review.read` | browser-tool surface-request | `user-admin-user-list[filter=access_review]` or `decision-card` |
-| Start access-risk investigation | `admin.access_review.investigate` | browser-tool, internal-tool | autonomous task progress/result surface or `system_message` core app fallback |
+| Start access-risk investigation | `admin.access_review.investigate` | browser-tool, internal-tool | autonomous task progress/result surface or `system_message` SaaS Foundation App fallback |
 | Open audit evidence | `admin.audit.read` / `audit.traces.view` | browser-tool, agent-tool | `audit-trace-explorer` |
-| Draft invitation | `admin.invitations.draft` | browser-tool, agent-tool | invite form/decision card or `system_message` core app fallback |
+| Draft invitation | `admin.invitations.draft` | browser-tool, agent-tool | invite form/decision card or `system_message` SaaS Foundation App fallback |
 
 ## UI states
 

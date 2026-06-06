@@ -12,7 +12,7 @@ Companion docs:
 |---|---|
 | SaaS Owner | The platform operator that sells and operates the SaaS product. |
 | Tenant | The SaaS user organization that subscribes to the platform and uses it to serve its own customers. This is the canonical internal/architectural term for “SaaS user.” |
-| Customer | An organization served by a Tenant through app-specific online services. Customers always start as organizations in the core app model. |
+| Customer | An organization served by a Tenant through app-specific online services. Customers always start as organizations in the SaaS Foundation App model. |
 | Account | A local Akka-owned authorization record linked to a WorkOS-authenticated human identity. |
 | User Profile | Human-facing account information and scoped profile attributes shown in the application, separate from authentication and authorization facts. |
 | User Settings | User-controlled preferences that affect application experience, such as UI appearance, without changing authorization. |
@@ -73,7 +73,7 @@ The same human/email may have separate local accounts or memberships at multiple
 
 ## AI-first expectations for the core foundation
 
-The core app foundation should validate the broader AI-first architecture by using core administrative work as real AI-first product behavior, not only as CRUD.
+The SaaS Foundation App should validate the broader AI-first architecture by using core administrative work as real AI-first product behavior, not only as CRUD.
 
 Core AI-first features must include:
 
@@ -111,26 +111,26 @@ Example AI-first core scenarios:
 | Policy gates and approvals | Workflows plus decision-card records and audit events. |
 | Browser APIs | JWT-protected HTTP endpoints using WorkOS authentication and Akka-owned authorization state. |
 
-## Initial implementation slices
+## Initial implementation and extension slices
 
-### Slice 0: core app baseline
+### SaaS Foundation App domain
 
-Use Slice 0 only when the requested target is the smallest valid generated AI-first SaaS app, core app, or chatbot-like bootstrap shell. Slice 0 is the **five-core-workstream core app domain** defined in `minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with `markdown_response` surfaces. It is not full-core readiness, a User-Admin-only slice, or a generic public chatbot.
+Use the SaaS Foundation App domain when the requested target is the repository's out-of-the-box foundation app, a starter/basic generated SaaS app, or a chatbot-like bootstrap shell. The domain is defined in `minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. It is not a User-Admin-only slice, a generic public chatbot, or a separate parallel baseline app.
 
-Slice 0 must include all of these together:
+The SaaS Foundation App domain must include all of these together:
 
 - bootstrap-authorized human user only; no public self-registration and no prompt- or UI-only privilege grant;
 - selected local `AuthContext` containing account/user identity, bootstrap scope, roles/capabilities, tenant/customer boundary when applicable, and actor metadata;
 - role/capability checks for protected workstream, surface, API, component, and agent-tool actions;
-- bounded core functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy that answer and guide within established bootstrap scope, deny or defer unsupported full-core actions, and never expand privileges autonomously;
+- bounded core functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy that answer and guide within established bootstrap scope, deny or defer unsupported SaaS Foundation App actions, and never expand privileges autonomously;
 - durable workstream log for requests, `markdown_response` entries, capability/tool results, denials, correlation ids, and trace references;
 - audit/work trace substrate for identity, authorization, prompt/skill/tool use, capability checks, data access, denials, and response generation;
 - capability-first backend contracts before exposing browser actions, agent tools, workflows, timers, consumers, or APIs;
 - tests for allowed bootstrap access, forbidden access, missing/disabled authority where modeled, trace creation, markdown sanitization, and frontend secret boundaries.
 
-Slice 0 must create explicit follow-up work for full-core readiness: WorkOS/AuthKit completion, `/api/me`, invitations/onboarding, Resend/outbox email delivery, full User Admin, Agent Admin and governed agent documents, Audit/Trace search UI, support access, subscription/billing boundary where relevant, and full tenant-isolation/security coverage.
+Any intentionally deferred foundation-domain behavior must become explicit follow-up work, such as WorkOS/AuthKit completion, `/api/me`, invitations/onboarding, Resend/outbox email delivery, User Admin depth, Agent Admin governed documents, Audit/Trace search UI, support access, subscription/billing boundary where relevant, or tenant-isolation/security coverage.
 
-### Full-core foundation slices
+### SaaS Foundation App foundation slices
 
 1. WorkOS-backed `/api/me` account bootstrap, membership selection, base profile, and base user settings.
 2. Mandatory invitation lifecycle: `Invitation` record, invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, audit trail, and idempotent duplicate handling.

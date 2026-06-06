@@ -2,7 +2,7 @@
 
 This guide is for developers using this repository with an AI coding harness.
 
-The repository contains both the runnable Akka full-stack core app and the Akka AI skills library. The skills library is guidance and routing for the harness; it does not provide a separate callable framework, duplicate app baseline, or generated distribution bundle. The installer does install pack docs, curated examples, templates, and downstream-safe tools referenced by skills under `.agents/skills/**`. The default generated-product target remains full-stack secure AI-first SaaS on Akka, implemented through capability-first backend architecture and validated through real local Akka/API/UI paths.
+The repository contains both the runnable Akka full-stack SaaS Foundation App and the Akka AI skills library. The skills library is guidance and routing for the harness; it does not provide a separate callable framework, duplicate app baseline, or generated distribution bundle. The installer does install pack docs, curated examples, templates, and downstream-safe tools referenced by skills under `.agents/skills/**`. The default generated-product target remains full-stack secure AI-first SaaS on Akka, implemented through capability-first backend architecture and validated through real local Akka/API/UI paths.
 
 ## Core idea
 
@@ -24,7 +24,7 @@ For a new app with an implementation baseline, fork or clone this repository, th
 
 Current manifest version: `0.3.0`
 
-Clone or check out the desired release tag. This repository clone/fork is the source attention for the runnable core app. Then copy or symlink the skills library, including referenced pack docs, curated examples, templates, and downstream-safe tools, into your harness skills directory:
+Clone or check out the desired release tag. This repository clone/fork is the source attention for the runnable SaaS Foundation App. Then copy or symlink the skills library, including referenced pack docs, curated examples, templates, and downstream-safe tools, into your harness skills directory:
 
 ```bash
 git clone https://github.com/mckeeh3/akka-ai-skills-pack.git

@@ -304,7 +304,7 @@ Each named theme should provide the same semantic token names. Components consum
 }
 ```
 
-Required aliases may be added for existing core app code, but the authoritative token roles are canvas/surface/text/border/accent/status/chart/focus/shadow. If legacy CSS uses `--color-bg` or `--color-primary`, map those aliases to `--color-canvas` and `--color-accent` during migration rather than preserving old semantics as a new default.
+Required aliases may be added for existing SaaS Foundation App code, but the authoritative token roles are canvas/surface/text/border/accent/status/chart/focus/shadow. If legacy CSS uses `--color-bg` or `--color-primary`, map those aliases to `--color-canvas` and `--color-accent` during migration rather than preserving old semantics as a new default.
 
 ### Initial theme token direction
 

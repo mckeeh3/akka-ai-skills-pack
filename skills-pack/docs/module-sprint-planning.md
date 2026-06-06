@@ -8,7 +8,7 @@ For generated full-stack AI-first SaaS, `vertical` means each sprint, backlog it
 
 Before splitting modules, classify the generated product as full-stack secure AI-first SaaS by default: delegated operational work, agents, approvals/exceptions, policy-controlled automation, supervision UI, audit traces, and outcome accountability should be represented as operating-model scope before CRUD/module decomposition.
 
-For SaaS app planning, the first sprint or slice is always the full-stack core secure SaaS foundation unless the task is explicitly non-SaaS reference material. Create `specs/cross-cutting/01-auth-tenancy-audit.md`, then make the first foundation sprint or foundation slice cover the canonical scope in `full-core-foundation-readiness.md`: identity/tenancy/auth, `/api/me`, authorization, invitation/email onboarding, admin read models/search, governed runtime agents, AI admin offload, decision cards, workstream UI, audit, and security/frontend/agent-governance tests before app-specific domain-specific features.
+For SaaS app planning in this repository or a downstream fork, start from the existing SaaS Foundation App rather than generating a separate baseline. Create or update `specs/cross-cutting/01-auth-tenancy-audit.md` when the change affects foundation behavior, then plan vertical sprints as either SaaS Foundation App maintenance/extension or business-domain extension work. Preserve identity/tenancy/auth, `/api/me`, authorization, invitation/email onboarding, admin read models/search, governed runtime agents, AI admin offload, decision cards, workstream UI, audit, and security/frontend/agent-governance tests before claiming app-specific domain features are complete.
 
 ## When to use
 

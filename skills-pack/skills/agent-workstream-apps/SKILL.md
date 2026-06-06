@@ -19,7 +19,7 @@ Read these first when using this skill:
 - `../docs/capability-first-backend-architecture.md`
 - `../docs/workstream-expertise-model.md` when LLM-backed workstreams, workstream help/explanation, governed skills/references, or user-facing workstream guidance are in scope
 
-For minimum, core app, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../docs/minimum-ai-first-saas-app.md` before applying the core app baseline routing rule.
+For minimum, SaaS Foundation App, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../docs/minimum-ai-first-saas-app.md` before applying the SaaS Foundation App routing rule.
 
 For high-level product input, also read `../docs/ai-first-saas-application-architecture.md` and load `../ai-first-saas/SKILL.md` plus `../core-saas-foundation/SKILL.md`.
 
@@ -57,19 +57,19 @@ Functional agents and their surfaces are the vertical application slices. Akka e
 
 Do not make a conventional page tree, CRUD console, or chatbot-bolt-on design the primary architecture for authenticated consequential work. Routes and pages may exist for implementation, deep links, public/static content, and direct surface URLs.
 
-## Minimum core app routing
+## SaaS Foundation App routing
 
-For natural-language requests such as “minimum AI-first app,” “core app,” “basic app,” “basic chatbot,” “smallest useful app,” or an initial chatbot-like generated SaaS, apply `../docs/minimum-ai-first-saas-app.md`.
+For natural-language requests such as “minimum AI-first app,” “SaaS Foundation App,” “basic app,” “basic chatbot,” “smallest useful app,” or an initial chatbot-like generated SaaS, apply `../docs/minimum-ai-first-saas-app.md`.
 
-The correct first runnable target is the **five-core-workstream core app domain**:
-- bootstrap-authorized user and selected AuthContext;
-- role-authorized functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with bounded bootstrap authority;
+The correct target is the **SaaS Foundation App domain** in the runnable repository/fork:
+- authorized user and selected AuthContext;
+- role-authorized functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy;
 - universal workstream icon metadata for visible shell workstreams, with My Account launched from the lower-left signed-in user tile rather than duplicated in the top rail;
-- durable request/response timeline and audit/work trace substrate for each visible core workstream;
-- first structured surface type `markdown_response`, rendered as sanitized HTML;
+- durable request/response timeline and audit/work trace substrate for each visible foundation workstream;
+- structured surfaces, starting with `markdown_response` where text-first behavior is appropriate;
 - no public self-registration, autonomous privilege expansion, generic unauthenticated chatbot, or page-first CRUD admin app.
 
-Treat this as a narrower core app readiness state, not full-core SaaS readiness. Record follow-up work for richer My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed behavior documents, and security completeness. Even in the minimum slice, route every backend action, surface action, browser API, and agent-tool through capability-first modeling before selecting Akka components.
+Route every backend action, surface action, browser API, and agent-tool through capability-first modeling before selecting Akka components.
 
 ## Interpretation workflow
 
@@ -77,7 +77,7 @@ Treat this as a narrower core app readiness state, not full-core SaaS readiness.
 
 For generated SaaS apps, keep `core-saas-foundation` mandatory: identity, AuthContext, tenant/customer scope, memberships, roles/capabilities, `/api/me`, invitations, admin audit, backend authorization, tenant isolation, and security tests.
 
-Full core app scope also requires complete My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents unless the user explicitly chooses a narrower deferred scope. The core app baseline is the accepted narrower scope: the five-core-workstream core app domain first, each using `markdown_response`, with full-core foundation items kept as explicit follow-up/readiness gates.
+SaaS Foundation App scope includes My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents. Business-specific workstreams extend this set and inherit the same authorization, capability, surface, trace, and test rules.
 
 ### 2. Identify vertical functional agents
 
@@ -151,7 +151,7 @@ When revising existing docs, specs, examples, or skills:
 - replace page-first, CRUD-first, dashboard-with-chat, or chatbot-bolt-on defaults with the workstream model;
 - keep conventional routes/pages as implementation/deep-link details, not the primary decomposition;
 - keep agent-tools as capability exposure surfaces, not backend design roots;
-- do not make user administration, agent administration, audit, or security optional for full generated core SaaS scope;
+- do not make user administration, agent administration, audit, or security optional for SaaS Foundation App/generated SaaS scope;
 - do not rewrite unrelated focused component guidance unless the task explicitly calls for that scope.
 
 ## Minimal output

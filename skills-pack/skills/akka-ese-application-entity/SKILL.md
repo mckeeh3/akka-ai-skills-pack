@@ -65,7 +65,7 @@ Repository examples:
 - `PromptDocumentEntity.detail(...)`
 - `PromptDocumentEntity.activeRuntimeLookup(...)`
 
-For strongly consistent reads in replicated deployments, use the Akka SDK docs and add a target-project example; the current core app example snapshot does not include a replicated read-consistency handler.
+For strongly consistent reads in replicated deployments, use the Akka SDK docs and add a target-project example; the current SaaS Foundation App example snapshot does not include a replicated read-consistency handler.
 
 ## Delete pattern
 

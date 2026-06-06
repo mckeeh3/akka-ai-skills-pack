@@ -24,4 +24,4 @@ The installed skills directory contains skill guidance, shared skill references,
 
 If a skill or doc still points to `.agents/resources/examples/**` or `resources/examples/**`, treat that as stale content and update it to `.agents/skills/examples/**` or an installed-relative `../examples/**` path from a skill.
 
-Examples use `ai.first` package names. Treat those names as both reference examples and the fixed package convention for generated or domain-specific application code in this core-app-first repository and downstream forks.
+Examples use `ai.first` package names. Treat those names as both reference examples and the fixed package convention for generated or domain-specific application code in this SaaS Foundation App repository and downstream forks.
