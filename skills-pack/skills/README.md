@@ -151,6 +151,6 @@ Load only the family/focused skill needed for the current implementation slice:
 - HTTP endpoints: `akka-http-endpoints`, component-client, JWT, request-context, ACL/internal, low-level, SSE, WebSocket, web UI, HTTP client provider, and testing.
 - gRPC endpoints: `akka-grpc-endpoints`, proto design, component-client, JWT, request-context, streaming, and testing.
 - MCP endpoints: `akka-mcp-endpoints`, component-client, request-context, resources/prompts, and testing.
-- Web UI: `akka-web-ui-apps`, frontend project, API client, UX design, accessibility/responsive, state rendering, forms validation, realtime, testing.
+- Web UI: start with `docs/web-ui-docs-index.md`, then use `akka-web-ui-apps`, frontend project, API client, UX design, accessibility/responsive, state rendering, forms validation, realtime, testing.
 
 When this quick map is too terse, inspect the relevant focused skill family directly instead of loading a broad historical routing catalog. For retired/static/legacy content boundaries, use `docs/retired-content-boundaries.md` rather than repeating long warnings in normal skill text.

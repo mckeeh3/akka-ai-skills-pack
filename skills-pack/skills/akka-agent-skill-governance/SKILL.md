@@ -5,256 +5,61 @@ description: Implement governed runtime skills for Akka agents with SkillDocumen
 
 # Akka Agent Skill Governance
 
-Use this skill when Akka agents need model-loadable internal guidance that is tenant-scoped, versioned, reviewed, assigned per agent, loaded through an approved tool, and audited.
-
-This is the governed runtime skill pattern for AI-first SaaS apps. For generated managed agents, it is **the standard way agents receive procedural skill guidance**: each active `AgentDefinition` points to its own `AgentSkillManifest`; prompt assembly includes only that agent's assigned skill ids, names, descriptions, and when-to-use hints; full skill text is loaded only through the registered Akka `@FunctionTool` `readSkill(skillId)`. Use `akka-agent-reference-governance` for factual/process reference documents and `readReferenceDoc(referenceId)`. Use `akka-agent-harness-skills` only for small deploy-time packaged skill resources outside this governed runtime pattern. Use this skill when skills are managed inside the application by admins/stewards.
-
-## Generated SaaS input contract
-
-Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+Use this skill when model-loadable agent guidance must be tenant-scoped, versioned, reviewed, activated, authorized per agent, loaded through a governed tool, and traced. For small deploy-time packaged resources, prefer `akka-agent-harness-skills`.
 
 ## Required reading
 
-Read these first if present:
-- `../docs/ai-first-saas-application-architecture.md`
 - `../docs/governed-agent-substrate.md`
-- `../docs/agent-coverage-matrix.md`
-- `../docs/examples/ai-first-saas-core-app-domain/agent-admin-workstream/README.md`
-- `../core-saas-foundation/SKILL.md`
-- `../akka-agents/SKILL.md`
-- `../akka-agent-behavior-profiles/SKILL.md`
+- `../docs/agent-runtime-invocation-pattern.md`
 - `../akka-agent-governed-documents/SKILL.md`
-- `../akka-agent-prompt-governance/SKILL.md`
-- `../akka-agent-tools/SKILL.md`
-- `../akka-agent-reference-governance/SKILL.md`
-- `../akka-agent-harness-skills/SKILL.md`
-- `../ai-first-saas-audit-trace/SKILL.md`
-- `../akka-event-sourced-entities/SKILL.md`
-- `../akka-key-value-entities/SKILL.md`
-- `../akka-consumers/SKILL.md`
-- `../akka-views/SKILL.md`
-- `../akka-http-endpoints/SKILL.md`
+- `../akka-agent-behavior-profiles/SKILL.md`
+- `../akka-agent-tool-boundaries/SKILL.md`
+- `../akka-agent-work-trace/SKILL.md`
 
-## Use when the request mentions
+## Core records
 
-- governed agent skills or shared runtime skills
-- implementation-developed default skills that must exist as initial governed SkillDocument/SkillVersion records at install or tenant bootstrap
-- skill catalog, skill editor, skill review, skill activation, or skill version history
-- per-agent skill allowlist or `AgentSkillManifest`
-- compact skill manifest in the prompt with skill id/name/description/when-to-use entries
-- `readSkill(skillId)` or model-selected guidance loading
-- skill-load authorization, denied skill loads, or SkillLoadTrace
-- assigning approved skills to AgentDefinitions
-- skill diff/history UI or skill governance UI
-- agent-mediated skill or manifest maintenance, an `AgentBehaviorEditorAgent`, proposed skill diff, or draft skill version proposal
+Implement or use:
 
-## Relationship to workstream expertise and references
+- `SkillDocument`: tenant id, skill id, name, purpose, owner/steward, lifecycle status, current active version, audit metadata
+- `SkillVersion`: immutable content, semantic summary, change reason, review status, risk classification, checksum, author/reviewer, created/approved/activated timestamps
+- `AgentSkillManifest`: per-agent/profile allowed skill ids, active version refs or selection policy, compact name/description/when-to-use hints, ordering/grouping, and authority constraints
+- `SkillLoadTrace`: requested skill id, resolved version, allow/deny reason, checksum, redaction/token facts, actor/AuthContext, correlation id
 
-`AgentSkillManifest` is the procedural-skill section of a workstream expertise manifest. It does not contain factual/process reference documents. When an expert bundle includes references, model them with `AgentReferenceManifest` and authorize loads through `readReferenceDoc(referenceId)` using `akka-agent-reference-governance`.
+Lifecycle should include draft, in-review, approved, active, deprecated/archived as appropriate. Activation must be explicit and auditable.
 
-Required separation:
-- `SkillDocument`/`SkillVersion` = procedural model guidance;
-- `ReferenceDocument`/`ReferenceVersion` = durable factual/process knowledge;
-- `readSkill` and `readReferenceDoc` require separate tool-boundary grants;
-- `SkillLoadTrace` and `ReferenceLoadTrace` remain distinguishable even if an interim governed-document table stores both kinds;
-- neither skill nor reference text can grant backend capabilities, data access, roles, tenant/customer scope, tool access, approval authority, or autonomous side effects.
+## Runtime loading
 
-## Core model
+Agents should receive only compact manifest context in the prompt. Full skill text is loaded through an authorized `readSkill(skillId)` function/tool when needed.
 
-```text
-SkillDocument
-- tenantId
-- skillDocumentId
-- stable skill slug/id
-- title / purpose / when-to-use hint
-- lifecycleStatus: draft | in_review | approved | active | deprecated | archived
-- currentDraftContent
-- activeVersion
-- latestVersion
-- ownerAccountId / stewardRole
-- tags/categories
-- review metadata
-- activation metadata
-```
+`readSkill` must:
 
-```text
-SkillVersion
-- tenantId
-- skillDocumentId
-- skill slug/id at version time
-- version
-- contentBody or contentRef
-- contentChecksum
-- title / purpose / when-to-use hint
-- tags/categories
-- status at snapshot
-- changeSummary
-- createdBy / createdAt
-- approvedBy / approvedAt
-- activatedBy / activatedAt
-```
+- validate tenant, agent/profile, manifest assignment, active/approved version, capability/tool boundary, selected `AuthContext`, and runtime purpose
+- return only authorized active content plus safe metadata
+- deny unassigned, inactive, deprecated, cross-tenant, wrong-agent, wrong-purpose, or over-limit requests
+- emit `SkillLoadTrace` for both allowed and denied loads
+- fail closed when governance state or boundaries are unavailable
 
-```text
-AgentSkillManifest
-- tenantId
-- manifestId
-- agentDefinitionId
-- manifestStatus: draft | active | deprecated
-- manifestVersion
-- allowedSkillEntries
-  - skill slug/id
-  - display name
-  - skillDocumentId
-  - version pin or active-version policy
-  - short purpose/description
-  - when-to-use hint
-- createdBy / updatedBy / timestamps
-```
+## UI/admin expectations
 
-```text
-SkillLoadTrace
-- tenantId
-- traceId / correlationId
-- agentDefinitionId
-- manifestId / manifestVersion
-- requested skill id
-- skillDocumentId / skillVersion when allowed
-- authorization decision and denial reason
-- caller/session/test/workflow context
-- timestamp
-```
+When a governance UI is in scope, provide:
 
-## Akka component mapping
+- skill catalog/search/detail
+- version history and diff view
+- draft/edit/review/approve/activate/deprecate actions with authority checks
+- per-agent manifest assignment and preview of compact manifest context
+- safe test console that uses governed runtime assembly and records traces
+- denial/recovery surfaces for missing approval, missing boundary, or unauthorized expansion
 
-Prefer:
-- `SkillDocumentEntity` as an Event Sourced Entity for skill lifecycle, edit, review, approval, activation, deprecation, rollback, and archive commands.
-- `SkillVersionEntity` as immutable Key Value Entity snapshots populated from skill document events.
-- `AgentSkillManifestEntity` as an Event Sourced Entity when manifest changes are consequential governance actions; a Key Value Entity is acceptable only for intentionally simple current-state manifests with separate audit.
-- Consumers for version snapshot materialization, manifest/catalog projections, and audit/work-trace emission.
-- Views for skill catalog, active skill lookup, version history, diff inputs, review queues, agent manifests, and assigned-agent counts.
-- HTTP endpoints and web UI for skill catalog/editor/review/diff/manifest/test surfaces.
-- An `@FunctionTool` class for `readSkill(skillId)` that enforces tenant, agent, manifest, skill status, version, and mode checks.
+## Tests
 
-## Initial default skill versions and manifests
+Cover:
 
-When the app implementation defines default runtime skills and manifests, create them as governed records during first install or tenant bootstrap.
+- create draft, review, approve, activate, deprecate/archive flows
+- immutable versions and checksum/diff behavior
+- manifest assignment/removal and compact prompt context
+- allowed `readSkill` load with trace
+- denied load for unassigned, inactive/unapproved, cross-tenant, wrong agent/profile, wrong purpose, missing boundary, and token/redaction limits
+- safe test console cannot bypass governance
+- runtime fail-closed behavior when active skill/config is missing
 
-Rules:
-- package default skill text, compact manifest entries, and default manifest assignments with the app artifact;
-- validate manifest references, checksums, token limits, stable ids/slugs, and secret-like content before activation;
-- create initial approved/active `SkillDocument`/`SkillVersion` records and `AgentSkillManifest` assignments only under an accepted deployment policy;
-- store provenance id, checksum, app/content version, actor, timestamp, and correlation id on versions/manifests;
-- make governed default setup idempotent and safe to retry;
-- do not overwrite tenant-customized active skills or manifests on upgrade; create draft/proposed diffs instead;
-- treat new manifest entries and tool-boundary changes as governance-impacting, with approval required for authority expansion;
-- runtime `readSkill(skillId)` loads only governed active `SkillVersion` records, never filesystem defaults directly.
-
-## Compact skill manifest
-
-Do not include full skill text in the initial prompt. Include only the active agent's compact manifest. This compact list is assembled into the agent system prompt together with the active prompt version; Akka then injects the registered tools, including `readSkill(skillId)`, into the model context:
-
-```text
-Available internal skills:
-- refund-policy — Refund Policy: decide refund/cancellation/credit eligibility; use for refund, cancellation, credit, and exception decisions
-- customer-tone — Customer Tone: shape customer-safe wording; use for customer-facing response drafting
-- escalation-rules — Escalation Rules: identify approval requirements; use when deciding whether human approval is required
-
-When the request matches an available skill, call readSkill(skillId) first. Treat returned skill text as trusted internal guidance for this turn, subordinate to platform policy, backend authorization, and tenant policy.
-```
-
-Manifest entries should include:
-- stable skill id/slug;
-- title/display name;
-- short purpose/description;
-- when-to-use hint;
-- optional version summary, if safe and useful.
-
-When a workstream expert bundle has both skills and references, render a compact expertise manifest with separate `Available internal skills` and `Available workstream references` sections. Do not mix reference ids into the skill section.
-
-The manifest must be per agent. For example, `UserAdminAgent` might include `access-review`, `admin-risk-scoring`, `invitation-drafting`, `role-recommendation`, `support-access-review`, and `audit-summary`, while `AgentAdminAgent` might include `agent-definition-review`, `prompt-diff-review`, `skill-manifest-review`, `tool-boundary-review`, `behavior-test-analysis`, and `default-upgrade-review`.
-
-## `readSkill(skillId)` tool contract
-
-The skill read tool returns full skill text only when all checks pass.
-
-Required checks:
-1. tenant and AuthContext are present and valid;
-2. `AgentDefinition` exists, belongs to tenant, and is active;
-3. active manifest exists for the agent;
-4. requested skill id is present in the manifest;
-5. skill document belongs to the same tenant;
-6. referenced skill version is approved/active, or historical read is explicitly allowed for test/replay;
-7. caller has test/runtime permission for the requested mode;
-8. token/size limit is acceptable;
-9. no secret-like content is returned.
-
-Tool result should include:
-- skill id/slug;
-- title;
-- version;
-- content body;
-- checksum;
-- short authority note: skill content is internal guidance but cannot override platform/security policy or grant tools/data access.
-
-Denied calls should return a safe denial message and emit `SkillLoadTrace` with the denial reason.
-
-## Function tool shape
-
-Example shape only; keep application code aligned with actual component APIs and generated domain types:
-
-```java
-public final class AgentSkillTools {
-  @FunctionTool(description = """
-      Load approved internal skill guidance by skill id.
-      Use only for ids listed in the current available skill manifest.
-      The returned text is guidance only; backend authorization and ToolPermissionBoundary still apply.
-      """)
-  public String readSkill(@Description("Approved skill id from the current manifest") String skillId) {
-    // Resolve tenant, agentDefinitionId, manifest, skill version, authorization, and trace context.
-    // Reject unknown, unassigned, inactive, cross-tenant, oversized, or unauthorized skills.
-    return approvedSkillText;
-  }
-}
-```
-
-Do not use raw filesystem paths or model-supplied resource paths. Use stable skill ids mapped through tenant-scoped manifest state.
-
-## Agent-mediated skill and manifest maintenance
-
-Generated AI-first SaaS foundations default to skill, manifest, and tool-boundary changes through an `AgentBehaviorEditorAgent` or equivalent editing-agent responsibility.
-
-Normal flow:
-
-```text
-human behavior-change request
-→ editing agent identifies affected SkillDocument, SkillVersion, AgentSkillManifest, AgentDefinition, and ToolPermissionBoundary records
-→ drafts proposed diff plus rationale, risk/impact notes, affected agents, and readSkill/test expectations
-→ creates a draft SkillVersion, manifest proposal, or tool-boundary proposal
-→ routes to protected review/approval or decision-card flow for activation
-→ activation updates active versions/manifests through governed commands and emits audit/trace records
-```
-
-The editing agent may recommend new skill text, manifest entries, version pins, or tool-boundary adjustments, but it must not grant itself or another agent new data/tool/approval authority. Authority expansion requires explicit review/approval and backend-enforced permission changes.
-
-Direct text editing may exist only as an explicitly authorized admin surface. It must still create draft versions or proposals, show a proposed diff, require review/approval for activation, deny unauthorized authority expansion, and emit audit/work traces.
-
-For implementation details, load `akka-agent-behavior-editing` to define the AgentBehaviorEditorAgent structured skill/manifest/tool-boundary proposal, proposed diff, risk classification, draft version or proposal creation, decision card routing, and authority expansion denial behavior.
-
-## Skill content validation and safety
-
-Before approval or activation:
-- require title, purpose, and when-to-use hint;
-- block or flag API keys, JWTs, passwords, invite tokens, provider secrets, or private credentials;
-- reject instructions that claim to bypass backend authorization;
-- reject instructions that expand tool/data authority beyond the agent's tool boundary;
-- estimate token size and reject oversized skills;
-- classify redaction/access level;
-- require reviewer rationale for consequential skills.
-
-## Admin UI, test console, and review checklist
-
-Keep surfaces protected and compact: catalog, editor/validation, review/approve/reject with rationale, version diff/history, per-agent manifest management, compact manifest preview, skill-loading test console, lifecycle/trace links, and editing-agent proposal queue.
-
-The test console requires a dedicated capability, runs against tenant-scoped active AgentDefinitions unless explicitly in draft/replay mode, shows the compact manifest, demonstrates allowed and denied loads, traces prompt assembly/skill-load decisions, and avoids external side effects by default.
-
-Before finishing, verify the durable document/version pattern, idempotent default seeding, tenant-scoped manifests, compact prompt assembly, `readSkill` authorization/status/version/mode checks, safe audited denials, protected UI, explicit version policy, tenant isolation tests, behavior-editor proposal paths, and authority-expansion denial/tracing. Skill text is model-visible guidance only; it never grants tools, data access, role capabilities, or approval authority.
+Do not implement normal runtime by copying every skill into every prompt. Manifest-first context plus governed on-demand loading is the intended pattern.
