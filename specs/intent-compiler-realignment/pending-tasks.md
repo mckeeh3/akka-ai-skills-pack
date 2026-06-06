@@ -256,7 +256,7 @@
 
 ### TASK-IC-99-001: Verify intent compiler realignment completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/intent-compiler-realignment/tasks/99-verification/01-verify-intent-compiler-realignment-completion.md
 - depends on:
@@ -276,7 +276,7 @@
   - none; repository verification task
 - expected outputs:
   - updated specs/intent-compiler-realignment/pending-tasks.md
-  - completion summary, verification notes, or newly appended follow-up tasks
+  - specs/intent-compiler-realignment/completion-summary.md
 - required checks:
   - `git diff --check`
   - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run`
