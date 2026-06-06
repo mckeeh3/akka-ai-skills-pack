@@ -74,7 +74,7 @@ Task operations:
 
 ## Generated SaaS guardrails
 
-For worker-style generated-app tasks, apply `../docs/autonomous-agent-worker-runtime-pattern.md` before coding the task contract. Every task operation exposed through HTTP, UI, workflow, tool, timer, consumer, or MCP is a governed capability. Preserve:
+For worker-style generated-app tasks, apply `../docs/autonomous-agent-worker-runtime-pattern.md` before coding the task contract. Use the curated User Admin examples for concrete task shape and runtime boundaries: `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewTasks.java`, `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/AccessReviewAutonomousAgentResultRule.java`, `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/ComponentClientAccessReviewAutonomousAgentRuntime.java`, and `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/FailClosedAccessReviewAutonomousAgentRuntime.java`. Every task operation exposed through HTTP, UI, workflow, tool, timer, consumer, or MCP is a governed capability. Preserve:
 - tenant/customer-scoped task ids and agent instance ids;
 - `AuthContext`, caller permission/capability, and active membership checks;
 - model policy and provider-secret boundaries;

@@ -17,8 +17,14 @@ Use **primary pattern reference** files first. Open **support context** only whe
 - `src/main/java/ai/first/application/coreapp/governance/GovernancePolicyImpactService.java` — primary pattern reference.
 - `src/main/java/ai/first/application/coreapp/myaccount/MyAccountPersonalAttentionDigestAutonomousAgent.java` — primary pattern reference.
 - `src/main/java/ai/first/application/coreapp/myaccount/MyAccountService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/useradmin/AccessReviewAutonomousAgentResult.java` — support context.
+- `src/main/java/ai/first/application/coreapp/useradmin/AccessReviewAutonomousAgentResultRule.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/useradmin/AccessReviewAutonomousAgentRuntime.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/useradmin/ComponentClientAccessReviewAutonomousAgentRuntime.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/useradmin/FailClosedAccessReviewAutonomousAgentRuntime.java` — primary pattern reference.
 - `src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewAutonomousAgent.java` — primary pattern reference.
 - `src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewService.java` — primary pattern reference.
+- `src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewTasks.java` — primary pattern reference.
 - `src/main/java/ai/first/application/coreapp/useradmin/UserAdminEvidenceTools.java` — primary pattern reference.
 - `src/main/java/ai/first/application/coreapp/useradmin/UserAdminService.java` — primary pattern reference.
 - `src/main/java/ai/first/application/coreapp/useradmin/UserDirectoryView.java` — primary pattern reference.
@@ -37,6 +43,8 @@ Use **primary pattern reference** files first. Open **support context** only whe
 - `src/main/java/ai/first/application/foundation/agent/ReferenceDocumentEntity.java` — primary pattern reference.
 - `src/main/java/ai/first/application/foundation/agent/SkillDocumentEntity.java` — primary pattern reference.
 - `src/main/java/ai/first/application/foundation/agent/ToolPermissionBoundaryEntity.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/ModelProviderClient.java` — primary pattern reference.
+- `src/main/java/ai/first/application/foundation/agent/OpenAiModelProviderClient.java` — primary pattern reference.
 - `src/main/java/ai/first/application/foundation/agent/WorkstreamRuntimeAgent.java` — primary pattern reference.
 - `src/main/java/ai/first/application/foundation/attention/AttentionProducerService.java` — primary pattern reference.
 - `src/main/java/ai/first/application/foundation/attention/DurableAttentionRepositoryEntity.java` — primary pattern reference.

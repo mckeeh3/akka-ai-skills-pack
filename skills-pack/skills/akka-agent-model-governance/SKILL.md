@@ -22,6 +22,10 @@ Read these first if present:
 - `../akka-agent-component/SKILL.md`
 - `../akka-agent-work-trace/SKILL.md`
 
+Concrete provider-boundary examples:
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/ModelProviderClient.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/OpenAiModelProviderClient.java`
+
 ## Use when the request mentions
 
 - `ModelConfigRef`, model alias, model profile, or model selection

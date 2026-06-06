@@ -69,6 +69,15 @@ The normal adapter must:
 
 The fail-closed adapter must produce a blocked provider/runtime state when `ComponentClient`, provider/model config, governed profile, tool grants, evidence access, or runtime binding is unavailable. The blocked state must include actionable browser-safe recovery text, correlation/trace refs, typed workstream events, and attention. It must not return a deterministic successful review or canned recommendations. For governance/policy impact analysis, deterministic simulation output may be cited only as scoped evidence; it is not a substitute for a real model-backed `AutonomousAgent` impact result and must never become fake success. For My Account personal attention digest, backend attention evidence may be collected deterministically and redacted before the task, but a normal successful digest summary must still come from the concrete model-backed `AutonomousAgent` path; collected evidence is not a canned/model-less digest result.
 
+Curated repository examples for this boundary:
+
+- `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewAutonomousAgent.java` — bounded `AutonomousAgent` definition.
+- `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewTasks.java` — typed task definition and scoped instruction builder.
+- `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/AccessReviewAutonomousAgentResultRule.java` — typed result validation before completion.
+- `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/ComponentClientAccessReviewAutonomousAgentRuntime.java` — governed `ComponentClient` start/query adapter with tool-boundary checks.
+- `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/FailClosedAccessReviewAutonomousAgentRuntime.java` — fail-closed runtime adapter for unbound provider/runtime configuration.
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/ModelProviderClient.java` and `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/OpenAiModelProviderClient.java` — backend-only provider boundary and real provider adapter with secret redaction/fail-closed configuration checks.
+
 ## typed workstream events and shared worker-task events
 
 Emit task lifecycle facts through the workstream event backbone so attention, dashboards, audit/traces, and realtime refresh can derive from backend facts.
