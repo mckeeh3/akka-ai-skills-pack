@@ -7,7 +7,7 @@ description: Convert an iterative feature request, bug report, issue, or impleme
 
 Use this skill when an Akka project already has app-description and/or `specs/` planning artifacts and the user introduces an incremental change.
 
-This is an **evolution skill**. It keeps the app meaning and implementation plan current before new code is written. For generated secure AI-first SaaS changes, reconcile against the existing workstream graph before adding work: workstream → role-specific dashboard attention → human surface graph node/action → internal workstream agent graph delegation/result → governed-tool inside a capability or surface/action map → selected Akka substrate/exposure channel → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
+This is an **evolution skill** for Capturing Incremental Intent. It compiles a local change request into the current intent graph and keeps the app meaning and implementation plan current before new code is written. For generated secure AI-first SaaS changes, reconcile against the existing workstream graph before adding work: workstream → role-specific dashboard attention → human surface graph node/action → internal workstream agent graph delegation/result → governed-tool inside a capability or surface/action map → selected Akka substrate/exposure channel → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
 
 ## Goal
 
@@ -44,9 +44,12 @@ Keep this skill local-delta oriented. It may update affected app-description/spe
 Read these first if present:
 - `../README.md`
 - `../docs/ai-first-saas-application-architecture.md` when the change involves delegated work, agents, governance, approvals, exceptions, audit, or outcomes
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-to-realization-flow.md`
+- `../docs/intent-compiler-skill-contracts.md`
 - `../docs/requirements-to-workstream-development-process.md` when the change touches workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or planning queues
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
 - `../docs/workstream-expertise-model.md` when the change adds or revises a functional agent, expert bundle, governed skills, references, manifests, loader authorization, tool boundaries, traces, default content, or expertise tests
 - `../docs/pending-task-queue.md`
 - `../docs/solution-plan-to-implementation-queue.md`
@@ -85,7 +88,7 @@ Ask the smallest clarifying question only when necessary to avoid changing the w
 
 ## Operating flow
 
-Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Return only the actionable summary, affected artifacts/layers, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed current-intent and planning output contract. Return only the actionable summary, affected graph nodes/artifacts, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
 
 ## Anti-patterns
 
@@ -101,8 +104,8 @@ Avoid:
 ## Final review checklist
 
 Before finishing, verify:
-- the change was classified
-- authoritative description/spec files were updated before queue edits
+- the change was classified as an incremental intent delta
+- authoritative current-intent graph nodes and specs were updated before queue edits
 - test impact was handled
 - governance, audit, policy, approval, workstream expertise, generation, and outcome implications were preserved when applicable
 - security, observability, UI/governance, and test impact were considered

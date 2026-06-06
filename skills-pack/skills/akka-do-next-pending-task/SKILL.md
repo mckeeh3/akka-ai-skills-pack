@@ -30,7 +30,7 @@ The skill must:
 - keep the task scope bounded
 - prefer fresh-context execution
 - load only the task's required reads and listed skills
-- preserve any AI-first operating-model, governance, approval, audit, supervision UI, or outcome constraints named by the task without broadening scope
+- preserve current-intent graph provenance and any AI-first operating-model, governance, approval, audit, supervision UI, or outcome constraints named by the task without broadening scope
 - preserve any workstream-expertise/reference-governance constraints named by the task: model binding, governed prompt/skill/reference docs, compact manifests, `readSkill`/`readReferenceDoc`, loader authorization, tool boundaries, load traces, expertise surfaces, default-content governance, and tests
 - require or inherit the generated-SaaS vertical contract before coding: workstream/functional agent or internal/foundation scope, attention category, role-specific dashboard, human surface graph node/action edge, governed-tool id and qualified exposure, capability id/API exposure, selected Akka substrate, internal workstream agent graph delegation/result mapping when applicable, autonomous task/result/notification mapping when applicable, auth, traces, and tests
 - generate or update the requested outputs
@@ -47,7 +47,9 @@ Read these first if present:
 - `../docs/workstream-expertise-model.md` when the selected task includes LLM-backed functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, load traces, or expertise surfaces
 - `../docs/pending-question-queue.md`
 - `../docs/pending-task-queue.md`
-- `../docs/intent-driven-usage-flow.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/intent-to-realization-flow.md`
 - `../docs/solution-plan-to-implementation-queue.md`
 - `../docs/web-ui-style-guide.md` when selected task includes browser UI work
 - the target project's implementation artifacts or legacy `specs/scaffold-report.md` if present, to detect existing-app extension mode and preserve fixed package/path decisions
@@ -88,7 +90,7 @@ Still execute only one queue item.
 
 ## Queue file contract
 
-Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed queue-execution contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
 ## Blocking rules
 
@@ -132,6 +134,7 @@ Before finishing, verify:
 - the queue status was updated
 - only the selected task's scope was implemented
 - required reads and skills were loaded narrowly
+- current-intent provenance was preserved or the task had a valid docs-only/internal/foundation/cross-cutting exemption
 - any AI-first constraints in the task were preserved or explicitly blocked rather than guessed
 - checks were run or explicitly reported as not run
 - generated-SaaS implementation tasks carried a workstream-attention-dashboard/surface-graph-governed-tool-capability/substrate contract, or were explicitly internal-only/foundation/cross-cutting

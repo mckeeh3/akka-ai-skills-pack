@@ -29,7 +29,7 @@ The skill must:
 - select the next `answered` question needing reconciliation, or the next askable pending question
 - ask exactly one question when user input is needed
 - record the user's answer when provided
-- reconcile answered questions into relevant artifacts when enough context exists
+- reconcile answered questions into relevant current-intent graph or planning artifacts when enough context exists
 - update the question status before finishing
 - report the next question or state that blocking questions are clear
 
@@ -39,6 +39,10 @@ Read these first if present:
 - `../README.md`
 - `../docs/pending-question-queue.md`
 - `../docs/pending-task-queue.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
 - `../docs/ai-first-saas-application-architecture.md` when the selected question involves delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../docs/workstream-expertise-model.md` when the selected question involves LLM-backed functional-agent expertise, model binding, skill/reference governance, `readReferenceDoc`, manifests, loader authorization, tool boundaries, load traces, or expertise surfaces
 - `../docs/web-ui-style-guide.md` when selected question is a UI style-guide question
@@ -65,14 +69,14 @@ Do **not** use this skill when:
 
 ## Selection algorithm
 
-Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Return only the actionable summary, affected artifacts/layers, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/incremental-intent-processing.md` for the detailed one-question processing contract. Return only the actionable summary, affected graph nodes/artifacts, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
 
 ## Final review checklist
 
 Before finishing, verify:
 - exactly one question was processed unless the user explicitly requested a batch
 - the queue status was updated
-- answers were not treated as resolved until reconciled
+- answers were not treated as resolved until reconciled into current-intent or planning artifacts
 - AI-first authority, policy, decision, trace, UI-surface, evaluation, and outcome semantics from the answer were preserved in reconciliation targets when relevant
 - requirements-to-workstream semantics from the answer were preserved in reconciliation targets when relevant, including attention/dashboard/surface-graph/surface-action/governed-tool/capability-id/internal-agent-graph/autonomous-task notification context
 - workstream-expertise/reference-governance semantics from the answer were preserved in reconciliation targets when relevant, including model-binding, manifests, `readReferenceDoc`, loader authorization, tool-boundary, load-trace, expertise-surface, default-content, and test context

@@ -11,7 +11,7 @@ This is a narrower follow-on planning skill than `akka-prd-to-specs-backlog`.
 
 ## Goal
 
-Create or update a single backlog file that is tightly aligned with one existing slice or sprint spec and is detailed enough to drive focused coding sessions.
+Create or update a single backlog file that is tightly aligned with one existing slice or sprint spec and the current intent graph nodes it realizes, and is detailed enough to drive focused coding sessions.
 The backlog should end in bounded harness-sized task items, not just class lists and prose.
 For generated secure AI-first SaaS, each backlog item must preserve the vertical workstream graph chain from the source increment: workstream → role-specific dashboard attention → human surface graph node/action or workstream event → internal workstream agent graph delegation/result when applicable → governed-tool id/class inside capability and surface/action maps → selected Akka substrate/exposure channel → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
 Also create or update matching entries in `specs/pending-tasks.md` so follow-on implementation can proceed one task per fresh context.
@@ -46,6 +46,10 @@ This skill should be used after:
 Read these first if present:
 - `../README.md`
 - `../akka-prd-to-specs-backlog/SKILL.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/intent-to-realization-flow.md`
+- `../docs/intent-compiler-skill-contracts.md`
 - target project path: specs/README.md
 - target project path: specs/backlog/README.md
 - target project path: specs/tasks/README.md
@@ -69,7 +73,7 @@ If a matching backlog file already exists:
 
 ## What this skill must produce
 
-Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed backlog and queue output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
 ## Mapping rules
 
@@ -134,7 +138,8 @@ Avoid:
 
 Before finishing, verify:
 - the backlog filename matches the slice filename by number and stem, or the sprint filename by number and stem after dropping `-sprint`
-- the backlog references the right prerequisite specs
+- the backlog references the right prerequisite specs and current-intent graph nodes
+- every generated task preserves or inherits current-intent provenance
 - the class list fits the slice or sprint scope
 - the endpoint list fits the slice or sprint scope
 - UI tasks include the selected style guide in required reads, or are blocked by the style-selection question

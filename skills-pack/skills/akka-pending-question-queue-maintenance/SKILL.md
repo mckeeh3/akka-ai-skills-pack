@@ -14,7 +14,7 @@ This is a question queue hygiene and reconciliation skill. It does not implement
 Audit and maintain the pending question queue so planning can progress without losing decisions or forcing the user through duplicate questions.
 
 The skill should:
-- validate queue shape against the question queue contract
+- validate queue shape against the question queue and intent-compiler contracts
 - preserve stable question IDs and history
 - detect duplicate or overlapping questions
 - detect stale questions whose source specs changed or disappeared
@@ -47,6 +47,10 @@ Read these first if present:
 - `../README.md`
 - `../docs/pending-question-queue.md`
 - `../docs/pending-task-queue.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
 - `../docs/ai-first-saas-application-architecture.md` when questions involve delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../docs/workstream-expertise-model.md` when questions involve functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, or load traces
 - `../akka-pending-question-generation/SKILL.md`
@@ -71,14 +75,14 @@ Do not read the original PRD by default unless source links are insufficient to 
 
 ## Maintenance workflow
 
-Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Return only the actionable summary, affected artifacts/layers, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/incremental-intent-processing.md` for the detailed queue-maintenance contract. Return only the actionable summary, affected graph nodes/artifacts, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
 
 ## Final review checklist
 
 Before finishing, verify:
 - all statuses and priorities are valid
 - answered questions are reconciled or explicitly still awaiting reconciliation
-- blocking questions name the exact blocked area
+- blocking questions name the exact blocked current-intent node or realization area
 - AI-first authority, approval, policy, risk, trace, UI-surface, evaluation, and outcome questions remain blocking when implementation would otherwise guess
 - requirements-to-workstream questions about attention, role-specific dashboards, human surface graph nodes/edges, surface actions, governed-tool ids/exposure, capability ids, internal workstream agent graph delegations/results, AutonomousAgent lifecycle/notification/result surfaces, and human/agent worker assignment remain blocking when implementation would otherwise guess
 - workstream-expertise/reference-governance questions about model binding, manifests, `readReferenceDoc`, loader authorization, tool boundaries, load traces, expertise surfaces, default-content governance, and tests remain blocking when implementation would otherwise guess

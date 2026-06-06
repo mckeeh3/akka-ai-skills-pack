@@ -9,7 +9,7 @@ Use this skill when an idea, feature, concept, migration, remediation, review fi
 
 The target may be a downstream generated app, a fork of the secure SaaS Foundation App, or the Akka AI skills-pack source repository itself. Preserve the target project's own source-of-truth app-description, specs, repository guidance, and runtime completion rules.
 
-The output is planning and queue materialization only. Do not implement the queued tasks in the same run unless the user explicitly asks to execute one task after the queue exists.
+The output is planning and queue materialization only. Treat the discussed idea as current intent for the mini-project, then materialize bounded tasks from that current-state model. Do not implement the queued tasks in the same run unless the user explicitly asks to execute one task after the queue exists.
 
 ## Use this skill when
 
@@ -38,6 +38,7 @@ Do not treat an installed `.agents/skills` support library as writable applicati
 Read only the smallest useful context:
 - `AGENTS.md` or equivalent repository guidance
 - `.agents/skills/README.md` or `skills/README.md` when present
+- pack `../docs/intent-compiler.md`, `../docs/current-intent-model.md`, `../docs/intent-to-realization-flow.md`, and `../docs/intent-compiler-skill-contracts.md` when present
 - pack `../docs/pending-task-queue.md` (installed skill) or project `docs/pending-task-queue.md` for queue mechanics when present
 - pack `../docs/pending-question-queue.md` (installed skill) or project `docs/pending-question-queue.md` when unresolved decisions may block tasks
 - pack `../docs/ai-first-saas-application-architecture.md` / `../docs/capability-first-backend-architecture.md` (installed skill) or project-local equivalents only when the initiative affects generated-app doctrine, agent workstreams, governed capabilities, security, UI, agents, audit, or runtime completion semantics
@@ -48,7 +49,7 @@ Prefer source artifacts that capture the actual discussion. Do not reread the wh
 
 ## Output directory shape
 
-Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed mini-project, backlog, and queue output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
 ## Verification loop
 
@@ -105,7 +106,7 @@ Do not mark a task `done` without a commit unless the queue explicitly says the 
 
 1. Name the initiative with a stable kebab-case directory and short task prefix.
 2. Capture the discussion and decisions in `conversation-capture.md`.
-3. Define done state and non-goals in `README.md`.
+3. Define current intent, done state, and non-goals in `README.md`.
 4. Split work into ordered sprints only as much as needed.
 5. Write backlog files with suggested harness task breakdowns.
 6. Write task briefs for non-trivial queue items, including the terminal verification task brief.

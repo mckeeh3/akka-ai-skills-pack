@@ -11,8 +11,9 @@ Use this skill when the user wants a PRD, high-level requirements document, or b
 
 ## Goal
 
-Create or update a repo-ready planning package that lets later harness sessions implement one bounded task at a time. The package must:
+Create or update a repo-ready planning package that lets later harness sessions implement one bounded task at a time. Treat the PRD or requirements file as source intent: compile it into the current intent graph first, then materialize specs, backlogs, questions, and tasks from that current-state model. The package must:
 
+- cite current-intent graph provenance in solution plans, specs, backlogs, task briefs, pending questions, and pending tasks;
 - interpret product intent through the secure AI-first SaaS operating model when generated-app scope is in play;
 - derive workstreams, attention/dashboard contracts, surface graph, governed tools, and backend capabilities before Akka substrates;
 - produce a master solution plan with fixed Java base package `ai.first`;
@@ -60,6 +61,11 @@ Read first when present/relevant:
 - `../README.md`
 - `../akka-solution-decomposition/SKILL.md`
 - `../core-saas-foundation/SKILL.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-to-realization-flow.md`
+- `../docs/intent-compiler-skill-contracts.md`
 - `../docs/full-core-foundation-readiness.md`
 - `../docs/minimum-ai-first-saas-app.md`
 - `../ai-first-saas/SKILL.md`
@@ -82,7 +88,7 @@ If the user provided a PRD/requirements file, read it completely before writing 
 
 ## Extraction order for PRD input
 
-Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the planning and queue contract. Extract app objective, domains, workstreams, capabilities, surfaces, agents, tools, policies, traces, tests, and realization mappings as current intent; do not keep PRD chronology or superseded alternatives in canonical artifacts. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
 ## Sizing rules
 
@@ -129,6 +135,7 @@ Before finishing, verify:
 
 - requested scope is explicit and honestly named;
 - fixed package `ai.first` is recorded;
+- current-intent graph provenance is recorded for generated specs, backlogs, questions, and tasks;
 - existing app-description/specs/source constraints were preserved;
 - foundation obligations are included or explicitly out of scope;
 - workstreams, surfaces, capabilities, governed tools, and Akka components are linked;

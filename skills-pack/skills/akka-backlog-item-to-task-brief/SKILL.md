@@ -12,7 +12,7 @@ This is the **leaf planning skill** below `akka-prd-to-specs-backlog` and `akka-
 ## Goal
 
 Create or update one small task brief under `specs/tasks/` that:
-- maps to exactly one slice and one backlog item
+- maps to exactly one slice, one backlog item, and the current-intent graph node(s) being realized
 - narrows scope to one focused implementation run
 - names the smallest required reads
 - makes non-goals explicit
@@ -53,6 +53,10 @@ Read these first if present:
 - `../README.md`
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-slice-spec-to-backlog/SKILL.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/intent-to-realization-flow.md`
+- `../docs/intent-compiler-skill-contracts.md`
 - target project path: specs/README.md
 - target project path: specs/backlog/README.md
 - target project path: specs/tasks/README.md
@@ -74,7 +78,7 @@ If a matching task brief already exists:
 
 ## What this skill must produce
 
-Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed task-brief and queue output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
 ## Sizing rules
 
@@ -129,7 +133,7 @@ Avoid:
 ## Final review checklist
 
 Before finishing, verify:
-- the task brief points to the correct slice and backlog
+- the task brief points to the correct slice, backlog, and current-intent graph node(s)
 - the scope is smaller than the backlog item, not larger
 - the reads are the minimum needed
 - non-goals are explicit

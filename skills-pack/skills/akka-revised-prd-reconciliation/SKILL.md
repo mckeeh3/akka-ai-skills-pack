@@ -7,7 +7,7 @@ description: Reconcile a revised or replacement PRD against existing app-descrip
 
 Use this skill when a project already has app-description/spec/backlog/queue artifacts and the user provides a revised PRD, replacement requirements document, or substantial product specification update.
 
-This skill protects long-running work from stale plans. It compares the revised requirements to the current maintained artifacts and updates them deliberately.
+This skill protects long-running work from stale plans. It treats the revised PRD as incremental source intent, compares it to the current intent graph and maintained planning artifacts, and updates only the accepted current-state model and downstream queues deliberately.
 
 ## Goal
 
@@ -46,11 +46,14 @@ Use this skill as a reconciliation layer, not as a fresh planning generator: pre
 Read these first if present:
 - `../README.md`
 - `../docs/ai-first-saas-application-architecture.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-to-realization-flow.md`
+- `../docs/intent-compiler-skill-contracts.md`
 - `../docs/requirements-to-workstream-development-process.md` when reconciling generated SaaS requirements, PRDs, workstreams, dashboards, attention, surface actions, capabilities, or task queues
 - `../docs/pending-task-queue.md`
 - `../docs/solution-plan-to-implementation-queue.md`
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
 - `../docs/workstream-expertise-model.md` when the revised PRD adds or changes functional agents, workstream expertise, prompts, skills, references, manifests, loaders, tool boundaries, governed agent behavior, traces, default content, or expertise tests
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-change-request-to-spec-update/SKILL.md`
@@ -70,7 +73,7 @@ If an original PRD is available, read it only when needed for diff confidence. P
 
 ## Reconciliation workflow
 
-Use `../docs/planning-skill-output-contracts.md` for the shared queue/task/reconciliation contract. Preserve existing ids, statuses, dependencies, implementation history, capability/workstream/surface/agent context, AuthContext/scope, authorization, traces, idempotency, tests, acceptance checks, and explicit out-of-scope items.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the shared current-intent, queue, task, and reconciliation contract. Preserve existing ids, statuses, dependencies, implementation history, graph-node provenance, capability/workstream/surface/agent context, AuthContext/scope, authorization, traces, idempotency, tests, acceptance checks, and explicit out-of-scope items.
 
 For SaaS Foundation App planning, keep required coverage for invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail in the relevant task sequence.
 
@@ -91,8 +94,8 @@ Avoid:
 
 Before finishing, verify:
 - the revised PRD was read completely
-- current maintained artifacts were used as baseline
-- deltas are categorized as added/changed/removed/clarified/conflict
+- current maintained artifacts and current-intent graph nodes were used as baseline
+- deltas are categorized as added/changed/removed/clarified/conflict and reconciled without retaining superseded intent
 - AI-first delegation, authority, governance, audit, UI supervision, and outcome implications were compared against the current baseline
 - workstream expertise implications were compared against the current baseline, including expert bundles, governed prompts/skills/references, compact manifests, loader authorization, `ToolPermissionBoundary`, traces, UI/governance surfaces, default-content generation assets, and tests
 - affected app-description/spec/backlog/task files were updated

@@ -14,7 +14,7 @@ This is a queue hygiene and reconciliation skill. It does not implement applicat
 Audit and maintain the pending task queue so future `akka-do-next-pending-task` runs remain safe and bounded.
 
 The skill should:
-- validate queue shape against the queue contract
+- validate queue shape against the queue and intent-compiler contracts
 - preserve stable task IDs and status history
 - detect duplicate or overlapping tasks
 - detect stale tasks whose source specs changed or disappeared
@@ -52,6 +52,10 @@ Read these first if present:
 - `../docs/pending-question-queue.md`
 - `../docs/pending-task-queue.md`
 - `../docs/solution-plan-to-implementation-queue.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/intent-to-realization-flow.md`
+- `../docs/intent-compiler-skill-contracts.md`
 - `../docs/ai-first-saas-application-architecture.md` when the queue contains or references delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../docs/workstream-expertise-model.md` when the queue contains or references LLM-backed functional agents, workstream expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, or load traces
 - `../akka-do-next-pending-task/SKILL.md`
@@ -80,7 +84,7 @@ If a queue does not yet document `superseded`, update its local queue rules to i
 
 ## Maintenance workflow
 
-Use `../docs/planning-skill-output-contracts.md` for the shared queue/task/reconciliation contract. Preserve existing ids, statuses, dependencies, implementation history, capability/workstream/surface/agent context, AuthContext/scope, authorization, traces, idempotency, tests, acceptance checks, and explicit out-of-scope items.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the shared queue/task/reconciliation contract. Preserve existing ids, statuses, dependencies, implementation history, current-intent graph provenance, capability/workstream/surface/agent context, AuthContext/scope, authorization, traces, idempotency, tests, acceptance checks, and explicit out-of-scope items.
 
 For SaaS Foundation App planning, keep required coverage for invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail in the relevant task sequence.
 
@@ -101,7 +105,7 @@ Avoid:
 Before finishing, verify:
 - queue rules mention all statuses in use
 - task IDs and dependency references are valid
-- non-done tasks have usable required reads and skills
+- non-done tasks have usable required reads, skills, and current-intent provenance or a valid exemption
 - stale/duplicate tasks are blocked or superseded
 - AI-first task entries preserve authority, policy, decision, trace, UI-surface, evaluation, and outcome context when present in source artifacts
 - generated-SaaS task entries preserve or inherit workstream, attention category, role-specific dashboard, human surface graph node/action edge, governed-tool id/exposure, capability id, API/exposure, selected Akka substrate, internal workstream agent graph result handling, autonomous task notification/result mapping, auth, traces, and tests

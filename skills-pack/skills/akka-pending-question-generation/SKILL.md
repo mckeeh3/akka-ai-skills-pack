@@ -17,7 +17,7 @@ Create or update:
 specs/pending-questions.md
 ```
 
-The queue should capture only questions that affect downstream meaning, architecture, specs, backlog, task generation, tests, security, observability, UI/API contracts, or safe implementation.
+The queue should capture only questions that block safe compilation of current intent graph nodes into downstream meaning, architecture, specs, backlog, task generation, tests, security, observability, UI/API contracts, or implementation.
 
 The skill must:
 - inspect the current PRD, app-description, solution plan, specs, backlogs, or existing question queue
@@ -57,7 +57,10 @@ Read these first if present:
 - `../docs/workstream-expertise-model.md` when unresolved decisions affect LLM-backed functional-agent expertise, model binding, skills, references, manifests, `readSkill`, `readReferenceDoc`, tool boundaries, traces, or expertise surfaces
 - `../docs/pending-question-queue.md`
 - `../docs/pending-task-queue.md`
-- `../docs/intent-driven-usage-flow.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
 - `../docs/web-ui-style-guide.md`
 - `../ai-first-saas/SKILL.md`
 - target project path: specs/README.md
@@ -72,7 +75,7 @@ Do not read the entire codebase. This skill is about planning decisions, not imp
 
 ## Question discovery rules
 
-Use `../docs/planning-skill-output-contracts.md` for the detailed output contract. Return only the actionable summary, affected artifacts/layers, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/incremental-intent-processing.md` for the detailed question output contract. Return only the actionable summary, affected graph nodes/artifacts, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
 
 ## Final review checklist
 
@@ -80,6 +83,7 @@ Before finishing, verify:
 - `specs/pending-questions.md` exists or no durable questions were needed
 - Java source generation records and uses the fixed base package `ai.first`
 - browser UI work has a selected style guide or a pending/deferred style-selection question that blocks only affected UI tasks
+- every question identifies the current-intent node or realization step it blocks
 - every question has a clear design impact
 - AI-first questions are actionable blockers or meaningful quality decisions, not cosmetic prompts
 - blocking questions name what they block

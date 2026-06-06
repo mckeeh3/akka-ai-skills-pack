@@ -11,7 +11,7 @@ Use this skill when a project already has planning artifacts under `specs/`, esp
 specs/pending-tasks.md
 ```
 
-This is a queue repair/materialization skill. It does not redo PRD decomposition, does not revise app meaning, and does not implement application code. It translates already-accepted backlog/task-brief work into the durable execution queue while preserving source semantics. For generated secure AI-first SaaS, source semantics include the existing workstream graph chain: workstream → role-specific dashboard attention → human surface graph node/action or workstream event → internal workstream agent graph delegation/result when applicable → governed-tool inside capability and surface/action maps → selected Akka substrate/exposure channel → request-based Agent or durable AutonomousAgent task → notification/projection → audit/work trace.
+This is a queue repair/materialization skill. It does not redo PRD decomposition, does not revise app meaning, and does not implement application code. It translates already-accepted backlog/task-brief work into the durable execution queue while preserving current-intent graph provenance and source semantics. For generated secure AI-first SaaS, source semantics include the existing workstream graph chain: workstream → role-specific dashboard attention → human surface graph node/action or workstream event → internal workstream agent graph delegation/result when applicable → governed-tool inside capability and surface/action maps → selected Akka substrate/exposure channel → request-based Agent or durable AutonomousAgent task → notification/projection → audit/work trace.
 
 ## Goal
 
@@ -47,6 +47,10 @@ Do **not** use this skill when:
 Read these first if present:
 - `../README.md`
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline and first-slice implementation order
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/intent-to-realization-flow.md`
+- `../docs/intent-compiler-skill-contracts.md`
 - `../docs/ai-first-saas-application-architecture.md` when backlog work involves delegated operations, agents, governance, decisions, supervision, audit, or outcomes
 - `../docs/requirements-to-workstream-development-process.md` when materializing generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or trace-aware queues
 - `../docs/pending-question-queue.md`
@@ -78,7 +82,7 @@ Use the contract in `../docs/pending-task-queue.md`, especially the required `Ve
 
 ## Queue derivation rules
 
-Use `../docs/planning-skill-output-contracts.md` for the shared queue/task/reconciliation contract. Preserve existing ids, statuses, dependencies, implementation history, capability/workstream/surface/agent context, AuthContext/scope, authorization, traces, idempotency, tests, acceptance checks, and explicit out-of-scope items.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the shared queue/task/reconciliation contract. Preserve existing ids, statuses, dependencies, implementation history, current-intent graph provenance, capability/workstream/surface/agent context, AuthContext/scope, authorization, traces, idempotency, tests, acceptance checks, and explicit out-of-scope items.
 
 For SaaS Foundation App planning, keep required coverage for invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail in the relevant task sequence.
 
@@ -87,7 +91,7 @@ For SaaS Foundation App planning, keep required coverage for invitation lifecycl
 Before finishing, verify:
 - `specs/pending-tasks.md` exists
 - secure foundation tasks are present and runnable before domain-specific tasks for SaaS app queues; missing foundation work is not treated as cross-cutting polish
-- each runnable backlog task item has a queue entry
+- each runnable backlog task item has a queue entry with current-intent provenance
 - no obvious duplicate queue entries were created
 - obsolete non-done queue entries were superseded rather than deleted
 - existing task IDs and statuses were preserved where possible
