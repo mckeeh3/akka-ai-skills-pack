@@ -18,8 +18,30 @@ Use them to understand the expected visual craft for the canonical `ai-first-wor
 - `tokens.css` — canonical example token bundles and component style primitives for the static references.
 - `mission-control.html` — dark-toned briefing/dashboard surface with command strip, KPI band, agent activity, decisions, trust controls, and autonomous action queues.
 - `mission-control-light.html` — light-toned variant with the same anatomy and design language; only named-theme color tokens change.
+- `attention-dashboard-flow.html` — canonical “what needs my attention?” flow: dashboard count cards → sorted list/table → item detail/action surface.
+- `decision-queue-detail.html` — decision queue and detail review with risk, evidence, policy trigger, confidence, trace links, and approve/reject/counter/defer/escalate actions.
+- `governance-policy-center.html` — policy list, proposed diff, simulation evidence, approval commit, rollback, and trace context.
+- `audit-trace-explorer.html` — search/filter plus chronological trace details for actor, tool, data access, policy invocation, and redaction.
+- `my-account-settings.html` — profile/context/settings surface with named theme picker, immediate preview semantics, and governed save.
+- `agent-admin-catalog-detail.html` — AgentDefinition catalog/detail with prompt/skill/reference manifests, model config, tool boundary, safe test console, and traces.
+- `goal-workbench.html` — goal/objective workbench with success criteria, constraints, plan, agent assignment, approval gates, and simulation result.
+- `autonomous-agent-task-progress.html` — durable AutonomousAgent task status, dependency, evidence, waiting-for-human, retry/cancel/escalate, and result controls.
+- `system-message-states.html` — denial, validation, approval-required, stale/reconnect, no-op, and provider/runtime-blocked system-message surfaces.
 - `user-admin-list.html` — user administration list/search surface with access health, audit, AI admin assistance, and capability/auth context.
 - `user-admin-edit.html` — detail/edit surface showing designed form controls, approval-required actions, audit timeline, and summary/result panels.
+
+## Canonical attention flow
+
+Most generated workstreams should start from a role-specific dashboard that answers **“what needs my attention?”**. The canonical flow is:
+
+```text
+dashboard attention count cards
+→ list/search/table surface sorted by urgency, risk, freshness, due time, or business priority
+→ item detail/action surface where the human reviews evidence and decides what to do
+→ result/system-message/progress surface with trace links
+```
+
+Attention cards should be simple, clickable, rectangular count shapes that show the “what” and the count. They are navigation/action affordances into governed surfaces; they are not authorization controls. The list view should make selection efficient. The detail surface is where consequential actions, approvals, denials, validation, traces, and outcomes become explicit.
 
 ## Use safely
 
