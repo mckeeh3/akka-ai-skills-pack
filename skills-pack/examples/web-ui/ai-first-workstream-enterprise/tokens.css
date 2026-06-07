@@ -169,6 +169,9 @@ button:disabled { cursor: not-allowed; opacity: .56; }
 .kpi:last-child { border-right: 0; }
 .kpi-value { font: 850 2rem/1 var(--font-display); letter-spacing: -.045em; }
 .kpi-label { color: var(--color-text-soft); }
+.attention-card { min-height: 9.25rem; display: grid; align-content: center; justify-items: center; gap: var(--space-3); text-align: center; text-decoration: none; color: inherit; }
+.attention-card .panel-note { margin: 0; color: var(--color-text-soft); font: 760 1rem/1.2 var(--font-display); letter-spacing: -.018em; }
+.attention-card .kpi-value { margin-block: var(--space-1) 0; }
 .trend.up { color: var(--color-success); } .trend.down { color: var(--color-danger); }
 
 .activity-list, .decision-list, .audit-list, .form-grid { display: grid; gap: var(--space-3); }
@@ -192,7 +195,9 @@ button:disabled { cursor: not-allowed; opacity: .56; }
 .person { display: flex; gap: var(--space-3); align-items: center; }
 .person strong { display: block; }
 .person span { color: var(--color-muted); font-size: .9rem; }
-.summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+.summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-5); }
+.summary-grid > div { display: grid; gap: var(--space-2); }
+.summary-grid .muted { font-size: .95rem; font-weight: 700; }
 .audit-entry { border-left: 2px solid var(--color-accent); }
 
 @media (max-width: 1000px) {

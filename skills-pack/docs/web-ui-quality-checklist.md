@@ -66,12 +66,13 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 - [ ] My Account theme selection, when in scope, lets the user choose one available named theme, previews the selected named theme immediately on field change, and persists only through the governed save/confirm settings path; it does not present dark/light/system mode choices.
 - [ ] Brand adaptations are applied without copying demo names, logos, users, or metrics from reference images.
 - [ ] Status colors, chart colors, shadows, spacing, radius, and component density match the selected style guide closely enough to guide future regeneration; switching themes changes color tokens only, not layout, design language, surface anatomy, spacing, or behavior.
+- [ ] Dashboard attention/KPI cards use the shared attention-card style across all dashboards, have readable semibold/bold labels, strong numeric hierarchy, enough vertical spacing between label, number, and badge/status text, and appear above lower-priority dashboard details/lists.
 
 ## Visual craft
 
 - [ ] The UI has an intentional aesthetic direction recorded in the style guide rather than improvised generic SaaS styling.
 - [ ] The style guide records a memorable motif and differentiation target, such as authority rails, trace-lit timelines, dense command panels, decision-card priority, or another product-appropriate craft detail.
-- [ ] Typography, spacing, and density make the shell and structured surfaces feel production-grade, readable, and intentionally designed rather than generic/default.
+- [ ] Typography, spacing, and density make the shell and structured surfaces feel production-grade, readable, and intentionally designed rather than generic/default; dashboard labels and metric text are not too small or too light for fast scanning.
 - [ ] Color, borders, shadows, texture, and depth clarify hierarchy instead of decorating equally weighted cards.
 - [ ] Human-needed work, policy-blocked work, autonomous progress, trace/history, and FYI activity have distinct hierarchy without relying on color alone.
 - [ ] Decision cards, structured-surface forms, audit timelines, governance diffs, denials, empty states, and errors feel deliberately designed, not default or placeholder.

@@ -25,7 +25,7 @@ Include these AI-first workstream/surface patterns for generated full-stack AI-f
 - **Functional-agent rail:** role-authorized work areas, attention indicators, hidden/denied agent recovery, and selected-agent context.
 - **Main workstream:** user intent, agent responses, capability results, workflow progress, decisions, traces, and follow-up actions in one continuous timeline.
 - **Persistent composer:** contextual natural-language requests, command shortcuts, uploads where allowed, disabled/forbidden explanations, and submit progress.
-- **Role-specific dashboard / command center surface:** attention items, evidence, freshness, active goals, plan progress, agent activity, exceptions, approval queues, material events, and next browser-tools with stale/reconnect status.
+- **Role-specific dashboard / command center surface:** attention items, evidence, freshness, active goals, plan progress, agent activity, exceptions, approval queues, material events, and next browser-tools with stale/reconnect status. All dashboards with attention counters must use the same attention-card counter strip style, placed above lower-priority details/lists. Labels must be slightly larger and semibold/bold, with deliberate vertical spacing between label, number, and badge/status so the card does not feel cramped.
 - **Decision card / deviation review surface:** recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, and approve/reject/defer/escalate actions.
 - **Policy/governance center surface:** policy versions, proposals, simulations, human-authorized commits, examples, thresholds, and rollback context.
 - **Async digest surface:** compressed routine activity with material events, pending decisions, outcome deltas, and trace links.
@@ -168,6 +168,7 @@ Before coding or accepting UI work, verify:
 - mobile layout preserves the main task
 - keyboard-only flow reaches and completes primary actions
 - selected style guide tokens, named-theme bundles, typography, texture/depth choices, and canonical reference mockup anatomy are used to reinforce hierarchy, focus, and status without relying on color alone
+- dashboard KPI/attention cards use the shared attention-card style across dashboards, appear above lower-priority details/lists, and have readable semibold/bold labels plus enough gap between label, value, and status badge for fast scanning
 - left rail, workstream panel, composer, and surface actions remain usable by keyboard and at narrow widths
 - AI-first surfaces show delegated work, retained authority, evidence, policy triggers, trace links, and outcome context when those concepts are in scope
 - the UI avoids generic AI/SaaS visual cliches and has a clearly recorded memorable motif

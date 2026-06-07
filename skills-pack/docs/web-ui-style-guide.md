@@ -99,7 +99,7 @@ Every app UI style guide should define:
 ## Component style rules
 - workstream shell and functional-agent rail:
 - AI command strip:
-- KPI summary cards:
+- KPI summary cards: all dashboards with attention counters use the same attention-card style; place the counter strip above lower-priority detail panels/lists, with readable labels, strong numbers, and deliberate vertical spacing between label, number, and status badge
 - decision/exception cards:
 - agent activity timeline/cards:
 - governance/trust controls:
@@ -168,7 +168,7 @@ Use this as the default style system for generated AI-first SaaS apps. It is a r
 - neutral canvas and layered card surfaces; structure comes from whitespace, hairline borders, and minimal elevation rather than heavy shadows
 - a single blue/indigo brand accent for primary actions, links, active navigation, and AI affordances
 - semantic status colors used sparingly and functionally: green for positive/healthy/on-track, amber for warning/needs-review, red for critical/at-risk, and neutral gray for unknown/inactive
-- strong numeric hierarchy in KPI strips, metrics, tables, and dense operational summaries
+- strong numeric hierarchy in KPI strips, metrics, tables, and dense operational summaries; all dashboard attention counters use a consistent card strip above detail content, with labels large/bold enough to scan and enough spacing between label, number, and status to avoid cramped cards
 - decisions, exceptions, policy boundaries, auditability, and outcome visibility are more prominent than decorative chrome
 - autonomous activity is visible through recommendation panels, confidence gauges, agent avatars, status pills, and timelines without hiding consequential work in chat transcripts
 - there is no dark/light/system mode and no mode-specific layout; named themes preserve the same component anatomy and design language while swapping color token bundles, primarily backgrounds/surfaces plus accent and semantic tuning
@@ -375,6 +375,13 @@ Required elements:
 - trend/delta with direction and text
 - optional icon or sparkline
 - status color plus text, not color alone
+
+Craft rules:
+
+- The label should be visibly larger and heavier than muted helper copy; use a semibold/bold display/body style rather than tiny gray text.
+- Leave clear vertical rhythm between label, number, and badge/status text, typically at least the selected spacing token equivalent of `--space-3` for attention-card stacks.
+- Centered KPI cards are acceptable only when the value/label/status cluster has enough breathing room; otherwise use a left-aligned hierarchy with the same spacing discipline.
+- In role-specific dashboards and My Account dashboards, put the attention counter strip before lower-priority profile/settings/details, queues, lists, or explanatory panels so users first see what needs attention and then inspect details below.
 
 ### Decision and exception cards
 
