@@ -7,6 +7,7 @@ Pair with:
 - `./structured-surface-contracts.md`
 - `./web-ui-frontend-decomposition.md`
 - `./web-ui-style-guide.md`
+- `./web-ui-component-catalog.md`
 - `./web-ui-quality-checklist.md`
 - `../akka-web-ui-ux-design/SKILL.md`
 
@@ -36,7 +37,7 @@ Main workstream stream:
 Persistent composer:
   accepted prompt/action requests, disabled/forbidden states, selected-agent context, refocus behavior
 Structured surfaces:
-  dashboards, decision cards, forms, tables, audit timelines, governance diffs, workflow/task progress, outcomes
+  dashboards, attention counter cards, decision cards, forms, tables, audit timelines, governance diffs, workflow/task progress, outcomes
 Realtime/stale region:
   connected/reconnecting/stale indicators and recovery actions
 ```

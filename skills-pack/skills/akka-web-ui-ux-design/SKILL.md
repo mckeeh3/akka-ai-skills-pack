@@ -38,8 +38,9 @@ Do not hide consequential AI behavior behind generic dashboards, page-first CRUD
 - `../docs/web-ui-frontend-decomposition.md`
 - `../docs/web-ui-ux-patterns.md`
 - `../docs/web-ui-style-guide.md`
+- `../docs/web-ui-component-catalog.md`
 - `../docs/web-ui-quality-checklist.md`
-- `../examples/web-ui/ai-first-workstream-enterprise/README.md` and the static mockups there when using the canonical style
+- `../examples/web-ui/ai-first-workstream-enterprise/README.md`, `../examples/web-ui/ai-first-workstream-enterprise/component-catalog.html`, and the static mockups there when using the canonical style
 - relevant app-description UI files under `app-description/55-ui/**` or specs under `specs/**` when present
 
 ## Use this skill when
@@ -70,7 +71,7 @@ For each workstream shell region, structured surface, or major region, define:
 12. **Responsive behavior** — how the primary task survives on narrow screens.
 13. **Keyboard/focus path** — how a keyboard-only user completes the primary flow.
 14. **UX copy** — labels, button text, helper text, empty/error/success messages.
-15. **Style guide application** — how selected style tokens, named themes, reference mockup anatomy, visual hierarchy, typography, texture/depth, and purposeful motion support feedback, structured-surface form controls, and My Account preference behavior when in scope.
+15. **Style guide and component catalog application** — how selected style tokens, named themes, reusable component catalog anatomy, reference mockup anatomy, visual hierarchy, typography, texture/depth, and purposeful motion support feedback, structured-surface form controls, and My Account preference behavior when in scope.
 16. **Browser-tool/capability mapping** — which browser-tool invokes which governed-tool/backend capability for each consequential action and how forbidden/denied states are shown.
 
 ## UX copy rules

@@ -60,7 +60,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 
 - [ ] A selected style guide is recorded in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent authoritative UI spec.
 - [ ] The authored stylesheet or component styling implements the selected AI-first style guide through CSS variables/tokens or project-standard styling configuration rather than scattered hard-coded values.
-- [ ] Canonical-style UI was compared against `skills-pack/examples/web-ui/ai-first-workstream-enterprise/` or the installed equivalent for anatomy, hierarchy, token roles, and component craft without copying demo content.
+- [ ] Canonical-style UI was compared against `skills-pack/docs/web-ui-component-catalog.md`, `skills-pack/examples/web-ui/ai-first-workstream-enterprise/component-catalog.html`, and the broader reference mockups or installed equivalents for anatomy, hierarchy, token roles, and component craft without copying demo content.
 - [ ] The user-facing theme preference is named-theme based; available themes, default theme, tone metadata for contrast testing only, and persistence scope are recorded.
 - [ ] Initial named themes are present or explicitly required for generated AI-first SaaS, with multiple named color-token bundles spanning both light-toned and dark-toned options for contrast coverage.
 - [ ] My Account theme selection, when in scope, lets the user choose one available named theme, previews the selected named theme immediately on field change, and persists only through the governed save/confirm settings path; it does not present dark/light/system mode choices.

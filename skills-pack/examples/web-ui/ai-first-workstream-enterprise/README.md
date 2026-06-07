@@ -16,6 +16,7 @@ Use them to understand the expected visual craft for the canonical `ai-first-wor
 ## Files
 
 - `tokens.css` — canonical example token bundles and component style primitives for the static references.
+- `component-catalog.html` — visual catalog of reusable AI-first UI components with names, short descriptions, examples, and a link to `../../../docs/web-ui-component-catalog.md`.
 - `mission-control.html` — dark-toned briefing/dashboard surface with command strip, KPI band, agent activity, decisions, trust controls, and autonomous action queues.
 - `mission-control-light.html` — light-toned variant with the same anatomy and design language; only named-theme color tokens change.
 - `attention-dashboard-flow.html` — canonical “what needs my attention?” flow: dashboard count cards → sorted list/table → item detail/action surface.
@@ -41,7 +42,7 @@ dashboard attention count cards
 → result/system-message/progress surface with trace links
 ```
 
-Attention cards should be simple, clickable, rectangular count shapes that show the “what” and the count. They are navigation/action affordances into governed surfaces; they are not authorization controls. The list view should make selection efficient. The detail surface is where consequential actions, approvals, denials, validation, traces, and outcomes become explicit.
+Attention cards should be simple, clickable, rectangular count shapes that show the “what” and the count. They are navigation/action affordances into governed surfaces; they are not authorization controls. Use the shared attention-card style shown in `component-catalog.html` across all dashboards with these counters. The list view should make selection efficient. The detail surface is where consequential actions, approvals, denials, validation, traces, and outcomes become explicit.
 
 ## Use safely
 

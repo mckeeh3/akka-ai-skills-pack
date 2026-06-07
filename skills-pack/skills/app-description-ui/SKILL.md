@@ -27,6 +27,7 @@ Read these first if present:
 - `../docs/workstream-ui-reference-architecture.md` for the canonical generated-app workstream UI implementation reference under `frontend/src/workstream/**`
 - `../docs/web-ui-frontend-decomposition.md`
 - `../docs/web-ui-style-guide.md`
+- `../docs/web-ui-component-catalog.md`
 - `../docs/web-ui-quality-checklist.md`
 - `../app-descriptions/SKILL.md`
 - `../app-description-functional-agent-modeling/SKILL.md` for role-authorized functional-agent rail, workstream, surface, capability, prompt/skill/tool, trace, and test semantics

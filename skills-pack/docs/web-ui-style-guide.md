@@ -2,7 +2,7 @@
 
 Use this document whenever a generated app includes a browser UI. The visual style is part of the maintained app specification, not an implementation detail that frontend generation may invent later.
 
-For the canonical style, also review the static reference mockups under `../examples/web-ui/ai-first-workstream-enterprise/`. They encode the expected visual craft: distinctive command-desk hierarchy, tokenized controls, functional-agent rail, command strip, decision cards, audit traces, and dense-but-readable workstream surfaces. Treat those files as design references, not runnable app completion evidence or content to copy wholesale.
+For the canonical style, also review `./web-ui-component-catalog.md` and the static reference mockups under `../examples/web-ui/ai-first-workstream-enterprise/`, especially `component-catalog.html`. They encode the expected visual craft: distinctive command-desk hierarchy, tokenized controls, functional-agent rail, command strip, reusable attention counters, decision cards, audit traces, and dense-but-readable workstream surfaces. Treat those files as design references, not runnable app completion evidence or content to copy wholesale.
 
 ## Policy
 
@@ -35,7 +35,7 @@ A generated web UI must read from that style guide before producing HTML, CSS, T
 Every app UI style guide should define:
 
 - selected AI-first style id and name, or `unselected`
-- source reference: this document, `../examples/web-ui/ai-first-workstream-enterprise/`, a custom design reference, or a user-provided brand brief
+- source reference: this document, `./web-ui-component-catalog.md`, `../examples/web-ui/ai-first-workstream-enterprise/`, a custom design reference, or a user-provided brand brief
 - visual direction: concise aesthetic point of view, tone, memorable motif, differentiation target, and forbidden generic patterns
 - **theme model:** named-theme selection, not dark/light/system mode; available theme ids/names; default theme id; optional tone metadata for contrast testing only; user preference scope and persistence expectations; immediate local preview behavior for My Account theme selection; governed save/confirm path for durable persistence
 - brand adaptations: app name, logo/icon treatment, product-specific accent allowances, forbidden copied demo names/logos
