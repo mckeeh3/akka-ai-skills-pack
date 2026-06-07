@@ -139,7 +139,7 @@ Any intentionally deferred foundation-domain behavior must become explicit follo
 5. Tenant Admin employee invitation and role management.
 6. Tenant Admin customer organization creation and Customer Admin invitation.
 7. Customer Admin customer user invitation and role management.
-8. User profile and settings APIs, starting with editable display profile fields and UI light/dark appearance.
+8. User profile and settings APIs, starting with editable display profile fields and named UI theme preferences. Themes are named color-token bundles, not dark/light/system modes.
 9. SaaS Owner to Tenant subscription creation, plan assignment, status changes, and billing audit.
 10. Cross-scope audit trace and access review views.
 11. Governed runtime agent foundation: `AgentDefinition` lifecycle/profile state, governed `PromptDocument`/`PromptVersion`, governed `SkillDocument`/`SkillVersion`, per-agent `AgentSkillManifest` with compact skill ids/names/descriptions/when-to-use hints, `ToolPermissionBoundary`, deterministic prompt assembly, authorized Akka `@FunctionTool` `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`, plus first-install/tenant-bootstrap governed setup of implementation-developed default agent behavior documents.

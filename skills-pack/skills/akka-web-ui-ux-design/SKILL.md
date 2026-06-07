@@ -19,6 +19,8 @@ Use `../references/generated-saas-input-contract.md` as the shared gate. Do not 
 
 For AI-first SaaS surfaces, design around supervision, judgment, teaching, and accountability before conventional record management. The first five seconds should answer: which objective or plan is active, what the agent/system is doing, what needs human attention, what authority the human retains, and how to inspect evidence or trace history.
 
+UX design also owns visual intentionality. Do not hand off a vague "modern SaaS" direction. Commit to a recorded aesthetic point of view, memorable motif, and hierarchy strategy before implementation. For the canonical pack style this should remain within the AI-first workstream enterprise language: command desk, governance cockpit, trust-and-outcomes workspace, dense operational panels, authority/trace rails, decision cards, designed controls, and named color themes.
+
 Include these AI-first workstream/surface patterns for generated full-stack AI-first SaaS:
 - **Functional-agent rail:** role-authorized work areas, attention indicators, hidden/denied agent recovery, and selected-agent context.
 - **Main workstream:** user intent, agent responses, capability results, workflow progress, decisions, traces, and follow-up actions in one continuous timeline.
@@ -37,6 +39,7 @@ Do not hide consequential AI behavior behind generic dashboards, page-first CRUD
 - `../docs/web-ui-ux-patterns.md`
 - `../docs/web-ui-style-guide.md`
 - `../docs/web-ui-quality-checklist.md`
+- `../examples/web-ui/ai-first-workstream-enterprise/README.md` and the static mockups there when using the canonical style
 - relevant app-description UI files under `app-description/55-ui/**` or specs under `specs/**` when present
 
 ## Use this skill when
@@ -67,7 +70,7 @@ For each workstream shell region, structured surface, or major region, define:
 12. **Responsive behavior** — how the primary task survives on narrow screens.
 13. **Keyboard/focus path** — how a keyboard-only user completes the primary flow.
 14. **UX copy** — labels, button text, helper text, empty/error/success messages.
-15. **Style guide application** — how selected style tokens and named themes support hierarchy, feedback, structured-surface form controls, and My Account preference behavior when in scope.
+15. **Style guide application** — how selected style tokens, named themes, reference mockup anatomy, visual hierarchy, typography, texture/depth, and purposeful motion support feedback, structured-surface form controls, and My Account preference behavior when in scope.
 16. **Browser-tool/capability mapping** — which browser-tool invokes which governed-tool/backend capability for each consequential action and how forbidden/denied states are shown.
 
 ## UX copy rules
@@ -129,6 +132,13 @@ UX copy:
 Responsive behavior:
 Keyboard/focus behavior:
 Deep-link behavior:
+Visual craft:
+Aesthetic point of view:
+Memorable motif:
+Hierarchy strategy:
+Typography/token strategy:
+Texture/depth/motion notes:
+Forbidden generic patterns:
 Implementation notes:
 ```
 
@@ -157,7 +167,8 @@ Before coding or accepting UI work, verify:
 - destructive actions are hard to trigger accidentally
 - mobile layout preserves the main task
 - keyboard-only flow reaches and completes primary actions
-- selected style guide tokens and named-theme bundles are used to reinforce hierarchy, focus, and status without relying on color alone
+- selected style guide tokens, named-theme bundles, typography, texture/depth choices, and canonical reference mockup anatomy are used to reinforce hierarchy, focus, and status without relying on color alone
 - left rail, workstream panel, composer, and surface actions remain usable by keyboard and at narrow widths
 - AI-first surfaces show delegated work, retained authority, evidence, policy triggers, trace links, and outcome context when those concepts are in scope
+- the UI avoids generic AI/SaaS visual cliches and has a clearly recorded memorable motif
 - consequential surface actions map to browser-tool exposures backed by governed-tools and backend capabilities; UI gating is not treated as authorization

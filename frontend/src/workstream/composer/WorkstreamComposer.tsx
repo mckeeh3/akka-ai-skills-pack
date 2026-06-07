@@ -109,6 +109,7 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
         <label htmlFor="workstream-composer-input" className="sr-only">Ask {selectedAgent?.label ?? 'a functional agent'}</label>
         <textarea
           id="workstream-composer-input"
+          className="designed-control composer-textarea"
           ref={inputRef}
           rows={1}
           autoFocus

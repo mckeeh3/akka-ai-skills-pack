@@ -10,6 +10,7 @@ const components = readFileSync(new URL('./styles/components.css', import.meta.u
 const surfaceRenderer = readFileSync(new URL('./workstream/surfaces/SurfaceRenderer.tsx', import.meta.url), 'utf8');
 const detailEditSurface = readFileSync(new URL('./workstream/surfaces/DetailEditSurface.tsx', import.meta.url), 'utf8');
 const shell = readFileSync(new URL('./workstream/shell/WorkstreamShell.tsx', import.meta.url), 'utf8');
+const surfaceFixtures = readFileSync(new URL('./__tests__/fixtures/workstream/surfaces.ts', import.meta.url), 'utf8');
 
 test('frontend entry composes the canonical workstream shell instead of route pages', () => {
   assert.match(main, /<WorkstreamShell/);
@@ -74,10 +75,13 @@ test('named theme selection uses root data-theme, live detail-edit preview, and 
   assert.match(main, /settings: \{ \.\.\.current\.me\.settings, preferredThemeId: selectedThemeId \}/);
   assert.doesNotMatch(main, /surfaceCorrelationId: `corr-\$\{action\.actionId\}`/);
   assert.doesNotMatch(main, /prefers-color-scheme: dark/);
+  assert.doesNotMatch(main, /value=\{?['\"](?:system|light|dark)['\"]\}?|label: ['\"](?:System|Light|Dark)['\"]/);
+  assert.doesNotMatch(surfaceFixtures, /value: '(?:system|light|dark)'|label: '(?:System|Light|Dark)'/);
 });
 
 test('AI-first workstream enterprise tokens include named themes and semantic aliases', () => {
-  assert.match(tokens, /--font-sans: Inter/);
+  assert.match(tokens, /--font-display: Sora/);
+  assert.match(tokens, /--font-sans: Geist/);
   assert.match(tokens, /--font-mono: "JetBrains Mono"/);
   assert.match(tokens, /\[data-theme="aurora-light"\]/);
   assert.match(tokens, /\[data-theme="cobalt-light"\]/);
@@ -89,9 +93,14 @@ test('AI-first workstream enterprise tokens include named themes and semantic al
   assert.match(tokens, /--color-accent: #38bdf8/);
   assert.match(tokens, /--color-accent: #ff3045/);
   assert.match(tokens, /--color-primary: var\(--color-accent\)/);
+  for (const block of tokens.matchAll(/\[data-theme="[^"]+"\] \{([\s\S]*?)\n\}/g)) {
+    assert.doesNotMatch(block[1], /grid-template|flex-direction|position:|font-size:|padding:|margin:/, 'theme blocks should change color tokens, not layout or typography');
+  }
 });
 
 test('focus, skip link, reduced motion, and responsive shell rules are present', () => {
+  assert.doesNotMatch(base, /color-scheme: light dark/);
+  assert.match(base, /radial-gradient\(circle at 18% 0%, var\(--color-glow-primary\)/);
   assert.match(base, /:focus-visible/);
   assert.match(base, /\.skip-link/);
   assert.match(shell, /<a className="skip-link" href="#main-content">Skip to main workstream<\/a>\s*<button[\s\S]*?className=\{`mobile-menu-button/);

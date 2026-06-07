@@ -1,7 +1,6 @@
 * { box-sizing: border-box; }
 
 html {
-  color-scheme: light dark;
   font-family: var(--font-sans);
   font-feature-settings: "tnum" 1, "ss01" 1;
 }
@@ -13,9 +12,11 @@ body {
   font-family: var(--font-sans);
   color: var(--color-text);
   background:
+    radial-gradient(circle at 18% 0%, var(--color-glow-primary), transparent 34rem),
+    radial-gradient(circle at 86% 12%, var(--color-glow-ai), transparent 34rem),
     radial-gradient(circle, var(--color-grid-line) 0 1px, transparent 1.2px),
-    var(--color-bg);
-  background-size: 28px 28px, auto;
+    linear-gradient(180deg, var(--color-bg), var(--color-bg-subtle));
+  background-size: auto, auto, 28px 28px, auto;
 }
 
 body, button, input, textarea, select { font-family: var(--font-sans); }

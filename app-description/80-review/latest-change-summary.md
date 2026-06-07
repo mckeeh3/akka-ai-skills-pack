@@ -5,11 +5,11 @@
 - defined the agent workstream application model with role-authorized functional agents, internal agents, durable workstreams, structured surfaces, governed capabilities, and horizontal Akka maps
 - defined AI-first operating-model substrate for goals, agents, policies, decisions, traces, and outcomes
 - selected the `ai-first-workstream-enterprise` UI design for seed validation
-- defined named-theme requirements with two light and two dark initial themes and limited lightweight style overrides to named theme, color, and font tokens
+- defined named-theme requirements with named color-token bundles spanning light-toned and dark-toned contrast coverage; theme changes alter color tokens only, not dark/light/system modes, layout, component anatomy, or behavior
 - refreshed UI guidance around the workstream shell, functional-agent rail, persistent composer, structured surface rendering, route/deep-link support, realtime state, accessibility, and responsive expectations
 - added explicit `12-workstreams/` contracts and traceability maps for functional agents, internal agents, surfaces, capabilities, and horizontal implementation candidates
 - retained `55-ui/ai-first-surfaces.md` for goal workbench, mission control, decision review, governance, digest, and audit surface semantics
 - expanded UI interactions/forms with fields, validation, idempotency, confirmation, success, and failure behavior
 - expanded frontend API contracts with browser-facing DTO sketches and SSE event envelope expectations
-- added design-specific UI acceptance checks for shell, modes, composer, decision cards, realtime, responsive behavior, and accessibility
+- added design-specific UI acceptance checks for shell, named themes, composer, decision cards, realtime, responsive behavior, and accessibility
 - mapped intended behavior to tests, security, observability, and generation phases

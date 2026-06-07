@@ -10,6 +10,7 @@ Use this index to avoid loading every UI document. For generated AI-first SaaS, 
 - `./web-ui-api-contract-patterns.md` — typed browser API and DTO/error patterns.
 - `./web-ui-frontend-project-integration.md` — React/Vite frontend build and Akka static-resource hosting.
 - `./web-ui-quality-checklist.md` — final review checklist.
+- `../examples/web-ui/ai-first-workstream-enterprise/README.md` — static visual reference mockups for the canonical style; use anatomy, token roles, and visual hierarchy, not demo content or runtime shortcuts.
 
 ## Thin routing docs
 

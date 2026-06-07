@@ -67,6 +67,6 @@ Before finishing, verify:
 - status/error information is not color-only
 - AI-first status, evidence, risk, policy-trigger, approval, exception, trace, and outcome information is available as text when applicable
 - narrow layouts preserve the main supervision, decision, or governance task before secondary diagnostics
-- each required named light/dark theme, focus rings, form controls, and status colors satisfy the selected style guide and accessibility contrast expectations
+- each required named theme color-token bundle, focus ring, form control, and status color satisfies the selected style guide and accessibility contrast expectations; light/dark tone is contrast metadata, not a user-facing mode
 - My Account named-theme selection previews immediately without breaking keyboard focus or accessible field announcements, and durable persistence still uses the governed save path
 - page has a clear main landmark and title/heading

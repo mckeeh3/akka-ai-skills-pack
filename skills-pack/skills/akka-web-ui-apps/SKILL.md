@@ -15,6 +15,7 @@ Use this skill when the product needs a real browser app, not only JSON APIs. Fo
 - `../docs/web-ui-api-contract-patterns.md` — typed API contracts
 - `../docs/structured-surface-contracts.md` — surface payload/action/event contracts
 - `../docs/web-ui-quality-checklist.md` — review gate
+- `../examples/web-ui/ai-first-workstream-enterprise/README.md` — canonical static visual reference mockups; use anatomy and token roles, not demo content
 - `../docs/retired-content-boundaries.md` if old page/static-fixture structures appear
 
 Load focused companions only as needed: `akka-web-ui-frontend-project`, `akka-web-ui-api-client`, `akka-web-ui-ux-design`, `akka-web-ui-accessibility-responsive`, `akka-web-ui-state-rendering`, `akka-web-ui-forms-validation`, `akka-web-ui-realtime`, `akka-web-ui-testing`, and `akka-http-endpoint-web-ui`.
@@ -40,7 +41,7 @@ Routes and deep links support this model; they are not the security boundary and
 - Rendering code consumes frontend-safe DTOs/surface envelopes. It must not import server domain state or secrets.
 - Every consequential surface action maps to a backend capability and is rechecked server-side.
 - Denials, validation failures, approval-required results, stale/reconnect states, and no-ops render as structured feedback, not silent UI failures.
-- Do not use legacy `frontend/src/screens/**`, removed static UI fixtures, copied demo names, or pack examples as generated-app runtime structure.
+- Do not use legacy `frontend/src/screens/**`, removed static UI fixtures, copied demo names, or pack examples as generated-app runtime structure. Static reference mockups under `../examples/web-ui/**` are visual guidance only, not runtime source or fixture completion evidence.
 
 ## Planning output
 

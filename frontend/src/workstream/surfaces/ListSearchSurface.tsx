@@ -14,7 +14,7 @@ export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps
     <SurfaceStateFrame envelope={envelope}>
       <form className="surface-search-form" role="search">
         <label htmlFor={`${envelope.surfaceId}-query`}>Search</label>
-        <input id={`${envelope.surfaceId}-query`} name="query" defaultValue={queryValue} />
+        <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" defaultValue={queryValue} />
       </form>
       {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial results: unauthorized or redacted evidence is omitted.</p>}
       {envelope.data.redaction && <p className="redaction-note">Redaction: {renderSurfaceValue(envelope.data.redaction)}</p>}
