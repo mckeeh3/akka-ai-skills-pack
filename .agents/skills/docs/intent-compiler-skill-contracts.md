@@ -52,6 +52,7 @@ Specs, backlogs, task briefs, pending questions, and pending tasks should:
 - name required reads and focused skills;
 - carry dependencies and blockers explicitly;
 - include done criteria, required checks, and runtime validation path when feature-bearing;
+- for browser-rendered structured surfaces or web UI realization, include required reads for `app-description-ui`, `akka-web-ui-ux-design`, `docs/web-ui-style-guide.md`, `docs/web-ui-component-catalog.md`, and `docs/web-ui-quality-checklist.md`, and cite the selected app style/named-theme artifact;
 - preserve the workstream vertical contract or state a valid docs-only/internal/foundation/cross-cutting exemption.
 
 ## Realization contract
@@ -60,6 +61,7 @@ Code-generation or implementation skills should:
 
 - verify current intent and task provenance before coding;
 - choose Akka/frontend substrates from the accepted current intent and specs;
+- for browser-rendered surfaces, preserve the selected UI style guide, named-theme contract, component-catalog anatomy, accessibility/responsive behavior, and surface graph semantics instead of inventing ad hoc page/card styling;
 - preserve tenant/customer scope, authorization, policy denials, audit/work traces, provider fail-closed behavior, and frontend secret boundaries;
 - implement tests at the smallest level that proves behavior;
 - run required checks and local runtime/API/UI validation when in scope;
