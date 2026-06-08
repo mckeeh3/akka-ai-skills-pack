@@ -1,49 +1,35 @@
 # Temporary Legacy App-description Source Manifest
 
-## Archive path
+## Archive status
 
-- Archived tree: `specs/app-description-intent-compiler-migration/archive/legacy-app-description/`
+- Archived tree at capture time: `specs/app-description-intent-compiler-migration/archive/legacy-app-description/`
 - Source tree at capture time: `app-description/`
 - Captured for task: `TASK-ADICM-01-001`
+- Removed for task: `TASK-ADICM-04-001`
 - Capture date: 2026-06-08
 - Captured file count: 88 Markdown files and other files under the legacy tree
 
 ## Authority status
 
-This archive is **temporary migration provenance only**. It is **not authoritative product current intent** and must not be used as the source of truth for generated-app behavior, backend authorization, UI surfaces, workstream agents, policies, tests, or runtime readiness.
+The copied legacy tree was **temporary migration provenance only**. It was **not authoritative product current intent** and was not a source of truth for generated-app behavior, backend authorization, UI surfaces, workstream agents, policies, tests, or runtime readiness.
 
-Active current intent remains under the root `app-description/` tree until later migration tasks replace it with the intent-compiler graph shape. During reconstruction, future tasks may cite this archive only as evidence to compare against current implementation and accepted migration decisions.
+The legacy copy has now been removed after reconstruction of the current-intent graph and reconciliation of active specs. The authoritative current intent is the root `app-description/` graph.
 
-## Intended use
+## Removal record
 
-Use this archive to:
+`TASK-ADICM-04-001` removed the temporary copied legacy tree so future work cannot accidentally use archived legacy files as product authority. Historical details remain available through git history and completed task notes, not through an active file tree.
 
-- recover legacy rough workstream and foundation-description content while the root `app-description/` is reconstructed;
-- identify statements that should become current starter intent, reusable foundation references, stale exclusions, or drift candidates;
-- support source-inventory and traceability notes during this mini-project.
+Active current-intent and planning work should use:
 
-Do not use this archive to:
+- `app-description/app.md`
+- `app-description/global/**`
+- `app-description/domains/core-starter/**`
+- current readiness/spec evidence under `specs/full-core-saas-readiness/**` and related active specs
 
-- override current implementation evidence;
-- preserve historical phrasing in active current-intent graph nodes;
-- justify runtime readiness without real implementation/test evidence;
-- add broad reusable foundation doctrine to the root app-description when skills-pack docs should be referenced instead.
+## Verification expectation
 
-## Removal and scrub requirement
+Terminal migration verification should prove that:
 
-Before this mini-project is complete, active content must be scrubbed so no app-description/spec/task artifact depends on archived legacy files as product authority. The temporary archive must then be removed or reduced to clearly non-authoritative migration notes, and the terminal verification task must prove that active current-intent content does not rely on this archive.
-
-## Recovery proof
-
-The archived source is recoverable by reading files under:
-
-```text
-specs/app-description-intent-compiler-migration/archive/legacy-app-description/
-```
-
-The legacy `app-description/README.md` and `app-description/00-system/app-manifest.md` were included in the copied tree and can be inspected at:
-
-```text
-specs/app-description-intent-compiler-migration/archive/legacy-app-description/README.md
-specs/app-description-intent-compiler-migration/archive/legacy-app-description/00-system/app-manifest.md
-```
+- no active `app-description/` node depends on the removed legacy copy;
+- active non-archive specs do not instruct implementers to use the removed legacy copy as product authority; and
+- `specs/app-description-intent-compiler-migration/archive/legacy-app-description/` does not exist.

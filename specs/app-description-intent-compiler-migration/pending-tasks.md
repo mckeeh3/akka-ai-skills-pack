@@ -277,7 +277,7 @@
 
 ### TASK-ADICM-04-001: Scrub legacy archive dependencies and remove temporary archive
 
-- status: pending
+- status: done
 - source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-07-scrub-legacy-archive-dependencies-and-remove-temporary-archive
 - task brief: specs/app-description-intent-compiler-migration/tasks/04-scrub-verify/01-scrub-legacy-archive-dependencies.md
 - depends on:
@@ -307,6 +307,10 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs-only migration scrub; no runtime behavior change; validation path `git diff --check` plus archive-dependency proof
+  - removed temporary archive tree: `specs/app-description-intent-compiler-migration/archive/legacy-app-description/`
+  - retained non-authoritative migration notes: `specs/app-description-intent-compiler-migration/archive/source-manifest.md`, `specs/app-description-intent-compiler-migration/archive/scrub-record.md`
+  - checks passed: `git diff --check`; `rg -n "specs/app-description-intent-compiler-migration/archive/legacy-app-description|archived legacy docs as authority|archived legacy files as product authority|use archived legacy|use the archive|archive-as-authority" app-description specs/full-core-saas-readiness specs/web-ui-design specs/tasks/01-user-admin-workstream-v0 specs/secure-ai-first-saas-core-starter-content-review.md || true`; `find specs/app-description-intent-compiler-migration/archive -maxdepth 2 -type f -o -type d | sort && test ! -e specs/app-description-intent-compiler-migration/archive/legacy-app-description && echo "legacy archive tree removed"`
+  - commit message: `app-desc-migrate: scrub legacy archive`
 
 ### TASK-ADICM-04-002: Terminal migration verification
 

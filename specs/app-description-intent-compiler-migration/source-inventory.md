@@ -10,8 +10,8 @@ This inventory gives later current-intent graph reconstruction tasks enough evid
 |---|---|---|
 | Intent compiler doctrine | `.agents/skills/docs/intent-compiler.md`, `.agents/skills/docs/current-intent-model.md`, `.agents/skills/docs/intent-to-realization-flow.md` | Target graph shape, workstream centrality, traceability spine, and realization-validation rules. |
 | Foundation architecture doctrine | `.agents/skills/docs/ai-first-saas-application-architecture.md`, `.agents/skills/docs/capability-first-backend-architecture.md` | Reusable doctrine to reference, not duplicate, for secure SaaS, managed agents, governed tools, workstream shell, capabilities, and runtime completion. |
-| Temporary legacy app-description archive | `specs/app-description-intent-compiler-migration/archive/legacy-app-description/**`, manifest at `specs/app-description-intent-compiler-migration/archive/source-manifest.md` | Migration provenance only. Mine for current-starter candidates, then scrub dependencies before completion. |
-| Current root app-description | `app-description/**` | Active legacy-shape content until graph replacement. Treat as evidence, not final current-intent shape. |
+| Removed temporary legacy app-description archive | Manifest/removal record at `specs/app-description-intent-compiler-migration/archive/source-manifest.md` | The copied legacy tree was migration provenance only and was removed by `TASK-ADICM-04-001` after graph reconstruction. Do not use archived legacy files as product authority. |
+| Current root app-description | `app-description/**` | Reconstructed current-intent graph after Sprint 02. Treat as active product current intent, with realization gaps governed by mapped evidence. |
 | Backend implementation | `src/main/java/ai/first/**` | Concrete package layout, protected API/component names, durable state, service, agent, trace, and workstream evidence. |
 | Backend tests | `src/test/java/ai/first/**` | Validation evidence and local/test-scope readiness boundaries. Test-only fixtures/demos are not normal runtime evidence. |
 | Frontend implementation | `frontend/src/**` | Canonical workstream shell, API clients, workstream surfaces, contract tests, and legacy page-fixture exclusions. |
@@ -69,8 +69,8 @@ Later `app-description/` nodes should reference these doctrine areas as reusable
 
 ## Stale, legacy, or exclusion candidates
 
-- `specs/app-description-intent-compiler-migration/archive/legacy-app-description/**` is temporary migration provenance only and must not be cited as final authority.
-- Current root `app-description/**` uses the legacy numbered taxonomy (`00-system`, `10-capabilities`, `12-workstreams`, etc.). Its content may inform reconstruction, but the final target is the current-intent graph shape from `current-intent-model.md`.
+- The temporary copied legacy app-description tree was removed by `TASK-ADICM-04-001`; historical provenance remains in git history and the removal manifest only, not as active product authority.
+- The old root `app-description/**` numbered taxonomy (`00-system`, `10-capabilities`, `12-workstreams`, etc.) was replaced during Sprint 02 by the current-intent graph shape from `current-intent-model.md`; do not recreate the numbered taxonomy as authority.
 - `frontend/src/screens/**` files are legacy/page-style fixture/reference artifacts according to current app-description and tests. They are not canonical runtime-completion evidence unless a future task explicitly migrates them into the workstream shell.
 - `frontend/src/__tests__/fixtures/**` and test-only `LocalDemo*` repositories/providers support tests only; do not use them as normal runtime readiness evidence.
 - Archived specs under `specs/archive/**` are historical unless active specs explicitly reference them. Prefer `specs/full-core-saas-readiness/**`, current source, and current frontend tests for current-state evidence.
@@ -112,7 +112,7 @@ find src/test/java/ai/first -type f | sort
 find frontend/src -type f | sort
 find docs -maxdepth 3 -type f | sort
 find specs -path 'specs/archive' -prune -o -path 'specs/app-description-intent-compiler-migration/archive/legacy-app-description' -prune -o -type f | sort | head -300
-find specs/app-description-intent-compiler-migration/archive/legacy-app-description -maxdepth 2 -type f | sort
+# Legacy archive tree was removed by TASK-ADICM-04-001 after this source-inventory task completed.
 find src/main/java/ai/first -type f | sed 's#src/main/java/ai/first/##; s#/[^/]*$##' | sort | uniq -c
 find src/test/java/ai/first -type f | sed 's#src/test/java/ai/first/##; s#/[^/]*$##' | sort | uniq -c
 find frontend/src/workstream -type f | sed 's#frontend/src/workstream/##; s#/[^/]*$##' | sort | uniq -c
