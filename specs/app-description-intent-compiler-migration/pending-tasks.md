@@ -158,7 +158,7 @@
 
 ### TASK-ADICM-02-002: Populate core starter workstream graph
 
-- status: pending
+- status: done
 - source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-04-populate-core-starter-workstream-graph
 - task brief: specs/app-description-intent-compiler-migration/tasks/02-current-intent-graph/02-populate-core-starter-workstreams.md
 - depends on:
@@ -195,6 +195,10 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs-only current-intent capture for five core starter workstreams; captures surfaces/agents/tools/policies/traces/tests/auth scope without runtime code changes; validation path `git diff --check` plus coverage proof
+  - populated capability nodes: `account-context-and-profile`, `user-and-access-administration`, `managed-agent-governance`, `audit-and-trace-investigation`, `governance-policy-lifecycle`
+  - populated data-state nodes: `auth-context-and-membership-state`, `managed-agent-behavior-state`, `workstream-audit-governance-state`
+  - checks passed: `git diff --check`; five-workstream coverage proof for workstream/access/behavior/tests/realization nodes; foundation-reference proof via `rg`
+  - commit message: `app-desc-migrate: populate core starter workstreams`
 
 ### TASK-ADICM-02-003: Populate realization and traceability mappings
 

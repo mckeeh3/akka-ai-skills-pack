@@ -1,3 +1,13 @@
 # Access: User Admin
 
-Access intent for this workstream will be populated in the next graph task. It must preserve tenant/customer scope, authenticated account context, backend authorization, and denial/audit behavior.
+## Authorized roles
+
+tenant-admin, customer-admin, auditor for read-only evidence.
+
+## Scope rules
+
+All reads, writes, surface actions, streams, agent turns, and governed-tool invocations use backend-owned selected `AuthContext`, tenant/customer ids, membership status, role/capability grants, and approval policy.
+
+## Denials
+
+Disabled users, inactive memberships, missing selected context, cross-tenant/customer access, unsupported authority expansion, and hidden/unauthorized actions are denied server-side, produce safe `system-message` feedback where user-facing, and emit required traces without exposing protected data.
