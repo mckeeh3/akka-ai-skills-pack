@@ -124,7 +124,7 @@
 
 ### TASK-ADICM-02-001: Define current-intent graph skeleton
 
-- status: pending
+- status: done
 - source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-03-define-target-current-intent-graph-skeleton
 - task brief: specs/app-description-intent-compiler-migration/tasks/02-current-intent-graph/01-define-current-intent-graph-skeleton.md
 - depends on:
@@ -151,6 +151,10 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs-only current-intent graph skeleton for secure multi-tenant AI-first SaaS core starter; no runtime behavior change; validation path `git diff --check` plus graph proof
+  - selected domain id: `core-starter`
+  - stable workstream ids: `my-account`, `user-admin`, `agent-admin`, `audit-trace`, `governance-policy`
+  - checks passed: `git diff --check`; `find app-description -maxdepth 4 -type d | sort`; `rg -n "core-starter|secure multi-tenant AI-first SaaS core starter|SaaS Foundation App" app-description`; `rg -n "foundation doctrine is referenced|referenced rather than duplicated|Do not duplicate|not duplicate" app-description specs/app-description-intent-compiler-migration/README.md`
+  - commit message: `app-desc-migrate: define current-intent graph skeleton`
 
 ### TASK-ADICM-02-002: Populate core starter workstream graph
 
