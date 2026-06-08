@@ -48,7 +48,7 @@
 
 ### TASK-ADICM-01-001: Archive legacy app-description as temporary migration input
 
-- status: pending
+- status: done
 - source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-01-archive-legacy-app-description-as-temporary-migration-input
 - task brief: specs/app-description-intent-compiler-migration/tasks/01-source-baseline/01-archive-legacy-app-description.md
 - depends on:
@@ -79,6 +79,10 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs-only source-baseline capture for app-description migration; no runtime behavior change; validation path `git diff --check` plus archive proof
+  - archive path: `specs/app-description-intent-compiler-migration/archive/legacy-app-description/`
+  - source manifest: `specs/app-description-intent-compiler-migration/archive/source-manifest.md`
+  - checks passed: `git diff --check`; `find specs/app-description-intent-compiler-migration/archive/legacy-app-description -type f | wc -l`; `rg -n "temporary migration provenance only|not authoritative product current intent|Removal and scrub requirement" specs/app-description-intent-compiler-migration/archive/source-manifest.md`
+  - commit message: `app-desc-migrate: archive legacy app-description`
 
 ### TASK-ADICM-01-002: Inventory implementation and source evidence
 

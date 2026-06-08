@@ -1,0 +1,26 @@
+# Negative Tests: Forbidden Actions
+
+- unauthenticated browser API request is rejected
+- authenticated user without active membership is rejected
+- member without admin role cannot invite users, resend invite, revoke invite, or assign elevated roles
+- cross-tenant admin cannot load `user-admin-dashboard`, list/search users through `user-admin-user-list`, open `user-admin-user-account`, inspect MembershipView, InvitationView, AdminAuditView, or AccessReviewQueueView outside scope
+- disabled inviter cannot create, resend, revoke, or bulk prepare invitations
+- revoked invitation cannot be accepted
+- expired invitation cannot be accepted
+- replayed acceptance cannot create duplicate memberships or bypass current tenant/customer policy
+- delivery-failed invitation does not activate a membership until valid acceptance succeeds
+- Customer Admin cannot perform Tenant-level User Admin actions and receives a safe Tenant-level denial without hidden Tenant rows
+- SaaS Owner Admin cannot read tenant application User Admin data without Tenant-created support access and receives a no-support-access denial
+- admin cannot remove/suspend/reactivate the last admin without last-admin protection and required decision-card approval
+- admin cannot reset/relink identity subject outside policy and authority scope
+- agent cannot execute a tool without permission grant
+- disabled agent cannot assemble prompts, load skills, call tools, or perform work
+- agent cannot read unassigned skill content; denied `readSkill(skillId)` creates `SkillLoadTrace`
+- unauthorized user cannot create, edit, approve, activate, rollback, or delete `PromptDocument`, `SkillDocument`, `AgentSkillManifest`, or `ToolPermissionBoundary` records
+- prompt or skill text cannot grant new tenant, data, tool, role, or approval authority
+- approval-required authority expansion cannot activate without approved decision card
+- AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and skilled UserAdminAgent responsibilities cannot access unscoped tenant/customer data
+- AI admin agents cannot autonomously grant admin roles, remove last admins, expand support access, bulk disable users, or change policy/permissions
+- agent cannot activate policy changes directly
+- reviewer without approval permission cannot decide a decision card
+- suspended tenant rejects normal user actions
