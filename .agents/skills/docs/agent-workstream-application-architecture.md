@@ -48,6 +48,30 @@ Default dashboard scoping is workstream-local and role-specific: a dashboard sho
 
 AutonomousAgent task progress/result surfaces are part of the workstream model when durable internal/background model-driven work exists. Task lifecycle events, notifications, snapshots, blocked states, rejected results, failures, and completion recommendations should update dashboards, attention items, traces, and governed surface actions; the task machinery never grants authority by itself.
 
+## Human-backed and AI-backed workstream actors
+
+A workstream agent is the shared governed application harness for a durable area of work. It can host **human-backed actor** turns, **AI-backed actor** turns, or mixed human/AI collaboration in the same workstream instance. Externally, a signed-in app user is a human supervisor. Internally, a human-backed actor is the governed participant whose reasoning engine is that authenticated human rather than an AI model. An AI-backed actor is the governed participant whose reasoning engine is a configured model invoked through the Akka Agent runtime path.
+
+The harness shapes each actor through actor-specific adapters while preserving one authority model:
+
+```text
+Workstream agent harness
+├── human-backed actor adapter: surfaces, instructions, evidence, forms, actions, decisions
+├── AI-backed actor adapter: prompts, skills, references, tools, model responses
+├── shared governed workstream tool catalog
+├── shared capability authorization and policy gates
+├── shared durable workstream log
+└── shared audit/work traces
+```
+
+A governed workstream tool is a capability-backed operation, not inherently a UI action or an AI function tool. The workstream harness may expose the same governed tool through multiple channels: a browser surface action for a human-backed actor, an agent-tool schema for an AI-backed actor, an internal/workflow/timer/consumer tool, an API, or an MCP tool. The exposure adapter changes the presentation and input mediation; it does not redefine business authority, tenant scope, idempotency, approval policy, audit, or denial behavior.
+
+For AI-backed actors, prompts, skills, references, tool descriptions, and schemas instruct the model how to request tool use from the harness. For human-backed actors, structured surfaces are the tool-use interface: labels, fields, validation, evidence, confirmations, disabled/denied states, result surfaces, and trace links teach and constrain how the human supervisor can use the same workstream tools.
+
+Example: `useradmin.invitation.create` may be exposed as an **Invite user** surface action in the User Admin dashboard and as an allowed agent tool for the User Admin Agent. A human can click the action and submit `jane.doe@gmail.com`; the same human can also ask the selected workstream AI agent, “create a user invite for jane.doe@gmail.com.” In both cases the backend invokes the same governed capability with selected `AuthContext`, tenant scope, role/capability checks, idempotency, policy gates, audit, traces, and safe denial behavior.
+
+Human availability does not automatically grant AI availability. If a human-backed actor can perform a consequential action from a surface, the AI-backed workstream agent may perform or propose that action only when the same governed tool is explicitly exposed to that agent, within its tool boundary and approval policy. Traces must distinguish direct human surface actions from AI-mediated tool calls while preserving their relationship, for example `actorType=human-backed`, `source=surface_action`, or `actorType=ai-backed`, `requestedBy=<human account/member>`, `source=agent_tool_call`.
+
 ## SaaS Foundation App workstream set
 
 The repository ships the **SaaS Foundation App** out of the box. It is not a generic chatbot or throwaway starter; it is the built-in foundation domain that downstream users extend. Use this interpretation for prompts such as "starter app," "minimum AI-first app," "core app," "basic app," or "initial chatbot" unless the user explicitly asks for non-SaaS reference material.
@@ -79,7 +103,10 @@ A workstream is not production-ready just because fixture items render, a determ
 |---|---|
 | Agent workstream shell | Primary authenticated browser shell: role-authorized functional agents in the left rail, continuous workstream in the main panel, persistent composer at the bottom, and structured surfaces embedded in the stream. |
 | Functional/context-area agent | User-facing, role-authorized assistant backing exactly one workstream and representing a functional area such as User Admin, Agent Admin, Procurement, Finance, Sales Pipeline, Support, Audit, Governance, or Outcome Metrics. Shortened to functional agent after first use. |
-| Workstream agent | The functional agent in its role as the selected workstream user's assistant. It can answer workstream-specific “how do I...” questions, interpret shorthand requests such as “dashboard” or “show users”, request or refresh surfaces, invoke allowed capability-backed actions, explain denials/errors, and guide users through tasks. It is not the root app abstraction and does not grant authority. |
+| Workstream agent | The functional agent in its role as the selected workstream user's assistant and shared governed harness for human-backed and AI-backed turns. It can answer workstream-specific “how do I...” questions, interpret shorthand requests such as “dashboard” or “show users”, request or refresh surfaces, invoke allowed capability-backed actions, explain denials/errors, and guide users through tasks. It is not the root app abstraction and does not grant authority. |
+| Human-backed actor | Governed workstream participant whose reasoning engine is an authenticated human supervisor. The harness shapes this actor through surfaces, instructions, evidence, forms, action affordances, confirmations, result surfaces, and trace links. |
+| AI-backed actor | Governed workstream participant whose reasoning engine is a configured model invoked through the Akka Agent runtime path. The harness shapes this actor through prompts, skills, references, tool schemas, tool boundaries, memory, guardrails, and traces. |
+| Human surface action | The human-backed actor's tool-use adapter for a governed workstream tool, including labels, fields, validation, evidence, confirmation/approval UX, result/system-message surfaces, denial states, and trace links. |
 | Internal agent | Non-left-rail agent invoked by workflows, tools, consumers, timers, functional agents, or backend services for bounded work such as classification, summarization, evaluation, routing, replay, proposal drafting, or governance review. |
 | Workstream definition | Design-time root app unit for authenticated consequential work, backed by exactly one functional agent, with role-specific dashboards, attention, surface graph, capability/governed-tool map, expertise, traces, and tests. |
 | Workstream instance | Durable runtime conversational/operational timeline for one workstream definition in a selected tenant/customer/AuthContext scope. It contains user requests, agent responses, tool/capability results, structured surfaces, system-message surfaces, decisions, workflow progress, traces, and follow-up actions. |
@@ -89,7 +116,7 @@ A workstream is not production-ready just because fixture items render, a determ
 | Surface graph | Human work tree for a workstream: the role-specific dashboard is the trunk, surface nodes are branches, and surface actions are edges that open surfaces, invoke browser-tools, create system-message surfaces, update attention, start internal-agent work, open traces, or route approvals/decisions. |
 | Internal workstream agent graph | Backend worker graph for a workstream: a virtual dashboard agent view determines agent attention, delegates bounded work to internal worker agents, collects results/proposals, updates attention/surfaces, and escalates to humans when required. |
 | Capability | Product-level backend ability or grouping behind related operations, queries, workflows, timers, consumers, APIs, and internal component calls. Capabilities define authority, scope, schemas, side effects, idempotency, policy/approval, audit, exposure channels, and tests. |
-| Governed-tool | Executable semantic operation inside a capability boundary and surface/action map, with actor/caller rules, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. Expose it only through qualified channels such as browser-tool, agent-tool, internal-tool, workflow/timer/consumer exposure, API, or MCP-tool. |
+| Governed-tool / governed workstream tool | Executable semantic operation inside a capability boundary and surface/action map, with actor/caller rules, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. It is not inherently a UI action or an AI function tool; expose it only through qualified actor adapters/channels such as human surface actions/browser-tools, agent-tools, internal-tools, workflow/timer/consumer exposure, API, or MCP-tool. |
 | Horizontal implementation | Akka entities, workflows, views, consumers, timed actions, agents, endpoints, web UI code, auth/security, audit, and tests that implement capabilities for vertical functional agents and surfaces. |
 
 ## Agent workstream shell

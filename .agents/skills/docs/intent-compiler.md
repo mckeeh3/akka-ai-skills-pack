@@ -29,13 +29,15 @@ Forward traceability should follow this chain:
 app objective
   -> domain
     -> workstream
-      -> surface / agent / tool / policy / trace
+      -> actor adapter / surface action / agent tool / governed tool / policy / trace
         -> capability / API / Akka component / frontend route
           -> test
             -> runtime trace / audit / outcome
 ```
 
 Reverse traceability should make it possible to start from code, state, an event, an endpoint, a test, or a runtime trace and identify the intent artifact that justified it.
+
+When a human surface action and an AI agent tool perform the same consequential operation, the compiler should model them as actor-specific adapters of one governed workstream tool rather than as separate business semantics. The current-intent graph should preserve the shared governed tool id, the human-backed and AI-backed exposure adapters, their approval/denial behavior, and trace source such as `surface_action` or `agent_tool_call`.
 
 ## Canonical doc set
 

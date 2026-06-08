@@ -13,6 +13,7 @@ workstream definition
 → exactly one backing functional/context-area agent
 → role-specific dashboard and attention model
 → human surface graph with typed surfaces and system-message surfaces
+→ human-backed and AI-backed actor adapters
 → capability-backed surface actions and governed-tools
 → optional internal workstream agent graph
 → workstream expertise bundle when LLM-backed
@@ -32,15 +33,15 @@ A workstream is not a page, route, CRUD module, chat session, Akka component, pr
 | Managed agent definition id | Required tenant-governed managed-agent behavior record id for the owning functional agent; it may match `functionalAgentId` until separately named. |
 | Workstream icon metadata | Stable icon id, visual hint, accent token, tooltip, accessible label, and optional approved asset ref. |
 | Instance scope | Runtime instance key semantics such as `tenantId + selectedContextId + functionalAgentId`; optional customer/subthread keys only when explicitly created by capability contracts. |
-| Authorized actors | Roles, capability ids, membership status, support-access rules, service actors if any, and hidden/denied/disabled states. |
+| Authorized actors | Human-backed actors, AI-backed actors, roles, capability ids, membership status, support-access rules, service actors if any, and hidden/denied/disabled states. Human supervisors and model-backed agents must be distinguishable in durable workstream entries and traces. |
 | Selected AuthContext assumptions | Tenant/customer scope, account/member identity, role/capability snapshot, and support-access/redaction behavior. |
 | Default surface | Initial dashboard, attention, briefing, or explicit deferred/system-message surface. |
 | Attention model | Workstream-local manifest category ids mapped to canonical `AttentionItem.category` values, severities, lifecycle, producers, idempotency, left-rail count effect, My Account aggregation effect, and tests; see `./workstream-attention-contracts.md`. |
 | Role-specific dashboards | Dashboard purpose and variants by role/AuthContext; the dashboard is the human surface graph trunk. |
 | Human surface graph | Nodes, edges, result surfaces, deferred typed surfaces if any, system-message surfaces, deep-link/surface-request behavior, stale/reconnect handling, and graph tests. Recommended placement: `12-workstreams/surface-graph.md` plus `deferred-typed-surfaces.md` when first-slice fallbacks exist. |
 | Surface contracts | Stable surface ids/types/versions, exactly one owner functional agent, explicit reusable-by agents/workstreams, compact or full payload schemas, states, actions, auth, redaction, traces, and tests under `12-workstreams/surface-contracts/**`. |
-| Capability/governed-tool map | Every read/query/mutation/surface request/agent tool/internal action maps to a capability id, governed-tool id, exposure channel, schema, idempotency, policy, audit, and tests. The manifest carries lightweight `surfaceActionMappings` with surface id, action id, capability id, governed-tool id, exposure channel, auth basis, idempotency summary, result/system-message surface, and trace requirement; this mapping is required at `capability-ready` and above. |
-| Workstream expertise bundle | Required for LLM-backed functional agents: prompt intent, model binding, skills, references, manifests, loader tools, tool boundary, traces, governance owner, and tests. |
+| Capability/governed-tool map | Every read/query/mutation/surface request/agent tool/internal action maps to a capability id, governed-tool id, actor adapter/exposure channel, schema, idempotency, policy, audit, and tests. Treat the governed tool as the shared semantic operation; human surface actions and AI agent tools are actor-specific exposures of that operation. The manifest carries lightweight `surfaceActionMappings` with surface id, action id, capability id, governed-tool id, exposure channel, auth basis, idempotency summary, result/system-message surface, and trace requirement; this mapping is required at `capability-ready` and above. |
+| Workstream expertise bundle | Required for LLM-backed functional agents: prompt intent, model binding, skills, references, manifests, loader tools, tool boundary, traces, governance owner, and tests. It must name which governed tools are exposed to the AI-backed actor; human surface availability alone does not grant model tool availability. |
 | Internal workstream agent graph | Virtual dashboard agent, worker agents/AutonomousAgent tasks, delegation edges, progress/result/failure surfaces, escalation, authority basis, tool boundaries, traces, and tests when delegated/background model work exists. Manifest `internalWorkers` entries are structured when present; omit or use `[]` when no internal/background worker behavior is claimed. |
 | Runtime realization | Selected Akka substrate and participants, HTTP/gRPC/MCP/API/frontend/realtime paths, provider fail-closed behavior, and local validation. At `runtime-ready` and `production-ready`, manifest `readinessEvidence` must name local commands, an API/UI smoke path, provider/security fail-closed check, and trace evidence from the real governed runtime path. |
 | Retention and redaction | Durable workstream log, summaries, audit-grade trace retention, actor labeling, deleted/disabled-account handling, frontend-safe and agent-safe redaction. |
@@ -67,6 +68,13 @@ type WorkstreamInstanceRef = {
   createdAt: string;
   lastActivityAt?: string;
   retentionClass: "routine" | "consequential" | "audit-grade";
+};
+
+type WorkstreamActorRef = {
+  actorType: "human-backed" | "ai-backed" | "service";
+  actorId: string;                  // account/member id, functionalAgentId, internal agent id, or service id
+  requestedByAccountId?: string;    // required when an AI-backed action is initiated from a human request
+  source: "surface_action" | "agent_tool_call" | "workflow" | "timer" | "consumer" | "api" | "mcp";
 };
 ```
 

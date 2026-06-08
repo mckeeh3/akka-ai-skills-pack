@@ -24,6 +24,8 @@ For broad requirements, surfaces are discovered through the canonical process: w
 
 Frontend action visibility is advisory only. The linked backend capability and governed-tool contract remain authoritative for authentication, selected `AuthContext`, tenant/customer scope, membership status, role/capability checks, approval policy, idempotency, side effects, audit, and denial behavior.
 
+Surfaces are the human-backed actor's tool-use interface. A surface action should be understood as a human-facing adapter for a governed workstream tool: it supplies labels, fields, validation, evidence, confirmations, disabled/denied states, result surfaces, and trace links so the authenticated human supervisor can safely use the operation. The same governed tool may also be exposed as an AI agent tool, workflow/internal tool, API, or MCP tool, but those exposures must be declared separately in the capability/governed-tool map and tool boundary. Do not duplicate business semantics between the surface action and the agent tool; both should point back to the same capability-backed operation.
+
 ## Surface graph contract
 
 A workstream's surfaces form a **surface graph** rather than a flat page list. The role-specific dashboard is usually the graph trunk: it summarizes attention, exposes the next safe actions, and links to evidence, detail, decision, workflow, trace, and system-message nodes.
@@ -32,7 +34,7 @@ Define the graph explicitly enough that implementation can preserve navigation, 
 
 - **Nodes:** dashboard surfaces, attention-item surfaces, tables, forms, detail cards, decision/approval cards, workflow/task progress surfaces, audit/trace timelines, `markdown_response`, and `system_message` surfaces. Each node has exactly one owner functional agent; reusable surfaces declare explicit reusable-by functional agents/workstreams.
 - **Edges:** surface actions, surface-request actions, deep links, prompt-entered requests, realtime refreshes, workflow/AutonomousAgent progress updates, and system-message results.
-- **Edge contract:** every edge maps to a governed backend capability and, when executable, to a governed-tool exposure such as a browser-tool, agent-tool, workflow-tool, timer-tool, consumer-tool, MCP-tool, or internal-tool.
+- **Edge contract:** every edge maps to a governed backend capability and, when executable, to a governed-tool exposure such as a human surface action/browser-tool, agent-tool, workflow-tool, timer-tool, consumer-tool, MCP-tool, or internal-tool. If the same governed tool is exposed to both human-backed and AI-backed actors, the mapping must preserve one operation id while declaring separate actor adapters, input mediation, approval behavior, and trace source.
 - **Result semantics:** an action should append a surface, update a surface, open another graph node, create a typed `system_message`, update dashboard attention, start/observe internal-agent work, or return a safe denial.
 - **Role variants:** dashboard and graph edges may differ by role and selected `AuthContext`; the backend capability remains authoritative for allowed traversal and data access.
 - **Tests:** graph tests must cover dashboard-to-node traversal, action result surfaces, denial/system-message surfaces, stale/reconnect behavior, audit/trace links, and tenant-isolated deep links.
@@ -51,7 +53,7 @@ For each surface, define these fields before implementation:
 | Payload schema | Typed render payload, field formats, required/optional fields, nested records, pagination/sort/filter metadata, trace/correlation ids, version/stale markers. |
 | Redaction | Role-dependent fields, PII/secret boundaries, support/auditor visibility, frontend-safe fields, agent-safe fields. |
 | Data source | Read/evidence capabilities and view/query sources that produce the payload; no raw unscoped state dumps by default. |
-| Actions | Allowed user/agent actions, labels, input payloads, confirmation/approval requirements, idempotency keys, result states, linked capability ids. |
+| Actions | Allowed human-backed and AI-backed actor actions, labels, input payloads, confirmation/approval requirements, idempotency keys, result states, linked capability ids, governed-tool ids, exposure channel, and trace source such as `surface_action` or `agent_tool_call`. |
 | Events | Realtime/update events, event ids, ordering/dedupe rules, reconnect behavior, partial update semantics, stale markers. |
 | Authority | AuthContext assumptions, tenant/customer scope, role/capability requirements, policy gates, denial shape, disabled-user behavior. |
 | Audit/trace | Audit event types, work-trace fields, visible trace links, correlation ids, evidence references, retention/redaction expectations. |
