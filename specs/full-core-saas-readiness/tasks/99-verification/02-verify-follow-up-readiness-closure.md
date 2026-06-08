@@ -10,8 +10,8 @@ Verify closure or accepted blockers for the follow-up tasks appended by `TASK-FC
 - `specs/full-core-saas-readiness/pending-tasks.md`
 - `specs/full-core-saas-readiness/full-core-readiness-verification.md`
 - follow-up task artifacts and validation evidence
-- `app-description/00-system/readiness-status.md`
-- `app-description/80-review/latest-readiness-summary.md`
+- `app-description/app.md` and `app-description/domains/core-starter/realization/traceability.md`
+- `specs/full-core-saas-readiness/full-core-readiness-verification.md`
 
 ## Skills
 

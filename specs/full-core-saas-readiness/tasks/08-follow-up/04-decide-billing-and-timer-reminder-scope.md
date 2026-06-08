@@ -9,8 +9,8 @@ Decide whether billing implementation and invitation timer-backed reminders rema
 - `AGENTS.md`
 - `specs/full-core-saas-readiness/full-core-readiness-verification.md`
 - `specs/full-core-saas-readiness/full-core-readiness-gap-contract.md`
-- `app-description/00-system/readiness-status.md`
-- `app-description/80-review/latest-readiness-summary.md`
+- `app-description/app.md` and `app-description/domains/core-starter/realization/traceability.md`
+- `specs/full-core-saas-readiness/full-core-readiness-verification.md`
 - `specs/full-core-saas-readiness/pending-tasks.md`
 
 ## Skills

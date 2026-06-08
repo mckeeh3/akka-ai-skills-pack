@@ -8,9 +8,9 @@ Close the invitation onboarding readiness gap at the selected full-core scope, i
 
 - full-core readiness gap contract from `TASK-FCSR-01-001`
 - `AGENTS.md`
-- `app-description/10-capabilities/01-secure-tenant-user-foundation.md`
-- `app-description/20-behavior/flows/01-onboarding-and-access-flow.md`
-- `app-description/40-auth-security/secure-saas-foundation.md`
+- `app-description/domains/core-starter/capabilities/user-and-access-administration.md` and `app-description/domains/core-starter/data-state/auth-context-and-membership-state.md`
+- `app-description/domains/core-starter/workstreams/user-admin/behavior.md`
+- `app-description/global/policies/foundation-security-and-governance.md`
 - `src/main/java/ai/first/application/foundation/invitation/**`
 - `src/main/java/ai/first/application/foundation/email/**`
 - `src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java`

@@ -13,14 +13,14 @@ Read these before coding:
 - `specs/scaffold-report.md`
 - `specs/pending-tasks.md`
 - `app-description/README.md`
-- `app-description/10-capabilities/01-secure-tenant-user-foundation.md` if present
-- `app-description/12-workstreams/functional-agents.md` if present
-- `app-description/12-workstreams/surface-contracts/00-markdown-response.md` if present
-- `app-description/20-behavior/rules/01-tenant-authz-rules.md` if present
-- `app-description/30-tests/negative/01-forbidden-actions.md` if present
-- `app-description/40-auth-security/authorization-rules.md` if present
-- `app-description/50-observability/traces-and-correlation.md` if present
-- `app-description/55-ui/workstream-panel-and-composer.md` if present
+- `app-description/domains/core-starter/capabilities/user-and-access-administration.md` and `app-description/domains/core-starter/data-state/auth-context-and-membership-state.md`
+- `app-description/global/agents/foundation-functional-agents.md` and `app-description/domains/core-starter/workstreams/user-admin/agents/functional-agent.md`
+- `app-description/global/surfaces/foundation-surface-patterns.md`
+- `app-description/domains/core-starter/workstreams/user-admin/access.md`
+- `app-description/domains/core-starter/workstreams/user-admin/tests/coverage.md`
+- `app-description/global/policies/foundation-security-and-governance.md`
+- `app-description/global/traces/foundation-trace-patterns.md` and `app-description/domains/core-starter/workstreams/user-admin/traces/work-traces.md`
+- `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`
 - `backend/pom.xml`
 - `frontend/package.json`
 - Existing backend AuthContext, capability/authorization, audit, trace, and workstream source files

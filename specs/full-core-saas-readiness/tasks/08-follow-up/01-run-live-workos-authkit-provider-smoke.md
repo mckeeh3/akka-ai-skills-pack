@@ -13,8 +13,8 @@ Do not start until backend-only WorkOS issuer/audience/provider values and a rea
 - `AGENTS.md`
 - `specs/full-core-saas-readiness/full-core-readiness-verification.md`
 - `specs/full-core-saas-readiness/auth-runtime-boundary-validation.md`
-- `app-description/00-system/readiness-status.md`
-- `app-description/80-review/latest-readiness-summary.md`
+- `app-description/app.md` and `app-description/domains/core-starter/realization/traceability.md`
+- `specs/full-core-saas-readiness/full-core-readiness-verification.md`
 - `frontend/src/main.tsx`
 - `src/main/java/ai/first/api/foundation/security/MeEndpoint.java`
 - `src/main/java/ai/first/application/foundation/identity/**`

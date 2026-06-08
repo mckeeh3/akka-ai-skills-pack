@@ -122,38 +122,28 @@ Important paths:
 
 Key files:
 
-- `app-description/00-system/app-manifest.md`
-  - Identifies app-class: `secure multi-tenant AI-first SaaS core starter`.
-  - Names five core workstreams.
-  - Defines non-goals and architectural assumptions.
+- `app-description/README.md`
+  - Identifies this directory as the authoritative current-intent graph.
+  - Distinguishes active current intent from migration/historical material.
 
-- `app-description/00-system/readiness-status.md`
-  - Current state: local/test-scope full-core foundation validated with live Resend/model smokes.
-  - Remaining production gaps: live WorkOS/AuthKit smoke, billing implementation, timer-backed invitation reminders.
+- `app-description/app.md`
+  - Identifies the secure multi-tenant AI-first SaaS core starter objective.
+  - Names the five built-in workstreams.
+  - Defines operating model, foundation references, tenant/security posture, validation posture, and non-goals.
 
-- `app-description/10-capabilities/**`
-  - Secure tenant/user foundation.
-  - AI-first work management.
-  - Governance/decisions/audit.
-  - Frontend shell.
-  - Managed agent foundation.
+- `app-description/global/**`
+  - Captures foundation actors, roles, policies, surfaces, functional agents, governed tools, and trace patterns for this starter.
 
-- `app-description/12-workstreams/**`
-  - Functional/internal agents, surfaces, retention.
+- `app-description/domains/core-starter/capabilities/**`
+  - Captures account/profile, user/access administration, managed-agent governance, audit/trace investigation, and governance/policy lifecycle capabilities.
 
-- `app-description/15-operating-model/**`
-  - Goals, policies, authority, runtime agents, audit traces, outcomes.
+- `app-description/domains/core-starter/workstreams/**`
+  - Captures My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy workstream access, behavior, surfaces, agents, tools, policies, traces, tests, and realization mappings.
 
-- `app-description/40-auth-security/**`
-  - Secure SaaS foundation, identity/trust, authorization, boundaries, data protection.
+- `app-description/domains/core-starter/realization/traceability.md`
+  - Maps current-intent areas to backend, frontend, API, test, provider, and readiness evidence/gaps.
 
-- `app-description/55-ui/**`
-  - Canonical AI-first workstream UI model and style guide.
-
-- `app-description/70-traceability/**`
-  - Maps capabilities, surfaces, agents, behavior, and implementation ids.
-
-This is the clearest starter app source-of-truth area.
+This current-intent graph is the clearest starter app source-of-truth area.
 
 ## Specs and planning content
 

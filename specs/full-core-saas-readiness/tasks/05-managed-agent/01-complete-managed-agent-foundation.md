@@ -7,9 +7,9 @@ Close the managed-agent foundation readiness gap for AgentDefinition, governed p
 ## Required reads
 
 - full-core readiness gap contract from `TASK-FCSR-01-001`
-- `app-description/10-capabilities/05-managed-agent-foundation.md`
-- `app-description/12-workstreams/workstream-expertise/*.md`
-- `app-description/20-behavior/flows/04-managed-agent-foundation-flow.md`
+- `app-description/domains/core-starter/capabilities/managed-agent-governance.md`
+- `app-description/domains/core-starter/workstreams/*/agents/functional-agent.md` and `app-description/domains/core-starter/workstreams/*/tools/governed-tools.md`
+- `app-description/domains/core-starter/workstreams/agent-admin/behavior.md`
 - `src/main/java/ai/first/application/foundation/agent/**`
 - `src/main/java/ai/first/application/coreapp/agentadmin/**`
 - `src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java`

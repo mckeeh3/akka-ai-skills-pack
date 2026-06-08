@@ -22,8 +22,8 @@
 - depends on: []
 - required reads:
   - AGENTS.md
-  - app-description/00-system/readiness-status.md
-  - app-description/80-review/latest-readiness-summary.md
+  - app-description/app.md and app-description/domains/core-starter/realization/traceability.md
+  - specs/full-core-saas-readiness/full-core-readiness-verification.md
   - current conversation context
 - skills:
   - project-discussed-idea-to-pending-project
@@ -51,11 +51,11 @@
   - TASK-FCSR-00-001
 - required reads:
   - AGENTS.md
-  - app-description/00-system/readiness-status.md
-  - app-description/80-review/latest-readiness-summary.md
-  - app-description/10-capabilities/capabilities-index.md
-  - app-description/12-workstreams/functional-agents.md
-  - app-description/70-traceability/workstream-id-map.md
+  - app-description/app.md and app-description/domains/core-starter/realization/traceability.md
+  - specs/full-core-saas-readiness/full-core-readiness-verification.md
+  - app-description/domains/core-starter/capabilities/README.md
+  - app-description/global/agents/foundation-functional-agents.md and app-description/domains/core-starter/workstreams/*/agents/functional-agent.md
+  - app-description/domains/core-starter/realization/traceability.md
   - specs/full-core-saas-readiness/README.md
   - specs/full-core-saas-readiness/conversation-capture.md
   - specs/full-core-saas-readiness/sprints/01-readiness-baseline-sprint.md
@@ -93,8 +93,8 @@
   - specs/full-core-saas-readiness/sprints/02-identity-user-admin-sprint.md
   - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
   - specs/full-core-saas-readiness/tasks/02-auth/01-validate-workos-authkit-runtime.md
-  - app-description/40-auth-security/identity-and-trust.md
-  - app-description/40-auth-security/boundary-and-surface-rules.md
+  - app-description/global/policies/foundation-security-and-governance.md
+  - app-description/global/policies/foundation-security-and-governance.md and app-description/global/roles/foundation-roles.md
   - frontend/src/main.tsx
   - frontend/src/api/HttpWorkstreamApiClient.ts
   - src/main/java/ai/first/api/foundation/security/MeEndpoint.java
@@ -135,9 +135,9 @@
   - specs/full-core-saas-readiness/sprints/02-identity-user-admin-sprint.md
   - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
   - specs/full-core-saas-readiness/tasks/03-invitations/01-complete-invitation-onboarding.md
-  - app-description/10-capabilities/01-secure-tenant-user-foundation.md
-  - app-description/20-behavior/flows/01-onboarding-and-access-flow.md
-  - app-description/40-auth-security/secure-saas-foundation.md
+  - app-description/domains/core-starter/capabilities/user-and-access-administration.md and app-description/domains/core-starter/data-state/auth-context-and-membership-state.md
+  - app-description/domains/core-starter/workstreams/user-admin/behavior.md
+  - app-description/global/policies/foundation-security-and-governance.md
   - src/main/java/ai/first/application/foundation/invitation/
   - src/main/java/ai/first/application/foundation/email/
   - src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java
@@ -178,10 +178,10 @@
   - specs/full-core-saas-readiness/sprints/02-identity-user-admin-sprint.md
   - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
   - specs/full-core-saas-readiness/tasks/04-user-admin/01-complete-user-admin-surfaces.md
-  - app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md
-  - app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md
-  - app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md
-  - app-description/70-traceability/surface-to-capability-map.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - app-description/domains/core-starter/realization/traceability.md and workstream realization files
   - src/main/java/ai/first/application/coreapp/useradmin/
   - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
   - frontend/src/workstream/surfaces/
@@ -222,9 +222,9 @@
   - specs/full-core-saas-readiness/sprints/03-agent-audit-governance-sprint.md
   - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
   - specs/full-core-saas-readiness/tasks/05-managed-agent/01-complete-managed-agent-foundation.md
-  - app-description/10-capabilities/05-managed-agent-foundation.md
-  - app-description/12-workstreams/workstream-expertise/
-  - app-description/20-behavior/flows/04-managed-agent-foundation-flow.md
+  - app-description/domains/core-starter/capabilities/managed-agent-governance.md
+  - app-description/domains/core-starter/workstreams/*/agents/functional-agent.md
+  - app-description/domains/core-starter/workstreams/agent-admin/behavior.md
   - src/main/java/ai/first/application/foundation/agent/
   - src/main/java/ai/first/application/coreapp/agentadmin/
   - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
@@ -268,10 +268,10 @@
   - specs/full-core-saas-readiness/sprints/03-agent-audit-governance-sprint.md
   - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
   - specs/full-core-saas-readiness/tasks/06-audit-governance/01-complete-audit-trace-and-governance.md
-  - app-description/10-capabilities/03-governance-decisions-and-audit.md
-  - app-description/12-workstreams/surface-contracts/05-decision-card.md
-  - app-description/12-workstreams/surface-contracts/06-audit-trace-explorer.md
-  - app-description/12-workstreams/surface-contracts/07-agent-governance-center.md
+  - app-description/domains/core-starter/capabilities/audit-and-trace-investigation.md and app-description/domains/core-starter/capabilities/governance-policy-lifecycle.md
+  - app-description/global/surfaces/foundation-surface-patterns.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
   - src/main/java/ai/first/application/foundation/audit/
   - src/main/java/ai/first/application/foundation/governance/
   - src/main/java/ai/first/application/coreapp/audit/
@@ -316,8 +316,8 @@
   - specs/full-core-saas-readiness/sprints/04-runtime-smoke-verification-sprint.md
   - specs/full-core-saas-readiness/backlog/01-full-core-readiness-build-backlog.md
   - specs/full-core-saas-readiness/tasks/07-runtime-smoke/01-run-full-core-runtime-smoke.md
-  - app-description/00-system/readiness-status.md
-  - app-description/80-review/latest-readiness-summary.md
+  - app-description/app.md and app-description/domains/core-starter/realization/traceability.md
+  - specs/full-core-saas-readiness/full-core-readiness-verification.md
   - frontend/package.json
   - pom.xml
   - tools/
@@ -398,8 +398,8 @@
   - AGENTS.md
   - specs/full-core-saas-readiness/full-core-readiness-verification.md
   - specs/full-core-saas-readiness/auth-runtime-boundary-validation.md
-  - app-description/00-system/readiness-status.md
-  - app-description/80-review/latest-readiness-summary.md
+  - app-description/app.md and app-description/domains/core-starter/realization/traceability.md
+  - specs/full-core-saas-readiness/full-core-readiness-verification.md
   - frontend/src/main.tsx
   - src/main/java/ai/first/api/foundation/security/MeEndpoint.java
   - src/main/java/ai/first/application/foundation/identity/
@@ -502,8 +502,8 @@
   - AGENTS.md
   - specs/full-core-saas-readiness/full-core-readiness-verification.md
   - specs/full-core-saas-readiness/full-core-readiness-gap-contract.md
-  - app-description/00-system/readiness-status.md
-  - app-description/80-review/latest-readiness-summary.md
+  - app-description/app.md and app-description/domains/core-starter/realization/traceability.md
+  - specs/full-core-saas-readiness/full-core-readiness-verification.md
   - specs/full-core-saas-readiness/pending-tasks.md
 - skills:
   - ai-first-saas-policy-governance
@@ -567,8 +567,7 @@
   - AGENTS.md
   - specs/full-core-saas-readiness/pending-tasks.md
   - specs/full-core-saas-readiness/full-core-readiness-verification.md
-  - app-description/00-system/readiness-status.md
-  - app-description/80-review/latest-readiness-summary.md
+  - app-description/app.md and app-description/domains/core-starter/realization/traceability.md
 - skills:
   - none; repository verification task
 - expected outputs:
@@ -579,3 +578,5 @@
 - done criteria:
   - follow-up provider/billing/timer/tooling statuses are verified against evidence or precise blockers
   - changes and queue update are committed
+- notes:
+  - vertical contract: docs-only cross-cutting readiness verification for all five core functional-agent workstreams; non-attention reason: non-runtime provider/blocker/status reconciliation; role-specific dashboard/surface: none directly; surface graph node/action edge: none directly; governed-tool id and exposure: none directly; capability id: full-core readiness closure and current-intent traceability; AuthContext / roles / tenant scope: preserve existing provider, billing, timer, tenant isolation, authorization, and secret-boundary constraints; Akka substrate: docs/specs only; API / frontend / realtime path: none directly, verifies previously recorded backend/API/UI evidence; audit/work trace requirements: preserve existing audit/work-trace obligations in evidence; local validation path: `git diff --check` plus completed follow-up checks.

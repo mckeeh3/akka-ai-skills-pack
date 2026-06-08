@@ -7,11 +7,11 @@ Create an evidence-based full-core readiness gap contract that maps current read
 ## Required reads
 
 - `AGENTS.md`
-- `app-description/00-system/readiness-status.md`
-- `app-description/80-review/latest-readiness-summary.md`
-- `app-description/10-capabilities/capabilities-index.md`
-- `app-description/12-workstreams/functional-agents.md`
-- `app-description/70-traceability/workstream-id-map.md`
+- `app-description/app.md` and `app-description/domains/core-starter/realization/traceability.md`
+- `specs/full-core-saas-readiness/full-core-readiness-verification.md`
+- `app-description/domains/core-starter/capabilities/README.md`
+- `app-description/global/agents/foundation-functional-agents.md` and `app-description/domains/core-starter/workstreams/*/agents/functional-agent.md`
+- `app-description/domains/core-starter/realization/traceability.md`
 - `specs/full-core-saas-readiness/README.md`
 - `specs/full-core-saas-readiness/conversation-capture.md`
 - selected sprint/backlog/queue entry and this task brief

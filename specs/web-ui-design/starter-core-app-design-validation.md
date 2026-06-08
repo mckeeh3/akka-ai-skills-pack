@@ -8,11 +8,11 @@ Inputs:
 
 - `specs/web-ui-design/ai-first-saas-web-ui-design-spec.md`
 - `specs/web-ui-design/images/ai-first-saas-web-ui-01.png` through `ai-first-saas-web-ui-08.png`
-- `templates/ai-first-saas-starter/app-description/app-description/55-ui/**`
-- `templates/ai-first-saas-starter/app-description/app-description/15-operating-model/**`
-- `templates/ai-first-saas-starter/app-description/app-description/20-behavior/**`
-- `templates/ai-first-saas-starter/app-description/app-description/30-tests/**`
-- `templates/ai-first-saas-starter/app-description/app-description/40-auth-security/**`
+- `app-description/global/surfaces/foundation-surface-patterns.md` and `app-description/domains/core-starter/workstreams/*/surfaces/surfaces.md`
+- `app-description/app.md`, `app-description/global/**`, and `app-description/domains/core-starter/**`
+- `app-description/domains/core-starter/workstreams/*/behavior.md`
+- `app-description/domains/core-starter/workstreams/*/tests/coverage.md`
+- `app-description/global/policies/foundation-security-and-governance.md`
 
 ## Validation result
 

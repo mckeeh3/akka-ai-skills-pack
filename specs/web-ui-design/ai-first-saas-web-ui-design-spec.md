@@ -4,7 +4,7 @@
 
 - status: draft for starter core app validation
 - source mockups: `specs/web-ui-design/images/ai-first-saas-web-ui-01.png` through `ai-first-saas-web-ui-08.png`
-- first target: `templates/ai-first-saas-starter/app-description/`
+- first target: root current-intent graph under `app-description/`
 - later target: integrate the validated design system into skills-pack guidance and generation assets
 
 ## Design intent
@@ -432,10 +432,10 @@ Required regions:
 
 Authoritative starter core app UI files to update during validation:
 
-- `templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md`
-- `templates/ai-first-saas-starter/app-description/app-description/55-ui/screens-and-navigation.md`
-- `templates/ai-first-saas-starter/app-description/app-description/55-ui/states-and-realtime.md`
-- `templates/ai-first-saas-starter/app-description/app-description/55-ui/accessibility-and-responsive.md`
+- `app-description/global/surfaces/foundation-surface-patterns.md`
+- `app-description/domains/core-starter/workstreams/*/surfaces/surfaces.md`
+- `app-description/domains/core-starter/workstreams/*/surfaces/surfaces.md` and workstream `realization/frontend-routes.md` files
+- `app-description/global/surfaces/foundation-surface-patterns.md`
 
 Expected generated frontend shape when realization is requested:
 

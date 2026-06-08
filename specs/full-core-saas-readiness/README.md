@@ -47,8 +47,8 @@ Execute one task per fresh harness context. Each task must update the queue, run
 ## Read order for future task sessions
 
 1. `AGENTS.md`
-2. `app-description/00-system/readiness-status.md`
-3. `app-description/80-review/latest-readiness-summary.md`
+2. `app-description/app.md` and `app-description/domains/core-starter/realization/traceability.md`
+3. `specs/full-core-saas-readiness/full-core-readiness-verification.md`
 4. `specs/full-core-saas-readiness/README.md`
 5. `specs/full-core-saas-readiness/conversation-capture.md`
 6. `specs/full-core-saas-readiness/pending-tasks.md`

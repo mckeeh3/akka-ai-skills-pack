@@ -17,8 +17,8 @@ Evidence reviewed includes:
 - `specs/full-core-saas-readiness/managed-agent-foundation-validation.md`
 - `specs/full-core-saas-readiness/audit-governance-validation.md`
 - `specs/full-core-saas-readiness/full-core-runtime-smoke.md`
-- `app-description/00-system/readiness-status.md`
-- `app-description/80-review/latest-readiness-summary.md`
+- `app-description/app.md` and `app-description/domains/core-starter/realization/traceability.md`
+- `specs/full-core-saas-readiness/full-core-readiness-verification.md`
 
 ## Completion comparison
 

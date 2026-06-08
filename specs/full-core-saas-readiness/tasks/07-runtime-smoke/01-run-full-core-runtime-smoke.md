@@ -9,8 +9,8 @@ Run the final full-core local validation pass for the selected scope, update rea
 - full-core readiness gap contract from `TASK-FCSR-01-001`
 - completed task notes from all prior full-core readiness tasks
 - `AGENTS.md`
-- `app-description/00-system/readiness-status.md`
-- `app-description/80-review/latest-readiness-summary.md`
+- `app-description/app.md` and `app-description/domains/core-starter/realization/traceability.md`
+- `specs/full-core-saas-readiness/full-core-readiness-verification.md`
 - `frontend/package.json`
 - `pom.xml`
 - any existing validation tools under `tools/**`

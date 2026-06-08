@@ -8,10 +8,10 @@ Close the User Admin full-core surface/action readiness gap for users, invitatio
 
 - full-core readiness gap contract from `TASK-FCSR-01-001`
 - completed invitation/auth task notes
-- `app-description/12-workstreams/surface-contracts/02-user-admin-dashboard.md`
-- `app-description/12-workstreams/surface-contracts/03-user-admin-user-list.md`
-- `app-description/12-workstreams/surface-contracts/04-user-admin-user-account.md`
-- `app-description/70-traceability/surface-to-capability-map.md`
+- `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`
+- `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`
+- `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`
+- `app-description/domains/core-starter/realization/traceability.md` and workstream `realization/` files
 - `src/main/java/ai/first/application/coreapp/useradmin/**`
 - `src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java`
 - `frontend/src/workstream/surfaces/**`

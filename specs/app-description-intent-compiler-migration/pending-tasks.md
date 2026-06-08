@@ -239,7 +239,7 @@
 
 ### TASK-ADICM-03-001: Reconcile active specs with new current-intent graph
 
-- status: pending
+- status: done
 - source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-06-reconcile-active-specsreadinessbacklogs-with-new-graph
 - task brief: specs/app-description-intent-compiler-migration/tasks/03-spec-reconciliation/01-reconcile-active-specs-with-new-graph.md
 - depends on:
@@ -270,6 +270,10 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs-only active spec reconciliation; preserves existing runtime/security/audit constraints; validation path `git diff --check`, reference proof, optional queue validator
+  - reconciliation artifact: `specs/app-description-intent-compiler-migration/spec-reconciliation.md`
+  - updated active planning/readiness references under `specs/full-core-saas-readiness/**`, `specs/web-ui-design/**`, `specs/tasks/01-user-admin-workstream-v0/03-capability-denials-audit-traces.md`, and `specs/secure-ai-first-saas-core-starter-content-review.md`
+  - checks passed: `rg` proof found no legacy numbered app-description references outside archive/migration provenance; `rg` proof found current graph references; `bash .agents/skills/tools/validate-pending-task-workstream-contract.sh specs/full-core-saas-readiness/pending-tasks.md`; `git diff --check`
+  - commit message: `app-desc-migrate: reconcile active specs`
 
 ### TASK-ADICM-04-001: Scrub legacy archive dependencies and remove temporary archive
 

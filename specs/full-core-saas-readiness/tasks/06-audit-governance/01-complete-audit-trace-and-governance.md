@@ -7,10 +7,10 @@ Close Audit/Trace and Governance/Policy full-core readiness gaps for searchable 
 ## Required reads
 
 - full-core readiness gap contract from `TASK-FCSR-01-001`
-- `app-description/10-capabilities/03-governance-decisions-and-audit.md`
-- `app-description/12-workstreams/surface-contracts/05-decision-card.md`
-- `app-description/12-workstreams/surface-contracts/06-audit-trace-explorer.md`
-- `app-description/12-workstreams/surface-contracts/07-agent-governance-center.md`
+- `app-description/domains/core-starter/capabilities/audit-and-trace-investigation.md` and `app-description/domains/core-starter/capabilities/governance-policy-lifecycle.md`
+- `app-description/global/surfaces/foundation-surface-patterns.md`
+- `app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`
+- `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`
 - `src/main/java/ai/first/application/foundation/audit/**`
 - `src/main/java/ai/first/application/foundation/governance/**`
 - `src/main/java/ai/first/application/coreapp/audit/**`

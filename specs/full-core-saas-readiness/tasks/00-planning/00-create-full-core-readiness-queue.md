@@ -7,8 +7,8 @@ Create the mini-project scaffold and pending-task queue for full-core SaaS readi
 ## Required reads
 
 - `AGENTS.md`
-- `app-description/00-system/readiness-status.md`
-- `app-description/80-review/latest-readiness-summary.md`
+- `app-description/app.md` and `app-description/domains/core-starter/realization/traceability.md`
+- `specs/full-core-saas-readiness/full-core-readiness-verification.md`
 - current conversation context
 
 ## In scope

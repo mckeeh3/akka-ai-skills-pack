@@ -4,18 +4,16 @@
 
 Reviewed the starter core app UI description against `specs/web-ui-design/ai-first-saas-web-ui-design-spec.md`.
 
-Reviewed files:
+Reviewed current graph files:
 
-- `templates/ai-first-saas-starter/app-description/app-description/55-ui/ui-index.md`
-- `templates/ai-first-saas-starter/app-description/app-description/55-ui/style-guide.md`
-- `templates/ai-first-saas-starter/app-description/app-description/55-ui/screens-and-navigation.md`
-- `templates/ai-first-saas-starter/app-description/app-description/55-ui/interactions-and-forms.md`
-- `templates/ai-first-saas-starter/app-description/app-description/55-ui/frontend-api-contracts.md`
-- `templates/ai-first-saas-starter/app-description/app-description/55-ui/states-and-realtime.md`
-- `templates/ai-first-saas-starter/app-description/app-description/55-ui/accessibility-and-responsive.md`
-- `templates/ai-first-saas-starter/app-description/30-tests/acceptance/01-core-app-acceptance.md`
-- `templates/ai-first-saas-starter/app-description/app-description/30-tests/negative/01-forbidden-actions.md`
-- `templates/ai-first-saas-starter/app-description/app-description/30-tests/operational/01-observability-and-audit.md`
+- `app-description/global/surfaces/README.md`
+- `app-description/global/surfaces/foundation-surface-patterns.md`
+- `app-description/domains/core-starter/workstreams/*/surfaces/surfaces.md`
+- `app-description/domains/core-starter/workstreams/*/tools/governed-tools.md`
+- `app-description/domains/core-starter/workstreams/*/realization/api-contracts.md`
+- `app-description/domains/core-starter/workstreams/*/realization/frontend-routes.md`
+- `app-description/domains/core-starter/workstreams/*/tests/coverage.md`
+- `app-description/domains/core-starter/workstreams/*/traces/work-traces.md`
 
 ## Result
 
@@ -93,19 +91,19 @@ This aligns with the mockups' live operational-console feel.
 
 ## Gaps before full frontend generation
 
-### Gap 1: Missing dedicated AI-first surfaces file
+### Gap 1: AI-first surface graph coverage
 
-The UI skill recommends `55-ui/ai-first-surfaces.md` when delegated work, supervision, decisions, governance, digests, audit, or outcomes are in scope.
+The current graph should make delegated work, supervision, decisions, governance, digests, audit, and outcomes explicit rather than hiding them in route/navigation prose.
 
-Current state:
+Current state after migration:
 
-- AI-first surfaces are embedded in `screens-and-navigation.md`.
-- This is acceptable for seed validation.
-- For generation and skills-pack integration, a dedicated file would make routing and regeneration safer.
+- AI-first surface patterns are captured in `app-description/global/surfaces/foundation-surface-patterns.md`.
+- Workstream-specific surface bindings are captured under each `app-description/domains/core-starter/workstreams/*/surfaces/surfaces.md` file.
+- Frontend realization routes are captured in each workstream `realization/frontend-routes.md` file.
 
 Recommended next action:
 
-- Add `templates/ai-first-saas-starter/app-description/app-description/55-ui/ai-first-surfaces.md` before frontend generation.
+- No separate legacy `55-ui/` file is required; future UI updates should maintain the current graph files above.
 
 ### Gap 2: Interactions and forms are too shallow
 

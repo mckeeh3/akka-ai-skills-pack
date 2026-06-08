@@ -8,8 +8,8 @@ Close or precisely block the WorkOS/AuthKit runtime validation and frontend secr
 
 - full-core readiness gap contract from `TASK-FCSR-01-001`
 - `AGENTS.md`
-- `app-description/40-auth-security/identity-and-trust.md`
-- `app-description/40-auth-security/boundary-and-surface-rules.md`
+- `app-description/global/policies/foundation-security-and-governance.md`
+- `app-description/global/policies/foundation-security-and-governance.md` and `app-description/global/roles/foundation-roles.md`
 - `frontend/src/main.tsx`
 - `frontend/src/api/HttpWorkstreamApiClient.ts`
 - `src/main/java/ai/first/api/foundation/security/MeEndpoint.java`
