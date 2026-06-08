@@ -133,8 +133,8 @@ Repository references:
 | Integration style | `TestKitSupport`, `httpClient`, `componentClient` | same |
 
 Repository references:
-- ESE tests under `../../examples/akka-components/src/test/java/ai/first/application/*EntityTest.java`
-- KVE tests under `../../examples/akka-components/src/test/java/ai/first/application/*EntityTest.java`
+- ESE tests under `../examples/akka-components/src/test/java/ai/first/application/*EntityTest.java`
+- KVE tests under `../examples/akka-components/src/test/java/ai/first/application/*EntityTest.java`
 
 ## Quick choice heuristic
 
