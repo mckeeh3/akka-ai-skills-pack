@@ -22,9 +22,9 @@ Backend authorization is authoritative. Disabled users, inactive memberships, mi
 
 ## Outcomes
 
-In scope: browser-safe self-service, context visibility, personal attention aggregation, notification preferences, and governed digest/export requests.
+In scope: browser-safe self-service, personal command-center dashboard, context/authority visibility, named theme and personal preference persistence, personal attention aggregation, in-app notification triage/preferences, governed digest/export progress/result/blocked flows, authorized sibling-workstream/source opening, and safe open-denied recovery.
 
-Out of scope: role assignment, account privilege escalation, tenant/customer administration, and provider secret exposure.
+Out of scope: role assignment, account privilege escalation, tenant/customer administration, tenant-wide branding, external notification provider administration, fake/model-less digest success in normal runtime, hidden workstream enumeration, and provider secret exposure.
 
 ## Linked graph nodes
 

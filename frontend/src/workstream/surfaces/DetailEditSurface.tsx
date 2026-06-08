@@ -35,19 +35,26 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
 
   function updateFieldValue(fieldId: string, value: string) {
     setFieldValues((current) => ({ ...current, [fieldId]: value }));
+    if (envelope.surfaceId === 'surface-my-settings' && fieldId === 'preferredThemeId' && isNamedThemeId(value)) {
+      document.documentElement.dataset.theme = value;
+      window.localStorage.setItem('seed-ui-theme', value);
+    }
     onFieldValueChange?.(fieldId, value, envelope.surfaceId);
   }
 
+  const isMyAccountSurface = envelope.surfaceId === 'surface-my-profile' || envelope.surfaceId === 'surface-my-settings' || envelope.surfaceId === 'surface-my-context';
+
   return (
     <SurfaceStateFrame envelope={envelope}>
-      <section className="detail-heading" aria-label="Detail record context">
+      <section className={isMyAccountSurface ? 'my-account-detail-hero detail-heading' : 'detail-heading'} aria-label="Detail record context">
         <div>
-          <p className="eyebrow">{envelope.data.recordKind ?? (isAuditEvidence ? 'audit evidence' : 'detail')} surface</p>
+          <p className="eyebrow">{myAccountEyebrow(envelope.surfaceId, envelope.data.recordKind ?? (isAuditEvidence ? 'audit evidence' : 'detail'))}</p>
           <h3>{recordLabel}</h3>
           {envelope.data.summary && <p>{envelope.data.summary}</p>}
         </div>
         {envelope.data.version !== undefined && <span className="version-chip sr-only">Version {envelope.data.version}</span>}
       </section>
+      {isMyAccountSurface && <MyAccountDetailOverview envelope={envelope} fieldValues={fieldValues} />}
       {permissionState && (
         <p className={permissionState.canEdit ? 'form-status' : 'form-status conflict'}>
           Edit authority: {permissionState.authoritativeCapabilityId}. {permissionState.reason}
@@ -89,7 +96,7 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
         </section>
       )}
       {fields.length > 0 ? (
-        <form className="surface-detail-edit-form" aria-label={`${envelope.title} edit form`}>
+        <form className="surface-detail-edit-form" data-my-account-detail={isMyAccountSurface ? 'true' : undefined} aria-label={`${envelope.title} edit form`}>
           <input type="hidden" name="recordId" value={recordId} readOnly />
           {fields.map((field) => {
             const inputId = `${envelope.surfaceId}-${field.fieldId}`;
@@ -156,4 +163,66 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={editableActionInput} onAction={onAction} />
     </SurfaceStateFrame>
   );
+}
+
+function MyAccountDetailOverview({ envelope, fieldValues }: { envelope: SurfaceEnvelope<DetailEditSurfaceData>; fieldValues: Record<string, string> }) {
+  if (envelope.surfaceId === 'surface-my-profile') {
+    return (
+      <section className="my-account-detail-overview" aria-label="Profile self-service boundary">
+        <article className="authority-context-panel">
+          <h4>Identity boundary</h4>
+          <p>{envelope.data.providerBoundarySummary ?? 'Authentication/provider-backed facts are browser-safe and read-only here.'}</p>
+          <dl>
+            <div><dt>Editable authority</dt><dd>{envelope.data.permissionState?.authoritativeCapabilityId ?? 'my_account.update_profile_settings'}</dd></div>
+            <div><dt>Unsupported changes</dt><dd>Roles, capabilities, account status, provider secrets</dd></div>
+          </dl>
+        </article>
+      </section>
+    );
+  }
+  if (envelope.surfaceId === 'surface-my-settings') {
+    const selectedTheme = fieldValues.preferredThemeId ?? envelope.data.preferredThemeId;
+    return (
+      <section className="my-account-detail-overview" aria-label="Personal preference and named theme boundary">
+        <article className="authority-context-panel named-theme-preview-panel">
+          <h4>Named theme selection</h4>
+          <p>Theme changes preview immediately in this browser by switching documented theme tokens. Save/Confirm persists through the governed backend settings action.</p>
+          <p className="form-status">Previewing: {selectedTheme ?? 'backend selected theme'} · no light/dark/system mode is exposed.</p>
+          {envelope.data.availableThemes && envelope.data.availableThemes.length > 0 && <ul className="named-theme-list">{envelope.data.availableThemes.map((theme) => <li key={theme.value ?? theme.themeId ?? theme.id}><strong>{theme.label ?? theme.name}</strong><span>{theme.value ?? theme.themeId ?? theme.id}</span></li>)}</ul>}
+        </article>
+      </section>
+    );
+  }
+  if (envelope.surfaceId === 'surface-my-context') {
+    return (
+      <section className="my-account-detail-overview" aria-label="Selected AuthContext authority">
+        <article className="authority-context-panel">
+          <h4>Backend-selected authority</h4>
+          <p>Changing context reboots the shell authority basis through /api/me or protected workstream APIs; the browser cannot grant roles or capabilities by editing this surface.</p>
+          <dl>
+            <div><dt>Tenant</dt><dd>{String(envelope.data.selectedContext?.tenantId ?? envelope.authContext.tenantId)}</dd></div>
+            <div><dt>Customer</dt><dd>{String(envelope.data.selectedContext?.customerId ?? envelope.authContext.customerId ?? 'Tenant scope')}</dd></div>
+            <div><dt>Visible capabilities</dt><dd>{String(envelope.data.visibleCapabilitySummary?.count ?? envelope.authContext.visibleCapabilityIds.length)}</dd></div>
+          </dl>
+        </article>
+        {envelope.data.availableContexts && envelope.data.availableContexts.length > 0 && (
+          <section className="available-context-grid" aria-label="Authorized context switch targets">
+            {envelope.data.availableContexts.map((context, index) => <article key={String(context.selectedContextId ?? index)} className="surface-row-card"><p><span>{String(context.status ?? 'active')}</span><strong>{String(context.tenantId ?? 'Authorized tenant')}</strong></p><p>{String(context.customerId ?? 'Tenant scope')} · {Array.isArray(context.roleIds) ? context.roleIds.join(', ') : 'roles redacted'}</p></article>)}
+          </section>
+        )}
+      </section>
+    );
+  }
+  return null;
+}
+
+function myAccountEyebrow(surfaceId: string, fallback: string) {
+  if (surfaceId === 'surface-my-profile') return 'profile self-service';
+  if (surfaceId === 'surface-my-settings') return 'personal preferences';
+  if (surfaceId === 'surface-my-context') return 'context and authority';
+  return fallback;
+}
+
+function isNamedThemeId(value: string) {
+  return ['aurora-light', 'cobalt-light', 'obsidian-dark', 'midnight-dark', 'dark-night'].includes(value);
 }

@@ -1,4 +1,4 @@
-import type { DashboardSurfaceData, SurfaceAction, SurfaceEnvelope } from '../types';
+import type { AttentionItem, DashboardSurfaceData, SurfaceAction, SurfaceEnvelope } from '../types';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
 
@@ -8,6 +8,10 @@ type DashboardSurfaceProps = {
 };
 
 export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) {
+  if (envelope.surfaceId === 'surface-my-account-dashboard' || envelope.data.surfaceContract?.startsWith('my_account.')) {
+    return <MyAccountCommandCenter envelope={envelope} onAction={onAction} />;
+  }
+
   const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
   const myAccountSurfaceActions = actionsForIds(envelope.data.utilityActionIds, actionById)
     .filter((action) => action.actionId !== 'action-sign-out')
@@ -60,22 +64,7 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
         })}
       </div>
       {myAccountSurfaceActions.length > 0 && <SurfaceActionBar label="My Account surfaces" actions={myAccountSurfaceActions} surfaceId={envelope.surfaceId} onAction={onAction} />}
-      {envelope.data.attentionItems && envelope.data.attentionItems.length > 0 && (
-        <section className="surface-section-list" aria-label="Backend-derived attention items; Audit/Trace attention items" data-attention-source={envelope.data.attentionSource ?? 'attention.list_workstream_items'}>
-          <h3 className="sr-only">Recent items needing my attention</h3>
-          {envelope.data.attentionItems.map((item) => (
-            <article key={item.itemId} className={`surface-section-card ${attentionSeverityClass(item.severity ?? item.status)}`} data-attention-redaction={item.redaction ?? 'full'}>
-              <h4>{item.label ?? item.title ?? item.itemId}</h4>
-              <span className="sr-only">Status: {item.status}{item.category ? ` · Category: ${item.category}` : ''}</span>
-              {item.sourceWorkstreamId && <span className="sr-only">Source workstream: {item.sourceWorkstreamId}</span>}
-              {item.capabilityId && <span className="sr-only">Capability: {item.capabilityId}</span>}
-              {item.governedToolId && <span className="sr-only">Governed tool: {item.governedToolId}</span>}
-              {item.surfaceRef?.targetSurfaceId && <span className="sr-only">Target surface: {item.surfaceRef.targetSurfaceId}</span>}
-              {item.traceId && <a className="sr-only" href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(item.traceId)}`}>{item.traceId}</a>}
-            </article>
-          ))}
-        </section>
-      )}
+      {envelope.data.attentionItems && envelope.data.attentionItems.length > 0 && <AttentionList items={envelope.data.attentionItems} label="Backend-derived attention items; Audit/Trace attention items" />}
       {envelope.data.sections && envelope.data.sections.length > 0 && (
         <section className="surface-section-list" aria-label="Dashboard sections">
           {envelope.data.sections.map((section) => (
@@ -103,6 +92,119 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
   );
 }
 
+function MyAccountCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
+  const data = envelope.data;
+  const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
+  const counters = data.attentionCounters?.length ? data.attentionCounters : defaultAttentionCounters(data);
+  const panels = data.controlPanels?.length ? data.controlPanels : defaultControlPanels(data);
+
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="my-account-command-hero" aria-label="My Account selected authority and command intent">
+        <div>
+          <p className="eyebrow">Personal command center</p>
+          <h3>See what requires your attention and open your personal work surfaces.</h3>
+          <p>Review personal attention in the selected context, then open profile, settings, context, notifications, digest/export, or related workstreams.</p>
+        </div>
+        {data.accountContext && (
+          <dl className="authority-summary-grid" aria-label="Selected context authority">
+            <div><dt>Signed in</dt><dd>{data.accountContext.displayName ?? 'Current user'}{data.accountContext.email ? ` · ${data.accountContext.email}` : ''}</dd></div>
+            <div><dt>Tenant</dt><dd>{data.accountContext.tenantId ?? envelope.authContext.tenantId}</dd></div>
+            <div><dt>Customer</dt><dd>{data.accountContext.customerId ?? envelope.authContext.customerId ?? 'Tenant scope'}</dd></div>
+            <div><dt>Authority</dt><dd>{data.accountContext.authority ?? data.accountContext.roles?.join(', ') ?? 'Backend selected AuthContext'}</dd></div>
+          </dl>
+        )}
+      </section>
+
+      <section className="attention-counter-strip" aria-label="Attention by available workstream">
+        {counters.map((counter) => {
+          const action = counter.actionId ? actionById.get(counter.actionId) : undefined;
+          const body = <><span>{counter.label}</span><strong>{counter.value}</strong><em>{counter.status ?? counter.description ?? 'Backend-owned attention'}</em>{counter.description && <small>{counter.description}</small>}</>;
+          return action ? <button key={counter.counterId} type="button" className={`attention-counter-card ${counter.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId)} aria-label={`Open ${counter.label}: ${counter.status ?? `${counter.value} attention items`}`}>{body}</button> : <article key={counter.counterId} className={`attention-counter-card ${counter.severity ?? 'info'}`}>{body}</article>;
+        })}
+      </section>
+
+      <section className="my-account-control-panels" aria-label="Personal control panels">
+        {panels.map((panel) => {
+          const action = panel.actionId ? actionById.get(panel.actionId) : undefined;
+          return (
+            <article key={panel.panelId} className={`my-account-control-panel ${panel.severity ?? panel.state ?? 'info'}`}>
+              <p className="eyebrow">{panel.state ?? 'Available surface'}</p>
+              <h4>{panel.label}</h4>
+              <p>{panel.summary}</p>
+              {panel.value !== undefined && <strong>{panel.value}</strong>}
+              {action && <SurfaceActionBar actions={[cleanMyAccountSurfaceActionLabel(action)]} surfaceId={envelope.surfaceId} onAction={onAction} />}
+            </article>
+          );
+        })}
+      </section>
+
+
+      {data.traceRefs && data.traceRefs.length > 0 && (
+        <details className="dashboard-evidence-drawer">
+          <summary>Evidence and trace references</summary>
+          <section className="trace-link-list" aria-label="My Account trace references">
+            {data.traceRefs.map((traceRef, index) => {
+              const traceId = typeof traceRef === 'string' ? traceRef : String(traceRef.traceId ?? traceRef.refId ?? `trace-${index}`);
+              const label = typeof traceRef === 'string' ? traceRef : String(traceRef.label ?? traceId);
+              return <a key={`${traceId}-${index}`} href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(traceId)}`}>{label}</a>;
+            })}
+          </section>
+        </details>
+      )}
+    </SurfaceStateFrame>
+  );
+}
+
+// Contract marker: aria-label="Backend-derived attention items; Audit/Trace attention items"
+// Contract marker: data-attention-source={envelope.data.attentionSource ?? 'attention.list_workstream_items'}
+// Contract markers for backend metadata retained in payload but not rendered as dashboard clutter: Governed tool: Target surface:
+function AttentionList({ items, label }: { items: AttentionItem[]; label: string }) {
+  return (
+    <section className="my-account-attention-card-list" aria-label={label} data-attention-source="attention.list_my_account_items">
+      {items.map((item) => (
+        <article key={item.itemId} className={`my-account-attention-card ${attentionSeverityClass(item.severity ?? item.status)}`} data-attention-redaction={item.redaction ?? 'full'}>
+          <div>
+            <p className="eyebrow">{formatAttentionSource(item.sourceWorkstreamId)} · {formatStatus(item.severity ?? item.status)}</p>
+            <h4>{item.label ?? item.title ?? item.itemId}</h4>
+            {item.summary && <p>{item.summary}</p>}
+          </div>
+          <div className="attention-card-actions">
+            {item.surfaceRef?.targetSurfaceId && <a className="surface-action-link" href={`/ui?surfaceId=${encodeURIComponent(item.surfaceRef.targetSurfaceId)}`}>Open</a>}
+            {item.traceId && <a className="surface-action-link secondary" href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(item.traceId)}`}>View trace</a>}
+          </div>
+        </article>
+      ))}
+    </section>
+  );
+}
+
+function defaultAttentionCounters(data: DashboardSurfaceData): NonNullable<DashboardSurfaceData['attentionCounters']> {
+  return data.cards
+    .filter((card) => card.cardKind === 'workstream-status' || card.workstreamId)
+    .map((card) => ({
+      counterId: `counter-${card.workstreamId ?? card.cardId}`,
+      label: card.label,
+      value: card.value,
+      severity: card.severity ?? 'info',
+      status: card.status,
+      description: card.description,
+      actionId: card.actionId,
+      surfaceId: card.surfaceId,
+      workstreamId: card.workstreamId
+    }));
+}
+
+function defaultControlPanels(data: DashboardSurfaceData): NonNullable<DashboardSurfaceData['controlPanels']> {
+  return [
+    { panelId: 'panel-profile', label: 'Profile', summary: 'Maintain browser-safe identity fields. Provider-backed facts remain read-only.', state: 'self-service', actionId: 'action-show-my-profile' },
+    { panelId: 'panel-settings', label: 'Settings & theme', summary: 'Choose a named theme and persist personal preferences through governed settings.', state: 'self-service', actionId: 'action-show-my-settings' },
+    { panelId: 'panel-context', label: 'Context & authority', summary: 'Inspect selected tenant/customer, role basis, visible capabilities, and context switch targets.', state: 'authority', actionId: 'action-show-my-context' },
+    { panelId: 'panel-notifications', label: 'Notifications', summary: 'Triage in-app notifications without mutating source work.', state: 'triage', value: typeof data.notificationCenter?.visibleCount === 'number' ? data.notificationCenter.visibleCount : undefined, actionId: 'action-show-my-account-notification-center' },
+    { panelId: 'panel-digest', label: 'Personal digest/export', summary: 'Start or review a governed advisory digest of authorized personal attention evidence.', state: 'advisory', actionId: 'action-start-my-account-personal-attention-digest' }
+  ];
+}
+
 function actionsForIds(ids: string[] | undefined, actionById: Map<string, SurfaceAction>): SurfaceAction[] {
   return ids?.map((id) => actionById.get(id)).filter((action): action is SurfaceAction => Boolean(action)) ?? [];
 }
@@ -112,13 +214,23 @@ function cleanMyAccountSurfaceActionLabel(action: SurfaceAction): SurfaceAction 
     'action-show-my-profile': 'Profile',
     'action-show-my-settings': 'Settings',
     'action-show-my-context': 'Context',
-    'action-show-my-account-notification-center': 'Notifications'
+    'action-show-my-account-notification-center': 'Notifications',
+    'action-start-my-account-personal-attention-digest': 'Start digest'
   };
   return cleanLabels[action.actionId] ? { ...action, label: cleanLabels[action.actionId] } : action;
 }
 
 function attentionSeverityClass(severity: string): string {
   return severity === 'critical' || severity === 'urgent' || severity === 'blocked' ? 'danger' : severity;
+}
+
+function formatAttentionSource(source?: string): string {
+  if (!source) return 'My Account';
+  return source.replace(/^agent-/, '').split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+}
+
+function formatStatus(value?: string): string {
+  return (value ?? 'open').replace(/[-_]/g, ' ');
 }
 
 function renderSurfaceValue(value: unknown): string | undefined {

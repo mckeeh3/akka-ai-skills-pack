@@ -46,11 +46,14 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
   const recommendations = accessReview?.recommendations ?? envelope.data.recommendations ?? [];
   const providerFailures = accessReview?.providerFailures ?? envelope.data.providerFailures ?? [];
   const taskTraceIds = accessReview?.traceIds ?? envelope.data.traceIds ?? [];
+  const isMyAccountDigest = envelope.surfaceId === 'surface-my-account-personal-attention-digest-progress';
   return (
     <SurfaceStateFrame envelope={envelope}>
-      <p role="status">Workflow {envelope.data.workflowId} is {statusText}.</p>
+      {isMyAccountDigest && <MyAccountDigestProgress data={envelope.data} />}
+      {!isMyAccountDigest && <p role="status">Workflow {envelope.data.workflowId} is {statusText}.</p>}
+      {isMyAccountDigest && <p role="status">Personal attention digest {envelope.data.digestTaskId ?? envelope.data.workflowId ?? 'request'} is {statusText}.</p>}
       {envelope.data.surfaceContract && <p className="form-status">Surface contract: {envelope.data.surfaceContract}</p>}
-      {envelope.data.taskId && <p className="form-status">Task id: {envelope.data.taskId}</p>}
+      {(envelope.data.taskId || envelope.data.digestTaskId || envelope.data.autonomousAgentTaskId) && <p className="form-status">Task id: {envelope.data.taskId ?? envelope.data.digestTaskId ?? envelope.data.autonomousAgentTaskId}</p>}
       {envelope.data.summary && <p className="surface-state-inline forbidden">{envelope.data.summary}</p>}
       {envelope.data.requiredCapabilityId && <p className="form-status">Required capability: {envelope.data.requiredCapabilityId}</p>}
       {envelope.data.initiatingCapabilityId && <p className="form-status">Initiating capability: {envelope.data.initiatingCapabilityId}</p>}
@@ -108,5 +111,24 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
       )}
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
     </SurfaceStateFrame>
+  );
+}
+
+function MyAccountDigestProgress({ data }: { data: WorkflowStatusSurfaceData }) {
+  return (
+    <section className="my-account-digest-progress" aria-label="Personal attention digest progress">
+      <div>
+        <p className="eyebrow">Autonomous personal briefing</p>
+        <h3>Digest/export progress is advisory and source attention remains authoritative.</h3>
+        <p>{data.summary ?? 'Start a backend-governed digest to summarize authorized personal attention evidence.'}</p>
+      </div>
+      <dl className="authority-summary-grid">
+        <div><dt>Status</dt><dd>{formatStatus(data.status)}</dd></div>
+        <div><dt>Authorized items</dt><dd>{data.authorizedAttentionCount ?? 0}</dd></div>
+        <div><dt>Direct mutation</dt><dd>{data.noDirectMutation ? 'Not allowed' : 'Not reported'}</dd></div>
+        <div><dt>Redaction</dt><dd>{data.redaction ?? 'Hidden workstreams/items are not counted or named'}</dd></div>
+      </dl>
+      {data.safety && <p className="surface-state-inline forbidden">{data.safety}</p>}
+    </section>
   );
 }

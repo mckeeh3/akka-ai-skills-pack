@@ -20,7 +20,7 @@ function traceHref(traceId: string) {
 
 export function SystemMessageSurface({ envelope, onAction }: SystemMessageSurfaceProps) {
   const data = envelope.data;
-  const traceIds = data.trace?.traceIds?.length ? data.trace.traceIds : envelope.traceIds;
+  const traceIds = data.trace?.traceIds?.length ? data.trace.traceIds : data.traceRefs?.length ? data.traceRefs : envelope.traceIds;
   const sourceRefs = data.sourceRefs?.filter((ref) => ref.refType === 'trace') ?? [];
   const recoverySteps = data.recoverySteps?.length ? data.recoverySteps : ['Retry after backend configuration or authorization is restored.'];
   const severity = data.severity ?? 'warning';
@@ -34,6 +34,7 @@ export function SystemMessageSurface({ envelope, onAction }: SystemMessageSurfac
           <span className="status-pill neutral">{data.capabilityId ?? 'capability unavailable'}</span>
         </div>
         <p>{data.message ?? data.summary ?? 'The workstream response was blocked safely.'}</p>
+        {(data.safeReasonCode || data.blockerCode || data.surfaceContract) && <dl className="system-message-boundary-grid"><div><dt>Contract</dt><dd>{data.surfaceContract ?? envelope.surfaceVersion}</dd></div><div><dt>Reason</dt><dd>{data.safeReasonCode ?? data.blockerCode ?? data.status}</dd></div><div><dt>Redaction</dt><dd>{data.redaction ?? 'Unauthorized target details are not enumerated.'}</dd></div></dl>}
         <section aria-label="Recovery steps">
           <h4>Recovery steps</h4>
           <ol>
@@ -57,7 +58,7 @@ export function SystemMessageSurface({ envelope, onAction }: SystemMessageSurfac
           </section>
         )}
         <p className="system-message-redaction">{data.safety?.redactionNote ?? 'Provider secrets, raw JWTs, hidden prompts, invitation tokens, and unauthorized tenant/customer evidence are not shown.'}</p>
-        <p className="system-message-boundary">UserAdminAgent guidance is read-only: no direct mutation of invitations, memberships, roles, capabilities, authorization state, or provider configuration occurred.</p>
+        <p className="system-message-boundary">{envelope.surfaceId.startsWith('surface-my-account') ? 'My Account recovery is browser-safe: hidden workstreams, hidden contexts, source details, provider secrets, and unauthorized tenant/customer evidence are not enumerated.' : 'UserAdminAgent guidance is read-only: no direct mutation of invitations, memberships, roles, capabilities, authorization state, or provider configuration occurred.'}</p>
         <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
       </article>
     </SurfaceStateFrame>

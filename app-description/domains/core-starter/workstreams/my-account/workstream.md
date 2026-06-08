@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Give the signed-in human a safe personal control point for profile, settings, selected context, personal attention, notifications, and governed digest/export requests.
+Give the signed-in human a safe AI-first personal control point for selected authority context, personal attention, profile, named-theme/settings preferences, in-app notifications, governed digest/export requests, and safe recovery from unavailable or denied workstream/source openings.
 
 ## Functional agent
 
@@ -14,7 +14,7 @@ Primary capability: `../../capabilities/account-context-and-profile.md`.
 
 ## Attention model
 
-Backend-owned attention includes personal action items, notification acknowledgements, context problems, digest/export status, and provider/configuration denials visible to the current user. Counts feed the left rail and, where personal, My Account aggregation.
+Backend-owned attention includes personal action items, notification acknowledgements, context problems, digest/export status, unavailable-source recovery, and provider/configuration denials visible to the current user. Counts feed the signed-in user rail tile and My Account personal command-center aggregation.
 
 ## Readiness posture
 

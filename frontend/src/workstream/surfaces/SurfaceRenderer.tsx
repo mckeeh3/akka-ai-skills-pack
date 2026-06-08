@@ -48,6 +48,7 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
     case 'governance-diff':
       return <GovernanceDiffSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'outcome':
+    case 'outcome-panel':
       return <OutcomeSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'notification-center':
       return <NotificationCenterSurface envelope={selectedEnvelope as never} onAction={onAction} />;

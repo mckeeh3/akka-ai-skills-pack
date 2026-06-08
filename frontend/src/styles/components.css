@@ -1904,3 +1904,261 @@ button.dashboard-card.ds-card {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+.my-account-command-hero,
+.my-account-detail-hero,
+.my-account-digest-progress,
+.outcome-briefing-hero {
+  display: grid;
+  gap: var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--color-ai) 26%, var(--color-border));
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-ai) 8%, var(--color-surface-raised)), var(--color-surface-raised));
+  padding: var(--space-5);
+}
+
+.my-account-command-hero h3,
+.my-account-needs-me h3,
+.authorized-workstream-links h3,
+.outcome-briefing-hero h3 { margin: 0; }
+
+.authority-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.authority-summary-grid div,
+.attention-counter-card,
+.my-account-control-panel,
+.authority-context-panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  padding: var(--space-4);
+}
+
+.authority-summary-grid dt,
+.attention-counter-card span {
+  color: var(--color-muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.authority-summary-grid dd {
+  margin: var(--space-1) 0 0;
+  overflow-wrap: anywhere;
+  font-weight: 850;
+}
+
+.attention-counter-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.attention-counter-card {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+  color: inherit;
+  text-align: left;
+}
+
+button.attention-counter-card { cursor: pointer; }
+button.attention-counter-card:hover,
+button.attention-counter-card:focus-visible {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+.attention-counter-card strong {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.attention-counter-card em {
+  color: var(--color-text-soft);
+  font-style: normal;
+  font-weight: 750;
+}
+
+.attention-counter-card.warning,
+.my-account-control-panel.warning { border-color: color-mix(in srgb, var(--color-warning) 44%, var(--color-border)); }
+.attention-counter-card.blocked,
+.my-account-control-panel.blocked { border-color: color-mix(in srgb, var(--color-danger) 44%, var(--color-border)); }
+
+.my-account-needs-me,
+.authorized-workstream-links,
+.my-account-detail-overview,
+.my-account-digest-result {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.my-account-control-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--space-4);
+}
+
+.my-account-control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.my-account-control-panel h4,
+.authority-context-panel h4 { margin: 0; }
+.my-account-control-panel p,
+.authority-context-panel p { color: var(--color-text-soft); }
+
+.my-account-detail-form {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-raised);
+  padding: var(--space-4);
+}
+
+.named-theme-list,
+.evidence-ref-list ul {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.named-theme-list li,
+.evidence-ref-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-soft);
+  padding: var(--space-3);
+}
+
+.available-context-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-3);
+}
+
+.my-account-digest-progress,
+.my-account-digest-result { margin-top: var(--space-2); }
+
+.system-message-boundary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.system-message-boundary-grid div {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-soft);
+  padding: var(--space-3);
+}
+
+.system-message-boundary-grid dt { color: var(--color-muted); font-size: 0.75rem; font-weight: 900; text-transform: uppercase; }
+.system-message-boundary-grid dd { margin: var(--space-1) 0 0; overflow-wrap: anywhere; font-weight: 800; }
+
+@media (max-width: 980px) {
+  .authority-summary-grid,
+  .attention-counter-strip,
+  .system-message-boundary-grid { grid-template-columns: 1fr; }
+}
+
+.my-account-attention-card-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.my-account-attention-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  padding: var(--space-4);
+}
+
+.my-account-attention-card h4,
+.my-account-attention-card p { margin: 0; }
+.my-account-attention-card h4 { margin-bottom: var(--space-2); }
+.my-account-attention-card p:not(.eyebrow) { color: var(--color-text-soft); }
+.my-account-attention-card.danger { border-color: color-mix(in srgb, var(--color-danger) 45%, var(--color-border)); }
+.my-account-attention-card.warning { border-color: color-mix(in srgb, var(--color-warning) 45%, var(--color-border)); }
+
+.attention-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.surface-action-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  padding: 0.5rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.surface-action-link:hover,
+.surface-action-link:focus-visible {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.surface-action-link.secondary { color: var(--color-text-soft); }
+
+.available-workstream-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--space-3);
+}
+
+.available-workstream-card {
+  display: grid;
+  gap: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  padding: var(--space-4);
+}
+
+.available-workstream-card h4,
+.available-workstream-card p { margin: 0; }
+.available-workstream-card p { color: var(--color-text-soft); }
+
+.dashboard-evidence-drawer {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  padding: var(--space-3) var(--space-4);
+}
+
+.dashboard-evidence-drawer summary {
+  cursor: pointer;
+  font-weight: 850;
+}
+
+@media (max-width: 760px) {
+  .my-account-attention-card { grid-template-columns: 1fr; }
+  .attention-card-actions { justify-content: flex-start; }
+}

@@ -550,7 +550,9 @@ class WorkstreamServiceTest {
     var accessProfileContext = service.surface(identity(), "membership-admin", "surface.access.profile.context.v1", "corr-access-profile-context");
 
     assertEquals("dashboard", dashboard.surfaceType());
-    assertEquals("my_account.dashboard.v1", dashboard.data().get("surfaceContract"));
+    assertEquals("my_account.personal_command_center.v1", dashboard.data().get("surfaceContract"));
+    assertTrue(dashboard.toString().contains("attentionCounters"));
+    assertTrue(dashboard.toString().contains("controlPanels"));
     assertTrue(dashboard.toString().contains("selected context"));
     assertTrue(dashboard.toString().contains("authorityBasis"));
     assertTrue(dashboard.toString().contains("my_account.view_context"));

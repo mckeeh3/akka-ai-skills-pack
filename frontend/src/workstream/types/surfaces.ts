@@ -2,7 +2,7 @@ import type { SurfaceAction } from './actions';
 
 export type SurfaceRedactionProfile = 'self' | 'tenant-admin' | 'support' | 'auditor' | 'agent';
 export type SurfaceUiStatus = 'loading' | 'empty' | 'ready' | 'submitting' | 'success' | 'pending' | 'approval-needed' | 'error' | 'forbidden' | 'conflict' | 'stale' | 'reconnecting' | 'partial-data' | 'no-op' | 'blocked_provider_or_runtime' | 'not_found_or_redacted' | 'validation-error';
-export type CanonicalSurfaceType = 'markdown_response' | 'system_message' | 'dashboard' | 'list-search' | 'detail-edit' | 'decision' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome' | 'notification-center';
+export type CanonicalSurfaceType = 'markdown_response' | 'system_message' | 'dashboard' | 'list-search' | 'detail-edit' | 'decision' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome' | 'outcome-panel' | 'notification-center';
 
 export type SurfaceLink = {
   label: string;
@@ -73,12 +73,19 @@ export type MarkdownResponseData = {
 };
 
 export type SystemMessageData = {
-  status?: 'blocked_provider_or_runtime' | 'forbidden' | 'validation-error' | 'error' | 'no-op' | string;
+  surfaceContract?: string;
+  status?: 'blocked_provider_or_runtime' | 'forbidden' | 'validation-error' | 'error' | 'no-op' | 'not_found_or_redacted' | string;
   severity?: 'info' | 'warning' | 'error' | 'critical' | string;
   title?: string;
   summary?: string;
   message?: string;
   recoverySteps?: string[];
+  safeReasonCode?: string;
+  blockerCode?: string;
+  redaction?: string;
+  traceRefs?: string[];
+  noFakeSuccess?: boolean;
+  noDirectMutation?: boolean;
   workstreamEntryId?: string;
   producingAgentId?: string;
   capabilityId?: string;
@@ -132,7 +139,17 @@ export type BrowserSafeRedactionMetadata = string | {
 
 export type DashboardSurfaceData = {
   surfaceContract?: 'audit.trace.dashboard.v1' | string;
-  cards: Array<{ cardId: string; label: string; value: string | number; unit?: string; status?: string; description?: string; cardKind?: 'workstream-status' | string; workstreamId?: string; surfaceId?: string; actionId?: string; severity?: 'info' | 'warning' | 'urgent' | 'critical' | 'blocked' | 'blocked_provider_or_runtime' }>;
+  cards: Array<{ cardId: string; label: string; value: string | number; unit?: string; status?: string; description?: string; cardKind?: 'workstream-status' | 'notification-center' | 'personal-command-center' | string; workstreamId?: string; surfaceId?: string; actionId?: string; severity?: 'info' | 'warning' | 'urgent' | 'critical' | 'blocked' | 'blocked_provider_or_runtime' }>;
+  attentionCounters?: Array<{ counterId: string; label: string; value: string | number; severity?: string; status?: string; source?: string; actionId?: string; surfaceId?: string; workstreamId?: string; description?: string }>;
+  needsAttention?: Array<AttentionItem>;
+  controlPanels?: Array<{ panelId: string; label: string; summary: string; state?: string; value?: string | number; surfaceId?: string; actionId?: string; severity?: string }>;
+  authorizedWorkstreamLinks?: Array<{ workstreamId: string; label: string; requiredCapabilityId?: string; surfaceId?: string; actionId?: string; status?: string }>;
+  notificationCenter?: Record<string, unknown>;
+  personalAttentionDigest?: Record<string, unknown>;
+  authorityBasis?: unknown;
+  contextCapabilityGroups?: unknown;
+  traceRefs?: Array<string | Record<string, unknown>>;
+  systemStates?: string[];
   attentionItems?: Array<AttentionItem>;
   attentionSource?: 'attention.list_workstream_items' | string;
   accountContext?: { displayName?: string; email?: string; tenantId?: string; customerId?: string; selectedContextId?: string; roles?: string[]; authority?: string };
@@ -165,7 +182,7 @@ export type DetailEditSurfaceData = {
     label: string;
     value: string;
     editable: boolean;
-    inputType?: 'text' | 'email' | 'select' | 'textarea';
+    inputType?: 'text' | 'email' | 'select' | 'textarea' | 'number';
     options?: Array<{ value: string; label: string }>;
     disabledReason?: string;
   }>;
@@ -197,6 +214,22 @@ export type DetailEditSurfaceData = {
   redactedDetails?: Record<string, string>;
   traceLinks?: string[];
   relatedEvents?: Array<{ traceId: string; eventKind?: string; summary?: string; correlationId?: string; status?: string }>;
+  surfaceContract?: string;
+  profileSummary?: Record<string, unknown>;
+  providerBoundarySummary?: string;
+  settingsSummary?: Record<string, unknown>;
+  preferredThemeId?: string;
+  availableThemes?: Array<{ themeId?: string; value?: string; id?: string; name?: string; label?: string; tone?: string; selected?: boolean }>;
+  notificationPreferenceSummary?: unknown;
+  digestPreferenceSummary?: unknown;
+  selectedContext?: Record<string, unknown>;
+  authorityBasis?: unknown;
+  roleSummary?: string[];
+  visibleCapabilitySummary?: Record<string, unknown>;
+  supportAccess?: Record<string, unknown>;
+  availableContexts?: Array<Record<string, unknown>>;
+  redaction?: BrowserSafeRedactionMetadata;
+  capabilityAliases?: string[];
   accessManagement?: {
     memberStatus?: {
       accountStatus: string;
@@ -246,9 +279,11 @@ export type AuditTimelineSurfaceData = {
 
 export type WorkflowStatusSurfaceData = {
   surfaceContract?: 'user_admin.access_review_task.v1' | string;
-  workflowId: string;
+  workflowId?: string;
+  digestTaskId?: string;
+  autonomousAgentTaskId?: string;
   taskId?: string;
-  status: 'queued' | 'running' | 'waiting-for-human' | 'blocked' | 'blocked_provider_or_runtime' | 'completed' | 'failed' | 'cancelled' | 'accepted' | 'rejected';
+  status: 'not_started' | 'queued' | 'running' | 'working' | 'waiting-for-human' | 'waiting-for-provider-runtime' | 'blocked' | 'blocked_provider_or_runtime' | 'completed' | 'completed-review-required' | 'failed' | 'cancelled' | 'accepted' | 'rejected' | string;
   summary?: string;
   traceIds?: string[];
   requiredCapabilityId?: string;
@@ -265,6 +300,9 @@ export type WorkflowStatusSurfaceData = {
   resultReviewState?: string;
   noDirectMutation?: boolean;
   safety?: string;
+  authorizedAttentionCount?: number;
+  sectionRefs?: string[];
+  redaction?: string;
   accessReview?: {
     surfaceContract: 'user_admin.access_review_task.v1';
     taskId: string;
@@ -341,8 +379,22 @@ export type NotificationCenterSurfaceData = {
 };
 
 export type OutcomeSurfaceData = {
-  outcomeId: string;
-  metrics: Array<{ metricId: string; label: string; current: number; target: number; unit?: string }>;
+  outcomeId?: string;
+  digestTaskId?: string;
+  autonomousAgentTaskId?: string;
+  surfaceContract?: string;
+  status?: string;
+  progressPercent?: number;
+  summary?: string;
+  authorizedAttentionCount?: number;
+  sectionRefs?: string[];
+  evidenceRefs?: Array<string | { refId?: string; label?: string; summary?: string; traceId?: string }>;
+  traceRefs?: string[];
+  redaction?: string;
+  noDirectMutation?: boolean;
+  safety?: string;
+  decisionState?: string;
+  metrics?: Array<{ metricId: string; label: string; current: number; target: number; unit?: string }>;
 };
 
 export type RegionState<T> =
