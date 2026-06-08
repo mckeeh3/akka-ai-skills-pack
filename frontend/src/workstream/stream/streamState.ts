@@ -18,14 +18,28 @@ export function appendOrUpdateWorkstreamItem(items: WorkstreamItem[], next: Work
   if (existingIndex === -1) {
     return orderWorkstreamSurfaceStream([...items, next]);
   }
-  return orderWorkstreamSurfaceStream(items.map((item, index) => (index === existingIndex ? { ...item, ...next, traceIds: Array.from(new Set([...item.traceIds, ...next.traceIds])) } : item)));
+  return orderWorkstreamSurfaceStream(items.map((item, index) => (index === existingIndex ? { ...item, ...next, createdAt: item.createdAt, traceIds: Array.from(new Set([...item.traceIds, ...next.traceIds])) } : item)));
 }
 
 export function orderWorkstreamSurfaceStream(items: WorkstreamItem[]): WorkstreamItem[] {
-  return [...items].sort((left, right) => {
-    const createdAtOrder = left.createdAt.localeCompare(right.createdAt);
-    return createdAtOrder === 0 ? left.itemId.localeCompare(right.itemId) : createdAtOrder;
-  });
+  return [...items].sort(compareWorkstreamSurfaceFlowItems);
+}
+
+function compareWorkstreamSurfaceFlowItems(left: WorkstreamItem, right: WorkstreamItem): number {
+  const createdAtOrder = left.createdAt.localeCompare(right.createdAt);
+  if (createdAtOrder !== 0) return createdAtOrder;
+
+  const correlationOrder = left.correlationId.localeCompare(right.correlationId);
+  if (correlationOrder !== 0) return correlationOrder;
+
+  const flowOrder = workstreamSurfaceFlowPriority(left) - workstreamSurfaceFlowPriority(right);
+  return flowOrder === 0 ? left.itemId.localeCompare(right.itemId) : flowOrder;
+}
+
+function workstreamSurfaceFlowPriority(item: WorkstreamItem): number {
+  if (item.kind === 'user-request' || item.kind === 'user-message' || item.kind === 'surface-request') return 0;
+  if (item.kind === 'system-status') return 1;
+  return 2;
 }
 
 export function pruneWorkstreamSurfaceStream(items: WorkstreamItem[], maxSurfaces = DEFAULT_WORKSTREAM_SURFACE_STREAM_LIMIT): WorkstreamItem[] {
