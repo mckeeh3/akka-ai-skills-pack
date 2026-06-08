@@ -601,21 +601,16 @@ class WorkstreamServiceTest {
     assertTrue(center.resultSurface().toString().contains("notification.mark_read"));
     assertTrue(center.resultSurface().toString().contains("notification.archive"));
     assertTrue(center.resultSurface().toString().contains("notification.update_preferences"));
-    assertTrue(center.resultSurface().toString().contains("notification.email.list_my_preferences"));
-    assertTrue(center.resultSurface().toString().contains("notification.email.update_preferences"));
-    assertTrue(center.resultSurface().toString().contains("resend"));
-    assertTrue(center.resultSurface().toString().contains("captured_outbox"));
-    assertTrue(center.resultSurface().toString().contains("SMS, mobile push"));
+    assertFalse(center.resultSurface().data().containsKey("emailPreferencesSummary"));
+    assertFalse(center.resultSurface().data().containsKey("channelRegistry"));
+    assertFalse(center.resultSurface().data().containsKey("deliveryAttempts"));
+    assertFalse(center.resultSurface().data().containsKey("externalOutbox"));
+    assertFalse(center.resultSurface().data().toString().contains("notification.email"));
+    assertFalse(center.resultSurface().data().toString().contains("resend"));
+    assertFalse(center.resultSurface().data().toString().contains("captured_outbox"));
+    assertFalse(center.resultSurface().data().toString().contains("SMS, mobile push"));
     assertFalse(center.resultSurface().toString().contains("pushEnabled"));
     assertFalse(center.resultSurface().toString().contains("RESEND_API_KEY"));
-
-    var emailPref = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-notification-email-update-preferences", "action-notification-email-update-preferences", "notification.email.update_preferences", "notification.email.update_preferences", Map.of("category", "digest_ready", "enabled", true, "minimumPriority", "info"), null, "membership-admin", "surface-my-account-notification-center", "corr-email-pref"));
-    assertEquals("accepted", emailPref.status());
-    assertEquals("surface-my-account-notification-center", emailPref.resultSurface().surfaceId());
-    assertTrue(emailPref.resultSurface().toString().contains("emailPreferencesSummary"));
-    assertTrue(emailPref.resultSurface().toString().contains("digest_ready"));
-    assertTrue(emailPref.message().contains("in-app notifications and future SMS/push/webhook channels are unchanged"));
 
     var firstNotificationId = ((List<?>) center.resultSurface().data().get("items")).get(0).toString().replaceFirst(".*notificationId=([^,}]+).*", "$1");
     var read = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(

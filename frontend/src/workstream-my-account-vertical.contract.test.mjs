@@ -105,11 +105,12 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.match(dashboardSurface, /nextSteps/);
   assert.match(surfaceRenderer, /case 'notification-center':\n      return <NotificationCenterSurface/);
   assert.match(notificationCenterSurface, /notification\.list_my_account_center/);
-  assert.match(notificationCenterSurface, /notification\.email\.list_my_preferences/);
-  assert.match(notificationCenterSurface, /notification\.email\.update_preferences/);
-  assert.match(notificationCenterSurface, /Resend configuration/);
-  assert.match(notificationCenterSurface, /SMS, push, and webhook controls are not rendered/);
-  assert.doesNotMatch(notificationCenterSurface, /pushEnabled|emailEnabled|RESEND_API_KEY|RESEND_FROM_EMAIL/);
+  assert.match(notificationCenterSurface, /Personal in-app triage/);
+  assert.match(notificationCenterSurface, /buildTriageLanes/);
+  assert.match(notificationCenterSurface, /notification-triage-board/);
+  assert.match(notificationCenterSurface, /actionInput=\{\{ notificationId: item\.notificationId \}\}/);
+  assert.match(notificationCenterSurface, /Hidden categories are not enumerated/);
+  assert.doesNotMatch(notificationCenterSurface, /notification\.email|Resend configuration|channelRegistry|deliveryAttempts|externalOutbox|pushEnabled|emailEnabled|RESEND_API_KEY|RESEND_FROM_EMAIL/);
   assert.match(detailEditSurface, /surface-detail-edit-form/);
   assert.match(detailEditSurface, /fieldValues/);
   assert.match(detailEditSurface, /fields\.filter\(\(field\) => field\.editable\)/);

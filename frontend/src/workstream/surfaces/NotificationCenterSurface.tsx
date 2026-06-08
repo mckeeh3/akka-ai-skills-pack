@@ -7,113 +7,200 @@ type NotificationCenterSurfaceProps = {
   onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
 };
 
+type NotificationItem = NonNullable<NotificationCenterSurfaceData['items']>[number];
+
+type TriageLane = {
+  laneId: 'needs-attention' | 'awareness' | 'handled';
+  title: string;
+  intent: string;
+  items: NotificationItem[];
+};
+
+const itemLifecycleActionIds = new Set([
+  'action-notification-mark-read',
+  'action-notification-dismiss',
+  'action-notification-archive',
+  'action-notification-snooze'
+]);
+
+const preferenceActionIds = new Set(['action-notification-update-preferences']);
+
+const handledStatuses = new Set(['read', 'dismissed', 'archived', 'expired']);
+const attentionPriorities = new Set(['blocked', 'urgent', 'warning']);
+
 export function NotificationCenterSurface({ envelope, onAction }: NotificationCenterSurfaceProps) {
   const data = envelope.data;
-  const items = data.items ?? [];
-  const emailPreferences = data.emailPreferencesSummary ?? [];
-  const channelRegistry = data.channelRegistry ?? [];
-  const deliveryAttempts = data.deliveryAttempts ?? [];
-  const externalOutbox = data.externalOutbox ?? [];
+  const items = sortNotifications(data.items ?? []);
+  const refreshActions = envelope.actions.filter((action) => action.actionId === 'action-show-my-account-notification-center');
+  const lifecycleActions = envelope.actions.filter((action) => itemLifecycleActionIds.has(action.actionId));
+  const preferenceActions = envelope.actions.filter((action) => preferenceActionIds.has(action.actionId));
+  const lanes = buildTriageLanes(items);
+  const primaryLane = lanes.find((lane) => lane.laneId === 'needs-attention') ?? lanes[0];
+  const secondaryLanes = lanes.filter((lane) => lane.laneId !== 'needs-attention');
+  const needsAttentionCount = primaryLane.items.length;
+  const blockedCount = items.filter((item) => normalize(item.priority) === 'blocked').length;
+
   return (
     <SurfaceStateFrame envelope={envelope}>
-      <section className="notification-center-summary" aria-label="In-app notification center summary" data-count-source="notification.list_my_account_center">
-        <p className="capability-basis">Surface contract: {data.surfaceContract}</p>
-        <p className="surface-state-inline partial">In-app notifications remain the source projection. Email is a governed Resend/captured-outbox channel. Webhook, SMS, mobile push, Slack, and Teams are provider-neutral fail-closed seams until Q-001 selects real production providers.</p>
-        <dl className="notification-center-counts">
-          <div><dt>Channel</dt><dd>{data.channel}</dd></div>
+      <section className="notification-triage-hero" aria-labelledby="notification-triage-title" data-count-source="notification.list_my_account_center">
+        <div className="notification-triage-intent">
+          <p className="eyebrow">Personal in-app triage</p>
+          <h3 id="notification-triage-title">Notice what changed. Acknowledge what is done. Keep source work governed.</h3>
+          <p>This center shows only authorized in-app notifications for the selected context. Lifecycle actions clear or defer notification visibility; they do not resolve source attention, tasks, workstream events, or audit records.</p>
+        </div>
+        <dl className="notification-triage-metrics" aria-label="Notification center counts">
+          <div><dt>Needs attention</dt><dd>{needsAttentionCount}</dd></div>
           <div><dt>Unread</dt><dd>{data.unreadCount}</dd></div>
           <div><dt>Visible</dt><dd>{data.visibleCount}</dd></div>
+          <div><dt>Blocked</dt><dd>{blockedCount}</dd></div>
         </dl>
-        {data.redaction && <p className="redaction-note">Redaction: {data.redaction}</p>}
-      </section>
-      {items.length === 0 ? (
-        <section className="surface-state-inline empty" aria-label="No in-app notifications">No authorized in-app notifications are visible for the selected context.</section>
-      ) : (
-        <section className="surface-section-list notification-center-items" aria-label="Backend-derived in-app notifications">
-          {items.map((item) => (
-            <article key={item.notificationId} className={`surface-section-card ${priorityClass(item.priority)} ${item.status}`} data-notification-status={item.status} data-notification-redaction={item.redactionLevel}>
-              <h4>{item.title ?? 'Redacted notification'}</h4>
-              {item.summary && <p>{item.summary}</p>}
-              <p>Status: {item.status} · Category: {item.category ?? 'redacted'} · Priority: {item.priority ?? 'info'}</p>
-              {item.owningWorkstreamId && <p className="capability-basis">Workstream: {item.owningWorkstreamId}</p>}
-              {item.requiredCapabilityId && <p className="capability-basis">Capability: {item.requiredCapabilityId}</p>}
-              {item.sourceRefs && item.sourceRefs.length > 0 && <p className="capability-basis">Source refs: {item.sourceRefs.map((ref) => ref.label ?? ref.refId).join(', ')}</p>}
-              {item.surfaceRef?.targetSurfaceId && <p className="capability-basis">Open target: {item.surfaceRef.targetSurfaceId}</p>}
-              {item.traceRefs && item.traceRefs.length > 0 && <section className="trace-link-list" aria-label="Notification trace links">{item.traceRefs.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}
-            </article>
-          ))}
-        </section>
-      )}
-      {data.preferencesSummary && data.preferencesSummary.length > 0 && (
-        <section className="surface-section-list notification-preferences" aria-label="In-app notification preference summary">
-          {data.preferencesSummary.map((pref) => (
-            <article key={pref.preferenceId} className="surface-section-card">
-              <h4>{pref.category} · {pref.channel}</h4>
-              <p>Enabled: {String(pref.enabled)} · Minimum priority: {pref.minimumPriority} · Include read: {String(pref.includeReadInCenter)}</p>
-            </article>
-          ))}
-        </section>
-      )}
-      {channelRegistry.length > 0 && (
-        <section className="surface-section-list notification-channel-registry" aria-label="Notification channel registry" data-governed-tool="notification.delivery.list_platform">
-          {channelRegistry.map((channel) => (
-            <article key={channel.channel} className="surface-section-card" data-channel-status={channel.status} data-production-configured={String(channel.productionConfigured)}>
-              <h4>{channel.channel}</h4>
-              <p>Status: {channel.status} · Provider: {channel.providerKind} · Local/test outbox: {String(channel.localTestOutboxAvailable)}</p>
-              <p className="capability-basis">Delivery capability: {channel.deliveryCapabilityId} · Preference capability: {channel.preferenceCapabilityId}</p>
-              <p>{channel.statusReason}</p>
-            </article>
-          ))}
-        </section>
-      )}
-      {deliveryAttempts.length > 0 && (
-        <section className="surface-section-list notification-delivery-attempts" aria-label="External notification delivery attempts">
-          {deliveryAttempts.map((attempt) => (
-            <article key={attempt.attemptId} className="surface-section-card" data-delivery-status={attempt.status}>
-              <h4>{attempt.channel} delivery attempt</h4>
-              <p>Status: {attempt.status} · Provider: {attempt.providerKind} · Destination: {attempt.destinationSummary ?? 'redacted'}</p>
-              {attempt.safeErrorSummary && <p className="surface-state-inline blocked">{attempt.safeErrorSummary}</p>}
-              <p className="capability-basis">Outbox: {attempt.outboxId ?? 'none'} · Correlation: {attempt.correlationId ?? 'backend-derived'}</p>
-            </article>
-          ))}
-        </section>
-      )}
-      {externalOutbox.length > 0 && (
-        <section className="surface-section-list notification-external-outbox" aria-label="Captured local test external notification outbox">
-          {externalOutbox.map((message) => (
-            <article key={message.outboxId} className="surface-section-card">
-              <h4>{message.channel} captured outbox</h4>
-              <p>{message.title ?? 'Notification'} · {message.previewText ?? 'Preview redacted'}</p>
-              <p className="capability-basis">Destination: {message.destinationSummary ?? 'redacted'} · Correlation: {message.correlationId ?? 'backend-derived'}</p>
-            </article>
-          ))}
-        </section>
-      )}
-      <section className="surface-section-list notification-email-preferences" aria-label="Email notification preference summary" data-channel="email" data-governed-tool="notification.email.list_my_preferences">
-        <div className="surface-section-card">
-          <h4>Email delivery channel</h4>
-          <p>Provider: {data.emailChannel?.provider ?? 'resend'} · Local/test delivery: {data.emailChannel?.localTestDelivery ?? 'captured_outbox'}</p>
-          <p className="capability-basis">Updates use {data.emailChannel?.updateCapabilityId ?? 'notification.email.update_preferences'}; provider secrets, Resend configuration, raw email bodies, SMS, push, and webhook controls are not rendered.</p>
-          {data.futureDeliveryChannels && <p className="surface-state-inline partial">{data.futureDeliveryChannels}</p>}
+        <div className="notification-triage-boundary" aria-label="Notification authority boundary">
+          <span>Channel: {data.channel}</span>
+          <span>Context: {envelope.authContext.selectedContextId}</span>
+          <span>Redaction: {data.redaction ?? envelope.redaction.profile}</span>
+          <span>Correlation: {data.correlationId ?? envelope.correlationId}</span>
         </div>
-        {emailPreferences.length === 0 ? (
-          <article className="surface-section-card empty">
-            <h4>No email categories enabled</h4>
-            <p>Email is opt-in or policy-required per backend category. Use the backend action to enable visible allowlisted categories such as digest_ready.</p>
-          </article>
-        ) : emailPreferences.map((pref) => (
-          <article key={pref.preferenceId} className="surface-section-card" data-email-category={pref.category}>
-            <h4>{pref.category} · {pref.channel}</h4>
-            <p>Enabled: {String(pref.enabled)} · Minimum priority: {pref.minimumPriority} · Digest mode: {pref.digestMode ?? 'immediate'}</p>
-            <p className="capability-basis">Boundary: {pref.deliveryBoundary ?? 'production_resend_or_local_captured_outbox'} · Correlation: {pref.correlationId ?? 'backend-derived'}</p>
-          </article>
-        ))}
+        {refreshActions.length > 0 && <SurfaceActionBar actions={refreshActions} surfaceId={envelope.surfaceId} label="Refresh personal notification triage" onAction={onAction} />}
       </section>
-      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
+
+      {items.length === 0 ? (
+        <section className="notification-triage-empty" aria-label="No personal notifications">
+          <h4>Nothing needs acknowledgement right now.</h4>
+          <p>No authorized in-app notifications are visible for this selected context. Hidden or unauthorized workstreams are not counted or named.</p>
+        </section>
+      ) : (
+        <section className="notification-triage-board" aria-label="Notification triage lanes">
+          <TriageLaneSection lane={primaryLane} actions={lifecycleActions} surfaceId={envelope.surfaceId} onAction={onAction} primary />
+          <section className="notification-secondary-lanes" aria-label="Secondary notification lanes">
+            {secondaryLanes.map((lane) => <TriageLaneSection key={lane.laneId} lane={lane} actions={lifecycleActions} surfaceId={envelope.surfaceId} onAction={onAction} />)}
+          </section>
+        </section>
+      )}
+
+      <section className="notification-triage-footer" aria-label="Notification center evidence and preferences">
+        <article className="notification-triage-panel">
+          <h4>In-app preference boundary</h4>
+          <p>Preferences apply only to visible, authorized in-app notification categories. Hidden categories are not enumerated.</p>
+          {data.preferencesSummary && data.preferencesSummary.length > 0 ? (
+            <ul className="notification-preference-list">
+              {data.preferencesSummary.map((pref) => (
+                <li key={pref.preferenceId}><strong>{pref.category}</strong><span>{pref.enabled ? 'enabled' : 'muted'} · minimum {pref.minimumPriority} · include read {String(pref.includeReadInCenter)}</span></li>
+              ))}
+            </ul>
+          ) : <p className="surface-state-inline empty">No in-app preference overrides are visible.</p>}
+          {preferenceActions.length > 0 && <SurfaceActionBar actions={preferenceActions} surfaceId={envelope.surfaceId} label="Update in-app notification preferences" onAction={onAction} />}
+        </article>
+
+        <article className="notification-triage-panel">
+          <h4>Evidence</h4>
+          {data.sourceSummary && Object.keys(data.sourceSummary).length > 0 ? (
+            <dl className="notification-source-counts">
+              {Object.entries(data.sourceSummary).map(([source, count]) => <div key={source}><dt>{source}</dt><dd>{count}</dd></div>)}
+            </dl>
+          ) : <p className="surface-state-inline empty">No visible source summary is available.</p>}
+          {data.traceRefs && data.traceRefs.length > 0 && <section className="trace-link-list" aria-label="Notification center trace links">{data.traceRefs.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}
+        </article>
+      </section>
     </SurfaceStateFrame>
   );
 }
 
+function TriageLaneSection({ lane, actions, surfaceId, onAction, primary = false }: { lane: TriageLane; actions: SurfaceAction[]; surfaceId: string; onAction?: NotificationCenterSurfaceProps['onAction']; primary?: boolean }) {
+  return (
+    <section className={`notification-triage-lane ${lane.laneId}${primary ? ' primary' : ''}`} aria-labelledby={`${lane.laneId}-title`}>
+      <header>
+        <p className="eyebrow">{lane.items.length} {lane.items.length === 1 ? 'item' : 'items'}</p>
+        <h4 id={`${lane.laneId}-title`}>{lane.title}</h4>
+        <p>{lane.intent}</p>
+      </header>
+      {lane.items.length === 0 ? (
+        <p className="surface-state-inline empty">No notifications in this lane.</p>
+      ) : (
+        <div className="notification-lane-items">
+          {lane.items.map((item) => <NotificationTriageCard key={item.notificationId} item={item} actions={actions} surfaceId={surfaceId} onAction={onAction} compact={!primary} />)}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function NotificationTriageCard({ item, actions, surfaceId, onAction, compact = false }: { item: NotificationItem; actions: SurfaceAction[]; surfaceId: string; onAction?: NotificationCenterSurfaceProps['onAction']; compact?: boolean }) {
+  const state = notificationStateLabel(item);
+  return (
+    <article className={`notification-triage-card ${priorityClass(item.priority)} ${normalize(item.status)}${compact ? ' compact' : ''}`} data-notification-status={item.status} data-notification-redaction={item.redactionLevel}>
+      <header>
+        <div>
+          <p className="eyebrow">{state}</p>
+          <h5>{item.title ?? 'Redacted notification'}</h5>
+        </div>
+        <span className="notification-priority-pill">{item.priority ?? 'info'}</span>
+      </header>
+      {item.summary && <p className="notification-summary-copy">{item.summary}</p>}
+      <dl className="notification-explain-grid" aria-label="Why this notification is visible">
+        <div><dt>Status</dt><dd>{item.status}</dd></div>
+        <div><dt>Category</dt><dd>{item.category ?? 'redacted'}</dd></div>
+        {item.owningWorkstreamId && <div><dt>Workstream</dt><dd>{item.owningWorkstreamId}</dd></div>}
+        {item.requiredCapabilityId && <div><dt>Capability</dt><dd>{item.requiredCapabilityId}</dd></div>}
+        {item.lastChangedAt && <div><dt>Changed</dt><dd>{formatDateTime(item.lastChangedAt)}</dd></div>}
+        {item.snoozedUntil && <div><dt>Snoozed until</dt><dd>{formatDateTime(item.snoozedUntil)}</dd></div>}
+      </dl>
+      {item.sourceRefs && item.sourceRefs.length > 0 && <p className="capability-basis">Why visible: {item.sourceRefs.map((ref) => ref.label ?? ref.refId).join(', ')}</p>}
+      {item.surfaceRef?.targetSurfaceId && <p className="capability-basis">Source target requires reauthorization before opening: {item.surfaceRef.targetSurfaceId}</p>}
+      {item.traceRefs && item.traceRefs.length > 0 && <section className="trace-link-list" aria-label="Notification trace links">{item.traceRefs.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}
+      {actions.length > 0 && <SurfaceActionBar actions={actions} surfaceId={surfaceId} label={`Lifecycle actions for ${item.title ?? item.notificationId}`} actionInput={{ notificationId: item.notificationId }} onAction={onAction} />}
+    </article>
+  );
+}
+
+function buildTriageLanes(items: NotificationItem[]): TriageLane[] {
+  const needsAttention = items.filter((item) => isNeedsAttention(item));
+  const handled = items.filter((item) => handledStatuses.has(normalize(item.status)));
+  const awareness = items.filter((item) => !needsAttention.includes(item) && !handled.includes(item));
+  return [
+    { laneId: 'needs-attention', title: 'Needs attention', intent: 'Items to notice now because they are unread, blocked, urgent, warning, or deferred back into view.', items: needsAttention },
+    { laneId: 'awareness', title: 'Awareness', intent: 'Visible informational items that can be read, snoozed, dismissed, or archived without changing source work.', items: awareness },
+    { laneId: 'handled', title: 'Handled', intent: 'Recently read, dismissed, archived, or expired notifications retained as context.', items: handled }
+  ];
+}
+
+function isNeedsAttention(item: NotificationItem): boolean {
+  const status = normalize(item.status);
+  if (handledStatuses.has(status)) return false;
+  return status === 'unread' || status === 'snoozed' || attentionPriorities.has(normalize(item.priority));
+}
+
+function sortNotifications(items: NotificationItem[]): NotificationItem[] {
+  return [...items].sort((left, right) => {
+    const leftRank = isNeedsAttention(left) ? 0 : handledStatuses.has(normalize(left.status)) ? 2 : 1;
+    const rightRank = isNeedsAttention(right) ? 0 : handledStatuses.has(normalize(right.status)) ? 2 : 1;
+    if (leftRank !== rightRank) return leftRank - rightRank;
+    return timestamp(right.lastChangedAt ?? right.updatedAt ?? right.createdAt) - timestamp(left.lastChangedAt ?? left.updatedAt ?? left.createdAt);
+  });
+}
+
+function notificationStateLabel(item: NotificationItem): string {
+  if (normalize(item.status) === 'snoozed') return 'Deferred reminder';
+  if (handledStatuses.has(normalize(item.status))) return 'Handled notification';
+  if (attentionPriorities.has(normalize(item.priority))) return 'Priority attention';
+  return 'Visible notification';
+}
+
 function priorityClass(priority?: string): string {
-  return priority === 'urgent' || priority === 'blocked' ? 'danger' : priority ?? 'info';
+  return normalize(priority) === 'urgent' || normalize(priority) === 'blocked' ? 'danger' : normalize(priority) || 'info';
+}
+
+function normalize(value?: string): string {
+  return (value ?? '').toLowerCase();
+}
+
+function timestamp(value?: string): number {
+  if (!value) return 0;
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function formatDateTime(value: string): string {
+  const parsed = Date.parse(value);
+  if (Number.isNaN(parsed)) return value;
+  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(parsed);
 }
