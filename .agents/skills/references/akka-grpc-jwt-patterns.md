@@ -26,9 +26,6 @@ Use this reference when implementing or reviewing Akka Java SDK gRPC endpoints s
 
 ### 1. Fixed-value JWT validation
 Reference files:
-- `../../examples/akka-components/src/main/proto/com/example/api/grpc/secure_greeting_grpc_endpoint.proto`
-- `../../examples/akka-components/src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
-- `../../examples/akka-components/src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
 
 Use when:
 - issuer list is known
@@ -45,9 +42,6 @@ Pattern shape:
 
 ### 2. Regex-based JWT validation
 Reference files:
-- `../../examples/akka-components/src/main/proto/com/example/api/grpc/pattern_secure_greeting_grpc_endpoint.proto`
-- `../../examples/akka-components/src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
-- `../../examples/akka-components/src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
 
 Use when:
 - claim value is not fully known in advance
@@ -111,6 +105,6 @@ Avoid:
 
 ## Quick copy targets
 
-- fixed-value JWT example: `SecureGreetingGrpcEndpointImpl`
-- regex-based JWT example: `PatternSecureGreetingGrpcEndpointImpl`
-- test helper and header injection: `SecureGreetingGrpcEndpointIntegrationTest`, `PatternSecureGreetingGrpcEndpointIntegrationTest`
+- fixed-value JWT example: a domain-specific JWT-secured gRPC endpoint implementation
+- regex-based JWT example: a domain-specific pattern-based JWT gRPC endpoint implementation
+- test helper and header injection: a domain-specific JWT gRPC endpoint integration test, a domain-specific pattern-based JWT gRPC endpoint integration test

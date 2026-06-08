@@ -2,9 +2,13 @@
 
 Use this document whenever a generated app includes a browser UI. The visual style is part of the maintained app specification, not an implementation detail that frontend generation may invent later.
 
+For the canonical style, also review `./web-ui-component-catalog.md` and the static reference mockups under `../examples/web-ui/ai-first-workstream-enterprise/`, especially `component-catalog.html`. They encode the expected visual craft: distinctive command-desk hierarchy, tokenized controls, functional-agent rail, command strip, reusable attention counters, decision cards, audit traces, and dense-but-readable workstream surfaces. Treat those files as design references, not runnable app completion evidence or content to copy wholesale.
+
 ## Policy
 
 Generated full-stack SaaS apps must use the canonical AI-first workstream UI style by default. The style is a calm enterprise data-product interface for supervising delegated work: neutral layered surfaces, sparse functional color, blue/indigo accent, semantic status colors, strong numerical hierarchy, and reusable workstream-surface patterns.
+
+Visual output must be intentionally designed, not merely acceptable. Before writing UI code, commit to the recorded aesthetic direction and execute it precisely through typography, color tokens, spacing, component anatomy, motion, and texture. Avoid generic AI-generated aesthetics: predictable SaaS dashboards, timid evenly distributed palettes, default controls, purple-gradient-on-white cliches, and layouts that could belong to any product.
 
 Do not select older dashboard/CRM/project-management visual styles for new generated AI-first SaaS apps. Those patterns overfit conventional CRUD/analytics pages and do not make delegated work, authority, policy, evidence, decisions, traces, and outcomes prominent enough.
 
@@ -14,7 +18,7 @@ Style and theme selection is intentionally narrow:
 
 1. **Use the canonical AI-first workstream style system** unless the user provides a custom brand brief or design system.
 2. **Use named themes as the user-facing preference model.** Users choose one available theme by name, normally in My Account settings; the app applies that theme to the UI.
-3. **Use `custom`** only when the user supplies enough tokens/component rules to preserve the AI-first UX anatomy.
+3. **Use `custom`** only when the user supplies enough tokens/component rules to preserve the AI-first UX anatomy and matches or exceeds the visual specificity of `../examples/web-ui/ai-first-workstream-enterprise/`.
 4. **Do not offer or invent generic dashboard/CRM/project-management style galleries.** Those are outside the AI-first SaaS UI model.
 
 ## Authoritative locations
@@ -31,16 +35,16 @@ A generated web UI must read from that style guide before producing HTML, CSS, T
 Every app UI style guide should define:
 
 - selected AI-first style id and name, or `unselected`
-- source reference: this document, a custom design reference, or a user-provided brand brief
-- visual direction: concise aesthetic point of view, tone, memorable motif, and forbidden generic patterns
-- **theme model:** named-theme selection; available theme ids/names; default theme id; user preference scope and persistence expectations; immediate local preview behavior for My Account theme selection; governed save/confirm path for durable persistence
+- source reference: this document, `./web-ui-component-catalog.md`, `../examples/web-ui/ai-first-workstream-enterprise/`, a custom design reference, or a user-provided brand brief
+- visual direction: concise aesthetic point of view, tone, memorable motif, differentiation target, and forbidden generic patterns
+- **theme model:** named-theme selection, not dark/light/system mode; available theme ids/names; default theme id; optional tone metadata for contrast testing only; user preference scope and persistence expectations; immediate local preview behavior for My Account theme selection; governed save/confirm path for durable persistence
 - brand adaptations: app name, logo/icon treatment, product-specific accent allowances, forbidden copied demo names/logos
 - layout shell: functional-agent rail, context/authority bar, main workstream panel, persistent composer, surface grid density, and deep-link support
 - typography: font family, scale, weights, line heights, numeric/table conventions, and fallback strategy
 - color tokens: CSS variables for canvas, surfaces, text, borders, primary/accent colors, status colors, chart colors, focus rings, and shadows
 - spacing/radius/elevation tokens
 - component rules: command strip, decision cards, cards, buttons, forms, structured-surface form controls, tables/lists, charts, badges, empty/error/loading states, toasts/modals where applicable
-- motion and texture: purposeful transition rules, reduced-motion behavior, background depth, borders, shadows, and decorative texture limits
+- motion and texture: purposeful transition rules, reduced-motion behavior, background depth, borders, shadows, decorative texture limits, and the one or two memorable visual details that make the UI feel product-specific
 - accessibility constraints: contrast, focus visibility, color-not-alone status semantics, reduced motion expectations
 - generated asset expectations: `index.html` uses semantic landmarks, `app.css` defines tokens as CSS variables, TypeScript toggles only documented theme ids/classes/attributes rather than hard-coded styling decisions
 
@@ -52,22 +56,24 @@ Every app UI style guide should define:
 ## Selection
 - selected style: <ai-first-workstream-enterprise | custom | unselected>
 - style name: <name>
-- source reference: <docs/web-ui-style-guide.md | custom brief path | user answer>
+- source reference: <./web-ui-style-guide.md | custom brief path | user answer>
 - status: <selected | pending-question | deferred-with-default>
 
 ## Theme model
 - user-facing model: named theme selection
 - default theme id: <aurora-light | ...>
 - available themes:
-  - <theme-id>: <theme name>; <light | dark>; <short intent>
+  - <theme-id>: <theme name>; tone <light | dark for contrast testing only>; <short intent>
 - My Account behavior: users select one available named theme, the UI previews the selected theme immediately on field change, and Save/Confirm persists the selected theme through the governed settings action
 - persistence scope: <backend user settings | local browser setting | deferred-with-follow-up>
-- future theme rule: add token bundles without changing workstream/component anatomy
+- future theme rule: add color-token bundles without changing workstream/component anatomy, design language, spacing, typography scale, or behavior
 
 ## Visual direction
 - aesthetic point of view:
 - tone:
 - memorable motif:
+- differentiation target: what should feel memorable or specifically designed for this app
+- reference mockups: `../examples/web-ui/ai-first-workstream-enterprise/*.html` when using the canonical style
 - forbidden generic patterns:
 
 ## Brand adaptation
@@ -93,7 +99,7 @@ Every app UI style guide should define:
 ## Component style rules
 - workstream shell and functional-agent rail:
 - AI command strip:
-- KPI summary cards:
+- KPI summary cards: all dashboards with attention counters use the same attention-card style; place the counter strip above lower-priority detail panels/lists, with readable labels, strong numbers, and deliberate vertical spacing between label, number, and status badge
 - decision/exception cards:
 - agent activity timeline/cards:
 - governance/trust controls:
@@ -162,14 +168,14 @@ Use this as the default style system for generated AI-first SaaS apps. It is a r
 - neutral canvas and layered card surfaces; structure comes from whitespace, hairline borders, and minimal elevation rather than heavy shadows
 - a single blue/indigo brand accent for primary actions, links, active navigation, and AI affordances
 - semantic status colors used sparingly and functionally: green for positive/healthy/on-track, amber for warning/needs-review, red for critical/at-risk, and neutral gray for unknown/inactive
-- strong numeric hierarchy in KPI strips, metrics, tables, and dense operational summaries
+- strong numeric hierarchy in KPI strips, metrics, tables, and dense operational summaries; all dashboard attention counters use a consistent card strip above detail content, with labels large/bold enough to scan and enough spacing between label, number, and status to avoid cramped cards
 - decisions, exceptions, policy boundaries, auditability, and outcome visibility are more prominent than decorative chrome
 - autonomous activity is visible through recommendation panels, confidence gauges, agent avatars, status pills, and timelines without hiding consequential work in chat transcripts
-- light and dark variants preserve the same component anatomy; named themes swap token bundles, primarily backgrounds/surfaces plus accent and semantic tuning
+- there is no dark/light/system mode and no mode-specific layout; named themes preserve the same component anatomy and design language while swapping color token bundles, primarily backgrounds/surfaces plus accent and semantic tuning
 
 ### Named-theme contract
 
-Generated AI-first SaaS apps start with these five named themes unless the authoritative style guide records a custom equivalent with two light and at least two dark themes:
+Generated AI-first SaaS apps start with these five named themes unless the authoritative style guide records a custom equivalent with multiple named color-token bundles spanning both light-toned and dark-toned options for contrast coverage:
 
 | Theme id | Name | Tone | Intended use |
 | --- | --- | --- | --- |
@@ -179,22 +185,32 @@ Generated AI-first SaaS apps start with these five named themes unless the autho
 | `midnight-dark` | Midnight Dark | dark | darker blue-black workspace with crisp cyan-blue accent |
 | `dark-night` | Dark Night | dark | near-black benchmark-style workspace with charcoal cards, hot red primary accents, gold ranking/warning cues, and teal success/AI accents |
 
-Theme ids are stable implementation values. Theme names are user-facing labels. My Account settings should expose available theme names, store/apply the selected theme id at the documented scope, and avoid presenting `system`, `light`, or `dark` as the primary choice. A theme may record `tone: light` or `tone: dark` for contrast testing, but users choose by name.
+Theme ids are stable implementation values. Theme names are user-facing labels. My Account settings must expose available theme names, store/apply the selected theme id at the documented scope, and must not present `system`, `light`, or `dark` as user-selectable modes. A theme may record `tone: light` or `tone: dark` for contrast testing only. Changing theme changes color tokens, not the design/style/look, workstream anatomy, surface inventory, spacing, typography scale, routes, capability mapping, authorization, or audit behavior.
 
 When the user changes a named-theme field, the UI must preview that selected theme immediately in the current browser session by switching only documented theme ids/classes/attributes. Save/Confirm must still call the governed backend settings action for durable persistence, authorization, audit, and cross-session truth. Immediate preview is not proof that persistence succeeded; failure to save must show a clear recovery path without silently claiming the preference is stored.
 
-Future themes are added by defining new token bundles and adding them to the available-theme list. Adding a theme must not change workstream shell anatomy, surface contracts, card structure, spacing scale, icon/status semantics, route behavior, capability mapping, authorization, audit behavior, or tests.
+Future themes are added by defining new color-token bundles and adding them to the available-theme list. Adding or switching a theme must not change workstream shell anatomy, surface contracts, card structure, spacing scale, typography scale, icon/status semantics, route behavior, capability mapping, authorization, audit behavior, or tests.
 
-### Cosmetic craft rules
+### Visual craft doctrine
 
-Use these rules to improve visual quality without changing product behavior:
+Use these rules to improve visual quality without changing product behavior. This doctrine folds in external frontend-design principles while constraining them to this pack's canonical AI-first SaaS model: be distinctive and precise, but do not vary the underlying workstream design language per app unless the user supplies a custom design system.
 
-- Choose a clear aesthetic direction for the app or brand adaptation, such as enterprise command desk, calm governance cockpit, data-product operations center, or trust-and-outcomes workspace.
+Before coding, the UI implementer must be able to state:
+
+- the app purpose and primary supervision/review job;
+- the selected aesthetic point of view, normally enterprise command desk / governance cockpit / trust-and-outcomes workspace;
+- the memorable design motif, such as authority rails, trace-lit timelines, decision cards, or dense operational panels;
+- the exact token families and component recipes that will carry that motif;
+- which visual cliches are forbidden for this app.
+
+Design craft rules:
+
+- Choose a clear aesthetic direction for the app or brand adaptation, such as enterprise command desk, calm governance cockpit, data-product operations center, or trust-and-outcomes workspace. Do not proceed with an unspecified "modern SaaS" look.
 - Avoid generic AI UI clichés: purple gradients on white, undifferentiated cards, equal visual weight everywhere, decorative chat bubbles for consequential work, and styling that could belong to any SaaS dashboard.
-- Typography should feel intentional. Use a readable grotesque/geometric sans for most UI copy and reserve monospace for code, trace ids, dense metrics, and technical labels. Custom styles may replace the default font tokens when the app records accessible fallbacks, readable line heights, and tabular/numeric conventions for dense operational data.
-- Use color, borders, shadows, texture, and depth to clarify hierarchy: human-needed work, policy-blocked work, autonomous progress, trace/history, and FYI activity should not look interchangeable.
-- Motion should be purposeful and state-driven: surface append/update, agent-working, approval result, stale/reconnect, expansion, and denial/recovery transitions may be polished, but must preserve reduced-motion support and never obscure state or audit evidence.
-- Background treatments, grain, dotted textures, patterns, and component-level glow effects are acceptable only when implemented through documented tokens/classes and when contrast, focus visibility, and surface readability remain intact. Prefer subtle depth fields over visible diagonal striping or large page-corner gradients.
+- Typography should feel intentional. Prefer a distinctive but highly readable display/body pairing over generic default system stacks when the target app can support it. Use weight, size, line height, letter spacing, and tabular numerals deliberately for hierarchy. Reserve monospace for code, trace ids, dense metrics, and technical labels. Custom styles may replace the default font tokens when the app records accessible fallbacks, readable line heights, and tabular/numeric conventions for dense operational data.
+- Use color, borders, shadows, texture, and depth to clarify hierarchy: human-needed work, policy-blocked work, autonomous progress, trace/history, and FYI activity should not look interchangeable. Strong accents are better than timid color spread, but accent color must stay functional and tokenized.
+- Motion should be purposeful and state-driven: surface append/update, agent-working, approval result, stale/reconnect, expansion, and denial/recovery transitions may be polished, but must preserve reduced-motion support and never obscure state or audit evidence. Prefer a small number of high-impact, meaningful transitions over scattered decorative animation.
+- Background treatments, grain, dotted textures, patterns, and component-level glow effects are acceptable only when implemented through documented tokens/classes and when contrast, focus visibility, and surface readability remain intact. Prefer subtle depth fields, atmospheric panels, and precise hairline grids over visible diagonal striping or large page-corner gradients.
 - Dark themes should avoid pure black slabs and default generic blue-black dashboard styling; use low-contrast layered near-black, charcoal, navy, or slate surfaces with crisp hairline borders.
 
 ### Style customization scope
@@ -304,7 +320,7 @@ Each named theme should provide the same semantic token names. Components consum
 }
 ```
 
-Required aliases may be added for existing starter code, but the authoritative token roles are canvas/surface/text/border/accent/status/chart/focus/shadow. If legacy CSS uses `--color-bg` or `--color-primary`, map those aliases to `--color-canvas` and `--color-accent` during migration rather than preserving old semantics as a new default.
+Required aliases may be added for existing SaaS Foundation App code, but the authoritative token roles are canvas/surface/text/border/accent/status/chart/focus/shadow. If legacy CSS uses `--color-bg` or `--color-primary`, map those aliases to `--color-canvas` and `--color-accent` during migration rather than preserving old semantics as a new default.
 
 ### Initial theme token direction
 
@@ -359,6 +375,13 @@ Required elements:
 - trend/delta with direction and text
 - optional icon or sparkline
 - status color plus text, not color alone
+
+Craft rules:
+
+- The label should be visibly larger and heavier than muted helper copy; use a semibold/bold display/body style rather than tiny gray text.
+- Leave clear vertical rhythm between label, number, and badge/status text, typically at least the selected spacing token equivalent of `--space-3` for attention-card stacks.
+- Centered KPI cards are acceptable only when the value/label/status cluster has enough breathing room; otherwise use a left-aligned hierarchy with the same spacing discipline.
+- In role-specific dashboards and My Account dashboards, put the attention counter strip before lower-priority profile/settings/details, queues, lists, or explanatory panels so users first see what needs attention and then inspect details below.
 
 ### Decision and exception cards
 
@@ -437,13 +460,14 @@ Generated AI-first SaaS UIs should favor these surfaces over generic CRUD dashbo
 
 ## Applying the style safely
 
-1. Replace demo names, logos, users, and metrics with the target app's domain.
-2. Keep the AI-first component anatomy, not literal mockup content.
-3. Define tokens once in `app.css` or project-standard token files; TypeScript may toggle only documented named theme ids/classes/attributes.
-4. Style structured-surface form controls through reusable tokenized selectors/classes; do not accept raw browser-default input, select, or textarea rendering in workstream surfaces.
-5. Preserve accessibility even when adapting brand colors: contrast and focus tokens override decorative brand fidelity.
-6. If users request custom styling later, update the authoritative style guide first, then regenerate affected web UI assets.
-7. If theme persistence is not implemented at the expected runtime scope, record the limitation and queue follow-up work rather than claiming durable My Account theme selection is complete.
+1. Review `../examples/web-ui/ai-first-workstream-enterprise/` before generating canonical-style UI.
+2. Replace demo names, logos, users, and metrics with the target app's domain.
+3. Keep the AI-first component anatomy, token roles, hierarchy, and state treatment, not literal mockup content.
+4. Define tokens once in `app.css` or project-standard token files; TypeScript may toggle only documented named theme ids/classes/attributes.
+5. Style structured-surface form controls through reusable tokenized selectors/classes; do not accept raw browser-default input, select, or textarea rendering in workstream surfaces.
+6. Preserve accessibility even when adapting brand colors: contrast and focus tokens override decorative brand fidelity.
+7. If users request custom styling later, update the authoritative style guide first, then regenerate affected web UI assets.
+8. If theme persistence is not implemented at the expected runtime scope, record the limitation and queue follow-up work rather than claiming durable My Account theme selection is complete.
 
 ## Removed generic visual catalog choices
 

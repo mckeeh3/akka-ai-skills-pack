@@ -12,7 +12,7 @@ For broad product, PRD, feature, or integration requests, route through `capabil
 ## Goal
 
 Generate or review Consumer code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about the source being consumed
 - safe for at-least-once delivery and duplicate redelivery
 - clear about whether the consumer ignores, completes, or produces
@@ -44,17 +44,7 @@ Read these first if present:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCommandsTopicConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewWorkflowTopicConsumer.java`
 - `../docs/consumer-reference.md`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 
 ## Companion skills
 
@@ -109,51 +99,48 @@ Load the companion skill that matches the current task:
 Use `akka-consumer-from-event-sourced-entity`.
 
 Repository examples:
-- `ShoppingCartCheckoutConsumer`
-- `ShoppingCartEventsToTopicConsumer`
-- `ShoppingCartPublicEventsConsumer`
+- `WorkstreamEventAttentionConsumer`
+- `WorkstreamEventAttentionConsumer`
+- `WorkstreamEventAttentionConsumer`
 
 ### 2. Downstream reaction to key value state snapshots
 Use `akka-consumer-from-key-value-entity`.
 
 Repository example:
-- `DraftCartCheckoutConsumer`
+- `WorkstreamEventAttentionConsumer`
 
 ### 3. Downstream reaction to workflow progress
 Use `akka-consumer-from-workflow`.
 
 Repository example:
-- `ReviewWorkflowTopicConsumer`
+- a domain-specific workflow topic consumer
 
 ### 4. Command ingestion from a broker topic
 Use `akka-consumer-from-topic`.
 
 Repository example:
-- `ShoppingCartCommandsTopicConsumer`
+- `WorkstreamEventAttentionConsumer`
 
 ### 5. Service-to-service subscription from another Akka service
 Use `akka-consumer-from-service-stream`.
 
 Repository references:
-- `ShoppingCartPublicEventsConsumer` for the producer side
-- `docs/consumer-reference.md` for the subscriber-side snippet
+- `WorkstreamEventAttentionConsumer` for the producer side
+- `../docs/consumer-reference.md` for the subscriber-side snippet
 
 ### 6. Event publication to topics or service streams
 Use `akka-consumer-producing`.
 
 Repository examples:
-- `ShoppingCartEventsToTopicConsumer`
-- `ShoppingCartPublicEventsConsumer`
-- `ReviewWorkflowTopicConsumer`
+- `WorkstreamEventAttentionConsumer`
+- a domain-specific workflow topic consumer
 
 ### 7. Integration and eventing tests
 Use `akka-consumer-testing`.
 
-Repository examples:
-- `ShoppingCartCommandsTopicConsumerIntegrationTest`
-- `ReviewWorkflowTopicConsumerIntegrationTest`
-- `ShoppingCartCheckoutConsumerIntegrationTest`
-- `DraftCartCheckoutConsumerIntegrationTest`
+Pattern references:
+- `../examples/akka-components/src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java`
+- target-project workflow/topic consumer integration tests when that source type is in scope
 
 ## Final review checklist
 

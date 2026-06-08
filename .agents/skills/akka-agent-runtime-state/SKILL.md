@@ -17,29 +17,6 @@ Read these first if present:
 - `akka-context/sdk/agents/testing.html.md`
 - `akka-context/sdk/views.html.md`
 - `akka-context/sdk/consuming-producing.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/TemplateBackedActivityAgent.java`
-- `../examples/akka-components/src/main/java/com/example/api/ActivityPromptEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/application/PromptTemplateHistoryView.java`
-- `../examples/akka-components/src/main/java/com/example/api/PromptTemplateHistoryEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryByComponentView.java`
-- `../examples/akka-components/src/main/java/com/example/api/SessionMemoryViewEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryAlertView.java`
-- `../examples/akka-components/src/main/java/com/example/api/SessionMemoryAlertStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryAlertsConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAuditConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/SessionMemoryCompactionAuditView.java`
-- `../examples/akka-components/src/main/java/com/example/api/SessionMemoryCompactionStreamEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/ActivityPromptEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PromptTemplateHistoryViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PromptTemplateHistoryEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryByComponentViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryViewEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryAlertStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryAlertsConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryCompactionConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SessionMemoryCompactionAuditConsumerIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -59,15 +36,15 @@ Read these first if present:
 6. Use a dedicated compaction agent with `MemoryProvider.none()` when summarizing history.
 7. Keep audit publication separate from compaction logic when you need topic output.
 
-## Repository examples
+## Pattern references
 
-- `TemplateBackedActivityAgent`
+- `WorkstreamRuntimeAgent` with governed prompt/runtime loading
   - prompt loaded from `PromptTemplate`
-- `ActivityPromptEndpoint`
+- a governed prompt/runtime-state endpoint
   - update/read prompt-template state over HTTP
-- `PromptTemplateHistoryView`
+- agent behavior document/version views such as `PromptDocumentView`
   - query current prompt value and update count
-- `PromptTemplateHistoryEndpoint`
+- a governed prompt history endpoint
   - edge-facing API over the prompt-template history view
 - `SessionMemoryByComponentView`
   - query sessions by the component that most recently wrote memory

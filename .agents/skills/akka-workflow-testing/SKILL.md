@@ -9,13 +9,7 @@ Use this skill for executable workflow tests.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS workflow test work, write tests only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- initiating functional agent, structured surface action/workstream event, or explicit internal trigger under test;
-- governed workflow capability id/class, start/advance exposure, workflow id/idempotency strategy, and downstream substrates;
-- `AuthContext`, tenant/customer scope, roles/capabilities, approval/supervision basis, forbidden behavior, and system-principal expectations;
-- command/state DTOs, side effects, compensation/no-op behavior, notification events, audit/work trace assertions, and rendering/API/realtime parity checks when exposed.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of testing only workflow step mechanics.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
@@ -23,9 +17,6 @@ Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
 - `akka-context/sdk/agents/testing.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/WalletEntityTest.java`
 
 ## Capability-first test role
 
@@ -43,14 +34,14 @@ Workflow tests should usually:
 ## Repository patterns
 
 ### Straight-through and compensation flows
-- `TransferWorkflowIntegrationTest`
+- a domain-specific workflow integration test
   - creates supporting wallet entities first
   - starts the workflow through `componentClient.forWorkflow(...)`
   - waits for completion with `Awaitility`
   - asserts both successful completion and compensation behavior
 
 ### Pause/resume flows
-- `ApprovalWorkflowIntegrationTest`
+- a domain-specific approval workflow integration test
   - starts the workflow and verifies it is waiting
   - sends a later resume command
   - asserts the workflow ends in the approved state

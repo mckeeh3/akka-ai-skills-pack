@@ -1,10 +1,8 @@
 # AI-First SaaS Application Architecture
 
-## Status and provenance
+## Status
 
-This is the canonical AI-first SaaS architecture doctrine for this skills pack.
-It distills temporary migration concept material retained only as source-repository provenance.
-Those archived source materials are not installed-skill guidance; this document is the authority for source-checkout repository guidance and routing work.
+This is the canonical AI-first SaaS architecture doctrine for this skills pack. This document is the authority for source-attention repository guidance and routing work.
 
 ## Default target architecture
 
@@ -33,15 +31,15 @@ Choose agent shape by responsibility boundaries, not by a desire for either one 
 
 AI-first does not mean every app must use every AI-first pattern. It means every generated app begins with secure SaaS foundations, then applies only the agentic substrate objects, governance surfaces, and Akka components justified by product intent.
 
-Broad product input must follow the canonical requirements-to-workstream process in `requirements-to-workstream-development-process.md`: secure foundation → workstream inventory → per-workstream attention breakdown ("what needs my attention?") → role-specific dashboard surfaces and `WorkstreamAttentionSummary` contracts → human surface graph → internal workstream agent graph → governed-tools inside capability files and surface/action maps → Akka substrate/exposure mapping → request-based workstream `Agent` turns → durable internal/background `AutonomousAgent` task candidates → events/notifications → My Account and left-rail attention projections → audit/work traces. Do not skip directly to pages, CRUD resources, endpoint lists, event streams, or Akka component families for generated SaaS planning.
+Broad product input must follow the canonical requirements-to-workstream process in `./requirements-to-workstream-development-process.md`: secure foundation → workstream inventory → per-workstream attention breakdown ("what needs my attention?") → role-specific dashboard surfaces and `WorkstreamAttentionSummary` contracts → human surface graph → internal workstream agent graph → governed-tools inside capability files and surface/action maps → Akka substrate/exposure mapping → request-based workstream `Agent` turns → durable internal/background `AutonomousAgent` task candidates → events/notifications → My Account and left-rail attention projections → audit/work traces. Do not skip directly to pages, CRUD resources, endpoint lists, event streams, or Akka component families for generated SaaS planning.
 
 Implementation readiness requires real runtime behavior. A named generated-app feature is not complete until the local Akka runtime path works for that feature at the stated scope, including backend authorization, durability, provider calls where required, audit/work traces, endpoints, frontend surfaces, and local smoke/manual validation. Akka local execution is production-like validation for generated apps and should be used aggressively. Claimed workstream/foundation state must be backed by Akka components in normal runtime; fail-closed behavior is for missing external provider/security configuration or unbound pre-runtime setup, not a substitute for internal Akka persistence. Deterministic/demo/mock/simulated/model-less normal runtime paths must not satisfy workstream agents, auth, protected capabilities, provider-backed model calls, or trace behavior. Test fixtures and test doubles are allowed only in tests or explicitly named test adapters, never as the user-facing runtime substitute used to claim readiness.
 
-The primary generated UI/application architecture is the agent workstream model defined in `agent-workstream-application-architecture.md`: role-authorized **functional/context-area agents** (shortened below to functional agents) in the authenticated shell, continuous workstreams in the main panel, a persistent composer, and typed structured surfaces such as dashboards, forms, tables, decision cards, diffs, audit timelines, workflow status cards, and outcome panels. Conventional routes, pages, and direct links may support implementation and deep linking, but they are not the primary decomposition model for consequential authenticated work.
+The primary generated UI/application architecture is the agent workstream model defined in `./agent-workstream-application-architecture.md`, with compact field/readiness rules in `./workstream-contract.md` and actionable attention rules in `./workstream-attention-contracts.md`: role-authorized **functional/context-area agents** (shortened below to functional agents) in the authenticated shell, continuous workstreams in the main panel, a persistent composer, and typed structured surfaces such as dashboards, forms, tables, decision cards, diffs, audit timelines, workflow status cards, and outcome panels. Conventional routes, pages, and direct links may support implementation and deep linking, but they are not the primary decomposition model for consequential authenticated work.
 
 Backend behavior should be modeled as governed capabilities before selecting Akka components or exposure surfaces. A capability is a product-level ability or grouping of related executable operations/queries with explicit actors, auth context, inputs, outputs, data access, side effects, idempotency, policy/approval rules, audit/trace requirements, tests, and selected exposure surfaces. A **governed-tool** is one executable semantic operation within that capability boundary. Governed-tools live inside capability files and surface/action maps, may compose other governed-tools, and are exposed only through qualified channels such as **browser-tools** for human surface actions, **agent-tools** for request-based or internal agents, and **internal-tools** for workflows, timers, consumers, projections, or backend services. Workstream actions, governed-tool exposures, browser actions, HTTP/gRPC/MCP endpoints, workflow steps, timers, consumers, and internal component methods are possible surfaces for capabilities; they are not the root abstraction.
 
-Existing Akka component skills remain substrate implementation tools. They should be selected after the secure SaaS foundation, agent workstream model, AI-first operating model, capability inventory, object model, governance requirements, and UI surfaces are understood well enough to implement bounded components. Use `agent-workstream-application-architecture.md` as the generated-app UI/application doctrine and `capability-first-backend-architecture.md` as the backend substrate doctrine below this AI-first operating model.
+Existing Akka component skills remain substrate implementation tools. They should be selected after the secure SaaS foundation, agent workstream model, AI-first operating model, capability inventory, object model, governance requirements, and UI surfaces are understood well enough to implement bounded components. Use `./agent-workstream-application-architecture.md`, `./workstream-contract.md`, and `./workstream-attention-contracts.md` as the generated-app UI/application doctrine and `./capability-first-backend-architecture.md` as the backend substrate doctrine below this AI-first operating model.
 
 ## What AI-first SaaS is not
 
@@ -59,7 +57,7 @@ Conversation can be an input and review channel, but consequential work should r
 
 ## Mandatory secure SaaS foundation
 
-The foundation is part of top-level product meaning and must be visible before component-specific routing or app-specific CRM/domain features.
+The foundation is part of top-level product meaning and must be visible before component-specific routing or app-specific domain-specific features.
 
 Required baseline:
 
@@ -76,17 +74,17 @@ Required baseline:
 | Tenant isolation | Include tenant/customer ids in scoped records; filter all reads by authorized context; reject cross-tenant/customer commands and queries. |
 | Security tests | Require tenant-isolation, forbidden-access, disabled-user, role/scope denial, `/api/me`, audit, frontend secret-boundary, and security-review tests. |
 | Security review | Treat missing auth/security semantics as not-ready for generation, not as an assumption to fill in later. |
-| AI-first managed agents | Include tenant-scoped `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, backend-owned tool registry ids, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace` from the first foundation slice. Implementation-developed default agent definitions, prompts, skills, references, manifests, workstream expert bundles, and tool boundaries must be packaged as seed material and imported into governed storage on first install or tenant bootstrap as the initial approved/active versions, with provenance, idempotency, audit, and upgrade rules that do not overwrite tenant customizations. Runtime assembly must resolve the active agent definition, assemble only approved active prompt content, include a compact expertise manifest with skill and reference sections, authorize `readSkill(skillId)` and `readReferenceDoc(referenceId)` before returning full text, resolve approved Java tool bindings from governed stable tool ids, register those objects with the Akka Agent via `effects().tools(runtimeTools)`, call the real configured model/provider boundary for model-backed behavior, fail closed when required provider configuration is absent, and trace prompt assembly, skill loads, reference loads, tool invocation, model invocation, denials, and errors. |
+| AI-first managed agents | Include tenant-scoped `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, backend-owned tool registry ids, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace` from the first foundation slice. Implementation-developed default agent definitions, prompts, skills, references, manifests, workstream expert bundles, and tool boundaries must become governed records on first install or tenant bootstrap as the initial approved/active versions, with provenance, audit, and upgrade rules that do not overwrite tenant customizations. Runtime assembly must resolve the active agent definition, assemble only approved active prompt content, include a compact expertise manifest with skill and reference sections, authorize `readSkill(skillId)` and `readReferenceDoc(referenceId)` before returning full text, resolve approved Java tool bindings from governed stable tool ids, register those objects with the Akka Agent via `effects().tools(runtimeTools)`, call the real configured model/provider boundary for model-backed behavior, fail closed when required provider configuration is absent, and trace prompt assembly, skill loads, reference loads, tool invocation, model invocation, denials, and errors. |
 
-Use `core-ai-first-saas-foundation.md`, `core-saas-identity-tenancy-admin.md`, and `core-saas-owner-tenant-billing.md` as the product-agnostic baseline. App-specific requirements may extend this foundation but must not weaken it.
+Use `./core-ai-first-saas-foundation.md`, `./core-saas-identity-tenancy-admin.md`, and `./core-saas-owner-tenant-billing.md` as the product-agnostic baseline. App-specific requirements may extend this foundation but must not weaken it.
 
-## Minimum AI-first SaaS starter
+## SaaS Foundation App
 
-The smallest valid generated AI-first SaaS app is a bootstrap-authorized **five core workstream starter set**, not a generic chatbot. See `minimum-ai-first-saas-app.md` for the canonical minimum-app doctrine.
+The repository ships a runnable **SaaS Foundation App** out of the box. It is not a lesser readiness tier, generic chatbot, or disposable starter. It is the foundation domain that users clone/fork and extend with business-specific domains, workstreams, surfaces, agents, capabilities, Akka components, frontend assets, app-description artifacts, specs, docs, and tests. See `./minimum-ai-first-saas-app.md` for the compatibility doctrine that now describes this concept.
 
-Minimum starter readiness means the My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy workstreams work for bootstrap-authorized users with a selected `AuthContext`, backend role/capability checks, a durable workstream log, audit/work trace substrate, capability-first backend boundaries, and a `markdown_response` structured surface rendered as sanitized HTML. This starter may use a chat-like shell, but the application model remains workstream + surface + capability.
+The built-in foundation domain contains five workstreams: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. The domain can be modified like any other domain when product needs require it; the difference is that it comes fully functional out of the box. Changes must preserve selected `AuthContext`, backend role/capability checks, durable workstream logs, audit/work trace substrate, capability-first backend boundaries, governed agent runtime behavior, and real local Akka/API/UI validation.
 
-Full-core SaaS readiness remains stricter than minimum starter readiness. Complete generated-core readiness still requires the full secure foundation: WorkOS/AuthKit user auth, local authorization, tenant/customer boundaries, `/api/me`, invitations/onboarding with Resend/outbox, complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, governed runtime agent artifacts, audit/trace search, support-access and billing boundaries where needed, security tests, and security review before app-specific work is considered ready.
+When a user asks for a starter, baseline, minimum app, basic app, or chatbot-like generated SaaS shell, interpret that request as maintaining or extending the SaaS Foundation App unless they explicitly ask for non-SaaS reference material or a separate experiment.
 
 ## Human operating roles
 
@@ -115,11 +113,11 @@ Core object categories:
 - **Learning and governance:** `HumanFeedback`, `LearnedRule`, `SkillProposal`, `PolicyProposal`, `PolicyCommit`, `ReplayResult`, `SimulationResult`.
 - **Accountability and outcomes:** `AuditEvent`, `WorkTrace`, `DecisionTrace`, `PolicyInvocation`, `OutcomeMetric`, `OutcomeLink`, `RollbackRecord`.
 
-These objects should be durable where they affect behavior, authorization, explainability, learning, or audit. AI-first managed agents are therefore a primary core app architecture pillar alongside secure SaaS foundation, workstreams, structured surfaces, and capability-first backend design; generated SaaS agents should not depend on static Java prompts or unregistered tools as their normal runtime behavior.
+These objects should be durable where they affect behavior, authorization, explainability, learning, or audit. AI-first managed agents are therefore a primary SaaS Foundation App architecture pillar alongside secure SaaS foundation, workstreams, structured surfaces, and capability-first backend design; generated SaaS agents should not depend on static Java prompts or unregistered tools as their normal runtime behavior.
 
 ## Required agent workstream shell and surfaces
 
-AI-first products may include tables, forms, and detail pages, but the primary UX is an authenticated agent workstream shell that supports delegation, supervision, judgment, teaching, catch-up, and audit. Use `agent-workstream-application-architecture.md` as the UI/application doctrine for this section.
+AI-first products may include tables, forms, and detail pages, but the primary UX is an authenticated agent workstream shell that supports delegation, supervision, judgment, teaching, catch-up, and audit. Use `./agent-workstream-application-architecture.md` as the UI/application doctrine for this section.
 
 Required shell regions:
 
@@ -145,7 +143,7 @@ Foundation generated SaaS apps must include secure-operation functional agents, 
 
 When these concepts are maintained in an app-description tree, `12-workstreams/` owns functional agents, internal agents, durable workstreams, structured surface contracts, reusable surface placement, action-to-capability mappings, trace semantics, and surface/action tests. `55-ui/` owns browser realization: shell rendering, functional-agent rail, workstream panel, persistent composer, structured-surface rendering, routes/deep links, interactions/forms, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide. `55-ui/` links back to `12-workstreams/` and capability/security/test layers instead of redefining application meaning.
 
-For secure foundation shape, start with the target project `app-description/README.md` plus `core-ai-first-saas-foundation.md`. For executable full-core implementation guidance, use this repository's runnable core app root or a downstream fork. After the harness install, `.agents/skills` provides skill guidance plus referenced pack docs/examples/templates/tools; application source, app-description, and specs remain in the source checkout or target project, while `akka-context/**` remains a top-level project/repository directory. For UI composition and implementation routing, use `agent-workstream-application-architecture.md`, `../skills/ai-first-saas-ui-surfaces/SKILL.md`, and the existing Akka web UI skills.
+For secure foundation shape, start with the target project `app-description/README.md` plus `./core-ai-first-saas-foundation.md`. For executable SaaS Foundation App implementation guidance, use this repository's runnable SaaS Foundation App root or a downstream fork. After the harness install, `.agents/skills` provides skill guidance plus referenced pack docs/examples/templates/tools; application source, app-description, and specs remain in the source attention or target project, while `akka-context/**` remains a top-level project/repository directory. For UI composition and implementation routing, use `./agent-workstream-application-architecture.md`, `../ai-first-saas-ui-surfaces/SKILL.md`, and the existing Akka web UI skills.
 
 ## Akka + React/Vite/TypeScript substrate
 
@@ -156,7 +154,7 @@ The implementation target is a full-stack system. Backend-only generation is not
 
 Map AI-first and agent workstream concepts onto backend capabilities first, then onto Akka components deliberately. For each workstream action, surface query/action, operation, or query, define authority, scope, schemas, side effects, idempotency, approval, audit/trace, tests, and exposure surfaces before deciding whether it is an entity command, workflow step, view query, endpoint action, agent tool, MCP tool, timer action, consumer reaction, or internal-only method.
 
-Map capability shapes onto Akka components deliberately:
+Map capability shapes onto the eleven Akka component families deliberately. This component set is intentionally prescriptive for the skills pack: it is the normal implementation path for app features and agent tools.
 
 - **Event Sourced Entities:** audit-grade state, decisions, policies, goals, traces, or domain records where event history and temporal reasoning matter.
 - **Key Value Entities:** current-state objects where event history is not required.
@@ -166,16 +164,19 @@ Map capability shapes onto Akka components deliberately:
 - **Views:** CQRS read models for workstream dashboards, attention surfaces, tables, command centers, decision queues, digests, policy lists, audit searches, and outcome dashboards.
 - **Consumers:** event reactions, trace enrichment, notifications, downstream publication, and asynchronous integrations.
 - **Timed Actions:** deadlines, reminders, periodic digests, expiry, rechecks, and scheduled governance/replay work.
-- **HTTP/gRPC/MCP endpoints:** browser APIs, service contracts, streaming surfaces, and AI-client tools/resources/prompts. Expose only selected capabilities and preserve backend auth, tenant scope, redaction, and audit.
-- **Web UI skills:** React workstream shell structure, typed clients, forms, structured surface rendering, realtime updates, accessibility, and responsive supervision surfaces.
+- **HTTP Endpoints:** browser APIs, SSE/WebSocket routes, static frontend hosting, and selected capability surfaces.
+- **gRPC Endpoints:** service contracts and streaming service APIs.
+- **MCP Endpoints:** AI-client tools, resources, and prompts that expose selected governed capabilities.
+
+React/Vite/TypeScript frontend work is the workstream shell and surface-rendering layer over these backend components; it is not counted as one of the eleven Akka component families.
 
 ## Governance and authority rules
 
-Treat prompts, skills, policies, rules, thresholds, approval gates, and permissions as runtime business logic. Generated AI-first SaaS foundations must include managed runtime agent behavior from the start. When choosing the Akka agent substrate, use `agent-component-selection-guide.md`: keep request-based Akka `Agent` as the default for model-backed user-facing workstream request/response turns, and use Akka `AutonomousAgent` as the default for durable task-oriented internal/background agent work when its semantics fit.
+Treat prompts, skills, policies, rules, thresholds, approval gates, and permissions as runtime business logic. Generated AI-first SaaS foundations must include managed runtime agent behavior from the start. When choosing the Akka agent substrate, use `./agent-component-selection-guide.md`: keep request-based Akka `Agent` as the default for model-backed user-facing workstream request/response turns, and use Akka `AutonomousAgent` as the default for durable task-oriented internal/background agent work when its semantics fit.
 
 - governed managed-agent `AgentDefinition` controls lifecycle, owner/steward, authority level, model references, prompt references, skill manifest references, and tool permission boundaries; Akka autonomous `AgentDefinition` is the SDK definition returned by `AutonomousAgent.definition()` or supplied via `AgentSetup` and must be qualified when both meanings are in scope;
 - `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, and `ReferenceDocument`/`ReferenceVersion` are tenant-scoped governed artifacts with review, approval, activation, rollback, checksums, diff/history, and audit;
-- implementation-developed default `AgentDefinition`, prompt, skill, reference, manifest, workstream expert bundle, and tool-boundary content is packaged with the app as a seed bundle and imported into governed storage on first install or tenant bootstrap as versioned records with seed provenance, checksums, idempotency, and audit; later app upgrades create draft/proposed changes when tenant content has diverged rather than overwriting active tenant customizations;
+- implementation-developed default `AgentDefinition`, prompt, skill, reference, manifest, workstream expert bundle, and tool-boundary content is created in governed storage on first install or tenant bootstrap as versioned records with default-content provenance, checksums, idempotency, and audit; later app upgrades create draft/proposed changes when tenant content has diverged rather than overwriting active tenant customizations;
 - `AgentSkillManifest` exposes only compact skill ids, titles, purposes, and when-to-use hints in prompt assembly;
 - `AgentReferenceManifest` exposes only compact reference ids, summaries, when-to-consult hints, allowed use, and access notes in prompt assembly;
 - full skill/reference text is loaded only through authorized `readSkill(skillId)` and `readReferenceDoc(referenceId)` tools or equivalent governed resource lookups;
@@ -249,7 +250,7 @@ Before calling a generated design AI-first, verify:
 - [ ] Backend capabilities are inventoried with actors/callers, auth context, schemas, side effects, idempotency, policy/approval rules, audit/trace needs, tests, and selected exposure surfaces.
 - [ ] Agent tools are treated as one optional exposure surface for selected capabilities, not as the backend design root.
 - [ ] Managed runtime agent foundation is present: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, deterministic compact expertise manifest assembly, authorized `readSkill(skillId)` and `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, and `AgentWorkTrace`.
-- [ ] Initial/default agent behavior documents are seeded from implementation-developed app resources into governed storage at first install or tenant bootstrap, with active v1 records, seed provenance, idempotency, validation, audit, and customization-preserving upgrade behavior.
+- [ ] Initial/default agent behavior documents are created as governed default records at first install or tenant bootstrap, with active v1 records, default-content provenance, idempotency, validation, audit, and customization-preserving upgrade behavior.
 - [ ] Agents have explicit responsibilities, versioned prompts/skills, permissions, thresholds, escalation rules, and traces.
 - [ ] Agent-mediated behavior maintenance exists for prompts, skills, manifests, and tool boundaries, including `AgentBehaviorEditorAgent` proposals, proposed diff review, draft version creation, approval, activation, audit, and denial of unauthorized authority expansion.
 - [ ] Execution plans are inspectable, policy-bound, and auditable before or during activation.
@@ -264,16 +265,16 @@ Before calling a generated design AI-first, verify:
 
 ## Routing implications for future tasks
 
-When high-level or incremental product input arrives, route first through secure AI-first SaaS interpretation and the mandatory foundation unless the task is explicitly repository-maintenance-only or non-SaaS reference material. Start with `../skills/ai-first-saas/SKILL.md`, apply the foundation docs, then follow `requirements-to-workstream-development-process.md`: identify or reconcile affected workstreams, role-specific dashboard attention, human surface graph changes, internal workstream agent graph changes, governed-tools within capabilities/surface maps, Akka substrate/exposure mapping, agent/AutonomousAgent worker roles, notifications, projections, traces, and validation before choosing among description-first maintenance, Akka solution decomposition, PRD/spec/backlog planning, or focused implementation skills. Use `agent-workstream-application-architecture.md` for the generated-app UI/application model and `capability-first-backend-architecture.md` for governed backend capabilities.
+When high-level or incremental product input arrives, route first through secure AI-first SaaS interpretation and the mandatory foundation unless the task is explicitly repository-maintenance-only or non-SaaS reference material. Start with `../ai-first-saas/SKILL.md`, apply the foundation docs, then follow `./requirements-to-workstream-development-process.md`: identify or reconcile affected workstreams, role-specific dashboard attention, human surface graph changes, internal workstream agent graph changes, governed-tools within capabilities/surface maps, Akka substrate/exposure mapping, agent/AutonomousAgent worker roles, notifications, projections, traces, and validation before choosing among description-first maintenance, Akka solution decomposition, PRD/spec/backlog planning, or focused implementation skills. Use `./agent-workstream-application-architecture.md`, `./workstream-contract.md`, and `./workstream-attention-contracts.md` for the generated-app UI/application model and `./capability-first-backend-architecture.md` for governed backend capabilities.
 
 Use the existing AI-first companion skills only for concerns that are actually in scope:
 
-- `../skills/ai-first-saas-object-model/SKILL.md` for durable goals, plans, policies, decisions, traces, outcomes, and related substrate objects.
-- `../skills/ai-first-saas-agent-team-design/SKILL.md` for bounded coordinator/specialist/evaluator agent teams, authority limits, tools, escalation rules, traces, and workflow supervision.
-- `../skills/ai-first-saas-policy-governance/SKILL.md` for policies, clauses, permissions, thresholds, approval gates, proposals, simulations, and human-governed commits.
-- `../skills/ai-first-saas-decision-cards/SKILL.md` for recommendation, approval, exception, and deviation review surfaces with evidence, risk, confidence, impact, alternatives, and actions.
-- `../skills/ai-first-saas-audit-trace/SKILL.md` for durable work, decision, policy, tool, data-access, approval, and outcome traces.
-- `../skills/ai-first-saas-ui-surfaces/SKILL.md` for supervision, decision, governance, digest, goal-to-execution, and audit UI surfaces.
-- `../skills/ai-first-saas-outcomes-metrics/SKILL.md` for outcome loops, metrics, decision/outcome links, feedback, replay, and validation surfaces.
+- `../ai-first-saas-object-model/SKILL.md` for durable goals, plans, policies, decisions, traces, outcomes, and related substrate objects.
+- `../ai-first-saas-agent-team-design/SKILL.md` for bounded coordinator/specialist/evaluator agent teams, authority limits, tools, escalation rules, traces, and workflow supervision.
+- `../ai-first-saas-policy-governance/SKILL.md` for policies, clauses, permissions, thresholds, approval gates, proposals, simulations, and human-governed commits.
+- `../ai-first-saas-decision-cards/SKILL.md` for recommendation, approval, exception, and deviation review surfaces with evidence, risk, confidence, impact, alternatives, and actions.
+- `../ai-first-saas-audit-trace/SKILL.md` for durable work, decision, policy, tool, data-access, approval, and outcome traces.
+- `../ai-first-saas-ui-surfaces/SKILL.md` for supervision, decision, governance, digest, goal-to-execution, and audit UI surfaces.
+- `../ai-first-saas-outcomes-metrics/SKILL.md` for outcome loops, metrics, decision/outcome links, feedback, replay, and validation surfaces.
 
-These skills route to the existing Akka substrate implementation skills; they do not replace component-specific guidance for request-based Agents, Autonomous Agents, workflows, entities, views, consumers, timed actions, endpoints, or web UI delivery. Use `agent-component-selection-guide.md` before selecting between request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`.
+These skills route to the existing Akka substrate implementation skills; they do not replace component-specific guidance for request-based Agents, Autonomous Agents, workflows, entities, views, consumers, timed actions, endpoints, or web UI delivery. Use `./agent-component-selection-guide.md` before selecting between request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`.

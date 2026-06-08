@@ -20,8 +20,6 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -39,7 +37,7 @@ Read these first if present:
 
 ## Repository example
 
-- `PingWebSocketEndpoint`
+- a domain-specific WebSocket endpoint
   - text WebSocket example
   - maps `ping` to `pong`
   - echoes any other text with a stable prefix

@@ -9,28 +9,12 @@ Use this skill when the main task is registering, replacing, or deleting timers.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Read first
 
 - `akka-context/sdk/timed-actions.html.md`
 - `akka-context/sdk/setup-and-dependency-injection.html.md`
-- `../examples/akka-components/src/main/java/com/example/api/TicketReservationEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/api/ReminderJobEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReminderJobTimedAction.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
 
 ## Where timers may be scheduled
 
@@ -66,12 +50,12 @@ timerScheduler.createSingleTimer(
     5,
     componentClient
         .forTimedAction()
-        .method(TicketReservationTimedAction::expireReservation)
+        .method(AttentionProducerService::expireReservation)
         .deferred(reservationId));
 
 var state = componentClient
     .forKeyValueEntity(reservationId)
-    .method(TicketReservationEntity::reserve)
+    .method(DurableAttentionRepositoryEntity::reserve)
     .invoke(command);
 ```
 
@@ -87,31 +71,31 @@ timerScheduler.delete(timerName(reservationId));
 Use when an untracked business object is worse than an obsolete timer.
 
 Repository example:
-- `TicketReservationEndpoint#createReservation`
+- `WorkstreamEndpoint#createReservation`
 
 ### Schedule from a workflow command
 Use when a workflow owns the timeout or reminder lifecycle.
 
-Repository example:
+Pattern reference:
 - `ApprovalDeadlineWorkflow#start`
 
 ### Delete after successful completion
 Use when the timer is no longer needed but the target command remains safe if the timer still fires.
 
 Repository example:
-- `TicketReservationEndpoint#confirm`
+- `WorkstreamEndpoint#confirm`
 
 ### Reschedule by reusing the same name
 Use when the latest reminder or expiry time should replace the previous one.
 
-Repository example:
-- `ReminderJobTimedAction#sendReminder`
+Pattern reference:
+- `AttentionRefreshTimedAction#sendReminder`
 
 ### Schedule from inside a timed action
 Use when each execution decides whether more work remains.
 
-Repository example:
-- `ReminderJobTimedAction#sendReminder`
+Pattern reference:
+- `AttentionRefreshTimedAction#sendReminder`
 
 ## Generated SaaS timer contract
 

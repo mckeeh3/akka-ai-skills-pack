@@ -18,7 +18,7 @@ export WORKOS_JWT_ISSUER="configured-workos-issuer" # when env-backed JWT config
 export WORKOS_JWT_AUDIENCE="configured-workos-audience" # when env-backed JWT config is used
 export APP_PUBLIC_BASE_URL="http://localhost:9000"
 export RESEND_API_KEY="re_xxxxxxxxx"
-export INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
+export INVITE_EMAIL_FROM="Your App <onboarding@example.com>"
 export INVITE_EMAIL_SUBJECT="Account access information"
 ```
 
@@ -155,7 +155,7 @@ AuthKit access tokens may not include `email`. Generated backends must not const
 var identity = WorkosIdentityResolver.fromClaims(requestContext().getJwtClaims());
 ```
 
-The resolver should read subject from `subject()`/`sub`, email from `email`, `preferred_username`, or `username`, display name from `name`, `given_name`, or `nickname`, and when subject is present but email is missing fetch the WorkOS user-management profile server-side with backend-only `WORKOS_API_KEY` and optional `WORKOS_API_BASE_URL`. Cache successful local/starter lookups through Akka components. Never expose or log `WORKOS_API_KEY`.
+The resolver should read subject from `subject()`/`sub`, email from `email`, `preferred_username`, or `username`, display name from `name`, `given_name`, or `nickname`, and when subject is present but email is missing fetch the WorkOS user-management profile server-side with backend-only `WORKOS_API_KEY` and optional `WORKOS_API_BASE_URL`. Cache successful local/SaaS Foundation App lookups through Akka components. Never expose or log `WORKOS_API_KEY`.
 
 Use `bearerTokenIssuers` and `staticClaims` when the WorkOS issuer/audience/claim contract is known:
 
@@ -286,7 +286,7 @@ Invite-email settings are backend-only and mandatory for production readiness. U
 
 ```bash
 export RESEND_API_KEY="re_xxxxxxxxx"
-export INVITE_EMAIL_FROM="Acme <onboarding@example.com>"
+export INVITE_EMAIL_FROM="Your App <onboarding@example.com>"
 export INVITE_EMAIL_SUBJECT="Account access information"
 ```
 
@@ -294,7 +294,7 @@ Local/dev/test environments may replace external delivery with an explicit safe 
 
 Bootstrap behavior:
 - implement startup bootstrap in the service's single Akka `@Setup` class implementing `akka.javasdk.ServiceSetup`; `onStartup()` must load `ADMIN_USERS` before `/api/me` or admin endpoints depend on local admin state
-- keep bootstrap idempotent because Akka invokes `onStartup()` for each service instance and restart; do not rely on endpoint lazy initialization or tests calling the seeder directly as the production startup path
+- keep bootstrap idempotent because Akka invokes `onStartup()` for each service instance and restart; do not rely on endpoint lazy initialization or tests calling the bootstrap helper directly as the production startup path
 - parse configured initial admins at startup using canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`) plus explicitly mapped app-specific roles when needed
 - create invited local Akka user accounts idempotently
 - create Invitation records with invite token or acceptance context, status, expiry, delivery status, delivery attempts, and audit metadata

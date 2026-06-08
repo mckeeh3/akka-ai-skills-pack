@@ -9,23 +9,14 @@ Use this skill for unit tests of event sourced entities.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/OrderEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ExpiringShoppingCartEntityTest.java`
+- `../docs/akka-entity-testing-shared-patterns.md`
 
 ## Test kit rules
 
@@ -66,21 +57,23 @@ Use these `EventSourcedTestKit` capabilities:
 ## Repository examples
 
 ### Standard entity tests
-- `ShoppingCartEntityTest`
+- `AgentDefinitionEntityTest`
   - success
   - validation error
   - no-op
   - delete
 
 ### Multi-event entity tests
-- `OrderEntityTest`
+- target-project ESE tests for commands that persist multiple events
   - one command persisting two events
   - no-op for missing item
   - strongly consistent read pattern
+- current curated governed-document tests: `../examples/akka-components/src/test/java/ai/first/application/foundation/agent/GovernedDocumentEntityTest.java`
 
 ### TTL test
-- `ExpiringShoppingCartEntityTest`
-  - asserts `Optional.of(Duration.ofDays(30))` from `getExpireAfter()`
+- target-project TTL tests for entities that configure `expireAfter(...)`
+  - assert the expected `Optional<Duration>` from `getExpireAfter()`
+- the current curated tree does not include a dedicated expiring entity fixture
 
 ## Generated SaaS test set
 

@@ -22,10 +22,6 @@ Read these first if present:
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
 - `../docs/capability-first-backend-architecture.md` when the stateful object implements a named capability with auth/scope, idempotency, audit, approval, or exposure-surface choices
 - `../docs/ai-first-saas-application-architecture.md` when the stateful object represents goals, plans, policies, decisions, approvals, traces, outcomes, agent authority, or other AI-first substrate state
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
 - `../references/akka-entity-comparison.md`
 
 ## Decision rule
@@ -47,8 +43,8 @@ For AI-first SaaS objects, decide whether the state is an audit-grade fact strea
 - governance changes require provenance, replay, simulation, or comparison across versions
 
 Repository examples:
-- `ShoppingCartEntity`
-- `OrderEntity`
+- `AgentDefinitionEntity`
+- `PromptDocumentEntity`
 
 ### Prefer Key Value Entity when
 - only latest state matters
@@ -59,8 +55,8 @@ Repository examples:
 - AI-first state is a replaceable snapshot such as current preferences, cached supervisor filters, non-audit operational cursors, or draft working data whose history is captured elsewhere
 
 Repository examples:
-- `DraftCartEntity`
-- `PurchaseOrderEntity`
+- `DurableIdentityRepositoryEntity`
+- a domain-specific key value entity
 
 ## Important comparison points
 

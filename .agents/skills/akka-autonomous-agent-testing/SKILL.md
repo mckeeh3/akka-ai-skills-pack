@@ -13,7 +13,7 @@ Read before validating generated-app worker tasks:
 - `../docs/autonomous-agent-worker-runtime-pattern.md`
 
 Read when API details are needed:
-- `../../../specs/autonomous-agents-integration/research-notes.md`
+- `../docs/autonomous-agents-api-notes.md`
 - `akka-context/sdk/autonomous-agents/testing.html.md`
 - `akka-context/sdk/autonomous-agents/client.html.md`
 - `akka-context/sdk/autonomous-agents/notifications.html.md`
@@ -69,7 +69,7 @@ For generated-app autonomous work, and especially worker tasks covered by `../do
 - task id/agent instance id/customer scope validation;
 - task creation idempotency where exposed through retriable APIs;
 - trace emission for task creation, assignment, completion/failure, tool calls, delegation, handoff, notification exposure, and denials;
-- v3 `worker.task.*` event payload/source refs, attention upsert/resolve behavior, and structured progress/result surface/API contracts;
+- typed `worker.task.*` event payload/source refs, attention upsert/resolve behavior, and structured progress/result surface/API contracts;
 - provider fail-closed and no fake success scans for deterministic/demo/model-less runtime substitutes;
 - endpoint/workflow/UI smoke path when the task represents a named runtime feature.
 

@@ -12,14 +12,6 @@ Use this skill when the task is to write documentation examples for event source
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/ExpiringShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/OrderEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ExpiringShoppingCartEntityTest.java`
 - `../references/akka-entity-comparison.md`
 
 ## Mission
@@ -78,14 +70,14 @@ When rewriting or extending ESE documentation, prefer a separate snippet for eac
 ## Mapping to repository references
 
 Use these as source material, but simplify aggressively for docs:
-- `ShoppingCartEntity` -> edge-facing validate/persist/read/delete/notifications
-- `OrderEntity` -> downstream/internal no-op, multi-event command, consistent read, replication
-- `ExpiringShoppingCartEntity` -> TTL
-- `ShoppingCartCheckoutConsumer` -> side effects outside entity
-- `ShoppingCartEndpoint` -> SSE mapping
-- `ShoppingCartEntityTest` -> unit test shape
-- `OrderEntityTest` -> multi-event test shape
-- `ExpiringShoppingCartEntityTest` -> TTL assertion shape
+- `AgentDefinitionEntity` -> edge-facing validate/persist/read/delete/notifications
+- `PromptDocumentEntity` -> downstream/internal no-op, multi-event command, consistent read, replication
+- `ExpiringAgentDefinitionEntity` -> TTL
+- `WorkstreamEventAttentionConsumer` -> side effects outside entity
+- `WorkstreamEndpoint` -> SSE mapping
+- `AgentDefinitionEntityTest` -> unit test shape
+- `GovernedDocumentEntityTest` -> governed document unit-test shape; use target-project tests for multi-event ESE snippets when needed
+- `AgentDefinitionEntityTest` -> entity test shape; use target-project TTL tests when the curated examples do not include an expiring entity
 
 ## What to trim out of docs
 

@@ -11,14 +11,7 @@ Capability-first framing: use KVE-backed Views for current-state read/evidence c
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
@@ -26,10 +19,6 @@ Read these first if present:
 - `akka-context/sdk/views.html.md`
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `akka-context/sdk/key-value-entities.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartLifecycleView.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Source-specific rules
@@ -50,11 +39,11 @@ Prefer a transformed summary row when the view only needs a subset of fields.
 Pattern:
 - define a compact row record inside the view
 - compute that row from the latest state in `onUpdate(...)`
-- query using wrapper records such as `List<Row> carts`
+- query using wrapper records such as `List<Row> rows`
 
 Repository examples:
-- `DraftCartsByCheckedOutView`
-- `DraftCartLifecycleView`
+- `UserDirectoryView`
+- `AdminAuditView`
   - demonstrates `@DeleteHandler` for logical deletion
 
 ## Delete guidance

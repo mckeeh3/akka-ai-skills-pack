@@ -13,31 +13,11 @@ Timed action tests should verify scheduled capability behavior, not only timer m
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Read first
 
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/api/TicketReservationEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReminderJobTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/api/ReminderJobEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
 
 ## Test modes
 
@@ -62,17 +42,17 @@ Use `TestKitSupport` plus `Awaitility` when you want to verify that a timer actu
 
 For self-rescheduling handlers that call `timers()` inside the timed action, prefer end-to-end tests for the rescheduling path. `TimedActionTestkit` is still useful for terminal `done()` mappings such as not-found or already-completed outcomes.
 
-Repository examples:
-- `TicketReservationEndpointIntegrationTest#reservationExpiresAfterTimerFires`
-- `ReminderJobEndpointIntegrationTest#timedActionSelfSchedulesUntilMaxRemindersReached`
+Pattern references:
+- target-project endpoint/component integration test for timer expiry
+- target-project self-rescheduling integration test that runs until the modeled reminder/max-attempt boundary
 
 ### 3. Delete-or-confirm integration test
 Use `TestKitSupport` plus `Awaitility.during(...)` when you want to prove that confirmation prevented the later timer from changing state.
 
-Repository examples:
-- `TicketReservationEndpointIntegrationTest#confirmDeletesTimerAndKeepsReservationConfirmed`
-- `ReminderJobEndpointIntegrationTest#completeStopsFutureSelfRescheduling`
-- `ApprovalDeadlineWorkflowIntegrationTest#approveDeletesTimerAndWorkflowStaysApproved`
+Pattern references:
+- target-project endpoint/component integration test for timer cancellation/confirmation
+- target-project self-rescheduling cancellation test
+- target-project workflow approval/deadline cancellation test
 
 ## Assertions to favor
 

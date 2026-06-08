@@ -15,18 +15,20 @@ It explains the readiness result in prompt/response form.
 Produce a concise readiness summary that explains:
 - whether the app description is ready, ready-with-assumptions, or not ready
 - which factors most influenced that result
-- what the blocking gaps or acceptable assumptions are, including missing required `15-operating-model/` semantics for generated AI-first SaaS apps
+- what the blocking gaps or acceptable assumptions are, including missing required global/domain/workstream operating-model semantics for generated AI-first SaaS apps
 - whether the harness recommends continuing description work or proceeding to generation
 
 ## Required reading
 
 Read these first if present:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
-- `../docs/description-first-application-doctrine.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-description-skill-output-contracts.md`
 - `../docs/ai-first-saas-application-architecture.md`
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
 - `../app-description-readiness-assessment/SKILL.md`
 - `../ai-first-saas/SKILL.md` when delegated work, agents, decisions, governance, supervision, audit, or outcomes are in scope
 - the latest readiness-assessment result if available

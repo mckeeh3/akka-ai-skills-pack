@@ -51,7 +51,7 @@ The workstream agent must handle:
 
 ## Surface style expectations
 
-These surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered surfaces, blue/indigo AI accent, sparse semantic status colors, accessible focus states, strong version/table hierarchy, and prominent evidence/authority/trust cues. Style is a UI realization layer only; it must not change functional-agent semantics, managed-agent governance, prompt/skill/reference authority, tool-boundary enforcement, capability mappings, approval rules, routes, or trace behavior.
+These surfaces inherit `ai-first-workstream-enterprise` from `../../../web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered surfaces, blue/indigo AI accent, sparse semantic status colors, accessible focus states, strong version/table hierarchy, and prominent evidence/authority/trust cues. Style is a UI realization layer only; it must not change functional-agent semantics, managed-agent governance, prompt/skill/reference authority, tool-boundary enforcement, capability mappings, approval rules, routes, or trace behavior.
 
 - Dashboard: render as an agent-governance briefing with KPI cards for active/disabled agents, pending proposals, failed tests, recent traces, and authority-expansion risk; put proposal and trace attention queues above routine catalog summaries.
 - Agent catalog and detail: use dense catalog rows/cards and layered detail panels showing lifecycle, owner/steward, model policy, prompt, manifests, tool boundary, status, and recent trace links with explicit disabled/read-only states.
@@ -97,7 +97,7 @@ For this workstream, read/evidence capabilities may be exposed as tools so the A
 - Activation of prompt/skill/reference/manifest/tool-boundary changes requires approval unless a narrow safe policy says otherwise.
 - Tool-boundary expansion, data-scope expansion, side-effect expansion, email/tool enablement, policy/gov authority changes, and cross-tenant effects require human approval.
 - Prompt/skill text cannot grant authority; backend checks `AuthContext`, `AgentDefinition`, manifest assignment, document status/version, and `ToolPermissionBoundary`.
-- Seeded implementation-developed defaults import into governed storage with provenance/checksums/idempotency and do not overwrite tenant customizations.
+- Implementation-developed default content is represented as governed draft/active records with provenance and review/change-control rules; upgrades must not overwrite tenant customizations.
 
 ## Workstream-agent prompt requirements
 
@@ -120,7 +120,7 @@ Runtime skills should cover agent lifecycle, prompt governance, skill/reference 
 - Agent: `AgentAdminAgent` and optional `AgentBehaviorEditorAgent`.
 - Tools: governed `readSkill(skillId)`, `readReferenceDoc(referenceId)`, trace readers, proposal draft tools.
 - HTTP: `/api/agent-admin/**` surface payload/action endpoints.
-- Consumers: seed import/audit projection/trace enrichment.
+- Consumers: governed default setup/audit projection/trace enrichment.
 
 ## Tests
 
@@ -133,7 +133,7 @@ Required:
 - tool-boundary expansion approval required;
 - deterministic prompt assembly includes compact manifests only;
 - `readSkill`/`readReferenceDoc` authorize manifest/version/status/tool boundary and trace allowed/denied loads;
-- seeded defaults idempotent and do not overwrite tenant customizations;
+- governed defaults idempotent and do not overwrite tenant customizations;
 - audit/work traces emitted for reads, drafts, approvals, activations, rollbacks, denied loads;
 - auditors see redacted read-only surfaces;
 - workstream agent explains and requests surfaces without granting authority.

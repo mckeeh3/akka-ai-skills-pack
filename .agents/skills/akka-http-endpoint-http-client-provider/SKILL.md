@@ -21,8 +21,6 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../examples/akka-components/src/main/java/com/example/api/ProxyGreetingEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -40,7 +38,7 @@ Read these first if present:
 
 ## Repository example
 
-- `ProxyGreetingEndpoint`
+- a domain-specific HTTP-client endpoint (no current snapshot example)
   - uses `HttpClientProvider`
   - reads a base URL from a request header for a self-contained local example only
   - delegates to another HTTP route and remaps the response

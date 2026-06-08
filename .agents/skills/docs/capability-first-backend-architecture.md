@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-This is the canonical capability-first backend doctrine for this skills pack. It extends the secure AI-first SaaS doctrine in `ai-first-saas-application-architecture.md` without replacing it.
+This is the canonical capability-first backend doctrine for this skills pack. It extends the secure AI-first SaaS doctrine in `./ai-first-saas-application-architecture.md` without replacing it.
 
 Default generated-application interpretation:
 
@@ -17,13 +17,13 @@ product intent
 → Akka component realization
 ```
 
-Use `requirements-to-workstream-development-process.md` for broad input, PRD, app-description, planning, backlog, and implementation-readiness work. It discovers capabilities through workstream attention, dashboard, surface, and action semantics before selecting APIs or Akka components.
+Use `./requirements-to-workstream-development-process.md` for broad input, PRD, app-description, planning, backlog, and implementation-readiness work. It discovers capabilities through workstream attention, dashboard, surface, and action semantics before selecting APIs or Akka components.
 
 A capability is the product-level backend ability or grouping. A capability owns one or more governed-tools: semantic executable operations or queries with actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. Agent workstream actions, Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent-tools are implementation or exposure choices for those governed-tools.
 
 ## Non-negotiable foundation
 
-Capability-first design does **not** weaken the mandatory secure SaaS foundation from `ai-first-saas-application-architecture.md`, `core-ai-first-saas-foundation.md`, `core-saas-identity-tenancy-admin.md`, and `core-saas-owner-tenant-billing.md`.
+Capability-first design does **not** weaken the mandatory secure SaaS foundation from `./ai-first-saas-application-architecture.md`, `./core-ai-first-saas-foundation.md`, `./core-saas-identity-tenancy-admin.md`, and `./core-saas-owner-tenant-billing.md`.
 
 Every protected capability must mechanically enforce:
 
@@ -86,7 +86,7 @@ Do not introduce a separate top-level governed-tool inventory when an app-descri
 
 An agent-tool is one possible exposure channel for a capability's governed-tool. It is not the root abstraction.
 
-Official Akka agent tooling supports local `@FunctionTool` methods, external agent-tool classes, Akka component-tool exposure, and remote MCP-tools. See `../../../akka-context/sdk/agents/extending.html.md`, `../skills/akka-agent-tools/SKILL.md`, and `../skills/akka-agent-component-tools/SKILL.md`.
+Official Akka agent tooling supports local `@FunctionTool` methods, external agent-tool classes, Akka component-tool exposure, and remote MCP-tools. See `akka-context/sdk/agents/extending.html.md`, `../akka-agent-tools/SKILL.md`, and `../akka-agent-component-tools/SKILL.md`.
 
 Capability-first interpretation of those tools:
 
@@ -146,7 +146,7 @@ For broad product input or implementation planning:
 5. Build a capability inventory before selecting Akka components.
 6. For each capability, define schemas, auth/scope, side effects, idempotency, policy/approval, audit/trace, and tests.
 7. Decide which exposure channels expose the capability, if any.
-8. Select Akka components that realize the capability semantics. Use `agent-component-selection-guide.md` when a capability could be a request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, or Workflow + AutonomousAgent.
+8. Select Akka components that realize the capability semantics. Use `./agent-component-selection-guide.md` when a capability could be a request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, or Workflow + AutonomousAgent.
 9. Generate code/tests component by component while preserving the capability contract.
 
 Do not jump from a product request directly to an entity, endpoint, or agent-tool unless the capability contract is already clear enough.
@@ -200,4 +200,4 @@ Future skills and planning artifacts should use this doctrine as the backend sub
 - PRD/spec/backlog planning should preserve the requirements-to-workstream chain: workstream id, attention category, dashboard/surface/action, capability ids, auth/scope, side effects, approval, audit, exposure channels, AutonomousAgent task semantics where applicable, notifications/projections, and tests in generated tasks.
 - Component skills should frame entities, workflows, views, endpoints, agents, MCP, consumers, and timers as capability carriers or capability exposure channels.
 
-The top-level routing skill for this doctrine is `../skills/capability-first-backend/SKILL.md`. Use it with `../skills/README.md` and this document when modeling capability-first backend behavior before selecting Akka components or exposure channels.
+The top-level routing skill for this doctrine is `../capability-first-backend/SKILL.md`. Use it with `../README.md` and this document when modeling capability-first backend behavior before selecting Akka components or exposure channels.

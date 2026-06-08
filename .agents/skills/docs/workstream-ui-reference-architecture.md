@@ -2,27 +2,29 @@
 
 ## Status and scope
 
-This is the target implementation architecture for reusable generated-app **agent workstream shell** UI modules. This repository's runnable core app root is the canonical end-to-end implementation baseline; this document remains the canonical UI architecture contract and reusable frontend reference.
+This is the target implementation architecture for reusable generated-app **agent workstream shell** UI modules. This repository's runnable SaaS Foundation App root is the canonical end-to-end implementation baseline; this document remains the canonical UI architecture contract and reusable frontend reference.
 
 It is a source-repository reference asset. It defines how future tasks should build reusable React/Vite/TypeScript modules under `frontend/src/workstream/**`, while preserving useful generic seams from the current frontend (`api/**`, `design-system/**`, `styles/**`) and replacing `screens/**` as the canonical UI taxonomy.
 
 Canonical doctrine:
-- `docs/agent-workstream-application-architecture.md`
-- `docs/structured-surface-contracts.md`
-- `docs/workstream-visual-sessions.md`
-- `docs/web-ui-frontend-decomposition.md`
-- `specs/workstream-ui-implementation-migration/frontend-stale-code-inventory.md`
+- `./agent-workstream-application-architecture.md`
+- `./workstream-contract.md`
+- `./workstream-attention-contracts.md`
+- `./structured-surface-contracts.md`
+- `./workstream-visual-sessions.md`
+- `./web-ui-frontend-decomposition.md`
+- source-checkout/root-only migration inventory: `specs/workstream-ui-implementation-migration/frontend-stale-code-inventory.md`
 
 Current implementation references:
-- full-core core app baseline source: this repository's runnable core app root
-- source-controlled app-description starter surface contracts: `templates/ai-first-saas-starter/app-description/**`
+- runnable SaaS Foundation App source: this repository's runnable SaaS Foundation App root
+- source-controlled app-description SaaS Foundation App surface contracts: `templates/ai-first-saas-core-app/app-description/**`
 - reusable React/Vite/TypeScript modules: `frontend/src/workstream/**`
 - fixture API and realtime seams: `frontend/src/api/WorkstreamApiClient.ts`, `frontend/src/api/WorkstreamRealtimeClient.ts`
 - integrated shell example: `frontend/src/main.tsx`
-- canonical User Admin UI vertical pattern: fixtures in `frontend/src/workstream/fixtures/**` plus `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+- canonical User Admin UI vertical pattern: `frontend/src/workstream-user-admin-vertical.contract.test.mjs` plus shared test fixtures under `frontend/src/__tests__/fixtures/**` when needed
 - shell/surface/action/deep-link/realtime contract coverage: `frontend/src/workstream*.contract.test.mjs`, `frontend/src/frontend.contract.test.mjs`, and `frontend/src/seed-frontend-quality.contract.test.mjs`
 
-Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Test fixtures are contract/test references only; generated user-facing runtime must bind to real backend `/api/me`, workstream APIs, authorization, audit/work-trace, and realtime API paths rather than simulated data. Older `frontend/src/screens/**` files and static examples under `../examples/akka-components/src/main/resources/static-resources/frontend-reference/**`, `web-ui/**`, `web-ui-sse/**`, or `web-ui-websocket/**` are mechanics or legacy references only; do not promote them as canonical generated-app structure.
+Treat those frontend files as the source-repository implementation reference for future generated SaaS UI work. Test fixtures are contract/test references only; generated user-facing runtime must bind to real backend `/api/me`, workstream APIs, authorization, audit/work-trace, and realtime API paths rather than simulated data. For non-canonical retired UI structures, use `./retired-content-boundaries.md`.
 
 ## Core rule
 
@@ -57,13 +59,6 @@ frontend/src/workstream/
     surfaces.ts            # SurfaceEnvelope, SurfaceAction, surface data unions, UI state unions
     events.ts              # SurfaceEvent/workstream event contracts and realtime connection state
     actions.ts             # capability action request/result/idempotency/confirmation contracts
-    index.ts
-  fixtures/
-    me.ts                  # /api/me fixture variants: admin, user, auditor/support, disabled/forbidden
-    agents.ts              # foundation functional agents and denied-agent examples
-    workstream.ts          # initial workstreams, stream item examples, action-feedback items
-    surfaces.ts            # canonical surface envelopes for each reusable surface type
-    events.ts              # duplicate, out-of-order, stale, reconnect, denied, malformed-safe event examples
     index.ts
   shell/
     WorkstreamShell.tsx    # layout composition: rail + context + stream + composer
@@ -186,7 +181,7 @@ type FunctionalAgentSummary = {
   icon?: string;
   defaultSurfaceType: string;
   requiredCapabilityIds: string[];
-  attention?: { count: number; severity: "info" | "warning" | "critical" };
+  attention?: { count: number; severity: "info" | "warning" | "urgent" | "blocked" };
   availability: "visible" | "hidden" | "denied" | "disabled";
   deniedReason?: string;
 };
@@ -226,7 +221,7 @@ type WorkstreamItem = {
 
 The stream supports grouped history, stable item ids, append/update semantics, trace links, and action-feedback items for non-chat navigation/actions.
 
-Every new user request is acknowledged as a request surface before the agent response surfaces are shown. This applies to direct composer prompts, prompt-entered shell commands such as `show users list`, the standard composer **Show dashboard** shell button, indirect requests raised by existing surface actions, My Account panels, rail selection, and deep-link entry. The stream uses traditional chat ordering: older turn groups remain above and newer turn groups append below them. When the request item is appended, the workstream scrolls that request surface to the top of the visible panel; any resulting markdown or structured response surfaces append below the request so the user sees the prompt/action first and the agent-selected response surfaces in order. The Show dashboard button is handled directly by the shell rather than routed through the workstream agent: it appends a `Show dashboard` request surface and then the selected workstream's dashboard surface. Workstream-switch request items are appended only in the new target workstream. Use `docs/workstream-visual-sessions.md` for turn-group, anchor, per-workstream session, and phased persistence guidance.
+Every new user request is acknowledged as a request surface before the agent response surfaces are shown. This applies to direct composer prompts, prompt-entered shell commands such as `show users list`, the standard composer **Show dashboard** shell button, indirect requests raised by existing surface actions, My Account panels, rail selection, and deep-link entry. The stream uses traditional chat ordering: older turn groups remain above and newer turn groups append below them. When the request item is appended, the workstream scrolls that request surface to the top of the visible panel; any resulting markdown or structured response surfaces append below the request so the user sees the prompt/action first and the agent-selected response surfaces in order. The Show dashboard button is handled directly by the shell rather than routed through the workstream agent: it appends a `Show dashboard` request surface and then the selected workstream's dashboard surface. Workstream-switch request items are appended only in the new target workstream. Use `./workstream-visual-sessions.md` for turn-group, anchor, per-workstream session, and phased persistence guidance.
 
 Shell request normalization contract:
 
@@ -251,7 +246,7 @@ Default prompt resolution is current-workstream scoped. Authorized cross-workstr
 
 ### Surface envelopes
 
-Use the envelope from `docs/structured-surface-contracts.md` as the canonical frontend contract:
+Use the envelope from `./structured-surface-contracts.md` as the canonical frontend contract:
 
 ```ts
 type SurfaceEnvelope<TData, TAction extends SurfaceAction = SurfaceAction> = {
@@ -400,7 +395,7 @@ The first implementation slice must include fixtures for:
 - selected `AuthContext` with tenant and optional customer scope
 - visible, denied, hidden, disabled, and attention-bearing functional agents
 - initial workstream items for user request, agent response, surface, capability result, workflow progress, decision, audit trace, action feedback, system-message surface, and system status
-- surface envelopes for every canonical surface type listed above, seeded from or aligned to `templates/ai-first-saas-starter/app-description/12-workstreams/**` when implementing the starter core surfaces
+- surface envelopes for every canonical surface type listed above, aligned to `templates/ai-first-saas-core-app/app-description/12-workstreams/**` when implementing SaaS Foundation App surfaces
 - surface actions covering read, command, proposal, approval, workflow, governance, and trace intents, each with browser-tool/governed-tool/capability ids and source/result surface graph behavior
 - action results for accepted, denied, validation error, approval required, conflict, no-op, and failed outcomes
 - realtime events for created, updated, accepted, denied, workflow progressed, stale, reconnected, duplicate/replay, out-of-order, malformed-safe, and cross-context-denied cases
@@ -421,13 +416,11 @@ Focused contract tests should verify:
 
 Do not hand-edit generated assets under `src/main/resources/static-resources/**` in component-library tasks. Replace generated Vite output only after the workstream source shell is ready to build.
 
-Do not delete `frontend/src/screens/**` until the replacement shell and reusable surfaces are in place and contract tests have moved to the workstream taxonomy.
-
-Do not promote legacy static examples under `../examples/akka-components/src/main/resources/static-resources/frontend-reference/**`, `web-ui/**`, `web-ui-sse/**`, or `web-ui-websocket/**` as canonical full-stack SaaS UI guidance. Keep them as quarantined mechanics references until later cleanup.
+Do not restore removed static UI fixtures as canonical full-stack SaaS UI guidance. If a task needs asset-serving mechanics, document the focused route shape in the target app and keep product UI source under `frontend/**`.
 
 ## Implementation handoff sequence
 
-1. Add `frontend/src/workstream/types/**` and `frontend/src/workstream/fixtures/**` with focused contract tests.
+1. Add or update `frontend/src/workstream/types/**` and focused contract tests. Keep reusable runtime modules under `frontend/src/workstream/**`; put test-only fixtures under `frontend/src/__tests__/fixtures/**` or inside the relevant contract test.
 2. Add shell, rail, context/authority, and composer components.
 3. Add stream item and structured surface components.
 4. Add capability action components and action state helpers.

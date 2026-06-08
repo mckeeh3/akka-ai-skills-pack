@@ -12,9 +12,6 @@ Use this skill when the workflow should stop processing until a later command re
 Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ApprovalState.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
 
 ## Capability-first approval/supervision role
 
@@ -28,9 +25,9 @@ Use pause/resume when a capability must wait for human approval, additional evid
 4. Guard the resume command so it only works in the waiting status and caller has the required role/scope for the capability.
 5. Resume by recording the approval/supervision decision, emitting audit/work-trace details, and transitioning to the next step with any required input.
 
-## Repository example
+## Pattern reference
 
-- `ApprovalWorkflow`
+- a domain-specific approval workflow
   - pauses in `waitForApprovalStep()`
   - resumes only from `WAITING_FOR_APPROVAL`
   - applies the approval decision in a dedicated step before ending

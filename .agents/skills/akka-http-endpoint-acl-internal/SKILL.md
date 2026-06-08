@@ -21,8 +21,6 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 Read these first if present:
 - `akka-context/sdk/access-control.html.md`
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/main/java/com/example/api/InternalStatusEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/InternalStatusEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -41,7 +39,7 @@ Read these first if present:
 
 ## Repository example
 
-- `InternalStatusEndpoint`
+- a domain-specific internal-only status endpoint
   - class-level service-only ACL
   - method-level override exposing one public route
   - principal inspection via `requestContext().getPrincipals()`

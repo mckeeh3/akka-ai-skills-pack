@@ -16,13 +16,7 @@ Ensure keyboard and screen-reader paths reach consequential actions such as appr
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS UI work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- owning functional agent, workstream, structured surface id/type/version, and surface action or workstream event;
-- governed capability id/class, selected Akka substrate, frontend/API/realtime exposure, and required tests;
-- `AuthContext`, tenant/customer scope, roles/capabilities, disabled/forbidden behavior, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work trace fields, correlation ids, and denial/error shapes.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing from UI mechanics.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
@@ -73,6 +67,6 @@ Before finishing, verify:
 - status/error information is not color-only
 - AI-first status, evidence, risk, policy-trigger, approval, exception, trace, and outcome information is available as text when applicable
 - narrow layouts preserve the main supervision, decision, or governance task before secondary diagnostics
-- each required named light/dark theme, focus rings, form controls, and status colors satisfy the selected style guide and accessibility contrast expectations
+- each required named theme color-token bundle, focus ring, form control, and status color satisfies the selected style guide and accessibility contrast expectations; light/dark tone is contrast metadata, not a user-facing mode
 - My Account named-theme selection previews immediately without breaking keyboard focus or accessible field announcements, and durable persistence still uses the governed save path
 - page has a clear main landmark and title/heading

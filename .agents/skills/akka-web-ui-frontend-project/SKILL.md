@@ -13,13 +13,7 @@ This skill is about web UI project integration only. Defer authentication, autho
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS frontend-project work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- functional-agent shell, workstream regions, structured surface ids/types/versions, surface actions/events, and deep-link strategy;
-- governed capability ids/classes behind browser API/realtime calls, selected Akka substrates, and frontend/API/realtime exposure;
-- `/api/me`, `AuthContext`, tenant/customer scope, roles/capabilities, disabled/forbidden states, frontend secret boundaries, selected style guide, and named-theme contract;
-- DTOs, redaction, idempotency/correlation ids, policy/approval/escalation states, audit/work trace links, rendering/API/realtime tests, and build checks.
-
-If these are absent for generated SaaS implementation, route back to `akka-web-ui-apps`, `agent-workstream-apps`, and `capability-first-backend` or repair the task brief instead of creating a generic frontend project.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
@@ -34,8 +28,11 @@ Read these first if present:
 - project `src/main/resources/static-resources/**` for current built assets
 - matching Akka frontend hosting endpoint and endpoint tests
 
-Reference example document:
-- `../docs/frontend-with-akka-backend.md` — use only the frontend layout, build output, Akka static hosting, route separation, and SPA-routing guidance. Do not import its auth/security content unless a security task explicitly asks for it.
+Canonical integration document:
+- `../docs/web-ui-frontend-project-integration.md` — use this for frontend layout, build output, Akka static hosting, route separation, and SPA-routing guidance.
+
+Legacy combined reference:
+- `../docs/frontend-with-akka-backend.md` — consult only when maintaining older pack guidance that already cites it; for new frontend work, route auth/security to `../docs/security-workos-auth-and-admin.md` and security-specific skills.
 
 ## Use this skill when
 
@@ -55,8 +52,8 @@ For workstream apps, organize frontend source around the canonical reusable work
 - `frontend/src/workstream/surfaces/` for typed dashboard, list/search, detail/edit, decision, diff, approval, audit timeline, workflow status, and outcome surface components;
 - `frontend/src/workstream/actions/` for capability-backed action controls and idempotency/result-surface helpers;
 - `frontend/src/workstream/realtime/` for surface/workstream event parsing, dedupe, reconnect, and stale markers;
-- `frontend/src/workstream/types/` and `frontend/src/workstream/fixtures/` for reusable contracts and fixture examples;
-- `frontend/src/api/` for browser-safe DTO clients and error mapping, including `WorkstreamApiClient.ts`, `WorkstreamRealtimeClient.ts`, and fixture implementations.
+- `frontend/src/workstream/types/` for reusable contracts and `frontend/src/__tests__/fixtures/` or colocated contract-test fixtures for test-only examples;
+- `frontend/src/api/` for browser-safe DTO clients and error mapping, including `WorkstreamApiClient.ts`, `WorkstreamRealtimeClient.ts`, and explicit test/dev fixture implementations where present.
 
 Do not organize the primary frontend solely as a conventional route/page tree unless the task is public/static, non-SaaS, or explicitly outside the generated workstream default.
 

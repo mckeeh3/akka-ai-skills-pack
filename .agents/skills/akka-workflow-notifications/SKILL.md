@@ -9,26 +9,13 @@ Use this skill when a workflow should push progress updates to subscribers.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
 
 ## Capability-first notification role
 
@@ -44,16 +31,16 @@ Use notifications as a selected exposure surface for workflow capability progres
 
 ## Repository example
 
-- `TransferWorkflow`
+- a domain-specific workflow
   - publishes progress notifications for withdraw success, completion, rejection, compensation, and unexpected failure
   - exposes `updates()` for subscribers
-- `ApprovalWorkflow`
+- a domain-specific approval workflow
   - publishes notifications when approval starts waiting and when approval is applied
   - exposes `updates()` for subscribers
-- `TransferWorkflowEndpoint`
+- a domain-specific workflow endpoint
   - adapts workflow notifications into API records
   - returns them as SSE over HTTP
-- `ApprovalWorkflowEndpoint`
+- a domain-specific approval workflow endpoint
   - adapts paused-workflow notifications into API records
   - returns them as SSE over HTTP
 

@@ -5,770 +5,201 @@ description: Decompose high-level requirements, prompts, or specification files 
 
 # Akka Solution Decomposition
 
-Use this as the top-level starting skill when the task begins from high-level intent rather than from a fixed Akka component type.
+Context-budget rule: do not load every focused Akka component skill up front. Classify scope, derive capabilities, choose component candidates, then load only the focused downstream skills needed for the selected substrates.
+
+Use this as the top-level starting skill when the task begins from accepted current intent or high-level intent rather than from a fixed Akka component type. For broad or changing product input, first treat the input as an intent compiler increment and preserve traceability to current app/global/domain/workstream nodes before selecting Akka components.
 
 ## Goal
 
-Generate or review an Akka solution plan that:
-- interprets high-level product intent through the full-stack secure AI-first SaaS operating model, including mandatory foundation and UI surfaces
-- derives governed backend capabilities before choosing Akka components or exposure channels
-- maps capability contracts to concrete Akka components
-- chooses the simplest component set that preserves required business semantics
-- makes write model, read model, orchestration, timing, integration, and edge concerns explicit
-- routes to the smallest relevant local skill set
-- gives a safe implementation order before code generation starts
-- acts as the implementation contract for the downstream coding phase
+Produce a compact implementation contract that:
+
+- interprets product intent through the secure AI-first SaaS operating model when generated-app scope is in play;
+- derives governed backend capabilities before selecting Akka components or exposure channels;
+- maps capabilities to the smallest component set that preserves durability, authority, orchestration, query, timing, integration, AI, and edge semantics;
+- labels readiness scope before planning implementation;
+- routes to the smallest relevant skill set for code and tests;
+- gives vertical implementation order, not just a component list.
 
 ## Supported inputs
 
-For the canonical broad-input planning shape, see:
+Use this skill for high-level prompts, PRDs, feature requests, UI/API briefs, change requests, or filenames containing requirements/specifications. If the user provides a path, read it completely and extract actors, capabilities, constraints, inputs, outputs, authority, side effects, state, queries, integrations, and tests before choosing components.
+
+For broad generated-app input, use these by reference instead of restating their contents:
+
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-to-realization-flow.md`
 - `../docs/requirements-to-workstream-development-process.md`
 - `../docs/examples/requirements-to-workstream-mini-example.md`
 
-Conventional mechanics-only examples, not canonical generated AI-first SaaS target architecture:
-- `../docs/prd-to-akka-flow.md` conventional mechanics section
-- `../docs/examples/purchase-request-prd.md`
-- `../docs/examples/purchase-request-solution-plan.md`
-
-
-Use this skill when the input is one or more of:
-- a high-level prompt
-- a product requirement
-- a user-story list
-- a business process description
-- an API sketch or contract draft
-- a UI brief
-- a feature request or change request
-- a filename or path containing requirements or specifications
-
-If the user provides a filename or path:
-1. read the file completely before selecting components
-2. extract capability contracts, constraints, actors, inputs, outputs, and integration points before selecting components
-3. then produce the capability-aware component plan
+Do not reintroduce removed historical domain-specific planning examples as generic guidance.
 
 ## Required reading
 
-Read these first if present:
-- `../../../AGENTS.md` for authoritative project rules and Akka coding constraints
-- `../README.md` for local routing across skill families
-- `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline every new app plan must include
-- `../akka-saas-invitation-onboarding/SKILL.md` when the foundation plan includes complete email-invite onboarding implementation details
-- `../docs/ai-first-saas-application-architecture.md` for high-level product, PRD, feature, and operating-model inputs
-- `../docs/agent-workstream-application-architecture.md` and `../agent-workstream-apps/SKILL.md` for generated full-stack SaaS functional-agent, workstream, and structured-surface modeling before backend capability design
-- `../docs/structured-surface-contracts.md` when workstream surfaces, surface actions, browser UI actions, or surface events are in scope
-- `../docs/capability-first-backend-architecture.md` and `../capability-first-backend/SKILL.md` for capability-first backend modeling before component selection
-- `../docs/agent-coverage-matrix.md` when the task is agent-related
-- `../references/akka-entity-comparison.md`
-- `../docs/workflow-endpoint-pattern.md`
-- `../docs/timer-pattern-selection.md`
-- `../../../akka-context/sdk/ai-coding-assistant-guidelines.html.md`
+Read first when present/relevant:
 
-When requirements already suggest a likely component, also read the official Akka doc for that area before coding:
-- `../../../akka-context/sdk/event-sourced-entities.html.md`
-- `../../../akka-context/sdk/key-value-entities.html.md`
-- `../../../akka-context/sdk/workflows.html.md`
-- `../../../akka-context/sdk/views.html.md`
-- `../../../akka-context/sdk/consuming-producing.html.md`
-- `../../../akka-context/sdk/timed-actions.html.md`
-- `../../../akka-context/sdk/http-endpoints.html.md`
-- `../../../akka-context/sdk/grpc-endpoints.html.md`
-- `../../../akka-context/sdk/agents.html.md`
+- target project path: AGENTS.md for authoritative project rules and coding constraints;
+- `../README.md` for current skill routing;
+- `../core-saas-foundation/SKILL.md` for mandatory secure SaaS scope;
+- `../docs/intent-compiler.md`, `../docs/current-intent-model.md`, and `../docs/intent-to-realization-flow.md` when input needs current-intent provenance or workstream binding before component selection;
+- `../docs/full-core-foundation-readiness.md` for canonical SaaS Foundation App inventory; summarize it, do not paste it;
+- `../docs/minimum-ai-first-saas-app.md` for minimum/core/basic/chatbot-like generated SaaS requests;
+- `../docs/ai-first-saas-application-architecture.md`;
+- `../agent-workstream-apps/SKILL.md` and `../docs/agent-workstream-application-architecture.md` when generated full-stack SaaS workstreams are in scope;
+- `../docs/structured-surface-contracts.md` when surfaces/actions/events are in scope;
+- `../capability-first-backend/SKILL.md` and `../docs/capability-first-backend-architecture.md` before backend component selection;
+- `../docs/agent-coverage-matrix.md` when agent runtime/governance coverage is in scope;
+- `../references/akka-entity-comparison.md`, `../docs/workflow-endpoint-pattern.md`, and `../docs/timer-pattern-selection.md` as needed;
+- `../references/generated-saas-runtime-completion.md` for generated-app completion standards;
+- official Akka docs under `akka-context/sdk/**` for each selected component family before coding.
 
-In this repository, prefer these cross-component examples:
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `../examples/akka-components/src/main/java/com/example/application/ActivityAgent.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
+## Output: component plan sections
 
-## What this skill must produce
+Before coding, produce a component plan with these sections. Keep each concise; link canonical references instead of duplicating checklists.
 
-Before any coding, produce a component plan with these sections:
 1. Inputs
-2. Java base package for generated code
-3. Scope label (`minimum starter`, `full core`, `Module 1-only / not full core`, or another explicit narrower scope)
+2. Java base package: fixed `ai.first`
+3. Scope label: `SaaS Foundation App maintenance/extension`, `business-domain extension`, `app-specific feature`, or another explicit narrower scope
 4. AI-first interpretation
-5. Core secure SaaS foundation
-6. Workstream decomposition decision (one-workstream vs multi-workstream, affected workstreams, split/merge rationale)
-7. Agent workstream model (functional agents, internal agents, workstreams, retained human authority)
-8. Workstream attention and role-specific dashboard model (`what needs my attention?`, dashboard summary cards, My Account aggregate, left rail counts)
-9. Human surface graph and surface actions (dashboard trunk, surface nodes, edge actions, payload-producing queries, events, states, trace links)
+5. Core secure SaaS foundation obligations
+6. Workstream decomposition decision
+7. Agent workstream model and retained human authority
+8. Attention/dashboard model
+9. Human surface graph and surface actions
 10. Surface/action-to-capability and governed-tool mapping
-11. Internal workstream agent graph, when internal/background model-driven work exists
-12. Autonomous task candidates and notification/projection mapping, when durable internal/background work exists
-13. Workstream expertise plan (prompt intent, skill/reference families, manifests, tool boundaries, denials, user-help examples)
-14. Capability and governed-tool inventory
-15. Capability-to-component mapping
-16. Chosen components
-17. Why each component exists
-18. Skill routing
-19. Open questions and assumptions
-20. Recommended implementation order by vertical workstream/attention/dashboard/surface/governed-tool/capability increments
-21. Required tests
+11. Internal agent/autonomous-task candidates
+12. Workstream expertise plan
+13. Capability and governed-tool inventory
+14. Capability-to-component mapping
+15. Chosen components and why each exists
+16. Skill routing for implementation and tests
+17. Open questions/assumptions
+18. Vertical implementation order
+19. Required tests
 
-For section 2, resolve the Java base package from existing project configuration or user input. If absent, ask: "What Java base package should I use for generated code? Press Enter to use `ai.first`." Use `ai.first` only when accepted/deferred. Do not use `com.example` as the generated application package unless explicitly requested; `com.example` in local examples is only reference material.
-
-For section 3, label scope before choosing components. `minimum starter` is allowed for minimum/starter/basic/chatbot-like generated SaaS requests and must be the five core workstream starter from `docs/minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy functional agents; bootstrap authorization; selected AuthContext; durable workstream log; `markdown_response` system-message surfaces; backend capability boundary; audit/work trace substrate; markdown sanitization; starter tests; and explicit follow-up for full-core work. `full core` requires those five functional agents plus complete Invitation onboarding; full user administration; governed runtime agent records (`AgentDefinition`, prompts, skills, reference documents, skill/reference manifests, tool boundaries, prompt/skill/reference/work traces, authorized `readSkill`, and authorized `readReferenceDoc`); workstream UI; and acceptance/security/agent-governance/frontend tests. `Module 1-only / not full core` is allowed only when the plan explicitly defers User Admin, Agent Admin, invitation lifecycle, governed prompts/skills/references/manifests/tool boundaries, unified audit/work trace UI, and governance loops. Any other narrower scope must be named and must list deferred full-core areas.
-
-Treat sections 7, 9, 10, 12, 14, 16, and 17 as the implementation handoff.
-The plan is not complete if it only names components.
-It must also tell the downstream implementation phase:
-- which functional agent, workstream, attention category, dashboard card/surface, and surface action each generated SaaS increment belongs to
-- which capability id and contract each component implements or exposes
-- which internal/background worker responsibilities should become Akka `AutonomousAgent` tasks, including task start/result/read/notification capabilities, when durable lifecycle fits
-- which events, notifications, authoritative projections, My Account aggregate behavior, left rail count behavior, and audit/work traces connect the increment
-- which skills to load for code generation
-- which skills to load for test generation
-- what vertical workstream/attention/dashboard/surface/capability order to implement before horizontal component details
-- whether endpoint generation, web UI generation, or documentation/snippet generation belong downstream
+A plan is incomplete if it names components without saying which current-intent graph nodes, functional agent, workstream, surface, capability, authority boundary, trace, and tests each increment belongs to.
 
 ## Decomposition workflow
 
-### 0. Resolve Java base package
+### 1. Record fixed package and scope
 
-Before planning work that will generate Java source files, determine the application base package. Prefer an existing Maven/Gradle group id or existing package root in the target project. If no package is present and the user has not supplied one, ask the initial package question:
+Use `ai.first`; do not ask the user to choose a Java package. Classify the requested work with `../docs/minimum-ai-first-saas-app.md` and `../docs/full-core-foundation-readiness.md`:
 
-```text
-What Java base package should I use for generated code? Press Enter to use `ai.first`.
-```
+- `SaaS Foundation App maintenance/extension`: modify the built-in foundation domain in place.
+- `business-domain extension`: add domain-specific workstreams, surfaces, agents, capabilities, components, frontend/app-description/spec/doc/test assets while preserving foundation semantics.
+- `app-specific feature`: a focused increment in an existing foundation or business domain.
+- narrower scope: name it and list intentionally deferred areas.
 
-Record the selected package in the solution plan and apply it consistently to group id, package declarations, imports, tests, and source paths. Never infer `com.example` from this repository's examples unless the user explicitly asks for `com.example`.
+### 2. Apply secure SaaS foundation
 
-### 1. Apply core secure SaaS foundation
+For generated SaaS work, load `core-saas-foundation` early unless the user explicitly asks for non-SaaS reference material. WorkOS/AuthKit and Resend are the supported foundation choices. Missing runtime values may become questions, but must not erase local authorization, tenancy, managed-agent governance, trace, or tool-boundary contracts.
 
-For every new app/PRD/spec handled by this skill, load `core-saas-foundation` and include a `Core secure SaaS foundation` section before app-specific capability decomposition unless the user explicitly asks for non-SaaS reference material.
+Route complete invitation onboarding to `akka-saas-invitation-onboarding`; reusable app/agent email delivery to `akka-resend-email-service`; user/admin foundation to `akka-basic-user-admin` and `akka-workos-user-auth`.
 
-Do not silently narrow a full-core request to a minimum starter or Module 1-only foundation. If the user asks for full-core generated app readiness, the plan must carry My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, complete Invitation onboarding, governed runtime agents, workstream UI, and required tests through the capability summary, component mapping, implementation order, and required tests. If the plan intentionally covers only the minimum starter, label it `minimum starter`, include all five core workstream starter agents and their `markdown_response` surfaces, and list follow-up work for full User Admin, Agent Admin, Audit/Trace UI/search, invitation/onboarding, governed prompts/skills/references/manifests/tool boundaries, support access, billing boundary, full security coverage, and app-specific workstreams. If the plan claims app-specific readiness, it must include full-core readiness plus product/domain functional agents, capabilities, structured surfaces, tests, and operational reviews. If the plan intentionally covers only Module 1, label it `Module 1-only / not full core` and list the full-core areas deferred.
+### 3. Interpret AI-first operating model
 
-That section must cover SaaS Owner, Tenant, Customer, Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, Invitation, complete email-invite onboarding, AuthContext, AdminAuditEvent, support-access, subscription/billing boundary, `/api/me`, backend authorization, tenant/customer-scoped commands and queries, governed runtime agent foundation objects (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`), and tenant-isolation tests. WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the supported production email service; missing WorkOS/Resend runtime setting values may become questions, but they must not erase local authorization, tenancy, managed-agent behavior, prompt/skill/reference governance, trace, or tool-boundary contracts. Route complete invitation onboarding work to `akka-saas-invitation-onboarding` for InvitationWorkflow, Resend email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, admin endpoints/UI, and lifecycle tests. Route reusable email service, future feature emails, and agent `@FunctionTool` email surfaces to `akka-resend-email-service`.
+Before CRUD or component decomposition, extract:
 
-### 2. Interpret AI-first operating model
+- human objective, owner, success criteria, constraints, definition of done;
+- delegated work vs retained human authority;
+- goals, plans, tasks, policies, decisions, approvals, exceptions, traces, outcomes;
+- agent/team responsibilities, tools, permissions, thresholds, escalation rules;
+- supervision, decision, governance, digest, audit, and outcome UI needs.
 
-Before CRUD or component decomposition, decide whether the input implies delegated operational work, semi/autonomous decisions, agent teams, human supervision, policy controls, approvals, exceptions, audit traces, or outcome accountability.
+If the product is clearly non-agentic, say so and continue with secure foundation-first Akka decomposition. Do not force optional AI-first patterns beyond the mandatory generated-app foundation.
 
-If AI-first concerns are present, use `ai-first-saas` framing and extract:
-- human objective, owner, success criteria, constraints, and definition of done
-- delegated work versus retained human authority
-- durable goals, plans, tasks, policies, decisions, approvals, exceptions, traces, and outcome links that are justified by the product intent
-- agent or agent-team responsibilities, tools, permissions, thresholds, escalation rules, and trace needs
-- governance, evidence, risk, confidence, impact, alternatives, audit, and learning-loop implications
-- supervision, decision, governance, digest, audit, and outcome UI surfaces
+### 4. Model workstreams and surfaces before backend components
 
-If the product is clearly not agentic, say so and continue with secure foundation-first Akka decomposition. Do not force every app to use every AI-first pattern beyond the mandatory secure SaaS foundation.
+For generated full-stack SaaS, apply `agent-workstream-apps` before backend mapping. Identify functional/context-area agents, workstreams, attention categories, role dashboards, human surface graph nodes/actions, system-message/result surfaces, trace links, workstream expertise bundles, internal/background worker candidates, and notification/projection needs.
 
-### 3. Model functional agents, workstreams, and structured surfaces
+If this inventory is absent, stop and add it or record a blocking gap.
 
-For generated full-stack SaaS input, load or apply `agent-workstream-apps` before backend capability mapping. Identify:
-- whether the PRD is one workstream, multiple workstreams, or an incremental change to existing workstream graph nodes/edges/governed-tools; preserve split/merge rationale and shared foundation/cross-workstream concerns;
-- role-authorized functional/context-area agents and any internal agents;
-- durable workstreams, retained human authority, default dashboard/attention surfaces, and supervision or decision surfaces;
-- per-workstream attention categories that answer `what needs my attention?`, including audience, severity/lifecycle, dashboard cards, left rail count implications, and My Account aggregate behavior;
-- role-specific dashboard variants for each affected actor, including summary cards, attention item sources, hidden/zero/forbidden states, and authoritative projection/query needs;
-- the human surface graph: dashboard trunk, surface nodes, surface-request/action edges, system-message nodes, result surfaces, edge effects, realtime/refresh behavior, and trace links;
-- backend capability and governed-tool candidates behind each surface action, payload-producing query, browser-tool, agent-tool, workflow step, API call, timer, consumer reaction, or internal operation;
-- workstream expertise needs: prompt intent, procedural skills, factual/process references, compact manifests, tool boundaries, denied-load behavior, governance owner, seed/import expectations, user-help examples, and tests;
-- the internal workstream agent graph: virtual dashboard agent responsibility, internal worker agents, delegation edges, stop conditions, escalation/handoff rules, result/proposal surfaces, and governed-tools allowed to each worker;
-- internal/background model-driven worker candidates, defaulting to Akka `AutonomousAgent` when typed tasks, snapshots/results, dependencies, notification streams, failure/cancellation, delegation, handoff, teams, or moderation fit;
-- events, notifications, authoritative attention projections, and audit/work traces that connect workstream actions, autonomous task progress/results, dashboards, My Account, and left rail indicators.
+### 5. Derive capabilities and governed tools
 
-If a generated SaaS plan lacks this inventory, stop and add it or record a blocking gap. Do not jump from product intent directly to Akka components.
+For each operation/query/action/event/tool, capture:
 
-### 4. Derive governed capabilities before component selection
+- stable capability id/name and governed-tool id when executable;
+- class: read/evidence, command, proposal, approval, workflow, policy/governance, trace/audit, scheduled, reactive, task lifecycle, projection read, integration;
+- actors/callers, AuthContext, tenant/customer scope, roles/capabilities, denial shape;
+- input/output schemas, validation, redaction, idempotency, correlation;
+- data reads/writes, side effects, external calls, topics, timers, emails, notifications;
+- policy/approval/escalation, audit/work-trace obligations, exposure channels;
+- browser UI, agent/tool, workflow/timer/consumer/MCP implications;
+- required success/forbidden/tenant-isolation/idempotency/approval/audit/UI tests.
 
-Build a capability and governed-tool inventory from the functional-agent workstreams, role-dashboard attention sources, human surface graph edges, payload-producing queries, browser-tools, agent-tools, workflow steps, APIs, timers, consumers, autonomous task lifecycle operations, and internal operations before deciding entities, workflows, views, endpoints, timers, consumers, or UI actions. For each operation or query, capture:
-- stable capability id/name in product language
-- stable governed-tool id/name when the operation is executable, plus qualified exposure terms (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP exposure)
-- capability/governed-tool class: read/evidence, command, proposal, approval, workflow, policy/governance, trace/audit, scheduled, reactive, task lifecycle, projection read, or integration action
-- purpose, actors/callers, human operating roles, delegated work, retained authority, and outcome loops when AI-first concerns exist
-- required AuthContext, tenant/customer scope, roles, permissions, named capability grants, and denial shape
-- input schema, validation rules, idempotency key, correlation id, and safe defaults
-- output schema, redaction rules, evidence boundaries, and user/agent-safe fields
-- data reads/writes, tenant filters, PII/secret handling, commands/mutations, queries/search/reporting needs
-- side effects: state changes, workflow starts, external calls, topics, timers, emails, notifications, or integrations
-- policy, approval, escalation, risk/confidence/impact thresholds, supervision, and governance requirements
-- audit/work-trace obligations for access, denials, approvals, side effects, tool activity, and data references
-- selected exposure channels: browser UI/browser-tool, HTTP/gRPC, MCP-tool, agent-tool/component tool, workflow step, timer action, consumer reaction, view/query/projection read, or internal-tool/internal-only
-- browser UI needs, including functional agents, workstream shell regions, structured surfaces, surface actions/forms, route/deep-link details, frontend state, realtime behavior, accessibility, and responsive requirements
-- AI and LLM needs, if genuinely prompt-driven
-- success, validation, forbidden, tenant-isolation, idempotency, approval, audit, and surface-specific tests
+Only after this should the plan choose Akka components.
 
-Only after these semantics are clear should the plan choose Akka components. If a broad request lacks enough authority, approval, audit, or scope detail to select components safely, record the smallest necessary open question instead of guessing.
+### 6. Select Akka substrates by capability shape
 
-### 5. Map capabilities to Akka substrate candidates
+Use this quick guide, then route to focused skills:
 
-Use capability shape as the input to component selection:
-- read/evidence capabilities usually need curated `View` queries, direct safe component reads, HTTP/gRPC endpoints, MCP resources, or agent tools only when scoped and redacted
-- command capabilities usually need entity or workflow commands with backend auth, validation, idempotency, audit, and denial semantics
-- proposal capabilities usually use agents or deterministic services to draft changes without committing side effects
-- approval capabilities usually use workflows, event-sourced decisions, policy checks, and human UI surfaces
-- workflow capabilities usually use `Workflow` for long-running, retryable, approval-gated, or compensating execution
-- scheduled capabilities usually use timers/timed actions and idempotent target calls
-- reactive capabilities usually use consumers with provenance, correlation, retry, duplicate, and audit behavior
-- policy/governance and trace/audit capabilities usually need event history, views, and admin/governance UI surfaces
+| Capability shape | Likely Akka substrate | Focused routing |
+|---|---|---|
+| Audit-grade facts/history, decisions, policies, approvals | EventSourcedEntity | `akka-event-sourced-entities`, ESE focused skills |
+| Latest-state record, profile/settings/config, simple repository | KeyValueEntity | `akka-key-value-entities`, KVE focused skills |
+| Long-running plan, approval, retry, compensation, waiting | Workflow | `akka-workflows`, focused workflow skills |
+| Query/search/reporting/alternate lookup | View | `akka-views`, source/query/testing skills |
+| React to entity/workflow/topic/service-stream changes | Consumer | `akka-consumers`, source/producing/testing skills |
+| Deadline/reminder/expiry/recheck | Timer + TimedAction | `akka-timed-actions` |
+| Browser/API exposure | HTTP endpoint | `akka-http-endpoints`, JWT/component/request/testing skills |
+| Protobuf service boundary | gRPC endpoint | `akka-grpc-endpoints` |
+| AI-client tool/resource/prompt boundary | MCP endpoint | `akka-mcp-endpoints` |
+| Request/response model-backed turn | Akka Agent | `akka-agents`, focused agent skills |
+| Durable internal/background model-driven task | AutonomousAgent | `akka-autonomous-agents`, task/coordination/testing skills |
+| Browser workstream app | React/Vite + Akka HTTP hosting | `akka-web-ui-apps`, focused web UI skills |
 
-A component may realize several capabilities, and a capability may have several exposure channels. Preserve one shared authority, validation, idempotency, approval, and audit contract across all channels.
+Rules:
 
-### 6. Identify the write model
+- Route to `akka-entity-type-selection` if stateful scope exists but ESE vs KVE is not clear.
+- Do not add a workflow for a simple single-entity command.
+- Do not add a view unless query shape justifies a projection.
+- Keep one shared authority, validation, idempotency, approval, and audit contract across all exposure channels.
 
-Ask:
-- what state must be durable?
-- is there one aggregate or several?
-- does history matter or only latest state?
-- are durable facts or events part of the business language?
-- are goals, policies, decisions, approvals, traces, or outcomes audit-grade business records?
+### 7. Add implementation order
 
-If a stateful core exists but entity type is not yet fixed, route to:
-- `akka-entity-type-selection`
+Prefer vertical increments:
 
-### 7. Add orchestration only when required
+1. foundation/auth/tenancy/audit needed by the selected scope;
+2. workstream/attention/dashboard/surface contract;
+3. capability contracts and governed tools;
+4. write model;
+5. query/projection model;
+6. orchestration/timers/consumers;
+7. agent/runtime/tool governance;
+8. endpoints/API clients;
+9. frontend surface rendering;
+10. tests and local smoke/manual validation.
 
-Choose a `Workflow` when:
-- the use case is multi-step and durable
-- retries or restarts must not lose progress
-- compensation or approval is required
-- agent execution, human review, or policy gates must be supervised as a durable plan
-- several components or integrations must be coordinated
+Each increment should identify the next focused skills to load.
 
-Do not add a workflow for a simple single-entity command flow.
+## Open questions policy
 
-### 8. Add read models only when query needs justify them
-
-Choose a `View` when:
-- the user needs list, search, filter, or reporting queries
-- query shape differs from write-model shape
-- data must be projected from events, updates, workflow state, topics, or service streams
-- streaming query results or live updates are required
-- command centers, decision queues, audit searches, governance lists, digest feeds, or outcome dashboards are needed
-
-Do not add a view for simple direct single-entity lookups unless the query pattern truly needs projection.
-
-### 9. Add async reactions only when something must react after the write
-
-Choose a `Consumer` when:
-- one component must react asynchronously to another component's updates
-- messages come from topics or service streams
-- side effects should happen outside the entity command handler
-- events need republishing to topics or service streams
-- traces, notifications, outcome links, or governance records must be enriched asynchronously
-
-### 10. Add time-based components only when deadlines or reminders exist
-
-Choose a `TimedAction` when:
-- a timeout, expiry, reminder, retry delay, or scheduled callback is required
-- the schedule must call back into an entity or workflow safely
-- obsolete timer executions must be normalized to no-op or done behavior
-- periodic digests, rechecks, policy simulations, or outcome reviews are required
-
-### 11. Add AI components only when the requirement is genuinely LLM-driven
-
-Choose an `Agent` when:
-- the behavior depends on prompt-driven generation, extraction, classification, evaluation, or summarization
-- structured LLM output is needed
-- tools, memory, guardrails, or multi-agent orchestration are required
-- bounded planning, recommendation, exception triage, evidence summarization, or evaluation is required
-
-Do not introduce an agent for deterministic business rules that should stay in code.
-
-### 12. Choose edge and API exposure channels
-
-Choose capability exposure channels after capability semantics are fixed. Use `structured surface` for workstream renderable artifacts; use `exposure channel` for HTTP/gRPC/MCP/tool/workflow/timer/consumer/view/internal paths:
-- `HTTP endpoint` for REST, browser integration, SSE, WebSocket, static assets, or co-hosted web UI
-- `Akka-hosted web UI app` for full browser applications with an agent workstream shell, structured surfaces, typed API clients, surface actions/forms, state, selected frontend project shape, and frontend quality requirements; prioritize supervision, decision, governance, digest, audit, and outcome surfaces when AI-first concerns exist
-- `gRPC endpoint` for protobuf-first service APIs
-- `MCP endpoint` for selectively exposed LLM-oriented tools, resources, or prompts
-
-A single solution may expose a capability through more than one edge channel, but every exposure channel must preserve the same capability auth/scope, validation, idempotency, approval, and audit rules. Do not expose all capabilities as agent tools or MCP tools by default.
-
-### 13. Add security and delivery concerns explicitly
-
-The secure foundation is mandatory; this step refines provider-specific and delivery details. Check whether the requirements imply:
-- WorkOS or other end-user authentication
-- frontend-to-backend JWT bearer-token security
-- `/api/me`, account linking, roles, invites, or basic administration
-- JWT-protected endpoints
-- internal-only ACL endpoints
-- SSE reconnect support
-- WebSocket interaction
-- packaged browser UI assets
-- notifications or service streams
-- policy-bound permissions, approval gates, tool/data-access controls, redaction, retention, tenant isolation, and trace visibility
-
-### 14. Generate the implementation order
-
-For generated full-stack SaaS apps, order work as vertical increments after the mandatory foundation:
-
-```text
-functional agent
-+ one workstream/default surface
-+ one or two surface actions or payload-producing queries
-+ governed capabilities
-+ Akka components and exposure channels for those capabilities
-+ authorization, audit/trace, tenant-isolation, rendering, and surface/action tests
-```
-
-Prefer this order unless requirements force another:
-1. core secure SaaS foundation before app-specific domain features: identity/tenancy types, Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, backend authorization, complete email-invite onboarding with a concrete invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, InvitationView, UserDirectoryView, MembershipView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, support-access, and billing boundary; then concrete managed-agent foundation tasks for `AgentDefinition` lifecycle/profile, `PromptDocument`/`PromptVersion` governance, `SkillDocument`/`SkillVersion` governance, `ReferenceDocument`/`ReferenceVersion` governance, `AgentSkillManifest`/`AgentReferenceManifest` and compact expertise manifest assembly, authorized `readSkill(skillId)` and `readReferenceDoc(referenceId)`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, behavior editing agent (`AgentBehaviorEditorAgent`) proposal flow, agent catalog/detail UI, prompt/skill/reference/manifest/tool-boundary UI, trace UI, AI admin responsibilities (for example one governed `UserAdminAgent` with admin skills and references or specialized agents such as AccessReviewAgent and AdminRiskAgent), decision cards for risky admin actions, and security/admin/agent-governance/UI tests
-2. AI-first object model, authority boundaries, policies, trace/outcome records, and domain invariants
-3. stateful app-specific core components: entities and workflows
-4. views
-5. consumers and timed actions
-6. endpoints and web UI
-7. tests for each component family
-8. docs or snippets if the task includes repository guidance
-
-## Component selection guide
-
-Component selection is a realization decision for the capability inventory. Do not start from CRUD screens, entity tables, endpoint routes, or agent tool lists when product-level capability semantics are still unclear.
-
-### AI-first substrate mapping
-
-When AI-first concerns are present, map durable objects before selecting components:
-- audit-grade goals, policies, decisions, approvals, traces, precedents, and consequential facts → `EventSourcedEntity`
-- current-state preferences, simple assignments, ephemeral operational state, and non-audit configuration → `KeyValueEntity`
-- execution plans, approval gates, retries, compensation, human wait states, and agent-team orchestration → `Workflow`
-- planning, classification, recommendation, summarization, evaluation, explanation, and bounded tool use → `Agent`
-- command centers, decision queues, policy lists, audit search, digest feeds, and outcome dashboards → `View`
-- trace enrichment, notification, publication, integration bridges, and outcome linking → `Consumer`
-- deadlines, reminders, expiries, periodic digests, rechecks, simulations, and review cadences → `TimedAction`
-- browser APIs, service APIs, streams, and AI-client tools/resources → HTTP, gRPC, and MCP endpoints
-- supervision, decision, governance, digest, trace, and outcome interfaces → `akka-web-ui-apps` plus focused web UI skills
-
-### Stateful core
-
-Choose one or more of:
-- `EventSourcedEntity` — event history, facts, replay, audit
-- `KeyValueEntity` — latest state only, simpler snapshot-style model
-- `Workflow` — durable multi-step orchestration across components or integrations
-
-### Query and read model
-
-Choose:
-- direct entity or workflow read when a simple point lookup is enough
-- `View` when list, search, reporting, or projection is required
-
-### Async and integration
-
-Choose one or more of:
-- `Consumer` — react to updates, topics, or service streams
-- `TimedAction` — deadlines, reminders, retries, expiries
-- notifications, topic production, or service streams when clients or downstream services must observe progress
-
-### Edge exposure channels
-
-Choose one or more of:
-- `HTTP endpoint`
-- `gRPC endpoint`
-- `MCP endpoint`
-- HTTP-hosted web UI via `akka-http-endpoint-web-ui`
-- fully capable frontend app via `akka-web-ui-apps`, usually with `akka-web-ui-frontend-project` for full React/Vite-style apps
-- SSE or WebSocket companions when live browser updates are required
-
-### AI layer
-
-Choose one or more of:
-- `Agent`
-- workflow-supervised multi-agent orchestration
-- prompt-template or session-memory runtime state
-- evaluator or guardrail patterns
-
-## Routing rules
-
-After decomposition, load the minimal next skill set.
-The routing output should feed code generation directly, not serve as a purely informational appendix.
-For every chosen component, list the implementation skills and the corresponding testing skill when one exists.
-
-For generated SaaS apps, always include `core-saas-foundation` in planning/intake routing before app-specific component skills. Include `capability-first-backend` whenever broad requirements still need operation/query contracts before Stage 3 implementation. When AI-first concerns shape the solution, include `ai-first-saas` and add only the companion skills needed by the plan:
-- `ai-first-saas-object-model` for durable goals, plans, policies, decisions, traces, and outcomes
-- `ai-first-saas-agent-team-design` for bounded coordinator/specialist/evaluator agent teams
-- `ai-first-saas-policy-governance` for policies, permissions, thresholds, simulations, and governed commits
-- `ai-first-saas-decision-cards` for recommendation, approval, exception, and deviation review surfaces
-- `ai-first-saas-audit-trace` for work, decision, policy, tool, data-access, approval, and outcome traces
-- `ai-first-saas-ui-surfaces` for supervision, decision, governance, digest, audit, and outcome interfaces
-- `ai-first-saas-outcomes-metrics` for outcome loops, metrics, replay, feedback, and validation surfaces
-
-Then route to the normal Akka substrate skills for implementation.
-
-### If the core decision is still entity type
-
-Load:
-- `akka-entity-type-selection`
-
-This is still part of the planning handoff, not the final coding step.
-Only move into entity code generation after this decision is resolved.
-
-### If the plan includes event-sourced state
-
-Load:
-- `akka-event-sourced-entities`
-- `akka-ese-domain-modeling`
-- `akka-ese-application-entity`
-
-Then add only what is needed:
-- `akka-ese-edge-and-flow-patterns`
-- `akka-ese-ttl`
-- `akka-ese-notifications`
-- `akka-ese-replication`
-- `akka-ese-unit-testing`
-- `akka-ese-integration-testing`
-
-### If the plan includes key-value state
-
-Load:
-- `akka-key-value-entities`
-- `akka-kve-domain-modeling`
-- `akka-kve-application-entity`
-
-Then add only what is needed:
-- `akka-kve-edge-and-flow-patterns`
-- `akka-kve-ttl`
-- `akka-kve-notifications`
-- `akka-kve-replication`
-- `akka-kve-unit-testing`
-- `akka-kve-integration-testing`
-
-### If the plan includes orchestration
-
-Load:
-- `akka-workflows`
-- `akka-workflow-component`
-
-Then add only what is needed:
-- `akka-workflow-compensation`
-- `akka-workflow-notifications`
-- `akka-workflow-pausing`
-- `akka-workflow-testing`
-
-### If the plan includes projections or reporting queries
-
-Load:
-- `akka-views`
-
-Then load the source-specific skill:
-- `akka-view-from-event-sourced-entity`
-- `akka-view-from-key-value-entity`
-- `akka-view-from-workflow`
-- `akka-view-from-topic`
-- `akka-view-from-service-stream`
-
-Then add:
-- `akka-view-query-patterns`
-- `akka-view-streaming` when live query updates are needed
-- `akka-view-testing`
-
-### If the plan includes async reactions or integration bridges
-
-Load:
-- `akka-consumers`
-
-Then add the source-specific skill:
-- `akka-consumer-from-event-sourced-entity`
-- `akka-consumer-from-key-value-entity`
-- `akka-consumer-from-workflow`
-- `akka-consumer-from-topic`
-- `akka-consumer-from-service-stream`
-
-Then add:
-- `akka-consumer-producing` when the consumer republishes or exposes outputs
-- `akka-consumer-testing`
-
-### If the plan includes deadlines, reminders, or expiry
-
-Load:
-- `akka-timed-actions`
-- `akka-timed-action-component`
-- `akka-timers-scheduling`
-- `akka-timed-action-testing`
-
-### If the plan includes a complete browser app
-
-Load:
-- `akka-web-ui-apps`
-- `akka-http-endpoints`
-- `akka-http-endpoint-web-ui`
-
-Then add only what is needed:
-- `akka-web-ui-frontend-project` for full web app frontend implementation
-- `akka-web-ui-api-client`
-- `akka-web-ui-state-rendering`
-- `akka-web-ui-forms-validation`
-- `akka-web-ui-realtime`
-- `akka-web-ui-accessibility-responsive`
-- `akka-web-ui-testing`
-- `akka-http-endpoint-component-client`
-- `akka-http-endpoint-sse`
-- `akka-http-endpoint-websocket`
-- `akka-http-endpoint-jwt` for protected browser/API routes; only public static asset routes are outside authenticated API authorization
-- `akka-http-endpoint-testing`
-
-The implementation handoff must include functional agents, structured surfaces, surface actions/forms, frontend project shape, state model, API contracts, loading/empty/error states, accessibility/responsive requirements, static asset route/deep-link plan, SPA routing choice, and tests.
-
-### If the plan includes WorkOS user authentication or basic administration
-
-Load as needed:
-- `akka-workos-user-auth` for WorkOS/AuthKit, JWT-secured browser APIs, `/api/me`, and account linking
-- `akka-basic-user-admin` for roles, admin bootstrap, invites, user management, disabling users, and tenant/customer scopes
-- `akka-saas-invitation-onboarding` for complete email-invite lifecycle, InvitationWorkflow, Resend email delivery/outbox Consumer, expiry/reminder TimedAction, InvitationView, resend, revoke, delivery status, acceptance, and invitation tests
-- `akka-resend-email-service` for the shared Resend production email service, local captured outbox, future feature emails, and governed agent `@FunctionTool` email tools
-- `akka-http-endpoints`
-- `akka-http-endpoint-jwt`
-- `akka-http-endpoint-request-context`
-- `akka-http-endpoint-testing`
-
-Add `akka-web-ui-frontend-project` when implementing the frontend authentication shell. Add entity skills when local user/account state must be implemented.
-
-### If the plan includes HTTP APIs or simple browser UI delivery
-
-Load:
-- `akka-http-endpoints`
-
-Then add only what is needed:
-- `akka-http-endpoint-component-client`
-- `akka-http-endpoint-request-context`
-- `akka-http-endpoint-web-ui`
-- `akka-http-endpoint-low-level`
-- `akka-http-endpoint-http-client-provider`
-- `akka-http-endpoint-sse`
-- `akka-http-endpoint-websocket`
-- `akka-http-endpoint-jwt`
-- `akka-http-endpoint-acl-internal`
-- `akka-http-endpoint-testing`
-
-### If the plan includes protobuf-first APIs
-
-Load:
-- `akka-grpc-endpoints`
-
-Then add only what is needed:
-- `akka-grpc-endpoint-component-client`
-- `akka-grpc-endpoint-request-context`
-- `akka-grpc-endpoint-streaming`
-- `akka-grpc-endpoint-jwt`
-- `akka-grpc-proto-design`
-- `akka-grpc-endpoint-testing`
-
-### If the plan includes LLM-facing tools, resources, or prompts
-
-Load:
-- `akka-mcp-endpoints`
-
-Then add only what is needed:
-- `akka-mcp-endpoint-component-client`
-- `akka-mcp-endpoint-request-context`
-- `akka-mcp-endpoint-resources-prompts`
-- `akka-mcp-endpoint-testing`
-
-### If the plan includes AI and LLM behavior
-
-Load:
-- `akka-agents`
-
-Then add only what is needed:
-- `akka-agent-behavior-profiles` for `AgentDefinition`, lifecycle, authority, tool-boundary references, agent catalog, and agent detail
-- `akka-agent-governed-documents` for governed behavior document lifecycle and editing-agent proposal surfaces
-- `akka-agent-prompt-governance` for `PromptDocument`/`PromptVersion`, deterministic prompt assembly, `PromptAssemblyTrace`, and prompt governance UI
-- `akka-agent-skill-governance` for `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, compact manifest prompt context, authorized `readSkill(skillId)`, `SkillLoadTrace`, and skill/manifest/tool-boundary UI
-- `akka-agent-reference-governance` for `ReferenceDocument`/`ReferenceVersion`, `AgentReferenceManifest`, compact reference manifest context, authorized `readReferenceDoc(referenceId)`, `ReferenceLoadTrace`, and reference-governance UI
-- `akka-agent-work-trace` for `AgentWorkTrace`, trace search/detail UI, and agent authorization/data/tool trace records
-- `akka-agent-component`
-- `akka-agent-structured-responses`
-- `akka-agent-tools`
-- `akka-agent-component-tools`
-- `akka-agent-mcp-tools`
-- `akka-agent-multimodal`
-- `akka-agent-memory`
-- `akka-agent-streaming`
-- `akka-agent-orchestration`
-- `akka-agent-guardrails`
-- `akka-agent-evaluation`
-- `akka-agent-runtime-state`
-- `akka-agent-testing`
-
-## Planning-to-implementation handoff
-
-After producing the solution plan, convert it into a concrete work queue:
-1. take the recommended implementation order
-2. preserve capability ids, AuthContext/scope, schemas, side effects, idempotency, approval, audit/trace, and exposure decisions in every implementation task
-3. for each component in that order, load only the named implementation skills
-4. generate that component's code before moving to the next major component
-5. generate the corresponding tests for that component family
-6. generate endpoints, web UI, or documentation/snippets when the plan explicitly includes them
-
-Decomposition has succeeded only when a future agent can follow the plan mechanically into focused implementation work.
-
-## Standard output template
-
-Use this exact response shape whenever the task starts from requirements:
-
-```md
-# Akka Solution Plan
-
-## Inputs
-- source:
-- assumptions:
-
-## Java base package
-- package:
-
-## Scope label
-- minimum starter | full core | Module 1-only / not full core | other narrower scope:
-- deferred full-core areas / minimum-starter follow-up, if not full core:
-
-## AI-first interpretation
-- operating model:
-- delegated work:
-- retained human authority:
-- durable substrate objects:
-- governance / approval / exception needs:
-- audit, trace, and outcome needs:
-- AI-first UI surfaces:
-
-## Core secure SaaS foundation
-- baseline objects:
-- `/api/me` and AuthContext:
-- backend authorization:
-- tenant/customer isolation:
-- governed runtime agents: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, `ToolPermissionBoundary`, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, behavior editing agent proposals, agent catalog/detail UI, and prompt/skill/reference/manifest/tool-boundary UI
-- audit and security tests:
-
-## Workstream decomposition decision
-- one-workstream vs multi-workstream:
-- affected workstreams:
-- split/merge rationale:
-- shared foundation or cross-workstream concerns:
-
-## Agent workstream model
-- functional agents:
-- internal agents:
-- workstreams:
-- retained human authority:
-
-## Workstream attention and role-specific dashboard model
-- <workstream-id>/<role-or-actor>: attention categories; target audience; severity/lifecycle; default dashboard cards; My Account aggregate behavior; left rail count/highest-severity behavior; authoritative projection/query; tests
-
-## Human surface graph and surface actions
-- trunk: <workstream-id>/<dashboard-surface-id>
-- <surface-id> (<surface-type>): owner functional agent; dashboard/attention placement; payload-producing queries; actions/forms; events; states; trace links; tests
-- <surface-edge-id>: from <surface-id> via <action/query/request> to <surface/result/effect>; governed-tool/capability; attention/projection effect; audit/work trace
-
-## Surface/action-to-capability and governed-tool mapping
-- <surface-id>/<action-id or query> → <capability-id>/<governed-tool-id>: <qualified exposure: browser-tool|agent-tool|internal-tool|workflow/timer/consumer/MCP>; <authority, input/output, result-surface, attention/projection effect, audit/trace summary>
-
-## Internal workstream agent graph
-- <workstream-id>: virtual dashboard agent; worker agents; delegation edges; allowed governed-tools/tool boundaries; stop/escalation/handoff rules; result/proposal surfaces; trace obligations
-
-## Autonomous task candidates and notification/projection mapping
-- <task-candidate-id>: why request-based Agent is insufficient or why no AutonomousAgent is needed; task start/result/read/notification capabilities; owning workstream; dashboard/result surfaces; notification-to-attention rules; audit/work traces; tests
-
-## Workstream expertise plan
-- <functional-agent-id>: prompt intent; workstream skill documents; reference document families; compact manifests; tool boundaries; denied-load behavior; governance owner; seed/import expectations; user-help examples; tests
-
-## Capability and governed-tool inventory
-- <capability-id>/<governed-tool-id> (<class>): actors/callers; AuthContext/scope; inputs/outputs; side effects; idempotency; policy/approval; audit/trace; qualified exposure channels; required tests
-
-## Capability-to-component mapping
-- <capability-id> → <ComponentName / structured surface / exposure channel>: <realization responsibility and preserved capability semantics>
-
-## Chosen components
-- <ComponentType>: <ComponentName> — <purpose>
-
-## Why each component exists
-- <ComponentName>: ...
-
-## Skill routing
-- <skill-name>
-- ...
-
-## Open questions and assumptions
-- question:
-- assumption:
-
-## Recommended implementation order by vertical workstream/attention/dashboard/surface/governed-tool/capability increments
-1. <functional agent> / <attention category> / <role dashboard or surface graph edge> / <surface action or query> / <governed-tool> / <capability> → <components, autonomous task candidate if any, notifications/projections, traces, and tests>
-2. ...
-
-## Required tests
-- <test type> — <component>
-```
-
-If requirements are incomplete, still produce the best provisional plan, but separate assumptions from confirmed facts.
-
-## Open questions to ask when the requirements are underspecified
-
-Ask only the smallest set needed to avoid architectural mistakes:
-- Is this product doing delegated operational work that should be modeled as durable goals/plans rather than CRUD records?
-- What authority is delegated to agents or automation, and what authority remains human-only?
-- Which decisions require approval, escalation, evidence, risk/confidence/impact display, or exception handling?
-- Which policies, permissions, thresholds, prompts, skills, reference documents, or guardrails must be versioned and mechanically enforced?
-- What audit traces and outcome links are required for accountability and learning?
-- Does the business need audit, history, or replay, or is latest state enough?
-- Is there a multi-step process that must survive retries and restarts?
-- Are approvals or human wait states required?
-- Are timeout, reminder, or expiry behaviors required?
-- What list, search, or reporting queries are needed?
-- Which external interfaces are required: HTTP, gRPC, MCP, browser UI?
-- Are live updates needed via SSE, WebSocket, or notifications?
-- Are there downstream integrations via topics or service streams?
-- Are JWT or internal-only ACL constraints required?
-- Is any part of the behavior genuinely LLM-driven?
+Ask only questions that materially block safe component choice or implementation. For generated AI-first SaaS, unresolved current-intent graph ownership, authority boundaries, approval gates, policy/risk thresholds, evidence, trace visibility, supervision UI, model binding, skill/reference governance, tool boundaries, or outcome metrics block only the affected slice.
 
 ## Anti-patterns
 
-Avoid:
-- starting with endpoint code before identifying the write model and process model
-- choosing only one component family because it is familiar
-- adding a workflow for simple one-step entity operations
-- adding an agent for deterministic rules that belong in domain code
-- exposing query-heavy use cases directly from write models when a view is the better fit
-- treating agent tools, MCP tools, endpoint routes, or UI actions as the root backend abstraction instead of selected capability exposure channels
-- performing side effects inside entity command handlers instead of routing through consumers or other supported patterns
-- generating code before listing unresolved assumptions
+- Component-first planning before capabilities and authority.
+- Page-first generated SaaS planning instead of workstream/surface/capability planning.
+- Treating the skills install as app source.
+- Copying curated examples wholesale as a baseline.
+- Marking fixture/demo/model-less runtime behavior as implemented; see `../references/generated-saas-runtime-completion.md`.
+- Adding all Akka component families just because they exist.
+- Asking for Java package selection; use `ai.first`.
 
 ## Final review checklist
 
-Before moving from planning to coding, verify:
-- high-level input was explicitly classified as AI-first-applicable or clearly non-agentic
-- scope label is explicit, and any minimum starter, Module 1-only, or narrower plan lists deferred full-core areas rather than presenting itself as full core
-- minimum-starter plans include the five core workstream starter: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with `markdown_response` surfaces, backend capability boundaries, audit/work trace substrate, starter tests, and follow-up work for full User Admin, Agent Admin, Audit/Trace UI/search, invitations/onboarding, governed agent documents, and full security coverage
-- full-core plans include My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, complete Invitation onboarding, governed runtime agents, workstream UI, and required tests in capability summary, component mapping, implementation order, and test plan
-- delegated work, retained human authority, policy, approval, audit, trace, mandatory UI surfaces, and outcome needs are reflected before CRUD/component decomposition for generated AI-first SaaS
-- generated SaaS plans include the one-workstream vs multi-workstream decision, functional agents, internal agents where needed, durable workstreams, attention categories, role-specific dashboard contracts, human surface graph nodes/edges, surface actions/events, and retained human authority before capability mapping
-- left rail and My Account attention summaries derive from governed backend projections, not frontend-only badge logic
-- internal workstream agent graphs identify virtual dashboard agent responsibilities, worker agents, delegation edges, result/proposal surfaces, and escalation/handoff rules before autonomous task selection
-- durable internal/background model-driven work has been evaluated for Akka `AutonomousAgent` task semantics, with request-based `Agent` retained for immediate user-facing workstream turns
-- workstream expertise planning covers prompt intent, skill/reference families, compact manifests, tool boundaries, authorized loaders, denials, user-help examples, governance, and tests for new or materially changed LLM-backed functional agents
-- notifications are progress signals tied to events/projections/capabilities and are not treated as authority or source of truth
-- governed capabilities and governed-tools were derived from workstream operations, surface graph payload queries/actions, browser-tools, agent-tools, workflow steps, APIs, timers, consumers, autonomous task lifecycle actions, and internal operations before Akka component selection
-- every user-facing capability has actors/callers, AuthContext/scope, schemas, side effects, idempotency, policy/approval, audit/trace, capability exposure channels, and tests, or an explicit open question
-- the core foundation implementation order includes separate managed-agent work for behavior profiles, prompt governance, skill governance/manifests/readSkill, reference governance/manifests/readReferenceDoc, trace records, behavior editing agent proposals, agent governance UI, and tests before app-specific domain features
-- every structured surface action or payload-producing query maps to a capability or an explicit decision not to expose one
-- every user-facing capability maps to at least one concrete component, structured surface, or exposure channel, or an explicit decision not to add one
-- each chosen component has a clear capability responsibility and owning package
-- entity type decisions are justified
-- workflow usage is justified
-- view needs are explicit
-- timer and consumer needs are explicit
-- edge and API exposure channels are explicit
-- required tests are listed for each component family
-- the next skills to load are listed in implementation order
-- the plan preserves capability semantics for downstream implementation tasks instead of stopping at component names
-- open questions and assumptions are called out separately
+Before handoff, verify:
+
+- scope label is explicit;
+- fixed package `ai.first` is recorded;
+- secure SaaS foundation obligations are included or explicitly out of scope;
+- workstreams/surfaces/capabilities precede component choices;
+- every chosen component has a reason and focused skill route;
+- authority, idempotency, side effects, traces, and tests are explicit;
+- open questions are minimal and tied to blocked work;
+- implementation order is vertical and runnable through the intended local Akka/API/UI path.
 
 ## Response style
 
-When answering:
-- start with the generated-app chain when in SaaS scope: functional agents → attention/dashboard → surfaces/actions → capabilities/APIs → Akka substrate → request-based workstream Agents and AutonomousAgent task candidates → notifications/projections/traces
-- include a short capability summary with capability ids and authority/scope highlights
-- then list the proposed Akka components
-- justify each component in one line
-- list the exact next skills to load
-- make the implementation order read like a downstream coding handoff
-- state open questions before coding
-- do not jump into code until the component plan is explicit
+Be decisive and concise. Prefer a concrete component table plus implementation order. If requirements are underspecified, state assumptions and ask the smallest blocking question set rather than producing a speculative design.

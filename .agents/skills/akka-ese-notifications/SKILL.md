@@ -9,22 +9,12 @@ Use this skill when clients need live updates from an event sourced entity.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartEntityTest.java`
 
 ## Core pattern
 
@@ -40,31 +30,26 @@ Read these first if present:
 - Do not rely on notifications for business-critical correctness.
 - Notifications are for live updates, not replay of history.
 
-Repository example:
-- `ShoppingCartEntity.notifications()`
-- `ShoppingCartEntity.persistAndReply(...)`
-- `ShoppingCartEntity.deleteAndReply(...)`
+Current repository note:
+- The SaaS Foundation App example snapshot does not currently include an EventSourcedEntity notification stream. Use the Akka SDK docs as the source of truth and add target-project examples only when a feature needs live ESE updates.
 
 ## Endpoint rules
 
 When exposing notifications over HTTP:
-- use `ComponentClient.notificationStream(...)`
+- subscribe through the typed component client, for example `componentClient.forEventSourcedEntity(id).notificationStream(Entity::notifications).source()`
 - map domain events to API records
 - return SSE via `HttpResponses.serverSentEvents(...)`
 - do not leak internal event types directly outside the service unless explicitly intended
 
-Repository example:
-- `ShoppingCartEndpoint.notifications(...)`
-- `ShoppingCartEndpoint.toNotification(...)`
+Related repository example:
+- `WorkstreamEndpoint.events(...)` demonstrates SSE response mapping for backend-owned workstream events, but it is not an entity `NotificationStream` example.
 
 ## Testing guidance
 
 At minimum, test that published messages happen after successful command handling.
 
-Repository example:
-- `ShoppingCartEntityTest`
-
-This repository uses a stub `NotificationPublisher` to capture published events and assert them.
+Testing note:
+- Add a focused target-project test that captures a stub `NotificationPublisher` and asserts events are published only after successful persistence. The current SaaS Foundation App example snapshot does not include this ESE notification test.
 
 ## Generated SaaS checks
 

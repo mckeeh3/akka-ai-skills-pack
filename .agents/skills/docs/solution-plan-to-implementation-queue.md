@@ -2,7 +2,7 @@
 
 Use this lightweight template after Stage 1 decomposition is accepted.
 
-For durable multi-session execution with task status, use `pending-question-queue.md` for unresolved decisions and `pending-task-queue.md` for implementation work. Materialize them as `specs/pending-questions.md` and `specs/pending-tasks.md`.
+For durable multi-session execution with task status, use `./pending-question-queue.md` for unresolved decisions and `./pending-task-queue.md` for implementation work. Materialize them as `specs/pending-questions.md` and `specs/pending-tasks.md`.
 
 Purpose:
 - turn unresolved design decisions into a durable clarification queue when needed
@@ -26,7 +26,7 @@ That contract should tell the next agent or next phase:
 - which skills to load for each build step
 - which tests and local validation paths prove the increment works
 - which delegated authority, policy/approval, trace, supervision UI, evaluation, and outcome requirements must be carried into each generated SaaS task
-- which workstream expertise requirements each functional-agent task must preserve: expert bundle id, prompt, skills, references, compact manifests, loader tools, tool boundaries, seed/import behavior, governance UI, traces, and tests
+- which workstream expertise requirements each functional-agent task must preserve: expert bundle id, prompt, skills, references, compact manifests, loader tools, tool boundaries, default-content governance, governance UI, traces, and tests
 
 ## Done means working
 
@@ -40,7 +40,7 @@ Take these sections from the solution plan:
 - AI-first interpretation: delegated work, retained authority, durable objects, policy/approval/exception needs, traces, mandatory UI surfaces, and outcomes
 - workstream graph decision: new vs incremental input, affected workstreams, role-specific dashboard attention categories, dashboard trunks, changed surface graph nodes/edges, internal workstream agent graph responsibilities, and reused or changed backlog/task entries
 - functional agents, internal agents, workstream attention categories, dashboard contracts, workstream events, structured surfaces, and surface actions
-- workstream expert bundles for functional agents with LLM behavior: prompt intent, `SkillDocument` and `ReferenceDocument` families, `AgentSkillManifest` and `AgentReferenceManifest`, `ToolPermissionBoundary`, `readSkill`/`readReferenceDoc`, `SkillLoadTrace`/`ReferenceLoadTrace`, seed/import behavior, governance UI, and tests
+- workstream expert bundles for functional agents with LLM behavior: prompt intent, `SkillDocument` and `ReferenceDocument` families, `AgentSkillManifest` and `AgentReferenceManifest`, `ToolPermissionBoundary`, `readSkill`/`readReferenceDoc`, `SkillLoadTrace`/`ReferenceLoadTrace`, default-content governance, governance UI, and tests
 - governed capability and governed-tool inventory: ids/classes, actors/callers, AuthContext/scope, schemas, side effects, idempotency, approval, audit/trace, qualified exposure channels (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP), and tests
 - chosen Akka substrate and frontend/API/realtime outputs
 - AutonomousAgent task candidates for durable internal/background model-driven work, including task lifecycle, result surfaces, notifications, dependencies, failure/cancellation, and authorization/tool-boundary constraints
@@ -119,25 +119,22 @@ Before starting code generation, verify that the solution plan already answers:
 - whether any explicit deferral narrows the feature goal instead of being counted as completed work
 - whether AI-first authority, policy, approval, trace, UI, evaluation, or outcome decisions are represented in the relevant queue items instead of silently dropped
 - whether durable background model-driven work is represented as an AutonomousAgent task candidate when lifecycle, result, notification, dependency, failure/cancellation, or handoff semantics fit
-- whether every new or materially changed functional agent has explicit workstream expertise tasks for prompts, skills, references, manifests, boundaries, loaders, seed/import behavior, UI/governance surfaces, and assigned/denied/boundary/trace tests
+- whether every new or materially changed functional agent has explicit workstream expertise tasks for prompts, skills, references, manifests, boundaries, loaders, default-content governance, UI/governance surfaces, and assigned/denied/boundary/trace tests
 
 ## Related docs
 
-- `pending-question-queue.md`
-- `pending-task-queue.md`
-- `intent-driven-usage-flow.md`
-- `prd-to-akka-flow.md`
-- `module-sprint-planning.md`
-- `examples/requirements-to-workstream-mini-example.md` — preferred generated-SaaS planning shape
-- `examples/purchase-request-solution-plan.md` — conventional solution-plan mechanics only
-- `examples/purchase-request-pending-tasks.md` — conventional queue mechanics only
-- `../skills/README.md`
-- `../skills/akka-solution-decomposition/SKILL.md`
-- `../skills/akka-pending-question-generation/SKILL.md`
-- `../skills/akka-do-next-pending-question/SKILL.md`
-- `../skills/akka-pending-question-queue-maintenance/SKILL.md`
-- `../skills/akka-backlog-to-pending-tasks/SKILL.md`
-- `../skills/akka-change-request-to-spec-update/SKILL.md`
-- `../skills/akka-revised-prd-reconciliation/SKILL.md`
-- `../skills/akka-pending-task-queue-maintenance/SKILL.md`
-- `../skills/akka-do-next-pending-task/SKILL.md`
+- `./pending-question-queue.md`
+- `./pending-task-queue.md`
+- `./intent-compiler.md`
+- `./intent-to-realization-flow.md`
+- `./module-sprint-planning.md`
+- `../README.md`
+- `../akka-solution-decomposition/SKILL.md`
+- `../akka-pending-question-generation/SKILL.md`
+- `../akka-do-next-pending-question/SKILL.md`
+- `../akka-pending-question-queue-maintenance/SKILL.md`
+- `../akka-backlog-to-pending-tasks/SKILL.md`
+- `../akka-change-request-to-spec-update/SKILL.md`
+- `../akka-revised-prd-reconciliation/SKILL.md`
+- `../akka-pending-task-queue-maintenance/SKILL.md`
+- `../akka-do-next-pending-task/SKILL.md`

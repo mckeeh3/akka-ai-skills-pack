@@ -9,23 +9,12 @@ Use this skill when the task involves replicated key value entities or multi-reg
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
-- `../examples/akka-components/src/main/java/com/example/api/PurchaseOrderEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
 
 ## Read patterns
 
@@ -34,8 +23,8 @@ Use:
 - `Effect<T>` for strongly consistent reads that should route to the primary region
 
 Repository example:
-- `PurchaseOrderEntity.getOrder()`
-- `PurchaseOrderEntity.getOrderConsistent()`
+- a domain-specific eventual read method
+- a domain-specific strongly consistent read method
 
 ## Replication filter pattern
 
@@ -46,8 +35,8 @@ When the task explicitly needs replication filtering:
 - reply after the filter update effect
 
 Repository example:
-- `PurchaseOrderEntity.includeRegion(...)`
-- `PurchaseOrderEntity.excludeRegion(...)`
+- a domain-specific replication include-region method
+- a domain-specific replication exclude-region method
 
 ## Endpoint guidance
 
@@ -57,9 +46,9 @@ If exposing replication behavior through HTTP:
 - map outcomes to clear API responses
 
 Repository example:
-- `PurchaseOrderEndpoint.includeRegion(...)`
-- `PurchaseOrderEndpoint.excludeRegion(...)`
-- `PurchaseOrderEndpoint.getOrderConsistent()`
+- a domain-specific admin include-region endpoint method
+- a domain-specific admin exclude-region endpoint method
+- a domain-specific admin strongly consistent read endpoint method
 
 ## Testing guidance
 
@@ -70,8 +59,8 @@ Cover:
 - request validation at endpoint or entity layer as appropriate
 
 Repository examples:
-- `PurchaseOrderEntityTest`
-- `PurchaseOrderEndpointIntegrationTest`
+- a domain-specific key value entity test
+- a domain-specific admin endpoint integration test
 
 ## Generated SaaS checks
 

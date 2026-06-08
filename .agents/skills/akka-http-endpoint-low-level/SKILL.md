@@ -20,8 +20,6 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/main/java/com/example/api/LowLevelHttpEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -41,7 +39,7 @@ Read these first if present:
 
 ## Repository example
 
-- `LowLevelHttpEndpoint`
+- a domain-specific low-level HTTP endpoint
   - lower-level `HttpResponse.create()` response construction
   - manual JSON bytes via `JsonSupport.encodeToAkkaByteString(...)`
   - `HttpEntity.Strict` request handling with content-type validation

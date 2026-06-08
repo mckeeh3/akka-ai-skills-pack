@@ -15,13 +15,6 @@ Read these first if present:
 - `akka-context/sdk/agents/calling.html.md`
 - `akka-context/sdk/agents/orchestrating.html.md`
 - `akka-context/sdk/workflows.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/AgentTeamWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/DynamicAgentTeamWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/SelectorAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/PlannerAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/SummarizerAgent.java`
-- `../examples/akka-components/src/test/java/com/example/application/AgentTeamWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DynamicAgentTeamWorkflowIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -48,11 +41,11 @@ Before choosing workflow-supervised orchestration, apply the one-agent vs agent-
 
 ## Repository example
 
-- `AgentTeamWorkflow`
+- a domain-specific agent-team workflow
   - predefined two-agent workflow
   - workflow id is reused as the shared session id
-  - workflow state stores intermediate weather context and final answer
-- `DynamicAgentTeamWorkflow`
+  - workflow state stores intermediate evidence context and final answer
+- a domain-specific agent-team workflow
   - selector/planner/summarizer orchestration
   - uses `dynamicCall(agentId)` for worker-agent execution
   - summarizes accumulated worker responses into a final answer

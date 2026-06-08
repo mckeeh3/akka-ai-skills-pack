@@ -12,7 +12,7 @@ For broad product, PRD, feature, or UI/API requests, route through `capability-f
 ## Goal
 
 Generate or review HTTP endpoint code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about public API request and response shapes
 - safe at the edge with clear validation and HTTP error mapping
 - easy for AI agents to extend without reading unrelated files
@@ -51,35 +51,6 @@ Read these first if present:
 - existing project endpoints under `src/main/java/**/api/*Endpoint.java`
 - matching endpoint tests under `src/test/java/**`
 
-In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/api/GreetingEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/LowLevelHttpEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ProxyGreetingEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/DraftCartViewStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/RequestHeadersEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/SecureGreetingEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/InternalStatusEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/OrderEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/PurchaseOrderEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/RequestHeadersEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/InternalStatusEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
-
 ## Companion skills
 
 Load the companion skill that matches the current task:
@@ -113,10 +84,12 @@ Use this top-level skill plus the official docs when those are the main concern.
 
 ## Default package layout
 
-Use:
-- `com.<org>.<app>.domain`
-- `com.<org>.<app>.application`
-- `com.<org>.<app>.api`
+Use the fixed Java base package `ai.first` for this SaaS Foundation App repository and downstream generated code. Keep package declarations, imports, tests, and source paths under `ai.first`; do not infer package names from examples.
+
+Typical layer paths are:
+- `<base>.domain`
+- `<base>.application`
+- `<base>.api`
 
 Rules:
 - HTTP endpoints belong in `api`
@@ -150,62 +123,61 @@ Choose one of these modes before coding:
 Use when the endpoint mainly maps HTTP requests to API responses and does not need component calls.
 
 Repository example:
-- `GreetingEndpoint`
+- current snapshot examples: `MeEndpoint`, `WorkstreamEndpoint`, or `AdminEndpoint` as applicable
 
 ### 2. Component-calling endpoint
 Use when the endpoint translates HTTP requests into entity or view calls and maps replies into API types.
 
 Repository examples:
-- `ShoppingCartEndpoint`
-- `DraftCartEndpoint`
-- `OrderEndpoint`
-- `PurchaseOrderEndpoint`
+- `WorkstreamEndpoint`
+- `MeEndpoint`
+- `AdminEndpoint`
+- a domain-specific admin endpoint
 
 ### 3. Request-context endpoint
 Use when endpoint logic depends on query parameters, request headers, JWT claims, or SSE reconnect metadata.
 
 Repository examples:
-- `GreetingEndpoint`
-- `RequestHeadersEndpoint`
+- current snapshot examples: `MeEndpoint`, `WorkstreamEndpoint`, or `AdminEndpoint` as applicable
+- a domain-specific request-context endpoint (or `MeEndpoint` for auth context)
 
 ### 4. Low-level HTTP endpoint
 Use when the endpoint needs `HttpResponse`, `HttpEntity.Strict`, or other lower-level HTTP model control.
 
 Repository example:
-- `LowLevelHttpEndpoint`
+- a domain-specific low-level HTTP endpoint
 
 ### 5. HTTP client provider endpoint
 Use when the endpoint delegates to another HTTP service through `HttpClientProvider`.
 
 Repository example:
-- `ProxyGreetingEndpoint`
+- a domain-specific HTTP-client endpoint (no current snapshot example)
 
 ### 6. SSE endpoint
 Use when the endpoint must stream a sequence of updates and optionally resume from the last seen event id.
 
 Repository examples:
-- `CounterStreamEndpoint`
-- `DraftCartViewStreamEndpoint`
-- `ShoppingCartEndpoint#notifications`
-- `DraftCartEndpoint#notifications`
+- a domain-specific SSE endpoint
+- a domain-specific workstream log stream endpoint
+- `WorkstreamEndpoint#events`
 
 ### 7. WebSocket endpoint
 Use when the endpoint must support bidirectional streaming over a socket.
 
 Repository example:
-- `PingWebSocketEndpoint`
+- a domain-specific WebSocket endpoint
 
 ### 8. JWT-secured endpoint
 Use when the endpoint requires bearer token validation and claim-aware behavior. This is the default for generated SaaS browser APIs under `/api/...`; pair JWT validation with local `/api/me`/membership authorization instead of treating token presence as permission.
 
 Repository example:
-- `SecureGreetingEndpoint`
+- JWT-secured generated-SaaS API endpoints such as `MeEndpoint` and protected `/api/...` routes
 
 ### 9. Internal-only ACL endpoint
 Use when the endpoint should be callable only by other services or needs class-level ACL defaults with method-level overrides.
 
 Repository example:
-- `InternalStatusEndpoint`
+- a domain-specific internal-only status endpoint
 
 ## Final review checklist
 

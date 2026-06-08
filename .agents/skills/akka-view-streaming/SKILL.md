@@ -13,11 +13,6 @@ Capability-first framing: a streaming View query is a live read/evidence capabil
 
 Read these first if present:
 - `akka-context/sdk/views.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartAuditView.java`
-- `../examples/akka-components/src/main/java/com/example/api/DraftCartViewStreamEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Two streaming modes
@@ -26,14 +21,14 @@ Read these first if present:
 Use `QueryStreamEffect<T>` plus `queryStreamResult()`.
 
 Repository example:
-- `ShoppingCartAuditView#streamByDeleted`
+- `AdminAuditView#streamByDeleted`
 
 ### 2. Stream current result and later updates
 Use `@Query(..., streamUpdates = true)` plus `QueryStreamEffect<T>` and `queryStreamResult()`.
 
 Repository examples:
-- `DraftCartsByCheckedOutView#continuousCarts`
-- `DraftCartViewStreamEndpoint`
+- `UserDirectoryView#continuousRows`
+- a domain-specific workstream log stream endpoint
 
 ## Core rules
 
@@ -54,7 +49,7 @@ Use a dedicated live-update query without `ORDER BY` for SSE endpoints:
 
 ```sql
 SELECT *
-FROM draft_carts_by_checked_out
+FROM workstream_logs_by_checked_out
 WHERE checkedOut = :checkedOut
 ```
 

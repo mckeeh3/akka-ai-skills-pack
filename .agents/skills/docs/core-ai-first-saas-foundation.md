@@ -3,8 +3,8 @@
 Use this document set when designing or implementing the common backend foundation for generated AI-first SaaS applications. These features are product-agnostic: they exist before the app-specific business domain is added.
 
 Companion docs:
-- `core-saas-identity-tenancy-admin.md` — actors, tenant/customer organization model, WorkOS identity, account administration, data isolation, support-access pattern.
-- `core-saas-owner-tenant-billing.md` — SaaS Owner to Tenant subscription management and billing boundaries.
+- `./core-saas-identity-tenancy-admin.md` — actors, tenant/customer organization model, WorkOS identity, account administration, data isolation, support-access pattern.
+- `./core-saas-owner-tenant-billing.md` — SaaS Owner to Tenant subscription management and billing boundaries.
 
 ## Canonical vocabulary
 
@@ -12,7 +12,7 @@ Companion docs:
 |---|---|
 | SaaS Owner | The platform operator that sells and operates the SaaS product. |
 | Tenant | The SaaS user organization that subscribes to the platform and uses it to serve its own customers. This is the canonical internal/architectural term for “SaaS user.” |
-| Customer | An organization served by a Tenant through app-specific online services. Customers always start as organizations in the seed model. |
+| Customer | An organization served by a Tenant through app-specific online services. Customers always start as organizations in the SaaS Foundation App model. |
 | Account | A local Akka-owned authorization record linked to a WorkOS-authenticated human identity. |
 | User Profile | Human-facing account information and scoped profile attributes shown in the application, separate from authentication and authorization facts. |
 | User Settings | User-controlled preferences that affect application experience, such as UI appearance, without changing authorization. |
@@ -73,14 +73,14 @@ The same human/email may have separate local accounts or memberships at multiple
 
 ## AI-first expectations for the core foundation
 
-The seed foundation should validate the broader AI-first architecture by using core administrative work as real AI-first product behavior, not only as CRUD.
+The SaaS Foundation App should validate the broader AI-first architecture by using core administrative work as real AI-first product behavior, not only as CRUD.
 
 Core AI-first features must include:
 
 - durable audit traces for identity, role, scope, tenant, customer, and billing administration;
 - policy-controlled administrative actions, such as role assignment, tenant suspension, and billing-plan changes, using the canonical foundation roles `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR` as the baseline;
 - mandatory governed runtime agent foundation: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace` for all foundation agents;
-- mandatory implementation-developed default agent behavior seed bundle loaded on first install or tenant bootstrap into governed storage as initial approved/active `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, and `ToolPermissionBoundary` records, with checksums, provenance, idempotency, audit, and upgrade behavior that preserves tenant customizations;
+- mandatory implementation-developed default agent behavior records created through governed setup on first install or tenant bootstrap as initial approved/active `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, and `ToolPermissionBoundary` records, with checksums, provenance, idempotency, audit, and upgrade behavior that preserves tenant customizations;
 - mandatory AI-assisted admin offload responsibilities: access review, admin risk scoring, invitation drafting, role recommendations, support-access review, admin audit summaries, and policy proposal drafting when the product allows policy/permission/threshold proposals; implement bounded user-facing explanations and immediate workstream turns through request-based agents, and implement durable internal/background offload such as access-review investigations, risk-review batches, audit-summary generation, evaluation/replay loops, monitoring/remediation, and specialist follow-up as Akka `AutonomousAgent` tasks when typed lifecycle, dependencies, notifications, or model-driven iteration are needed; keep either one governed `UserAdminAgent` with focused skills in its `AgentSkillManifest` or specialized governed agent responsibilities such as AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and AdminPolicyProposalAgent;
 - decision cards for risky or high-impact administration changes;
 - anomaly and risk signals for suspicious account, access, or billing events;
@@ -107,30 +107,30 @@ Example AI-first core scenarios:
 | Invitations and onboarding | Workflow for mandatory email invite delivery, token/acceptance context, link/activate, resend, revoke/cancel, expiry, idempotency, and multi-step onboarding. |
 | Access review and support-access expiry | Timed Actions plus Views and Consumers. |
 | Administrative dashboards | Views for scoped lists, queues, tenant health, subscription state, and audit search. |
-| AI recommendations and summaries | Mandatory admin offload responsibilities managed through active governed managed-agent `AgentDefinition` records, governed prompt/skill versions, per-agent `AgentSkillManifest` compact entries, `ToolPermissionBoundary`, authorized Akka `@FunctionTool` `readSkill(skillId)`, and read-only access unless explicitly approved. Use request-based Akka `Agent` for bounded user-facing workstream turns and one-shot summaries; use Akka `AutonomousAgent` for durable internal/background reviews, evaluation/replay loops, monitoring/remediation, specialist investigations, task dependencies, notification-backed progress, delegation, or handoff. A single `UserAdminAgent` may carry multiple approved admin skills; `AgentAdminAgent` and other managed agents have their own distinct manifests; separate specialized agents remain available when useful. Default foundation prompts, skills, manifests, tool boundaries, and agent definitions are packaged as starter resources and imported into governed storage during install/tenant bootstrap. Qualify Akka autonomous `AgentDefinition` separately from governed managed-agent `AgentDefinition` when both are in scope. |
+| AI recommendations and summaries | Mandatory admin offload responsibilities managed through active governed managed-agent `AgentDefinition` records, governed prompt/skill versions, per-agent `AgentSkillManifest` compact entries, `ToolPermissionBoundary`, authorized Akka `@FunctionTool` `readSkill(skillId)`, and read-only access unless explicitly approved. Use request-based Akka `Agent` for bounded user-facing workstream turns and one-shot summaries; use Akka `AutonomousAgent` for durable internal/background reviews, evaluation/replay loops, monitoring/remediation, specialist investigations, task dependencies, notification-backed progress, delegation, or handoff. A single `UserAdminAgent` may carry multiple approved admin skills; `AgentAdminAgent` and other managed agents have their own distinct manifests; separate specialized agents remain available when useful. Default foundation prompts, skills, manifests, tool boundaries, and agent definitions are created as governed records during install/tenant bootstrap. Qualify Akka autonomous `AgentDefinition` separately from governed managed-agent `AgentDefinition` when both are in scope. |
 | Policy gates and approvals | Workflows plus decision-card records and audit events. |
 | Browser APIs | JWT-protected HTTP endpoints using WorkOS authentication and Akka-owned authorization state. |
 
-## Initial implementation slices
+## Initial implementation and extension slices
 
-### Slice 0: minimum starter
+### SaaS Foundation App domain
 
-Use Slice 0 only when the requested target is the smallest valid generated AI-first SaaS app, starter app, or chatbot-like bootstrap shell. Slice 0 is the **five core workstream starter** defined in `minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with `markdown_response` surfaces. It is not full-core readiness, a User-Admin-only slice, or a generic public chatbot.
+Use the SaaS Foundation App domain when the requested target is the repository's out-of-the-box foundation app, a starter/basic generated SaaS app, or a chatbot-like bootstrap shell. The domain is defined in `./minimum-ai-first-saas-app.md`: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. It is not a User-Admin-only slice, a generic public chatbot, or a separate parallel baseline app.
 
-Slice 0 must include all of these together:
+The SaaS Foundation App domain must include all of these together:
 
 - bootstrap-authorized human user only; no public self-registration and no prompt- or UI-only privilege grant;
 - selected local `AuthContext` containing account/user identity, bootstrap scope, roles/capabilities, tenant/customer boundary when applicable, and actor metadata;
 - role/capability checks for protected workstream, surface, API, component, and agent-tool actions;
-- bounded core functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy that answer and guide within established bootstrap scope, deny or defer unsupported full-core actions, and never expand privileges autonomously;
+- bounded core functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy that answer and guide within established bootstrap scope, deny or defer unsupported SaaS Foundation App actions, and never expand privileges autonomously;
 - durable workstream log for requests, `markdown_response` entries, capability/tool results, denials, correlation ids, and trace references;
 - audit/work trace substrate for identity, authorization, prompt/skill/tool use, capability checks, data access, denials, and response generation;
 - capability-first backend contracts before exposing browser actions, agent tools, workflows, timers, consumers, or APIs;
 - tests for allowed bootstrap access, forbidden access, missing/disabled authority where modeled, trace creation, markdown sanitization, and frontend secret boundaries.
 
-Slice 0 must create explicit follow-up work for full-core readiness: WorkOS/AuthKit completion, `/api/me`, invitations/onboarding, Resend/outbox email delivery, full User Admin, Agent Admin and governed agent documents, Audit/Trace search UI, support access, subscription/billing boundary where relevant, and full tenant-isolation/security coverage.
+Any intentionally deferred foundation-domain behavior must become explicit follow-up work, such as WorkOS/AuthKit completion, `/api/me`, invitations/onboarding, Resend/outbox email delivery, User Admin depth, Agent Admin governed documents, Audit/Trace search UI, support access, subscription/billing boundary where relevant, or tenant-isolation/security coverage.
 
-### Full-core foundation slices
+### SaaS Foundation App foundation slices
 
 1. WorkOS-backed `/api/me` account bootstrap, membership selection, base profile, and base user settings.
 2. Mandatory invitation lifecycle: `Invitation` record, invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, audit trail, and idempotent duplicate handling.
@@ -139,8 +139,8 @@ Slice 0 must create explicit follow-up work for full-core readiness: WorkOS/Auth
 5. Tenant Admin employee invitation and role management.
 6. Tenant Admin customer organization creation and Customer Admin invitation.
 7. Customer Admin customer user invitation and role management.
-8. User profile and settings APIs, starting with editable display profile fields and UI light/dark appearance.
+8. User profile and settings APIs, starting with editable display profile fields and named UI theme preferences. Themes are named color-token bundles, not dark/light/system modes.
 9. SaaS Owner to Tenant subscription creation, plan assignment, status changes, and billing audit.
 10. Cross-scope audit trace and access review views.
-11. Governed runtime agent foundation: `AgentDefinition` lifecycle/profile state, governed `PromptDocument`/`PromptVersion`, governed `SkillDocument`/`SkillVersion`, per-agent `AgentSkillManifest` with compact skill ids/names/descriptions/when-to-use hints, `ToolPermissionBoundary`, deterministic prompt assembly, authorized Akka `@FunctionTool` `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`, plus first-install/tenant-bootstrap import of implementation-developed default agent behavior seed documents into governed storage.
+11. Governed runtime agent foundation: `AgentDefinition` lifecycle/profile state, governed `PromptDocument`/`PromptVersion`, governed `SkillDocument`/`SkillVersion`, per-agent `AgentSkillManifest` with compact skill ids/names/descriptions/when-to-use hints, `ToolPermissionBoundary`, deterministic prompt assembly, authorized Akka `@FunctionTool` `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`, plus first-install/tenant-bootstrap governed setup of implementation-developed default agent behavior documents.
 12. AI-assisted admin offload: either one governed `UserAdminAgent` with `AgentSkillManifest` skills for access review, admin risk scoring, invitation drafting, role recommendation, support-access review, audit summary, and optional policy proposal drafting, or separate specialized agents such as AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, and AdminPolicyProposalAgent when useful; route risky role, support-access, tenant suspension, bulk, identity relink, and billing changes to decision cards.

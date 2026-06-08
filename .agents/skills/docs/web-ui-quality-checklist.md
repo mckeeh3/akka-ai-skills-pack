@@ -2,7 +2,7 @@
 
 Use this checklist before completing any non-trivial Akka-hosted browser UI.
 
-For generated AI-first SaaS work in this source repository and downstream forks, compare end-to-end behavior against the runnable core app repository root, then compare UI architecture against `docs/workstream-ui-reference-architecture.md` and the reusable React/Vite reference under root `frontend/src/workstream/**`. The harness install includes pack examples under `.agents/skills/examples/**`, but application code belongs in the target project and root frontend source is not exported into `.agents`. The User Admin vertical contract test (`frontend/src/workstream-user-admin-vertical.contract.test.mjs`) is the canonical foundation-admin UI pattern. Legacy `frontend/src/screens/**` and standalone static examples are not canonical generated-app structure.
+For generated AI-first SaaS work in this source repository and downstream forks, compare end-to-end behavior against the runnable SaaS Foundation App repository root, then compare UI architecture against `./workstream-ui-reference-architecture.md` and the reusable React/Vite reference under root `frontend/src/workstream/**`. The harness install includes pack examples under `.agents/skills/examples/**`, but application code belongs in the target project and root frontend source is not exported into `.agents`. The User Admin vertical contract test (`frontend/src/workstream-user-admin-vertical.contract.test.mjs`) is the canonical foundation-admin UI pattern. Legacy `frontend/src/screens/**` and removed standalone static UI fixtures are not canonical generated-app structure.
 
 ## UX completeness
 
@@ -28,7 +28,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 
 ## API contracts
 
-- [ ] Structured surfaces, when used, have explicit payload, action, event, auth, trace/audit, and rendering-test contracts per `structured-surface-contracts.md`.
+- [ ] Structured surfaces, when used, have explicit payload, action, event, auth, trace/audit, and rendering-test contracts per `./structured-surface-contracts.md`.
 - [ ] Every surface action maps to a governed backend capability, including read/query and surface-request actions; frontend visibility, disabled controls, prompt text, and route names are not treated as authorization.
 - [ ] Browser-facing DTOs are intentional and not accidental domain leaks.
 - [ ] API routes use clear `/api/...` paths.
@@ -60,21 +60,26 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 
 - [ ] A selected style guide is recorded in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent authoritative UI spec.
 - [ ] The authored stylesheet or component styling implements the selected AI-first style guide through CSS variables/tokens or project-standard styling configuration rather than scattered hard-coded values.
-- [ ] The user-facing theme preference is named-theme based; available themes, default theme, and persistence scope are recorded.
-- [ ] At least four initial named themes are present or explicitly required for generated AI-first SaaS: two light and two dark.
-- [ ] My Account theme selection, when in scope, lets the user choose one available named theme, previews the selected named theme immediately on field change, and persists only through the governed save/confirm settings path.
+- [ ] Canonical-style UI was compared against `skills-pack/docs/web-ui-component-catalog.md`, `skills-pack/examples/web-ui/ai-first-workstream-enterprise/component-catalog.html`, and the broader reference mockups or installed equivalents for anatomy, hierarchy, token roles, and component craft without copying demo content.
+- [ ] The user-facing theme preference is named-theme based; available themes, default theme, tone metadata for contrast testing only, and persistence scope are recorded.
+- [ ] Initial named themes are present or explicitly required for generated AI-first SaaS, with multiple named color-token bundles spanning both light-toned and dark-toned options for contrast coverage.
+- [ ] My Account theme selection, when in scope, lets the user choose one available named theme, previews the selected named theme immediately on field change, and persists only through the governed save/confirm settings path; it does not present dark/light/system mode choices.
 - [ ] Brand adaptations are applied without copying demo names, logos, users, or metrics from reference images.
-- [ ] Status colors, chart colors, shadows, spacing, radius, and component density match the selected style guide closely enough to guide future regeneration.
+- [ ] Status colors, chart colors, shadows, spacing, radius, and component density match the selected style guide closely enough to guide future regeneration; switching themes changes color tokens only, not layout, design language, surface anatomy, spacing, or behavior.
+- [ ] Dashboard attention/KPI cards use the shared attention-card style across all dashboards, have readable semibold/bold labels, strong numeric hierarchy, enough vertical spacing between label, number, and badge/status text, and appear above lower-priority dashboard details/lists.
 
 ## Visual craft
 
 - [ ] The UI has an intentional aesthetic direction recorded in the style guide rather than improvised generic SaaS styling.
-- [ ] Typography, spacing, and density make the shell and structured surfaces feel production-grade and readable.
+- [ ] The style guide records a memorable motif and differentiation target, such as authority rails, trace-lit timelines, dense command panels, decision-card priority, or another product-appropriate craft detail.
+- [ ] Typography, spacing, and density make the shell and structured surfaces feel production-grade, readable, and intentionally designed rather than generic/default; dashboard labels and metric text are not too small or too light for fast scanning.
+- [ ] Color, borders, shadows, texture, and depth clarify hierarchy instead of decorating equally weighted cards.
 - [ ] Human-needed work, policy-blocked work, autonomous progress, trace/history, and FYI activity have distinct hierarchy without relying on color alone.
 - [ ] Decision cards, structured-surface forms, audit timelines, governance diffs, denials, empty states, and errors feel deliberately designed, not default or placeholder.
-- [ ] Motion and transitions clarify state changes and respect reduced-motion preferences.
+- [ ] Motion and transitions clarify state changes and respect reduced-motion preferences; animation is purposeful rather than scattered decoration.
 - [ ] Cosmetic effects such as gradients, grain, glow, shadows, or patterns preserve contrast, focus visibility, and surface readability.
 - [ ] Visual changes do not alter functional agents, workstreams, surface contracts, capability mappings, authorization, API behavior, tests, or readiness claims.
+- [ ] The UI avoids generic AI/SaaS cliches such as purple-gradient-on-white defaults, browser-native controls, timid evenly spread accents, and undifferentiated card grids.
 
 ## Accessibility
 
@@ -123,4 +128,5 @@ For generated SaaS applications, the browser UI inherits the mandatory secure fo
 - [ ] Tests assert route references for API/SSE/WebSocket dependencies without promoting page routes as the primary app model.
 - [ ] Workstream contract tests cover shell, rail, composer, structured surfaces, capability actions, deep links, forbidden/disabled states, stale/realtime behavior, and the User Admin reference vertical where foundation admin UI is in scope.
 - [ ] UX review notes or tests cover key loading, empty, error, validation, success states, structured-surface form control styling, and immediate named-theme preview when those surfaces are in scope.
+- [ ] Optional source drift check has been run when practical: `skills-pack/tools/validate-web-ui-style-contract.py --warn-only .` from the target project root, with warnings reconciled or documented.
 - [ ] Backend tests pass for changed endpoint/component behavior.

@@ -3,8 +3,8 @@
 Use this doc to model the product-agnostic billing foundation for AI-first SaaS applications.
 
 Related docs:
-- `core-ai-first-saas-foundation.md`
-- `core-saas-identity-tenancy-admin.md`
+- `./core-ai-first-saas-foundation.md`
+- `./core-saas-identity-tenancy-admin.md`
 
 ## Scope
 
@@ -86,7 +86,7 @@ Recommended fields:
 
 ### Invoice / Payment Reference
 
-The core app may store provider references and summary status, while the payment provider remains the financial system of record.
+The SaaS Foundation App may store provider references and summary status, while the payment provider remains the financial system of record.
 
 Recommended fields:
 - `invoiceId`

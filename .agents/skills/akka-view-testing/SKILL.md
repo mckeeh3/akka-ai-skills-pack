@@ -11,20 +11,12 @@ For capability-first read/evidence capabilities, test the View projection and th
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS view test work, write tests only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- consuming functional agent, structured surface/query action, API/tool/resource exposure, or explicit internal read use;
-- governed read/evidence capability id/class, source component/event/topic, query contract, and selected exposure path;
-- `AuthContext`, tenant/customer scope, roles/capabilities, row-level filters, redaction, forbidden behavior, and data-access trace obligations;
-- source fixtures, query DTOs, pagination/sorting/streaming behavior, audit/work trace assertions, and rendering/API/tool parity tests when exposed.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of testing only projection mechanics.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/views.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Test kit rules
@@ -58,30 +50,18 @@ For each reusable view example, cover at least:
 
 ## Repository examples
 
-### Event sourced view tests
-- `ShoppingCartsByCheckedOutViewIntegrationTest`
-  - publishes shopping cart events
-  - queries checked-out carts
-  - verifies delete event removes the row
-- `ShoppingCartAuditViewIntegrationTest`
-  - verifies logical delete event handling
-  - verifies `QueryStreamEffect` collection for current rows
+### Current curated view references
+- `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserDirectoryView.java`
+  - user directory projection/query shape
+  - pair with target-project view integration tests for mocked updates and eventual consistency
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/audit/AdminAuditView.java`
+  - audit query/read-model shape
+  - pair with target-project tests for stream/delete/query behavior
 
-### Key value view tests
-- `DraftCartsByCheckedOutViewIntegrationTest`
-  - publishes draft cart state snapshots
-  - queries checked-out carts
-  - verifies paginated response mapping
-- `DraftCartLifecycleViewIntegrationTest`
-  - verifies logical delete via `@DeleteHandler`
-
-### Workflow view test
-- `ReviewRequestsByStatusViewIntegrationTest`
-  - publishes workflow state snapshots
-  - queries workflow-derived rows
+The current curated tree does not include standalone `*ViewIntegrationTest` classes. Treat event-sourced, key-value, and workflow view test bullets above as target-project test shapes, not repository class names.
 
 ### Topic view test
-- `ShoppingCartTopicViewIntegrationTest`
+- target-project topic view integration test; the current curated tree does not include a standalone topic-view test class
   - publishes topic messages with `ce-subject` metadata
   - verifies ignored and deleted message behavior
 

@@ -9,13 +9,7 @@ Use this skill when the task is mainly about the workflow class itself.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS workflow work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- initiating functional agent, structured surface action/workstream event, or explicit internal trigger;
-- governed workflow capability id/class, workflow id/idempotency strategy, selected start/advance exposure, and downstream substrates;
-- `AuthContext`, tenant/customer scope, roles/capabilities, system principal for internal steps, approval/supervision authority, and forbidden behavior;
-- command/state DTOs, redaction, side effects, compensation/no-op rules, policy/approval/escalation, audit/work trace fields, notification events, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of modeling steps from process mechanics alone.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
@@ -23,12 +17,6 @@ Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
 - `../docs/timer-pattern-selection.md`
-- `../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/domain/TransferState.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ApprovalState.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ApprovalDeadlineState.java`
 
 ## Capability-first pattern
 
@@ -46,13 +34,13 @@ Workflow command handlers are capability entry/advance points. They should valid
 6. Use step input records when a later step needs durable input.
 7. Add a read-only command handler when callers need the current workflow state.
 
-## Repository examples
+## Pattern references
 
-- `TransferWorkflow`
+- a domain-specific workflow
   - start command updates state and transitions to a withdraw step
   - step-specific recovery overrides the default strategy
   - state keeps stable command ids for replay-safe downstream calls
-- `ApprovalWorkflow`
+- a domain-specific approval workflow
   - start command transitions to a pause step
   - read handler exposes current approval state
 - `ApprovalDeadlineWorkflow`

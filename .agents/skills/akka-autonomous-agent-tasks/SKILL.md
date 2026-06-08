@@ -13,7 +13,7 @@ Read before defining generated-app worker task contracts:
 - `../docs/autonomous-agent-worker-runtime-pattern.md`
 
 Read when API details are needed:
-- `../../../specs/autonomous-agents-integration/research-notes.md`
+- `../docs/autonomous-agents-api-notes.md`
 - `akka-context/sdk/autonomous-agents/tasks.html.md`
 - `akka-context/sdk/autonomous-agents/client.html.md`
 - `akka-context/sdk/autonomous-agents/notifications.html.md`
@@ -74,13 +74,13 @@ Task operations:
 
 ## Generated SaaS guardrails
 
-For worker-style generated-app tasks, apply `../docs/autonomous-agent-worker-runtime-pattern.md` before coding the task contract. Every task operation exposed through HTTP, UI, workflow, tool, timer, consumer, or MCP is a governed capability. Preserve:
+For worker-style generated-app tasks, apply `../docs/autonomous-agent-worker-runtime-pattern.md` before coding the task contract. Use the curated User Admin examples for concrete task shape and runtime boundaries: `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewTasks.java`, `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/AccessReviewAutonomousAgentResultRule.java`, `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/ComponentClientAccessReviewAutonomousAgentRuntime.java`, and `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/FailClosedAccessReviewAutonomousAgentRuntime.java`. Every task operation exposed through HTTP, UI, workflow, tool, timer, consumer, or MCP is a governed capability. Preserve:
 - tenant/customer-scoped task ids and agent instance ids;
 - `AuthContext`, caller permission/capability, and active membership checks;
 - model policy and provider-secret boundaries;
 - approval gates for external completion/failure, high-risk handoff, or side effects;
 - audit/work traces for task creation, assignment, completion, failure, cancellation, dependency waits, and notification exposure;
-- v3 `worker.task.*` events, attention state, and structured backend-projected surfaces for visible worker progress/results;
+- typed `worker.task.*` workstream events, attention state, and structured backend-projected surfaces for visible worker progress/results;
 - provider/runtime fail-closed states and no fake success or model-less successful findings.
 
 ## Review checklist

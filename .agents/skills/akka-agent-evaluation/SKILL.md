@@ -12,20 +12,13 @@ Use `akka-agent-closed-loop-improvement` when evaluation results should become g
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS agent work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- placement as a user-facing functional agent or a bounded internal agent, including owning workstream and structured surface placement when user-facing;
-- capability id/class for each model request, tool call, output, workflow step, endpoint, or evaluation result;
-- caller `AuthContext`, tenant/customer scope, roles/capabilities, allowed data/tools, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work trace fields, correlation ids, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing from prompt, memory, streaming, guardrail, or test mechanics.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/agents/llm_eval.html.md`
 - `akka-context/sdk/agents/memory.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ActivityAnswerEvaluatorAgent.java`
 
 ## Use this pattern when
 
@@ -43,12 +36,12 @@ Read these first if present:
 4. Keep the model reply structured and map it into the final evaluation result.
 5. Validate labels before translating them into pass/fail.
 
-## Repository example
+## Pattern to implement
 
-- `ActivityAnswerEvaluatorAgent`
-  - structured model result
-  - label validation
-  - mapping into `EvaluationResult`
+Create or select a domain-specific evaluator `Agent` that demonstrates:
+- structured model result
+- label validation
+- mapping into `EvaluationResult`
 
 ## Closed-loop routing
 

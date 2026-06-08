@@ -28,7 +28,7 @@ This file belongs in the target project workspace, not inside the installed `.ag
 4. For AI-first scope, add questions when work would otherwise guess delegated authority, human-only decisions, approval gates, policy/risk thresholds, evidence requirements, trace retention/visibility, supervision UI mode, evaluation/replay approach, or outcome metrics.
 5. For generated full-stack AI-first SaaS, add focused blocking questions when implementation or task generation would otherwise guess affected workstream boundaries, role-specific dashboard purpose, attention item lifecycle, human surface graph nodes/edges, surface action authority, internal workstream agent graph delegation/result handling, governed-tool identity/exposure, or workstream expertise ownership.
 6. For generated full-stack AI-first SaaS, add focused blocking questions when LLM-backed workstream-agent work would otherwise guess the workstream expert bundle: model binding, prompt/skill/reference ownership, compact expertise manifests, `readSkill`/`readReferenceDoc` loader authority, `ToolPermissionBoundary`, load traces, surfaces, or tests.
-7. For generated full-stack AI-first SaaS, if no style guide is selected, add a `category: ui` style-selection question using `docs/web-ui-style-guide.md`; it should block web UI implementation/generation work until answered.
+7. For generated full-stack AI-first SaaS, if no style guide is selected, add a `category: ui` style-selection question using `./web-ui-style-guide.md`; it should block web UI implementation/generation work until answered.
 8. Do not create implementation tasks for work blocked by unresolved `blocking` questions.
 9. A user answer moves a question to `answered`; the question becomes `resolved` only after affected artifacts are updated.
 10. Defer questions only when the plan can safely proceed without that answer.
@@ -169,10 +169,11 @@ To continue, ask:
 
 ## Related skills and docs
 
-- `web-ui-style-guide.md`
-- `../skills/akka-pending-question-generation/SKILL.md`
-- `../skills/akka-do-next-pending-question/SKILL.md`
-- `../skills/akka-pending-question-queue-maintenance/SKILL.md`
-- `pending-task-queue.md`
-- `solution-plan-to-implementation-queue.md`
-- `intent-driven-usage-flow.md`
+- `./web-ui-style-guide.md`
+- `../akka-pending-question-generation/SKILL.md`
+- `../akka-do-next-pending-question/SKILL.md`
+- `../akka-pending-question-queue-maintenance/SKILL.md`
+- `./pending-task-queue.md`
+- `./solution-plan-to-implementation-queue.md`
+- `./intent-compiler.md`
+- `./incremental-intent-processing.md`

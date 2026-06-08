@@ -1,13 +1,13 @@
 ---
 name: app-description-behavior-specification
-description: Update the authoritative app-description behavior layer from flexible user input by capturing capabilities, rules, invariants, state transitions, edge cases, and forbidden behavior without generating code.
+description: Update authoritative workstream behavior nodes in the app-description current-intent graph from flexible user input by capturing capabilities, rules, invariants, state transitions, edge cases, and forbidden behavior without generating code.
 ---
 
 # App Description Behavior Specification
 
 Use this skill when the user is defining or revising what the application should do.
 
-This skill maintains the **behavior layer** of the internal application description.
+This skill maintains `domains/<domain>/workstreams/<workstream>/behavior.md` and related domain/workstream behavior nodes in the current-intent graph.
 It does not generate code.
 It turns input into authoritative behavioral meaning that downstream generation can later realize.
 
@@ -26,13 +26,15 @@ Create or update behavior-oriented app-description artifacts that:
 ## Required reading
 
 Read these first if present:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
-- `../docs/description-first-application-doctrine.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-description-skill-output-contracts.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/capability-first-backend-architecture.md` for preserving capability contracts when behavior changes alter authority, side effects, idempotency, approval, audit, or exposure
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
 - `../app-description-intake-router/SKILL.md`
 
 ## Use this skill when
@@ -71,7 +73,7 @@ The job of this skill is to define:
 
 It should avoid prematurely locking in code structure unless the behavior itself requires a structural distinction.
 
-Behavior specs do not own capability boundaries. If a behavior change adds or changes actors/callers, AuthContext, inputs/outputs, side effects, idempotency, approval, audit, exposure surfaces, source functional agents, or source surface actions, update or route to `app-description-capability-modeling` instead of burying those contract changes only in `20-behavior/`.
+Behavior specs do not own capability boundaries. If a behavior change adds or changes actors/callers, AuthContext, inputs/outputs, side effects, idempotency, approval, audit, exposure surfaces, source functional agents, or source surface actions, update or route to `app-description-capability-modeling` and the affected workstream bindings instead of burying those contract changes only in behavior prose.
 
 ## What this skill must capture
 
@@ -92,7 +94,7 @@ For each requested change, identify and describe as applicable:
 - evidence, risk, confidence, impact, and alternative requirements for decisions when applicable
 - learning, feedback, replay, simulation, or outcome-loop behavior when applicable
 - whether the behavior changes the capability or governed-tool contract: actors/callers, AuthContext, inputs/outputs, data access, side effects, idempotency, policy/approval, audit/trace, selected exposure surfaces, or browser-tool/agent-tool/internal-tool mappings
-- dependencies on operating-model, workstream expertise, security, UI, test, readiness, or observability layers
+- dependencies on global definitions, domain capabilities/data-state, workstream access/surfaces/agents/tools/policies/traces/tests, readiness, or realization maps
 
 ## Output contract
 
@@ -101,86 +103,15 @@ The updated behavior specification should make it possible for a later harness s
 - what behaviors are newly required?
 - what behaviors are newly forbidden?
 - what tests must exist to make this unambiguous?
-- which other app-description layers are now affected?
+- which other app-description graph nodes are now affected?
 
 ## Standard behavioral output shape
 
-Use this response shape when updating or summarizing behavior changes:
-
-```md
-# Behavior Specification Update
-
-## Requested change
-- ...
-
-## Capability or scope change
-- linked capability id/class:
-- contract changes: actors/callers, AuthContext/scope, inputs/outputs, side effects, idempotency, approval, audit, exposure surfaces
-
-## AI-first operating semantics for generated SaaS apps
-- delegated work:
-- retained human authority:
-- approval / exception / decision semantics:
-- policy / permission semantics:
-- trace / feedback / outcome semantics:
-
-## Behavioral rules
-- ...
-
-## State and transitions
-- ...
-
-## Invariants
-- ...
-
-## Forbidden behavior
-- ...
-
-## No-op / idempotent behavior
-- ...
-
-## Open questions and assumptions
-- ...
-
-## Affected linked layers
-- operating model:
-- tests:
-- auth/security:
-- observability:
-```
+Use the delta modeling contract in `../docs/app-description-skill-output-contracts.md`. For this behavior skill, report the requested change, affected graph nodes/file targets, in-scope and out-of-scope behavior, authority/scope, DTOs or payloads where relevant, side effects/idempotency/denials/traces/tests, linked graph nodes, assumptions, and next handoff. Avoid repeating the full app-description graph model.
 
 ## Behavior modeling rules
 
-### 1. State intent before implementation
-Describe behavior in terms of outcomes, transitions, and invariants before discussing code structure.
-
-### 2. Separate confirmed facts from assumptions
-Never present an inferred behavior as confirmed if the user did not actually specify it.
-
-### 3. Pull hidden expectations upward
-If the request implies missing semantics such as idempotency, ordering, approval boundaries, or failure handling, make them explicit as assumptions or questions.
-
-### 4. Make no-op behavior explicit
-For update and retry scenarios, describe what should happen when the requested change is already true or no longer applicable.
-
-### 5. Make forbidden behavior explicit
-Do not stop at positive happy-path rules.
-Capture what the system must refuse, reject, or ignore.
-
-### 6. Flag cross-layer impact
-If a behavior change implies new tests, tighter security, or more observability, say so explicitly.
-
-### 7. Preserve delegation and governance semantics
-When behavior involves agents, automation, recommendations, approvals, exceptions, or policy-bound action, define:
-- what the system or agent may do autonomously
-- where it must pause for human review
-- what evidence, risk, confidence, impact, and alternatives are required
-- what transitions are allowed after approval, rejection, override, timeout, or exception resolution
-- what must be recorded for audit and outcome learning
-
-### 8. Keep policy-controlled behavior mechanical
-Do not describe policy, permission, or approval behavior as prompt advice only.
-Behavior specs must identify enforceable rules, forbidden transitions, and escalation points, then link security and observability impacts.
+Apply the concise rules in `../docs/app-description-skill-output-contracts.md` plus the focused skill's goal. Preserve mandatory secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agent/tool boundaries, traces, and tests when those concerns are in scope. Ask only blocking questions; otherwise record assumptions and hand off to the next focused skill.
 
 ## Clarification policy
 
@@ -215,7 +146,7 @@ Avoid:
 - treating delegated work as ordinary CRUD plus generated text
 - allowing agents to act without explicit authority, approval, exception, and trace semantics
 - treating a bug fix as only a patch instead of a corrected behavioral rule
-- mixing security or observability policy into behavior without identifying the cross-layer impact
+- mixing security or observability policy into behavior without identifying the cross-node impact
 
 ## Final review checklist
 

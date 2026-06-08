@@ -6,11 +6,7 @@ Primary official semantics:
 - `akka-context/sdk/workflows.html.md`
 - `akka-context/sdk/http-endpoints.html.md`
 
-Local executable examples:
-- `../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
+Local executable examples: none in the current curated SaaS Foundation App examples. Treat the code below as a minimal domain-specific pattern, not a class name to look up.
 
 ## Use this pattern when
 
@@ -22,13 +18,13 @@ Local executable examples:
 ## Minimal structure
 
 ```java
-@HttpEndpoint("/transfers")
+@HttpEndpoint("/domain-workflows")
 @Acl(allow = @Acl.Matcher(principal = Acl.Principal.ALL))
-public class TransferWorkflowEndpoint {
+public class DomainWorkflowEndpoint {
 
   private final ComponentClient componentClient;
 
-  public TransferWorkflowEndpoint(ComponentClient componentClient) {
+  public DomainWorkflowEndpoint(ComponentClient componentClient) {
     this.componentClient = componentClient;
   }
 
@@ -66,9 +62,9 @@ Prefer this route split:
 - `GET /{workflowId}/updates` → SSE notifications when available
 
 Repository examples:
-- `TransferWorkflowEndpoint`
+- a domain-specific workflow endpoint
   - start + get + updates
-- `ApprovalWorkflowEndpoint`
+- a domain-specific approval workflow endpoint
   - start + approve + get + updates
 
 ## Mapping rules
@@ -104,9 +100,9 @@ public HttpResponse updates(String workflowId) {
 }
 ```
 
-Repository examples:
-- `TransferWorkflowEndpoint#updates`
-- `ApprovalWorkflowEndpoint#updates`
+Pattern examples:
+- domain-specific workflow endpoint `updates` method
+- domain-specific approval workflow endpoint `updates` method
 
 ## Testing reminders
 
@@ -118,5 +114,5 @@ Prefer route-level tests with `httpClient`:
 - SSE route uses `testKit.getSelfSseRouteTester()`
 
 Repository examples:
-- `TransferWorkflowEndpointIntegrationTest`
-- `ApprovalWorkflowEndpointIntegrationTest`
+- a domain-specific workflow endpoint integration test
+- a domain-specific approval workflow endpoint integration test

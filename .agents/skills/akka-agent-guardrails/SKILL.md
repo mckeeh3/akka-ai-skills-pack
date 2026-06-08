@@ -10,21 +10,13 @@ Use this skill when runtime validation of model input or output is the main conc
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS agent work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- placement as a user-facing functional agent or a bounded internal agent, including owning workstream and structured surface placement when user-facing;
-- capability id/class for each model request, tool call, output, workflow step, endpoint, or evaluation result;
-- caller `AuthContext`, tenant/customer scope, roles/capabilities, allowed data/tools, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work trace fields, correlation ids, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing from prompt, memory, streaming, guardrail, or test mechanics.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/agents/guardrails.html.md`
 - `akka-context/sdk/sanitization.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/CompetitorMentionGuard.java`
-- `../examples/akka-components/src/main/resources/application.conf`
 
 ## Use this pattern when
 
@@ -42,13 +34,12 @@ Read these first if present:
 5. Target agents by component id or `@AgentRole`.
 6. Choose `report-only = true` for observation-only rollout, or `false` to block.
 
-## Repository examples
+## Pattern to implement
 
-- `CompetitorMentionGuard`
-  - custom `TextGuardrail`
-  - config-driven blocked phrase
-- `src/main/resources/application.conf`
-  - report-only guardrail bound to `activity-agent`
+Create a domain-specific guardrail and config pair that demonstrates:
+- custom `TextGuardrail`
+- config-driven blocked phrase or policy signal
+- `src/main/resources/application.conf` binding with report-only rollout before blocking rollout
 
 ## Review checklist
 

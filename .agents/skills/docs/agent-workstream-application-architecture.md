@@ -5,13 +5,13 @@
 This is the canonical agent workstream application architecture doctrine for this skills pack.
 It defines the mandatory default UI/application model for generated full-stack secure AI-first SaaS applications.
 
-Use this doctrine below `ai-first-saas-application-architecture.md` and above detailed app-description, web UI, agent, and Akka component guidance. For broad input, PRD, app-description, planning, backlog, and implementation-readiness work, apply `requirements-to-workstream-development-process.md` before component selection. This document does not replace `capability-first-backend-architecture.md`: workstream UI actions, agent tools, workflow steps, APIs, timers, consumers, and internal calls still map to governed backend capabilities before Akka implementation is selected.
+Use this doctrine below `./ai-first-saas-application-architecture.md` and above detailed app-description, web UI, agent, and Akka component guidance. For the compact schema-style workstream fields, type-vs-instance terminology, ownership/reuse rules, readiness levels, and id taxonomy, apply `./workstream-contract.md`. For the machine-readable app-description index, apply `./workstream-manifest-schema.md`. For one harness-sized implementation slice, apply `./minimum-implementable-workstream-slice.md`. For broad input, PRD, app-description, planning, backlog, and implementation-readiness work, apply `./requirements-to-workstream-development-process.md` before component selection. This document does not replace `./capability-first-backend-architecture.md`: workstream UI actions, agent tools, workflow steps, APIs, timers, consumers, and internal calls still map to governed backend capabilities before Akka implementation is selected.
 
-For starter app-description surface examples, use the source-controlled files under `templates/ai-first-saas-starter/app-description/**`; do not depend on generated distribution output directories as template sources.
+For SaaS Foundation App description workstream and surface examples, use the source-controlled files under `templates/ai-first-saas-core-app/app-description/**`; do not depend on generated distribution output directories as template sources.
 
 ## Default generated-app architecture
 
-Generated AI-first SaaS apps are **agent workstream applications by default**. The **workstream is the root application abstraction** for authenticated consequential work. First use: **functional/context-area agent** means a user-facing, role-authorized agent for one durable work area; this document shortens the term to **functional agent** after defining the alias.
+Generated AI-first SaaS apps are **agent workstream applications by default**. The **workstream is the root application abstraction** for authenticated consequential work. First use: **functional/context-area agent** means a user-facing, role-authorized agent for one durable work area; this document shortens the term to **functional agent** after defining the alias. Use **workstream definition** for the design-time product vertical, **workstream instance** for the durable runtime timeline/log in a selected AuthContext scope, and **workstream view/session** for browser rendering.
 
 ```text
 workstream
@@ -48,11 +48,11 @@ Default dashboard scoping is workstream-local and role-specific: a dashboard sho
 
 AutonomousAgent task progress/result surfaces are part of the workstream model when durable internal/background model-driven work exists. Task lifecycle events, notifications, snapshots, blocked states, rejected results, failures, and completion recommendations should update dashboards, attention items, traces, and governed surface actions; the task machinery never grants authority by itself.
 
-## Minimum initial core workstream set
+## SaaS Foundation App workstream set
 
-The smallest generated AI-first SaaS starter is a bootstrap-authorized **five core workstream starter set**, not a generic chatbot. Use this interpretation for prompts such as "minimum AI-first app," "starter app," "basic app," or "initial chatbot" unless the user explicitly asks for non-SaaS reference material.
+The repository ships the **SaaS Foundation App** out of the box. It is not a generic chatbot or throwaway starter; it is the built-in foundation domain that downstream users extend. Use this interpretation for prompts such as "starter app," "minimum AI-first app," "core app," "basic app," or "initial chatbot" unless the user explicitly asks for non-SaaS reference material.
 
-The minimum initial shell contains these role-authorized functional agents for the bootstrap operator:
+The foundation shell contains these role-authorized functional agents:
 
 1. **My Account Agent** — opened only from the signed-in user tile/email at the bottom of the left rail, not listed with the top workstream buttons.
 2. **User Admin Agent**
@@ -60,18 +60,16 @@ The minimum initial shell contains these role-authorized functional agents for t
 4. **Audit/Trace Agent**
 5. **Governance/Policy Agent**
 
-Each core starter workstream is intentionally narrow, but each must still use the same shell model:
+Each foundation workstream uses the same shell model:
 
-- **Left rail** — exposes role-authorized core functional agents for the bootstrap operator. User Admin, Agent Admin, Audit/Trace, and Governance/Policy appear in the top workstream rail when allowed. My Account is still one of the five core workstreams, but its only launcher is the signed-in user tile/email in the bottom rail user region. Unavailable richer full-core actions or surfaces are represented as explicit deferred/denied behavior, not hidden readiness claims.
+- **Left rail** — exposes role-authorized core functional agents for the bootstrap operator. User Admin, Agent Admin, Audit/Trace, and Governance/Policy appear in the top workstream rail when allowed. My Account is still one of the five core workstreams, but its only launcher is the signed-in user tile/email in the bottom rail user region. Unavailable richer SaaS Foundation App actions or surfaces are represented as explicit deferred/denied behavior, not hidden readiness claims.
 - **Main workstream panel** — renders a durable request/response timeline for the selected core workstream with capability results, denials, trace references, and the first structured surface type: `markdown_response`.
 - **Persistent composer** — accepts natural-language bootstrap requests for the selected core functional agent; it is an input channel, not an authorization boundary.
 - **Context and authority indicators** — show selected AuthContext, bootstrap role/capability basis, available capabilities, denied/deferred actions, and trace links.
 
-The first renderable surface for each core workstream is `markdown_response`: model-authored markdown in a versioned surface payload, rendered as sanitized HTML with trace/correlation ids and explicit loading, success, error, forbidden, and empty states. It is a real structured surface contract, not an informal chat blob; richer surfaces such as profile/settings cards, user tables, access-review queues, agent behavior diffs, audit timelines, and policy/approval cards can be added after the starter slice.
+`markdown_response` is the lowest-ceremony structured surface available to these workstreams: model-authored markdown in a versioned surface payload, rendered as sanitized HTML with trace/correlation ids and explicit loading, success, error, forbidden, and empty states. It is a real structured surface contract, not an informal chat blob. The same workstream model also supports richer surfaces such as profile/settings cards, user tables, access-review queues, agent behavior diffs, audit timelines, policy/approval cards, forms, and other SaaS-style screens.
 
-Audit/work trace recording starts in this first slice for identity basis, AuthContext selection, capability checks, prompt/tool use, denials, and rendered responses. The Audit/Trace workstream is present from the first runnable starter, but it may initially explain and link to the trace substrate through `markdown_response` before richer search and investigation surfaces are implemented.
-
-Full-core generated SaaS readiness remains stricter than this minimum starter. The five core workstream starter set is a valid first runnable slice only when follow-up work remains explicit for complete My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy, invitations/onboarding, governed runtime agent documents, tenant isolation, and full security coverage.
+Audit/work trace recording is part of normal SaaS Foundation App behavior for identity basis, AuthContext selection, capability checks, prompt/tool use, denials, and rendered responses. When extending or modifying the foundation domain, preserve those traces instead of treating them as optional hardening.
 
 A workstream is not production-ready just because fixture items render, a deterministic placeholder response exists, or a service directly calls a provider without the workstream Akka Agent. Named model-backed workstream behavior must pass through the real local Akka runtime path: selected AuthContext, backend authorization, durable workstream entries, governed prompt/runtime assembly, active managed configuration resolution, governed `readSkill`/`readReferenceDoc` loader tools, `ToolPermissionBoundary` enforcement, invocation of a concrete Akka `Agent` component for the functional agent with resolved tools registered through `effects().tools(runtimeTools)`, configured model/provider invocation from that Agent path, trace emission, API response, and frontend rendering. Workstream/foundation state claimed as implemented must be backed by Akka components in normal runtime. Provider/configuration failures should become safe system-message surfaces and traces. Mocks, fixtures, deterministic fakes, service-only provider bypasses, and test doubles are allowed only in tests or explicitly test-only adapters; they are not normal runtime substitutes.
 
@@ -83,7 +81,9 @@ A workstream is not production-ready just because fixture items render, a determ
 | Functional/context-area agent | User-facing, role-authorized assistant backing exactly one workstream and representing a functional area such as User Admin, Agent Admin, Procurement, Finance, Sales Pipeline, Support, Audit, Governance, or Outcome Metrics. Shortened to functional agent after first use. |
 | Workstream agent | The functional agent in its role as the selected workstream user's assistant. It can answer workstream-specific “how do I...” questions, interpret shorthand requests such as “dashboard” or “show users”, request or refresh surfaces, invoke allowed capability-backed actions, explain denials/errors, and guide users through tasks. It is not the root app abstraction and does not grant authority. |
 | Internal agent | Non-left-rail agent invoked by workflows, tools, consumers, timers, functional agents, or backend services for bounded work such as classification, summarization, evaluation, routing, replay, proposal drafting, or governance review. |
-| Workstream | Root app unit for authenticated consequential work: a durable conversational and operational timeline backed by exactly one functional agent. It contains user requests, agent responses, tool/capability results, structured surfaces, system-message surfaces, decisions, workflow progress, traces, and follow-up actions. |
+| Workstream definition | Design-time root app unit for authenticated consequential work, backed by exactly one functional agent, with role-specific dashboards, attention, surface graph, capability/governed-tool map, expertise, traces, and tests. |
+| Workstream instance | Durable runtime conversational/operational timeline for one workstream definition in a selected tenant/customer/AuthContext scope. It contains user requests, agent responses, tool/capability results, structured surfaces, system-message surfaces, decisions, workflow progress, traces, and follow-up actions. |
+| Workstream view/session | Browser rendering of a selected workstream instance. It may be route/deep-link addressable but is not the durable source of truth. |
 | Workstream icon | Universal shell metadata for a workstream launcher/status button: a compact icon chosen from the workstream name/domain, with stable id, accessible label, tooltip text, accent color, and optional glyph/vector asset. Icons keep rails and status panels compact while preserving full workstream names for hover, focus, and screen readers. |
 | Surface | Typed renderable artifact in a workstream, such as a dashboard, form, data table, chart, decision card, diff review, audit timeline, entity detail, approval card, workflow status, exception card, system message, or outcome metric panel. |
 | Surface graph | Human work tree for a workstream: the role-specific dashboard is the trunk, surface nodes are branches, and surface actions are edges that open surfaces, invoke browser-tools, create system-message surfaces, update attention, start internal-agent work, open traces, or route approvals/decisions. |
@@ -150,7 +150,7 @@ type WorkstreamIconDescriptor = {
   workstreamId: string;
   displayName: string;
   iconId: string;              // stable generated/selected icon id
-  visualHint: string;          // e.g. cart, invoice, chart, shield, user, wrench
+  visualHint: string;          // e.g. workstream event, invoice, chart, shield, user, wrench
   accentColorToken: string;    // shell theme token, not arbitrary user input
   tooltip: string;             // usually full workstream display name
   ariaLabel: string;           // accessible launcher/status label
@@ -158,7 +158,7 @@ type WorkstreamIconDescriptor = {
 };
 ```
 
-When a new workstream is added, generate or select an icon from the workstream's actual domain name and responsibility. The shell must render the descriptor through an approved SVG/icon-library registry, not through text initials or arbitrary emoji. Keep icons semantically simple and consistent: Procurement may use a cart/purchase-order glyph, Inventory a package/warehouse glyph, Finance an invoice/currency glyph, Sales Pipeline a rising-chart glyph, Customer Success a health/heart glyph, Field Service a wrench/truck glyph, Governance a shield/checklist glyph. Unknown domain workstreams must still use the registry's semantic derivation/fallback SVG icon; letter-only fallback is not acceptable except as an explicitly failing development diagnostic. Do not encode authorization or sensitive state only through color; expose names and status through labels/tooltips and text.
+When a new workstream is added, generate or select an icon from the workstream's actual domain name and responsibility. The shell must render the descriptor through an approved SVG/icon-library registry, not through text initials or arbitrary emoji. Keep icons semantically simple and consistent: Procurement may use a workstream event/purchase-order glyph, Inventory a package/warehouse glyph, Finance an invoice/currency glyph, Sales Pipeline a rising-chart glyph, Customer Success a health/heart glyph, Field Service a wrench/truck glyph, Governance a shield/checklist glyph. Unknown domain workstreams must still use the registry's semantic derivation/fallback SVG icon; letter-only fallback is not acceptable except as an explicitly failing development diagnostic. Do not encode authorization or sensitive state only through color; expose names and status through labels/tooltips and text.
 
 ## Workstreams and functional agents as verticals
 
@@ -214,7 +214,7 @@ Surfaces are structured renderable results, not just text. They are associated w
 
 Canonical surface types:
 
-- `markdown_response` for sanitized model-authored markdown in the minimum five core workstream starter set and other intentionally text-first responses;
+- `markdown_response` for sanitized model-authored markdown in the minimum SaaS Foundation App domain and other intentionally text-first responses;
 - `system_message` for typed system feedback, denial, warning, success, validation, approval-required, deferred, stale, background-work, and recovery messages;
 - dashboard / attention surface;
 - form or guided intake;
@@ -302,7 +302,7 @@ Do not present these as equivalent defaults for generated AI-first SaaS apps:
 - agent tools as the backend design root;
 - ungoverned prompt-only automation;
 - unaudited agents that can act without backend-enforced authority;
-- optional user administration or optional agent administration for a full generated core SaaS app.
+- optional user administration or optional agent administration when the SaaS Foundation App/domain scope requires them.
 
 Allowed exceptions are narrow: public marketing/legal/static pages, direct deep links to surfaces, implementation routes, non-SaaS reference material, or repository-maintenance tasks explicitly outside generated-app architecture.
 
@@ -333,7 +333,7 @@ Before treating a generated full-stack AI-first SaaS app as architecture-ready, 
 - [ ] Left rail entries select role-authorized workstreams/functional agents from backend capabilities and selected AuthContext.
 - [ ] Each workstream/functional agent has purpose, authority, supported user intents, surfaces, capability mappings, traces, and tests.
 - [ ] Each LLM-backed functional agent is an AI-first managed agent with a workstream expert bundle or explicit deferral covering skills, reference documents, manifests, loader authorization, `ToolPermissionBoundary`, `effects().tools(runtimeTools)` registration, traces, and tests.
-- [ ] User Admin and Agent Admin functional agents are present for full core SaaS scope, or the narrower scope explicitly defers them.
+- [ ] User Admin and Agent Admin functional agents are present for SaaS Foundation App scope, or the narrower scope explicitly defers them.
 - [ ] Internal agents are distinguished from functional agents and have governed behavior, tool boundaries, and traces.
 - [ ] Surfaces are typed renderable artifacts with schemas, allowed actions, states, and rendering tests.
 - [ ] System messages are modeled as typed surfaces, not ad hoc strings.
@@ -358,7 +358,7 @@ When this model is maintained in an app-description tree, keep ownership split b
 For high-level product input, apply this sequence:
 
 1. Preserve the mandatory secure AI-first SaaS foundation.
-2. Apply `requirements-to-workstream-development-process.md`: workstream inventory, attention categories, dashboard contracts, surfaces/actions, governed capabilities/APIs, Akka substrate, agent/AutonomousAgent workers, events/notifications/projections, traces, and tests.
+2. Apply `./requirements-to-workstream-development-process.md`: workstream inventory, attention categories, dashboard contracts, surfaces/actions, governed capabilities/APIs, Akka substrate, agent/AutonomousAgent workers, events/notifications/projections, traces, and tests.
 3. Interpret the product as an agent workstream application unless explicitly out of scope.
 4. Identify functional agents, internal agents, initial workstreams, structured surfaces, and retained human authority.
 5. Model governed backend capabilities for every surface action, tool, workflow step, API, timer, consumer, and internal operation.
@@ -366,10 +366,10 @@ For high-level product input, apply this sequence:
 7. Use web UI and agent skills to implement the workstream shell and governed agents.
 8. Use Akka component skills to implement the horizontal substrate from accepted capability contracts.
 
-Use `workstream-expertise-model.md` with this doctrine when a functional agent needs governed skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests that make it an expert in its workstream. Use `agent-component-selection-guide.md` before choosing whether supporting agent work should be a request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`.
+Use `./workstream-expertise-model.md` with this doctrine when a functional agent needs governed skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests that make it an expert in its workstream. Use `./agent-component-selection-guide.md` before choosing whether supporting agent work should be a request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`.
 
 When a target app-description already has or receives `12-workstreams/surface-contracts/**`, run `tools/validate-surface-contracts.sh <app-description-dir>` as a lightweight structural check before treating the surface layer as ready for implementation.
 
-Use `domain-workstream-prd-structure.md` when capturing domain-level and workstream-level PRDs for the core SaaS app domain or app-specific domains. It defines the directory structure for domains, workstreams, workstream-agent prompts/skills, surfaces, capabilities, and tests.
+Use `./current-intent-model.md` when capturing domain-level and workstream-level intent for the core SaaS app domain or app-specific domains. It defines the current app/domain/workstream graph, global definitions, workstream bindings, realization mappings, and tests.
 
 This doctrine should be referenced by future app-description, web UI, agent, routing, and review tasks as the single generated-app UI/application architecture default.

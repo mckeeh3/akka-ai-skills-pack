@@ -80,7 +80,7 @@ For this workstream, read/evidence capabilities may be exposed to the My Account
 
 ## Surface style expectations
 
-My Account surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md` and the core domain overview. Keep the dashboard as a personal operating hub rendered with enterprise workstream surface patterns: profile/context summary cards, a concise personal attention queue, compact workstream status panels, capability/evidence affordances, and typed system-message cards for denial or recovery feedback.
+My Account surfaces inherit `ai-first-workstream-enterprise` from `../../../web-ui-style-guide.md` and the core domain overview. Keep the dashboard as a personal operating hub rendered with enterprise workstream surface patterns: profile/context summary cards, a concise personal attention queue, compact workstream status panels, capability/evidence affordances, and typed system-message cards for denial or recovery feedback.
 
 The Settings surface should expose named theme selection. Users choose one available named theme by label; the saved value is the stable theme id in `preferredThemeId`. Initial available ids are `aurora-light`, `cobalt-light`, `obsidian-dark`, `midnight-dark`, and `dark-night`. The UI may use each theme's light/dark tone for contrast testing, but it must not present `system`, `light`, or `dark` as the primary user preference. Changing `preferredThemeId` only changes visual tokens and must not alter workstream visibility, capability grants, authorization, audit behavior, routes, or surface contracts.
 
@@ -88,9 +88,10 @@ The Settings surface should expose named theme selection. Users choose one avail
 
 The dashboard is the default surface for `dashboard`, `my account`, `show my account`, and signed-in user tile selection. It should include:
 
-- **Profile and Settings actions** as prominent shortcuts. These request the Profile or Settings surface in the My Account workstream rather than navigating to a separate shell menu.
-- **Personal queue**: a concise cross-workstream list of the signed-in user's actionable items, such as approvals, decisions, exceptions, reviews, assigned tasks, or overdue items. Each item includes enough context to choose the next action: title, source workstream, item type, priority/due state, and an action that opens the relevant workstream surface or detail.
-- **Workstream status panels**: one compact panel for each workstream visible to the current `/api/me` AuthContext. Each panel shows only a large `itemsNeedingAttention` number, a short `needs attention` label, and an icon button/open affordance for the workstream. The panel does not list detailed items; detailed investigation belongs in that workstream's own dashboard.
+- **Attention counter strip first**: render cross-workstream attention counters above profile/settings/details using the same shared dashboard attention-card style as role-specific workstream dashboards: semibold/bold label, large `itemsNeedingAttention` number, and a concise badge/status or open affordance below.
+- **Profile and Settings actions** as secondary shortcuts below the attention counters. These request the Profile or Settings surface in the My Account workstream rather than navigating to a separate shell menu.
+- **Personal queue**: a concise cross-workstream list below the counter strip of the signed-in user's actionable items, such as approvals, decisions, exceptions, reviews, assigned tasks, or overdue items. Each item includes enough context to choose the next action: title, source workstream, item type, priority/due state, and an action that opens the relevant workstream surface or detail.
+- **Workstream status panels**: one compact panel for each workstream visible to the current `/api/me` AuthContext. Each panel uses the shared attention-card counter style and shows only a large `itemsNeedingAttention` number, a short label, and an icon button/open affordance or status badge for the workstream. The panel does not list detailed items; detailed investigation belongs below the counter strip or in that workstream's own dashboard.
 - **Workstream icons**: use the universal shell workstream icon metadata. The icon is generated or selected from the workstream name/domain, appears on the panel button, and exposes the full workstream name through tooltip/accessible label text.
 - **Context and authority summary**: selected tenant/customer, role/capability basis, and safe links to capabilities/context selector where useful.
 

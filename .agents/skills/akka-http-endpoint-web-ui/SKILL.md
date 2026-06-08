@@ -11,13 +11,7 @@ For generated full-stack AI-first SaaS, the hosted app is an agent workstream sh
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS web-UI endpoint work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- functional-agent shell, workstream deep-link routes, structured surface ids/actions/events, and browser API/realtime route families;
-- governed capability ids/classes behind protected JSON/SSE/WebSocket routes and selected Akka substrates;
-- `AuthContext`, tenant/customer scope, `/api/me` context selection, roles/capabilities, disabled/forbidden behavior, and static/protected route separation;
-- DTOs, redaction, idempotency/correlation ids, policy/approval/escalation, audit/work trace fields, rendering/API/realtime tests, selected style guide, and named-theme contract.
-
-If these are absent for generated SaaS implementation, route back to `akka-web-ui-apps`, `agent-workstream-apps`, and `capability-first-backend` or repair the task brief instead of serving a page-first shell.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Capability-first exposure rule
 
@@ -30,25 +24,15 @@ When the same capability is also exposed through workstream surface actions, age
 ## Required reading
 
 Read these first if present:
-- `../../../akka-context/sdk/http-endpoints.html.md`
+- `akka-context/sdk/http-endpoints.html.md`
 - `../docs/workstream-ui-reference-architecture.md` for the canonical generated SaaS frontend reference and reusable `frontend/src/workstream/**` modules
 - `../docs/web-ui-pattern-selection.md`
 - `../docs/web-ui-frontend-decomposition.md`
 - `../docs/web-ui-style-guide.md`
 - `../docs/web-ui-frontend-project-integration.md`
 - `../docs/web-ui-quality-checklist.md`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiDataEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiSsePageEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/WebUiHomeEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/WebUiDataEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/WebUiSsePageEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/WebUiWebSocketPageEndpointIntegrationTest.java`
 
-The `WebUi*PageEndpoint` examples are endpoint delivery mechanics references. They do not replace the canonical generated SaaS app structure under `frontend/src/workstream/**` or the User Admin workstream vertical reference.
+Old standalone static UI page fixtures were removed. Use this skill for route shape, static build hosting, and protected API/stream/socket boundaries; use `frontend/src/workstream/**` and the User Admin vertical as generated SaaS UI structure.
 
 ## Use this skill when
 
@@ -84,25 +68,22 @@ Then add focused frontend companions as needed:
 Use this when the browser UI has real user journeys, multiple states, forms, structured surfaces, functional-agent selection, stream state, navigation/deep links, or frontend application logic. Use `akka-web-ui-frontend-project` for full React/Vite or similar app projects.
 
 ### UI + JSON API
-Read first:
-- `../examples/akka-components/src/main/java/com/example/api/WebUiHomeEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/WebUiDataEndpoint.java`
 
-Use this when a browser surface should load JSON through `fetch`; for product UI work, keep the browser source in `frontend/src/**` and keep generated SaaS structure workstream-first.
+Use this when a browser surface should load JSON through `fetch`; for product UI work, keep the browser source in `frontend/src/**`, use `akka-web-ui-api-client` for typed browser clients, and keep generated SaaS structure workstream-first. Protect `/api/...` routes with JWT/request context, tenant/customer scoping, backend capability authorization, validation, redaction, and audit/work traces.
 
 ### UI + SSE
 Read first:
-- `../examples/akka-components/src/main/java/com/example/api/WebUiSsePageEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java`
+- `../akka-http-endpoint-sse/SKILL.md`
+- `../akka-web-ui-realtime/SKILL.md`
 
 Use this when the browser needs server-to-client live updates; for product UI work, keep the browser source in `frontend/src/**` and model updates as workstream/surface events where generated SaaS semantics apply.
 
 ### UI + WebSocket
 Read first:
-- `../examples/akka-components/src/main/java/com/example/api/WebUiWebSocketPageEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/PingWebSocketEndpoint.java`
+- `../akka-http-endpoint-websocket/SKILL.md`
+- `../akka-web-ui-realtime/SKILL.md`
 
-Use this when the browser needs two-way communication; for product UI work, keep the browser source in `frontend/src/**` and avoid treating socket demo pages as generated SaaS UI structure.
+Use this when the browser needs two-way communication; for product UI work, keep the browser source in `frontend/src/**` and avoid adding standalone socket demo pages as generated SaaS UI structure.
 
 ### Public vs protected/internal routes
 Read next as needed:
@@ -110,7 +91,6 @@ Read next as needed:
 - `../akka-http-endpoint-jwt/SKILL.md`
 - `../akka-http-endpoint-request-context/SKILL.md`
 - `../akka-http-endpoint-acl-internal/SKILL.md`
-- `../examples/akka-components/src/main/java/com/example/api/InternalStatusEndpoint.java`
 
 Default generated SaaS route boundary:
 - public: static app shell/assets only, such as `/`, `/ui...`, `/assets/**`, and explicit deep-link entry routes that return the same static shell without embedding protected data
@@ -127,7 +107,7 @@ Use a standard frontend project for full apps.
 - build output goes to `src/main/resources/static-resources/`
 - build with the frontend project's script, for example `cd frontend && npm run build`
 - do not hand-edit generated files in `static-resources/`
-- read `docs/web-ui-frontend-project-integration.md`
+- read `../docs/web-ui-frontend-project-integration.md`
 
 Akka implementation and tests remain Java-based.
 
@@ -143,14 +123,15 @@ Prefer clear route families:
 
 Keep those route families separate so a future agent can infer intent from the path alone. Avoid a broad `/**` SPA fallback when it overlaps `/assets/**`; use hash routing or explicit entry routes for deep links.
 
-## Repository examples
+## Examples and current boundaries
 
-- `WebUiHomeEndpoint` + `WebUiDataEndpoint`
-  - generated app shell plus JSON API hosting pattern
-- `WebUiSsePageEndpoint` + `CounterStreamEndpoint`
-  - generated app shell consuming SSE
-- `WebUiWebSocketPageEndpoint` + `PingWebSocketEndpoint`
-  - generated app shell consuming a WebSocket
+The current curated SaaS Foundation App examples focus on HTTP API/workstream route shape, not standalone SSE/WebSocket demo endpoints. For SSE or WebSocket mechanics, load the focused endpoint skill and implement target-project tests against the named capability, tenant/customer scope, authorization, and work trace.
+
+Current curated references:
+- `../examples/akka-components/src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java` for co-hosted workstream HTTP endpoint shape
+- `../examples/akka-components/src/main/java/ai/first/api/foundation/security/MeEndpoint.java` for protected API/auth boundary shape
+
+Static UI page fixtures were removed; generated app shells should come from the target project's frontend build output.
 
 ## Testing rule
 
@@ -183,6 +164,6 @@ Before finishing, verify:
 - SSE and WebSocket routes remain explicit and separate
 - frontend source paths and served JavaScript/CSS asset paths are easy to correlate
 - integration tests fetch the generated app shell and CSS/JS asset routes through `httpClient`
-- non-trivial UI work has been reviewed against `docs/web-ui-quality-checklist.md`, the selected style guide, and the named-theme contract
+- non-trivial UI work has been reviewed against `../docs/web-ui-quality-checklist.md`, the selected style guide, and the named-theme contract
 - protected API, SSE, or WebSocket routes called by workstream surfaces, composer actions, or realtime subscriptions carry AuthContext, tenant/customer filtering, and forbidden-access tests
 - public static asset exposure has been reviewed so it cannot leak backend secrets or protected data

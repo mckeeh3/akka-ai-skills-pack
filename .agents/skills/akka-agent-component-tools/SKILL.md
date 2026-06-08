@@ -13,9 +13,6 @@ Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/agents/extending.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/CartInspectorAgent.java`
-- `../examples/akka-components/src/test/java/com/example/application/CartInspectorAgentTest.java`
 
 ## Use this pattern when
 
@@ -54,18 +51,14 @@ If the agent-facing operation should compose multiple component calls, hide comp
 
 ## Repository example
 
-- `ShoppingCartEntity#inspectCartSummary`
-  - read-only EventSourcedEntity capability tool for `cart.inspect-summary`
-  - returns a curated `CartSummary` rather than raw entity state or event history
-  - generated schema adds `uniqueId` for the cart id
-- `CartInspectorAgent`
-  - registers `ShoppingCartEntity.class` as a tool
-  - instructs the model to use `ShoppingCartEntity_inspectCartSummary`
-- `GovernedRefundAutonomousAgent` + `RefundApprovalWorkflow#requestFromGovernedTool`
-  - side-effecting workflow component tool for `refund.request_consequential`
-  - generated tool schema uses `uniqueId` as the refund workflow id and checks model-supplied tenant/customer/order/amount against backend context
-  - enforces `ToolPermissionBoundary`, idempotency, approval-required behavior, and trace emission before any refund side effect
-  - covered by `GovernedRefundToolBoundaryIntegrationTest` for approval-required, cross-tenant denial, and trace assertions
+The current curated SaaS Foundation App examples use a safer facade pattern for governed runtime loader tools:
+
+- `AgentRuntimeLoaderTools`
+  - exposes request-scoped `@FunctionTool` methods such as governed skill/reference loading
+  - enforces tenant/customer scope, assigned manifests, active versions, `ToolPermissionBoundary`, and trace emission before returning model-visible content
+- `WorkstreamRuntimeAgent`
+  - registers resolved runtime tool instances with `effects().tools(runtimeTools)` instead of exposing broad component methods directly
+- Use direct Akka component tools only when the component method is already a narrow, model-safe capability. For side effects, prefer a facade/workflow that enforces permission, idempotency, approval-required behavior, and trace emission before any mutation.
 
 ## Review checklist
 

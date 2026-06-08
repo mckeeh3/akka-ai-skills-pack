@@ -9,25 +9,13 @@ Use this skill when a Consumer republishes, transforms, or filters messages into
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/sdk/access-control.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewWorkflowTopicConsumer.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -60,13 +48,13 @@ For service streams and topics, do not leak internal state or policy-only events
 
 These are Akka substrate mechanics examples, not generated-product architecture templates.
 
-- `ShoppingCartEventsToTopicConsumer`
-  - republishes internal shopping-cart events to a topic
-  - preserves the cart id through `ce-subject`
-- `ShoppingCartPublicEventsConsumer`
-  - maps internal shopping-cart events to a public service-stream contract
+- `WorkstreamEventAttentionConsumer`
+  - republishes internal workstream-event events to a topic
+  - preserves the workstream id through `ce-subject`
+- `WorkstreamEventAttentionConsumer`
+  - maps internal workstream-event events to a public service-stream contract
   - ignores deletion events from the public stream
-- `ReviewWorkflowTopicConsumer`
+- a domain-specific workflow topic consumer
   - publishes only completed workflow updates to a topic
 
 ## Generated SaaS consumer contract

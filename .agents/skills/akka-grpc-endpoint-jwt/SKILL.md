@@ -23,12 +23,6 @@ Read these first if present:
 - `akka-context/sdk/auth-with-jwts.html.md`
 - `akka-context/reference/jwts.html.md`
 - `../references/akka-grpc-jwt-patterns.md`
-- `../examples/akka-components/src/main/proto/com/example/api/grpc/secure_greeting_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/proto/com/example/api/grpc/pattern_secure_greeting_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
-- `../examples/akka-components/src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -48,11 +42,11 @@ Read these first if present:
 
 ## Repository example
 
-- `SecureGreetingGrpcEndpointImpl`
+- a domain-specific JWT-secured gRPC endpoint implementation
   - validates bearer token issuers
   - requires a static `role` claim
   - reads issuer, subject, role, and optional audience from `requestContext().getJwtClaims()`
-- `PatternSecureGreetingGrpcEndpointImpl`
+- a domain-specific pattern-based JWT gRPC endpoint implementation
   - validates regex-based claims with `@JWT.StaticClaim(pattern = ...)`
   - demonstrates role, UUID subject, and non-blank name validation
 

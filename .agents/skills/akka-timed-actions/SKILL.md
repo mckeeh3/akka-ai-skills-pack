@@ -12,7 +12,7 @@ For broad product, PRD, feature, reminder, expiry, or deadline requests, route t
 ## Goal
 
 Generate or review timer code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about where timers are scheduled and where they are handled
 - safe under at-least-once execution and retries
 - easy for AI agents to extend without loading unrelated component families
@@ -40,29 +40,6 @@ Read these first if present:
 - `../docs/timer-pattern-selection.md`
 - existing timer examples under `src/main/java/**/TimedAction*.java`, `*TimedAction.java`, or timer-scheduling endpoints
 - matching tests under `src/test/java/**`
-
-In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/application/TicketReservationEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/api/TicketReservationEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/domain/TicketReservation.java`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReminderJobEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReminderJobTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/api/ReminderJobEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ReminderJob.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalDeadlineTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/api/ApprovalDeadlineWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ApprovalDeadlineState.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalDeadlineWorkflowEndpointIntegrationTest.java`
 
 ## Companion skills
 
@@ -103,33 +80,33 @@ If the timer flow is part of a broader component story, also load the relevant f
 Use when an endpoint or workflow should schedule one future call.
 
 Repository example:
-- `TicketReservationEndpoint`
+- `WorkstreamEndpoint`
 
 ### 2. Implement the timer handler
 Use when the timed action translates the scheduled call into a command on another component.
 
-Repository examples:
-- `TicketReservationTimedAction`
-- `ReminderJobTimedAction`
+Pattern references:
+- `AttentionProducerService`
+- `AttentionRefreshTimedAction`
 
 ### 3. Self-reschedule from inside the timed action
 Use when each timer execution decides whether to schedule the next one.
 
-Repository example:
-- `ReminderJobTimedAction#sendReminder`
+Pattern reference:
+- `AttentionRefreshTimedAction#sendReminder`
 
 ### 4. Schedule a timer from a workflow command
 Use when a workflow start or resume command should register a timeout or reminder.
 
-Repository example:
+Pattern reference:
 - `ApprovalDeadlineWorkflow#start`
 
 ### 5. Make the target command timer-safe
 Use when the entity or workflow must treat stale timer executions as successful no-ops or explicit terminal replies.
 
-Repository examples:
-- `TicketReservationEntity#expire`
-- `ReminderJobEntity#recordReminderSent`
+Pattern references:
+- `DurableAttentionRepositoryEntity#expire`
+- `AttentionRefreshEntity#recordReminderSent`
 - `ApprovalDeadlineWorkflow#markTimedOut`
 
 ## Final review checklist

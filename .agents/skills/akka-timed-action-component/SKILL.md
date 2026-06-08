@@ -9,27 +9,12 @@ Use this skill when the main task is the `TimedAction` class.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Read first
 
 - `akka-context/sdk/timed-actions.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/TicketReservationTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/application/TicketReservationEntity.java`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/TicketReservationEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReminderJobTimedAction.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReminderJobEntity.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobTimedActionTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReminderJobEndpointIntegrationTest.java`
 
 ## Component rules
 
@@ -80,7 +65,7 @@ public class MyTimedAction extends TimedAction {
 - Make duplicate timer delivery idempotent by using target commands with stable dedupe keys or no-op semantics.
 - If a timed action receives a stale, forbidden, or cross-tenant payload, return terminal `done()` after recording the required denial/no-op audit rather than retrying forever.
 - If the timed action needs to schedule another timer while handling one, use `timers()` inside the handler.
-- The self-rescheduling reference pattern in this repository is `ReminderJobTimedAction#sendReminder`.
+- The self-rescheduling reference pattern in this repository is `AttentionRefreshTimedAction#sendReminder`.
 - If a method used by timers must be renamed later, keep a legacy delegating method for compatibility.
 
 ## Generated SaaS timer contract

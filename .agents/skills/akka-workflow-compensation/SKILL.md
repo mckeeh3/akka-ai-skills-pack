@@ -9,26 +9,13 @@ Use this skill when the workflow must reverse earlier work if a later step canno
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/workflows.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/WalletEntity.java`
-- `../examples/akka-components/src/main/java/com/example/domain/TransferState.java`
-- `../examples/akka-components/src/main/java/com/example/domain/Wallet.java`
-- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/WalletEntityTest.java`
 
 ## Capability-first compensation role
 
@@ -42,9 +29,9 @@ Use compensation for governed capabilities whose side effects may need safe reve
 4. Store durable command ids in workflow state so downstream retries are idempotent.
 5. Reserve workflow recovery settings for unknown failures or timeouts.
 
-## Repository example
+## Pattern reference
 
-- `TransferWorkflow`
+- a domain-specific workflow
   - withdraw succeeds first
   - deposit rejection updates workflow state to `DEPOSIT_REJECTED`
   - compensation deposits funds back to the source wallet

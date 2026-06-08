@@ -21,8 +21,6 @@ Expose read-only scoped evidence capabilities more readily than side-effecting c
 Read these first if present:
 - `akka-context/sdk/mcp-endpoints.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
 
 ## Use this pattern when
 
@@ -34,21 +32,22 @@ Read these first if present:
 ## Core pattern
 
 1. Inject `ComponentClient` through the constructor.
-2. Keep tool parameters small and explicit.
-3. Call components synchronously with `.invoke()`.
-4. Map internal component state to an MCP-facing summary record.
-5. Serialize tool results with `JsonSupport.encodeToString(...)`.
-6. Reuse the same summary mapper for matching dynamic resources when helpful.
+2. Annotate every component-backed tool method with `@McpTool(...)`, including a clear `name`, `description`, and optional `inputSchema` when needed.
+3. Keep tool parameters small and explicit.
+4. Call components synchronously with `.invoke()`.
+5. Map internal component state to an MCP-facing summary record.
+6. Serialize tool results with `JsonSupport.encodeToString(...)`.
+7. Reuse the same summary mapper for matching dynamic resources when helpful.
 
-## Repository examples
+## Pattern references
 
-- `ShoppingCartMcpEndpoint`
-  - `getCartSummary` calls `ShoppingCartEntity::getCart`
-  - adapts state to `CartSummary`
+- `CoreAppMcpEndpoint`
+  - a domain-specific summary tool calls a domain-specific component read method
+  - adapts state to a domain-specific summary DTO
   - returns compact JSON for tool responses
-  - reuses the same mapping for `cartSummaryResource`
-- `GovernedRefundMcpEndpoint`
-  - exposes `request-governed-refund` as a side-effecting MCP tool for `refund.request_consequential`
+  - reuses the same mapping for `workstream eventSummaryResource`
+- a domain-specific governed MCP endpoint
+  - exposes a domain-specific governed action tool id as a side-effecting MCP tool for a domain-specific consequential capability
   - calls backend-governed boundary logic before any consequential refund action
   - returns safe `denied` or `approval_required` JSON and emits traces instead of relying on MCP tool descriptions for authorization
 
@@ -66,6 +65,7 @@ Avoid:
 
 Before finishing, verify:
 - `ComponentClient` is injected only where needed
+- every component-backed tool method has `@McpTool(...)`
 - tool output is compact and model-friendly
 - `.invoke()` is used for normal MCP endpoint component calls
 - component state is mapped to an explicit MCP-facing shape

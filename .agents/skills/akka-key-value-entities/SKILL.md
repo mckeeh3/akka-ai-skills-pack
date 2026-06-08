@@ -12,7 +12,7 @@ Use it only after the relevant backend capability contract is clear enough, or a
 ## Goal
 
 Generate or review key value entity code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - cleanly split across `domain`, `application`, and `api`
 - state-replacement based rather than event-sourced
 - aligned to a named capability's AuthContext, scope, idempotency, audit/trace, and approval semantics
@@ -39,17 +39,6 @@ If these files exist, read them first:
 - existing project examples under `src/main/java/**/application/*Entity.java`
 - matching domain files under `src/main/java/**/domain/*`
 - matching tests under `src/test/java/**`
-
-In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/ExpiringDraftCartSessionEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/PurchaseOrderEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
 
 ## Companion skills
 
@@ -81,10 +70,12 @@ For ESE vs KVE choice questions, also read:
 
 ## Default package layout
 
-Use:
-- `com.<org>.<app>.domain`
-- `com.<org>.<app>.application`
-- `com.<org>.<app>.api`
+Use the fixed Java base package `ai.first` for this SaaS Foundation App repository and downstream generated code. Keep package declarations, imports, tests, and source paths under `ai.first`; do not infer package names from examples.
+
+Typical layer paths are:
+- `<base>.domain`
+- `<base>.application`
+- `<base>.api`
 
 Rules:
 - domain has no Akka effects
@@ -133,8 +124,8 @@ Typical behavior:
 - endpoint translates `CommandException` to HTTP response and records required audit/trace data
 
 Repository example:
-- `DraftCartEntity`
-- `DraftCartEndpoint`
+- `DurableIdentityRepositoryEntity`
+- `MeEndpoint`
 
 ### 2. Downstream/internal entity
 Use when a consumer or workflow drives the entity.
@@ -147,8 +138,8 @@ Typical behavior:
 - one command may replace the full current state in one update and trigger separate audit/trace recording when consequential
 
 Repository example:
-- `PurchaseOrderEntity`
-- `DraftCartCheckoutConsumer`
+- a domain-specific key value entity
+- `WorkstreamEventAttentionConsumer`
 
 ### 3. Focused doc/example snippet
 Use when teaching one concept only.
@@ -162,7 +153,7 @@ Prefer a minimal example per topic:
 - testing
 
 Repository example:
-- `ExpiringDraftCartSessionEntity`
+- `DurableNotificationRepositoryEntity`
 
 ## Final review checklist
 

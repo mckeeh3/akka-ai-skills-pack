@@ -3,12 +3,13 @@
 Use this doc when an Akka-hosted browser UI must be more than technically correct. For generated full-stack AI-first SaaS, apply UX planning to the agent workstream shell before route or visual-component details.
 
 Pair with:
-- `docs/workstream-ui-reference-architecture.md`
-- `docs/structured-surface-contracts.md`
-- `docs/web-ui-frontend-decomposition.md`
-- `docs/web-ui-style-guide.md`
-- `docs/web-ui-quality-checklist.md`
-- `skills/akka-web-ui-ux-design/SKILL.md`
+- `./workstream-ui-reference-architecture.md`
+- `./structured-surface-contracts.md`
+- `./web-ui-frontend-decomposition.md`
+- `./web-ui-style-guide.md`
+- `./web-ui-component-catalog.md`
+- `./web-ui-quality-checklist.md`
+- `../akka-web-ui-ux-design/SKILL.md`
 
 ## UX principles
 
@@ -36,7 +37,7 @@ Main workstream stream:
 Persistent composer:
   accepted prompt/action requests, disabled/forbidden states, selected-agent context, refocus behavior
 Structured surfaces:
-  dashboards, decision cards, forms, tables, audit timelines, governance diffs, workflow/task progress, outcomes
+  dashboards, attention counter cards, decision cards, forms, tables, audit timelines, governance diffs, workflow/task progress, outcomes
 Realtime/stale region:
   connected/reconnecting/stale indicators and recovery actions
 ```
@@ -79,7 +80,7 @@ Keyboard/focus path:
 Use this order unless the product context says otherwise:
 
 1. selected functional agent, tenant/customer context, and concise purpose
-2. attention state, pending decision, blocked work, or summary metric
+2. attention state, pending decision, blocked work, or summary metric, rendered as the first dashboard counter strip when present, with KPI labels large/bold enough to scan and clearly separated from the number/status by deliberate spacing
 3. primary action or next decision
 4. decision-driving structured surface content
 5. filters/search/sort for dense data when needed
@@ -158,7 +159,7 @@ Confirm the concrete outcome and next step. If nothing changed, explain why and 
 
 Forms must define labels, helper text, validation, backend error mapping, submit state, idempotency expectations, success behavior, and focus movement after validation failure.
 
-Dense tables, queues, charts, and cards should define default ordering, filters/search needed for realistic volume, item primary action, status treatment, empty-filtered vs truly-empty states, and narrow-screen transformation.
+Dense tables, queues, charts, and cards should define default ordering, filters/search needed for realistic volume, item primary action, status treatment, empty-filtered vs truly-empty states, and narrow-screen transformation. Dashboard attention/KPI cards must not compress label, count, and badge into a cramped cluster; use the shared attention-card style with larger semibold/bold labels and visible vertical rhythm so users can read the attention category before acting on the number. Place these counters above dashboard details, profile/settings panels, queues, and lists; detailed investigation belongs below the counter strip or inside the target workstream dashboard.
 
 ## Deep links
 

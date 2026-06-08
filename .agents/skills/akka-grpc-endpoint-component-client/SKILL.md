@@ -21,11 +21,6 @@ When the same capability is also exposed through UI, HTTP, agent tools, workflow
 Read these first if present:
 - `akka-context/sdk/grpc-endpoints.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../examples/akka-components/src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -44,13 +39,13 @@ Read these first if present:
 6. Convert normal validation failures into `GrpcServiceException(Status.INVALID_ARGUMENT...)`.
 7. For streamed replies, delegate to a streamed component source and map each element to protobuf.
 
-## Repository example
+## Pattern to implement
 
-- `ShoppingCartGrpcEndpointImpl`
-  - unary protobuf-to-entity mapping
-  - `CommandException` translated into `INVALID_ARGUMENT`
-  - server-streaming reply backed by a view stream
-  - `google.protobuf.Timestamp` and `StringValue` used in API messages
+Create a domain-specific gRPC endpoint that demonstrates:
+- unary protobuf-to-entity mapping
+- `CommandException` translated into `INVALID_ARGUMENT`
+- optional server-streaming reply backed by a view stream
+- `google.protobuf.Timestamp` and `StringValue` used in API messages when needed
 
 ## Mapping rules
 

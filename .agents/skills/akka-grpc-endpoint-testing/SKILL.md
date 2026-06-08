@@ -20,10 +20,6 @@ When the same capability is also exposed through UI, HTTP, agent tools, workflow
 
 Read these first if present:
 - `akka-context/sdk/grpc-endpoints.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
 
 ## Test harness rules
 
@@ -34,22 +30,21 @@ gRPC endpoint tests should:
 - assert protobuf reply content directly
 - assert failure behavior through `StatusRuntimeException`
 
-## Repository patterns
+## Target-project patterns
+
+The current curated SaaS Foundation App examples do not include gRPC runtime fixtures. Do not cite retired workstream-event gRPC classes as current repository examples. Implement these shapes in the target project when gRPC is in scope.
 
 ### Unary endpoint tests
-- `ShoppingCartGrpcEndpointIntegrationTest`
-  - protobuf request-to-command mapping
-  - `INVALID_ARGUMENT` assertion for rejected requests
+- protobuf request-to-command mapping
+- `INVALID_ARGUMENT` assertion for rejected requests
 
 ### Streaming endpoint tests
-- `ShoppingCartGrpcEndpointIntegrationTest`
-  - collects stream replies with `Sink.seq()` and `testKit.getMaterializer()`
-  - waits for view consistency before consuming the gRPC stream
+- collect stream replies with `Sink.seq()` and `testKit.getMaterializer()`
+- wait for view consistency before consuming the gRPC stream
 
 ### ACL/request-context tests
-- `InternalStatusGrpcEndpointIntegrationTest`
-  - allowed service principal via `Principal.localService(...)`
-  - denied internet principal via `Principal.INTERNET`
+- allowed service principal via `Principal.localService(...)`
+- denied internet principal via `Principal.INTERNET`
 
 ## What to cover
 

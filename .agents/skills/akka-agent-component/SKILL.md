@@ -14,13 +14,7 @@ If the internal/background work needs a durable typed task, task id, lifecycle, 
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS agent work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- placement as a user-facing functional agent or a bounded internal agent, including owning workstream and structured surface placement when user-facing;
-- capability id/class for each model request, tool call, output, workflow step, endpoint, or evaluation result;
-- caller `AuthContext`, tenant/customer scope, roles/capabilities, allowed data/tools, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work trace fields, correlation ids, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing from prompt, memory, streaming, guardrail, or test mechanics.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
@@ -30,10 +24,6 @@ Read these first if present:
 - `akka-context/sdk/agents.html.md`
 - `akka-context/sdk/agents/prompt.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ActivityAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/TemplateBackedActivityAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/ConfiguredModelActivityAgent.java`
-- `../examples/akka-components/src/main/java/com/example/api/ActivityPromptEndpoint.java`
 - `../akka-agent-model-governance/SKILL.md` when model aliases, `ModelConfigRef`, model policy, fallback model policy, or provider secret boundaries are in scope
 
 ## Core pattern
@@ -48,18 +38,18 @@ Read these first if present:
 8. Keep tool calls aligned to named capability contracts; tool availability does not define the agent's responsibility or authorization boundary.
 9. For generated app runtime, missing provider/model config, disabled/unknown managed agent state, missing `AuthContext`, denied tool boundary, or policy denial must fail closed with audit/work trace and actionable error; do not return canned, deterministic, or simulated successful work as the normal user-facing response.
 
-## Repository example
+## Pattern reference
 
-- `ActivityAgent`
+- `WorkstreamRuntimeAgent`
   - single command handler
   - structured reply type
   - bounded session memory
   - fallback reply on failure
-- `TemplateBackedActivityAgent`
+- `WorkstreamRuntimeAgent` with governed prompt/runtime loading
   - system prompt loaded from the built-in `PromptTemplate` entity
-- `ConfiguredModelActivityAgent`
-  - focused static example of `ModelProvider.fromConfig("openai-low-temperature")`; for managed runtime agents, pair this pattern with `akka-agent-model-governance` so `AgentDefinition.modelConfigRef`, model policy, fallback policy, provider secret boundaries, and model-use traces are resolved before invocation
-- `ActivityPromptEndpoint`
+- configured model alias pattern
+  - when a static Java agent uses `ModelProvider.fromConfig("openai-low-temperature")`, treat the alias as a safe deployment-configured reference only; for managed runtime agents, pair this pattern with `akka-agent-model-governance` so `AgentDefinition.modelConfigRef`, model policy, fallback policy, provider secret boundaries, and model-use traces are resolved before invocation
+- a governed prompt/runtime-state endpoint
   - HTTP management of prompt-template values
 
 ## Review checklist

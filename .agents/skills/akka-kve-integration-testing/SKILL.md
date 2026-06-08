@@ -5,99 +5,38 @@ description: Write integration tests for Akka key value entity flows using TestK
 
 # Akka KVE Integration Testing
 
-Use this skill for service-level tests involving key value entities.
+Use this skill for service-level tests involving Key Value Entities.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
+
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
+- `../docs/akka-entity-testing-shared-patterns.md`
+- `../references/akka-entity-integration-testing-patterns.md`
 
-## Test harness rules
+## Key-value specifics
 
-Integration tests should:
-- extend `TestKitSupport`
-- use `httpClient` for endpoint tests
-- use `componentClient` for internal component-to-component calls
-- verify externally visible behavior, not internal implementation details only
+Cover Key Value Entity behavior that can only be proven through persisted current state and state-change reactions:
 
-## Endpoint test pattern
-
-Use when validating HTTP behavior:
-- invoke endpoint routes with `httpClient`
-- send request bodies as API request records
-- deserialize responses as API response records
-- assert HTTP success or expected failure behavior
-
-Repository examples:
-- `DraftCartIntegrationTest`
-- `PurchaseOrderEndpointIntegrationTest`
-
-## Consumer-driven flow pattern
-
-Use when a state change from one entity triggers work in another component:
-- drive the flow through the edge component or endpoint
-- wait for the downstream state to appear
-- assert final state using `componentClient` or endpoint reads
-- account for asynchronous propagation
-
-Repository example:
-- `DraftCartCheckoutConsumerIntegrationTest`
-
-## Waiting strategy
-
-When the flow is asynchronous:
-- do not assume immediate consistency
-- poll or await until the expected state is visible
-- keep timeouts explicit and reasonable
-
-## What to cover
-
-Prefer these categories:
-1. endpoint round trip success
-2. validation failure mapped to HTTP behavior
-3. update flow changing persistent state
-4. end-to-end consumer or workflow driven interaction
-5. idempotent or repeated command behavior when important
-
-## Generated SaaS test set
-
-For generated SaaS entity work, derive tests from the capability contract, not only from entity mechanics:
-- authorized success with tenant/customer scoped identifiers or state;
-- validation failure and safe reply shape;
-- no-op/idempotent duplicate command behavior;
-- forbidden or cross-tenant attempts when the entity method is directly exposed or called by endpoints/tools/workflows;
-- audit/work-trace expectations for consequential commands, denials, and data access;
-- exposure parity for HTTP/gRPC/MCP/tool/surface flows when the entity backs those surfaces.
-
-
-## Anti-patterns
-
-Avoid:
-- using `componentClient` to test endpoint HTTP contracts
-- assuming consumer-driven flows are synchronous
-- exposing domain records as external API test payloads when endpoint-specific types exist
-- testing only happy paths
+1. endpoint or component command updates the expected durable state;
+2. read paths expose the latest authorized state, not direct fixture objects;
+3. duplicate/idempotent commands preserve state and do not trigger duplicate consequential side effects;
+4. consumers or views react to the intended state changes and handle delete/no-op behavior safely;
+5. authorization denials and validation failures avoid accidental state mutation;
+6. audit/work-trace expectations preserve correlation ids, policy/evidence refs, state-change summary, and actor scope when consequential.
 
 ## Review checklist
 
 Before finishing, verify:
-- test extends `TestKitSupport`
-- endpoint tests use `httpClient`
-- internal follow-up checks use `componentClient` where appropriate
-- async flows wait explicitly
-- validation failures are asserted, not ignored
+
+- shared patterns in `../references/akka-entity-integration-testing-patterns.md` are applied;
+- endpoint tests use `httpClient` and endpoint DTOs;
+- internal checks use `componentClient` where appropriate;
+- async projections/consumers wait explicitly;
+- state update, idempotency, validation, delete/no-op, and denial behavior are asserted.

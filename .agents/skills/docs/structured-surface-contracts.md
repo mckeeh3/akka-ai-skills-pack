@@ -1,8 +1,8 @@
 # Structured surface contracts
 
-Use this document when defining or implementing typed surfaces in an agent workstream application. It turns the surface guidance from `agent-workstream-application-architecture.md` and the requirements-to-workstream process in `requirements-to-workstream-development-process.md` into an implementation contract for app descriptions, frontend code, HTTP APIs, realtime events, capability modeling, and tests.
+Use this document when defining or implementing typed surfaces in an agent workstream application. It turns the surface guidance from `./agent-workstream-application-architecture.md`, the compact workstream fields in `./workstream-contract.md`, the attention contracts in `./workstream-attention-contracts.md`, and the requirements-to-workstream process in `./requirements-to-workstream-development-process.md` into an implementation contract for app descriptions, frontend code, HTTP APIs, realtime events, capability modeling, and tests.
 
-Source-controlled starter assets live under `templates/ai-first-saas-starter/app-description/**`. Use them as copy/adapt examples for the five-core workstream starter surface layer when a target project lacks an app-description surface baseline. Validate adapted target-project contracts with `tools/validate-surface-contracts.sh <app-description-dir>` when available.
+Source-controlled SaaS Foundation App assets live under `templates/ai-first-saas-core-app/app-description/**`. Use them as copy/adapt examples for the five-core workstream domain surface layer when a target project lacks an app-description surface baseline. Validate adapted target-project contracts with `tools/validate-surface-contracts.sh --mode template <app-description-dir>` for process/template baselines or `tools/validate-surface-contracts.sh --mode implementation <app-description-dir>` for app-level contracts. Implementation validation is readiness-aware; `capability-ready` and higher scopes must not rely on unresolved deferred result surfaces.
 
 A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear. All renderable system feedback in a workstream is also a surface, not an ad hoc UI string.
 
@@ -30,7 +30,7 @@ A workstream's surfaces form a **surface graph** rather than a flat page list. T
 
 Define the graph explicitly enough that implementation can preserve navigation, authority, and traceability:
 
-- **Nodes:** dashboard surfaces, attention-item surfaces, tables, forms, detail cards, decision/approval cards, workflow/task progress surfaces, audit/trace timelines, `markdown_response`, and `system_message` surfaces.
+- **Nodes:** dashboard surfaces, attention-item surfaces, tables, forms, detail cards, decision/approval cards, workflow/task progress surfaces, audit/trace timelines, `markdown_response`, and `system_message` surfaces. Each node has exactly one owner functional agent; reusable surfaces declare explicit reusable-by functional agents/workstreams.
 - **Edges:** surface actions, surface-request actions, deep links, prompt-entered requests, realtime refreshes, workflow/AutonomousAgent progress updates, and system-message results.
 - **Edge contract:** every edge maps to a governed backend capability and, when executable, to a governed-tool exposure such as a browser-tool, agent-tool, workflow-tool, timer-tool, consumer-tool, MCP-tool, or internal-tool.
 - **Result semantics:** an action should append a surface, update a surface, open another graph node, create a typed `system_message`, update dashboard attention, start/observe internal-agent work, or return a safe denial.
@@ -45,7 +45,7 @@ For each surface, define these fields before implementation:
 
 | Field | Required content |
 |---|---|
-| Surface identity | Stable `surfaceId`, display name, canonical type, semantic version, owner, lifecycle status. |
+| Surface identity | Stable `surfaceId`, display name, canonical type, semantic version, exactly one owner functional agent, explicit reusable-by agents/workstreams, lifecycle status. |
 | Placement | Owning functional agent, reusable functional agents, workstream entry point, embedded/drill-in/modal/side-panel/deep-link placement. |
 | Purpose | User outcome, business context, and when the surface should appear or refresh. |
 | Payload schema | Typed render payload, field formats, required/optional fields, nested records, pagination/sort/filter metadata, trace/correlation ids, version/stale markers. |
@@ -107,13 +107,13 @@ Payload rules:
 
 Dashboard and attention surfaces are first-class structured surfaces. A normal workstream dashboard is scoped primarily to its owning workstream and should expose what is happening, what needs the current user's attention, what is blocked/overdue/risky/failed/paused, who or what is participating, pending decisions/approvals, recent changes, and authorized next actions. My Account is the main aggregate exception: its dashboard may summarize attention across accessible workstreams and open target workstream dashboards or attention items through governed surface-request actions.
 
-Use backend-produced attention projections for left rail badges, My Account aggregate panels, dashboard summary cards, digests, and briefing surfaces. The compact summary shape should align with `WorkstreamAttentionSummary` from `requirements-to-workstream-development-process.md`; detailed attention items should link to their owning workstream, source event/message/trace, relevant capability, and any linked AutonomousAgent task. The starter implements this as a v1 shared attention backbone plus v2 bounded producers/update refresh; generated apps must not treat frontend-only badge state, fixtures, or demo data as authoritative actionable attention.
+Use backend-produced attention projections for left rail badges, My Account aggregate panels, dashboard summary cards, digests, and briefing surfaces. The compact summary shape should align with `WorkstreamAttentionSummary` from `./requirements-to-workstream-development-process.md`; detailed attention items should link to their owning workstream, source event/message/trace, relevant capability, and any linked AutonomousAgent task. The SaaS Foundation App implements this as a shared attention backbone plus bounded producers/update refresh; generated apps must not treat frontend-only badge state, fixtures, or demo data as authoritative actionable attention.
 
 AutonomousAgent task progress/result surfaces are required when durable internal/background model-driven work is user-visible or creates decisions, exceptions, approvals, failures, rejected results, blocked dependencies, or recommendations. Task progress notifications can update the surface, but task progress and attention state must derive from governed backend task/projection state. Actions such as `open_attention_item`, `retry_failed_action`, `request_approval`, `escalate`, `dismiss`, `start_investigation`, or `open_task_result` must map to governed capabilities.
 
 ## Base surface: `markdown_response`
 
-Use `markdown_response` as the smallest valid structured surface for the five core workstream starter (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) and other low-ceremony explanatory replies. It is a structured surface, not a raw chat transcript or untyped assistant message.
+Use `markdown_response` as the smallest valid structured surface for the SaaS Foundation App domain (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) and other low-ceremony explanatory replies. It is a structured surface, not a raw chat transcript or untyped assistant message.
 
 Contract:
 
@@ -125,7 +125,7 @@ Contract:
 | Rendering | Render markdown only through an approved markdown parser and sanitizer pipeline; browser output is sanitized HTML, not raw model HTML. |
 | Sanitization | Strip or neutralize raw HTML that can execute code, `<script>`, event-handler attributes, dangerous URL schemes such as `javascript:`, unsafe iframes/embeds, inline styles unless explicitly allow-listed, and untrusted target behavior. External links must be transformed according to the UI security policy, usually with safe `rel` attributes and visible destination affordance. |
 | Redaction | Markdown content must already be scoped and redacted by the producing capability/agent; the renderer must not reveal hidden fields, secrets, prompt text, provider credentials, cross-tenant data, or support-only facts. |
-| Actions | Prefer no consequential inline actions in starter scope. Allowed actions, when present, use the normal `SurfaceAction` shape and link to governed capabilities such as `open_trace`, `copy_response`, `retry_request`, `request_clarification`, or `open_follow_up_task`; backend authorization remains authoritative. |
+| Actions | Prefer no consequential inline actions in SaaS Foundation App scope. Allowed actions, when present, use the normal `SurfaceAction` shape and link to governed capabilities such as `open_trace`, `copy_response`, `retry_request`, `request_clarification`, or `open_follow_up_task`; backend authorization remains authoritative. |
 | UI states | Define loading/generating, ready, empty, error, forbidden, stale/reconnecting, and redacted states. Forbidden and redacted states must avoid leaking the original unsafe content. |
 | Accessibility | Preserve semantic headings, lists, tables, code blocks, blockquotes, and links; provide keyboard navigation, visible focus, readable code-block wrapping/copy affordance where allowed, screen-reader-friendly status changes, and heading hierarchy that does not skip the surrounding shell structure. |
 | Realtime | If streamed or updated incrementally, partial markdown must be rendered safely at every increment or shown as plain text until finalized; reconnect either resumes from a safe event id or marks the surface stale and requests refresh. |
@@ -281,7 +281,7 @@ Event rules:
 
 ## Capability mapping requirements
 
-For every surface action and payload-producing query, the capability inventory must specify:
+For every surface action and payload-producing query, the capability inventory must specify the details below. For workstreams at `capability-ready` or higher, also add the lightweight `surfaceActionMappings` entry in `12-workstreams/workstream-manifest.json` so validators can check the surface/action/capability/governed-tool link without duplicating this full contract.
 
 - capability id and class (`read/evidence`, `command`, `proposal`, `approval`, `workflow`, `autonomous task`, `governance`, `trace/audit`, `scheduled`, or `reactive`);
 - actors/callers, including human roles, functional agents, internal agents, workflows, services, timers, consumers, or support roles;
@@ -306,29 +306,29 @@ A structured surface is not implementable until tests are named for:
 
 ## Source template and validation support
 
-The source repository includes an app-description-only starter template:
+The source repository includes an app-description-only SaaS Foundation App template:
 
 ```text
-templates/ai-first-saas-starter/app-description/
+templates/ai-first-saas-core-app/app-description/
   12-workstreams/surfaces-index.md
   12-workstreams/surface-contracts/*.md
   55-ui/structured-surface-rendering.md
   70-traceability/surface-to-capability-map.md
 ```
 
-Use that template for starter surface shape and field density; copy only the files relevant to the target project and then adapt ids, roles, capabilities, tests, and domain-specific surfaces. The template is not a generated runtime baseline. For a compact non-core domain example, see `docs/examples/domain-workstream-surface-contract-example.md`.
+Use that template for SaaS Foundation App surface shape and field density; copy only the files relevant to the target project and then adapt ids, roles, capabilities, tests, and domain-specific surfaces. The template is not a generated runtime baseline. For a compact non-core domain example, see `./examples/domain-workstream-surface-contract-example.md`.
 
-`tools/validate-surface-contracts.sh` performs lightweight structural checks for target app-description trees: index presence, referenced contract files, required contract fields, action/capability/governed-tool exposure details, auth/security, redaction, trace/correlation, tests, and traceability-map coverage. It is intentionally a guardrail, not a substitute for reviewing product semantics.
+`tools/validate-surface-contracts.sh` performs lightweight structural checks for target app-description trees. Use `--mode template` for process examples that may include compact mappings and deferred typed surfaces. Use `--mode implementation` for app-level contracts; it is readiness-aware and tightens checks for `capability-ready` and higher workstreams. Checks include index presence, referenced contract files, required contract fields, single-owner semantics, action/capability/governed-tool exposure details, auth/security, redaction, trace/correlation, tests, graph/map coverage, and deferred-surface handling. It is intentionally a guardrail, not a substitute for reviewing product semantics.
 
 ## Handoff checklist
 
 Before moving from surface design to code generation, verify:
 
-- [ ] Surface has stable identity, type, version, owner/reuse, placement, and purpose.
+- [ ] Surface has stable identity, type, version, exactly one owner functional agent, explicit reuse, placement, and purpose.
 - [ ] Payload schema is typed, scoped, redacted, traceable, and frontend-safe.
 - [ ] Every action, including surface-request/read actions, maps to a governed backend capability.
 - [ ] Backend authorization remains authoritative over UI visibility, prompt text, and tool descriptions.
 - [ ] Events define ordering, dedupe, reconnect, stale, and cross-context handling.
 - [ ] UI states and accessibility/responsive expectations are explicit.
 - [ ] Rendering, capability/action, authorization, tenant-isolation, audit/trace, realtime, and frontend secret-boundary tests are defined.
-- [ ] Starter or repaired app-description surface layers pass `tools/validate-surface-contracts.sh <app-description-dir>` when the tool is available.
+- [ ] SaaS Foundation App or repaired app-description surface layers pass `tools/validate-surface-contracts.sh <app-description-dir>` when the tool is available.

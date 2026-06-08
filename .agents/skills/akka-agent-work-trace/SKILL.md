@@ -11,20 +11,15 @@ This is the agent-specific companion to `ai-first-saas-audit-trace`. It does not
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS agent trace work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- functional/internal agent, workstream, trace/audit surface ids, investigation actions, and source surface/action/tool/workflow events;
-- capability ids/classes for trace recording, search, detail, export, redaction, retention, and investigation operations;
-- `AuthContext`, tenant/customer scope, viewer roles/capabilities, support-access rules, sensitive-field redaction, and forbidden behavior;
-- correlation/work trace ids, prompt/skill/reference/model/tool/data/policy refs, outcome/decision links, audit obligations, retention rules, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of logging arbitrary agent metadata.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md`
+- `../docs/governed-agent-substrate.md`
 - `../docs/agent-coverage-matrix.md`
-- `../docs/examples/core-ai-first-saas-input/08-module-audit-work-trace-prd.md`
+- `../docs/examples/ai-first-saas-core-app-domain/audit-trace-workstream/README.md`
 - `../core-saas-foundation/SKILL.md`
 - `../ai-first-saas-audit-trace/SKILL.md`
 - `../akka-agents/SKILL.md`

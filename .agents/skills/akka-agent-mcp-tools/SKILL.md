@@ -19,9 +19,6 @@ Prefer read-only evidence capabilities for remote MCP tool use. Side-effecting r
 
 Read these first if present:
 - `akka-context/sdk/agents/extending.html.md`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartToolsMcpEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/application/RemoteShoppingCartAgent.java`
-- `../examples/akka-components/src/test/java/com/example/application/RemoteShoppingCartAgentTest.java`
 
 ## Use this pattern when
 
@@ -41,19 +38,16 @@ Read these first if present:
 8. Keep tool results curated for the agent's purpose; do not ask a remote MCP tool for raw state when the capability requires redacted evidence.
 9. Emit `ToolInvocation`/work trace records for allowed, denied, approval-required, and failed remote tool attempts.
 
-## Repository example
+## Repository example status
 
-- `ShoppingCartToolsMcpEndpoint`
-  - default-path MCP server exposing the read-only `cart.summary.inspect` capability through `getCartSummary`
-  - uses a service ACL to show the remote MCP boundary is selective rather than open by default
-  - returns a compact cart summary, not raw entity state
-- `RemoteShoppingCartAgent`
-  - connects to an explicit remote MCP server URL
-  - allows only `getCartSummary` for the `cart.summary.inspect` capability
-- `GovernedRefundMcpEndpoint`
-  - exposes side-effecting `refund.request_consequential` through `request-governed-refund`
-  - preserves service ACL, stable MCP tool id, `ToolPermissionBoundary`, tenant/customer scope, idempotency, approval-required behavior, and trace emission
-  - covered by `GovernedRefundToolBoundaryIntegrationTest` for ungranted MCP denial, approval-required result, duplicate idempotency behavior, and no direct side-effect execution
+The current SaaS Foundation App example snapshot does not include MCP runtime examples. Do not cite retired MCP fixture class names as current repository examples.
+
+When implementing this pattern in a target project, create target-specific examples that:
+- expose only the selected read-only summary or governed action tool ids;
+- use service ACLs so the remote MCP boundary is selective rather than open by default;
+- return compact, redacted evidence DTOs instead of raw entity state;
+- preserve `ToolPermissionBoundary`, tenant/customer scope, idempotency, approval-required behavior, and trace emission;
+- include integration tests for ungranted MCP denial, approval-required results, duplicate idempotency behavior, and no direct side-effect execution.
 
 ## Review checklist
 

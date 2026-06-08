@@ -13,32 +13,21 @@ Consumer tests should verify reactive capability behavior, not only that a handl
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
 
 ## Test modes
 
 ### 1. End-to-end through endpoint or component flow
 Use when the consumer is triggered by the real upstream component in the same service.
 
-Repository examples:
-- `ShoppingCartCheckoutConsumerIntegrationTest`
-- `DraftCartCheckoutConsumerIntegrationTest`
+Pattern references:
+- current curated consumer shape: `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
+- current curated flow test shape: `../examples/akka-components/src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java`
 
 Pattern:
 - trigger the upstream entity through `httpClient` or `componentClient`
@@ -48,8 +37,8 @@ Pattern:
 ### 2. Mocked incoming topic messages
 Use when the consumer source is a broker topic.
 
-Repository example:
-- `ShoppingCartCommandsTopicConsumerIntegrationTest`
+Pattern reference:
+- target-project topic consumer integration test; the current curated tree does not include a broker-topic fixture class
 
 Pattern:
 - configure `withTopicIncomingMessages(...)`
@@ -61,7 +50,7 @@ Pattern:
 Use when isolating the consumer from workflow or entity change streams. If the upstream workflow/entity exists in the same generated service and the named feature depends on that reaction, also include an end-to-end local/TestKit path that triggers the real upstream component and observes the downstream result before calling the feature complete.
 
 Repository example:
-- `ReviewWorkflowTopicConsumerIntegrationTest`
+- a domain-specific workflow topic consumer integration test
 
 Pattern:
 - configure `withWorkflowIncomingMessages(...)`, `withEventSourcedEntityIncomingMessages(...)`, or `withKeyValueEntityIncomingMessages(...)`

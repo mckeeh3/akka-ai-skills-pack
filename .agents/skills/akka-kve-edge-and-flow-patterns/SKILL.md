@@ -12,11 +12,6 @@ Use this skill when deciding how a key value entity participates in a larger flo
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/PurchaseOrderEndpoint.java`
 
 ## Capability-first framing
 
@@ -41,8 +36,8 @@ Typical traits:
 - endpoint catches `CommandException`, maps to HTTP response, and records required audit/trace data
 
 Repository example:
-- `DraftCartEntity`
-- `DraftCartEndpoint`
+- `DurableIdentityRepositoryEntity`
+- `MeEndpoint`
 
 ### Downstream/internal entity
 
@@ -59,8 +54,8 @@ Typical traits:
 - one command often results in one full-state replacement and separate audit/trace recording when consequential
 
 Repository example:
-- `PurchaseOrderEntity`
-- `DraftCartCheckoutConsumer`
+- a domain-specific key value entity
+- `WorkstreamEventAttentionConsumer`
 
 ## Endpoint rules
 
@@ -75,8 +70,8 @@ For HTTP or gRPC endpoints that call entities:
 - use `HttpResponses.badRequest(...)` for business validation failures when returning `HttpResponse`
 
 Repository example:
-- `DraftCartEndpoint`
-- `PurchaseOrderEndpoint`
+- `MeEndpoint`
+- a domain-specific admin endpoint
 
 ## Consumer and workflow rules
 
@@ -88,7 +83,7 @@ When another component reacts to key value entity state changes:
 - prefer idempotent downstream commands
 
 Repository example:
-- `DraftCartCheckoutConsumer`
+- `WorkstreamEventAttentionConsumer`
 
 ## No-op guidance
 

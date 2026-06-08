@@ -94,12 +94,12 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
   - specs/akka-solution-plan.md
   - specs/backlog/01-<slice>-build-backlog.md
   - specs/tasks/01-<slice>/01-<task>.md
-  - docs/ai-first-saas-application-architecture.md when the task implements AI-first objects, authority, policies, decisions, traces, UI surfaces, or outcomes
-  - docs/workstream-expertise-model.md when the task implements or changes an LLM-backed functional agent's workstream expertise, model binding, skills, references, manifests, loaders, tool boundaries, traces, or expertise surfaces
-  - skills/akka-agent-behavior-profiles/SKILL.md when the task implements AgentDefinition, lifecycle, authority, agent catalog, or agent detail
-  - skills/akka-agent-prompt-governance/SKILL.md when the task implements PromptDocument, PromptVersion, prompt assembly, PromptAssemblyTrace, or prompt governance UI
-  - skills/akka-agent-skill-governance/SKILL.md when the task implements SkillDocument, SkillVersion, AgentSkillManifest, readSkill, SkillLoadTrace, or skill/manifest/tool-boundary UI
-  - skills/akka-agent-work-trace/SKILL.md when the task implements AgentWorkTrace or agent trace search/detail UI
+  - ./ai-first-saas-application-architecture.md when the task implements AI-first objects, authority, policies, decisions, traces, UI surfaces, or outcomes
+  - ./workstream-expertise-model.md when the task implements or changes an LLM-backed functional agent's workstream expertise, model binding, skills, references, manifests, loaders, tool boundaries, traces, or expertise surfaces
+  - ../akka-agent-behavior-profiles/SKILL.md when the task implements AgentDefinition, lifecycle, authority, agent catalog, or agent detail
+  - ../akka-agent-prompt-governance/SKILL.md when the task implements PromptDocument, PromptVersion, prompt assembly, PromptAssemblyTrace, or prompt governance UI
+  - ../akka-agent-skill-governance/SKILL.md when the task implements SkillDocument, SkillVersion, AgentSkillManifest, readSkill, SkillLoadTrace, or skill/manifest/tool-boundary UI
+  - ../akka-agent-work-trace/SKILL.md when the task implements AgentWorkTrace or agent trace search/detail UI
 - skills:
   - <skill-name>
   - ai-first-saas when the task must preserve AI-first operating-model semantics
@@ -146,13 +146,19 @@ Use this section in task briefs:
 
 For `specs/pending-tasks.md`, put the same content under the task's `notes` as a `vertical contract:` line or as equivalent bullet notes. A task may omit workstream/surface/action fields only when it explicitly says `internal-only`, `foundation-only`, `cross-cutting`, `docs-only`, or `non-runtime` and explains the non-attention/non-UI reason, capability/foundation scope, trace expectations, and validation path.
 
-Before implementation, use the repository validator when available:
+Before implementation, use the pending-task validator when available. From a source attention, run:
 
 ```bash
 bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md
 ```
 
-In a downstream fork, run the script from the repository source checkout when available, passing the target queue path. The harness install also makes pack tools available under `.agents/skills/tools/**` for installed-skill use. The validator is intentionally conservative: it checks for the presence of the required contract vocabulary, not semantic correctness. Passing the script does not replace reading the task brief; failing it means repair the backlog/task brief/queue before coding.
+From an installed skills library, run the installed equivalent:
+
+```bash
+bash .agents/skills/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md
+```
+
+In a downstream fork, use whichever path exists and pass the target queue path. The validator is intentionally conservative: it checks for the presence of the required contract vocabulary, not semantic correctness. Passing the script does not replace reading the task brief; failing it means repair the backlog/task brief/queue before coding.
 
 ## Managed-agent and workstream expertise splitting guardrails
 
@@ -170,7 +176,7 @@ Use bounded foundation task families such as:
 
 For every new or materially changed domain-specific functional agent with LLM behavior, queue self-contained fresh-session workstream expertise tasks. Split as needed into:
 - app-description expert bundle contract with functional agent, approved model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited governed default), surfaces, capabilities, authority, traces, and tests
-- seeded default model refs/policies, prompt, skill documents, reference documents, compact skill/reference manifests, and provenance/checksum expectations
+- default model refs/policies, prompt, skill documents, reference documents, compact skill/reference manifests, and provenance/checksum expectations
 - runtime model-binding and loader/boundary work for model policy validation, fallback/no-fallback behavior, provider secret boundaries, `readSkill`, `readReferenceDoc`, assigned loads, unassigned denials, missing-boundary denials, redaction/token limits, and trace emission
 - expertise manifest and governance UI surfaces that show model aliases/policy summaries, compact manifests, evidence, denials, decisions, trace links, and review state without exposing full bodies or provider secrets by default
 - contract/runtime tests for model binding success/denial/fallback, provider-secret non-exposure, assigned skill/reference loads, denied loads, tool-boundary denial, no authority expansion from prompt/skill/reference text, tenant isolation, audit/work traces, and surface rendering
@@ -299,18 +305,18 @@ If a task discovers an unresolved design decision during execution, block the ta
 
 ## Related skills and docs
 
-- `../skills/akka-pending-question-generation/SKILL.md`
-- `../skills/akka-do-next-pending-question/SKILL.md`
-- `../skills/akka-pending-question-queue-maintenance/SKILL.md`
-- `../skills/akka-do-next-pending-task/SKILL.md`
-- `../skills/akka-pending-task-queue-maintenance/SKILL.md`
-- `../skills/akka-change-request-to-spec-update/SKILL.md`
-- `../skills/akka-revised-prd-reconciliation/SKILL.md`
-- `../skills/akka-backlog-to-pending-tasks/SKILL.md`
-- `../skills/akka-prd-to-specs-backlog/SKILL.md`
-- `../skills/akka-slice-spec-to-backlog/SKILL.md`
-- `../skills/akka-backlog-item-to-task-brief/SKILL.md`
-- `examples/purchase-request-pending-tasks.md` — conventional queue mechanics only, not generated-SaaS architecture
-- `module-sprint-planning.md`
-- `solution-plan-to-implementation-queue.md`
-- `intent-driven-usage-flow.md`
+- `../akka-pending-question-generation/SKILL.md`
+- `../akka-do-next-pending-question/SKILL.md`
+- `../akka-pending-question-queue-maintenance/SKILL.md`
+- `../akka-do-next-pending-task/SKILL.md`
+- `../akka-pending-task-queue-maintenance/SKILL.md`
+- `../akka-change-request-to-spec-update/SKILL.md`
+- `../akka-revised-prd-reconciliation/SKILL.md`
+- `../akka-backlog-to-pending-tasks/SKILL.md`
+- `../akka-prd-to-specs-backlog/SKILL.md`
+- `../akka-slice-spec-to-backlog/SKILL.md`
+- `../akka-backlog-item-to-task-brief/SKILL.md`
+- `./module-sprint-planning.md`
+- `./solution-plan-to-implementation-queue.md`
+- `./intent-compiler.md`
+- `./intent-to-realization-flow.md`

@@ -20,12 +20,6 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/main/java/com/example/api/GreetingEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/RequestHeadersEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/SecureGreetingEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/RequestHeadersEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -49,14 +43,14 @@ Generated SaaS APIs should treat request context as the source for authenticated
 
 ## Repository examples
 
-- `GreetingEndpoint`
+- current snapshot examples: `MeEndpoint`, `WorkstreamEndpoint`, or `AdminEndpoint` as applicable
   - reads query parameters through `requestContext().queryParams()`
   - combines path parameters and request body parameters
   - returns `HttpResponses.badRequest(...)` for invalid edge input
-- `RequestHeadersEndpoint`
+- a domain-specific request-context endpoint (or `MeEndpoint` for auth context)
   - reads required and optional headers through `requestContext().requestHeader(...)`
   - inspects principals through `requestContext().getPrincipals()`
-- `SecureGreetingEndpoint`
+- JWT-secured generated-SaaS API endpoints such as `MeEndpoint` and protected `/api/...` routes
   - reads JWT claims through `requestContext().getJwtClaims()` after `@JWT` validation
 
 ## Common request-context uses

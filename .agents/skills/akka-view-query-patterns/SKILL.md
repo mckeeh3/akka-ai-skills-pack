@@ -17,7 +17,6 @@ Read these first if present:
 - `akka-context/reference/views/syntax/query.html.md`
 - `akka-context/reference/views/syntax/select.html.md`
 - `akka-context/reference/views/syntax/order-by.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
 - `../docs/capability-first-backend-architecture.md`
 
 ## Core rules
@@ -60,42 +59,42 @@ Prevent this by checking every generated query:
 
 Query:
 ```sql
-SELECT * AS carts
-FROM draft_carts_by_checked_out
+SELECT * AS rows
+FROM workstream_logs_by_checked_out
 WHERE checkedOut = :checkedOut
-  AND cartId >= :minCartId
-ORDER BY cartId
+  AND workstreamId >= :minWorkstreamId
+ORDER BY workstreamId
 ```
 
 Java:
 ```java
-public record FindCheckedOutCarts(boolean checkedOut, String minCartId) {}
-public record DraftCartSummaries(List<DraftCartSummary> carts) {}
+public record FindCheckedOutRows(boolean checkedOut, String minWorkstreamId) {}
+public record WorkstreamLogSummaries(List<WorkstreamLogSummary> rows) {}
 ```
 
-Call with `minCartId = ""` only when cart ids are non-empty strings and lexicographic lower-bound behavior is correct.
+Call with `minWorkstreamId = ""` only when workstream ids are non-empty strings and lexicographic lower-bound behavior is correct.
 
 ### 2. Offset pagination wrapper
 
 Query:
 ```sql
-SELECT * AS carts
-FROM draft_carts_by_checked_out
+SELECT * AS rows
+FROM workstream_logs_by_checked_out
 WHERE checkedOut = :checkedOut
-  AND cartId >= :minCartId
-ORDER BY cartId
+  AND workstreamId >= :minWorkstreamId
+ORDER BY workstreamId
 OFFSET :offset
 LIMIT :pageSize
 ```
 
 Java:
 ```java
-public record FindPage(boolean checkedOut, String minCartId, int offset, int pageSize) {}
-public record DraftCartPage(List<DraftCartSummary> carts) {}
+public record FindPage(boolean checkedOut, String minWorkstreamId, int offset, int pageSize) {}
+public record WorkstreamLogPage(List<WorkstreamLogSummary> rows) {}
 ```
 
 Repository example:
-- `DraftCartsByCheckedOutView#getCartsPage`
+- `UserDirectoryView#getRowsPage`
 
 ### 3. Non-updating non-SSE stream query
 
@@ -104,15 +103,15 @@ Use this only when the stream is collected directly or forwarded through a proto
 Query:
 ```sql
 SELECT *
-FROM shopping_cart_audit
+FROM workstream_event_audit
 WHERE deleted = :deleted
-  AND cartId >= :minCartId
-ORDER BY cartId
+  AND workstreamId >= :minWorkstreamId
+ORDER BY workstreamId
 ```
 
 Java:
 ```java
-public record FindByDeleted(boolean deleted, String minCartId) {}
+public record FindByDeleted(boolean deleted, String minWorkstreamId) {}
 
 public QueryStreamEffect<AuditRow> streamByDeleted(FindByDeleted request) {
   return queryStreamResult();
@@ -120,7 +119,7 @@ public QueryStreamEffect<AuditRow> streamByDeleted(FindByDeleted request) {
 ```
 
 Repository example:
-- `ShoppingCartAuditView#streamByDeleted`
+- `AdminAuditView#streamByDeleted`
 
 ### 4. Offset pagination with total count
 
@@ -128,18 +127,18 @@ When the client needs total rows as well as a page slice, follow the same wrappe
 
 Query:
 ```sql
-SELECT * AS carts, total_count() AS totalCount
-FROM draft_carts_by_checked_out
+SELECT * AS rows, total_count() AS totalCount
+FROM workstream_logs_by_checked_out
 WHERE checkedOut = :checkedOut
-  AND cartId >= :minCartId
-ORDER BY cartId
+  AND workstreamId >= :minWorkstreamId
+ORDER BY workstreamId
 OFFSET :offset
 LIMIT :pageSize
 ```
 
 Java:
 ```java
-public record DraftCartPageWithTotal(List<DraftCartSummary> carts, int totalCount) {}
+public record WorkstreamLogPageWithTotal(List<WorkstreamLogSummary> rows, int totalCount) {}
 ```
 
 For this pattern, read:

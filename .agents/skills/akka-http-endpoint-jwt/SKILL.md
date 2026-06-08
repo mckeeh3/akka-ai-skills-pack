@@ -9,13 +9,7 @@ Use this skill when an HTTP endpoint requires JWT authentication.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS JWT endpoint work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- source functional agent, structured surface action, browser/API caller, or explicit service/internal caller;
-- governed capability id/class, route exposure, selected tenant/customer context, and matching backend substrate;
-- JWT issuer/audience/claim contract, local `AuthContext`, roles/capabilities, disabled/forbidden behavior, and backend authorization boundary;
-- DTOs, redaction, idempotency/correlation ids, policy/approval/escalation, audit/work trace events, denial/error shapes, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of treating JWT presence as sufficient authorization.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Capability-first exposure rule
 
@@ -34,8 +28,6 @@ Read these first if present:
 - `../docs/security-pattern-selection.md`
 - `../docs/security-workos-auth-and-admin.md`
 - `../docs/security-review-checklist.md`
-- `../examples/akka-components/src/main/java/com/example/api/SecureGreetingEndpoint.java`
-- `../examples/akka-components/src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -77,7 +69,7 @@ Do not trust hidden frontend navigation, JWT presence, email domain, or mutable 
 
 ## Repository example
 
-- `SecureGreetingEndpoint`
+- JWT-secured generated-SaaS API endpoints such as `MeEndpoint` and protected `/api/...` routes
   - validates a bearer token issuer
   - requires a static claim
   - reads issuer, subject, and role from `requestContext().getJwtClaims()`

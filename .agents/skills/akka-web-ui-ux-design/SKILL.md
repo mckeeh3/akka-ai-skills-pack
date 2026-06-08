@@ -13,23 +13,19 @@ Use this skill before implementing details with `akka-web-ui-frontend-project` s
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS UX work, produce an implementation-ready UX plan only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agents, workstream regions, role-specific dashboard attention sources, structured surface ids/types/versions, human surface graph edges, surface actions/events, and deep-link intent;
-- browser-tool exposure names, governed-tool ids, governed capability ids/classes behind consequential actions/queries, and selected frontend/API/realtime exposure;
-- `AuthContext`, tenant/customer scope, roles/capabilities, authority indicators, disabled/forbidden states, and retained-human-authority rules;
-- DTO/error states, redaction, idempotency/correlation, policy/approval/escalation states, audit/work trace links, selected style guide, named-theme contract, accessibility, and required rendering/API/realtime tests.
-
-If these are absent for generated SaaS implementation, route back to `akka-web-ui-apps`, `agent-workstream-apps`, and `capability-first-backend` or repair the task brief instead of designing page-first UX.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## AI-first UX role
 
 For AI-first SaaS surfaces, design around supervision, judgment, teaching, and accountability before conventional record management. The first five seconds should answer: which objective or plan is active, what the agent/system is doing, what needs human attention, what authority the human retains, and how to inspect evidence or trace history.
 
+UX design also owns visual intentionality. Do not hand off a vague "modern SaaS" direction. Commit to a recorded aesthetic point of view, memorable motif, and hierarchy strategy before implementation. For the canonical pack style this should remain within the AI-first workstream enterprise language: command desk, governance cockpit, trust-and-outcomes workspace, dense operational panels, authority/trace rails, decision cards, designed controls, and named color themes.
+
 Include these AI-first workstream/surface patterns for generated full-stack AI-first SaaS:
 - **Functional-agent rail:** role-authorized work areas, attention indicators, hidden/denied agent recovery, and selected-agent context.
 - **Main workstream:** user intent, agent responses, capability results, workflow progress, decisions, traces, and follow-up actions in one continuous timeline.
 - **Persistent composer:** contextual natural-language requests, command shortcuts, uploads where allowed, disabled/forbidden explanations, and submit progress.
-- **Role-specific dashboard / command center surface:** attention items, evidence, freshness, active goals, plan progress, agent activity, exceptions, approval queues, material events, and next browser-tools with stale/reconnect status.
+- **Role-specific dashboard / command center surface:** attention items, evidence, freshness, active goals, plan progress, agent activity, exceptions, approval queues, material events, and next browser-tools with stale/reconnect status. All dashboards with attention counters must use the same attention-card counter strip style, placed above lower-priority details/lists. Labels must be slightly larger and semibold/bold, with deliberate vertical spacing between label, number, and badge/status so the card does not feel cramped.
 - **Decision card / deviation review surface:** recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, and approve/reject/defer/escalate actions.
 - **Policy/governance center surface:** policy versions, proposals, simulations, human-authorized commits, examples, thresholds, and rollback context.
 - **Async digest surface:** compressed routine activity with material events, pending decisions, outcome deltas, and trace links.
@@ -42,7 +38,9 @@ Do not hide consequential AI behavior behind generic dashboards, page-first CRUD
 - `../docs/web-ui-frontend-decomposition.md`
 - `../docs/web-ui-ux-patterns.md`
 - `../docs/web-ui-style-guide.md`
+- `../docs/web-ui-component-catalog.md`
 - `../docs/web-ui-quality-checklist.md`
+- `../examples/web-ui/ai-first-workstream-enterprise/README.md`, `../examples/web-ui/ai-first-workstream-enterprise/component-catalog.html`, and the static mockups there when using the canonical style
 - relevant app-description UI files under `app-description/55-ui/**` or specs under `specs/**` when present
 
 ## Use this skill when
@@ -73,7 +71,7 @@ For each workstream shell region, structured surface, or major region, define:
 12. **Responsive behavior** — how the primary task survives on narrow screens.
 13. **Keyboard/focus path** — how a keyboard-only user completes the primary flow.
 14. **UX copy** — labels, button text, helper text, empty/error/success messages.
-15. **Style guide application** — how selected style tokens and named themes support hierarchy, feedback, structured-surface form controls, and My Account preference behavior when in scope.
+15. **Style guide and component catalog application** — how selected style tokens, named themes, reusable component catalog anatomy, reference mockup anatomy, visual hierarchy, typography, texture/depth, and purposeful motion support feedback, structured-surface form controls, and My Account preference behavior when in scope.
 16. **Browser-tool/capability mapping** — which browser-tool invokes which governed-tool/backend capability for each consequential action and how forbidden/denied states are shown.
 
 ## UX copy rules
@@ -135,6 +133,13 @@ UX copy:
 Responsive behavior:
 Keyboard/focus behavior:
 Deep-link behavior:
+Visual craft:
+Aesthetic point of view:
+Memorable motif:
+Hierarchy strategy:
+Typography/token strategy:
+Texture/depth/motion notes:
+Forbidden generic patterns:
 Implementation notes:
 ```
 
@@ -163,7 +168,9 @@ Before coding or accepting UI work, verify:
 - destructive actions are hard to trigger accidentally
 - mobile layout preserves the main task
 - keyboard-only flow reaches and completes primary actions
-- selected style guide tokens and named-theme bundles are used to reinforce hierarchy, focus, and status without relying on color alone
+- selected style guide tokens, named-theme bundles, typography, texture/depth choices, and canonical reference mockup anatomy are used to reinforce hierarchy, focus, and status without relying on color alone
+- dashboard KPI/attention cards use the shared attention-card style across dashboards, appear above lower-priority details/lists, and have readable semibold/bold labels plus enough gap between label, value, and status badge for fast scanning
 - left rail, workstream panel, composer, and surface actions remain usable by keyboard and at narrow widths
 - AI-first surfaces show delegated work, retained authority, evidence, policy triggers, trace links, and outcome context when those concepts are in scope
+- the UI avoids generic AI/SaaS visual cliches and has a clearly recorded memorable motif
 - consequential surface actions map to browser-tool exposures backed by governed-tools and backend capabilities; UI gating is not treated as authorization

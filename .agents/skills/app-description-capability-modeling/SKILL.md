@@ -1,13 +1,13 @@
 ---
 name: app-description-capability-modeling
-description: Update the authoritative capability layer of the app description by defining business capabilities, scope boundaries, actors, outcomes, and links to behavior, tests, security, and observability artifacts.
+description: Update authoritative domain capability nodes in the app-description current-intent graph by defining business capabilities, scope boundaries, actors, outcomes, and links to workstream behavior, tests, security, and observability artifacts.
 ---
 
 # App Description Capability Modeling
 
-Use this skill when the harness needs to define or revise the **capability layer** of the app description.
+Use this skill when the harness needs to define or revise **domain capability nodes** in the app-description current-intent graph.
 
-This skill maintains `10-capabilities/` as the inventory of what the app is for, what governed backend operations and queries exist, which governed-tools sit inside each capability, what user-visible outcomes they support, and what is in or out of scope.
+This skill maintains `app-description/domains/<domain>/capabilities/<capability>.md` as the inventory of what the app is for, what governed backend operations and queries exist, which governed-tools sit inside each capability, what user-visible outcomes they support, and what is in or out of scope. Reusable tool/role/policy/trace definitions belong under `app-description/global/**`; workstream-specific usage belongs under `domains/<domain>/workstreams/<workstream>/**` bindings.
 It does not generate code.
 
 ## Goal
@@ -24,11 +24,13 @@ Create or update capability-oriented app-description artifacts that:
 ## Required reading
 
 Read these first if present:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
-- `../docs/description-first-application-doctrine.md`
-- `../docs/internal-app-description-architecture.md`
-- `../docs/app-description-maintenance-flow.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/incremental-intent-processing.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-description-skill-output-contracts.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/requirements-to-workstream-development-process.md` for workstream attention/dashboard/surface-action/autonomous task provenance before component selection
 - `../docs/capability-first-backend-architecture.md`
@@ -40,17 +42,13 @@ Read these first if present:
 - `../app-description-ui/SKILL.md`
 - `../app-description-behavior-specification/SKILL.md`
 
-Prefer these AI-first SaaS seed capability references when present:
-- target project `app-description/10-capabilities/capabilities-index.md`
-- target project `app-description/10-capabilities/01-secure-tenant-user-foundation.md`
-- target project `app-description/10-capabilities/02-ai-first-work-management.md`
-- target project `app-description/10-capabilities/03-governance-decisions-and-audit.md`
-- target project `app-description/10-capabilities/05-managed-agent-foundation.md`
+Prefer these SaaS Foundation App capability references when present:
+- target project path: app-description/domains/<domain>/capabilities/*.md
+- target project path: app-description/domains/foundation/capabilities/*.md for SaaS Foundation App capabilities
+- target project path: app-description/global/tools/*.md, `global/roles/*.md`, `global/policies/*.md`, and `global/traces/*.md` when reusable definitions are affected
+- target project path: app-description/domains/<domain>/workstreams/<workstream>/tools/*.md when a capability is exposed through a workstream binding
 
-Conventional mechanics-only references, not canonical generated AI-first SaaS target architecture:
-- `../docs/examples/purchase-request-app-description/app-description/10-capabilities/capabilities-index.md`
-- `../docs/examples/purchase-request-app-description/app-description/10-capabilities/01-submit-and-approve-purchase-requests.md`
-- `../docs/examples/purchase-request-app-description/app-description/70-traceability/capability-to-behavior-map.md`
+For capability cross-linking mechanics, use current target-project app-description files and SaaS Foundation App templates; do not depend on removed historical domain examples.
 
 ## Use this skill when
 
@@ -59,7 +57,7 @@ The task sounds like:
 - "add a new business capability"
 - "split this into capability areas"
 - "what is in scope vs out of scope?"
-- "model the capability layer before behavior details"
+- "model the capability node before workstream behavior details"
 
 Use it for:
 - new capability definition
@@ -67,7 +65,7 @@ Use it for:
 - actor and outcome identification
 - delegated-work, supervision, decision, governance, trace, or outcome-loop capability boundaries
 - capability splitting or consolidation
-- maintaining the `10-capabilities/` layer and its links
+- maintaining domain `capabilities/` nodes, reusable global definitions, and workstream bindings
 
 ## Core operating rule
 
@@ -81,7 +79,7 @@ A capability should be:
 
 ## Generated SaaS exposure rule
 
-For generated full-stack SaaS, a user-facing capability change must record the source functional agent, attention category or role-specific dashboard context, workstream action, structured surface, surface graph edge, surface action, and governed-tool that expose or consume the capability. If no human workstream or browser surface should expose it, state `internal-only` explicitly and name the internal caller class. This prevents capability modeling from bypassing `12-workstreams/`, `55-ui`, and surface-to-capability traceability.
+For generated full-stack SaaS, a user-facing capability change must record the source functional agent, attention category or role-specific dashboard context, workstream action, structured surface, surface graph edge, surface action, and governed-tool that expose or consume the capability under `domains/<domain>/workstreams/<workstream>/**`. If no human workstream or browser surface should expose it, state `internal-only` explicitly and name the internal caller class. This prevents capability modeling from bypassing workstream bindings, frontend realization files, and surface-to-capability traceability.
 
 For durable internal/background model-driven work, record the internal workstream agent graph exposure explicitly: virtual dashboard agent, worker-agent/delegation node, start/query/cancel/result-read/external-complete/external-fail capabilities, task lifecycle state, snapshot/result schemas, notification/projection updates, governed-tools available to each worker, result/proposal/system-message surfaces, escalation rules, and whether Akka `AutonomousAgent` is the intended substrate. AutonomousAgent tasks do not grant authority; every lifecycle action and governed-tool call still inherits this capability contract.
 
@@ -109,7 +107,7 @@ For each capability, identify and describe as applicable:
 - in-scope outcomes
 - out-of-scope outcomes
 - major constraints or assumptions
-- linked operating-model artifacts under the required `15-operating-model/` for generated AI-first SaaS semantics
+- linked app/global/domain/workstream operating-model artifacts for generated AI-first SaaS semantics
 - linked behavior artifacts
 - linked test artifacts, including success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and surface-specific cases
 - linked auth/security artifacts
@@ -118,97 +116,11 @@ For each capability, identify and describe as applicable:
 
 ## Standard capability output shape
 
-Use this response shape when updating or summarizing capability work:
-
-```md
-# Capability Modeling Update
-
-## Requested change
-- ...
-
-## Capability definition
-- id / name:
-- class:
-- business goal:
-- actors / callers:
-- source workstream / attention / role-specific dashboard context:
-- source surface graph node / edge:
-
-## Authority and contract
-- AuthContext / scope:
-- permissions / named capability grants:
-- inputs / validation / idempotency:
-- outputs / redaction / denial shape:
-- data access:
-- side effects:
-- governed-tools:
-  - id:
-  - class:
-  - exposure (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP/API/view):
-  - authority / schemas / side effects / idempotency / audit:
-- source functional agents / workstream actions:
-- source surfaces / surface actions / graph edges:
-- exposure surfaces:
-- internal workstream agent graph / autonomous task lifecycle / AutonomousAgent fit, if applicable:
-- notification / dashboard / attention projection outputs:
-- internal-only declaration, if applicable:
-
-## AI-first operating semantics
-- delegated work:
-- retained human authority:
-- governance / policy boundary:
-- decision, exception, or supervision needs:
-- trace / learning / outcome needs:
-
-## In-scope outcomes
-- ...
-
-## Out-of-scope outcomes
-- ...
-
-## Major assumptions or constraints
-- ...
-
-## Linked layers
-- operating model:
-- behavior:
-- tests:
-- auth/security:
-- observability:
-- UI:
-- traceability:
-```
+Use the delta modeling contract in `../docs/app-description-skill-output-contracts.md`. For this capability skill, report the requested change, affected graph nodes/file targets, whether reusable global definitions or workstream bindings change, in-scope and out-of-scope behavior, authority/scope, DTOs or payloads where relevant, side effects/idempotency/denials/traces/tests, linked graph nodes, assumptions, and next handoff. Avoid repeating the full app-description graph model.
 
 ## Capability modeling rules
 
-### 1. Model capability before implementation structure
-Use business outcomes, governed operation/query contracts, governed-tools, and user-visible purpose, not classes, services, endpoints, or agent tools, as the primary definition.
-
-### 2. Keep scope boundaries explicit
-Every important capability should make clear what it does not include.
-This reduces later ambiguity and uncontrolled scope creep.
-
-### 3. Keep capabilities stable but bounded
-Do not create one giant capability for the whole app.
-Do not create tiny pseudo-capabilities that are really just implementation details.
-
-### 4. Link forward deliberately
-A capability is incomplete if it cannot be linked to behavior, verification, security, observability, UI when exposed to humans, traceability artifacts, governed-tool exposure channels, and any attention/dashboard/autonomous task notification projections it changes.
-
-### 5. Separate capability change from behavior detail
-A new capability may require later behavior work, but capability modeling should first establish the business boundary, authority model, contract shape, side-effect boundaries, audit/approval obligations, and intended outcomes.
-
-### 6. Preserve AI-first semantics before component or CRUD framing
-When the capability involves delegated operational work, autonomous or semi-autonomous judgment, human approval, policy controls, exceptions, auditability, or outcome accountability, define those as capability semantics.
-Do not flatten them into CRUD records, dashboards, or a chatbot feature.
-Link the capability to `15-operating-model/` artifacts for goals, agent authority, policies, decisions, traces, and outcomes as applicable.
-
-### 7. Keep human governance visible
-If automation can affect consequential state, money, commitments, permissions, customer communication, compliance, or operational outcomes, record what humans delegate and what humans retain.
-If the boundary is unknown, ask or flag it before downstream behavior or generation work.
-
-### 8. Preserve user language where useful
-When the user names a business concept clearly, preserve that concept in the capability name or description rather than replacing it with framework language.
+Apply the concise rules in `../docs/app-description-skill-output-contracts.md` plus the focused skill's goal. Preserve mandatory secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agent/tool boundaries, traces, and tests when those concerns are in scope. Ask only blocking questions; otherwise record assumptions and hand off to the next focused skill.
 
 ## Handoff rules
 
@@ -222,7 +134,7 @@ Route onward as needed:
 - to `app-description-observability` when the capability introduces auditable, measurable, traceable, or diagnostically important flows
 - to `app-description-ui` when the capability adds, removes, or changes a human exposure surface, navigation/action availability, decision/supervision surface, frontend API contract, or capability-gated UI behavior
 - to `app-description-readiness-assessment` when missing capability contract fields would force generation to invent actors, AuthContext, schemas, side effects, idempotency, approval, audit, exposure surfaces, or tests
-- to `app-description-change-impact` when a capability change likely alters existing linked layers, realization scope, specs/backlogs, or pending tasks
+- to `app-description-change-impact` when a capability change likely alters existing linked graph nodes, realization scope, specs/backlogs, or pending tasks
 
 ## Clarification policy
 
@@ -261,8 +173,8 @@ Before finishing, verify:
 - in-scope and out-of-scope outcomes are explicit
 - major assumptions are recorded when relevant
 - delegated work and retained human governance are explicit for generated AI-first SaaS semantics
-- linked downstream layers are called out
-- the result strengthens `10-capabilities/` rather than bypassing it
+- linked downstream graph nodes are called out
+- the result strengthens domain `capabilities/` and workstream bindings rather than bypassing them
 
 ## Response style
 
@@ -271,5 +183,5 @@ When answering:
 - state the capability boundary clearly
 - list in-scope and out-of-scope outcomes explicitly
 - avoid implementation terminology unless needed for clarification
-- call out the next linked description layers to update
+- call out the next linked app/global/domain/workstream graph nodes to update
 - mention operating-model links before behavior/test/security/observability links for generated AI-first SaaS semantics

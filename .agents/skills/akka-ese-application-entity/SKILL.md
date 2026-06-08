@@ -14,8 +14,6 @@ Use it after the entity's named capability contract is known: command/read purpo
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
 
 Load companion skills when needed:
 - `akka-ese-ttl`
@@ -63,8 +61,11 @@ Use:
 - `ReadOnlyEffect<T>` for ordinary reads
 - `Effect<T>` for strongly consistent reads in replicated deployments
 
-Repository example:
-- `OrderEntity.getOrderConsistent()`
+Repository examples:
+- `PromptDocumentEntity.detail(...)`
+- `PromptDocumentEntity.activeRuntimeLookup(...)`
+
+For strongly consistent reads in replicated deployments, use the Akka SDK docs and add a target-project example; the current SaaS Foundation App example snapshot does not include a replicated read-consistency handler.
 
 ## Delete pattern
 
@@ -75,7 +76,7 @@ When deleting an entity:
 - do not persist more events afterward
 
 Repository example:
-- `ShoppingCartEntity.delete(...)`
+- `AgentDefinitionEntity.delete(...)`
 
 ## Agent tool exposure
 

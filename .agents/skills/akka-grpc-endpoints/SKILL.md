@@ -12,7 +12,7 @@ For broad product, PRD, feature, or service-contract requests, route through `ca
 ## Goal
 
 Generate or review gRPC endpoint code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about protobuf contracts in `src/main/proto`
 - safe at the edge with clear gRPC status mapping
 - easy for AI agents to extend without reading unrelated files
@@ -49,18 +49,6 @@ Read these first if present:
 - existing project gRPC endpoints under `src/main/java/**/api/*GrpcEndpointImpl.java`
 - matching gRPC endpoint tests under `src/test/java/**`
 
-In this repository, prefer these examples:
-- `../examples/akka-components/src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/proto/com/example/api/grpc/internal_status_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/api/InternalStatusGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/api/SecureGreetingGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/api/PatternSecureGreetingGrpcEndpointImpl.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/InternalStatusGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SecureGreetingGrpcEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PatternSecureGreetingGrpcEndpointIntegrationTest.java`
-
 ## Companion skills
 
 Load the companion skill that matches the current task:
@@ -87,10 +75,12 @@ Use this top-level skill plus the official docs when those are the main concern.
 
 ## Default package layout
 
-Use:
-- `com.<org>.<app>.domain`
-- `com.<org>.<app>.application`
-- `com.<org>.<app>.api`
+Use the fixed Java base package `ai.first` for this SaaS Foundation App repository and downstream generated code. Keep package declarations, imports, tests, and source paths under `ai.first`; do not infer package names from examples.
+
+Typical layer paths are:
+- `<base>.domain`
+- `<base>.application`
+- `<base>.api`
 - `src/main/proto`
 
 Rules:
@@ -125,32 +115,32 @@ Choose one of these modes before coding:
 ### 1. Pure edge mapping endpoint
 Use when the endpoint mainly maps protobuf requests to protobuf replies and does not need component calls.
 
-Repository example:
-- `InternalStatusGrpcEndpointImpl`
+Pattern to implement:
+- a small service/internal status endpoint with no component dependency
 
 ### 2. Component-calling unary endpoint
 Use when the endpoint translates protobuf requests into entity or view calls and maps replies back into protobuf.
 
-Repository example:
-- `ShoppingCartGrpcEndpointImpl`
+Pattern to implement:
+- a domain-specific endpoint that maps protobuf requests to component calls and protobuf replies
 
 ### 3. Request-context endpoint
 Use when endpoint logic depends on gRPC metadata, principals, JWT claims, or tracing.
 
-Repository example:
-- `InternalStatusGrpcEndpointImpl`
+Pattern to implement:
+- a service/internal endpoint that inspects principals, metadata, JWT claims, or trace headers through `requestContext()`
 
 ### 4. Streaming endpoint
 Use when a gRPC method should stream multiple replies.
 
-Repository example:
-- `ShoppingCartGrpcEndpointImpl#streamCheckedOutCarts`
+Pattern to implement:
+- a domain-specific endpoint method that forwards a streamed view query
 
 ### 5. Protocol-design task
 Use when the main work is protobuf layout, compatibility, common message types, or external proto imports.
 
 Repository examples:
-- `shopping_cart_grpc_endpoint.proto`
+- `workstream_event_grpc_endpoint.proto`
 - `internal_status_grpc_endpoint.proto`
 
 ## Final review checklist

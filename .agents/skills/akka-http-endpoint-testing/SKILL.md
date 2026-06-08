@@ -18,31 +18,12 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/GreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/LowLevelHttpEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ProxyGreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PingWebSocketEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/RequestHeadersEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SecureGreetingEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/InternalStatusEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/OrderEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEndpointIntegrationTest.java`
 
 ## Test harness rules
 
@@ -55,44 +36,44 @@ HTTP endpoint tests should:
 ## Repository patterns
 
 ### Pure endpoint tests
-- `GreetingEndpointIntegrationTest`
+- current endpoint integration tests for `MeEndpoint`, `WorkstreamEndpoint`, or `AdminEndpoint` when present in the target app
   - query parameter behavior
   - request body mapping
   - HTTP 400 mapping for invalid input
-- `LowLevelHttpEndpointIntegrationTest`
+- domain-specific low-level endpoint integration tests
   - low-level response and `HttpEntity.Strict` handling
-- `ProxyGreetingEndpointIntegrationTest`
+- domain-specific HTTP-client endpoint integration tests
   - endpoint-to-endpoint delegation through `HttpClientProvider`
-- `RequestHeadersEndpointIntegrationTest`
+- domain-specific request-context endpoint integration tests
   - request-header access through `requestContext()`
   - header validation mapped to HTTP 400
-- `SecureGreetingEndpointIntegrationTest`
+- JWT/protected-route endpoint integration tests for `MeEndpoint` or protected `/api/...` routes
   - bearer token injection through `Authorization` header
   - JWT claims available in the endpoint through `requestContext()`
 
 ### SSE endpoint tests
-- `CounterStreamEndpointIntegrationTest`
-  - uses `testKit.getSelfSseRouteTester()`
-  - verifies initial events and resume-from-offset behavior
-- `DraftCartViewStreamEndpointIntegrationTest`
-  - combines mocked view source updates with `SseRouteTester`
-  - verifies view-backed SSE emits initial rows and later updates
+- domain-specific SSE endpoint integration tests
+  - use `testKit.getSelfSseRouteTester()`
+  - verify initial events, authorization, and resume-from-offset behavior
+- domain-specific view/workstream stream endpoint integration tests
+  - combine mocked source updates with `SseRouteTester`
+  - verify view-backed or workstream-backed SSE emits initial rows and later updates
 
 ### WebSocket endpoint tests
-- `PingWebSocketEndpointIntegrationTest`
-  - uses `testKit.getSelfWebSocketRouteTester()`
-  - verifies bidirectional text message exchange
+- domain-specific WebSocket endpoint integration tests
+  - use `testKit.getSelfWebSocketRouteTester()`
+  - verify bidirectional text message exchange
 
 ### ACL-focused endpoint tests
-- `InternalStatusEndpointIntegrationTest`
+- domain-specific internal-only endpoint integration tests
   - denied internet call for service-only route
   - allowed method-level ACL override
   - allowed impersonated service caller
 
 ### Component-calling endpoint tests
-- `ShoppingCartIntegrationTest`
-- `OrderEndpointIntegrationTest`
-- `PurchaseOrderEndpointIntegrationTest`
+- `../examples/akka-components/src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java` plus target-project endpoint integration tests
+- target-project admin endpoint integration tests
+- a domain-specific admin endpoint integration test
 
 These cover route-to-component behavior and HTTP response mapping.
 

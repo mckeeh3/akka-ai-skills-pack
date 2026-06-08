@@ -13,11 +13,6 @@ Read these first if present:
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/agents/extending.html.md`
 - `akka-context/sdk/agents/failures.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/WeatherAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/WeatherForecastTools.java`
-- `../examples/akka-components/src/main/java/com/example/application/CartCheckoutAdvisorAgent.java`
-- `../examples/akka-components/src/main/java/com/example/application/CartCheckoutAdvisorTools.java`
-- `../examples/akka-components/src/test/java/com/example/application/CartCheckoutAdvisorAgentTest.java`
 
 If the main task is not local or external tool classes, load the focused companion skill instead:
 - `akka-agent-tool-boundaries` for backend-enforced ToolPermissionBoundary grants, tool registry/catalog, denied-tool semantics, approval-required expansion, and tool invocation traces
@@ -112,8 +107,8 @@ Rules:
 - component methods called internally through `ComponentClient` do not need `@FunctionTool`; annotate an underlying component method only when it is also intentionally exposed directly to the model as a component tool.
 
 Canonical example:
-- `CartCheckoutAdvisorAgent` injects `ComponentClient` and registers `new CartCheckoutAdvisorTools(componentClient)`.
-- `CartCheckoutAdvisorTools#adviseCheckout` is a read-only `cart.checkout-advice` facade that calls `ShoppingCartEntity#inspectCartSummary` and `ShoppingCartsByCheckedOutView#getCarts`, applies deterministic readiness logic, and returns a curated `CartCheckoutAdvice` result.
+- a domain-specific attention-advisor agent injects `ComponentClient` and registers a domain-specific tool facade instance.
+- a domain-specific read-only attention-advice facade tool is a read-only `workstream event.attention-advice` facade that calls a domain-specific curated component read method and a domain-specific view query method, applies deterministic readiness logic, and returns a curated domain-specific advice result.
 
 ## Capability-first tool design
 
@@ -126,15 +121,15 @@ Canonical example:
 
 ## Repository examples
 
-- `WeatherAgent`
+- `UserAdminAccessReviewAutonomousAgent`
   - local `@FunctionTool` for current date
   - external tool registration with `.tools(forecastTools)`
-- `WeatherForecastTools`
+- `UserAdminEvidenceTools`
   - public external tool method with parameter descriptions
-- `RefundApprovalAgent` / `RefundProposalTools` / `RefundApprovalCapabilityTest`
+- a domain-specific approval agent / domain-specific proposal tools / a domain-specific approval capability test
   - consequential `refund.issue` capability exposed as a proposal-only tool; approval workflow or explicit bounded policy grant commits the side effect
-- `CartCheckoutAdvisorAgent` / `CartCheckoutAdvisorTools` / `CartCheckoutAdvisorAgentTest`
-  - non-component `cart.checkout-advice` facade tool backed by `ComponentClient`, combining entity and view evidence plus deterministic processing into one model-facing tool
+- a domain-specific attention-advisor agent / domain-specific attention-advisor tools / a domain-specific attention-advisor agent test
+  - non-component `workstream event.attention-advice` facade tool backed by `ComponentClient`, combining entity and view evidence plus deterministic processing into one model-facing tool
 
 ## Review checklist
 

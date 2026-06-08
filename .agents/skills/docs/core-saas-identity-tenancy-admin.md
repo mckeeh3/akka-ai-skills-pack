@@ -3,9 +3,9 @@
 Use this doc to implement the product-agnostic identity and administration foundation for AI-first SaaS applications.
 
 Related docs:
-- `core-ai-first-saas-foundation.md`
-- `core-saas-owner-tenant-billing.md`
-- `security-workos-auth-and-admin.md`
+- `./core-ai-first-saas-foundation.md`
+- `./core-saas-owner-tenant-billing.md`
+- `./security-workos-auth-and-admin.md`
 
 ## Design intent
 
@@ -15,7 +15,7 @@ The core model supports a three-level SaaS business structure:
 SaaS Owner -> Tenant -> Customer
 ```
 
-A **Tenant** is the SaaS user organization. A **Customer** is always modeled initially as an organization served by a Tenant. Specific generated applications may later adapt this model for individual consumers, but the seed foundation should start with organization customers.
+A **Tenant** is the SaaS user organization. A **Customer** is always modeled initially as an organization served by a Tenant. Specific generated applications may later adapt this model for individual consumers, but the SaaS Foundation App should start with organization customers.
 
 ## Identity and authorization model
 

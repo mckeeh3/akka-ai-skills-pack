@@ -46,18 +46,8 @@ Use this reference when deciding whether to implement an Akka Java SDK stateful 
 ## Reference examples in this repository
 
 ### Event Sourced Entity references
-- `../../examples/akka-components/src/main/java/com/example/application/ShoppingCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/OrderEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ExpiringShoppingCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/ShoppingCart.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/Order.java`
 
 ### Key Value Entity references
-- `../../examples/akka-components/src/main/java/com/example/application/DraftCartEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/PurchaseOrderEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/application/ExpiringDraftCartSessionEntity.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/DraftCart.java`
-- `../../examples/akka-components/src/main/java/com/example/domain/PurchaseOrder.java`
 
 ## Command handler algorithms
 
@@ -95,8 +85,8 @@ Use this reference when deciding whether to implement an Akka Java SDK stateful 
 | Later write without TTL | cancels TTL | cancels TTL |
 
 Repository references:
-- ESE: `ExpiringShoppingCartEntity`
-- KVE: `ExpiringDraftCartSessionEntity`
+- ESE: `ExpiringAgentDefinitionEntity`
+- KVE: `DurableNotificationRepositoryEntity`
 
 ## Notifications
 
@@ -107,8 +97,8 @@ Repository references:
 | SSE mapping | map domain events to API records | map notifications to API records |
 
 Repository references:
-- ESE: `ShoppingCartEntity`, `ShoppingCartEndpoint`
-- KVE: `DraftCartEntity`, `DraftCartEndpoint`
+- ESE: `AgentDefinitionEntity`, `WorkstreamEndpoint`
+- KVE: `DurableIdentityRepositoryEntity`, `MeEndpoint`
 
 ## Replication and consistent reads
 
@@ -119,8 +109,8 @@ Repository references:
 | Replication filters | `@EnableReplicationFilter` + `updateReplicationFilter(...)` | same |
 
 Repository references:
-- ESE: `OrderEntity`
-- KVE: `PurchaseOrderEntity`
+- ESE: `PromptDocumentEntity`
+- KVE: a domain-specific key value entity
 
 ## Consumers and downstream flows
 
@@ -131,8 +121,8 @@ Repository references:
 | Typical downstream command style | fact-driven | snapshot-driven / idempotent |
 
 Repository references:
-- ESE: `ShoppingCartCheckoutConsumer`
-- KVE: `DraftCartCheckoutConsumer`
+- ESE: `WorkstreamEventAttentionConsumer`
+- KVE: `WorkstreamEventAttentionConsumer`
 
 ## Testing differences
 
@@ -143,8 +133,8 @@ Repository references:
 | Integration style | `TestKitSupport`, `httpClient`, `componentClient` | same |
 
 Repository references:
-- ESE tests under `../../examples/akka-components/src/test/java/com/example/application/*EntityTest.java`
-- KVE tests under `../../examples/akka-components/src/test/java/com/example/application/*EntityTest.java`
+- ESE tests under `../../examples/akka-components/src/test/java/ai/first/application/*EntityTest.java`
+- KVE tests under `../../examples/akka-components/src/test/java/ai/first/application/*EntityTest.java`
 
 ## Quick choice heuristic
 

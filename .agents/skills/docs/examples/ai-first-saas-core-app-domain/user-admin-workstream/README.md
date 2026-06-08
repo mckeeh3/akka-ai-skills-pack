@@ -6,7 +6,7 @@
 - **Backing functional agent:** `functional_agent.user_admin`
 - **Domain:** `ai_first_saas_core_app`
 - **Purpose:** tenant/customer-scoped user administration: user discovery, invitations, memberships, roles/capabilities, disabled access, access review, support-access visibility, and admin audit
-- **Minimum starter role:** User Admin participates in the five core workstream starter using `markdown_response`; it is not a valid single-workstream generated SaaS starter by itself, and full-core readiness requires the surfaces/capabilities below
+- **SaaS Foundation App role:** User Admin participates in the SaaS Foundation App domain; it is not a valid single-workstream SaaS Foundation App by itself, and complete User Admin behavior requires the surfaces/capabilities below
 
 ## Invariants
 
@@ -50,7 +50,7 @@ The agent may draft or recommend side-effecting changes, but commit requires exp
 
 ## Surface style expectations
 
-These surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered cards, blue/indigo accent, sparse semantic status colors, accessible focus states, and strong numeric/table hierarchy. Style clarifies authority, risk, evidence, and auditability; it must not change surface inventory, capability mappings, authorization, routes, or audit behavior.
+These surfaces inherit `ai-first-workstream-enterprise` from `../../../web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered cards, blue/indigo accent, sparse semantic status colors, accessible focus states, and strong numeric/table hierarchy. Style clarifies authority, risk, evidence, and auditability; it must not change surface inventory, capability mappings, authorization, routes, or audit behavior.
 
 - Dashboard: render as a mission-control briefing with a KPI strip for admin health, pending invites, failed deliveries, disabled users, and admin counts; keep attention queues for failed delivery, last-admin, approval-required, and stale access-review items visually above routine reports.
 - Users and invitations lists: use dense enterprise table/search layouts with clear scoped filters, sortable columns, status badges with text, row-level trace links where allowed, and empty/error states that do not leak cross-tenant existence.

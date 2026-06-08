@@ -9,14 +9,7 @@ Use this skill when a Consumer reacts to Key Value Entity state updates.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
@@ -24,8 +17,6 @@ Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
 
 ## Source-specific semantics
 
@@ -47,9 +38,9 @@ Therefore:
 
 ## Repository example
 
-- `DraftCartCheckoutConsumer`
-  - reacts only when the cart is checked out
-  - uses the cart id from metadata or state
+- `WorkstreamEventAttentionConsumer`
+  - reacts only when the workstream event is checked out
+  - uses the workstream id from metadata or state
   - calls a downstream key value entity with an idempotent create command
   - includes `@DeleteHandler`
 

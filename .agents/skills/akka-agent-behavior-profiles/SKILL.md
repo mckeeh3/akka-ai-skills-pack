@@ -11,18 +11,13 @@ This is not the skill for writing the Java `Agent` class itself. Use it before `
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS agent profile work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- functional-agent or internal-agent placement, workstream ownership, agent catalog/detail surface, and affected surface actions;
-- governed capability ids/classes for lifecycle, activation, assignment, test-run, and visibility operations;
-- `AuthContext`, tenant/customer scope, owner/steward roles, authority level, tool/data boundaries, and disabled-agent behavior;
-- prompt/skill/model/tool references, including the agent-specific skill list and compact skill names/descriptions/when-to-use hints, policy/approval/escalation rules, audit/work trace obligations, redaction, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of guessing profile fields from agent mechanics.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md`
+- `../docs/governed-agent-substrate.md`
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/agent-coverage-matrix.md`
 - `../docs/agent-runtime-invocation-pattern.md`

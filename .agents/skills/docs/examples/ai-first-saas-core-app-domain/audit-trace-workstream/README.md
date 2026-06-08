@@ -51,7 +51,7 @@ The agent summarizes and explains evidence but cannot hide, alter, or delete aud
 
 ## Surface style expectations
 
-These surfaces inherit `ai-first-workstream-enterprise` from `docs/web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered surfaces, blue/indigo AI accent, sparse semantic status colors, accessible focus states, strong numerical/table hierarchy, and prominent evidence, redaction, authorization, and trace cues. Style is a UI realization layer only; it must not change audit sensitivity, redaction, scoped capability mappings, approval policy, routes, export behavior, or trace immutability.
+These surfaces inherit `ai-first-workstream-enterprise` from `../../../web-ui-style-guide.md`: calm enterprise workstream styling, named-theme tokens, neutral layered surfaces, blue/indigo AI accent, sparse semantic status colors, accessible focus states, strong numerical/table hierarchy, and prominent evidence, redaction, authorization, and trace cues. Style is a UI realization layer only; it must not change audit sensitivity, redaction, scoped capability mappings, approval policy, routes, export behavior, or trace immutability.
 
 - Dashboard: render as an audit mission-control briefing with KPI cards for denials, high-risk activity, trace volume, pending exports, support-access reads, and redaction pressure; put suspicious-activity and export attention queues above routine volume summaries.
 - Search and data-access surfaces: use dense enterprise search/table layouts with filter chips, saved-query controls, scoped tenant/customer context, redaction badges, actor/tool/workflow columns, monotonic timestamps, trace/correlation ids in monospace, and empty/no-results states that do not leak hidden records.

@@ -4,11 +4,11 @@ Use this pattern when a large PRD, revised PRD, app-description realization, or 
 
 Goal: decompose work into **vertical module sprints** that can be implemented and tested full stack, one module at a time. For incremental changes against an existing plan, first locate the affected module/sprint by existing workstream graph node, role-specific dashboard attention item, surface graph edge, internal workstream agent graph responsibility, governed-tool, capability, or expertise bundle; do not create a new module merely because the change arrived as a new prompt.
 
-For generated full-stack AI-first SaaS, `vertical` means each sprint, backlog item, task brief, and pending task is anchored to functional agent ownership, the workstream attention category and dashboard contract, a structured surface/action or workstream event, a governed capability id/class, AuthContext and role/capability rules, selected Akka substrate, frontend/API/realtime work, notifications/projections, audit/work traces, and required tests. When durable internal/background model-driven work is part of the increment, preserve the AutonomousAgent task lifecycle, result surface, notification, dependency/failure/cancellation, and tool-authority contract. When a functional agent has LLM behavior, the vertical contract must also preserve its workstream expert bundle requirements: prompt intent, procedural skills, reference documents, compact manifests, tool boundaries, authorized skill/reference loaders, traces, governance surfaces, seed/import behavior, and tests. Do not treat component family, page, dashboard, generic module names, or vague `agent expertise` labels as sufficient implementation boundaries.
+For generated full-stack AI-first SaaS, `vertical` means each sprint, backlog item, task brief, and pending task is anchored to functional agent ownership, the workstream attention category and dashboard contract, a structured surface/action or workstream event, a governed capability id/class, AuthContext and role/capability rules, selected Akka substrate, frontend/API/realtime work, notifications/projections, audit/work traces, and required tests. When durable internal/background model-driven work is part of the increment, preserve the AutonomousAgent task lifecycle, result surface, notification, dependency/failure/cancellation, and tool-authority contract. When a functional agent has LLM behavior, the vertical contract must also preserve its workstream expert bundle requirements: prompt intent, procedural skills, reference documents, compact manifests, tool boundaries, authorized skill/reference loaders, traces, governance surfaces, default-content governance, and tests. Do not treat component family, page, dashboard, generic module names, or vague `agent expertise` labels as sufficient implementation boundaries.
 
 Before splitting modules, classify the generated product as full-stack secure AI-first SaaS by default: delegated operational work, agents, approvals/exceptions, policy-controlled automation, supervision UI, audit traces, and outcome accountability should be represented as operating-model scope before CRUD/module decomposition.
 
-For SaaS app planning, the first sprint or slice is always the full-stack core secure SaaS foundation unless the task is explicitly non-SaaS reference material. Create `specs/cross-cutting/01-auth-tenancy-audit.md`, then make the first foundation sprint or foundation slice cover Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, WorkOS/JWT seam, `/api/me`, central authorization, full invitation lifecycle, email delivery/outbox, InvitationWorkflow, expiry/reminder timers, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, governed runtime agent foundation (`AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `ReferenceDocument`/`ReferenceVersion`, `AgentSkillManifest`, `AgentReferenceManifest`, deterministic prompt assembly, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `ToolPermissionBoundary`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`), behavior editing agent proposal/review flow, agent catalog/detail, prompt/skill/reference/manifest/tool-boundary UI, AI admin responsibilities, decision cards for risky admin actions, mandatory admin UI surfaces, audit, frontend shell/context selection, and security/admin/frontend/agent-governance tests before app-specific CRM/domain features.
+For SaaS app planning in this repository or a downstream fork, start from the existing SaaS Foundation App rather than generating a separate baseline. Create or update `specs/cross-cutting/01-auth-tenancy-audit.md` when the change affects foundation behavior, then plan vertical sprints as either SaaS Foundation App maintenance/extension or business-domain extension work. Preserve identity/tenancy/auth, `/api/me`, authorization, invitation/email onboarding, admin read models/search, governed runtime agents, AI admin offload, decision cards, workstream UI, audit, and security/frontend/agent-governance tests before claiming app-specific domain features are complete.
 
 ## When to use
 
@@ -37,20 +37,20 @@ specs/
     02-ui-style-guide.md
   modules/
     01-identity-access.md
-    02-purchase-requests.md
+    02-domain-workstream.md
     03-approvals.md
   sprints/
     01-identity-access-sprint.md
-    02-purchase-request-core-sprint.md
+    02-domain-workstream-core-sprint.md
     03-approval-flow-sprint.md
   backlog/
     README.md
     01-identity-access-build-backlog.md
-    02-purchase-request-core-build-backlog.md
+    02-domain-workstream-core-build-backlog.md
     03-approval-flow-build-backlog.md
   tasks/
     README.md
-    02-purchase-request-core/
+    02-domain-workstream-core/
       01-request-entity.md
 ```
 
@@ -89,7 +89,7 @@ Each `specs/sprints/NN-<sprint>.md` should be a full-stack delivery contract:
 - backend scope: entities, workflows, views, consumers, timers, endpoints as implementation of those capabilities
 - frontend scope: functional-agent workstream shell changes, structured surfaces, forms/surface actions, route/deep-link details, API client calls, realtime behavior
 - AI-first increment for generated SaaS: goals/plans, agent/team responsibilities, authority limits, approval gates, policy clauses, evidence/risk/confidence/impact surfaces, trace records, evaluations, and outcome metrics
-- workstream expertise increment for each new or changed functional agent: expert bundle id, prompt/skill/reference document families, `AgentSkillManifest`/`AgentReferenceManifest`, `ToolPermissionBoundary`, `readSkill`/`readReferenceDoc`, `SkillLoadTrace`/`ReferenceLoadTrace`, seed/import behavior, governance UI, and tests
+- workstream expertise increment for each new or changed functional agent: expert bundle id, prompt/skill/reference document families, `AgentSkillManifest`/`AgentReferenceManifest`, `ToolPermissionBoundary`, `readSkill`/`readReferenceDoc`, `SkillLoadTrace`/`ReferenceLoadTrace`, default-content governance, governance UI, and tests
 - acceptance behavior: happy paths, validation, no-op/idempotent cases, error cases
 - pending questions that block or affect the sprint
 - implementation task groups
@@ -104,8 +104,8 @@ A sprint should end with a named, working app state. For generated full-stack Ak
 Each sprint should have one matching backlog file:
 
 ```text
-specs/sprints/02-purchase-request-core-sprint.md
-specs/backlog/02-purchase-request-core-build-backlog.md
+specs/sprints/02-domain-workstream-core-sprint.md
+specs/backlog/02-domain-workstream-core-build-backlog.md
 ```
 
 The backlog should break the sprint into harness-sized vertical tasks. Each implementation task should carry:
@@ -153,7 +153,7 @@ Rules:
 
 `specs/pending-tasks.md` should group or annotate tasks by sprint/module while preserving stable task IDs. A pending task is not implementation-ready if it names only a component, page, dashboard, module, generic UI feature, or vague `make the agent expert` work without the vertical workstream/surface/capability/expertise contract above; block it or create a task brief before queueing it as runnable.
 
-For every new or materially changed functional agent with LLM behavior, create bounded workstream expertise tasks that a fresh harness session can execute independently. Split work into expert bundle/app-description ownership, seeded prompt content, procedural `SkillDocument` content, factual/process `ReferenceDocument` content, compact skill/reference manifests, tool-boundary and loader grants, runtime authorized/denied load behavior, expertise manifest/governance UI surfaces, and assigned-load/denied-load/boundary/trace/no-authority-expansion tests whenever those concerns would otherwise make one task too broad.
+For every new or materially changed functional agent with LLM behavior, create bounded workstream expertise tasks that a fresh harness session can execute independently. Split work into expert bundle/app-description ownership, default prompt content, procedural `SkillDocument` content, factual/process `ReferenceDocument` content, compact skill/reference manifests, tool-boundary and loader grants, runtime authorized/denied load behavior, expertise manifest/governance UI surfaces, and assigned-load/denied-load/boundary/trace/no-authority-expansion tests whenever those concerns would otherwise make one task too broad.
 
 Acceptable ID patterns:
 
@@ -210,10 +210,8 @@ Avoid:
 
 ## Related skills and examples
 
-- `examples/requirements-to-workstream-mini-example.md` — preferred generated-SaaS planning shape
-- `examples/purchase-request-module-sprint-plan.md` — conventional module/sprint mechanics only, not generated-SaaS target architecture
-- `../skills/akka-prd-to-specs-backlog/SKILL.md`
-- `../skills/akka-slice-spec-to-backlog/SKILL.md`
-- `../skills/akka-backlog-to-pending-tasks/SKILL.md`
-- `pending-task-queue.md`
-- `pending-question-queue.md`
+- `../akka-prd-to-specs-backlog/SKILL.md`
+- `../akka-slice-spec-to-backlog/SKILL.md`
+- `../akka-backlog-to-pending-tasks/SKILL.md`
+- `./pending-task-queue.md`
+- `./pending-question-queue.md`

@@ -9,13 +9,7 @@ Use this skill when an HTTP endpoint returns server-sent events.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS SSE work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent, workstream, structured surface id/type/version, and surface/workstream event types being streamed;
-- governed read/evidence/notification capability id/class, selected Akka source, stream route, and frontend realtime consumer;
-- `AuthContext`, tenant/customer scope, roles/capabilities, reconnect/resume behavior, forbidden-stream behavior, and backend authorization boundary;
-- event DTOs, redaction, stale/reconnect states, trace/correlation ids, audit/data-access trace obligations, and required tests.
-
-If these are absent for generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or repair the task brief instead of exposing component notifications directly.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Capability-first exposure rule
 
@@ -29,13 +23,6 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 
 Read these first if present:
 - `akka-context/sdk/http-endpoints.html.md`
-- `../examples/akka-components/src/main/java/com/example/api/CounterStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/DraftCartViewStreamEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/DraftCartEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
-- `../examples/akka-components/src/test/java/com/example/application/CounterStreamEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartViewStreamEndpointIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -57,20 +44,20 @@ Read these first if present:
 ## Repository examples
 
 ### Focused resumable SSE example
-- `CounterStreamEndpoint`
+- a domain-specific SSE endpoint
   - finite deterministic stream
   - uses `requestContext().lastSeenSseEventId()`
   - sets SSE ids and event type explicitly
   - tested with `SseRouteTester`
 
 ### Component-backed SSE examples
-- `ShoppingCartEndpoint#notifications`
+- `WorkstreamEndpoint#events`
   - maps event sourced entity notifications to API records
-- `DraftCartEndpoint#notifications`
+- a domain-specific authenticated notification stream
   - maps key value entity notifications to API records
 
 ### View-backed SSE example
-- `DraftCartViewStreamEndpoint`
+- a domain-specific workstream log stream endpoint
   - streams a view query with `streamUpdates = true`
   - uses an SSE-specific view query with no `ORDER BY`
   - forwards `lastSeenSseEventId()` to the view stream offset

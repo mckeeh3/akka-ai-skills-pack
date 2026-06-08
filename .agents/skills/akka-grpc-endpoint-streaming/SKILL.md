@@ -21,10 +21,6 @@ When the same capability is also exposed through UI, HTTP, agent tools, workflow
 Read these first if present:
 - `akka-context/sdk/grpc-endpoints.html.md`
 - `akka-context/sdk/views.html.md`
-- `../examples/akka-components/src/main/proto/com/example/api/grpc/shopping_cart_grpc_endpoint.proto`
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartGrpcEndpointImpl.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartGrpcEndpointIntegrationTest.java`
 
 ## Core rules
 
@@ -35,13 +31,12 @@ Read these first if present:
 5. If reconnects matter, design the request so the client can resume from its own offset or cursor.
 6. Do not rely on a single JVM instance staying alive for the lifetime of the gRPC connection.
 
-## Repository example
+## Pattern to implement
 
-- `ShoppingCartGrpcEndpointImpl#streamCheckedOutCarts`
-  - forwards a streamed view query
-  - maps each row to a protobuf `CartSummary`
-- `ShoppingCartsByCheckedOutView#streamCarts`
-  - query-stream method used by the endpoint
+Create a domain-specific streaming gRPC endpoint that demonstrates:
+- forwarding a streamed view query
+- mapping each row to a protobuf summary DTO
+- pairing the endpoint with a view query-stream method
 
 ## Testing pattern
 

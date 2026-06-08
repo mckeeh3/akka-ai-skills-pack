@@ -7,13 +7,16 @@ description: Model backend behavior as governed capabilities before choosing Akk
 
 Use this skill after secure AI-first SaaS interpretation and before selecting entities, workflows, endpoints, agent-tools, MCP-tools, timers, consumers, or UI actions.
 
-This is a routing and framing skill. It does not replace `core-saas-foundation`, `ai-first-saas`, app-description skills, `akka-solution-decomposition`, PRD/spec/backlog skills, or focused Stage 3 component skills.
+This is a routing and framing skill. It does not replace `core-saas-foundation`, `ai-first-saas`, app-description/current-intent skills, `akka-solution-decomposition`, spec/backlog skills, or focused Stage 3 component skills. In the intent compiler model, capabilities and governed tools are current-intent nodes that bind workstream actions to realization paths.
 
 ## Required reading
 
 Read these first when using this skill:
-- `../../../AGENTS.md`
+- target project path: AGENTS.md
 - `../README.md`
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/intent-to-realization-flow.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app modeling before backend capability design
 - `../docs/structured-surface-contracts.md` when workstream surfaces, surface actions, or browser UI actions are in scope
@@ -123,7 +126,7 @@ Use the shape to choose the Akka substrate later:
 - command governed-tool in a capability → entity/workflow command with validation, idempotency, auth, audit;
 - proposal governed-tool in a capability → agent or human drafts change without committing side effects;
 - approval governed-tool in a capability → human or policy-governed decision commits/rejects/delegates;
-- AutonomousAgent worker governed-tool in a capability → durable task-oriented internal/background model-driven work; apply `../docs/autonomous-agent-worker-runtime-pattern.md` so start/read/cancel/accept/reject style capabilities preserve task contract, v3 `worker.task.*` events, attention, structured surfaces, provider fail-closed behavior, and no fake success;
+- AutonomousAgent worker governed-tool in a capability → durable task-oriented internal/background model-driven work; apply `../docs/autonomous-agent-worker-runtime-pattern.md` so start/read/cancel/accept/reject style capabilities preserve task contract, typed `worker.task.*` workstream events, attention, structured surfaces, provider fail-closed behavior, and no fake success;
 - workflow governed-tool in a capability → long-running, retryable, approval-gated, or compensating process;
 - policy/governance governed-tool in a capability → versioned policy, prompt, skill, threshold, simulation, activation, rollback;
 - trace/audit governed-tool in a capability → record, search, explain, redact, or export history;
@@ -151,9 +154,9 @@ Default stance: expose scoped read/evidence capabilities to agents more readily 
 
 After capability semantics are clear, route to exactly one primary operating path:
 
-- `app-descriptions` when maintaining or reviewing the app-description source of truth. Preserve capability inventory in description layers alongside behavior, auth/security, UI, observability, readiness, and tests.
+- `app-descriptions` when maintaining or reviewing the app-description/current-intent graph source of truth. Preserve capability inventory under domain/workstream artifacts and link it to global definitions, behavior, auth/security, UI, observability, readiness, and tests.
 - `akka-solution-decomposition` when deriving a direct Akka component plan. The decomposition must preserve the functional-agent/workstream/structured-surface inventory, map surface actions and payload-producing queries to capabilities, then map capabilities to entities, workflows, views, agents, consumers, timers, endpoints, and web UI realization.
-- `akka-prd-to-specs-backlog` when creating repo-ready specs, backlogs, and pending tasks. Generated tasks must preserve capability ids, auth/scope, schemas, side effects, idempotency, approval, audit, exposure channels, and tests.
+- `akka-prd-to-specs-backlog` or related planning skills when compiling accepted current intent into repo-ready specs, backlogs, and pending tasks. Generated tasks must preserve capability ids, auth/scope, schemas, side effects, idempotency, approval, audit, exposure channels, and tests.
 - Focused Stage 3 skills only when the secure foundation, capability contract, exposure channel, and Akka component choice are already settled.
 
 ## Stage 3 mapping

@@ -12,7 +12,7 @@ For broad product, PRD, feature, or agent-integration requests, route through `c
 ## Goal
 
 Generate or review MCP endpoint code that is:
-- correct for Akka SDK 3.5+
+- correct for Akka SDK 3.6.x
 - explicit about tool, resource, and prompt contracts
 - safe for LLM clients through strong descriptions and validated inputs
 - easy for AI agents to extend without loading unrelated files
@@ -49,13 +49,6 @@ Read these first if present:
 - existing project MCP endpoints under `src/main/java/**/api/*McpEndpoint.java`
 - matching MCP endpoint tests under `src/test/java/**`
 
-In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/api/ShoppingCartMcpEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/SecureSupportMcpEndpoint.java`
-- `../examples/akka-components/src/main/resources/mcp/checkout-guidelines.md`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartMcpEndpointTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SecureSupportMcpEndpointTest.java`
-
 ## Companion skills
 
 Load the companion skill that matches the current task:
@@ -71,10 +64,12 @@ Load the companion skill that matches the current task:
 
 ## Default package layout
 
-Use:
-- `com.<org>.<app>.domain`
-- `com.<org>.<app>.application`
-- `com.<org>.<app>.api`
+Use the fixed Java base package `ai.first` for this SaaS Foundation App repository and downstream generated code. Keep package declarations, imports, tests, and source paths under `ai.first`; do not infer package names from examples.
+
+Typical layer paths are:
+- `<base>.domain`
+- `<base>.application`
+- `<base>.api`
 - `src/main/resources`
 
 Rules:
@@ -89,17 +84,18 @@ Rules:
 2. Add `@Acl(...)` explicitly at class level.
 3. If bearer-token validation is required, add `@JWT(...)` at class level.
 4. MCP endpoint methods are public and focused: tools, resources, or prompts.
-5. Tool methods return `String`.
-6. Use `@Description` on tool and prompt parameters so the calling LLM can understand the contract.
-7. Prefer simple parameter lists for tools. If you need a richer input object, keep the fields simple and use `inputSchema` when automatic schema inference would be ambiguous.
-8. If a manual `inputSchema` is used, it must exactly match the JSON shape Jackson will parse into the Java parameter.
-9. Static resources use `uri`, zero parameters, and return `String`, `byte[]`, or JSON-serializable objects.
-10. Dynamic resources use `uriTemplate`; each placeholder must match a `String` parameter name.
-11. Prompt methods return `String`. Prefer required `String` parameters in repository examples; verify `Optional<String>` prompt parameters against the exact SDK version before relying on them.
-12. Extend `AbstractMcpEndpoint` only when request context access is needed.
-13. For generated SaaS MCP surfaces, resolve caller context and authorize every protected tool/resource/prompt against tenant/customer scope, allowed tool/resource grants, and required capability before calling components.
-14. Side-effecting tools must preserve the named capability's idempotency, approval/policy, and audit/work-trace semantics; prefer proposal or approval-request tools when authority is not explicitly granted.
-15. Default MCP testing is direct method invocation. Use raw MCP-over-HTTP payloads only when transport behavior itself is under test.
+5. Annotate every tool method with `@McpTool(...)`; set a clear `name`, `description`, and optional `inputSchema` when schema inference would be ambiguous.
+6. Tool methods return `String`.
+7. Use `@Description` on tool and prompt parameters so the calling LLM can understand the contract.
+8. Prefer simple parameter lists for tools. If you need a richer input object, keep the fields simple and use `inputSchema` when automatic schema inference would be ambiguous.
+9. If a manual `inputSchema` is used, it must exactly match the JSON shape Jackson will parse into the Java parameter.
+10. Static resources use `uri`, zero parameters, and return `String`, `byte[]`, or JSON-serializable objects.
+11. Dynamic resources use `uriTemplate`; each placeholder must match a `String` parameter name.
+12. Prompt methods return `String`. Prefer required `String` parameters in repository examples; verify `Optional<String>` prompt parameters against the exact SDK version before relying on them.
+13. Extend `AbstractMcpEndpoint` only when request context access is needed.
+14. For generated SaaS MCP surfaces, resolve caller context and authorize every protected tool/resource/prompt against tenant/customer scope, allowed tool/resource grants, and required capability before calling components.
+15. Side-effecting tools must preserve the named capability's idempotency, approval/policy, and audit/work-trace semantics; prefer proposal or approval-request tools when authority is not explicitly granted.
+16. Default MCP testing is direct method invocation. Use raw MCP-over-HTTP payloads only when transport behavior itself is under test.
 
 ## Decision guide
 
@@ -109,28 +105,28 @@ Choose one of these modes before coding:
 Use when the MCP endpoint should expose current entity or view state as LLM-friendly JSON.
 
 Repository example:
-- `ShoppingCartMcpEndpoint#getCartSummary`
+- a domain-specific MCP summary tool
 
 ### 2. Resource and prompt endpoint
 Use when the main work is exposing static guidance, dynamic resources, or reusable prompt templates.
 
-Repository examples:
-- `ShoppingCartMcpEndpoint#checkoutGuidelines`
-- `ShoppingCartMcpEndpoint#cartSummaryResource`
-- `ShoppingCartMcpEndpoint#respondToCartQuestion`
+Pattern references:
+- a packaged-resource guidance method such as `attentionGuidelines`
+- a resource method that returns a domain-specific event or state summary
+- a domain-specific MCP prompt/resource responder
 
 ### 3. Request-context or JWT-aware endpoint
 Use when the endpoint behavior depends on headers, principals, or validated JWT claims.
 
-Repository example:
-- `SecureSupportMcpEndpoint`
+Pattern to implement:
+- a secure support/admin endpoint that validates bearer tokens, tenant headers, subject, issuer, and role through request context
 
 ### 4. MCP testing task
 Use when you need to verify tool output, prompt construction, or context-aware behavior.
 
-Repository examples:
-- `ShoppingCartMcpEndpointTest`
-- `SecureSupportMcpEndpointTest`
+Pattern references:
+- a component-backed endpoint test using `TestKitSupport` and direct endpoint instantiation
+- a request-context endpoint test with a stubbed `McpRequestContext`
 
 ## Final review checklist
 
@@ -139,6 +135,7 @@ Before finishing, verify:
 - `@Acl` is present
 - no `@Component` annotation is used on the endpoint
 - class-level `@JWT` is used when token validation is required
+- every tool method has `@McpTool(...)`
 - tool descriptions are specific enough for an LLM to choose the right tool
 - tool inputs use `@Description` or an accurate manual schema
 - `uri` and `uriTemplate` usage matches the method signature

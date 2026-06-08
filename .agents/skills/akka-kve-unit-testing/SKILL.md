@@ -9,23 +9,14 @@ Use this skill for unit tests of key value entities.
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/key-value-entities.html.md`
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/PurchaseOrderEntityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ExpiringDraftCartSessionEntityTest.java`
+- `../docs/akka-entity-testing-shared-patterns.md`
 
 ## Test kit rules
 
@@ -63,21 +54,21 @@ Use these `KeyValueEntityTestKit` capabilities:
 ## Repository examples
 
 ### Standard entity tests
-- `DraftCartEntityTest`
+- `DurableIdentityRepositoryEntityTest`
   - success
   - validation error
   - no-op
   - delete
 
 ### Downstream/internal entity tests
-- `PurchaseOrderEntityTest`
+- a domain-specific key value entity test
   - create
   - idempotent no-op
   - strongly consistent read pattern
   - replication filter command shape
 
 ### TTL test
-- `ExpiringDraftCartSessionEntityTest`
+- `DurableNotificationRepositoryEntityTest`
   - asserts `Optional.of(Duration.ofDays(30))` from `getExpireAfter()`
 
 ## Generated SaaS test set

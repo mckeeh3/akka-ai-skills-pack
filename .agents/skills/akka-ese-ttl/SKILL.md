@@ -9,22 +9,12 @@ Use this skill when an event sourced entity should expire automatically after a 
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
 - `akka-context/sdk/event-sourced-entities.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ExpiringShoppingCartEntity.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ExpiringShoppingCart.java`
-- `../examples/akka-components/src/test/java/com/example/application/ExpiringShoppingCartEntityTest.java`
 
 ## Core pattern
 
@@ -45,7 +35,7 @@ Use TTL only on write commands that actually persist events.
 ## Repository example
 
 See:
-- `ExpiringShoppingCartEntity.addItem(...)`
+- `ExpiringAgentDefinitionEntity.addItem(...)`
 
 This shows:
 - validation error on blank input
@@ -61,8 +51,8 @@ Use `EventSourcedTestKit` and assert:
 - `result.getExpireAfter()`
 - resulting state
 
-Repository example:
-- `ExpiringShoppingCartEntityTest`
+Pattern reference:
+- target-project TTL entity tests; no dedicated expiring entity exists in the current curated examples
 
 ## Generated SaaS checks
 

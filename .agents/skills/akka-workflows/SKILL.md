@@ -12,7 +12,7 @@ For broad product, PRD, feature, or process requests, route through `capability-
 ## Goal
 
 Generate or review workflow code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about command handlers vs step handlers
 - durable across retries and restarts
 - safe to compensate or pause when business flow requires it
@@ -38,25 +38,7 @@ Read these first if present:
 - matching workflow tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/application/TransferWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/RefundApprovalWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/SupervisedExportWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewWorkflow.java`
-- `../examples/akka-components/src/main/java/com/example/application/WalletEntity.java`
-- `../examples/akka-components/src/main/java/com/example/domain/TransferState.java`
-- `../examples/akka-components/src/main/java/com/example/domain/ApprovalState.java`
-- `../examples/akka-components/src/main/java/com/example/api/TransferWorkflowEndpoint.java`
-- `../examples/akka-components/src/main/java/com/example/api/ApprovalWorkflowEndpoint.java`
 - `../docs/workflow-endpoint-pattern.md`
-- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/TransferWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ApprovalWorkflowEndpointIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/RefundApprovalCapabilityTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SupervisedExportWorkflowIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
 
 ## Companion skills
 
@@ -82,10 +64,12 @@ If the workflow drives or is consumed by other components, also load:
 
 ## Default package layout
 
-Use:
-- `com.<org>.<app>.domain`
-- `com.<org>.<app>.application`
-- `com.<org>.<app>.api`
+Use the fixed Java base package `ai.first` for this SaaS Foundation App repository and downstream generated code. Keep package declarations, imports, tests, and source paths under `ai.first`; do not infer package names from examples.
+
+Typical layer paths are:
+- `<base>.domain`
+- `<base>.application`
+- `<base>.api`
 
 Rules:
 - workflow state records belong in `domain`
@@ -122,33 +106,33 @@ Before implementation, identify:
 Use when the workflow coordinates a short series of durable steps.
 
 Repository example:
-- `TransferWorkflow`
+- a domain-specific workflow
 
 ### 2. Workflow with live notifications
 Use when clients should subscribe to workflow progress instead of polling.
 
 Repository examples:
-- `TransferWorkflow`
-- `TransferWorkflowEndpoint`
-- `ApprovalWorkflow`
-- `ApprovalWorkflowEndpoint`
+- a domain-specific workflow
+- a domain-specific workflow endpoint
+- a domain-specific approval workflow
+- a domain-specific approval workflow endpoint
 
 ### 3. Pause-and-resume workflow
 Use when a human or external signal must unblock the next step.
 
 Repository examples:
-- `ApprovalWorkflow`
-- `ApprovalWorkflowEndpoint`
-- `RefundApprovalWorkflow` — consequential proposal/approval capability; side effects wait for approval unless bounded policy grants autonomy
-- `SupervisedExportWorkflow` — workflow-backed customer data export capability; high-risk work pauses for supervision while preserving tenant/customer scope and audit trace
+- a domain-specific approval workflow
+- a domain-specific approval workflow endpoint
+- a domain-specific consequential approval workflow — consequential proposal/approval capability; side effects wait for approval unless bounded policy grants autonomy
+- a domain-specific supervised workflow — workflow-backed customer data export capability; high-risk work pauses for supervision while preserving tenant/customer scope and audit trace
 
 ### 4. Workflow as upstream source for views or consumers
 Use when other components react to workflow state snapshots.
 
 Repository examples:
-- `ReviewWorkflow`
-- `ReviewWorkflowTopicConsumer`
-- `ReviewRequestsByStatusView`
+- a domain-specific workflow
+- a domain-specific workflow topic consumer
+- a domain-specific workflow-status view
 
 ## Final review checklist
 

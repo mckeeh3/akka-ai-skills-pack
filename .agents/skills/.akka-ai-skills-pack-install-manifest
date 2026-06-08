@@ -2,7 +2,7 @@
 pack	akka-ai-skills-pack
 source	/home/hxmc/ai/akka-ai-skills-pack/skills-pack
 mode	copy
-installed_at	2026-06-05T10:19:15Z
+installed_at	2026-06-08T10:35:23Z
 entry	file	README.md
 entry	dir	references
 entry	dir	docs
@@ -36,7 +36,6 @@ entry	dir	akka-agent-orchestration
 entry	dir	akka-agent-prompt-governance
 entry	dir	akka-agent-reference-governance
 entry	dir	akka-agent-runtime-state
-entry	dir	akka-agent-seed-documents
 entry	dir	akka-agent-skill-governance
 entry	dir	akka-agent-streaming
 entry	dir	akka-agent-structured-responses

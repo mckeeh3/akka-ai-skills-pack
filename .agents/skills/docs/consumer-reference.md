@@ -5,13 +5,8 @@ Small, agent-oriented reference for Akka Java SDK Consumers.
 Primary official semantics:
 - `akka-context/sdk/consuming-producing.html.md`
 
-Local executable examples:
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCommandsTopicConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewWorkflowTopicConsumer.java`
+Local executable example:
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
 
 ## Quick source selection
 
@@ -35,13 +30,13 @@ Design for:
 ### Event sourced entity consumer
 
 ```java
-@Component(id = "shopping-cart-checkout-consumer")
-@Consume.FromEventSourcedEntity(ShoppingCartEntity.class)
-public class ShoppingCartCheckoutConsumer extends Consumer {
+@Component(id = "workstream-event-attention-consumer")
+@Consume.FromEventSourcedEntity(AgentDefinitionEntity.class)
+public class WorkstreamEventAttentionConsumer extends Consumer {
 
-  public Effect onEvent(ShoppingCart.Event event) {
+  public Effect onEvent(WorkstreamEvent.Event event) {
     return switch (event) {
-      case ShoppingCart.Event.CheckedOut checkedOut -> effects().done();
+      case WorkstreamEvent.Event.CheckedOut checkedOut -> effects().done();
       default -> effects().ignore();
     };
   }
@@ -51,11 +46,11 @@ public class ShoppingCartCheckoutConsumer extends Consumer {
 ### Key value entity consumer
 
 ```java
-@Component(id = "draft-cart-checkout-consumer")
-@Consume.FromKeyValueEntity(DraftCartEntity.class)
-public class DraftCartCheckoutConsumer extends Consumer {
+@Component(id = "workstream-log-attention-consumer")
+@Consume.FromKeyValueEntity(DurableIdentityRepositoryEntity.class)
+public class WorkstreamEventAttentionConsumer extends Consumer {
 
-  public Effect onChange(DraftCart.State state) {
+  public Effect onChange(WorkstreamLog.State state) {
     if (!state.checkedOut()) {
       return effects().ignore();
     }
@@ -72,14 +67,14 @@ public class DraftCartCheckoutConsumer extends Consumer {
 ### Topic consumer
 
 ```java
-@Component(id = "shopping-cart-commands-topic-consumer")
-@Consume.FromTopic("shopping-cart-commands")
-public class ShoppingCartCommandsTopicConsumer extends Consumer {
+@Component(id = "workstream-event-commands-topic-consumer")
+@Consume.FromTopic("workstream-event-commands")
+public class WorkstreamEventAttentionConsumer extends Consumer {
 
-  public record Checkout() {}
+  public record Attention() {}
 
-  public Effect onMessage(Checkout ignored) {
-    var cartId = messageContext().eventSubject().orElseThrow();
+  public Effect onMessage(Attention ignored) {
+    var workstreamId = messageContext().eventSubject().orElseThrow();
     return effects().done();
   }
 }
@@ -90,24 +85,24 @@ public class ShoppingCartCommandsTopicConsumer extends Consumer {
 Use this when one Akka service publishes a public event stream and another Akka service subscribes to it.
 
 Dedicated reference:
-- `docs/service-to-service-consumers.md`
+- `./service-to-service-consumers.md`
 
 Local producer-side executable example:
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
 
 ## Topic production with subject metadata
 
 Use `ce-subject` when downstream routing or per-entity ordering matters.
 
 ```java
-@Component(id = "shopping-cart-events-to-topic-consumer")
-@Consume.FromEventSourcedEntity(ShoppingCartEntity.class)
-@Produce.ToTopic("shopping-cart-events")
-public class ShoppingCartEventsToTopicConsumer extends Consumer {
+@Component(id = "workstream-event-events-to-topic-consumer")
+@Consume.FromEventSourcedEntity(AgentDefinitionEntity.class)
+@Produce.ToTopic("workstream-event-events")
+public class WorkstreamEventAttentionConsumer extends Consumer {
 
-  public Effect onEvent(ShoppingCart.Event event) {
-    var cartId = messageContext().eventSubject().orElseThrow();
-    Metadata metadata = Metadata.EMPTY.add("ce-subject", cartId);
+  public Effect onEvent(WorkstreamEvent.Event event) {
+    var workstreamId = messageContext().eventSubject().orElseThrow();
+    Metadata metadata = Metadata.EMPTY.add("ce-subject", workstreamId);
     return effects().produce(event, metadata);
   }
 }
@@ -122,8 +117,5 @@ Prefer:
 - `withWorkflowIncomingMessages(...)` for workflow-driven consumers
 - end-to-end tests for same-service entity consumers
 
-Reference tests:
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewWorkflowTopicConsumerIntegrationTest.java`
+Reference test:
+- `../examples/akka-components/src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java`

@@ -9,13 +9,7 @@ Use this skill when implementing browser state, structured surface rendering, DO
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS state/rendering work, implement only after the task, app-description, spec, or backlog supplies or explicitly defers:
-- owning functional agent, workstream region, role-specific dashboard attention source, structured surface id/type/version, human surface graph edge, surface action/event, and deep-link behavior;
-- browser-tool exposure name plus governed-tool id/capability id/class behind each consequential action/query and selected frontend/API/realtime exposure;
-- `AuthContext`, tenant/customer scope, roles/capabilities, disabled/forbidden states, stale/reconnect behavior, and backend authorization boundary;
-- DTOs, redaction, idempotency/correlation ids, policy/approval/escalation states, audit/work trace links, and rendering/API/realtime tests.
-
-If these are absent for generated SaaS implementation, route back to `akka-web-ui-apps`, `agent-workstream-apps`, and `capability-first-backend` or repair the task brief instead of rendering generic UI state.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## AI-first state role
 

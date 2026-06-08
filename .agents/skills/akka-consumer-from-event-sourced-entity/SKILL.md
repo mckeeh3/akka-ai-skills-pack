@@ -9,14 +9,7 @@ Use this skill when a Consumer reacts to persisted events from an Event Sourced 
 
 ## Generated SaaS input contract
 
-For generated full-stack AI-first SaaS work, implement only after the selected task, app-description, spec, or backlog supplies or explicitly defers:
-- functional agent or explicit internal-only/foundation scope;
-- workstream, structured surface id/type/version, and surface action or workstream event when user-facing;
-- capability id/class, selected Akka substrate, and exposure surfaces;
-- `AuthContext`, tenant/customer scope, roles/capabilities, and backend authorization boundary;
-- input/output DTOs, redaction, side effects, idempotency, policy/approval/escalation, audit/work traces, and required tests.
-
-If these are absent and the work is generated SaaS implementation, route back to `agent-workstream-apps` + `capability-first-backend` or block for task-brief repair instead of guessing.
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
@@ -24,11 +17,6 @@ Read these first if present:
 - `akka-context/sdk/consuming-producing.html.md`
 - `akka-context/sdk/event-sourced-entities.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartCheckoutConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartEventsToTopicConsumer.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartPublicEventsConsumer.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCheckoutConsumerIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartCommandsTopicConsumerIntegrationTest.java`
 
 ## Use this pattern when
 
@@ -56,18 +44,18 @@ Rules:
 - use the snapshot to initialize downstream state or emit a summary message
 - keep snapshot logic compatible with later event processing
 
-## Repository examples
+## Pattern references
 
 These are Akka substrate mechanics examples, not generated-product architecture templates.
 
-- `ShoppingCartCheckoutConsumer`
+- `WorkstreamEventAttentionConsumer`
   - filters to `CheckedOut`
-  - reads current cart state
+  - reads current workstream event state
   - creates a downstream order entity
-- `ShoppingCartEventsToTopicConsumer`
-  - republishes every shopping-cart event to a broker topic
+- `WorkstreamEventAttentionConsumer`
+  - republishes every workstream-event event to a broker topic
   - sets `ce-subject` metadata from the entity id
-- `ShoppingCartPublicEventsConsumer`
+- `WorkstreamEventAttentionConsumer`
   - transforms internal events into service-stream public events
   - uses `@Acl` because other services subscribe
 

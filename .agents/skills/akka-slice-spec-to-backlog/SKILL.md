@@ -11,7 +11,7 @@ This is a narrower follow-on planning skill than `akka-prd-to-specs-backlog`.
 
 ## Goal
 
-Create or update a single backlog file that is tightly aligned with one existing slice or sprint spec and is detailed enough to drive focused coding sessions.
+Create or update a single backlog file that is tightly aligned with one existing slice or sprint spec and the current intent graph nodes it realizes, and is detailed enough to drive focused coding sessions.
 The backlog should end in bounded harness-sized task items, not just class lists and prose.
 For generated secure AI-first SaaS, each backlog item must preserve the vertical workstream graph chain from the source increment: workstream → role-specific dashboard attention → human surface graph node/action or workstream event → internal workstream agent graph delegation/result when applicable → governed-tool id/class inside capability and surface/action maps → selected Akka substrate/exposure channel → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
 Also create or update matching entries in `specs/pending-tasks.md` so follow-on implementation can proceed one task per fresh context.
@@ -46,21 +46,25 @@ This skill should be used after:
 Read these first if present:
 - `../README.md`
 - `../akka-prd-to-specs-backlog/SKILL.md`
-- `../../../specs/README.md`
-- `../../../specs/backlog/README.md`
-- `../../../specs/tasks/README.md`
-- `../../../specs/pending-tasks.md` if it already exists
+- `../docs/intent-compiler.md`
+- `../docs/current-intent-model.md`
+- `../docs/intent-to-realization-flow.md`
+- `../docs/intent-compiler-skill-contracts.md`
+- target project path: specs/README.md
+- target project path: specs/backlog/README.md
+- target project path: specs/tasks/README.md
+- target project path: specs/pending-tasks.md if it already exists
 - `../docs/pending-task-queue.md`
 - `../docs/ai-first-saas-application-architecture.md` when the slice or sprint includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../docs/requirements-to-workstream-development-process.md` when the source increment includes generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent candidates, notifications/projections, or task queues
-- `../../../app-description/15-operating-model/` or equivalent operating-model specs when present and relevant
-- `../../../specs/templates/build-backlog-template.md`
-- `../../../specs/templates/implementation-task-template.md`
-- the target slice spec file under `../../../specs/slices/` or sprint spec file under `../../../specs/sprints/`
-- the related module spec under `../../../specs/modules/` when present
+- target project path: app-description/15-operating-model/ or equivalent operating-model specs when present and relevant
+- target project path: specs/templates/build-backlog-template.md if the target project provides it; otherwise use the backlog structure described in this skill
+- target project path: specs/templates/implementation-task-template.md if the target project provides it; otherwise use the task-brief structure described in this skill
+- the target slice spec file under target project path: specs/slices/ or sprint spec file under target project path: specs/sprints/
+- the related module spec under target project path: specs/modules/ when present
 - any cross-cutting spec files referenced or obviously relevant to the slice or sprint
-- `../../../specs/cross-cutting/*ui-style-guide*.md`, `../../../app-description/55-ui/style-guide.md`, or equivalent style artifact when the slice or sprint includes browser UI work
-- `../../../specs/akka-solution-plan.md`
+- target project path: specs/cross-cutting/*ui-style-guide*.md, target project path: app-description/55-ui/style-guide.md, or equivalent style artifact when the slice or sprint includes browser UI work
+- target project path: specs/akka-solution-plan.md
 
 If a matching backlog file already exists:
 - read it first
@@ -69,62 +73,15 @@ If a matching backlog file already exists:
 
 ## What this skill must produce
 
-For one target slice file such as:
-- `specs/slices/03-consumables-ordering.md`
-
-produce the matching backlog file:
-- `specs/backlog/03-consumables-ordering-build-backlog.md`
-
-For one target sprint file such as:
-- `specs/sprints/03-consumables-ordering-sprint.md`
-
-produce the matching backlog file:
-- `specs/backlog/03-consumables-ordering-build-backlog.md`
-
-Also create or update:
-- `specs/pending-tasks.md`
-
-This skill is a one-increment expansion step. Do not reinterpret the whole PRD, create a fresh parallel app, or change unrelated slices/sprints while creating the backlog. The backlog and queue entries must inherit the selected Java base package, core-app-extension assumptions, style-guide status, workstream ids, role-specific dashboards, attention items, surface graph nodes/edges, internal-agent graph context, governed-tool ids, capability ids, AuthContext/scope, role/capability rules, approval gates, audit/trace obligations, and test expectations from the solution plan and source slice/sprint. If the source increment lacks those contracts, block or queue the narrow repair question instead of inventing implementation authority.
-
-## Required backlog content
-
-The backlog file must include:
-1. Purpose
-2. Delivery goal
-3. Workstream/attention/dashboard contract: workstream id, functional agent, role-specific dashboards, attention categories/items, left-rail/My Account contribution, and notification/projection expectations when in scope
-4. Human surface graph plus governed-tool/capability map: surface nodes, edges, states/actions, system-message surfaces, governed-tool ids/classes, capability ids/classes, AuthContext, approval/policy, audit/work trace, and exposure channel
-5. Internal workstream agent graph and autonomous task candidates: virtual dashboard agent attention, internal worker delegations/results/escalations, durable internal/background work that should use AutonomousAgent, plus task lifecycle/result/notification surfaces when applicable
-6. Recommended package layout additions
-7. Class-by-class file list
-8. Concrete endpoint list
-9. Write-model design decisions
-10. View/workflow/consumer/timer/integration design as relevant
-11. Web UI style-guide dependency and selected AI-first style when the slice includes browser UI work
-12. Test plan by file/class
-13. Implementation order
-14. Suggested harness task breakdown
-15. Done criteria, including the working local app/API/UI state for the slice or sprint goal
-16. Explicit defer list, including whether each deferral narrows the goal or blocks calling the feature implemented
-
-The suggested harness task breakdown is the default leaf layer for implementation.
-Each item should be small enough to become one focused implementation prompt without reopening the full PRD.
-
-When the target slice or sprint is the SaaS foundation, split the breakdown into concrete foundation and five-core workstream starter tasks before app-specific domain features: invitation lifecycle, email delivery/outbox, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, membership/role management, admin audit/search, AI admin agents including AdminRiskAgent and AccessReviewAgent or a skilled UserAdminAgent, decision cards for risky admin actions, My Account/User Admin/Agent Admin/Audit or Trace/Governance or Policy workstream surfaces, admin UI surfaces, and security/admin tests. Do not produce one broad `auth/admin` item or a User-Admin-only starter backlog for this work.
-
-Also split governed runtime agent foundation work into separate backlog and pending-task items by component/UI/test family: `AgentDefinition` lifecycle/profile and agent catalog/detail, `PromptDocument`/`PromptVersion` governance with prompt assembly and `PromptAssemblyTrace`, `SkillDocument`/`SkillVersion` governance, `ReferenceDocument`/`ReferenceVersion` governance, `AgentSkillManifest`/`AgentReferenceManifest`, authorized `readSkill(skillId)`/`readReferenceDoc(referenceId)` and `SkillLoadTrace`/`ReferenceLoadTrace`, `ToolPermissionBoundary`, `AgentWorkTrace`, behavior editing agents and proposed-diff approval, prompt/skill/reference/manifest/tool-boundary UI, trace UI, and security/admin/agent-governance tests. Do not produce one broad managed-agent or `agent governance` item that spans all of these.
-
-For each bounded item in the suggested harness task breakdown, add or update a corresponding task in `specs/pending-tasks.md` using `../docs/pending-task-queue.md`. Each backlog and queue item must carry the relevant workstream id, role-specific dashboard, attention category/item, surface graph node/edge or surface action, source governed-tool ids, source capability ids, internal-agent delegation/result context, actor/caller, `AuthContext`, role/scope or permission checks, approval gates, selected Akka substrate/exposure channel, AutonomousAgent task lifecycle/notification/result semantics when applicable, audit/trace requirements, UI surface, concrete checks, and local/runtime validation path when the work implements app behavior rather than reducing the work to a vague implementation label.
-If the slice or sprint goal names a feature such as sign-in, user auth, invitation onboarding, User Admin, Agent Admin, or an app-specific workflow, the backlog must include the backend, endpoint/API, frontend/workstream surface, authorization, audit/trace, tests, and local smoke/manual verification needed for that named feature to work at the stated scope. Deferrals that prevent that working state must narrow/rename the goal or block completion; they must not be counted as done.
-If a bounded item implements browser UI and style is unresolved, do not make it runnable; add/update a `specs/pending-questions.md` style-selection question using `../docs/web-ui-style-guide.md` and mark only the affected UI task as blocked or defer it with an explicitly accepted default.
-Preserve existing task IDs and statuses when updating an existing queue.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed backlog and queue output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
 ## Mapping rules
 
 ### Slice or sprint to backlog name mapping
-- `specs/slices/01-foo.md` -> `specs/backlog/01-foo-build-backlog.md`
-- `specs/slices/02-bar.md` -> `specs/backlog/02-bar-build-backlog.md`
-- `specs/sprints/01-foo-sprint.md` -> `specs/backlog/01-foo-build-backlog.md`
-- `specs/sprints/02-bar-sprint.md` -> `specs/backlog/02-bar-build-backlog.md`
+- `specs/slices/01-domain-specific.md` -> `specs/backlog/01-domain-specific-build-backlog.md`
+- `specs/slices/02-domain-specific-process.md` -> `specs/backlog/02-domain-specific-process-build-backlog.md`
+- `specs/sprints/01-domain-specific-sprint.md` -> `specs/backlog/01-domain-specific-build-backlog.md`
+- `specs/sprints/02-domain-specific-process-sprint.md` -> `specs/backlog/02-domain-specific-process-build-backlog.md`
 
 ### AI-first context preservation
 
@@ -181,7 +138,8 @@ Avoid:
 
 Before finishing, verify:
 - the backlog filename matches the slice filename by number and stem, or the sprint filename by number and stem after dropping `-sprint`
-- the backlog references the right prerequisite specs
+- the backlog references the right prerequisite specs and current-intent graph nodes
+- every generated task preserves or inherits current-intent provenance
 - the class list fits the slice or sprint scope
 - the endpoint list fits the slice or sprint scope
 - UI tasks include the selected style guide in required reads, or are blocked by the style-selection question

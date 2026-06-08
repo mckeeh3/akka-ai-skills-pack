@@ -9,19 +9,22 @@ Use this skill when agent behavior profiles include runtime model selection or m
 
 This skill governs model configuration. It does not replace `akka-agent-component` for Java `Agent` class structure or `akka-agent-behavior-profiles` for durable `AgentDefinition` lifecycle.
 
-Use this skill only for model-selection authority, policy, fallback, secret-boundary, and model-use trace concerns. Use `akka-agent-behavior-profiles` for which agent references a model config, `app-description-functional-agent-modeling` / `docs/workstream-expertise-model.md` for the per-workstream expert bundle contract, `akka-agent-tool-boundaries` for tool/data/side-effect authority, and prompt/skill governance skills for model-visible behavior guidance. Prompt text, skill text, or evaluator recommendations cannot select an unapproved provider or bypass model policy.
+Use this skill only for model-selection authority, policy, fallback, secret-boundary, and model-use trace concerns. Use `akka-agent-behavior-profiles` for which agent references a model config, `app-description-functional-agent-modeling` / `../docs/workstream-expertise-model.md` for the per-workstream expert bundle contract, `akka-agent-tool-boundaries` for tool/data/side-effect authority, and prompt/skill governance skills for model-visible behavior guidance. Prompt text, skill text, or evaluator recommendations cannot select an unapproved provider or bypass model policy.
 
 ## Required reading
 
 Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md`
+- `../docs/governed-agent-substrate.md`
 - `../docs/agent-runtime-invocation-pattern.md`
 - `../docs/agent-coverage-matrix.md`
 - `../akka-agent-behavior-profiles/SKILL.md`
 - `../akka-agent-component/SKILL.md`
 - `../akka-agent-work-trace/SKILL.md`
-- `../examples/akka-components/src/main/java/com/example/application/ConfiguredModelActivityAgent.java`
-- `../examples/akka-components/src/test/java/com/example/application/ConfiguredModelActivityAgentTest.java`
+
+Concrete provider-boundary examples:
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/ModelProviderClient.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/OpenAiModelProviderClient.java`
 
 ## Use when the request mentions
 
@@ -79,7 +82,7 @@ Before model invocation, the runtime resolver must verify:
 6. Provider secrets are resolved only by backend runtime configuration and are never returned to the model, browser, trace views, or agent tools.
 7. `AgentWorkTrace` records the `ModelConfigRef`, policy decision, fallback decision when used, and safe provider/model alias summary.
 
-For a static Java example of configured model aliases, use `ConfiguredModelActivityAgent`, which demonstrates `ModelProvider.fromConfig("openai-low-temperature")`. In managed agents, prefer resolving the approved `ModelConfigRef` before invoking the Java `Agent` or passing a known-safe alias into the invocation wrapper.
+For static Java agents that use configured model aliases such as `ModelProvider.fromConfig("openai-low-temperature")`, treat the alias as a safe deployment-configured reference only. In managed agents, resolve the approved `ModelConfigRef` before invoking the Java `Agent` or passing a known-safe alias into the invocation wrapper.
 
 ## Akka component mapping
 
@@ -112,7 +115,7 @@ Plan tests for:
 - provider secret boundary: no API key/secret in frontend API responses, traces, prompts, skills, or model-visible context;
 - model config change audit and runtime `AgentWorkTrace` model reference;
 - prompt/skill attempts to request unauthorized model/provider do not change backend selection;
-- deterministic static model-alias tests with `TestModelProvider`, as shown by `ConfiguredModelActivityAgentTest`.
+- deterministic static model-alias tests with `TestModelProvider`, covering the configured alias path without exposing provider secrets.
 
 ## Review checklist
 

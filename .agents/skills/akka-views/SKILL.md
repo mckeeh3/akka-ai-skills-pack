@@ -12,7 +12,7 @@ For broad product, PRD, feature, dashboard, reporting, or search requests, route
 ## Goal
 
 Generate or review view code that is:
-- correct for Akka SDK 3.4+
+- correct for Akka SDK 3.6.x
 - explicit about its source and update model
 - queryable with low-ambiguity result mappings
 - easy for AI agents to extend safely
@@ -45,21 +45,7 @@ Read these first if present:
 - matching tests under `src/test/java/**`
 
 In this repository, prefer these examples:
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartsByCheckedOutView.java`
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartAuditView.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartsByCheckedOutView.java`
-- `../examples/akka-components/src/main/java/com/example/application/DraftCartLifecycleView.java`
-- `../examples/akka-components/src/main/java/com/example/application/ReviewRequestsByStatusView.java`
-- `../examples/akka-components/src/main/java/com/example/application/SupervisedExportEvidenceView.java` — capability-first scoped evidence view
-- `../examples/akka-components/src/main/java/com/example/application/ShoppingCartTopicView.java`
 - `../docs/service-to-service-views.md`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartAuditViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartsByCheckedOutViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/DraftCartLifecycleViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ReviewRequestsByStatusViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/SupervisedExportEvidenceViewIntegrationTest.java`
-- `../examples/akka-components/src/test/java/com/example/application/ShoppingCartTopicViewIntegrationTest.java`
 
 ## Companion skills
 
@@ -90,10 +76,12 @@ If the source is another Akka service via service-to-service eventing, use this 
 
 ## Default package layout
 
-Use:
-- `com.<org>.<app>.domain`
-- `com.<org>.<app>.application`
-- `com.<org>.<app>.api`
+Use the fixed Java base package `ai.first` for this SaaS Foundation App repository and downstream generated code. Keep package declarations, imports, tests, and source paths under `ai.first`; do not infer package names from examples.
+
+Typical layer paths are:
+- `<base>.domain`
+- `<base>.application`
+- `<base>.api`
 
 Rules:
 - view classes belong in `application`
@@ -135,8 +123,8 @@ Typical sources:
 - Workflow
 
 Repository examples:
-- `DraftCartsByCheckedOutView`
-- `ReviewRequestsByStatusView`
+- `UserDirectoryView`
+- a domain-specific workflow-status view
 
 ### 2. Event-driven projection view
 Use when the source emits domain events and the view must rebuild row state incrementally.
@@ -146,16 +134,16 @@ Typical sources:
 - Topic
 
 Repository examples:
-- `ShoppingCartsByCheckedOutView`
-- `ShoppingCartTopicView`
+- `UserDirectoryView`
+- `AgentRuntimeTraceView`
 
 ### 3. Query-shaping or streaming task
 Use when the main problem is result mapping, aliases, pagination, streaming current results, or streaming updates.
 
 Repository examples:
-- `DraftCartsByCheckedOutView#getCartsPage`
-- `DraftCartsByCheckedOutView#streamCarts`
-- `ShoppingCartAuditView#streamByDeleted`
+- `UserDirectoryView#getRowsPage`
+- `UserDirectoryView#streamRows`
+- `AdminAuditView#streamByDeleted`
 
 ## Advanced semantics to remember
 
@@ -165,7 +153,7 @@ Repository examples:
 - KVE-backed views may skip intermediate state transitions and reflect only the latest guaranteed state.
 - Topic-backed views rely on topic delivery and metadata such as `ce-subject`.
 - For multi-region scenarios, `updateContext().hasLocalOrigin()`, `originRegion()`, and `selfRegion()` can drive origin-aware filtering.
-- For service-to-service eventing sources, also use `docs/service-to-service-views.md` and `akka-context/sdk/consuming-producing.html.md`.
+- For service-to-service eventing sources, also use `../docs/service-to-service-views.md` and `akka-context/sdk/consuming-producing.html.md`.
 - `ORDER BY` is constrained by the View indexes inferred from the `WHERE` clause. If you need `ORDER BY lowestConsumablePercent, deviceId`, include conditions for both fields, such as `lowestConsumablePercent <= :maxPercent` and `deviceId >= :minDeviceId`.
 - Do not use `ORDER BY` on live view queries forwarded to SSE; create a separate unsorted `streamUpdates = true` query for SSE and keep sorted/paginated queries separate.
 - View schema/query changes must be treated carefully; incompatible changes may require a new `@Component(id = ...)` and a staged migration.
@@ -179,7 +167,7 @@ Before finishing, verify:
 - the updater source annotation matches the source component type
 - ESE/Topic uses `onEvent(...)`, KVE/Workflow uses `onUpdate(...)`
 - query response records match the `SELECT` shape and aliases exactly
-- multi-row queries use a wrapper field alias such as `AS carts`
+- multi-row queries use a wrapper field alias such as `AS rows`
 - every non-SSE `ORDER BY` column appears in the same query's `WHERE` conditions
 - SSE-backed view queries do not contain `ORDER BY`
 - optional filters are split into separate query methods rather than `OR` branches

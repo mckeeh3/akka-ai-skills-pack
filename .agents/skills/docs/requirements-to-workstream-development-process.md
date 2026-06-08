@@ -4,15 +4,19 @@
 
 Canonical process doctrine for generated secure AI-first SaaS app intake, PRD processing, app-description maintenance, decomposition, backlog generation, and implementation planning.
 
-Use this doc when broad product input must become a workstream-centered application model before Akka components are selected. It promotes the requirements-to-workstream process from `docs/workstream-dashboard-attention-event-backbone-wip.md`; keep that WIP as provenance and idea backlog, not as the primary rule source.
+Use this doc when broad product input must become a workstream-centered application model before Akka components are selected. It is the operative source for workstream-centered intake, planning, backlog, and implementation guidance.
 
 Related doctrine:
-- `docs/ai-first-saas-application-architecture.md`
-- `docs/agent-workstream-application-architecture.md`
-- `docs/structured-surface-contracts.md`
-- `docs/capability-first-backend-architecture.md`
-- `docs/agent-component-selection-guide.md`
-- `docs/workstream-ui-reference-architecture.md`
+- `./ai-first-saas-application-architecture.md`
+- `./agent-workstream-application-architecture.md`
+- `./workstream-contract.md`
+- `./workstream-manifest-schema.md`
+- `./minimum-implementable-workstream-slice.md`
+- `./workstream-attention-contracts.md`
+- `./structured-surface-contracts.md`
+- `./capability-first-backend-architecture.md`
+- `./agent-component-selection-guide.md`
+- `./workstream-ui-reference-architecture.md`
 
 ## Core rule
 
@@ -65,7 +69,7 @@ Direct solution plans and PRD-to-spec/backlog outputs must make the graph model 
 4. per-role dashboard/attention contracts, including My Account and left rail effects;
 5. human surface graph nodes, action edges, result surfaces, edge effects, and trace links;
 6. internal workstream agent graph, including virtual dashboard agent, worker agents, delegations, governed-tools, stop/escalation rules, and result/proposal surfaces;
-7. workstream expertise plan: prompt intent, skill/reference families, compact manifests, tool boundaries, authorized loaders, denials, governance owner, seed/import expectations, user-help examples, and tests;
+7. workstream expertise plan: prompt intent, skill/reference families, compact manifests, tool boundaries, authorized loaders, denials, governance owner, default-content governance expectations, user-help examples, and tests;
 8. capability and governed-tool inventory with AuthContext, tenant/customer scope, schemas, side effects, idempotency, policy/approval, audit/work traces, qualified exposure channels, and tests;
 9. Akka substrate mapping only after the capability/governed-tool contract is clear;
 10. implementation order by vertical workstream/attention/dashboard/surface-edge/governed-tool/capability increments;
@@ -79,20 +83,24 @@ Artifacts may keep only the smallest subset relevant to their scope, but decompo
 
 ### Workstream identity
 
-Record:
+Use `./workstream-contract.md` as the compact field contract and `./workstream-manifest-schema.md` as the machine-readable index for app-description trees. For one harness-sized implementation task, use `./minimum-implementable-workstream-slice.md` instead of copying the full contract. Record:
 - `workstreamId`, display name, and responsibility;
-- owner functional/context-area agent;
+- whether this is the workstream definition/type or a runtime workstream instance/thread/log;
+- owner functional/context-area agent, exactly one per workstream definition;
+- required `managedAgentDefinitionId` for the tenant-governed managed-agent behavior record; it may match `functionalAgentId` until separately named;
 - authorized actors, roles, memberships, and tenant/customer scope;
-- core-foundation vs domain-specific classification.
+- workstream icon metadata including stable icon id, visual hint, accent token, tooltip, accessible label, and optional approved asset ref;
+- core-foundation vs domain-specific classification;
+- readiness level: `identified`, `described`, `surface-ready`, `capability-ready`, `expertise-ready`, `runtime-ready`, or `production-ready`.
 
 ### Attention model
 
-Each workstream must answer the product question `what needs my attention?` for its authorized users.
+Use `./workstream-attention-contracts.md` for the concrete `AttentionItem`, `WorkstreamAttentionSummary`, producer, idempotency, lifecycle, aggregation, and test contracts. Each workstream must answer the product question `what needs my attention?` for its authorized users.
 
 Record:
-- attention categories such as approval, decision, exception, policy conflict, blocked work, overdue item, failed action, SLA risk, audit anomaly, or outcome drift;
-- target audience for each category;
-- severity and lifecycle expectations: open, acknowledged, resolved, dismissed, expired, escalated;
+- workstream-local manifest attention category ids and their mapped canonical `AttentionItem.category` values such as approval, decision, exception, policy conflict, blocked work, overdue item, failed action, SLA risk, audit anomaly, or outcome drift;
+- target audience and producer for each local category;
+- severity rules using `info | warning | urgent | blocked`, plus lifecycle expectations: open, acknowledged, resolved, dismissed, expired, escalated;
 - whether the item contributes to left rail and My Account counts.
 
 Attention is not merely notification. It is a scoped, authorized, actionable signal that a human or participant may need to inspect, decide, approve, correct, retry, escalate, acknowledge, or learn from something.
@@ -124,13 +132,13 @@ The left rail may show compact workstream attention indicators. The count means:
 
 > There are N items in this workstream that currently require this user's attention, given their identity, tenant/customer context, memberships, roles, permissions, workstream availability, and authority.
 
-Counts must derive from governed backend state/projections, not frontend-only badge logic. In the AI-first SaaS starter, this is implemented by the v1 shared attention backbone and bounded v2 attention producers: backend state owns actionable `AttentionItem` lifecycle, while workstream dashboards, My Account, and left rail summaries read authorized backend projections. Frontend-only unseen-response badges are transient presentation state, not authoritative attention.
+Counts must derive from governed backend state/projections, not frontend-only badge logic. In the SaaS Foundation App, this is implemented by the shared backend-owned attention backbone and bounded attention producers: backend state owns actionable `AttentionItem` lifecycle, while workstream dashboards, My Account, and left rail summaries read authorized backend projections. Frontend-only unseen-response badges are transient presentation state, not authoritative attention.
 
-Planning and implementation artifacts should distinguish current starter coverage from future work:
+Planning and implementation artifacts should distinguish current SaaS Foundation App coverage from future work:
 
-- v1 backbone: shared backend-owned attention items, scoped reads, redaction, lifecycle operations, and traces;
-- v2 producers: bounded service/timer/task producers with stable producer ids, idempotency, upsert/resolve behavior, and backend-derived refresh/update delivery;
-- v3 event backbone: typed `WorkstreamEventEnvelope`/source refs, bounded starter invitation and access-review lifecycle event publication, idempotent event-to-attention consumption, and backend-derived projection-refresh hints;
+- attention backbone: shared backend-owned attention items, scoped reads, redaction, lifecycle operations, and traces;
+- bounded attention producers: bounded service/timer/task producers with stable producer ids, idempotency, upsert/resolve behavior, and backend-derived refresh/update delivery;
+- typed workstream event backbone: typed `WorkstreamEventEnvelope`/source refs, bounded SaaS Foundation App invitation and access-review lifecycle event publication, idempotent event-to-attention consumption, and backend-derived projection-refresh hints;
 - future extensions: broader generated-app event coverage, enterprise notification preferences, digests, and real AutonomousAgent durable task notification/lifecycle streams over the governed runtime path.
 
 Initial summary shape:
