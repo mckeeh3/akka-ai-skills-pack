@@ -314,7 +314,7 @@
 
 ### TASK-ADICM-04-002: Terminal migration verification
 
-- status: pending
+- status: done
 - source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-08-terminal-migration-verification
 - task brief: specs/app-description-intent-compiler-migration/tasks/04-scrub-verify/02-terminal-migration-verification.md
 - depends on:
@@ -348,3 +348,7 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs-only terminal verification; validates current-intent graph migration, spec reconciliation, and archive scrub; no runtime feature validation beyond mapping evidence; validation path `git diff --check` plus proof commands
+  - verification report: `specs/app-description-intent-compiler-migration/migration-verification.md`
+  - result: mini-project done state verified; no material migration gaps found; no follow-up tasks appended
+  - checks passed: `git diff --check`; graph-shape proof; five-workstream coverage proof; archive-authority scrub proof; active-spec current-graph reference proof; legacy numbered path proof; archive tree removal proof
+  - commit message: `app-desc-migrate: verify migration closure`
