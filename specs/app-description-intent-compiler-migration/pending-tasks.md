@@ -1,0 +1,323 @@
+# Pending Tasks: App-description Intent-Compiler Migration
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each completed task must make one focused git commit containing the intended changes and queue update.
+- If the queue status update is included in the same commit, record the commit message in task notes.
+- Commit message format: `app-desc-migrate: <short task title>`.
+
+## Tasks
+
+### TASK-ADICM-00-001: Create app-description intent-compiler migration queue
+
+- status: done
+- source: user discussion accepting archive/inventory/reconstruct/reconcile/scrub approach
+- task brief: specs/app-description-intent-compiler-migration/tasks/00-planning/00-create-migration-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - .agents/skills/project-discussed-idea-to-pending-project/SKILL.md
+  - .agents/skills/docs/intent-compiler.md
+  - .agents/skills/docs/current-intent-model.md
+  - .agents/skills/docs/intent-to-realization-flow.md
+  - .agents/skills/docs/intent-compiler-skill-contracts.md
+  - current conversation context
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/app-description-intent-compiler-migration/README.md
+  - specs/app-description-intent-compiler-migration/conversation-capture.md
+  - specs/app-description-intent-compiler-migration/pending-tasks.md
+  - specs/app-description-intent-compiler-migration/sprints/*.md
+  - specs/app-description-intent-compiler-migration/backlog/*.md
+  - specs/app-description-intent-compiler-migration/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - migration approach and queue are captured
+  - task changes and queue update are committed
+- notes:
+  - commit message: `app-desc-migrate: add migration queue`
+  - vertical contract: docs-only cross-cutting planning for root app-description current-intent migration; no runtime/API/UI behavior change; validation path `git diff --check`
+
+### TASK-ADICM-01-001: Archive legacy app-description as temporary migration input
+
+- status: pending
+- source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-01-archive-legacy-app-description-as-temporary-migration-input
+- task brief: specs/app-description-intent-compiler-migration/tasks/01-source-baseline/01-archive-legacy-app-description.md
+- depends on:
+  - TASK-ADICM-00-001
+- required reads:
+  - AGENTS.md
+  - .agents/skills/docs/current-intent-model.md
+  - .agents/skills/docs/intent-compiler-skill-contracts.md
+  - specs/app-description-intent-compiler-migration/README.md
+  - specs/app-description-intent-compiler-migration/conversation-capture.md
+  - specs/app-description-intent-compiler-migration/sprints/01-source-baseline-sprint.md
+  - specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md
+  - specs/app-description-intent-compiler-migration/tasks/01-source-baseline/01-archive-legacy-app-description.md
+  - app-description/README.md
+  - app-description/00-system/app-manifest.md
+- skills:
+  - app-descriptions
+- expected outputs:
+  - temporary migration archive of current app-description
+  - archive/source manifest labelling archive as non-authoritative and temporary
+  - updated queue status and notes
+- required checks:
+  - `git diff --check`
+  - archive/non-authority proof command output
+- done criteria:
+  - legacy app-description is recoverable as migration input
+  - archive is clearly temporary and non-authoritative
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs-only source-baseline capture for app-description migration; no runtime behavior change; validation path `git diff --check` plus archive proof
+
+### TASK-ADICM-01-002: Inventory implementation and source evidence
+
+- status: pending
+- source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-02-inventory-implementation-and-source-evidence
+- task brief: specs/app-description-intent-compiler-migration/tasks/01-source-baseline/02-inventory-implementation-and-source-evidence.md
+- depends on:
+  - TASK-ADICM-01-001
+- required reads:
+  - AGENTS.md
+  - .agents/skills/docs/intent-compiler.md
+  - .agents/skills/docs/current-intent-model.md
+  - .agents/skills/docs/intent-to-realization-flow.md
+  - .agents/skills/docs/ai-first-saas-application-architecture.md
+  - .agents/skills/docs/capability-first-backend-architecture.md
+  - specs/app-description-intent-compiler-migration/README.md
+  - specs/app-description-intent-compiler-migration/conversation-capture.md
+  - specs/app-description-intent-compiler-migration/sprints/01-source-baseline-sprint.md
+  - specs/app-description-intent-compiler-migration/tasks/01-source-baseline/02-inventory-implementation-and-source-evidence.md
+  - temporary legacy app-description archive manifest from TASK-ADICM-01-001
+- skills:
+  - app-description-change-impact
+  - capability-first-backend
+  - ai-first-saas
+- expected outputs:
+  - specs/app-description-intent-compiler-migration/source-inventory.md
+  - classification of foundation references, core starter current intent, stale exclusions, and drift candidates
+- required checks:
+  - `git diff --check`
+  - inventory coverage proof commands
+- done criteria:
+  - future graph reconstruction tasks can proceed without guessing source evidence
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs-only cross-cutting inventory for backend/frontend/tests/specs/legacy evidence; no runtime behavior change; validation path `git diff --check` plus coverage proof
+
+### TASK-ADICM-02-001: Define current-intent graph skeleton
+
+- status: pending
+- source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-03-define-target-current-intent-graph-skeleton
+- task brief: specs/app-description-intent-compiler-migration/tasks/02-current-intent-graph/01-define-current-intent-graph-skeleton.md
+- depends on:
+  - TASK-ADICM-01-002
+- required reads:
+  - AGENTS.md
+  - .agents/skills/docs/current-intent-model.md
+  - .agents/skills/docs/intent-compiler-skill-contracts.md
+  - specs/app-description-intent-compiler-migration/README.md
+  - specs/app-description-intent-compiler-migration/source-inventory.md
+  - specs/app-description-intent-compiler-migration/sprints/02-current-intent-graph-sprint.md
+  - specs/app-description-intent-compiler-migration/tasks/02-current-intent-graph/01-define-current-intent-graph-skeleton.md
+- skills:
+  - app-description-bootstrap
+  - app-descriptions
+- expected outputs:
+  - reconstructed app-description graph skeleton
+  - app/domain/global starter nodes
+- required checks:
+  - `git diff --check`
+  - app-description graph-shape proof commands
+- done criteria:
+  - app-description graph shape and naming are stable for population tasks
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs-only current-intent graph skeleton for secure multi-tenant AI-first SaaS core starter; no runtime behavior change; validation path `git diff --check` plus graph proof
+
+### TASK-ADICM-02-002: Populate core starter workstream graph
+
+- status: pending
+- source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-04-populate-core-starter-workstream-graph
+- task brief: specs/app-description-intent-compiler-migration/tasks/02-current-intent-graph/02-populate-core-starter-workstreams.md
+- depends on:
+  - TASK-ADICM-02-001
+- required reads:
+  - AGENTS.md
+  - .agents/skills/docs/current-intent-model.md
+  - .agents/skills/docs/intent-to-realization-flow.md
+  - .agents/skills/docs/ai-first-saas-application-architecture.md
+  - .agents/skills/docs/core-ai-first-saas-foundation.md
+  - .agents/skills/docs/foundation-layer-coverage-matrix.md
+  - specs/app-description-intent-compiler-migration/README.md
+  - specs/app-description-intent-compiler-migration/source-inventory.md
+  - specs/app-description-intent-compiler-migration/sprints/02-current-intent-graph-sprint.md
+  - specs/app-description-intent-compiler-migration/tasks/02-current-intent-graph/02-populate-core-starter-workstreams.md
+  - current app-description graph skeleton
+- skills:
+  - app-description-capability-modeling
+  - app-description-functional-agent-modeling
+  - app-description-surface-modeling
+  - app-description-auth-security
+  - app-description-test-specification
+  - app-description-observability
+  - ai-first-saas
+  - agent-workstream-apps
+- expected outputs:
+  - populated core starter domain/workstream graph for My Account, User Admin, Agent Admin, Audit/Trace, Governance/Policy
+- required checks:
+  - `git diff --check`
+  - five-workstream coverage proof commands
+- done criteria:
+  - five core workstreams are captured as current-state graph bindings
+  - foundation doctrine is referenced rather than duplicated
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs-only current-intent capture for five core starter workstreams; captures surfaces/agents/tools/policies/traces/tests/auth scope without runtime code changes; validation path `git diff --check` plus coverage proof
+
+### TASK-ADICM-02-003: Populate realization and traceability mappings
+
+- status: pending
+- source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-05-populate-realization-and-traceability-mappings
+- task brief: specs/app-description-intent-compiler-migration/tasks/02-current-intent-graph/03-populate-realization-and-traceability.md
+- depends on:
+  - TASK-ADICM-02-002
+- required reads:
+  - AGENTS.md
+  - .agents/skills/docs/intent-to-realization-flow.md
+  - .agents/skills/docs/intent-compiler-skill-contracts.md
+  - specs/app-description-intent-compiler-migration/README.md
+  - specs/app-description-intent-compiler-migration/source-inventory.md
+  - specs/app-description-intent-compiler-migration/sprints/02-current-intent-graph-sprint.md
+  - specs/app-description-intent-compiler-migration/tasks/02-current-intent-graph/03-populate-realization-and-traceability.md
+  - populated app-description graph
+- skills:
+  - app-description-change-impact
+  - akka-solution-decomposition
+  - akka-views
+  - akka-http-endpoints
+  - akka-web-ui-api-client
+- expected outputs:
+  - realization mappings for Akka components, API contracts, frontend routes, tests, and validation evidence/gaps
+- required checks:
+  - `git diff --check`
+  - realization traceability proof commands
+- done criteria:
+  - current-intent graph is traceable to implementation/test artifacts or explicit gaps
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs-only realization mapping for all five core workstreams; maps runtime artifacts but does not implement them; validation path `git diff --check` plus traceability proof
+
+### TASK-ADICM-03-001: Reconcile active specs with new current-intent graph
+
+- status: pending
+- source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-06-reconcile-active-specsreadinessbacklogs-with-new-graph
+- task brief: specs/app-description-intent-compiler-migration/tasks/03-spec-reconciliation/01-reconcile-active-specs-with-new-graph.md
+- depends on:
+  - TASK-ADICM-02-003
+- required reads:
+  - AGENTS.md
+  - .agents/skills/docs/intent-to-realization-flow.md
+  - .agents/skills/docs/pending-task-queue.md
+  - specs/app-description-intent-compiler-migration/README.md
+  - specs/app-description-intent-compiler-migration/source-inventory.md
+  - specs/app-description-intent-compiler-migration/sprints/03-spec-reconciliation-sprint.md
+  - specs/app-description-intent-compiler-migration/tasks/03-spec-reconciliation/01-reconcile-active-specs-with-new-graph.md
+  - populated app-description graph
+  - active specs/readiness docs and pending queues that still cite old app-description paths
+- skills:
+  - app-description-change-impact
+  - akka-change-request-to-spec-update
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - active spec/readiness/queue references updated or explicitly deferred
+  - follow-up tasks/questions for unresolved drift as needed
+- required checks:
+  - `git diff --check`
+  - old/new reference proof commands
+  - pending-task contract validator if queue entries materially change and validator exists
+- done criteria:
+  - active planning artifacts no longer require legacy app-description taxonomy as authority
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs-only active spec reconciliation; preserves existing runtime/security/audit constraints; validation path `git diff --check`, reference proof, optional queue validator
+
+### TASK-ADICM-04-001: Scrub legacy archive dependencies and remove temporary archive
+
+- status: pending
+- source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-07-scrub-legacy-archive-dependencies-and-remove-temporary-archive
+- task brief: specs/app-description-intent-compiler-migration/tasks/04-scrub-verify/01-scrub-legacy-archive-dependencies.md
+- depends on:
+  - TASK-ADICM-03-001
+- required reads:
+  - AGENTS.md
+  - .agents/skills/docs/intent-compiler.md
+  - .agents/skills/docs/intent-compiler-skill-contracts.md
+  - specs/app-description-intent-compiler-migration/README.md
+  - specs/app-description-intent-compiler-migration/source-inventory.md
+  - specs/app-description-intent-compiler-migration/sprints/04-scrub-verify-sprint.md
+  - specs/app-description-intent-compiler-migration/tasks/04-scrub-verify/01-scrub-legacy-archive-dependencies.md
+  - populated app-description graph
+  - active specs touched by reconciliation
+  - temporary archive manifest
+- skills:
+  - app-description-change-impact
+  - app-description-readiness-assessment
+- expected outputs:
+  - active content scrubbed of archive-as-authority references
+  - temporary archive removed or isolated as non-authoritative
+- required checks:
+  - `git diff --check`
+  - archive-dependency scrub proof commands
+- done criteria:
+  - archived docs are not part of real current-intent content
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs-only migration scrub; no runtime behavior change; validation path `git diff --check` plus archive-dependency proof
+
+### TASK-ADICM-04-002: Terminal migration verification
+
+- status: pending
+- source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-08-terminal-migration-verification
+- task brief: specs/app-description-intent-compiler-migration/tasks/04-scrub-verify/02-terminal-migration-verification.md
+- depends on:
+  - TASK-ADICM-04-001
+- required reads:
+  - AGENTS.md
+  - .agents/skills/docs/intent-compiler.md
+  - .agents/skills/docs/current-intent-model.md
+  - .agents/skills/docs/intent-to-realization-flow.md
+  - .agents/skills/docs/intent-compiler-skill-contracts.md
+  - .agents/skills/docs/pending-task-queue.md
+  - specs/app-description-intent-compiler-migration/README.md
+  - specs/app-description-intent-compiler-migration/conversation-capture.md
+  - specs/app-description-intent-compiler-migration/source-inventory.md
+  - specs/app-description-intent-compiler-migration/pending-tasks.md
+  - specs/app-description-intent-compiler-migration/tasks/04-scrub-verify/02-terminal-migration-verification.md
+  - final app-description graph
+  - active specs/readiness docs touched by migration
+- skills:
+  - app-description-readiness-assessment
+  - app-description-readiness-summary
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - specs/app-description-intent-compiler-migration/migration-verification.md
+  - queue updates or appended follow-up tasks plus new terminal verification task if gaps remain
+- required checks:
+  - `git diff --check`
+  - final graph-shape and archive-scrub proof commands
+- done criteria:
+  - mini-project done state is verified or bounded follow-up tasks are appended
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs-only terminal verification; validates current-intent graph migration, spec reconciliation, and archive scrub; no runtime feature validation beyond mapping evidence; validation path `git diff --check` plus proof commands
