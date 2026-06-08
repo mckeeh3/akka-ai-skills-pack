@@ -19,7 +19,9 @@ Use this skill to update authoritative app-description surface definitions and w
 - `../docs/workstream-attention-contracts.md`
 - `../docs/workstream-ui-reference-architecture.md`
 - `../docs/agent-workstream-application-architecture.md`
-- `../docs/web-ui-style-guide.md` when visual guidance is in scope
+- `../docs/web-ui-style-guide.md`
+- `../docs/web-ui-component-catalog.md`
+- `../docs/web-ui-quality-checklist.md`
 - current `app-description/global/surfaces/**`, `global/tools/**`, `global/traces/**`, domain capability files, and workstream surface/access/tool/trace/test/realization bindings
 
 ## Surface contract fields
@@ -41,6 +43,8 @@ For each surface, define:
 ## Modeling rules
 
 - Model dashboard attention and surface graph edges before conventional route/page details.
+- Every browser-rendered surface must link to the selected web UI style guide, named-theme contract, and component-catalog anatomy before implementation. Surface contracts own purpose/authority/capability semantics; frontend realization owns visual/style mechanics and must not invent application meaning.
+- If the app lacks a selected UI style/named-theme contract, route to `app-description-ui` or queue a blocking `category: ui` question before creating surface implementation tasks.
 - Every consequential read/query/mutation/action maps to a backend capability and is authorized server-side.
 - Denials, approval-required results, validation failures, stale/reconnect, no-op, and background-work states are explicit structured outcomes.
 - Do not expose secrets, raw provider data, hidden roles, cross-tenant/customer identifiers, or privileged evidence in browser payloads.
@@ -56,6 +60,6 @@ Update or propose updates to the app-description with:
 - affected capability/security/test/observability links
 - traceability map or graph-link changes
 - assumptions and open questions
-- generation impact: localized UI/API change, backend capability change, broader workstream redesign, or separate app-level surface implementation cleanup
+- generation impact: localized UI/API change, backend capability change, broader workstream redesign, UI style/catalog realization prerequisite, or separate app-level surface implementation cleanup
 
 If a surface requires data, authority, or behavior not yet described, queue or ask the blocking question instead of inventing it.

@@ -39,7 +39,9 @@ Define the graph explicitly enough that implementation can preserve navigation, 
 - **Role variants:** dashboard and graph edges may differ by role and selected `AuthContext`; the backend capability remains authoritative for allowed traversal and data access.
 - **Tests:** graph tests must cover dashboard-to-node traversal, action result surfaces, denial/system-message surfaces, stale/reconnect behavior, audit/trace links, and tenant-isolated deep links.
 
-In app-description trees, surface ownership belongs in `12-workstreams/`: surface index and contracts, reusable functional-agent placement, action-to-capability mappings, trace semantics, and surface/action tests. `55-ui/` owns browser realization of those contracts: shell placement, route/deep-link mappings, components, forms/interactions, frontend API contracts, state/realtime behavior, accessibility/responsive behavior, and style guide. Do not redefine surface purpose, authority, or capability semantics in `55-ui/`; link back to `12-workstreams/` and capability/security/test layers.
+In app-description trees, surface ownership belongs in `12-workstreams/`: surface index and contracts, reusable functional-agent placement, action-to-capability mappings, trace semantics, and surface/action tests. `55-ui/` owns browser realization of those contracts: shell placement, route/deep-link mappings, components, forms/interactions, frontend API contracts, state/realtime behavior, accessibility/responsive behavior, selected style guide, named-theme contract, and component-catalog application. Do not redefine surface purpose, authority, or capability semantics in `55-ui/`; link back to `12-workstreams/` and capability/security/test layers.
+
+A browser-rendered surface is not implementation-ready until its realization path names the selected app UI style artifact and the component-catalog anatomy it uses, or a blocking UI question records why that selection is missing. Intent-compiler planning must route such work through `app-description-ui` and `akka-web-ui-ux-design` before frontend implementation tasks.
 
 ## Minimum contract fields
 
@@ -59,6 +61,7 @@ For each surface, define these fields before implementation:
 | Audit/trace | Audit event types, work-trace fields, visible trace links, correlation ids, evidence references, retention/redaction expectations. |
 | UI states | Loading, empty, ready, submitting, success, pending, approval-needed, error, forbidden, conflict, stale, reconnecting, partial-data, and no-op states. |
 | Accessibility/responsive | Keyboard path, labels, focus behavior, status announcements, narrow-layout strategy, chart/table alternatives. |
+| Style/catalog binding | Selected UI style guide artifact, named theme/default theme expectation, component-catalog anatomy used for the surface, and forbidden ad hoc/generic visual patterns. |
 | Tests | Rendering, payload parsing, action-to-capability invocation, auth/forbidden/tenant isolation, audit/trace, realtime/stale, accessibility and responsive checks. |
 
 ## Surface payload shape
