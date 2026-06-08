@@ -41,8 +41,8 @@ This hierarchy expresses primary ownership, not exclusive reuse. Cross-links are
 ## Graph node responsibilities
 
 - `app.md`: objective, operating model, tenant/customer assumptions, global non-goals, and cross-domain outcomes.
-- `global/actors` and `global/roles`: canonical actor and role definitions reused across domains and workstreams.
-- `global/policies`, `global/surfaces`, `global/agents`, `global/tools`, `global/traces`: reusable definitions that answer "what is this artifact?".
+- `global/actors` and `global/roles`: canonical actor and role definitions reused across domains and workstreams, including human-backed actors, AI-backed actors, and service actors where applicable.
+- `global/policies`, `global/surfaces`, `global/agents`, `global/tools`, `global/traces`: reusable definitions that answer "what is this artifact?". Global tools define governed workstream operations; surface actions and agent tools are actor-specific exposure adapters unless explicitly local-only.
 - `domains/<domain>/domain.md`: domain purpose, boundaries, owned capabilities, and data/state responsibilities.
 - `capabilities/<capability>.md`: business capability contract, actors, outcomes, authorization, and realization references.
 - `data-state/<state-object>.md`: durable state, lifecycle, invariants, retention, and trace obligations.
@@ -67,10 +67,13 @@ app-description/domains/admin/workstreams/user-onboarding/tools/create-invitatio
 The binding should state:
 
 - `Uses:` link to the global artifact, or identify a local-only artifact;
-- the surface, agent, workflow, timer, consumer, MCP endpoint, or internal path that invokes it;
-- workstream-specific authorization and approval rules;
+- the shared governed tool id and capability id;
+- the human-backed actor exposure, such as the surface action, form, confirmation, result surface, and trace source;
+- the AI-backed actor exposure, such as the agent tool schema, tool boundary entry, approval policy, and trace source;
+- any workflow, timer, consumer, MCP endpoint, API, or internal path that invokes it;
+- workstream-specific authorization and approval rules per actor adapter;
 - allowed inputs, effects, and denial behavior;
-- audit/work trace events;
+- audit/work trace events, including `requestedBy` when an AI-backed action is initiated from a human supervisor request;
 - tests and runtime validation expectations.
 
 ## Centrality of workstreams
@@ -81,6 +84,7 @@ Workstreams are the main operational unit for generated AI-first SaaS apps. They
 - authorized roles and access state;
 - human surfaces and action edges;
 - functional agents and authority limits;
+- human-backed and AI-backed actor adapters;
 - governed tools and capability APIs;
 - policies, approvals, and exception paths;
 - traces, audit, and outcome metrics;

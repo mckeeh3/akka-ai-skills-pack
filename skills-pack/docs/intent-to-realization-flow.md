@@ -27,13 +27,15 @@ Feature-bearing implementation tasks should inherit or state a vertical contract
 - attention category or non-attention reason;
 - role-specific dashboard or non-UI trigger;
 - human surface graph node and action edge, when user-facing;
-- governed tool id and exposure (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP-tool);
+- governed tool id for the shared capability-backed operation;
+- actor adapter and exposure channel, such as `human-backed` + `surface_action`, `ai-backed` + `agent_tool_call`, `service` + `workflow`, or timer/consumer/API/MCP exposure;
+- whether the operation is exposed to human-backed actors, AI-backed actors, both, or neither in this workstream;
 - capability id/API exposure;
 - selected Akka substrate and package path;
 - functional-agent delegation/result surface, when agent-backed;
 - autonomous task/result/notification mapping, when AutonomousAgent-backed;
 - `AuthContext`, authorization denial behavior, and tenant/customer scoping;
-- audit/work trace obligations;
+- audit/work trace obligations, including trace source and `requestedBy` relationship for AI-mediated human requests;
 - local validation path.
 
 If the contract is missing and cannot be inherited from current intent/specs, repair the task brief or block with a pending question.
@@ -42,12 +44,16 @@ If the contract is missing and cannot be inherited from current intent/specs, re
 
 Current intent should drive implementation choices:
 
-- Capabilities map to HTTP/gRPC/MCP/API contracts, tool contracts, workflows, entities, consumers, timers, views, or agents.
-- Workstream surfaces map to frontend routes, structured panels/cards/forms, SSE/WebSocket subscriptions, and browser API clients.
-- Agent bindings map to concrete Akka `Agent` or `AutonomousAgent` components, model policy, governed prompts/skills/references, tool boundaries, memory, guardrails, and traces.
+- Capabilities map to HTTP/gRPC/MCP/API contracts, governed tool contracts, workflows, entities, consumers, timers, views, or agents.
+- Workstream surfaces map to frontend routes, structured panels/cards/forms, SSE/WebSocket subscriptions, browser API clients, and human-backed surface-action adapters for governed tools.
+- Agent bindings map to concrete Akka `Agent` or `AutonomousAgent` components, model policy, governed prompts/skills/references, agent-tool adapters, tool boundaries, memory, guardrails, and traces.
 - Data-state artifacts map to EventSourcedEntity or KeyValueEntity state, events/commands, views, retention, and tests.
 - Policies map to authorization checks, approval workflows, denial responses, audit events, and negative tests.
 - Trace bindings map to durable audit/work traces and investigation surfaces.
+
+## Actor-adapter realization rule
+
+Do not realize the same business operation twice because it is reachable through both a surface and an AI agent. Compile one governed workstream tool and then realize each declared actor adapter against it. Human surface availability does not automatically grant AI tool availability; an AI-backed workstream agent may perform or propose the operation only when the governed tool is explicitly included in its tool boundary and approval policy. Tests should cover direct human surface action, AI-mediated tool call when allowed, AI denial when not allowed, shared capability authorization, idempotency, result/system-message surfaces, and trace differences.
 
 ## Runtime validation doctrine
 
