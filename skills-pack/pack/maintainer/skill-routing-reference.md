@@ -51,7 +51,8 @@ Canonical doctrine:
 - `docs/minimum-ai-first-saas-app.md` for minimum/core app/basic/chatbot-like generated SaaS requests
 - `docs/requirements-to-workstream-development-process.md` for broad input/PRD/incremental change → affected workstreams → attention → role-specific dashboards → human surface graph → internal workstream agent graph → governed-tools in capability files/surface maps → governed capabilities/APIs → Akka substrate/exposure channels → Agents/AutonomousAgents/events/traces
 - `docs/agent-workstream-application-architecture.md`
-- `docs/domain-workstream-prd-structure.md`
+- `docs/current-intent-model.md`
+- `docs/workstream-contract.md`
 - `docs/structured-surface-contracts.md`
 - `docs/capability-first-backend-architecture.md`
 - `docs/core-ai-first-saas-foundation.md`
@@ -152,10 +153,11 @@ Default description-first flow:
 
 Reference docs:
 - the target project `app-description/README.md` plus `docs/core-ai-first-saas-foundation.md` — preferred core app-description shape
-- `docs/description-first-application-doctrine.md`
-- `docs/internal-app-description-architecture.md`
-- `docs/app-description-maintenance-flow.md`
-- `docs/app-description-end-to-end-workflow-example.md`
+- `docs/intent-compiler.md`
+- `docs/current-intent-model.md`
+- `docs/incremental-intent-processing.md`
+- `docs/intent-to-realization-flow.md`
+- `docs/intent-compiler-skill-contracts.md`
 - `docs/structured-surface-contracts.md`
 
 Important routing rule:
@@ -177,8 +179,8 @@ Use the skills in this order:
 8. generate code and tests only after capability contracts, decomposition, and structural selection are done
 
 Short reusable version:
-- `docs/intent-driven-usage-flow.md`
-- `docs/prd-to-akka-flow.md`
+- `docs/intent-compiler.md`
+- `docs/intent-to-realization-flow.md`
 - `docs/module-sprint-planning.md`
 
 ## Visible 3-stage skill model
