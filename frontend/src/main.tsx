@@ -91,13 +91,13 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
   React.useEffect(() => {
     const root = document.documentElement;
     root.dataset.theme = themeId;
-    window.localStorage.setItem(themeStorageKey, themeId);
   }, [themeId]);
 
   React.useEffect(() => {
     if (bootstrap.status !== 'ready') return;
-    const backendThemeId = normalizeThemeId(bootstrap.me.settings.preferredThemeId);
-    setThemeId(backendThemeId ?? defaultThemeId);
+    const backendThemeId = normalizeThemeId(bootstrap.me.settings.preferredThemeId) ?? defaultThemeId;
+    setThemeId(backendThemeId);
+    persistThemeId(backendThemeId);
   }, [bootstrap.status === 'ready' ? bootstrap.me.settings.preferredThemeId : undefined]);
 
   React.useEffect(() => {
@@ -350,11 +350,18 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
           : [...current.surfaces, result.value.resultSurface]
         : current.surfaces;
       const selectedThemeId = input && typeof input === 'object' && 'preferredThemeId' in input ? normalizeThemeId((input as { preferredThemeId?: unknown }).preferredThemeId) : undefined;
-      const nextMe = result.ok && selectedThemeId ? { ...current.me, settings: { ...current.me.settings, preferredThemeId: selectedThemeId } } : current.me;
+      const selectedThemeCommitAccepted = result.ok && selectedThemeId && (result.value.status === 'accepted' || result.value.status === 'no-op');
+      const nextMe = selectedThemeCommitAccepted ? { ...current.me, settings: { ...current.me.settings, preferredThemeId: selectedThemeId } } : current.me;
       return { ...current, me: nextMe, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
     });
     const selectedThemeId = input && typeof input === 'object' && 'preferredThemeId' in input ? normalizeThemeId((input as { preferredThemeId?: unknown }).preferredThemeId) : undefined;
-    if (result.ok && selectedThemeId) setThemeId(selectedThemeId);
+    const selectedThemeCommitAccepted = result.ok && selectedThemeId && (result.value.status === 'accepted' || result.value.status === 'no-op');
+    if (selectedThemeCommitAccepted) {
+      setThemeId(selectedThemeId);
+      persistThemeId(selectedThemeId);
+    } else if (selectedThemeId) {
+      setThemeId(normalizeThemeId(me.settings.preferredThemeId) ?? defaultThemeId);
+    }
     const opensAnotherWorkstreamFromMyAccount = surfaceId === 'surface-my-account-dashboard' && targetSurface?.ownerFunctionalAgentId !== selectedFunctionalAgentId;
     if (targetSurface && (action.intent === 'surface-request' || opensAnotherWorkstreamFromMyAccount || isCurrentlySelectedFunctionalAgent(targetSurface.ownerFunctionalAgentId))) {
       clearRailAttention(targetSurface.ownerFunctionalAgentId);
@@ -718,6 +725,10 @@ function normalizeThemeId(value: unknown): ThemePreference | undefined {
 
 function readStoredThemeId(): ThemePreference {
   return normalizeThemeId(window.localStorage.getItem(themeStorageKey)) ?? defaultThemeId;
+}
+
+function persistThemeId(themeId: ThemePreference) {
+  window.localStorage.setItem(themeStorageKey, themeId);
 }
 
 

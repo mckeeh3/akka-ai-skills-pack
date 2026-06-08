@@ -103,8 +103,8 @@ function MyAccountCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
       <section className="my-account-command-hero" aria-label="My Account selected authority and command intent">
         <div>
           <p className="eyebrow">Personal command center</p>
-          <h3>See what requires your attention and open your personal work surfaces.</h3>
-          <p>Review personal attention in the selected context, then open profile, settings, context, notifications, digest/export, or related workstreams.</p>
+          <h3>Your account, attention, and preferences in one place.</h3>
+          <p>Start with items that need action, or jump to profile, settings, context, notifications, and digest tools.</p>
         </div>
         {data.accountContext && (
           <dl className="authority-summary-grid" aria-label="Selected context authority">
@@ -116,29 +116,64 @@ function MyAccountCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
         )}
       </section>
 
-      <section className="attention-counter-strip" aria-label="Attention by available workstream">
-        {counters.map((counter) => {
-          const action = counter.actionId ? actionById.get(counter.actionId) : undefined;
-          const body = <><span>{counter.label}</span><strong>{counter.value}</strong><em>{counter.status ?? counter.description ?? 'Backend-owned attention'}</em>{counter.description && <small>{counter.description}</small>}</>;
-          return action ? <button key={counter.counterId} type="button" className={`attention-counter-card ${counter.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId)} aria-label={`Open ${counter.label}: ${counter.status ?? `${counter.value} attention items`}`}>{body}</button> : <article key={counter.counterId} className={`attention-counter-card ${counter.severity ?? 'info'}`}>{body}</article>;
-        })}
+      <section className="my-account-section" aria-labelledby={`${envelope.surfaceId}-attention-heading`}>
+        <div className="surface-section-heading">
+          <div>
+            <p className="eyebrow">Attention</p>
+            <h4 id={`${envelope.surfaceId}-attention-heading`}>Items that need my attention</h4>
+          </div>
+        </div>
+        <div className="attention-counter-strip" aria-label="Attention by available workstream">
+          {counters.map((counter) => {
+            const action = counter.actionId ? actionById.get(counter.actionId) : undefined;
+            const status = counter.status ?? counter.description ?? 'Backend-owned attention';
+            const body = <><span>{counter.label}</span><strong>{counter.value}</strong><em>{formatStatus(status)}</em></>;
+            return action ? <button key={counter.counterId} type="button" className={`attention-counter-card ${counter.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId)} aria-label={`Open ${counter.label}: ${status}; ${counter.value} attention items`}>{body}</button> : <article key={counter.counterId} className={`attention-counter-card ${counter.severity ?? 'info'}`}>{body}</article>;
+          })}
+        </div>
       </section>
 
-      <section className="my-account-control-panels" aria-label="Personal control panels">
-        {panels.map((panel) => {
-          const action = panel.actionId ? actionById.get(panel.actionId) : undefined;
-          return (
-            <article key={panel.panelId} className={`my-account-control-panel ${panel.severity ?? panel.state ?? 'info'}`}>
-              <p className="eyebrow">{panel.state ?? 'Available surface'}</p>
-              <h4>{panel.label}</h4>
-              <p>{panel.summary}</p>
-              {panel.value !== undefined && <strong>{panel.value}</strong>}
-              {action && <SurfaceActionBar actions={[cleanMyAccountSurfaceActionLabel(action)]} surfaceId={envelope.surfaceId} onAction={onAction} />}
-            </article>
-          );
-        })}
-      </section>
+      {data.attentionItems && data.attentionItems.length > 0 ? (
+        <section className="my-account-section" aria-labelledby={`${envelope.surfaceId}-attention-items-heading`}>
+          <div className="surface-section-heading">
+            <div>
+              <p className="eyebrow">Actionable attention</p>
+              <h4 id={`${envelope.surfaceId}-attention-items-heading`}>Personal workstream items</h4>
+            </div>
+            <p>Open an item to review the source work or its trace.</p>
+          </div>
+          <AttentionList items={data.attentionItems} label="Backend-derived attention items; Audit/Trace attention items" />
+        </section>
+      ) : (
+        <section className="surface-empty-state my-account-empty-attention" aria-label="No current My Account attention">
+          <h4>No personal attention items</h4>
+          <p>Nothing visible needs action in this context. You can still update settings or review notifications below.</p>
+        </section>
+      )}
 
+      <section className="my-account-section" aria-labelledby={`${envelope.surfaceId}-control-heading`}>
+        <div className="surface-section-heading">
+          <div>
+            <p className="eyebrow">Personal surfaces</p>
+            <h4 id={`${envelope.surfaceId}-control-heading`}>Self-service controls</h4>
+          </div>
+          <p>Manage your personal account surfaces without leaving this workstream.</p>
+        </div>
+        <div className="my-account-control-panels" aria-label="Personal control panels">
+          {panels.map((panel) => {
+            const action = panel.actionId ? actionById.get(panel.actionId) : undefined;
+            return (
+              <article key={panel.panelId} className={`my-account-control-panel ${panel.severity ?? panel.state ?? 'info'}`}>
+                <p className="eyebrow">{panel.state ?? 'Available surface'}</p>
+                <h4>{panel.label}</h4>
+                <p>{panel.summary}</p>
+                {panel.value !== undefined && <strong>{panel.value}</strong>}
+                {action ? <SurfaceActionBar actions={[cleanMyAccountSurfaceActionLabel(action)]} surfaceId={envelope.surfaceId} onAction={onAction} /> : <p className="capability-basis">No authorized action is available for this panel in the selected context.</p>}
+              </article>
+            );
+          })}
+        </div>
+      </section>
 
       {data.traceRefs && data.traceRefs.length > 0 && (
         <details className="dashboard-evidence-drawer">

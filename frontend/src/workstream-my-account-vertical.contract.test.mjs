@@ -17,6 +17,7 @@ const notificationCenterSurface = read('./workstream/surfaces/NotificationCenter
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
 const systemMessageSurface = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const actionState = read('./workstream/actions/capabilityActionState.ts');
+const componentsCss = read('./styles/components.css');
 const shell = read('./workstream/shell/WorkstreamShell.tsx');
 const rail = read('./workstream/rail/FunctionalAgentRail.tsx');
 
@@ -102,7 +103,12 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.match(surfaceRenderer, /case 'detail-edit':\n      return <DetailEditSurface/);
   assert.match(surfaceRenderer, /case 'system_message':\n      return <SystemMessageSurface/);
   assert.match(dashboardSurface, /attentionItems/);
-  assert.match(dashboardSurface, /nextSteps/);
+  assert.doesNotMatch(dashboardSurface, /Next safe steps|Capabilities checked:|Authorized traversal/);
+  assert.match(dashboardSurface, /Items that need my attention/);
+  assert.doesNotMatch(dashboardSurface, /Use these counts to decide where to focus first/);
+  assert.match(componentsCss, /\.attention-counter-card \{\n  display: grid;\n  place-items: center;[\s\S]*text-align: center;/);
+  assert.match(dashboardSurface, /No personal attention items/);
+  assert.match(dashboardSurface, /Manage your personal account surfaces without leaving this workstream/);
   assert.match(surfaceRenderer, /case 'notification-center':\n      return <NotificationCenterSurface/);
   assert.match(notificationCenterSurface, /notification\.list_my_account_center/);
   assert.match(notificationCenterSurface, /Personal in-app triage/);
@@ -110,8 +116,12 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.match(notificationCenterSurface, /notification-triage-board/);
   assert.match(notificationCenterSurface, /actionInput=\{\{ notificationId: item\.notificationId \}\}/);
   assert.match(notificationCenterSurface, /Hidden categories are not enumerated/);
+  assert.match(componentsCss, /\.notification-triage-metrics div \{\n  display: grid;\n  place-items: center;[\s\S]*text-align: center;/);
   assert.doesNotMatch(notificationCenterSurface, /notification\.email|Resend configuration|channelRegistry|deliveryAttempts|externalOutbox|pushEnabled|emailEnabled|RESEND_API_KEY|RESEND_FROM_EMAIL/);
   assert.match(detailEditSurface, /surface-detail-edit-form/);
+  assert.match(detailEditSurface, /onSubmit=\{\(event\) => event\.preventDefault\(\)\}/);
+  assert.match(detailEditSurface, /aria-live="polite"/);
+  assert.match(detailEditSurface, /backend validation, idempotency, authorization, and audit remain authoritative/);
   assert.match(detailEditSurface, /fieldValues/);
   assert.match(detailEditSurface, /fields\.filter\(\(field\) => field\.editable\)/);
   assert.match(detailEditSurface, /actionInput=\{editableActionInput\}/);

@@ -37,7 +37,6 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
     setFieldValues((current) => ({ ...current, [fieldId]: value }));
     if (envelope.surfaceId === 'surface-my-settings' && fieldId === 'preferredThemeId' && isNamedThemeId(value)) {
       document.documentElement.dataset.theme = value;
-      window.localStorage.setItem('seed-ui-theme', value);
     }
     onFieldValueChange?.(fieldId, value, envelope.surfaceId);
   }
@@ -96,28 +95,40 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
         </section>
       )}
       {fields.length > 0 ? (
-        <form className="surface-detail-edit-form" data-my-account-detail={isMyAccountSurface ? 'true' : undefined} aria-label={`${envelope.title} edit form`}>
-          <input type="hidden" name="recordId" value={recordId} readOnly />
-          {fields.map((field) => {
-            const inputId = `${envelope.surfaceId}-${field.fieldId}`;
-            const describedBy = field.disabledReason ? `${inputId}-reason` : undefined;
-            return (
-              <div key={field.fieldId} className="surface-detail-field">
-                <label htmlFor={inputId}>{field.label}</label>
-                {field.inputType === 'textarea' ? (
-                  <textarea className="designed-control surface-detail-control" id={inputId} name={field.fieldId} value={fieldValues[field.fieldId] ?? field.value} onChange={(event) => updateFieldValue(field.fieldId, event.currentTarget.value)} readOnly={!field.editable} aria-readonly={!field.editable} aria-describedby={describedBy} />
-                ) : field.inputType === 'select' && field.options ? (
-                  <select className="designed-control surface-detail-control" id={inputId} name={field.fieldId} value={fieldValues[field.fieldId] ?? field.options.find((option) => option.label === field.value)?.value ?? field.value} onChange={(event) => updateFieldValue(field.fieldId, event.currentTarget.value)} disabled={!field.editable} aria-describedby={describedBy}>
-                    {field.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                  </select>
-                ) : (
-                  <input className="designed-control surface-detail-control" id={inputId} name={field.fieldId} type={field.inputType ?? 'text'} value={fieldValues[field.fieldId] ?? field.value} onChange={(event) => updateFieldValue(field.fieldId, event.currentTarget.value)} readOnly={!field.editable} aria-readonly={!field.editable} aria-describedby={describedBy} />
-                )}
-                {!field.editable && field.disabledReason && <p id={describedBy} className="form-error denied-reason">{field.disabledReason}</p>}
-              </div>
-            );
-          })}
-        </form>
+        <section className="detail-edit-form-section" aria-labelledby={`${envelope.surfaceId}-form-heading`}>
+          <div className="surface-section-heading">
+            <div>
+              <p className="eyebrow">Governed form</p>
+              <h4 id={`${envelope.surfaceId}-form-heading`}>Review editable fields</h4>
+            </div>
+            <p>Field edits are held locally until you use the governed action below; backend validation, idempotency, authorization, and audit remain authoritative.</p>
+          </div>
+          <form className="surface-detail-edit-form" data-my-account-detail={isMyAccountSurface ? 'true' : undefined} aria-label={`${envelope.title} edit form`} onSubmit={(event) => event.preventDefault()}>
+            <input type="hidden" name="recordId" value={recordId} readOnly />
+            {fields.map((field) => {
+              const inputId = `${envelope.surfaceId}-${field.fieldId}`;
+              const helpId = `${inputId}-help`;
+              const reasonId = field.disabledReason ? `${inputId}-reason` : undefined;
+              const describedBy = [helpId, reasonId].filter(Boolean).join(' ');
+              return (
+                <div key={field.fieldId} className="surface-detail-field">
+                  <label htmlFor={inputId}>{field.label}</label>
+                  {field.inputType === 'textarea' ? (
+                    <textarea className="designed-control surface-detail-control" id={inputId} name={field.fieldId} value={fieldValues[field.fieldId] ?? field.value} onChange={(event) => updateFieldValue(field.fieldId, event.currentTarget.value)} readOnly={!field.editable} aria-readonly={!field.editable} aria-describedby={describedBy} />
+                  ) : field.inputType === 'select' && field.options ? (
+                    <select className="designed-control surface-detail-control" id={inputId} name={field.fieldId} value={fieldValues[field.fieldId] ?? field.options.find((option) => option.label === field.value)?.value ?? field.value} onChange={(event) => updateFieldValue(field.fieldId, event.currentTarget.value)} disabled={!field.editable} aria-describedby={describedBy}>
+                      {field.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                    </select>
+                  ) : (
+                    <input className="designed-control surface-detail-control" id={inputId} name={field.fieldId} type={field.inputType ?? 'text'} value={fieldValues[field.fieldId] ?? field.value} onChange={(event) => updateFieldValue(field.fieldId, event.currentTarget.value)} readOnly={!field.editable} aria-readonly={!field.editable} aria-describedby={describedBy} />
+                  )}
+                  <p id={helpId} className="field-helper">{field.editable ? 'Editable in this selected context; save with the governed action below.' : 'Read-only in this selected context.'}</p>
+                  {!field.editable && field.disabledReason && <p id={reasonId} className="form-error denied-reason">{field.disabledReason}</p>}
+                </div>
+              );
+            })}
+          </form>
+        </section>
       ) : (
         <article className="audit-evidence-panel" aria-label="Denial/provider/tool evidence">
           {envelope.data.safeReason && <p className="safe-reason">{envelope.data.safeReason}</p>}
@@ -187,7 +198,7 @@ function MyAccountDetailOverview({ envelope, fieldValues }: { envelope: SurfaceE
         <article className="authority-context-panel named-theme-preview-panel">
           <h4>Named theme selection</h4>
           <p>Theme changes preview immediately in this browser by switching documented theme tokens. Save/Confirm persists through the governed backend settings action.</p>
-          <p className="form-status">Previewing: {selectedTheme ?? 'backend selected theme'} · no light/dark/system mode is exposed.</p>
+          <p className="form-status" role="status" aria-live="polite">Previewing: {selectedTheme ?? 'backend selected theme'} · no light/dark/system mode is exposed.</p>
           {envelope.data.availableThemes && envelope.data.availableThemes.length > 0 && <ul className="named-theme-list">{envelope.data.availableThemes.map((theme) => <li key={theme.value ?? theme.themeId ?? theme.id}><strong>{theme.label ?? theme.name}</strong><span>{theme.value ?? theme.themeId ?? theme.id}</span></li>)}</ul>}
         </article>
       </section>

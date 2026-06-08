@@ -60,10 +60,12 @@ test('workstream entry gates fixture realtime client and wires stream state', ()
 test('named theme selection uses root data-theme, live detail-edit preview, and backend persistence', () => {
   assert.match(main, /type ThemePreference = 'aurora-light' \| 'cobalt-light' \| 'obsidian-dark' \| 'midnight-dark' \| 'dark-night'/);
   assert.match(main, /root\.dataset\.theme = themeId/);
+  assert.match(main, /function persistThemeId\(themeId: ThemePreference\)/);
   assert.match(main, /window\.localStorage\.setItem\(themeStorageKey, themeId\)/);
   assert.match(main, /bootstrap\.me\.settings\.preferredThemeId/);
   assert.match(main, /function handleSurfaceFieldValueChange\(fieldId: string, value: string\)/);
   assert.match(main, /if \(fieldId !== 'preferredThemeId'\) return;\n    const previewThemeId = normalizeThemeId\(value\);\n    if \(previewThemeId\) setThemeId\(previewThemeId\);/);
+  assert.doesNotMatch(detailEditSurface, /localStorage\.setItem\('seed-ui-theme'/);
   assert.match(surfaceRenderer, /onFieldValueChange=\{onFieldValueChange\}/);
   assert.match(detailEditSurface, /onFieldValueChange\?: \(fieldId: string, value: string, surfaceId: string\) => void;/);
   assert.match(detailEditSurface, /onChange=\{\(event\) => updateFieldValue\(field\.fieldId, event\.currentTarget\.value\)\}/);
@@ -73,6 +75,9 @@ test('named theme selection uses root data-theme, live detail-edit preview, and 
   assert.match(main, /const actionCorrelationId = `corr-\$\{action\.actionId\}-\$\{Date\.now\(\)\.toString\(36\)\}`;/);
   assert.match(main, /current\.surfaces\.map\(\(surface\) => surface\.surfaceId === result\.value\.resultSurface\?\.surfaceId \? result\.value\.resultSurface : surface\)/);
   assert.match(main, /settings: \{ \.\.\.current\.me\.settings, preferredThemeId: selectedThemeId \}/);
+  assert.match(main, /result\.value\.status === 'accepted' \|\| result\.value\.status === 'no-op'/);
+  assert.match(main, /if \(selectedThemeCommitAccepted\) \{\n      setThemeId\(selectedThemeId\);\n      persistThemeId\(selectedThemeId\);/);
+  assert.match(main, /else if \(selectedThemeId\) \{\n      setThemeId\(normalizeThemeId\(me\.settings\.preferredThemeId\) \?\? defaultThemeId\);/);
   assert.doesNotMatch(main, /surfaceCorrelationId: `corr-\$\{action\.actionId\}`/);
   assert.doesNotMatch(main, /prefers-color-scheme: dark/);
   assert.doesNotMatch(main, /value=\{?['\"](?:system|light|dark)['\"]\}?|label: ['\"](?:System|Light|Dark)['\"]/);

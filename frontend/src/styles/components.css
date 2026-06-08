@@ -724,6 +724,11 @@
 .field-helper { margin: 0; font-size: 0.875rem; }
 .field-error { margin: 0; color: var(--color-danger); font-weight: 800; }
 
+.detail-edit-form-section {
+  display: grid;
+  gap: var(--space-3);
+}
+
 .surface-detail-edit-form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
@@ -802,10 +807,18 @@
   color: var(--color-muted);
 }
 
+.surface-detail-field .field-helper,
 .surface-detail-field .denied-reason {
   margin: 0;
-  color: var(--color-danger);
   font-size: 0.86rem;
+}
+
+.surface-detail-field .field-helper {
+  color: var(--color-text-soft);
+}
+
+.surface-detail-field .denied-reason {
+  color: var(--color-danger);
   font-weight: 800;
 }
 
@@ -1732,7 +1745,12 @@ button.dashboard-card.ds-card {
 }
 
 .notification-triage-metrics div {
+  display: grid;
+  place-items: center;
+  gap: var(--space-2);
+  min-height: 3.75rem;
   padding: var(--space-4);
+  text-align: center;
 }
 
 .notification-triage-metrics dt,
@@ -1953,6 +1971,40 @@ button.dashboard-card.ds-card {
   font-weight: 850;
 }
 
+.my-account-section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.surface-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.surface-section-heading h4,
+.surface-section-heading p { margin: 0; }
+.surface-section-heading > p {
+  max-width: 34rem;
+  color: var(--color-text-soft);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.surface-empty-state {
+  display: grid;
+  gap: var(--space-2);
+  border: 1px dashed color-mix(in srgb, var(--color-primary) 28%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-primary-soft) 28%, var(--color-surface-raised));
+  padding: var(--space-4);
+}
+
+.surface-empty-state h4,
+.surface-empty-state p { margin: 0; }
+.surface-empty-state p { color: var(--color-text-soft); }
+
 .attention-counter-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1961,10 +2013,11 @@ button.dashboard-card.ds-card {
 
 .attention-counter-card {
   display: grid;
+  place-items: center;
   gap: var(--space-3);
   width: 100%;
   color: inherit;
-  text-align: left;
+  text-align: center;
 }
 
 button.attention-counter-card { cursor: pointer; }
@@ -2073,6 +2126,11 @@ button.attention-counter-card:focus-visible {
   .authority-summary-grid,
   .attention-counter-strip,
   .system-message-boundary-grid { grid-template-columns: 1fr; }
+
+  .surface-section-heading {
+    align-items: start;
+    flex-direction: column;
+  }
 }
 
 .my-account-attention-card-list {
