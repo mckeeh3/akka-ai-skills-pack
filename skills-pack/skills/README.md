@@ -53,6 +53,7 @@ Canonical doctrine:
 - `docs/intent-to-realization-flow.md`
 - `docs/intent-compiler-skill-contracts.md`
 - `docs/generated-saas-canonical-doctrine.md`
+- `docs/foundation-layer-coverage-matrix.md`
 - `docs/ai-first-saas-application-architecture.md`
 - `docs/minimum-ai-first-saas-app.md`
 - `docs/requirements-to-workstream-development-process.md`
