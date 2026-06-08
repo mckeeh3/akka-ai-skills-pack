@@ -1,5 +1,24 @@
 # Realization: Frontend routes and surfaces for Audit/Trace
 
-Routes and deep links are implementation details below the workstream shell. The browser realization must render the functional-agent rail/workstream panel/composer and structured surfaces listed in `../surfaces/surfaces.md`, using backend-owned authorization and attention state.
+Capability: `audit-and-trace-investigation`.
 
-Legacy page-style fixtures are not primary runtime architecture unless a later reconciliation task reclassifies them.
+## Frontend evidence
+
+| Surface / route concern | Frontend evidence | Notes |
+|---|---|---|
+| Audit search/list and investigation dashboard | `frontend/src/workstream/surfaces/ListSearchSurface.tsx`, `DashboardSurface.tsx` | Query/filter UI must rely on backend-scoped results. |
+| Trace timeline/detail | `AuditTimelineSurface.tsx`, `DetailEditSurface.tsx`, `TraceLinkList.tsx` | Timelines render redacted, correlation-rich evidence. |
+| Export/approval/denial surfaces | `DecisionSurface.tsx`, `WorkflowStatusSurface.tsx`, `SystemMessageSurface.tsx`, `OutcomeSurface.tsx` | Sensitive export requests surface policy gates and denials. |
+| Realtime/stale-state behavior | `frontend/src/workstream/realtime/useWorkstreamRealtime.ts`, `workstreamEvents.ts` | Event streams update workstream state and must recover from disconnects. |
+| Typed browser API client | `frontend/src/api/HttpWorkstreamApiClient.ts`, `HttpWorkstreamRealtimeClient.ts`, `types.ts` | Normalizes unauthorized/forbidden/not-found/server stream errors. |
+
+## Validation evidence
+
+- `frontend/src/workstream-audit-trace-vertical.contract.test.mjs`
+- `frontend/src/workstream-attention-update-delivery.contract.test.mjs`
+- `frontend/src/workstream-surfaces.contract.test.mjs`
+- `frontend/src/governance-audit-admin-profile.contract.test.mjs`
+
+## Gaps / caveats
+
+- Legacy `frontend/src/screens/audit/AuditTraceExplorerPage.tsx` is reference/fixture evidence, not the primary workstream shell architecture.

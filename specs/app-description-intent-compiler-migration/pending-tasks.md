@@ -202,7 +202,7 @@
 
 ### TASK-ADICM-02-003: Populate realization and traceability mappings
 
-- status: pending
+- status: done
 - source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-05-populate-realization-and-traceability-mappings
 - task brief: specs/app-description-intent-compiler-migration/tasks/02-current-intent-graph/03-populate-realization-and-traceability.md
 - depends on:
@@ -232,6 +232,10 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs-only realization mapping for all five core workstreams; maps runtime artifacts but does not implement them; validation path `git diff --check` plus traceability proof
+  - added cross-workstream traceability map: `app-description/domains/core-starter/realization/traceability.md`
+  - populated five workstream `realization/` files with Akka components, API contracts, frontend routes, tests, auth/tenant scope, and audit/work-trace evidence/gaps
+  - checks passed: `git diff --check`; realization proof counts for backend paths, API paths, frontend paths, test paths, auth/tenant scope, and audit/work trace across `app-description/domains/core-starter/{realization,workstreams/*/realization}`
+  - commit message: `app-desc-migrate: populate realization traceability`
 
 ### TASK-ADICM-03-001: Reconcile active specs with new current-intent graph
 

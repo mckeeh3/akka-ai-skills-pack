@@ -1,11 +1,30 @@
 # Realization: Akka components for Audit/Trace
 
-Current intent maps to the existing root app implementation inventory. This task does not change runtime code.
+Capability: `audit-and-trace-investigation`.
 
-## Mapping intent
+This map is docs-only. It points to current implementation evidence and does not change runtime behavior.
 
-Capability `audit-and-trace-investigation` should remain traceable to protected Akka endpoints/services/entities/views/agents/workflows as applicable in later realization mapping. Known implementation evidence is in `specs/app-description-intent-compiler-migration/source-inventory.md`.
+## Component and service evidence
 
-## Validation posture
+| Intent binding | Akka / Java evidence | Notes |
+|---|---|---|
+| Admin audit and trace repository | `src/main/java/ai/first/application/foundation/audit/AuditTraceService.java`, `AuditTraceRepository.java`, `AkkaAuditTraceRepository.java`, `AdminAuditView.java` | Authoritative evidence access must be scoped, redacted, and audited. |
+| Agent/runtime trace evidence | `src/main/java/ai/first/application/foundation/agent/AgentRuntimeTraceEntity.java`, `AgentRuntimeTraceView.java`, `AgentRuntimeTraceSink.java` | Connects prompt/skill/reference/model/tool/data/policy activity to investigation timelines. |
+| Workstream event/log trace | `src/main/java/ai/first/application/foundation/workstream/DurableWorkstreamLogEntity.java`, `DurableWorkstreamEventRepositoryEntity.java`, `WorkstreamEventAttentionConsumer.java` | Correlates shell actions, agent replies, surface actions, and attention updates. |
+| Audit summary worker | `src/main/java/ai/first/application/coreapp/audit/AuditTraceSummaryService.java`, `AuditTraceSummaryAutonomousAgent.java`, `DurableAuditTraceSummaryTaskRepositoryEntity.java` | Summaries are bounded, trace-linked, and fail closed when provider config is absent. |
+| Evidence tools | `AuditTraceEvidenceTools.java` | Agent-visible evidence reads must use authorized, redacted query shapes. |
 
-Runtime completion requires real local Akka/API/UI validation; fixtures, deterministic demos, and model-less substitutes do not prove model-backed or protected behavior readiness.
+## Validation evidence
+
+- `src/test/java/ai/first/application/foundation/audit/AdminAuditViewTest.java`
+- `src/test/java/ai/first/application/foundation/agent/AgentRuntimeTraceEntityTest.java`
+- `src/test/java/ai/first/application/foundation/agent/AgentRuntimeTraceViewTest.java`
+- `src/test/java/ai/first/application/foundation/workstream/DurableWorkstreamLogEntityTest.java`
+- `src/test/java/ai/first/application/coreapp/audit/AuditTraceSummaryServiceTest.java`
+- `src/test/java/ai/first/application/coreapp/audit/AuditTraceSummaryAutonomousAgentTest.java`
+- `frontend/src/workstream-audit-trace-vertical.contract.test.mjs`
+
+## Gaps / caveats
+
+- Redacted export and sensitive evidence access require policy gates; descriptions alone do not prove export readiness.
+- Local demo/fail-closed repositories are test support or failure-path proof, not normal runtime substitutes.
