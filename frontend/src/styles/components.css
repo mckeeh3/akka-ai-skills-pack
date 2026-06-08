@@ -1680,3 +1680,197 @@ button.dashboard-card.ds-card {
   color: var(--color-text-muted);
   font-size: 0.875rem;
 }
+
+.surface-frame.notification-center {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.surface-frame.notification-center .surface-header {
+  margin-bottom: 0;
+}
+
+.notification-triage-hero {
+  display: grid;
+  gap: var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 28%, var(--color-border));
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 10%, var(--color-surface-raised)), var(--color-surface-raised));
+  padding: var(--space-5);
+}
+
+.notification-triage-intent h3,
+.notification-triage-lane h4,
+.notification-triage-card h5,
+.notification-triage-panel h4 {
+  margin: 0;
+}
+
+.notification-triage-intent p:last-child,
+.notification-triage-lane header p:last-child,
+.notification-summary-copy,
+.notification-triage-panel p {
+  color: var(--color-text-soft);
+}
+
+.notification-triage-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.notification-triage-metrics div,
+.notification-triage-boundary,
+.notification-triage-empty,
+.notification-triage-panel,
+.notification-triage-lane,
+.notification-triage-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+}
+
+.notification-triage-metrics div {
+  padding: var(--space-4);
+}
+
+.notification-triage-metrics dt,
+.notification-explain-grid dt,
+.notification-source-counts dt {
+  color: var(--color-muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.notification-triage-metrics dd {
+  margin: var(--space-1) 0 0;
+  font-size: 1.5rem;
+  font-weight: 950;
+}
+
+.notification-triage-boundary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.notification-triage-boundary span,
+.notification-priority-pill {
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface-soft);
+  padding: 0.35rem 0.65rem;
+  color: var(--color-text-soft);
+  font-size: 0.8rem;
+  font-weight: 850;
+}
+
+.notification-triage-empty {
+  padding: var(--space-5);
+  text-align: center;
+}
+
+.notification-triage-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.notification-triage-lane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4);
+}
+
+.notification-triage-lane.needs-attention {
+  border-color: color-mix(in srgb, var(--color-warning) 45%, var(--color-border));
+}
+
+.notification-triage-card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.notification-triage-card.danger {
+  border-color: color-mix(in srgb, var(--color-danger) 48%, var(--color-border));
+  background: color-mix(in srgb, var(--color-danger) 6%, var(--color-surface-raised));
+}
+
+.notification-triage-card.warning {
+  border-color: color-mix(in srgb, var(--color-warning) 48%, var(--color-border));
+  background: color-mix(in srgb, var(--color-warning) 8%, var(--color-surface-raised));
+}
+
+.notification-triage-card > header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.notification-explain-grid,
+.notification-source-counts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.notification-explain-grid dd,
+.notification-source-counts dd {
+  margin: var(--space-1) 0 0;
+  overflow-wrap: anywhere;
+  font-weight: 800;
+}
+
+.notification-triage-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+.notification-triage-panel {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.notification-preference-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notification-preference-list li {
+  display: grid;
+  gap: var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-soft);
+  padding: var(--space-3);
+}
+
+.notification-preference-list span {
+  color: var(--color-text-soft);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 980px) {
+  .notification-triage-board,
+  .notification-triage-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .notification-triage-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
