@@ -86,7 +86,7 @@
 
 ### TASK-ADICM-01-002: Inventory implementation and source evidence
 
-- status: pending
+- status: done
 - source: specs/app-description-intent-compiler-migration/backlog/01-app-description-intent-compiler-migration-build-backlog.md#adicm-02-inventory-implementation-and-source-evidence
 - task brief: specs/app-description-intent-compiler-migration/tasks/01-source-baseline/02-inventory-implementation-and-source-evidence.md
 - depends on:
@@ -118,6 +118,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs-only cross-cutting inventory for backend/frontend/tests/specs/legacy evidence; no runtime behavior change; validation path `git diff --check` plus coverage proof
+  - inventory path: `specs/app-description-intent-compiler-migration/source-inventory.md`
+  - checks passed: `git diff --check`; coverage proof counted backend files, backend tests, frontend source, active specs/docs, and legacy archive files, then `rg` verified source classes and five core workstreams in the inventory
+  - commit message: `app-desc-migrate: inventory source evidence`
 
 ### TASK-ADICM-02-001: Define current-intent graph skeleton
 
