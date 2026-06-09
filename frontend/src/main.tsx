@@ -463,7 +463,6 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
   async function handleComposerSubmit(request: Parameters<NonNullable<React.ComponentProps<typeof WorkstreamShell>['onComposerSubmit']>>[0]) {
     if (!ready || !me) return false;
     const submittedAt = Date.now();
-    const pendingItemId = `composer-submitting-${submittedAt}`;
     const correlationId = `corr-composer-${submittedAt.toString(36)}`;
     const shellRequest = buildComposerShellRequest(request.prompt, request.functionalAgentId, me.selectedAuthContext.selectedContextId, correlationId);
     if (shellRequest) {
@@ -478,24 +477,13 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       traceIds: [],
       title: request.prompt,
       body: request.prompt,
-      status: 'ready'
-    };
-    const submittingItem: WorkstreamItem = {
-      itemId: pendingItemId,
-      functionalAgentId: request.functionalAgentId,
-      kind: 'system-status',
-      createdAt: new Date(submittedAt).toISOString(),
-      correlationId,
-      traceIds: [],
-      title: 'Submitting to model-backed agent',
-      body: 'The governed runtime is assembling the prompt, checking model/provider configuration, and invoking the model. This selected workstream context is preserved for retry.',
       status: 'working'
     };
     setSubmittingFunctionalAgentId(request.functionalAgentId);
     setRequestScrollTargetForCurrentSession(userRequestItem.itemId, request.functionalAgentId);
     rememberVisualSession(sessionForAgent(request.functionalAgentId), { activeTurnGroupId: correlationId, anchorSurfaceId: userRequestItem.itemId, userHasManualScroll: false });
     setBootstrap((current) => current.status === 'ready'
-      ? { ...current, items: pruneWorkstreamItems([...current.items, userRequestItem, submittingItem]) }
+      ? { ...current, items: pruneWorkstreamItems([...current.items, userRequestItem]) }
       : current);
 
     const result = await workstreamClient.submitWorkstreamMessage({
@@ -515,14 +503,14 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
         correlationId,
         traceIds: [],
         title: safeError.title,
-        body: `${safeError.body} Retry is safe: the prompt remains in the composer and will reuse the selected workstream context. Correlation ${result.error.correlationId}.`,
+        body: `${safeError.body} Retry is safe: re-enter the prompt to reuse the selected workstream context. Correlation ${result.error.correlationId}.`,
         status: safeError.status
       };
       setRequestScrollTargetForCurrentSession(userRequestItem.itemId, request.functionalAgentId);
       rememberVisualSession(sessionForAgent(request.functionalAgentId), { anchorSurfaceId: userRequestItem.itemId, userHasManualScroll: false });
       if (!isCurrentlySelectedFunctionalAgent(request.functionalAgentId)) markUnseenResponse(request.functionalAgentId, errorItem.itemId, 'warning');
       setBootstrap((current) => current.status === 'ready'
-        ? { ...current, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== pendingItemId), errorItem]) }
+        ? { ...current, items: pruneWorkstreamItems([...current.items.map((item) => item.itemId === userRequestItem.itemId ? { ...item, status: 'ready' as const } : item), errorItem]) }
         : current);
       return false;
     }
@@ -541,7 +529,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       const nextSurfaces = current.surfaces.some((candidate) => candidate.surfaceId === surface.surfaceId)
         ? current.surfaces.map((candidate) => candidate.surfaceId === surface.surfaceId ? surface : candidate)
         : [...current.surfaces, surface];
-      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== pendingItemId && item.itemId !== userRequestItem.itemId), userItem, traceableAgentItem]) };
+      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== userRequestItem.itemId), userItem, traceableAgentItem]) };
     });
     if (isCurrentlySelectedFunctionalAgent(responseFunctionalAgentId)) {
       updateSelection({

@@ -1065,6 +1065,32 @@
   border-color: color-mix(in srgb, var(--color-ai) 58%, var(--color-border));
 }
 
+.workstream-user-request-row {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: min(46rem, 72%);
+}
+
+.workstream-request-spinner {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  border: 2px solid color-mix(in srgb, var(--color-ai) 20%, transparent);
+  border-top-color: var(--color-ai);
+  border-radius: 999px;
+  animation: workstream-request-spin 0.8s linear infinite;
+}
+
+@keyframes workstream-request-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workstream-request-spinner { animation-duration: 1.6s; }
+}
+
 .workstream-item.user-request.prompt-input-surface,
 .workstream-item.surface-request.request-surface {
   width: fit-content;

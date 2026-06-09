@@ -58,7 +58,7 @@ test('standard Show dashboard button is shell-handled and appends request plus d
 test('composer response appends returned items and markdown_response surface', () => {
   assert.match(main, /const \{ userItem, agentItem, surface \} = result\.value/);
   assert.match(main, /traceableAgentItem/);
-  assert.match(main, /items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== pendingItemId && item\.itemId !== userRequestItem\.itemId\), userItem, traceableAgentItem\]\)/);
+  assert.match(main, /items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== userRequestItem\.itemId\), userItem, traceableAgentItem\]\)/);
   assert.match(main, /const responseFunctionalAgentId = surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId/);
   assert.match(main, /setRequestScrollTargetForCurrentSession\(userItem\.itemId, responseFunctionalAgentId\)/);
   assert.match(main, /selectedSurfaceId: surface\.surfaceId/);
@@ -86,15 +86,15 @@ test('composer acknowledges prompts immediately as request surfaces and scrolls 
   assert.match(stream, /requestSurface\.focus\(\{ preventScroll: true \}\)/);
 });
 
-test('composer exposes in-flight model submission state and preserves safe retry context', () => {
+test('composer exposes in-flight model submission state with an inline request spinner and clears submitted drafts', () => {
   assert.match(main, /submittingFunctionalAgentId/);
-  assert.match(main, /Submitting to model-backed agent/);
+  assert.doesNotMatch(main, /Submitting to model-backed agent/);
   assert.match(main, /status: 'working'/);
-  assert.match(main, /selected workstream context is preserved for retry/);
-  assert.match(main, /return false/);
+  assert.match(itemCard, /workstream-request-spinner/);
+  assert.match(itemCard, /aria-busy=\{isWorking \|\| undefined\}/);
   assert.match(composer, /isSubmitting/);
   assert.match(composer, /Model-backed agent is responding/);
-  assert.match(composer, /accepted !== false/);
+  assert.match(composer, /setDraft\(''\);\n    await onSubmit\?\.\(request\)/);
 });
 
 test('composer maps provider-missing and forbidden errors to safe system notifications', () => {
@@ -158,7 +158,7 @@ test('background composer responses update their originating workstream without 
   assert.match(main, /function updateSelection\(nextSelection: Partial<WorkstreamSelection>\) \{\s*const merged = \{ \.\.\.selection, \.\.\.nextSelection \};\s*selectedFunctionalAgentIdRef\.current = merged\.selectedFunctionalAgentId;\s*setSelection\(merged\);/s);
   assert.match(main, /function isCurrentlySelectedFunctionalAgent\(functionalAgentId: string\) \{\s*return selectedFunctionalAgentIdRef\.current === functionalAgentId;\s*\}/s);
   assert.match(main, /const responseFunctionalAgentId = surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId/);
-  assert.match(main, /setBootstrap\(\(current\) => \{[\s\S]*items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== pendingItemId && item\.itemId !== userRequestItem\.itemId\), userItem, traceableAgentItem\]\)[\s\S]*\}\);/);
+  assert.match(main, /setBootstrap\(\(current\) => \{[\s\S]*items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== userRequestItem\.itemId\), userItem, traceableAgentItem\]\)[\s\S]*\}\);/);
   assert.match(main, /if \(isCurrentlySelectedFunctionalAgent\(responseFunctionalAgentId\)\) \{\s*updateSelection\(\{\s*selectedFunctionalAgentId: responseFunctionalAgentId,/s);
   assert.match(main, /\} else \{\s*markUnseenResponse\(responseFunctionalAgentId, traceableAgentItem\.itemId, 'info'\);\s*\}/s);
   assert.doesNotMatch(main, /updateSelection\(\{\s*selectedFunctionalAgentId: surface\.ownerFunctionalAgentId \?\? request\.functionalAgentId,/s);

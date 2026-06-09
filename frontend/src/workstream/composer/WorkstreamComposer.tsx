@@ -92,8 +92,9 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isSubmitting || !selectedAgent || !canSubmitComposer(draft, availability)) return;
-    const accepted = await onSubmit?.(buildComposerRequest(authContext, selectedAgent, draft, attachedSurfaceId));
-    if (accepted !== false) setDraft('');
+    const request = buildComposerRequest(authContext, selectedAgent, draft, attachedSurfaceId);
+    setDraft('');
+    await onSubmit?.(request);
     window.requestAnimationFrame(focusComposerInput);
   }
 

@@ -10,10 +10,14 @@ type WorkstreamItemCardProps = {
 
 export function WorkstreamItemCard({ item, onOpenSurface }: WorkstreamItemCardProps) {
   if (item.kind === 'user-request' || item.kind === 'user-message') {
+    const isWorking = item.status === 'working';
     return (
-      <article id={item.itemId} className="ds-card workstream-item user-request prompt-input-surface" tabIndex={-1} aria-label="Request received">
-        <p>{item.body ?? item.title ?? ''}</p>
-      </article>
+      <div className="workstream-user-request-row">
+        {isWorking && <span className="workstream-request-spinner" aria-label="Model-backed agent working" />}
+        <article id={item.itemId} className="ds-card workstream-item user-request prompt-input-surface" tabIndex={-1} aria-label="Request received" aria-busy={isWorking || undefined}>
+          <p>{item.body ?? item.title ?? ''}</p>
+        </article>
+      </div>
     );
   }
 
