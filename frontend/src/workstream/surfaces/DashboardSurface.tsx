@@ -11,6 +11,9 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
   if (envelope.surfaceId === 'surface-my-account-dashboard' || envelope.data.surfaceContract?.startsWith('my_account.')) {
     return <MyAccountCommandCenter envelope={envelope} onAction={onAction} />;
   }
+  if (envelope.surfaceId === 'surface-user-admin-dashboard' || envelope.data.surfaceContract === 'user_admin.dashboard.v1') {
+    return <UserAdminCommandCenter envelope={envelope} onAction={onAction} />;
+  }
 
   const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
   const myAccountSurfaceActions = actionsForIds(envelope.data.utilityActionIds, actionById)
@@ -88,6 +91,82 @@ export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) 
         </section>
       )}
       {remainingActions.length > 0 && <SurfaceActionBar actions={remainingActions} surfaceId={envelope.surfaceId} onAction={onAction} />}
+    </SurfaceStateFrame>
+  );
+}
+
+function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
+  const data = envelope.data;
+  const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
+  const summaryCards = data.summaryCards?.length ? data.summaryCards : data.cards;
+  const queues = data.attentionQueues?.length ? data.attentionQueues : userAdminQueuesFromData(data);
+  const actions = data.authorizedActions?.length ? data.authorizedActions : envelope.actions.map((action) => ({ actionId: action.actionId, label: action.label, capabilityId: action.capabilityId, governedToolId: action.governedToolId, resultSurfaceId: action.resultSurface?.updateSurfaceId ?? action.resultSurface?.appendSurfaceType, approvalRequired: action.requiresApproval }));
+
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="user-admin-command-hero" aria-label="User Admin selected scope and authority">
+        <div>
+          <p className="eyebrow">Access operations</p>
+          <h3>Scoped users, invitations, roles, support access, and review work.</h3>
+          <p>Every card and action is backed by selected AuthContext, backend authorization, idempotency, approval policy, and audit/work traces.</p>
+        </div>
+        <dl className="authority-summary-grid" aria-label="User Admin authority basis">
+          <div><dt>Tenant</dt><dd>{data.accountContext?.tenantId ?? envelope.authContext.tenantId}</dd></div>
+          <div><dt>Customer</dt><dd>{data.accountContext?.customerId ?? envelope.authContext.customerId ?? 'Tenant scope'}</dd></div>
+          <div><dt>Capabilities</dt><dd>{data.capabilityIds?.length ?? envelope.authContext.visibleCapabilityIds.length}</dd></div>
+          <div><dt>Contract</dt><dd>{data.surfaceContract ?? 'user_admin.dashboard.v1'}</dd></div>
+        </dl>
+      </section>
+
+      <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-summary-heading`}>
+        <div className="surface-section-heading">
+          <div><p className="eyebrow">Overview</p><h4 id={`${envelope.surfaceId}-summary-heading`}>Access health and blockers</h4></div>
+          <p>Counts are browser-safe backend projections; hidden scopes are not enumerated.</p>
+        </div>
+        <div className="surface-dashboard-grid user-admin-summary-grid" aria-label="User Admin summary cards">
+          {summaryCards.map((card) => {
+            const action = (card.actionId && actionById.get(card.actionId)) || (card.targetSurfaceId ? actionForTarget(card.targetSurfaceId, actionById) : undefined);
+            const body = <><p>{card.label}</p><strong>{card.value}</strong>{(card.status || card.description) && <span>{card.status ?? card.description}</span>}</>;
+            return action ? <button key={card.cardId} type="button" className={`ds-card dashboard-card clickable ${card.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId)}>{body}</button> : <article key={card.cardId} className={`ds-card dashboard-card ${card.severity ?? 'info'}`}>{body}</article>;
+          })}
+        </div>
+      </section>
+
+      <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-attention-heading`}>
+        <div className="surface-section-heading">
+          <div><p className="eyebrow">Needs admin attention</p><h4 id={`${envelope.surfaceId}-attention-heading`}>Queues and risky changes</h4></div>
+          <p>Open a queue to reauthorize its target surface before showing identities, counts, or trace evidence.</p>
+        </div>
+        <div className="user-admin-attention-grid" aria-label="User Admin attention queues">
+          {queues.map((queue) => {
+            const action = (queue.actionId && actionById.get(queue.actionId)) || (queue.targetSurfaceId ? actionForTarget(queue.targetSurfaceId, actionById) : undefined);
+            const body = <><span className="eyebrow">{queue.sourceCapabilityId ?? queue.filter ?? 'backend queue'}</span><h4>{queue.label}</h4><strong>{queue.count ?? 'review'}</strong><p>{queue.statusText ?? 'Open with backend authorization before acting.'}</p>{queue.traceRefs?.[0] && <a href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(queue.traceRefs[0])}`}>Trace</a>}</>;
+            return action ? <button key={queue.queueId} type="button" className={`user-admin-attention-card ${queue.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId)}>{body}</button> : <article key={queue.queueId} className={`user-admin-attention-card ${queue.severity ?? 'info'}`}>{body}</article>;
+          })}
+        </div>
+      </section>
+
+      {data.attentionItems && data.attentionItems.length > 0 && <AttentionList items={data.attentionItems} label="Backend-derived User Admin attention items" />}
+
+      {actions.length > 0 && (
+        <section className="surface-section-list" aria-label="User Admin authorized action map">
+          {actions.slice(0, 8).map((action) => (
+            <article key={action.actionId} className={`surface-section-card ${action.approvalRequired ? 'warning' : 'allowed'}`}>
+              <h4>{action.label}</h4>
+              <p>{action.capabilityId ?? 'backend capability'} · {action.governedToolId ?? 'governed tool'}</p>
+              {action.resultSurfaceId && <p className="capability-basis">Result surface: {action.resultSurfaceId}</p>}
+            </article>
+          ))}
+        </section>
+      )}
+
+      {data.recentActivity && data.recentActivity.length > 0 && (
+        <section className="surface-section-list" aria-label="Recent User Admin audit activity">
+          {data.recentActivity.map((activity) => <article key={activity.activityId} className="surface-section-card"><h4>{activity.label}</h4>{activity.summary && <p>{activity.summary}</p>}{activity.traceId && <a href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(activity.traceId)}`}>{activity.traceId}</a>}</article>)}
+        </section>
+      )}
+
+      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
     </SurfaceStateFrame>
   );
 }
@@ -238,6 +317,33 @@ function defaultControlPanels(data: DashboardSurfaceData): NonNullable<Dashboard
     { panelId: 'panel-notifications', label: 'Notifications', summary: 'Triage in-app notifications without mutating source work.', state: 'triage', value: typeof data.notificationCenter?.visibleCount === 'number' ? data.notificationCenter.visibleCount : undefined, actionId: 'action-show-my-account-notification-center' },
     { panelId: 'panel-digest', label: 'Personal digest/export', summary: 'Start or review a governed advisory digest of authorized personal attention evidence.', state: 'advisory', actionId: 'action-start-my-account-personal-attention-digest' }
   ];
+}
+
+function userAdminQueuesFromData(data: DashboardSurfaceData): NonNullable<DashboardSurfaceData['attentionQueues']> {
+  const cardQueues = data.cards
+    .filter((card) => /invitation|review|support|audit|denied|failed|risk/i.test(`${card.cardId} ${card.label}`))
+    .map((card) => ({
+      queueId: `queue-${card.cardId}`,
+      label: card.label,
+      count: card.value,
+      severity: card.severity ?? 'info',
+      statusText: card.status ?? card.description ?? 'Backend-owned User Admin attention.',
+      targetSurfaceId: card.surfaceId,
+      actionId: card.actionId
+    }));
+  const sectionQueues = data.sections?.map((section) => ({
+    queueId: section.sectionId,
+    label: section.label,
+    severity: /review|risk|failed|expired/i.test(section.label) ? 'warning' : 'info',
+    statusText: section.summary,
+    targetSurfaceId: section.sectionId.includes('invitation') ? 'surface-user-admin-invitation-panel' : section.sectionId.includes('review') ? 'surface-user-admin-access-review-task' : section.sectionId.includes('audit') ? 'surface-audit-trace-dashboard' : 'surface-user-admin-member-directory',
+    filter: section.sectionId
+  })) ?? [];
+  return [...cardQueues, ...sectionQueues];
+}
+
+function actionForTarget(targetSurfaceId: string, actionById: Map<string, SurfaceAction>): SurfaceAction | undefined {
+  return Array.from(actionById.values()).find((action) => action.resultSurface?.updateSurfaceId === targetSurfaceId || action.resultSurface?.appendSurfaceType === targetSurfaceId || action.shellRequest?.targetSurfaceId === targetSurfaceId);
 }
 
 function actionsForIds(ids: string[] | undefined, actionById: Map<string, SurfaceAction>): SurfaceAction[] {

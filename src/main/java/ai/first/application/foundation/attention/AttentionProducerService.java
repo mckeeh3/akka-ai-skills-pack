@@ -278,7 +278,7 @@ public final class AttentionProducerService {
         category,
         severity,
         "secure-tenant-user-foundation",
-        "surface-user-admin-access-review",
+        "surface-user-admin-access-review-task",
         task.taskId(),
         WORKER_TASK_STATE_PRODUCER_ID,
         timerId == null || timerId.isBlank() ? "autonomous_task" : "timer",

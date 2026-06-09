@@ -289,7 +289,7 @@ public final class WorkstreamEventPublisher {
         task.idempotencyKey(),
         List.of(traceId),
         "agent-user-admin",
-        "surface-user-admin-access-review",
+        "surface-user-admin-access-review-task",
         PAYLOAD_ACCESS_REVIEW_LIFECYCLE,
         Map.of(
             "taskId", task.taskId(),

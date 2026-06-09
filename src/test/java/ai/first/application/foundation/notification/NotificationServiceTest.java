@@ -174,7 +174,7 @@ class NotificationServiceTest {
     assertEquals(NotificationCategory.AUDIT_OR_SECURITY, auditSummary.category());
     assertEquals(NotificationCategory.POLICY_OR_GOVERNANCE, governanceImpact.category());
     assertEquals(4, center.visibleCount());
-    assertTrue(center.items().stream().anyMatch(item -> item.origin().equals("access_review_task") && item.surfaceRef().surfaceId().equals("surface-user-admin-access-review")));
+    assertTrue(center.items().stream().anyMatch(item -> item.origin().equals("access_review_task") && item.surfaceRef().surfaceId().equals("surface-user-admin-access-review-task")));
     assertTrue(center.items().stream().anyMatch(item -> item.origin().equals("prompt_risk_review_task") && item.summary().contains("Prompt-risk review blocked")));
     assertTrue(center.items().stream().flatMap(item -> item.sourceRefs().stream()).allMatch(ref -> ref.requiredCapabilityId() != null && !ref.requiredCapabilityId().isBlank()));
     assertFalse(center.toString().contains("token="));

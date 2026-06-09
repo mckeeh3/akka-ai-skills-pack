@@ -251,7 +251,7 @@ class WorkstreamServiceTest {
     var events = service.events(identity(), "membership-admin", "agent-user-admin", null, "corr-event-refresh-read");
 
     assertTrue(events.stream().anyMatch(event -> event.eventType().equals("projection.refresh.available")
-        && event.surfaceId().equals("surface-user-admin-access-review")
+        && event.surfaceId().equals("surface-user-admin-access-review-task")
         && event.patch().toString().contains("workstream.event.delivery.refresh")
         && event.patch().toString().contains("Bounded SSE replay v1")
         && event.patch().toString().contains("idempotencyKey")
@@ -396,11 +396,11 @@ class WorkstreamServiceTest {
   @Test
   void disabledSurfaceActionsReturnDenialResultSurface() {
     var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-replace-membership-role", "action-replace-membership-role", "secure-tenant-user-foundation", "secure-tenant-user-foundation", null, "idem-1", "membership-admin", "surface-user-admin-detail-admin", "corr-role"));
+        "action-replace-membership-role", "action-replace-membership-role", "secure-tenant-user-foundation", "secure-tenant-user-foundation", null, "idem-1", "membership-admin", "surface-user-admin-user-account", "corr-role"));
 
     assertEquals("denied", result.status());
     assertTrue(result.message().contains("last tenant admin"));
-    assertEquals("surface-user-admin-detail-admin", result.resultSurface().surfaceId());
+    assertEquals("surface-user-admin-user-account", result.resultSurface().surfaceId());
   }
 
   @Test
@@ -411,7 +411,7 @@ class WorkstreamServiceTest {
     identityRepository.putMembership(new Membership("membership-second-admin", "second-admin@example.test", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), MembershipStatus.ACTIVE, false, null));
 
     var preview = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-preview-role-change", "action-useradmin-preview-role-change", "USERADMIN_PREVIEW_ROLE_CHANGE", "USERADMIN_PREVIEW_ROLE_CHANGE", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "promotion"), null, "membership-admin", "surface-user-admin-detail-admin", "corr-useradmin-preview"));
+        "action-useradmin-preview-role-change", "action-useradmin-preview-role-change", "USERADMIN_PREVIEW_ROLE_CHANGE", "USERADMIN_PREVIEW_ROLE_CHANGE", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "promotion"), null, "membership-admin", "surface-user-admin-user-account", "corr-useradmin-preview"));
     assertEquals("accepted", preview.status());
     assertTrue(preview.traceIds().get(0).contains("trace-useradmin-preview-role-change"));
     assertEquals("surface-user-admin-role-change-preview", preview.resultSurface().surfaceId());
@@ -420,12 +420,12 @@ class WorkstreamServiceTest {
     assertTrue(preview.resultSurface().toString().contains("affectedWorkstreams"));
 
     var changed = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-change-member-roles", "action-useradmin-change-member-roles", "USERADMIN_CHANGE_MEMBER_ROLES", "USERADMIN_CHANGE_MEMBER_ROLES", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "promotion"), "idem-useradmin-change", "membership-admin", "surface-user-admin-detail-admin", "corr-useradmin-change"));
+        "action-useradmin-change-member-roles", "action-useradmin-change-member-roles", "USERADMIN_CHANGE_MEMBER_ROLES", "USERADMIN_CHANGE_MEMBER_ROLES", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "promotion"), "idem-useradmin-change", "membership-admin", "surface-user-admin-user-account", "corr-useradmin-change"));
     assertEquals("accepted", changed.status());
-    assertEquals("surface-user-admin-detail-admin", changed.resultSurface().surfaceId());
+    assertEquals("surface-user-admin-user-account", changed.resultSurface().surfaceId());
 
     var duplicate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-change-member-roles", "action-useradmin-change-member-roles", "USERADMIN_CHANGE_MEMBER_ROLES", "USERADMIN_CHANGE_MEMBER_ROLES", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_EMPLOYEE"), "reason", "ignored replay"), "idem-useradmin-change", "membership-admin", "surface-user-admin-detail-admin", "corr-useradmin-change-replay"));
+        "action-useradmin-change-member-roles", "action-useradmin-change-member-roles", "USERADMIN_CHANGE_MEMBER_ROLES", "USERADMIN_CHANGE_MEMBER_ROLES", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_EMPLOYEE"), "reason", "ignored replay"), "idem-useradmin-change", "membership-admin", "surface-user-admin-user-account", "corr-useradmin-change-replay"));
     assertEquals(changed, duplicate);
     assertEquals(List.of(FoundationRole.TENANT_ADMIN), identityRepository.findMembership("membership-member").orElseThrow().roles());
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("USERADMIN_CHANGE_MEMBER_ROLES") && event.correlationId().equals("corr-useradmin-change")));
@@ -434,23 +434,23 @@ class WorkstreamServiceTest {
   @Test
   void userAdminStatusActionsDisableReactivateNoOpAndDenyManualSelfDisable() {
     var disabled = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "reason", "leave"), "idem-disable-member", "membership-admin", "surface-user-admin-list", "corr-disable-member"));
+        "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "reason", "leave"), "idem-disable-member", "membership-admin", "surface-user-admin-member-directory", "corr-disable-member"));
     assertEquals("accepted", disabled.status());
-    assertEquals("surface-user-admin-list", disabled.resultSurface().surfaceId());
+    assertEquals("surface-user-admin-member-directory", disabled.resultSurface().surfaceId());
     assertTrue(disabled.traceIds().get(0).contains("trace-useradmin-update-member-status"));
     assertTrue(disabled.resultSurface().toString().contains("status=suspended"));
 
     var duplicate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "reason", "ignored replay"), "idem-disable-member", "membership-admin", "surface-user-admin-list", "corr-disable-member-replay"));
+        "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "reason", "ignored replay"), "idem-disable-member", "membership-admin", "surface-user-admin-member-directory", "corr-disable-member-replay"));
     assertEquals(disabled, duplicate);
 
     var reactivated = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-reactivate-member", "action-useradmin-reactivate-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "reason", "return"), "idem-reactivate-member", "membership-admin", "surface-user-admin-list", "corr-reactivate-member"));
+        "action-useradmin-reactivate-member", "action-useradmin-reactivate-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "reason", "return"), "idem-reactivate-member", "membership-admin", "surface-user-admin-member-directory", "corr-reactivate-member"));
     assertEquals("accepted", reactivated.status());
     assertTrue(reactivated.resultSurface().toString().contains("status=active"));
 
     var selfDisable = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-admin", "reason", "self-disable"), "idem-self-disable", "membership-admin", "surface-user-admin-list", "corr-self-disable")));
+        "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-admin", "reason", "self-disable"), "idem-self-disable", "membership-admin", "surface-user-admin-member-directory", "corr-self-disable")));
     assertEquals("self-disable-denied", selfDisable.reasonCode());
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("USERADMIN_UPDATE_MEMBER_STATUS") && event.reasonCode().equals("self-disable-denied")));
   }
@@ -458,7 +458,7 @@ class WorkstreamServiceTest {
   @Test
   void userAdminSupportAccessActionsUseBackendAuthorityAndAuditTraceSurface() {
     var grant = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-grant-support-access", "action-useradmin-grant-support-access", "USERADMIN_SUPPORT_ACCESS_GRANT", "USERADMIN_SUPPORT_ACCESS_GRANT", Map.of("membershipId", "membership-member", "reason", "break glass"), "idem-support-grant", "membership-admin", "surface-user-admin-detail-admin", "corr-support-grant"));
+        "action-useradmin-grant-support-access", "action-useradmin-grant-support-access", "USERADMIN_SUPPORT_ACCESS_GRANT", "USERADMIN_SUPPORT_ACCESS_GRANT", Map.of("membershipId", "membership-member", "reason", "break glass"), "idem-support-grant", "membership-admin", "surface-user-admin-user-account", "corr-support-grant"));
 
     assertEquals("accepted", grant.status());
     assertEquals("surface-user-admin-support-access", grant.resultSurface().surfaceId());
@@ -468,7 +468,7 @@ class WorkstreamServiceTest {
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("SUPPORT_ACCESS_GRANT") && event.correlationId().equals("corr-support-grant")));
 
     var duplicate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-grant-support-access", "action-useradmin-grant-support-access", "USERADMIN_SUPPORT_ACCESS_GRANT", "USERADMIN_SUPPORT_ACCESS_GRANT", Map.of("membershipId", "membership-member", "reason", "ignored replay"), "idem-support-grant", "membership-admin", "surface-user-admin-detail-admin", "corr-support-grant-replay"));
+        "action-useradmin-grant-support-access", "action-useradmin-grant-support-access", "USERADMIN_SUPPORT_ACCESS_GRANT", "USERADMIN_SUPPORT_ACCESS_GRANT", Map.of("membershipId", "membership-member", "reason", "ignored replay"), "idem-support-grant", "membership-admin", "surface-user-admin-user-account", "corr-support-grant-replay"));
     assertEquals(grant, duplicate);
 
     var revoke = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
@@ -486,7 +486,7 @@ class WorkstreamServiceTest {
 
     assertEquals("blocked-runtime", result.status());
     assertTrue(result.message().contains("provider/runtime configuration"));
-    assertEquals("surface-user-admin-access-review", result.resultSurface().surfaceId());
+    assertEquals("surface-user-admin-access-review-task", result.resultSurface().surfaceId());
     assertEquals("user_admin.access_review_task.v1", result.resultSurface().data().get("surfaceContract"));
     assertEquals("blocked_provider_or_runtime", result.resultSurface().data().get("status"));
     assertEquals(true, result.resultSurface().data().get("noDirectMutation"));
@@ -495,12 +495,12 @@ class WorkstreamServiceTest {
 
     var taskId = result.resultSurface().data().get("taskId").toString();
     var read = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-read-access-review", "action-useradmin-read-access-review", "user_admin.access_review.read", "user_admin.access_review.read", Map.of("taskId", taskId), null, "membership-admin", "surface-user-admin-access-review", "corr-access-review-read"));
+        "action-useradmin-read-access-review", "action-useradmin-read-access-review", "user_admin.access_review.read", "user_admin.access_review.read", Map.of("taskId", taskId), null, "membership-admin", "surface-user-admin-access-review-task", "corr-access-review-read"));
     assertEquals("accepted", read.status());
     assertEquals(taskId, read.resultSurface().data().get("taskId"));
 
     var cancelled = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-cancel-access-review", "action-useradmin-cancel-access-review", "user_admin.access_review.cancel", "user_admin.access_review.cancel", Map.of("taskId", taskId, "reason", "not needed"), "idem-access-review-cancel", "membership-admin", "surface-user-admin-access-review", "corr-access-review-cancel"));
+        "action-useradmin-cancel-access-review", "action-useradmin-cancel-access-review", "user_admin.access_review.cancel", "user_admin.access_review.cancel", Map.of("taskId", taskId, "reason", "not needed"), "idem-access-review-cancel", "membership-admin", "surface-user-admin-access-review-task", "corr-access-review-cancel"));
     assertEquals("accepted", cancelled.status());
     assertEquals("cancelled", cancelled.resultSurface().data().get("status"));
   }
@@ -700,7 +700,7 @@ class WorkstreamServiceTest {
     var users = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
         "show_surface", "user_prompt", "show users", null, "agent-user-admin", null, null, "agent-user-admin", null, null, "current_workstream", "corr-shell-users", "membership-admin"));
     assertEquals("accepted", users.status());
-    assertEquals("surface-user-admin-list", users.resultSurface().surfaceId());
+    assertEquals("surface-user-admin-member-directory", users.resultSurface().surfaceId());
     assertEquals("show users", users.request().canonicalPrompt());
 
     var notifications = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(

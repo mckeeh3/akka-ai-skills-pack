@@ -59,6 +59,7 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
           Edit authority: {permissionState.authoritativeCapabilityId}. {permissionState.reason}
         </p>
       )}
+      {isUserAdminSurface(envelope) && <UserAdminDetailOverview envelope={envelope} />}
       {envelope.data.accessManagement && (
         <section className="access-management-evidence" aria-label="User Admin access-management evidence">
           <p className="capability-basis">{envelope.data.accessManagement.advisoryNotice}</p>
@@ -74,6 +75,18 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
               </dl>
               <ul>{envelope.data.accessManagement.memberStatus.denialHints.map((hint) => <li key={hint}>{hint}</li>)}</ul>
               <section className="trace-link-list" aria-label="Member status trace links">{envelope.data.accessManagement.memberStatus.traceLinks.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-timeline#${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>
+            </article>
+          )}
+          {envelope.data.accessManagement.supportAccess && (
+            <article className="access-management-card support-access-preview">
+              <h4>Support access boundary</h4>
+              <dl>
+                <dt>Status</dt><dd>{envelope.data.accessManagement.supportAccess.status ?? (envelope.data.accessManagement.supportAccess.supportAccess ? 'active' : 'not active')}</dd>
+                {envelope.data.accessManagement.supportAccess.expiresAt && <><dt>Expires</dt><dd>{envelope.data.accessManagement.supportAccess.expiresAt}</dd></>}
+                {envelope.data.accessManagement.supportAccess.actionIds && <><dt>Action ids</dt><dd>{envelope.data.accessManagement.supportAccess.actionIds.join(', ')}</dd></>}
+              </dl>
+              {envelope.data.accessManagement.supportAccess.denialHints && <ul>{envelope.data.accessManagement.supportAccess.denialHints.map((hint) => <li key={hint}>{hint}</li>)}</ul>}
+              {envelope.data.accessManagement.supportAccess.traceLinks && <section className="trace-link-list" aria-label="Support access trace links">{envelope.data.accessManagement.supportAccess.traceLinks.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-timeline#${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}
             </article>
           )}
           {envelope.data.accessManagement.roleChangePreview && (
@@ -176,6 +189,42 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
   );
 }
 
+function UserAdminDetailOverview({ envelope }: { envelope: SurfaceEnvelope<DetailEditSurfaceData> }) {
+  const data = envelope.data;
+  const isRolePreview = data.surfaceContract === 'user_admin.role_change_preview.v1' || envelope.surfaceId === 'surface-user-admin-role-change-preview';
+  return (
+    <section className="user-admin-detail-overview" aria-label="User Admin capability and policy evidence">
+      <article className="authority-context-panel">
+        <h4>{isRolePreview ? 'Role-change preview boundary' : 'User Admin detail boundary'}</h4>
+        <p>{data.message ?? 'Frontend controls are advisory only; selected AuthContext, backend authorization, policy, idempotency, and audit/work traces remain authoritative.'}</p>
+        <dl>
+          <div><dt>Surface contract</dt><dd>{data.surfaceContract ?? 'user_admin.user_account.v1'}</dd></div>
+          <div><dt>Status</dt><dd>{data.status ?? 'ready'}</dd></div>
+          <div><dt>Correlation</dt><dd>{envelope.correlationId}</dd></div>
+          <div><dt>Redaction</dt><dd>{renderSurfaceValue(data.redaction) ?? envelope.redaction.profile}</dd></div>
+        </dl>
+      </article>
+      {isRolePreview && (
+        <article className="access-management-card role-change-preview">
+          <h4>Capability delta and affected workstreams</h4>
+          <dl>
+            <dt>Added</dt><dd>{data.capabilityDelta?.added?.join(', ') || 'none'}</dd>
+            <dt>Removed</dt><dd>{data.capabilityDelta?.removed?.join(', ') || 'none'}</dd>
+            <dt>Unchanged</dt><dd>{data.capabilityDelta?.unchanged?.join(', ') || 'none'}</dd>
+            <dt>Affected workstreams</dt><dd>{data.affectedWorkstreams?.join(', ') || 'not reported'}</dd>
+            <dt>Last-admin impact</dt><dd>{data.lastAdminImpact ?? 'not reported'}</dd>
+          </dl>
+          {data.policyHints && <ul>{data.policyHints.map((hint) => <li key={hint}>{hint}</li>)}</ul>}
+        </article>
+      )}
+    </section>
+  );
+}
+
+function isUserAdminSurface(envelope: SurfaceEnvelope<DetailEditSurfaceData>) {
+  return envelope.ownerFunctionalAgentId === 'agent-user-admin' || envelope.surfaceId.startsWith('surface-user-admin-') || envelope.data.surfaceContract?.startsWith('user_admin.');
+}
+
 function MyAccountDetailOverview({ envelope, fieldValues }: { envelope: SurfaceEnvelope<DetailEditSurfaceData>; fieldValues: Record<string, string> }) {
   if (envelope.surfaceId === 'surface-my-profile') {
     return (
@@ -232,6 +281,14 @@ function myAccountEyebrow(surfaceId: string, fallback: string) {
   if (surfaceId === 'surface-my-settings') return 'personal preferences';
   if (surfaceId === 'surface-my-context') return 'context and authority';
   return fallback;
+}
+
+function renderSurfaceValue(value: unknown): string | undefined {
+  if (value == null) return undefined;
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (Array.isArray(value)) return value.map(renderSurfaceValue).filter(Boolean).join(' · ');
+  if (typeof value === 'object') return Object.entries(value as Record<string, unknown>).map(([key, entry]) => `${key}: ${renderSurfaceValue(entry) ?? 'n/a'}`).join(' · ');
+  return String(value);
 }
 
 function isNamedThemeId(value: string) {

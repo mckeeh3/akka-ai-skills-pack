@@ -139,7 +139,11 @@ export type BrowserSafeRedactionMetadata = string | {
 
 export type DashboardSurfaceData = {
   surfaceContract?: 'audit.trace.dashboard.v1' | string;
-  cards: Array<{ cardId: string; label: string; value: string | number; unit?: string; status?: string; description?: string; cardKind?: 'workstream-status' | 'notification-center' | 'personal-command-center' | string; workstreamId?: string; surfaceId?: string; actionId?: string; severity?: 'info' | 'warning' | 'urgent' | 'critical' | 'blocked' | 'blocked_provider_or_runtime' }>;
+  cards: Array<{ cardId: string; label: string; value: string | number; unit?: string; status?: string; description?: string; cardKind?: 'workstream-status' | 'notification-center' | 'personal-command-center' | string; workstreamId?: string; surfaceId?: string; targetSurfaceId?: string; actionId?: string; severity?: 'info' | 'warning' | 'urgent' | 'critical' | 'blocked' | 'blocked_provider_or_runtime' }>;
+  summaryCards?: Array<{ cardId: string; label: string; value: string | number; unit?: string; status?: string; description?: string; severity?: string; actionId?: string; targetSurfaceId?: string }>;
+  attentionQueues?: Array<{ queueId: string; label: string; count?: string | number; severity?: string; statusText?: string; sourceCapabilityId?: string; targetSurfaceId?: string; filter?: string; actionId?: string; traceRefs?: string[]; redaction?: string }>;
+  authorizedActions?: Array<{ actionId: string; label: string; governedToolId?: string; capabilityId?: string; resultSurfaceId?: string; approvalRequired?: boolean; denialHint?: string }>;
+  recentActivity?: Array<{ activityId: string; label: string; summary?: string; traceId?: string; redaction?: string; occurredAt?: string }>;
   attentionCounters?: Array<{ counterId: string; label: string; value: string | number; severity?: string; status?: string; source?: string; actionId?: string; surfaceId?: string; workstreamId?: string; description?: string }>;
   needsAttention?: Array<AttentionItem>;
   controlPanels?: Array<{ panelId: string; label: string; summary: string; state?: string; value?: string | number; surfaceId?: string; actionId?: string; severity?: string }>;
@@ -165,9 +169,16 @@ export type DashboardSurfaceData = {
 
 export type ListSearchSurfaceData = {
   surfaceContract?: 'audit.trace.search.v1' | string;
+  surfaceContracts?: string[];
   query: string | Record<string, string | number | boolean | undefined | Record<string, unknown>>;
   rows: Array<Record<string, string | number | boolean | undefined>>;
   pageInfo?: { nextPageToken?: string; nextCursor?: string; totalKnownCount?: number };
+  filterState?: Record<string, string | number | boolean | undefined>;
+  mobileFallback?: string;
+  dashboardOrigin?: Record<string, unknown>;
+  emptyMessage?: string;
+  capabilityIds?: string[];
+  systemStates?: string[];
   partial?: boolean;
   redaction?: BrowserSafeRedactionMetadata;
 };
@@ -240,6 +251,14 @@ export type DetailEditSurfaceData = {
       idempotencyKeySource?: string;
       traceLinks: string[];
     };
+    supportAccess?: {
+      supportAccess?: boolean;
+      status?: string;
+      expiresAt?: string;
+      actionIds?: string[];
+      denialHints?: string[];
+      traceLinks?: string[];
+    };
     roleChangePreview?: {
       surfaceContract: 'user_admin.role_change_preview.v1';
       currentRoles: string[];
@@ -254,6 +273,13 @@ export type DetailEditSurfaceData = {
     };
     advisoryNotice: string;
   };
+  capabilityDelta?: { added?: string[]; removed?: string[]; unchanged?: string[] };
+  affectedWorkstreams?: string[];
+  policyHints?: string[];
+  lastAdminImpact?: string;
+  message?: string;
+  status?: string;
+  systemStates?: string[];
 };
 
 export type DecisionSurfaceData = {
