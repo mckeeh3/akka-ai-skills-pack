@@ -1452,7 +1452,7 @@ export const auditTraceStructuredSurfaces = [auditTraceDashboardSurface, auditTr
 export const userAdminDashboardSurface = envelope(
   'surface-user-admin-dashboard',
   'dashboard',
-  'User Admin dashboard',
+  'User Admin Dashboard',
   'agent-user-admin',
   {
     cards: [

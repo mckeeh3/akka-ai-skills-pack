@@ -26,7 +26,7 @@ test('User Admin dashboard, list, and detail surfaces use canonical surface ids 
   assert.match(surfaces, /userAdminDashboardSurface/);
   assert.match(surfaces, /surface-user-admin-dashboard/);
   assert.match(surfaces, /legacySurfaceId: 'user-admin-dashboard'/);
-  assert.match(surfaces, /User Admin dashboard/);
+  assert.match(surfaces, /User Admin Dashboard/);
   assert.match(surfaces, /invitation-queue/);
   assert.match(surfaces, /access-review/);
   assert.match(surfaces, /admin-audit/);

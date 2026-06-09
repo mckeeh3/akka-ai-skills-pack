@@ -2278,13 +2278,22 @@ button.attention-counter-card:focus-visible {
 
 .user-admin-summary-grid,
 .user-admin-attention-grid,
+.user-admin-population-grid,
 .user-admin-row-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
   gap: var(--space-3);
 }
 
+.user-admin-next-actions {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 24%, var(--color-border));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-primary-soft) 22%, transparent);
+  padding: var(--space-4);
+}
+
 .user-admin-attention-card,
+.user-admin-population-card,
 .user-admin-row {
   display: grid;
   gap: var(--space-3);
@@ -2297,19 +2306,33 @@ button.attention-counter-card:focus-visible {
   text-align: left;
 }
 
-button.user-admin-attention-card {
+button.user-admin-attention-card,
+button.user-admin-population-card {
   cursor: pointer;
 }
 
 button.user-admin-attention-card:hover,
-button.user-admin-attention-card:focus-visible {
+button.user-admin-attention-card:focus-visible,
+button.user-admin-population-card:hover,
+button.user-admin-population-card:focus-visible {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
-.user-admin-attention-card strong {
+.user-admin-attention-card strong,
+.user-admin-population-card strong {
   font-size: clamp(1.4rem, 3vw, 2.1rem);
 }
+
+.user-admin-population-card h4,
+.user-admin-population-card p,
+.user-admin-population-card strong,
+.user-admin-attention-card h4,
+.user-admin-attention-card p,
+.user-admin-attention-card strong { margin: 0; }
+
+.user-admin-population-card p,
+.user-admin-attention-card p { color: var(--color-text-soft); }
 
 .user-admin-attention-card.warning,
 .user-admin-row.invitation-queue,

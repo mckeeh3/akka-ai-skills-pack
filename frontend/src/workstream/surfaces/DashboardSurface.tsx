@@ -100,23 +100,37 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
   const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
   const summaryCards = data.summaryCards?.length ? data.summaryCards : data.cards;
   const queues = data.attentionQueues?.length ? data.attentionQueues : userAdminQueuesFromData(data);
-  const actions = data.authorizedActions?.length ? data.authorizedActions : envelope.actions.map((action) => ({ actionId: action.actionId, label: action.label, capabilityId: action.capabilityId, governedToolId: action.governedToolId, resultSurfaceId: action.resultSurface?.updateSurfaceId ?? action.resultSurface?.appendSurfaceType, approvalRequired: action.requiresApproval }));
+  const nextActions = (data.authorizedActions?.length ? data.authorizedActions : envelope.actions.map((action) => ({ actionId: action.actionId, label: action.label, capabilityId: action.capabilityId, governedToolId: action.governedToolId, resultSurfaceId: action.resultSurface?.updateSurfaceId ?? action.resultSurface?.appendSurfaceType, approvalRequired: action.requiresApproval }))).slice(0, 6);
+  const nextActionButtons = actionsForIds(nextActions.map((action) => action.actionId), actionById);
+  const populationCards = userAdminPopulationCards(data, actionById);
+  const hasOpenAttention = queues.some((queue) => Number(queue.count ?? 0) > 0 || ['warning', 'urgent', 'critical', 'blocked', 'blocked_provider_or_runtime'].includes(String(queue.severity)));
 
   return (
     <SurfaceStateFrame envelope={envelope}>
       <section className="user-admin-command-hero" aria-label="User Admin selected scope and authority">
         <div>
           <p className="eyebrow">Access operations</p>
-          <h3>Scoped users, invitations, roles, support access, and review work.</h3>
-          <p>Every card and action is backed by selected AuthContext, backend authorization, idempotency, approval policy, and audit/work traces.</p>
+          <h3>Administer scoped users, invitations, roles, support access, and review work.</h3>
+          <p>Start with what needs attention, then open an authorized queue, detail surface, decision card, or audit trace. Backend authorization remains authoritative.</p>
         </div>
         <dl className="authority-summary-grid" aria-label="User Admin authority basis">
           <div><dt>Tenant</dt><dd>{data.accountContext?.tenantId ?? envelope.authContext.tenantId}</dd></div>
-          <div><dt>Customer</dt><dd>{data.accountContext?.customerId ?? envelope.authContext.customerId ?? 'Tenant scope'}</dd></div>
-          <div><dt>Capabilities</dt><dd>{data.capabilityIds?.length ?? envelope.authContext.visibleCapabilityIds.length}</dd></div>
-          <div><dt>Contract</dt><dd>{data.surfaceContract ?? 'user_admin.dashboard.v1'}</dd></div>
+          <div><dt>Scope</dt><dd>{data.accountContext?.customerId ?? envelope.authContext.customerId ?? 'Tenant scope'}</dd></div>
+          <div><dt>Authority</dt><dd>{data.accountContext?.authority ?? data.accountContext?.roles?.join(', ') ?? 'Selected AuthContext'}</dd></div>
+          <div><dt>Traceable read</dt><dd>{data.traceRefs?.length ? 'Trace available' : 'Audit/work traces'}</dd></div>
         </dl>
+        <p className="sr-only">Surface contract: {data.surfaceContract ?? 'user_admin.dashboard.v1'}. Browser-visible capability count: {data.capabilityIds?.length ?? envelope.authContext.visibleCapabilityIds.length}.</p>
       </section>
+
+      {nextActionButtons.length > 0 && (
+        <section className="user-admin-section user-admin-next-actions" aria-labelledby={`${envelope.surfaceId}-next-actions-heading`}>
+          <div className="surface-section-heading">
+            <div><p className="eyebrow">Next actions</p><h4 id={`${envelope.surfaceId}-next-actions-heading`}>What you can do now</h4></div>
+            <p>These actions recheck scope, capability, idempotency, approval policy, and audit requirements before returning a result surface.</p>
+          </div>
+          <SurfaceActionBar label="Primary User Admin next actions" actions={nextActionButtons} surfaceId={envelope.surfaceId} onAction={onAction} />
+        </section>
+      )}
 
       <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-summary-heading`}>
         <div className="surface-section-heading">
@@ -140,25 +154,41 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
         <div className="user-admin-attention-grid" aria-label="User Admin attention queues">
           {queues.map((queue) => {
             const action = (queue.actionId && actionById.get(queue.actionId)) || (queue.targetSurfaceId ? actionForTarget(queue.targetSurfaceId, actionById) : undefined);
-            const body = <><span className="eyebrow">{queue.sourceCapabilityId ?? queue.filter ?? 'backend queue'}</span><h4>{queue.label}</h4><strong>{queue.count ?? 'review'}</strong><p>{queue.statusText ?? 'Open with backend authorization before acting.'}</p>{queue.traceRefs?.[0] && <a href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(queue.traceRefs[0])}`}>Trace</a>}</>;
+            const queueCount = Number(queue.count ?? 0);
+            const body = <><span className="eyebrow">{formatQueueEyebrow(queue.severity, queueCount)}</span><h4>{queue.label}</h4><strong>{queue.count ?? 'review'}</strong><p>{queue.statusText ?? (queueCount === 0 ? 'No visible items need attention in this scope.' : 'Open with backend authorization before acting.')}</p>{queue.traceRefs?.[0] && <a href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(queue.traceRefs[0])}`}>View trace</a>}</>;
             return action ? <button key={queue.queueId} type="button" className={`user-admin-attention-card ${queue.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId)}>{body}</button> : <article key={queue.queueId} className={`user-admin-attention-card ${queue.severity ?? 'info'}`}>{body}</article>;
           })}
         </div>
       </section>
 
-      {data.attentionItems && data.attentionItems.length > 0 && <AttentionList items={data.attentionItems} label="Backend-derived User Admin attention items" />}
-
-      {actions.length > 0 && (
-        <section className="surface-section-list" aria-label="User Admin authorized action map">
-          {actions.slice(0, 8).map((action) => (
-            <article key={action.actionId} className={`surface-section-card ${action.approvalRequired ? 'warning' : 'allowed'}`}>
-              <h4>{action.label}</h4>
-              <p>{action.capabilityId ?? 'backend capability'} · {action.governedToolId ?? 'governed tool'}</p>
-              {action.resultSurfaceId && <p className="capability-basis">Result surface: {action.resultSurfaceId}</p>}
-            </article>
-          ))}
+      {!hasOpenAttention && (
+        <section className="surface-empty-state" aria-label="No User Admin attention needed">
+          <h4>No admin attention needed in this scope</h4>
+          <p>Visible queues are clear. You can still open the member directory, invite a user, review support access, or inspect audit evidence.</p>
         </section>
       )}
+
+      {populationCards.length > 0 && (
+        <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-populations-heading`}>
+          <div className="surface-section-heading">
+            <div><p className="eyebrow">Administered populations</p><h4 id={`${envelope.surfaceId}-populations-heading`}>Who you can administer</h4></div>
+            <p>Population counts are visible-scope projections. Hidden tenants, customers, users, and counts are omitted.</p>
+          </div>
+          <div className="user-admin-population-grid" aria-label="Visible administered populations">
+            {populationCards.map((card) => card.action ? (
+              <button key={card.cardId} type="button" className="user-admin-population-card" onClick={() => onAction?.(card.action!, envelope.surfaceId)}>
+                <span className="eyebrow">{card.scope}</span><h4>{card.label}</h4><strong>{card.value}</strong><p>{card.summary}</p>
+              </button>
+            ) : (
+              <article key={card.cardId} className="user-admin-population-card">
+                <span className="eyebrow">{card.scope}</span><h4>{card.label}</h4><strong>{card.value}</strong><p>{card.summary}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {data.attentionItems && data.attentionItems.length > 0 && <AttentionList items={data.attentionItems} label="Backend-derived User Admin attention items" />}
 
       {data.recentActivity && data.recentActivity.length > 0 && (
         <section className="surface-section-list" aria-label="Recent User Admin audit activity">
@@ -317,6 +347,26 @@ function defaultControlPanels(data: DashboardSurfaceData): NonNullable<Dashboard
     { panelId: 'panel-notifications', label: 'Notifications', summary: 'Triage in-app notifications without mutating source work.', state: 'triage', value: typeof data.notificationCenter?.visibleCount === 'number' ? data.notificationCenter.visibleCount : undefined, actionId: 'action-show-my-account-notification-center' },
     { panelId: 'panel-digest', label: 'Personal digest/export', summary: 'Start or review a governed advisory digest of authorized personal attention evidence.', state: 'advisory', actionId: 'action-start-my-account-personal-attention-digest' }
   ];
+}
+
+function userAdminPopulationCards(data: DashboardSurfaceData, actionById: Map<string, SurfaceAction>): Array<{ cardId: string; label: string; value: string | number; scope: string; summary: string; action?: SurfaceAction }> {
+  const activeUsers = data.cards.find((card) => /active users/i.test(card.label));
+  const pendingInvitations = data.cards.find((card) => /pending invitations/i.test(card.label));
+  const supportAccess = data.cards.find((card) => /support/i.test(card.label));
+  const directoryAction = actionForTarget('surface-user-admin-member-directory', actionById) ?? actionById.get('action-display-user-list');
+  const invitationAction = actionForTarget('surface-user-admin-invitation-panel', actionById) ?? actionById.get('action-invite-user');
+  const supportAction = actionForTarget('surface-user-admin-support-access', actionById) ?? actionById.get('action-useradmin-read-support-access');
+  const cards: Array<{ cardId: string; label: string; value: string | number; scope: string; summary: string; action?: SurfaceAction }> = [];
+  if (activeUsers) cards.push({ cardId: 'population-active-users', label: 'Users and memberships', value: activeUsers.value, scope: 'Visible scope', summary: 'Open the member directory for scoped users, memberships, roles, and review flags.', action: directoryAction });
+  if (pendingInvitations) cards.push({ cardId: 'population-invitations', label: 'Invitations', value: pendingInvitations.value, scope: 'Invitation work', summary: 'Create, resend, revoke, or inspect invitation delivery without exposing tokens.', action: invitationAction });
+  if (supportAccess) cards.push({ cardId: 'population-support-access', label: 'Support access', value: supportAccess.value, scope: 'Controlled support', summary: 'Review expiring support access and route grants through approval-aware actions.', action: supportAction });
+  return cards;
+}
+
+function formatQueueEyebrow(severity: string | undefined, count: number): string {
+  if (severity === 'critical' || severity === 'urgent' || severity === 'blocked' || severity === 'blocked_provider_or_runtime') return 'Needs review';
+  if (severity === 'warning') return 'Watch queue';
+  return count > 0 ? 'Open queue' : 'No attention needed';
 }
 
 function userAdminQueuesFromData(data: DashboardSurfaceData): NonNullable<DashboardSurfaceData['attentionQueues']> {
