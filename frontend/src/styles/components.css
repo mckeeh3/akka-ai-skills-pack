@@ -1067,16 +1067,22 @@
 
 .workstream-user-request-row {
   justify-self: end;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  max-width: min(46rem, 72%);
+  position: relative;
+  width: fit-content;
+  max-width: min(46rem, 62%);
+}
+
+.workstream-user-request-row .workstream-item.user-request.prompt-input-surface {
+  max-width: 100%;
 }
 
 .workstream-request-spinner {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + var(--space-2));
   width: 1rem;
+  margin-top: -0.5rem;
   height: 1rem;
-  flex: 0 0 auto;
   border: 2px solid color-mix(in srgb, var(--color-ai) 20%, transparent);
   border-top-color: var(--color-ai);
   border-radius: 999px;
