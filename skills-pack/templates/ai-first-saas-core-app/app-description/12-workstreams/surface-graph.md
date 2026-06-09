@@ -7,8 +7,9 @@ This file makes the template surface graph explicit for process guidance. It is 
 - Every surface has exactly one owning functional agent.
 - Reuse is explicit through `reusableByFunctionalAgentIds`/contract text; reuse does not transfer authority.
 - Every edge is a surface action, surface-request, prompt-entered request, deep link, realtime refresh, workflow/AutonomousAgent progress event, or typed system result.
+- Each edge should produce at most one primary browser-visible result surface for the same content. Activity records, tool-call traces, and response metadata remain collapsed/audit-only unless the edge explicitly targets a visible progress/detail surface.
 - Browser-visible edges are advisory. Backend capability checks decide authorization, scope, redaction, approval, idempotency, side effects, audit, and denial.
-- Deferred typed result surfaces are listed in `deferred-typed-surfaces.md` and may use `markdown_response`/`system_message` only as first-slice fallbacks.
+- Deferred typed result surfaces are listed in `deferred-typed-surfaces.md` and may use `markdown_response`/`system_message` only as first-slice fallbacks, not as duplicate siblings of internal activity/detail surfaces.
 
 ## Foundation graph nodes
 
@@ -21,8 +22,8 @@ This file makes the template surface graph explicit for process guidance. It is 
 | `decision-card` | `governance-policy-agent` | User Admin, Agent Admin, Audit/Trace, domain-specific reviewer workstreams | Approval/exception gate | `surface-contracts/05-decision-card.md` |
 | `audit-trace-explorer` | `audit-trace-agent` | all foundation and domain-specific workstreams with scoped trace access | Evidence/timeline drill-in node | `surface-contracts/06-audit-trace-explorer.md` |
 | `agent-governance-center` | `agent-admin-agent` | Governance/Policy | Managed-agent governance workspace | `surface-contracts/07-agent-governance-center.md` |
-| `markdown_response` | producing functional agent | all foundation/domain workstreams | Structured explanatory/result surface | shared contract in `docs/structured-surface-contracts.md` |
-| `system_message` | producing functional agent | all foundation/domain workstreams | Structured feedback/denial/status surface | shared contract in `docs/structured-surface-contracts.md` |
+| `markdown_response` | producing functional agent | all foundation/domain workstreams | Structured explanatory/result surface; sole visible markdown result for the turn | shared contract in `docs/structured-surface-contracts.md` |
+| `system_message` | producing functional agent | all foundation/domain workstreams | Structured feedback/denial/status surface; sole visible status result for the event | shared contract in `docs/structured-surface-contracts.md` |
 
 ## Foundation graph edges
 

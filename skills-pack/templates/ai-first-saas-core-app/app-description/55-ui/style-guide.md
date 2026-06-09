@@ -73,7 +73,7 @@
 - AI command strip: visually distinct raised surface with AI mark, prompt input affordance, suggested prompt chips, send/action button, and subtle AI glow/border; results must become durable workstream items/surfaces
 - KPI summary cards: strong numbers, label, trend text, status icon/color, optional sparkline; avoid equal visual weight with decision queues
 - decision/exception cards: subject, originating agent/system, risk/policy badge, recommendation, evidence summary, confidence/impact when available, primary action, secondary details/evidence action, visible trace link when available
-- agent activity timeline/cards: timestamp, agent, action summary, automation/review/escalation badge, semantic icon, detail affordance
+- agent activity timeline/cards: timestamp, agent, action summary, automation/review/escalation badge, semantic icon, detail affordance; use as collapsed/audit detail, not duplicate sibling surfaces beside the primary typed result
 - governance/trust controls: threshold/authority, enabled/verified state, edit/history/simulation links, approval-required state when applicable
 - cards/panels: layered surface tokens, hairline borders, purposeful density, no undifferentiated card grids
 - buttons/actions: specific verb labels; primary action dominance; destructive/approval actions visually distinct but not overpowering; disabled controls include visible reason when not obvious

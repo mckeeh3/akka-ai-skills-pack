@@ -398,6 +398,8 @@ Required elements:
 
 ### Agent activity timeline
 
+Use agent activity timelines for collapsed/audit detail, progress inspection, or explicitly requested trace views. Do not show them as duplicate sibling cards next to the primary typed result surface for the same prompt/action.
+
 Required elements:
 
 - timestamp

@@ -4,7 +4,7 @@ Use this document when defining or implementing typed surfaces in an agent works
 
 Source-controlled SaaS Foundation App assets live under `templates/ai-first-saas-core-app/app-description/**`. Use them as copy/adapt examples for the five-core workstream domain surface layer when a target project lacks an app-description surface baseline. Validate adapted target-project contracts with `tools/validate-surface-contracts.sh --mode template <app-description-dir>` for process/template baselines or `tools/validate-surface-contracts.sh --mode implementation <app-description-dir>` for app-level contracts. Implementation validation is readiness-aware; `capability-ready` and higher scopes must not rely on unresolved deferred result surfaces.
 
-A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear. All renderable system feedback in a workstream is also a surface, not an ad hoc UI string.
+A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear. All renderable system feedback in a workstream is also a surface, not an ad hoc UI string. Internal activity records, tool-call details, trace bookkeeping, and response metadata are not separate user-visible surfaces unless the product contract deliberately exposes them as a typed audit/progress/detail surface.
 
 ## Contract rule
 
@@ -35,7 +35,7 @@ Define the graph explicitly enough that implementation can preserve navigation, 
 - **Nodes:** dashboard surfaces, attention-item surfaces, tables, forms, detail cards, decision/approval cards, workflow/task progress surfaces, audit/trace timelines, `markdown_response`, and `system_message` surfaces. Each node has exactly one owner functional agent; reusable surfaces declare explicit reusable-by functional agents/workstreams.
 - **Edges:** surface actions, surface-request actions, deep links, prompt-entered requests, realtime refreshes, workflow/AutonomousAgent progress updates, and system-message results.
 - **Edge contract:** every edge maps to a governed backend capability and, when executable, to a governed-tool exposure such as a human surface action/browser-tool, agent-tool, workflow-tool, timer-tool, consumer-tool, MCP-tool, or internal-tool. If the same governed tool is exposed to both human-backed and AI-backed actors, the mapping must preserve one operation id while declaring separate actor adapters, input mediation, approval behavior, and trace source.
-- **Result semantics:** an action should append a surface, update a surface, open another graph node, create a typed `system_message`, update dashboard attention, start/observe internal-agent work, or return a safe denial.
+- **Result semantics:** an action should append one primary result surface, update an existing surface, open another graph node, create a typed `system_message`, update dashboard attention, start/observe internal-agent work, or return a safe denial. Do not render a separate activity/detail surface for the same result unless the contract intentionally defines a visible progress/detail node.
 - **Role variants:** dashboard and graph edges may differ by role and selected `AuthContext`; the backend capability remains authoritative for allowed traversal and data access.
 - **Tests:** graph tests must cover dashboard-to-node traversal, action result surfaces, denial/system-message surfaces, stale/reconnect behavior, audit/trace links, and tenant-isolated deep links.
 
@@ -102,6 +102,8 @@ type SurfaceEnvelope<TData, TAction extends SurfaceAction = SurfaceAction> = {
 
 Payload rules:
 
+- Each user turn or surface action should produce at most one primary browser-visible result surface for the same content. A progress surface followed by a final result is allowed only when durable/background work is intentionally visible.
+- Activity-log rows, tool-call records, trace metadata, and response bookkeeping should be stored as workstream/audit history or collapsed details, not duplicated as sibling surfaces.
 - Include `surfaceVersion` and type-specific schema version when payload semantics change.
 - Include `correlationId` and trace ids for audit/debugging surfaces and consequential actions.
 - Include stale/reconnect markers when rendered data may lag event streams or command results.
@@ -118,7 +120,7 @@ AutonomousAgent task progress/result surfaces are required when durable internal
 
 ## Base surface: `markdown_response`
 
-Use `markdown_response` as the smallest valid structured surface for the SaaS Foundation App domain (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) and other low-ceremony explanatory replies. It is a structured surface, not a raw chat transcript or untyped assistant message.
+Use `markdown_response` as the smallest valid structured surface for the SaaS Foundation App domain (My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy) and other low-ceremony explanatory replies. It is the actual markdown result surface for that turn, not a raw chat transcript, untyped assistant message, or companion to a separate "agent response detail" surface.
 
 Contract:
 
@@ -157,7 +159,7 @@ type MarkdownResponseData = {
 };
 ```
 
-`markdown_response` is acceptable for first-slice guidance, explanations, denials, and summaries. Do not use it to hide missing typed surfaces for decisions, approvals, forms, tables, settings, access reviews, audit timelines, or workflow status once those richer interactions are required.
+`markdown_response` is acceptable for first-slice guidance, explanations, denials, and summaries. Do not use it to hide missing typed surfaces for decisions, approvals, forms, tables, settings, access reviews, audit timelines, or workflow status once those richer interactions are required. Do not render both a generic agent-response/activity surface and a `markdown_response` for the same markdown content; the `markdown_response` envelope is the renderable result, while underlying activity/trace records stay collapsed or audit-only unless separately requested.
 
 ## Base surface: `system_message`
 

@@ -8,7 +8,8 @@ A workstream definition is the product vertical such as `user-admin`. A workstre
 
 - One workstream definition exists per user-facing functional/context-area agent.
 - One durable workstream instance exists per functional agent and selected `AuthContext` scope unless a capability explicitly creates a goal-, decision-, audit-, or customer-focused subthread.
-- Workstream instances contain user requests, surface requests, agent responses, capability results, structured surfaces, workflow progress, decision cards, policy citations, trace links, safe denials, and follow-up actions.
+- Workstream instances retain user requests, surface requests, agent responses, capability results, structured surfaces, workflow progress, decision cards, policy citations, trace links, safe denials, and follow-up actions.
+- Browser rendering must not turn every retained activity record into a separate visible surface. For a normal prompt turn, render one primary result surface such as `markdown_response`; the corresponding agent-response/activity/trace records remain collapsed or audit-only unless a typed detail/progress surface is explicitly requested.
 - Surface updates append or replace typed payloads; consequential state changes occur only through backend capabilities and governed-tools.
 - My Account may aggregate authorized attention from other workstreams, but it does not own their source items.
 

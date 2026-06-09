@@ -33,7 +33,8 @@ Functional-agent rail:
 Context and authority bar:
   selected tenant/customer, membership, roles/capabilities, support access, pending approvals
 Main workstream stream:
-  user requests, surface requests, agent responses, surfaces, action feedback, system messages, traces
+  user requests, surface requests, primary result surfaces, action feedback, system messages, traces
+  no duplicate generic activity/detail surface when a typed result surface already represents the turn
 Persistent composer:
   accepted prompt/action requests, disabled/forbidden states, selected-agent context, refocus behavior
 Structured surfaces:
