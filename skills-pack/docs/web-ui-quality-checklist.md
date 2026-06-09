@@ -10,6 +10,8 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 - [ ] Each workstream shell region or structured surface communicates selected functional agent, tenant/customer context, what matters, and what the user can do within the first five seconds.
 - [ ] Each structured surface has one clear purpose or an explicitly read-only purpose.
 - [ ] Dashboard cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons that represent attention or next work are clickable and keyboard-operable by default.
+- [ ] Rectangular dashboard tiles/cards/counters with a work-object name and prominent count use the whole shape as the button, not just a nested action control.
+- [ ] Zero-count dashboard tiles that represent valid queues/categories remain operable when they should open an empty queue, detail, explanation, setup, or history surface.
 - [ ] Dashboard interactions append a request-like workstream item and append/open the target detail, decision, progress, evidence/trace, result, updated dashboard, or typed `system_message` surface.
 - [ ] Ready dashboards show authorized work this actor can do; forbidden targets are normally omitted rather than shown as disabled work objects.
 - [ ] Non-actionable dashboard objects are visually distinct from actionable work objects and have a recorded `none` reason.
@@ -70,7 +72,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 - [ ] My Account theme selection, when in scope, lets the user choose one available named theme, previews the selected named theme immediately on field change, and persists only through the governed save/confirm settings path; it does not present dark/light/system mode choices.
 - [ ] Brand adaptations are applied without copying demo names, logos, users, or metrics from reference images.
 - [ ] Status colors, chart colors, shadows, spacing, radius, and component density match the selected style guide closely enough to guide future regeneration; switching themes changes color tokens only, not layout, design language, surface anatomy, spacing, or behavior.
-- [ ] Dashboard attention/KPI cards use the shared attention-card style across all dashboards, have readable semibold/bold labels, strong numeric hierarchy, enough vertical spacing between label, number, and badge/status text, appear above lower-priority dashboard details/lists, and clearly look operable when they represent attention or available work.
+- [ ] Dashboard attention/KPI cards use the shared attention-card style across all dashboards, have readable semibold/bold labels, strong numeric hierarchy, enough vertical spacing between label, number, and badge/status text, appear above lower-priority dashboard details/lists, and clearly look like modern high-tech operable controls when they represent attention or available work.
 
 ## Visual craft
 
@@ -83,7 +85,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 - [ ] Motion and transitions clarify state changes and respect reduced-motion preferences; animation is purposeful rather than scattered decoration.
 - [ ] Cosmetic effects such as gradients, grain, glow, shadows, or patterns preserve contrast, focus visibility, and surface readability.
 - [ ] Visual changes do not alter functional agents, workstreams, surface contracts, capability mappings, authorization, API behavior, tests, or readiness claims.
-- [ ] The UI avoids generic AI/SaaS cliches such as purple-gradient-on-white defaults, browser-native controls, timid evenly spread accents, and undifferentiated card grids.
+- [ ] The UI avoids generic AI/SaaS cliches and yesterday's passive CRUD dashboard patterns such as purple-gradient-on-white defaults, browser-native controls, timid evenly spread accents, inert metric tiles, and undifferentiated card grids.
 
 ## Accessibility
 
