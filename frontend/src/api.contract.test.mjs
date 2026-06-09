@@ -92,7 +92,8 @@ test('workstream fixture realtime client emits workstream events and visible sta
   assert.match(fixtureWorkstreamRealtime, /duplicateReplayEvent/);
   assert.match(fixtureWorkstreamRealtime, /outOfOrderEvent/);
   assert.match(fixtureWorkstreamRealtime, /status: 'stale'/);
-  assert.match(httpWorkstreamRealtime, /new EventSource\(`\/api\/workstream\/events/);
+  assert.match(httpWorkstreamRealtime, /fetch\(`\/api\/workstream\/events/);
+  assert.match(httpWorkstreamRealtime, /Authorization', `Bearer \$\{token\}`/);
   assert.match(httpWorkstreamRealtime, /selectedContextId/);
   assert.match(httpWorkstreamRealtime, /lastEventId/);
   assert.match(httpWorkstreamRealtime, /Malformed realtime payload was ignored safely/);

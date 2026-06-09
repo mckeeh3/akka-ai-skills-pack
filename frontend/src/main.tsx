@@ -58,7 +58,7 @@ type WorkstreamAppProps = {
 
 function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps) {
   const workstreamClient = React.useMemo<WorkstreamClient>(() => clients?.workstream ?? new HttpWorkstreamApiClient(tokenProvider), [clients, tokenProvider]);
-  const realtimeClient = React.useMemo<WorkstreamRealtimeClient>(() => clients?.realtime ?? new HttpWorkstreamRealtimeClient(), [clients]);
+  const realtimeClient = React.useMemo<WorkstreamRealtimeClient>(() => clients?.realtime ?? new HttpWorkstreamRealtimeClient(tokenProvider), [clients, tokenProvider]);
   const [themeId, setThemeId] = React.useState<ThemePreference>(() => readStoredThemeId());
   const [selection, setSelection] = React.useState<Partial<WorkstreamSelection>>(() => readDeepLinkSelection());
   const [bootstrap, setBootstrap] = React.useState<BootstrapState>({ status: 'loading' });
