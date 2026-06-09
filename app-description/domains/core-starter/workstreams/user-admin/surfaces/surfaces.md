@@ -27,9 +27,9 @@ All surfaces use the canonical AI-first workstream shell, structured surface env
 
 ### Intent
 
-`surface-user-admin-dashboard` is titled **User Admin Dashboard** and is the default User Admin surface. It orients authorized admins to access-administration attention in the selected tenant/customer context, then provides governed entry points into member directory, invitations, support access, access review, risky-change decision cards, and scoped audit evidence.
+`surface-user-admin-dashboard` is titled **User Admin Dashboard** and is the default User Admin surface. Its first goal is visibility: show the signed-in admin **what needs my attention now** in the selected app-owner, tenant, or customer context. Its second goal is to show **who I can administer** through backend-authorized scope cards for users, memberships, invitations, roles/capabilities, support access, access reviews, identity exceptions, and admin audit evidence.
 
-This surface must not render hidden counts, use client-side authorization as a shortcut, or become a generic admin KPI grid. Each card, queue row, action, and trace link is a structured surface edge backed by server-side authorization.
+The dashboard uses positive, capability-aware language. User-facing dashboard copy lists visible administered populations and available work for the current admin level; it does not present unavailable powers as "cannot manage" lists. Empty states use "nothing to manage" or "0 need attention" language for visible scopes, while authorization denials are reserved for direct attempts that backend policy rejects. If something is outside scope or hidden, the dashboard omits it; if an attempted action is denied, it returns a safe recovery/system message focused on visible next steps. This surface must not render hidden counts, use client-side authorization as a shortcut, or become a generic admin KPI grid. Each card, queue row, action, and trace link is a structured surface edge backed by server-side authorization.
 
 ### Contract
 
@@ -43,34 +43,37 @@ This surface must not render hidden counts, use client-side authorization as a s
 
 ### User experience model
 
-1. **Orient** — show selected scope label/type, safe tenant/customer labels, actor authority summary, redaction marker, support-access state if visible, and trace/correlation affordances.
-2. **Prioritize** — render attention cards for failed invitation delivery, stale/expired invitations, users needing review, dormant/admin risk, support-access expiry, last-admin risk, access-review results needing human review, recent denied admin actions, and provider/outbox/model blockers.
-3. **Summarize health** — show active users, pending invitations, expired invitations, suspended/disabled users, role/capability coverage, access-review status, recent consequential activity, and provider/outbox readiness where safe.
-4. **Act safely** — expose authorized next actions: invite user, open filtered queue, open member directory, open failed invitations, start access review, open support-access queue, open admin audit evidence, or ask `user-admin-agent` for guidance.
-5. **Recover** — first-run, empty, forbidden, stale, provider-fail-closed, disabled-actor, no-membership, and partial-data states include safe recovery without revealing hidden data.
+1. **Hero: orient me to my active scope** — show selected scope label/type, safe tenant/customer labels, admin level, visible administered populations, redaction marker, support-access state if visible, and trace/correlation affordances. The hero uses positive copy such as "You administer tenant employees and customer admins in this tenant" or "You administer customer users for this customer".
+2. **Show what needs my attention** — render visible attention cards and queues with numeric counts for each attention type. `0` means no attention is needed for that visible type. Attention types include invitation delivery failures, pending/stale/expired invitations, users or memberships needing review, dormant/admin-risk users, role/capability changes needing approval, last-admin risks, support-access expiry, identity link/relink exceptions, access-review results needing human review, recent consequential admin events, recent safe denial/no-op evidence, and provider/outbox/model blockers. Visibility of all relevant attention types is more important than forcing a universal priority order.
+3. **Show who I can administer** — show backend-authorized population cards for the current admin level: App Admin users, Tenant Admin users, tenant employees, Customer Admin users, or Customer Users as applicable to the selected context. Cards show visible counts, attention counts, health/status counts, and open/list actions for the administered population.
+4. **Show scoped health and available work** — show active users, admin users by level when visible, pending invitations, expired/stale invitations, suspended/disabled users, role/capability coverage, support-access active/expiring, access-review status, recent consequential activity, and provider/outbox/model readiness where safe. Available work is presented as action affordances attached to visible populations or attention cards.
+5. **Recover without implying missing authorization** — first-run, empty, forbidden, stale, provider-fail-closed, disabled-actor, no-membership, and partial-data states provide recovery guidance such as selecting an available scope, refreshing stale data, opening visible audit evidence, or contacting an authorized admin. Visible empty states say "nothing to manage" or show `0`; they do not imply the user is unauthorized. Direct denied attempts use safe system-message language and avoid listing unavailable management powers.
 
 ### Frontend-safe payload
 
-- `surfaceContract`, `accountContext`, `selectedAuthContext`, `scopeLabel`, `scopeType`, `authorityBasis`, `redaction`, `capabilityIds`, `traceRefs`, `correlationId`.
-- `summaryCards[]`: active users, pending/expired invitations, disabled/suspended users, support-access expiry, access-review status, recent denied actions, and readiness summaries marked safe by backend.
-- `attentionQueues[]`: stable queue id, label, severity, count, status text, source capability/tool, target surface id/filter, trace refs, redaction state, and open action id.
-- `authorizedActions[]`: action id, label, governed capability/tool id, required idempotency/correlation behavior, result surface, approval/decision-card requirement, and denial hint when visible.
+- `surfaceContract`, `accountContext`, `selectedAuthContext`, `scopeLabel`, `scopeType`, `adminLevel`, `authorityBasis`, `redaction`, `capabilityIds`, `traceRefs`, `correlationId`.
+- `hero`: `{ title, scopeLabel, scopeType, adminLevel, administeredPopulationLabels[], supportAccessState?, redactionSummary, traceRefs[], correlationId }`.
+- `attentionCounts[]`: `{ attentionType, label, count, severity, statusText, administeredPopulationType?, targetSurfaceId?, filter?, sourceCapabilityId, traceRefs[], redactionState, openActionId? }`. Counts are non-negative integers; `0` is shown as an explicit no-attention state for visible attention types.
+- `administeredPopulations[]`: `{ populationType, label, visibleCount, attentionCount, activeCount?, pendingInvitationCount?, suspendedOrDisabledCount?, staleOrExpiredCount?, reviewCount?, roleCoverageSummary?, targetSurfaceId, openActionId, capabilityIds[], traceRefs[] }` where `populationType` is one of `app_admin_users`, `tenant_admin_users`, `tenant_employees`, `customer_admin_users`, or `customer_users`.
+- `summaryCards[]`: active users, admin users by level when visible, pending/expired invitations, disabled/suspended users, support-access active/expiring, access-review status, recent safe denial/no-op evidence, and readiness summaries marked safe by backend.
+- `authorizedActions[]`: action id, label, governed capability/tool id, administered population or attention type, required idempotency/correlation behavior, result surface, approval/decision-card requirement, and positive next-step guidance. Unavailable actions are omitted from the dashboard action list.
 - `recentActivity[]`: browser-safe admin audit excerpts with trace ids and redaction summaries.
 
-Forbidden payload/content: hidden workstream/source names, hidden user identities/counts, cross-tenant/customer facts, raw WorkOS ids unless policy-safe, raw JWT/session data, invitation tokens/token hashes, Resend/provider secrets, full email bodies, raw model/provider config, or fixture/mock data as normal runtime.
+Dashboard payload/content must not include hidden workstream/source names, hidden user identities/counts, cross-tenant/customer facts, raw WorkOS ids unless policy-safe, raw JWT/session data, invitation tokens/token hashes, Resend/provider secrets, full email bodies, raw model/provider config, or fixture/mock data as normal runtime. User-facing copy should describe available scoped work and recovery paths rather than enumerating unavailable powers.
 
 ### Actions
 
 | Action | Governed backend capability/tool | Result behavior |
 |---|---|---|
 | Refresh dashboard | `user_admin.view_overview` / `search-user-directory` | Reload backend-owned overview projection. |
-| Open member directory / filtered queue | `user_admin.list_members` / `search-user-directory` | Render `surface-user-admin-member-directory` with backend-shaped filter context. |
-| Create invitation | `user_admin.invite_user` / `create-or-resend-invitation` | Render invitation panel/form or decision/system message when risky/denied. |
-| Open failed/stale/expired invitations | `user_admin.acceptance_status.read` / `search-user-directory` | Render invitation panel or filtered directory. |
-| Start access review | `user_admin.access_review.start` / `run-access-review` | Render access-review task progress or blocked/denied message. |
-| Open access-review item/result | `user_admin.access_review.read` | Render access-review task or decision card. |
-| Open support-access queue | `user_admin.support_access.read` / `grant-or-revoke-support-access` read side | Render filtered directory/detail or denial. |
-| Open admin audit evidence | `admin.audit.read` / Audit Trace capability | Render authorized Audit/Trace surface or safe redacted message. |
+| Open member directory / filtered queue | `user_admin.list_members` / `search-user-directory` | Render `surface-user-admin-member-directory` with backend-shaped filter context for visible users, memberships, invitations, support-access markers, and review flags. |
+| Manage invitation | `user_admin.invite_user`, `user_admin.resend_invitation`, `user_admin.revoke_invitation` / `create-or-resend-invitation` | Render invitation panel/form, action status, approval step, validation recovery, or system message. |
+| Manage scoped user or membership | `user_admin.read_user_account`, `user_admin.update_member_status` / `change-membership-role-or-status` | Render user account detail, refreshed dashboard/list, action status, approval step, or system message. |
+| Preview/manage roles and capabilities | `user_admin.preview_role_change`, `user_admin.change_member_roles` / `change-membership-role-or-status` | Render role-change preview, capability delta, decision card, refreshed detail, or system message. |
+| Manage support access | `user_admin.support_access.*` / `grant-or-revoke-support-access` | Render support-access queue/detail, refreshed account detail, decision card, action status, or system message. |
+| Start/open access review | `user_admin.access_review.start`, `user_admin.access_review.read` / `run-access-review` | Render access-review task progress/result, human review step, decision card, or system message. |
+| Review identity exception | `user_admin.identity_exception.read`, identity relink/recovery capability where assigned | Render user account identity section, recovery workflow/status, audit evidence, or system message. |
+| Open admin audit evidence | `admin.audit.read` / Audit Trace capability | Render authorized Audit/Trace surface or safe redacted system message. |
 | Ask User Admin agent | `user_admin.ask_agent` | Invoke governed agent runtime or provider/model blocked system message. |
 
 ## Member directory surface
