@@ -23,7 +23,7 @@ UX design also owns visual intentionality. Do not hand off a vague "modern SaaS"
 
 Include these AI-first workstream/surface patterns for generated full-stack AI-first SaaS:
 - **Functional-agent rail:** role-authorized work areas, attention indicators, hidden/denied agent recovery, and selected-agent context.
-- **Main workstream:** user intent, agent responses, capability results, workflow progress, decisions, traces, and follow-up actions in one continuous timeline.
+- **Main workstream:** user intent, primary result surfaces, capability results, workflow progress, decisions, traces, and follow-up actions in one continuous timeline; do not duplicate a prompt/action as both a generic activity-detail card and the actual typed result surface.
 - **Persistent composer:** contextual natural-language requests, command shortcuts, uploads where allowed, disabled/forbidden explanations, and submit progress.
 - **Role-specific dashboard / command center surface:** attention items, evidence, freshness, active goals, plan progress, agent activity, exceptions, approval queues, material events, and next browser-tools with stale/reconnect status. All dashboards with attention counters must use the same attention-card counter strip style, placed above lower-priority details/lists. Labels must be slightly larger and semibold/bold, with deliberate vertical spacing between label, number, and badge/status so the card does not feel cramped.
 - **Decision card / deviation review surface:** recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, and approve/reject/defer/escalate actions.

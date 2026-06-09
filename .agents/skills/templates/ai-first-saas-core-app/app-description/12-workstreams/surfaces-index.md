@@ -18,12 +18,12 @@ Structured surfaces are the browser/user-visible contract for workstream state. 
 
 | Surface id | Type/version | Owning workstream | Contract file | Primary actions / capability links | Required states/tests |
 | --- | --- | --- | --- | --- | --- |
-| `markdown_response` | markdown_response/v1 | producing functional agent | shared contract in `docs/structured-surface-contracts.md` | bounded agent answer, safe denial, blocked provider/system status → owning workstream capabilities | sanitization, redaction, forbidden/error/empty states, trace links. |
-| `system_message` | system_message/v1 | producing functional agent | shared contract in `docs/structured-surface-contracts.md` | provider blocked, authorization denial, task status, bounded SSE replay/projection refresh → owning workstream capabilities | safe copy, no secrets, actionable next step, trace link. |
+| `markdown_response` | markdown_response/v1 | producing functional agent | shared contract in `docs/structured-surface-contracts.md` | bounded agent answer, safe denial, blocked provider/system status → owning workstream capabilities | sanitization, redaction, forbidden/error/empty states, trace links; no duplicate generic response/detail surface for the same markdown content. |
+| `system_message` | system_message/v1 | producing functional agent | shared contract in `docs/structured-surface-contracts.md` | provider blocked, authorization denial, task status, bounded SSE replay/projection refresh → owning workstream capabilities | safe copy, no secrets, actionable next step, trace link; no duplicate activity-detail surface for the same status. |
 
 ## Deferred typed surfaces
 
-Deferred typed result surfaces are listed in `deferred-typed-surfaces.md`. Template examples may reference them with a `markdown_response` or `system_message` first-slice fallback, but app-level implementation cleanup must replace consequential fallbacks with full contracts before claiming `capability-ready` for the relevant workstream/action scope.
+Deferred typed result surfaces are listed in `deferred-typed-surfaces.md`. Template examples may reference them with a `markdown_response` or `system_message` first-slice fallback, but app-level implementation cleanup must replace consequential fallbacks with full contracts before claiming `capability-ready` for the relevant workstream/action scope. A fallback replaces the richer result surface for that slice; it must not be rendered in addition to a generic internal activity/detail surface for the same event.
 
 ## Surface graph
 

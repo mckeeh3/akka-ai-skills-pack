@@ -435,7 +435,7 @@
 .workstream-composer {
   pointer-events: auto;
   overflow: visible;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   align-items: end;
   border-color: color-mix(in srgb, var(--color-ai) 24%, var(--color-border));
   border-radius: var(--radius-xl);
@@ -473,7 +473,8 @@
 .workstream-composer textarea::placeholder { color: var(--color-muted); }
 
 .send-prompt-button,
-.show-dashboard-button {
+.show-dashboard-button,
+.clear-screen-button {
   position: relative;
   overflow: visible;
   width: 3rem;
@@ -511,7 +512,8 @@
 }
 
 .workstream-send-prompt-tooltip,
-.workstream-show-dashboard-tooltip {
+.workstream-show-dashboard-tooltip,
+.workstream-clear-screen-tooltip {
   position: absolute;
   right: 0;
   bottom: calc(100% + var(--space-2));
@@ -537,7 +539,8 @@
 }
 
 .workstream-send-prompt-tooltip::before,
-.workstream-show-dashboard-tooltip::before {
+.workstream-show-dashboard-tooltip::before,
+.workstream-clear-screen-tooltip::before {
   content: '';
   position: absolute;
   right: 1.15rem;
@@ -553,7 +556,9 @@
 .send-prompt-button:hover .workstream-send-prompt-tooltip,
 .send-prompt-button:focus-visible .workstream-send-prompt-tooltip,
 .show-dashboard-button:hover .workstream-show-dashboard-tooltip,
-.show-dashboard-button:focus-visible .workstream-show-dashboard-tooltip {
+.show-dashboard-button:focus-visible .workstream-show-dashboard-tooltip,
+.clear-screen-button:hover .workstream-clear-screen-tooltip,
+.clear-screen-button:focus-visible .workstream-clear-screen-tooltip {
   opacity: 1;
   transform: translateY(0);
 }

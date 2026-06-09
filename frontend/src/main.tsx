@@ -16,7 +16,7 @@ import { parseWorkstreamDeepLink, serializeWorkstreamDeepLink } from './workstre
 import { WorkstreamStream } from './workstream/stream';
 import { pruneWorkstreamSurfaceStreamsByAgent } from './workstream/stream/streamState';
 import { buildCapabilityActionRequest } from './workstream/actions';
-import { createWorkstreamVisualSessionKey, persistDeviceSurfaceStreams, restoreDevicePersistedSurfaceStreams, restoreOrCreateVisualSession, saveVisualSession, updateVisualSessionViewState, type WorkstreamVisualSession, type WorkstreamVisualSessionStore } from './workstream/visual-session';
+import { clearDeviceSurfaceStreamForSession, createWorkstreamVisualSessionKey, persistDeviceSurfaceStreams, restoreDevicePersistedSurfaceStreams, restoreOrCreateVisualSession, saveVisualSession, updateVisualSessionViewState, type WorkstreamVisualSession, type WorkstreamVisualSessionStore } from './workstream/visual-session';
 import { clearRailAttentionForAgent, defaultSelectableAgentId, recordUnseenRailResponse } from './workstream/rail';
 import { applyWorkstreamRealtimeEvent, realtimeStatusLabel } from './workstream/realtime';
 import {
@@ -431,6 +431,28 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     await runShellSurfaceRequest(shellRequest, functionalAgentId, 'show-dashboard');
   }
 
+  function handleClearScreen(functionalAgentId: string) {
+    if (!ready || !me) return;
+    const sessionKey = createWorkstreamVisualSessionKey({
+      accountId: me.account.accountId,
+      selectedContextId: me.selectedAuthContext.selectedContextId,
+      functionalAgentId,
+      workstreamId: functionalAgentId
+    });
+    clearDeviceSurfaceStreamForSession(sessionKey);
+    setVisualSessionsByKey((store) => {
+      const { [sessionKey]: _cleared, ...remaining } = store;
+      return remaining;
+    });
+    setRequestScrollTargetBySessionKey((targets) => ({ ...targets, [sessionKey]: undefined }));
+    clearRailAttention(functionalAgentId);
+    setBootstrap((current) => current.status === 'ready'
+      ? { ...current, items: current.items.filter((item) => item.functionalAgentId !== functionalAgentId) }
+      : current);
+    updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: undefined, surfacePlacement: undefined });
+    requestAnimationFrame(() => document.getElementById('main-content')?.focus());
+  }
+
   async function refreshBackendDerivedAttentionDelivery(input: { functionalAgentId?: string; surfaceId?: string; reason: 'workstream-open' | 'producer-affecting-action-completion' | 'shell-surface-refresh' | 'event-backed-projection-refresh' }) {
     // Backend attention remains authoritative: rail badges refresh from attention.list_rail_summaries via functional-agents,
     // while dashboard/My Account attention items refresh from backend surfaces carrying attention.list_workstream_items
@@ -567,6 +589,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       onSelectAgent={selectAgent}
       onComposerSubmit={handleComposerSubmit}
       onShowDashboard={handleShowDashboard}
+      onClearScreen={handleClearScreen}
       submittingFunctionalAgentId={submittingFunctionalAgentId}
       railAttentionByAgentId={railAttentionByAgentId}
       onSignOut={onSignOut}

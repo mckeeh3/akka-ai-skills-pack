@@ -15,12 +15,13 @@ type WorkstreamShellProps = {
   onSelectAgent?: (functionalAgentId: string) => void;
   onComposerSubmit?: (request: ComposerRequest) => void | Promise<boolean | void>;
   onShowDashboard?: (functionalAgentId: string) => void | Promise<void>;
+  onClearScreen?: (functionalAgentId: string) => void | Promise<void>;
   submittingFunctionalAgentId?: string;
   railAttentionByAgentId?: FunctionalAgentRailAttentionStore;
   onSignOut?: () => void;
 };
 
-export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], children, appName, onSelectAgent, onComposerSubmit, onShowDashboard, submittingFunctionalAgentId, railAttentionByAgentId, onSignOut }: WorkstreamShellProps) {
+export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], children, appName, onSelectAgent, onComposerSubmit, onShowDashboard, onClearScreen, submittingFunctionalAgentId, railAttentionByAgentId, onSignOut }: WorkstreamShellProps) {
   const initialAgentId = initialFunctionalAgentId ?? defaultSelectableAgentId(me.functionalAgents, me.visibleCapabilityIds, me.account.status) ?? me.functionalAgents[0]?.functionalAgentId;
   const [selectedFunctionalAgentId, setSelectedFunctionalAgentId] = useState(initialAgentId);
   const [railCollapsed, setRailCollapsed] = useState(false);
@@ -78,7 +79,7 @@ export function WorkstreamShell({ me, initialFunctionalAgentId, items = [], chil
         <div className="main-column workstream-main-column">
           <WorkstreamPanel selectedAgent={selectedAgent} items={items}>{children}</WorkstreamPanel>
           <footer className="workstream-composer-region" aria-label="Persistent composer region">
-            <WorkstreamComposer me={me} authContext={me.selectedAuthContext} selectedAgent={selectedAgent} isSubmitting={submittingFunctionalAgentId === selectedFunctionalAgentId} onSubmit={onComposerSubmit} onShowDashboard={onShowDashboard} />
+            <WorkstreamComposer me={me} authContext={me.selectedAuthContext} selectedAgent={selectedAgent} isSubmitting={submittingFunctionalAgentId === selectedFunctionalAgentId} onSubmit={onComposerSubmit} onShowDashboard={onShowDashboard} onClearScreen={onClearScreen} />
           </footer>
         </div>
       </div>

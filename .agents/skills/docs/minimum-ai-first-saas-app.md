@@ -80,7 +80,7 @@ Required semantics:
 - selected `AuthContext` with account/user identity, selected scope, roles, capabilities, and actor metadata;
 - backend authorization checks for protected workstream, surface, API, component, stream, and tool actions;
 - tenant/customer boundary model where applicable;
-- durable workstream log for requests, responses, tool/capability results, denials, and trace references;
+- durable workstream log for requests, responses, tool/capability results, denials, and trace references, while rendering one primary result surface per prompt/action instead of duplicate generic activity/detail surfaces;
 - audit/work trace substrate for identity, authorization, agent prompt/skill/reference/model/tool use, capability checks, data access, and denials;
 - capability-first backend modeling before exposing browser actions, agent tools, workflows, timers, consumers, or APIs;
 - model-backed workstream agents invoke concrete Akka `Agent` components through governed runtime configuration, active prompts/manifests/tool boundaries, registered runtime tools, provider boundary, and traces;

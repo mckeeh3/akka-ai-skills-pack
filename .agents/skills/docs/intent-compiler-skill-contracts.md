@@ -37,6 +37,7 @@ The output should not force the user to know internal taxonomy.
 Changes to current intent artifacts should:
 
 - edit the smallest complete set of app/global/domain/workstream files;
+- for new or substantially changed browser-rendered workstream dashboards or structured surfaces, record the surface-description sufficiency review question and either a yes answer or the need for another description pass before implementation;
 - preserve global definition plus workstream binding separation;
 - remove or replace superseded current-state statements;
 - link workstream artifacts to capabilities, surfaces, agents, tools, policies, traces, tests, and realization files;
@@ -52,7 +53,7 @@ Specs, backlogs, task briefs, pending questions, and pending tasks should:
 - name required reads and focused skills;
 - carry dependencies and blockers explicitly;
 - include done criteria, required checks, and runtime validation path when feature-bearing;
-- for browser-rendered structured surfaces or web UI realization, include required reads for `app-description-ui`, `akka-web-ui-ux-design`, `docs/web-ui-style-guide.md`, `docs/web-ui-component-catalog.md`, and `docs/web-ui-quality-checklist.md`, and cite the selected app style/named-theme artifact;
+- for browser-rendered structured surfaces or web UI realization, include required reads for `app-description-ui`, `akka-web-ui-ux-design`, `docs/web-ui-style-guide.md`, `docs/web-ui-component-catalog.md`, and `docs/web-ui-quality-checklist.md`, cite the selected app style/named-theme artifact, and confirm the surface-description sufficiency review has passed or is blocking;
 - preserve the workstream vertical contract or state a valid docs-only/internal/foundation/cross-cutting exemption.
 
 ## Realization contract

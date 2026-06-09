@@ -46,6 +46,12 @@ export function persistDeviceSurfaceStreams(input: { me: MeResponse; items: Work
   writePersistedWorkstreamSurfaceStreamStore(nextStore);
 }
 
+export function clearDeviceSurfaceStreamForSession(sessionKey: string) {
+  const stored = readPersistedWorkstreamSurfaceStreamStore();
+  const { [sessionKey]: _cleared, ...remaining } = stored;
+  writePersistedWorkstreamSurfaceStreamStore(remaining);
+}
+
 export function readPersistedWorkstreamSurfaceStreamStore(): PersistedWorkstreamSurfaceStreamStore {
   if (typeof window === 'undefined') return {};
   try {

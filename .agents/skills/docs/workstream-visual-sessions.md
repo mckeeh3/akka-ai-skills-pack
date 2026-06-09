@@ -49,7 +49,7 @@ This lets users keep their own request in view while reviewing the generated res
 
 ### Durable workstream history
 
-Backend-owned durable history of user requests, agent responses, surfaces, capability results, workflow status, decisions, denials, and trace links. This history may be subject to retention, archival, summarization, and authorization rules.
+Backend-owned durable history of user requests, agent responses, surfaces, capability results, workflow status, decisions, denials, and trace links. This history may be subject to retention, archival, summarization, and authorization rules. Durable history records are not automatically individual browser surfaces; the visual session should render one primary result surface for a turn/action and keep activity/trace detail collapsed unless explicitly opened.
 
 ### Visual session
 

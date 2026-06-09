@@ -10,15 +10,17 @@ type WorkstreamComposerProps = {
   isSubmitting?: boolean;
   onSubmit?: (request: ComposerRequest) => void | Promise<boolean | void>;
   onShowDashboard?: (functionalAgentId: string) => void | Promise<void>;
+  onClearScreen?: (functionalAgentId: string) => void | Promise<void>;
 };
 
-export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSurfaceId, isSubmitting = false, onSubmit, onShowDashboard }: WorkstreamComposerProps) {
+export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSurfaceId, isSubmitting = false, onSubmit, onShowDashboard, onClearScreen }: WorkstreamComposerProps) {
   const [draft, setDraft] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const availability = useMemo(() => composerAvailability(me, selectedAgent), [me, selectedAgent]);
   const disabledReason = availability.status === 'disabled' ? availability.reason : undefined;
   const submitDisabled = isSubmitting || !selectedAgent || !canSubmitComposer(draft, availability);
   const showDashboardDisabled = !selectedAgent || availability.status === 'disabled';
+  const clearScreenDisabled = !selectedAgent;
   const helperId = 'workstream-composer-helper';
   const pointerStartedInSelectableSurfaceRef = useRef(false);
 
@@ -104,6 +106,12 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
     window.requestAnimationFrame(focusComposerInput);
   }
 
+  async function clearScreen() {
+    if (!selectedAgent || clearScreenDisabled) return;
+    await onClearScreen?.(selectedAgent.functionalAgentId);
+    window.requestAnimationFrame(focusComposerInput);
+  }
+
   return (
     <form className="command-strip workstream-composer" aria-label="Persistent workstream composer" onSubmit={submit}>
       <div className="composer-input-wrap">
@@ -133,6 +141,10 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
       <button type="button" className="ds-button secondary icon-button show-dashboard-button" disabled={showDashboardDisabled} aria-label="Show dashboard" onClick={showDashboard}>
         <DashboardIcon />
         <span className="workstream-show-dashboard-tooltip" role="tooltip">Show dashboard</span>
+      </button>
+      <button type="button" className="ds-button ghost icon-button clear-screen-button" disabled={clearScreenDisabled} aria-label="Clear screen for current workstream" title="Clear screen" onClick={clearScreen}>
+        <span aria-hidden="true">+</span>
+        <span className="workstream-clear-screen-tooltip" role="tooltip">Clear screen</span>
       </button>
     </form>
   );
