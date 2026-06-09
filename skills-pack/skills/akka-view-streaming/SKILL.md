@@ -55,6 +55,8 @@ WHERE checkedOut = :checkedOut
 
 Keep any sorted list or paginated query as a separate `QueryEffect` method. Do not reuse sorted `ORDER BY` queries for SSE.
 
+Do not implement a claimed SSE view response by returning a finite `List` or `QueryEffect` from the View and wrapping it as a one-shot response. For view-backed SSE, the View must expose a `QueryStreamEffect<T>` method that calls `queryStreamResult()`; add `streamUpdates = true` when subscribers must receive later matching updates.
+
 ## Review checklist
 
 Before finishing, verify:
@@ -64,4 +66,5 @@ Before finishing, verify:
 - view queries forwarded to SSE do not contain `ORDER BY`
 - any non-SSE `ORDER BY` columns are also indexed by `WHERE` conditions
 - endpoints forwarding the stream preserve offset/reconnect semantics when relevant
+- no endpoint or adapter wraps a finite `List`/`QueryEffect` as a substitute for view-backed SSE
 - protected stream exposure tests cover authorized subscription, forbidden/cross-scope denial, redacted rows, and audit/data-access trace behavior
