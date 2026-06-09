@@ -43,6 +43,12 @@ In app-description trees, surface ownership belongs in `12-workstreams/`: surfac
 
 A browser-rendered surface is not implementation-ready until its realization path names the selected app UI style artifact and the component-catalog anatomy it uses, or a blocking UI question records why that selection is missing. Intent-compiler planning must route such work through `app-description-ui` and `akka-web-ui-ux-design` before frontend implementation tasks.
 
+Before moving a new or substantially changed dashboard, command center, queue, decision, audit, workflow/progress, form, table, detail, or other browser-rendered surface from description to implementation, ask this surface-description sufficiency review question:
+
+> Is this surface definition sufficiently unambiguous that a developer or generator can implement and review the surface without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics?
+
+If the answer is no, make another pass on the surface description first. The developer review loop should inspect both artifacts: the generated surface in the running app and the current-intent surface description that drives code generation. Fixes to UI behavior should normally refine the description, then use that refined description to revise or repair surface-related code.
+
 ## Minimum contract fields
 
 For each surface, define these fields before implementation:
@@ -331,6 +337,7 @@ Use that template for SaaS Foundation App surface shape and field density; copy 
 
 Before moving from surface design to code generation, verify:
 
+- [ ] Human surface-description sufficiency question was asked and answered yes, or another description pass is queued/blocked before implementation.
 - [ ] Surface has stable identity, type, version, exactly one owner functional agent, explicit reuse, placement, and purpose.
 - [ ] Payload schema is typed, scoped, redacted, traceable, and frontend-safe.
 - [ ] Every action, including surface-request/read actions, maps to a governed backend capability.

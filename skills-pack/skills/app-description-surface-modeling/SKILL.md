@@ -43,6 +43,7 @@ For each surface, define:
 ## Modeling rules
 
 - Model dashboard attention and surface graph edges before conventional route/page details.
+- When creating or revising a workstream dashboard, command center, queue, decision, audit, workflow/progress, form, table, detail, or other browser-rendered surface contract, include an explicit surface-description sufficiency review question for human app developers: "Is this surface definition sufficiently unambiguous that a developer or generator can implement and review the surface without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics?" If the answer is no, make another pass on the surface description before creating surface implementation tasks.
 - Every browser-rendered surface must link to the selected web UI style guide, named-theme contract, and component-catalog anatomy before implementation. Surface contracts own purpose/authority/capability semantics; frontend realization owns visual/style mechanics and must not invent application meaning.
 - If the app lacks a selected UI style/named-theme contract, route to `app-description-ui` or queue a blocking `category: ui` question before creating surface implementation tasks.
 - Every consequential read/query/mutation/action maps to a backend capability and is authorized server-side.
@@ -57,9 +58,10 @@ For each surface, define:
 Update or propose updates to the app-description with:
 
 - new/changed surface contracts
+- a surface-description sufficiency review result for each new or substantially changed browser-rendered surface, including whether another description pass is required before code generation
 - affected capability/security/test/observability links
 - traceability map or graph-link changes
 - assumptions and open questions
 - generation impact: localized UI/API change, backend capability change, broader workstream redesign, UI style/catalog realization prerequisite, or separate app-level surface implementation cleanup
 
-If a surface requires data, authority, or behavior not yet described, queue or ask the blocking question instead of inventing it.
+If a surface requires data, authority, behavior, style/catalog binding, or tests not yet described, queue or ask the blocking question instead of inventing it. Do not treat the generated UI as the only review artifact; the app developer should also be able to review and refine the surface description itself, then use that refined description to revise or repair surface-related code.
