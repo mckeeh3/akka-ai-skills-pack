@@ -11,12 +11,28 @@ Treat root source, frontend, app-description, specs, docs, and tools as app-faci
 
 The installable Akka AI skills pack source lives under [`skills-pack/`](skills-pack/). For pack maintenance, read `skills-pack/AGENTS.md` and work inside `skills-pack/**` unless the task explicitly requires a root compatibility wrapper or root documentation link.
 
+## Harness routing rule
+
+Use this practical routing rule for ambiguous harness input:
+
+```text
+Does the user explicitly mention skills-pack, .agents/skills, skill authoring,
+installer, package manifest, reusable examples, or release tooling?
+  yes -> skills-pack maintenance; follow skills-pack/AGENTS.md
+  no  -> app realization; use the skills pack as guidance and edit the root app
+```
+
+App realization is the default. Requests such as "build", "implement", "compile this intent", "update the app", "generate", "work on pending task", "fix the backend/frontend/spec", or domain feature requests should be treated as root app work unless the user explicitly opts into skills-pack maintenance.
+
+Skills-pack maintenance is opt-in by explicit wording. Do not edit `skills-pack/**` during default app-realization work except for an explicitly requested compatibility wrapper, documentation link, or task that names the skills-pack assets.
+
 ## Default interpretation
 
 - Root app work: improve the runnable secure AI-first SMB SaaS core application, its Akka Java SDK backend, React/Vite frontend, app-description, specs, validation, docs, and domain-specific extension seams.
 - Skills-pack work: improve installable `.agents` assets under `skills-pack/`, including skills, docs, code examples, templates, package manifests, installers, and release tooling used by harness agents to maintain the core app and generate downstream business-specific SaaS extensions.
 - Do not mix focused skills-pack reference examples into root `src/**`.
 - Do not add core app runtime code under `skills-pack/**`.
+- Prefer the nearest directory-specific `AGENTS.md` when editing under root app directories such as `src/`, `frontend/`, `app-description/`, `specs/`, `docs/`, or `tools/`.
 
 ## Runtime completion doctrine
 

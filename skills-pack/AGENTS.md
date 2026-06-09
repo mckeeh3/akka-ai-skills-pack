@@ -1,6 +1,8 @@
 # Skills-Pack Maintainer Guidance
 
-This directory is the source area for the installable Akka AI skills pack inside the SaaS Foundation App repository.
+This directory is the opt-in skills-pack maintenance mode for the installable Akka AI skills pack inside the SaaS Foundation App repository.
+
+Use this mode only when the user explicitly mentions skills-pack, `.agents/skills`, skill authoring, installer behavior, package manifests, reusable examples/templates/docs, installed-tool payloads, or release tooling. Otherwise, default to root app realization and follow the repository root `AGENTS.md` plus the nearest root app directory `AGENTS.md`.
 
 The repository has a two-fold purpose: maintain the harness skills library and provide the runnable SaaS Foundation App that users clone or fork. The skills pack supports both purposes by giving harness agents focused guidance, referenced docs, templates, tools, and code examples for maintaining the SaaS Foundation App and adding downstream business-specific SaaS domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests.
 
