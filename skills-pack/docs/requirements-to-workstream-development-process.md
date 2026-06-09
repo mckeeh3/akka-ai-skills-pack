@@ -107,7 +107,7 @@ Attention is not merely notification. It is a scoped, authorized, actionable sig
 
 ### Role-specific dashboard contract
 
-A workstream dashboard is a role-specific situational-awareness surface scoped primarily to one workstream and AuthContext. It is not a generic analytics dashboard; its primary objective is to show what requires this actor's attention and what work can or should be done next. The same workstream may have different dashboard variants for Tenant Admin, Customer Admin, Auditor, SaaS Owner support, or other authorized roles. It should answer:
+A workstream dashboard is a role-specific situational-awareness surface scoped primarily to one workstream and AuthContext. It is not a generic analytics dashboard; its primary objective is to show what requires this actor's attention and what work can or should be done next. Dashboard attention and next-action visuals are interactive work objects by default, not static summaries with a few separate buttons. If a card, row, counter, badge, chart segment, task/progress panel, icon, shortcut, or button represents a thing needing attention or a thing the actor can do, clicking or keyboard-activating it should append a request-like workstream item and append the detail, decision, progress, evidence/trace, result, updated dashboard, or `system_message` surface where the actor can inspect details and take allowed actions. Non-actionable visuals are explicit exceptions and should be visually distinct with a recorded reason. Ready dashboards should show authorized work this actor can do; forbidden targets should normally be omitted rather than displayed as disabled dashboard objects. The same workstream may have different dashboard variants for Tenant Admin, Customer Admin, Auditor, SaaS Owner support, or other authorized roles. It should answer:
 
 1. What is happening in this workstream?
 2. What needs my attention?
@@ -119,7 +119,9 @@ A workstream dashboard is a role-specific situational-awareness surface scoped p
 
 Record:
 - default dashboard purpose and summary cards;
+- per-card/per-row/per-counter interaction contracts: `open_attention_item`, `show_surface`, `refresh_surface`, `open_trace`, governed browser-tool action, or `none` with reason;
 - detailed attention item surfaces reachable from the dashboard;
+- request/result append behavior for each dashboard interaction;
 - cross-workstream references, with the owning workstream preserved;
 - My Account aggregate behavior when an item affects the current user across workstreams;
 - left rail summary behavior: count, highest severity, hidden/unavailable/zero states.
@@ -173,7 +175,7 @@ Record the human work tree for each workstream:
 - edge effects: show another surface, invoke a browser-tool, create a system-message surface, update dashboard attention, start internal-agent work, open traces, or route to approval/decision surfaces;
 - realtime or refresh behavior when events, notifications, task snapshots, or views change.
 
-Buttons, links, cards, rail items, and agent suggestions that perform protected work map to governed capabilities and qualified governed-tools. They are not ad hoc frontend jumps.
+Buttons, links, cards, rows, counters, badges, charts, task/progress panels, rail items, and agent suggestions that perform protected work map to governed capabilities and qualified governed-tools. They are not ad hoc frontend jumps. Dashboard graph tests should prove that attention and next-action objects are keyboard-operable, append the expected request/result surfaces, preserve correlation/trace ids, and safely omit unauthorized targets from ready dashboard payloads.
 
 ### Governed capabilities, governed-tools, and APIs
 

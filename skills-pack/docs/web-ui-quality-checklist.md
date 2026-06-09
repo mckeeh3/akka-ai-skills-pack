@@ -9,6 +9,10 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 - [ ] For generated AI-first SaaS, primary user goals are represented by role-authorized functional agents, workstream shell regions, structured surfaces, and capability-backed actions.
 - [ ] Each workstream shell region or structured surface communicates selected functional agent, tenant/customer context, what matters, and what the user can do within the first five seconds.
 - [ ] Each structured surface has one clear purpose or an explicitly read-only purpose.
+- [ ] Dashboard cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons that represent attention or next work are clickable and keyboard-operable by default.
+- [ ] Dashboard interactions append a request-like workstream item and append/open the target detail, decision, progress, evidence/trace, result, updated dashboard, or typed `system_message` surface.
+- [ ] Ready dashboards show authorized work this actor can do; forbidden targets are normally omitted rather than shown as disabled work objects.
+- [ ] Non-actionable dashboard objects are visually distinct from actionable work objects and have a recorded `none` reason.
 - [ ] The primary action is visually obvious and uses specific action text.
 - [ ] Secondary actions are useful but visually subordinate.
 - [ ] Routes/navigation are treated as implementation and deep-link details into workstreams/surfaces, with current location/context visible where relevant.
@@ -29,7 +33,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 ## API contracts
 
 - [ ] Structured surfaces, when used, have explicit payload, action, event, auth, trace/audit, and rendering-test contracts per `./structured-surface-contracts.md`.
-- [ ] Every surface action maps to a governed backend capability, including read/query and surface-request actions; frontend visibility, disabled controls, prompt text, and route names are not treated as authorization.
+- [ ] Every surface action and dashboard work-object interaction maps to a governed backend capability, including read/query and surface-request actions; frontend visibility, disabled controls, prompt text, and route names are not treated as authorization.
 - [ ] Browser-facing DTOs are intentional and not accidental domain leaks.
 - [ ] API routes use clear `/api/...` paths.
 - [ ] Validation errors have a documented shape.
@@ -66,7 +70,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 - [ ] My Account theme selection, when in scope, lets the user choose one available named theme, previews the selected named theme immediately on field change, and persists only through the governed save/confirm settings path; it does not present dark/light/system mode choices.
 - [ ] Brand adaptations are applied without copying demo names, logos, users, or metrics from reference images.
 - [ ] Status colors, chart colors, shadows, spacing, radius, and component density match the selected style guide closely enough to guide future regeneration; switching themes changes color tokens only, not layout, design language, surface anatomy, spacing, or behavior.
-- [ ] Dashboard attention/KPI cards use the shared attention-card style across all dashboards, have readable semibold/bold labels, strong numeric hierarchy, enough vertical spacing between label, number, and badge/status text, and appear above lower-priority dashboard details/lists.
+- [ ] Dashboard attention/KPI cards use the shared attention-card style across all dashboards, have readable semibold/bold labels, strong numeric hierarchy, enough vertical spacing between label, number, and badge/status text, appear above lower-priority dashboard details/lists, and clearly look operable when they represent attention or available work.
 
 ## Visual craft
 
@@ -85,7 +89,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 
 - [ ] The workstream shell has a clear title/heading and main landmark.
 - [ ] Structured surfaces use logical heading order.
-- [ ] Interactive elements are keyboard-operable.
+- [ ] Interactive elements, including dashboard work objects that represent attention or next work, are keyboard-operable.
 - [ ] Focus states are visible.
 - [ ] Focus moves intentionally after validation failure, functional-agent change, route/deep-link change, modal open/close, or major surface changes.
 - [ ] Errors are associated with fields or announced near the form.
@@ -126,7 +130,7 @@ For generated SaaS applications, the browser UI inherits the mandatory secure fo
 - [ ] Served JS/CSS assets correspond to the frontend source build output.
 - [ ] Endpoint tests fetch packaged HTML/CSS/JS through `httpClient`.
 - [ ] Tests assert route references for API/SSE/WebSocket dependencies without promoting page routes as the primary app model.
-- [ ] Workstream contract tests cover shell, rail, composer, structured surfaces, capability actions, deep links, forbidden/disabled states, stale/realtime behavior, and the User Admin reference vertical where foundation admin UI is in scope.
+- [ ] Workstream contract tests cover shell, rail, composer, structured surfaces, dashboard work-object interactions, request/result append behavior, capability actions, deep links, forbidden/disabled states, stale/realtime behavior, and the User Admin reference vertical where foundation admin UI is in scope.
 - [ ] UX review notes or tests cover key loading, empty, error, validation, success states, structured-surface form control styling, and immediate named-theme preview when those surfaces are in scope.
 - [ ] Optional source drift check has been run when practical: `skills-pack/tools/validate-web-ui-style-contract.py --warn-only .` from the target project root, with warnings reconciled or documented.
 - [ ] Backend tests pass for changed endpoint/component behavior.

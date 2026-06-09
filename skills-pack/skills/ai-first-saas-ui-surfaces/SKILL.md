@@ -42,7 +42,7 @@ Before selecting any surface family, place it inside one or more functional/cont
 - identify reusable functional agents that may render or link the same surface without owning its semantics;
 - record workstream placement: default briefing/dashboard, timeline item, attention queue, embedded card, modal, side panel, drill-in, or direct deep link;
 - define payload/query source expectations: read/evidence capabilities, view/query sources, redaction, selected `AuthContext`, and trace/correlation fields;
-- list capability-backed actions and denial/result surfaces; frontend controls are exposure details only;
+- list capability-backed actions and denial/result surfaces; for dashboard/command-center/attention surfaces, list clickable and keyboard-operable work-object interactions for cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons; frontend controls are exposure details only;
 - link audit/work traces for payload access, agent work, decisions, approvals, denials, and side effects;
 - treat routes and deep links only as implementation details that reopen a selected functional agent, workstream item, or structured surface.
 
@@ -72,7 +72,7 @@ Must expose:
 - owning functional agent such as Operations, Supervisor, or a domain-specific command context; reusable placements such as Audit/Trace, Governance/Policy, and Outcome Metrics where justified
 - workstream placement as the default dashboard/attention surface for the owning agent; routes/deep links, drill-ins, and direct links are implementation details
 - payload/query source expectations for objective or operational scope, progress, outcome, risk, policy/autonomy status, agent roster/activity, approval/exception queues, material events, and trace/correlation ids
-- capability-backed supervision actions, queue actions, drill-down reads, refresh/reconnect behavior, and denial/result surfaces
+- capability-backed supervision actions, queue actions, drill-down reads, refresh/reconnect behavior, and denial/result surfaces; dashboard objects representing attention or next work open the detail/decision/progress/evidence/result surface directly and append request/result surfaces rather than remaining inert visuals
 - compressed routine activity with drill-down to audit facts and work-trace links
 
 Route to:
