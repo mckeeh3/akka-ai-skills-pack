@@ -68,14 +68,17 @@ export function WorkstreamStream({ items: rawItems, selectedItemId, requestScrol
         if (isManualScrollKey(event.key)) pauseAutoAnchorForManualScroll();
       }}
     >
-      {items.map((item) => (
-        <div key={item.itemId} className="workstream-flow-entry">
-          {item.kind !== 'surface' && <WorkstreamItemCard item={item} onOpenSurface={onOpenSurface} />}
-          {item.surfaceId && (item.kind === 'surface' || item.kind === 'markdown_response') && (
-            <SurfaceRenderer envelopes={surfaces} selectedSurfaceId={item.surfaceId} onAction={onSurfaceAction} onFieldValueChange={onSurfaceFieldValueChange} />
-          )}
-        </div>
-      ))}
+      {items.map((item) => {
+        const renderedSurfaceItem = item.surfaceId && (item.kind === 'surface' || item.kind === 'markdown_response');
+        return (
+          <div key={item.itemId} className="workstream-flow-entry">
+            {!renderedSurfaceItem && <WorkstreamItemCard item={item} onOpenSurface={onOpenSurface} />}
+            {renderedSurfaceItem && (
+              <SurfaceRenderer envelopes={surfaces} selectedSurfaceId={item.surfaceId} onAction={onSurfaceAction} onFieldValueChange={onSurfaceFieldValueChange} />
+            )}
+          </div>
+        );
+      })}
     </section>
   );
 }

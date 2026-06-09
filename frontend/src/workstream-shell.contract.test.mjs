@@ -216,8 +216,10 @@ test('workstream shell composes left rail, continuous flow, and floating persist
 
 test('workstream stream renders surface responses inline after requests', () => {
   assert.match(stream, /SurfaceRenderer/);
-  assert.match(stream, /item\.kind !== 'surface'/);
+  assert.match(stream, /renderedSurfaceItem/);
   assert.match(stream, /item\.kind === 'surface'/);
+  assert.match(stream, /item\.kind === 'markdown_response'/);
+  assert.match(stream, /!renderedSurfaceItem && <WorkstreamItemCard/);
   assert.match(stream, /onSurfaceAction/);
 });
 

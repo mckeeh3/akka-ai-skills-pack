@@ -42,6 +42,9 @@ const allSurfaceComponents = surfaceComponentFiles.join('\n');
 
 test('workstream stream components cover canonical item kinds and action feedback navigation', () => {
   assert.match(stream, /WorkstreamStream/);
+  assert.match(stream, /renderedSurfaceItem/);
+  assert.match(stream, /item\.kind === 'surface' \|\| item\.kind === 'markdown_response'/);
+  assert.match(stream, /!renderedSurfaceItem && <WorkstreamItemCard/);
   assert.match(item, /item\.kind === 'action-feedback'/);
   assert.match(item, /item\.kind === 'workflow-status'/);
   assert.match(item, /item\.kind === 'system-status'/);
