@@ -134,6 +134,7 @@ export class HttpWorkstreamRealtimeClient implements WorkstreamRealtimeClient {
 
   private handleMessage(message: MessageEvent<string>) {
     const resumeEventId = message.lastEventId || this.lastEventId();
+    if (!message.data.trim()) return;
     try {
       const event = this.parseWorkstreamEvent(message.data);
       if (!event?.eventId || !event.eventType || !event.tenantId || !event.functionalAgentId) {
