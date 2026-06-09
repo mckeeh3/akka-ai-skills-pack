@@ -10,6 +10,17 @@ Give authorized administrators an AI-first access operations command center for 
 
 The intended hierarchy is `App Admin -> Tenant Admin -> tenant employees and Customer Admins -> Customer Users`, with every step constrained by selected `AuthContext`, backend capability grants, resource ownership, redaction, and audit policy.
 
+The workstream explicitly covers these access-administration areas:
+
+- **Managing users** — find, inspect, activate/reactivate, disable, and understand scoped user accounts at the App Admin, Tenant Admin, or Customer Admin level allowed by policy.
+- **Managing memberships** — add, suspend, reactivate, or remove a user's membership in an app-owner, tenant, or customer context while preserving tenant/customer boundaries and last-admin protections.
+- **Managing invitations** — create, resend, revoke, track, expire, and troubleshoot invitations for Tenant Admins, tenant employees, Customer Admins, or Customer Users according to the caller's admin level.
+- **Managing roles/capabilities** — preview and change role/capability assignments, show capability deltas and affected workstreams, enforce role-escalation and approval gates, and prevent authority expansion outside the caller's scope.
+- **Managing support access** — grant, revoke, extend, view, and audit time-bounded support access when tenant policy permits it; support access does not replace App Admin, Tenant Admin, or Customer Admin authority.
+- **Managing access reviews** — start, monitor, review, accept, reject, or resolve access-review tasks and recommendations; review output informs deterministic admin actions but does not directly mutate access.
+- **Managing identity exceptions** — review identity-link/relink exceptions, provider-account mismatches, disabled or stale identity state, and approved recovery flows without exposing raw provider internals.
+- **Managing admin audit evidence** — expose browser-safe audit excerpts, trace links, denial/no-op evidence, mutation history, and investigation context for authorized admins and auditors.
+
 The workstream helps admins answer:
 
 1. **Who needs access administration attention in this selected tenant/customer context?**
