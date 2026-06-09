@@ -1,0 +1,105 @@
+---
+name: akka-ese-unit-testing
+description: Write unit tests for Akka Java SDK EventSourcedEntity components using EventSourcedTestKit. Use for entity command tests, no-op behavior, multi-event behavior, delete behavior, and TTL assertions.
+---
+
+# Akka ESE Unit Testing
+
+Use this skill for unit tests of event sourced entities.
+
+## Generated SaaS input contract
+
+Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+
+## Required reading
+
+Read these first if present:
+- `akka-context/sdk/event-sourced-entities.html.md`
+- `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
+- `../docs/akka-entity-testing-shared-patterns.md`
+
+## Test kit rules
+
+Use `EventSourcedTestKit`.
+
+Preferred pattern:
+- create a fresh test kit per test
+- give explicit entity ids
+- invoke the entity method under test with `testKit.method(...).invoke(...)`
+- assert reply, error, events, and resulting state as needed
+
+## What to test
+
+For each reusable entity example, cover at least:
+1. successful command path
+2. validation error path
+3. no-op or idempotent path when applicable
+4. multi-event path when supported
+5. delete behavior when supported
+6. TTL behavior when supported
+
+## Useful assertions
+
+Use these `EventSourcedResult` capabilities:
+- `getReply()`
+- `isError()`
+- `getError()`
+- `didPersistEvents()`
+- `getNextEventOfType(...)`
+- `getAllEvents()`
+- `getExpireAfter()`
+
+Use these `EventSourcedTestKit` capabilities:
+- `getState()`
+- `getAllEvents()`
+- `isDeleted()` when relevant
+
+## Repository examples
+
+### Standard entity tests
+- `AgentDefinitionEntityTest`
+  - success
+  - validation error
+  - no-op
+  - delete
+
+### Multi-event entity tests
+- target-project ESE tests for commands that persist multiple events
+  - one command persisting two events
+  - no-op for missing item
+  - strongly consistent read pattern
+- current curated governed-document tests: `../examples/akka-components/src/test/java/ai/first/application/foundation/agent/GovernedDocumentEntityTest.java`
+
+### TTL test
+- target-project TTL tests for entities that configure `expireAfter(...)`
+  - assert the expected `Optional<Duration>` from `getExpireAfter()`
+- the current curated tree does not include a dedicated expiring entity fixture
+
+## Generated SaaS test set
+
+For generated SaaS entity work, derive tests from the capability contract, not only from entity mechanics:
+- authorized success with tenant/customer scoped identifiers or state;
+- validation failure and safe reply shape;
+- no-op/idempotent duplicate command behavior;
+- forbidden or cross-tenant attempts when the entity method is directly exposed or called by endpoints/tools/workflows;
+- audit/work-trace expectations for consequential commands, denials, and data access;
+- exposure parity for HTTP/gRPC/MCP/tool/surface flows when the entity backs those surfaces.
+
+
+## Anti-patterns
+
+Avoid:
+- reusing one test kit across unrelated test methods
+- asserting only replies while ignoring persisted events
+- testing integration behavior with unit test APIs
+- skipping no-op behavior when the entity claims idempotence
+
+## Review checklist
+
+Before finishing, verify:
+- each test has a fresh test kit
+- explicit entity ids are used
+- persisted events are asserted where important
+- no-op behavior checks `didPersistEvents()`
+- TTL tests check `getExpireAfter()`
+- delete tests check final event and deleted state

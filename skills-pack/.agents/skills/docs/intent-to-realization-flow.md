@@ -1,0 +1,85 @@
+# Intent to Realization Flow
+
+Intent realization maps the current intent graph to specs, task queues, generated code, tests, and runtime validation evidence. It should not realize stale historical intent or isolated component work without a traceable reason.
+
+## Realization chain
+
+Use this chain for generated app work:
+
+```text
+current intent graph
+  -> solution/slice spec
+    -> build backlog
+      -> task brief
+        -> implementation changes
+          -> tests and checks
+            -> local runtime/API/UI validation
+              -> audit/work trace and outcome evidence
+```
+
+Each downstream artifact should cite the upstream current-intent node or accepted spec that justifies it.
+
+## Workstream vertical contract
+
+Feature-bearing implementation tasks should inherit or state a vertical contract before coding:
+
+- workstream or explicit internal/foundation/cross-cutting scope;
+- attention category or non-attention reason;
+- role-specific dashboard or non-UI trigger;
+- human surface graph node and action edge, when user-facing;
+- governed tool id for the shared capability-backed operation;
+- actor adapter and exposure channel, such as `human-backed` + `surface_action`, `ai-backed` + `agent_tool_call`, `service` + `workflow`, or timer/consumer/API/MCP exposure;
+- whether the operation is exposed to human-backed actors, AI-backed actors, both, or neither in this workstream;
+- capability id/API exposure;
+- selected Akka substrate and package path;
+- functional-agent delegation/result surface, when agent-backed;
+- autonomous task/result/notification mapping, when AutonomousAgent-backed;
+- `AuthContext`, authorization denial behavior, and tenant/customer scoping;
+- audit/work trace obligations, including trace source and `requestedBy` relationship for AI-mediated human requests;
+- local validation path.
+
+If the contract is missing and cannot be inherited from current intent/specs, repair the task brief or block with a pending question.
+
+## Mapping to Akka and frontend artifacts
+
+Current intent should drive implementation choices:
+
+- Capabilities map to HTTP/gRPC/MCP/API contracts, governed tool contracts, workflows, entities, consumers, timers, views, or agents.
+- Workstream surfaces map to frontend routes, structured panels/cards/forms, SSE/WebSocket subscriptions, browser API clients, and human-backed surface-action adapters for governed tools.
+- Agent bindings map to concrete Akka `Agent` or `AutonomousAgent` components, model policy, governed prompts/skills/references, agent-tool adapters, tool boundaries, memory, guardrails, and traces.
+- Data-state artifacts map to EventSourcedEntity or KeyValueEntity state, events/commands, views, retention, and tests.
+- Policies map to authorization checks, approval workflows, denial responses, audit events, and negative tests.
+- Trace bindings map to durable audit/work traces and investigation surfaces.
+
+## Actor-adapter realization rule
+
+Do not realize the same business operation twice because it is reachable through both a surface and an AI agent. Compile one governed workstream tool and then realize each declared actor adapter against it. Human surface availability does not automatically grant AI tool availability; an AI-backed workstream agent may perform or propose the operation only when the governed tool is explicitly included in its tool boundary and approval policy. Tests should cover direct human surface action, AI-mediated tool call when allowed, AI denial when not allowed, shared capability authorization, idempotency, result/system-message surfaces, and trace differences.
+
+## Runtime validation doctrine
+
+A feature is complete only when the intended local runtime path works at the stated scope. Prefer the real Akka/API/UI path over duplicated deterministic demos or fixture-only checks.
+
+- Provider-backed user-visible behavior should fail closed when configuration is missing and should not be counted as implemented through mocks.
+- Tests may use fixtures and test doubles, but the normal runtime path must remain real and governed.
+- Required validation that cannot run should block completion unless the task is explicitly docs-only, planning-only, or non-runtime.
+
+## Planning outputs
+
+Planning and queue skills should preserve provenance:
+
+- specs should link to current-intent graph nodes;
+- backlog items should identify the capability/workstream/surface/agent/tool/component they realize;
+- task briefs should carry required reads, done criteria, checks, and validation path;
+- pending tasks should execute one bounded realization or maintenance step at a time.
+
+## Drift repair
+
+When code, tests, or runtime behavior drift from current intent, choose one of three explicit repairs:
+
+1. update code/tests/runtime behavior to match current intent;
+2. update current intent because implementation discovery changed the accepted product design;
+3. block with a pending question because the correct direction is ambiguous.
+
+Do not silently let implementation details become de facto product intent.
+
+See also [Intent Compiler](intent-compiler.md) and [Current intent model](current-intent-model.md).

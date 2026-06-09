@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" data-theme="obsidian-command">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI-first Workstream Enterprise · User Admin Edit Reference</title>
+  <link rel="stylesheet" href="tokens.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="rail" aria-label="Functional agents">
+      <div class="brand"><span class="brand-mark">◎</span><span>Atlas Ops</span></div>
+      <nav><p class="nav-section-title">Functional agents</p><ul class="nav-list"><li><a class="nav-item" href="#">⌂ Briefing</a></li><li><a class="nav-item active" href="#">◇ User Admin</a></li><li><a class="nav-item" href="#">☷ Audit / Trace</a></li><li><a class="nav-item" href="#">🛡 Governance</a></li></ul></nav>
+      <div class="rail-footer"><div class="user-tile"><span class="avatar">HM</span><div><strong>Hugh Morris</strong><br><span class="muted">Lifecycle Manager</span></div></div><span class="badge warning">2 approvals pending</span></div>
+    </aside>
+
+    <main class="workspace">
+      <h1 class="page-title">Sarah Patel</h1>
+      <p class="page-subtitle">Field Technician · Active · Customer Admin + Access Reviewer capability basis. Consequential changes require governed backend actions and traceable outcomes.</p>
+
+      <section class="command-strip" aria-label="AI command strip"><div class="command-row"><span class="ai-mark">✦</span><div class="command-input">Ask User Admin to explain this user's access, draft a change, or prepare an approval request...</div><button class="btn ai">Send</button></div><div class="chips"><span class="chip">Explain permissions</span><span class="chip">Review access risk</span><span class="chip">Draft approval</span></div></section>
+
+      <div class="grid-12">
+        <section class="panel panel-pad span-8">
+          <h2 class="panel-title">Detail edit surface</h2>
+          <p class="panel-note">Designed controls: no browser-default input/select/textarea rendering.</p>
+          <form class="form-grid">
+            <div class="field"><label for="role">Role</label><select id="role"><option>Field Technician</option><option>Service Lead</option></select></div>
+            <div class="field"><label for="status">Status</label><select id="status"><option>Active</option><option>Suspended</option></select></div>
+            <div class="field"><label for="manager">Manager</label><input id="manager" value="James Carter" /></div>
+            <div class="field"><label for="expires">Access expires</label><input id="expires" value="Aug 12, 2025" /></div>
+            <div class="field full"><label for="memberships">Memberships</label><input id="memberships" value="Dispatch Ops · Field Service" /><small>Adding elevated memberships may create an approval-required result surface.</small></div>
+            <div class="field"><label for="mfa">MFA</label><select id="mfa"><option>Enabled</option><option>Required next sign-in</option></select></div>
+            <div class="field"><label for="logging">Audit settings</label><select id="logging"><option>Standard logging</option><option>Enhanced logging</option></select></div>
+            <div class="field full"><label for="note">Governance note</label><textarea id="note">Access review due Aug 15, 2025.</textarea></div>
+          </form>
+          <div class="hairline"></div>
+          <div class="toolbar"><button class="btn primary">Save changes</button><button class="btn">Send invite</button><button class="btn">Reset MFA</button><button class="btn danger">Suspend access</button><button class="btn warning">Request approval</button></div>
+        </section>
+
+        <aside class="panel panel-pad span-4">
+          <h2 class="panel-title">Audit / Trace</h2>
+          <div class="audit-list">
+            <div class="audit-entry"><strong>Today, 9:05 AM</strong><br><span class="muted">User viewed · trace 172.16.4.21 · Success</span></div>
+            <div class="audit-entry"><strong>Jun 30, 10:12 AM</strong><br><span class="muted">Role updated: Field Technician by James Carter</span></div>
+            <div class="audit-entry"><strong>Jun 15, 2:41 PM</strong><br><span class="muted">Access review completed · outcome approved</span></div>
+          </div>
+          <div class="hairline"></div>
+          <p><span class="badge warning">Approval required</span></p>
+          <p class="muted">Certain authority-expanding actions cannot be committed directly. Submit a request for approval.</p>
+        </aside>
+
+        <section class="panel panel-pad span-12">
+          <h2 class="panel-title">Summary of changes and decisions</h2>
+          <div class="summary-grid">
+            <div><strong>Summary</strong><p>✓ Updated access and settings<br>✓ Enabled MFA and audit settings<br>✓ Requested elevated-membership approval</p></div>
+            <div><strong>Risks</strong><p>⚠ Access review due soon<br>⚠ Elevated membership requires approval<br>⚠ User has sensitive dispatch data</p></div>
+            <div><strong>Capability basis</strong><p>✓ Invite users: enabled<br>✓ Edit access: enabled<br>✓ Approvals: request-only</p></div>
+            <div><strong>Next actions</strong><p>○ Review pending requests<br>○ Monitor policy exceptions<br>○ Verify audit logs</p></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

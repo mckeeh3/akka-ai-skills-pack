@@ -1,0 +1,77 @@
+---
+name: akka-grpc-endpoint-jwt
+description: Implement Akka Java SDK gRPC endpoints secured with JWT bearer token validation and requestContext().getJwtClaims(). Use when endpoint authentication or claim-based behavior is the main concern.
+---
+
+# Akka gRPC Endpoint JWT
+
+Use this skill when a gRPC endpoint requires JWT authentication.
+
+
+## Capability-first exposure rule
+
+Treat every gRPC method as a selected exposure surface for a named backend capability, not as the capability itself. Before adding or changing a method, identify the capability id, allowed actors/callers, `AuthContext`, tenant/customer scope, protobuf input/output schema, side effects, idempotency, approval policy, audit/trace obligations, and tests.
+
+For protected services, preserve the capability contract at the edge: authenticate the caller or service identity, resolve or receive the selected tenant/customer context, authorize the required role/scope/capability, validate protobuf messages, redact replies, map denials to explicit gRPC statuses such as `UNAUTHENTICATED` or `PERMISSION_DENIED`, and record required audit/work-trace events before calling components. Metadata, service names, and method names are not authorization controls.
+
+When the same capability is also exposed through UI, HTTP, agent tools, workflows, MCP, timers, or consumers, keep authority, validation, idempotency, approval, and audit semantics identical across surfaces. Consequential gRPC actions should call the workflow/entity/approval substrate that enforces policy instead of committing side effects only in endpoint code.
+
+## Required reading
+
+Read these first if present:
+- `akka-context/sdk/grpc-endpoints.html.md`
+- `akka-context/sdk/auth-with-jwts.html.md`
+- `akka-context/reference/jwts.html.md`
+- `../references/akka-grpc-jwt-patterns.md`
+
+## Use this pattern when
+
+- the gRPC endpoint should require a bearer token
+- issuer or claim validation is part of the contract
+- endpoint behavior depends on JWT claims like `sub`, `iss`, `aud`, or `role`
+- you need an integration-test pattern for injecting a bearer token into a generated gRPC client
+
+## Core pattern
+
+1. Add `@Acl(...)` to the gRPC endpoint.
+2. Extend `AbstractGrpcEndpoint` when the handler must inspect claims.
+3. Add `@JWT(...)` at class or method level.
+4. Read claims through `requestContext().getJwtClaims()`.
+5. Keep authentication and claim checks at the edge.
+6. In integration tests, inject a bearer token through `addRequestHeader("Authorization", "Bearer ...")` on the generated gRPC client.
+
+## Repository example
+
+- a domain-specific JWT-secured gRPC endpoint implementation
+  - validates bearer token issuers
+  - requires a static `role` claim
+  - reads issuer, subject, role, and optional audience from `requestContext().getJwtClaims()`
+- a domain-specific pattern-based JWT gRPC endpoint implementation
+  - validates regex-based claims with `@JWT.StaticClaim(pattern = ...)`
+  - demonstrates role, UUID subject, and non-blank name validation
+
+## Integration test rule
+
+When testing locally or in integration tests:
+- JWT signature is not validated by default
+- claim presence and values are still enforced
+- create a simple unsigned token and pass it as an `Authorization` request header on the gRPC client
+- prefer `Principal.INTERNET` when testing public JWT-protected gRPC endpoints
+
+## Anti-patterns
+
+Avoid:
+- reading JWT claims without configuring `@JWT` when the endpoint depends on them
+- using self or service principals for tests that are supposed to verify internet-facing JWT behavior
+- scattering claim extraction logic across unrelated helpers
+- leaking auth concerns into domain classes
+
+## Review checklist
+
+Before finishing, verify:
+- `@JWT` is present where authentication is required
+- `bearerTokenIssuers` matches the intended issuer contract
+- required static claims are explicit when needed
+- regex-based `pattern = ...` claims are used when values are not fixed in advance
+- claim access uses `requestContext().getJwtClaims()`
+- integration tests inject a bearer token header through the generated gRPC client

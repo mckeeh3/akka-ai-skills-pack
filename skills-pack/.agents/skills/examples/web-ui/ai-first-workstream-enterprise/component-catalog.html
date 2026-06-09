@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en" data-theme="obsidian-command">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>AI-first UI Component Catalog Reference</title>
+  <link rel="stylesheet" href="tokens.css"/>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="rail">
+    <div class="brand"><span class="brand-mark">◎</span><span>Atlas Ops</span></div>
+    <p class="nav-section-title">Reference</p>
+    <ul class="nav-list">
+      <li><a class="nav-item active" href="#attention-counter-card">Component catalog</a></li>
+      <li><a class="nav-item" href="attention-dashboard-flow.html">Attention flow</a></li>
+      <li><a class="nav-item" href="system-message-states.html">System states</a></li>
+    </ul>
+    <div class="rail-footer"><p>Static visual reference only. Not runtime completion evidence.</p></div>
+  </aside>
+  <main class="workspace">
+    <h1 class="page-title">UI Component Catalog</h1>
+    <p class="page-subtitle">Reusable AI-first workstream components for dashboards, decisions, authority, traces, and governed actions. Written guidance: <a href="../../../docs/web-ui-component-catalog.md">web-ui-component-catalog.md</a>.</p>
+
+    <section id="attention-counter-card" class="panel panel-pad" style="margin-top:var(--space-6)">
+      <h2 class="panel-title">Attention counter card</h2>
+      <p class="panel-note">Clickable “what needs my attention?” counters. Use the same counter strip style across My Account, workstream dashboards, and command centers; counters appear above detail panels.</p>
+      <div class="grid-12" aria-label="Component example: attention counters">
+        <a class="panel panel-pad span-3 attention-card" href="#queue-row-card"><p class="panel-note">Needs approval</p><div class="kpi-value">24</div><span class="badge warning">Due today</span></a>
+        <a class="panel panel-pad span-3 attention-card" href="#decision-card"><p class="panel-note">Policy blocked</p><div class="kpi-value">7</div><span class="badge danger">High risk</span></a>
+        <a class="panel panel-pad span-3 attention-card" href="#system-message-card"><p class="panel-note">Exceptions</p><div class="kpi-value">13</div><span class="badge info">Review</span></a>
+        <a class="panel panel-pad span-3 attention-card" href="#trace-evidence-block"><p class="panel-note">Stale evidence</p><div class="kpi-value">5</div><span class="badge">Refresh</span></a>
+      </div>
+    </section>
+
+    <section id="ai-command-strip" class="command-strip">
+      <h2 class="panel-title">AI command strip</h2>
+      <p class="panel-note">Contextual request entry for summaries, explanations, or safe action preparation. Consequential results become durable surfaces, not hidden chat-only state.</p>
+      <div class="command-row"><span class="ai-mark">✦</span><div class="command-input">Ask the agent to explain risk, summarize blocked work, or prepare a decision...</div><button class="btn ai">Send</button></div>
+      <div class="chips"><span class="chip">Summarize urgent items</span><span class="chip">Explain policy risk</span><span class="chip">Prepare approval card</span></div>
+    </section>
+
+    <section class="grid-12" style="margin-top:var(--space-6)">
+      <article id="decision-card" class="decision-card danger span-6">
+        <span class="icon-cell">!</span>
+        <div>
+          <h2 class="panel-title">Decision card</h2>
+          <p><strong>Discount exception · Order #1842</strong></p>
+          <p class="muted">Recommendation: approve with 10% cap and require renewal commitment.</p>
+          <p><span class="badge danger">High risk</span> <span class="badge warning">Policy trigger</span></p>
+          <p class="muted">Evidence, confidence, impact, alternatives, and trace links are visible before approval.</p>
+        </div>
+        <div class="decision-actions"><button class="btn primary">Approve</button><button class="btn">Counter</button><button class="btn danger">Reject</button></div>
+      </article>
+
+      <section id="authority-context-panel" class="panel panel-pad span-6">
+        <h2 class="panel-title">Authority/context panel</h2>
+        <p class="panel-note">Shows selected tenant/customer, role/capability basis, retained human authority, and safe recovery actions.</p>
+        <p><strong>Tenant:</strong> Atlas Ops<br><span class="muted">Customer: Northwind Architecture</span></p>
+        <p><span class="badge info">approval.review</span> <span class="badge success">trace.read</span> <span class="badge">support off</span></p>
+        <button class="btn">Change context</button>
+      </section>
+    </section>
+
+    <section id="queue-row-card" class="panel panel-pad" style="margin-top:var(--space-6)">
+      <h2 class="panel-title">Queue row/card</h2>
+      <p class="panel-note">Dense, sorted, actionable list item before detail review. Sort by urgency, risk, freshness, due time, or business priority.</p>
+      <div class="table">
+        <article class="table-row"><div><strong>Order #1842 · Northwind</strong><br><span class="muted">$48,200 · discount exception · due 3h</span></div><span class="badge danger">High risk</span><span>Margin impact 8%</span><span>Trace ready</span><a class="btn" href="#decision-card">Open</a></article>
+        <article class="table-row"><div><strong>Access review · Taylor Kim</strong><br><span class="muted">Admin role · review overdue</span></div><span class="badge warning">Review</span><span>Last admin risk</span><span>Audit ready</span><a class="btn" href="#authority-context-panel">Open</a></article>
+      </div>
+    </section>
+
+    <section class="grid-12" style="margin-top:var(--space-6)">
+      <article id="system-message-card" class="panel panel-pad span-6" style="border-left:4px solid var(--color-warning)">
+        <h2 class="panel-title">System-message card</h2>
+        <p><strong>Approval required before this change can continue</strong></p>
+        <p class="muted">The requested action changes policy authority. Request approval or revise the proposal.</p>
+        <p><span class="badge warning">approval required</span> <span class="badge">trace-msg-4921</span></p>
+        <button class="btn primary">Request approval</button> <button class="btn">Revise</button>
+      </article>
+
+      <article id="trace-evidence-block" class="panel panel-pad span-6">
+        <h2 class="panel-title">Trace/evidence block</h2>
+        <p class="panel-note">Compact provenance for decisions, queues, details, and audit surfaces.</p>
+        <p><strong>Evidence:</strong> renewal likelihood 92%, requested discount exceeds threshold by 4 points.</p>
+        <p class="muted">Policy: discount-authority-v7 · Trace: trace-order-1842 · Source: margin guardrail</p>
+        <button class="btn">Open trace</button> <button class="btn">Copy citation</button>
+      </article>
+    </section>
+
+    <section class="grid-12" style="margin-top:var(--space-6)">
+      <form id="named-theme-selector" class="panel panel-pad span-6">
+        <h2 class="panel-title">Named theme selector</h2>
+        <p class="panel-note">Immediate preview changes documented theme tokens only; Save persists through governed settings.</p>
+        <div class="field"><label for="theme">Theme</label><select id="theme"><option>Aurora Light</option><option>Cobalt Light</option><option selected>Obsidian Dark</option><option>Midnight Dark</option><option>Dark Night</option></select><small>No dark/light/system mode selector.</small></div>
+        <div class="hairline"></div>
+        <button class="btn primary">Save settings</button>
+      </form>
+
+      <article id="empty-error-forbidden-state-card" class="panel panel-pad span-6" style="border-left:4px solid var(--color-danger)">
+        <h2 class="panel-title">Empty/error/forbidden state card</h2>
+        <p><strong>Could not load the audit timeline</strong></p>
+        <p class="muted">Your work is preserved. Retry the timeline query or request access if this context should include audit data.</p>
+        <p><span class="badge danger">load failed</span> <span class="badge">trace-load-7710</span></p>
+        <button class="btn primary">Retry</button> <button class="btn">Request access</button>
+      </article>
+    </section>
+  </main>
+</div>
+</body>
+</html>

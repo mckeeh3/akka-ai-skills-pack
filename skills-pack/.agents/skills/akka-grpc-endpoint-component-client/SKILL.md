@@ -1,0 +1,80 @@
+---
+name: akka-grpc-endpoint-component-client
+description: Implement Akka Java SDK gRPC endpoints that call entities or views through ComponentClient. Use when protobuf mapping, component invocation, and gRPC error translation are the main concerns.
+---
+
+# Akka gRPC Endpoint ComponentClient Pattern
+
+Use this skill when a gRPC endpoint calls Akka components.
+
+
+## Capability-first exposure rule
+
+Treat every gRPC method as a selected exposure surface for a named backend capability, not as the capability itself. Before adding or changing a method, identify the capability id, allowed actors/callers, `AuthContext`, tenant/customer scope, protobuf input/output schema, side effects, idempotency, approval policy, audit/trace obligations, and tests.
+
+For protected services, preserve the capability contract at the edge: authenticate the caller or service identity, resolve or receive the selected tenant/customer context, authorize the required role/scope/capability, validate protobuf messages, redact replies, map denials to explicit gRPC statuses such as `UNAUTHENTICATED` or `PERMISSION_DENIED`, and record required audit/work-trace events before calling components. Metadata, service names, and method names are not authorization controls.
+
+When the same capability is also exposed through UI, HTTP, agent tools, workflows, MCP, timers, or consumers, keep authority, validation, idempotency, approval, and audit semantics identical across surfaces. Consequential gRPC actions should call the workflow/entity/approval substrate that enforces policy instead of committing side effects only in endpoint code.
+
+## Required reading
+
+Read these first if present:
+- `akka-context/sdk/grpc-endpoints.html.md`
+- `akka-context/sdk/component-and-service-calls.html.md`
+
+## Use this pattern when
+
+- the endpoint accepts protobuf requests and calls an entity or view
+- the external protobuf shape should differ from the internal domain or state shape
+- entity or view errors should become explicit gRPC statuses
+- the endpoint should expose both unary and streamed methods over the same service contract
+
+## Core pattern
+
+1. Inject `ComponentClient` through the constructor.
+2. Validate protobuf fields explicitly before component calls.
+3. Map protobuf requests to domain commands explicitly.
+4. Call the component with synchronous `.invoke()` for unary methods.
+5. Map successful replies to protobuf responses with private `toApi(...)` helpers.
+6. Convert normal validation failures into `GrpcServiceException(Status.INVALID_ARGUMENT...)`.
+7. For streamed replies, delegate to a streamed component source and map each element to protobuf.
+
+## Pattern to implement
+
+Create a domain-specific gRPC endpoint that demonstrates:
+- unary protobuf-to-entity mapping
+- `CommandException` translated into `INVALID_ARGUMENT`
+- optional server-streaming reply backed by a view stream
+- `google.protobuf.Timestamp` and `StringValue` used in API messages when needed
+
+## Mapping rules
+
+Prefer:
+- protobuf request -> domain command
+- component reply -> protobuf response
+
+Avoid:
+- returning domain records directly from the endpoint
+- embedding component-specific logic in the protobuf contract
+- leaking internal validation exceptions as generic `INTERNAL` failures
+
+## Error mapping rules
+
+Use endpoint-level gRPC status translation for edge failures.
+
+Typical mapping:
+- malformed or incomplete protobuf request -> `INVALID_ARGUMENT`
+- missing business data when that is part of the contract -> `NOT_FOUND`
+- unexpected infrastructure failure -> allow Akka to surface `INTERNAL`
+
+For normal validation paths, do not rely on generic runtime exceptions.
+
+## Review checklist
+
+Before finishing, verify:
+- `ComponentClient` is injected only where needed
+- protobuf request and reply messages are API-facing, not leaked domain types
+- `.invoke()` is used for unary endpoint code
+- component rejections become explicit gRPC status errors
+- streamed methods map source rows to protobuf replies
+- tests exercise the endpoint through a generated gRPC client
