@@ -181,7 +181,7 @@ Lifecycle operations usually return an updated dashboard/attention surface, targ
 
 ## Dashboard and surface graph integration
 
-A role-specific dashboard should show attention in context: what is happening, what is blocked/risky/failed/overdue, who or what participates, what changed recently, and what actions are allowed next. Detailed attention cards should link to their owning source, evidence, traces, capability, and target surface.
+A role-specific dashboard is attention-first. Its top region should prominently answer what needs the current authorized user's attention now in the selected `AuthContext`. Its second primary region should show what the current user can do next: allowed actions, safe shortcuts, and surface requests backed by governed capabilities. Supporting context such as what is happening, what is blocked/risky/failed/overdue, who or what participates, and what changed recently should reinforce those two actionable goals rather than displacing them. Detailed attention cards should link to their owning source, evidence, traces, capability, and target surface. Dashboard cards, lists, badges, charts, rows, and buttons are actionable graph affordances when they represent attention or available work; clicking them should open an attention item, target structured surface, detail/decision/progress surface, evidence/trace node, or governed capability-backed action result.
 
 Common graph edges:
 
