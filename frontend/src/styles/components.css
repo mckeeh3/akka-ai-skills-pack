@@ -1379,7 +1379,7 @@ button.dashboard-card.ds-card {
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.surface-frame tr:last-child td { border-bottom: 0; }
+.surface-frame tr:last-child td { border-bottom: 1px solid var(--color-border); }
 
 .stacked-form { gap: var(--space-4); }
 
@@ -2219,4 +2219,97 @@ button.attention-counter-card:focus-visible {
 @media (max-width: 760px) {
   .my-account-attention-card { grid-template-columns: 1fr; }
   .attention-card-actions { justify-content: flex-start; }
+}
+
+.user-admin-command-hero,
+.user-admin-list-hero,
+.user-admin-detail-overview {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--color-surface-raised), color-mix(in srgb, var(--color-info) 8%, var(--color-surface-soft)));
+}
+
+.user-admin-section {
+  display: grid;
+  gap: var(--space-3);
+  margin-block: var(--space-4);
+}
+
+.user-admin-summary-grid,
+.user-admin-attention-grid,
+.user-admin-row-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--space-3);
+}
+
+.user-admin-attention-card,
+.user-admin-row {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  padding: var(--space-4);
+  text-align: left;
+}
+
+button.user-admin-attention-card {
+  cursor: pointer;
+}
+
+button.user-admin-attention-card:hover,
+button.user-admin-attention-card:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.user-admin-attention-card strong {
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
+}
+
+.user-admin-attention-card.warning,
+.user-admin-row.invitation-queue,
+.user-admin-row.support-access {
+  border-color: color-mix(in srgb, var(--color-warning) 45%, var(--color-border));
+}
+
+.user-admin-attention-card.critical,
+.user-admin-attention-card.blocked,
+.user-admin-attention-card.blocked_provider_or_runtime {
+  border-color: color-mix(in srgb, var(--color-danger) 52%, var(--color-border));
+}
+
+.user-admin-row dl,
+.user-admin-detail-overview dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.user-admin-row dt,
+.user-admin-detail-overview dt {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.user-admin-row dd,
+.user-admin-detail-overview dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.surface-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
 }

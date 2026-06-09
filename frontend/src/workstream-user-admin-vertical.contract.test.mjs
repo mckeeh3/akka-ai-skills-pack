@@ -11,6 +11,9 @@ const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 const httpApiClient = read('./api/HttpWorkstreamApiClient.ts');
 const main = read('./main.tsx');
+const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
+const componentsCss = read('./styles/components.css');
+const workstreamService = read('../../src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
 
 test('User Admin functional agent defaults to markdown_response and uses the governed foundation capability', () => {
   assert.match(agents, /label: 'User Admin'/);
@@ -28,9 +31,9 @@ test('User Admin dashboard, list, and detail surfaces use canonical surface ids 
   assert.match(surfaces, /access-review/);
   assert.match(surfaces, /admin-audit/);
   assert.match(surfaces, /userAdminListSearchSurface/);
-  assert.match(surfaces, /surface-user-admin-list/);
+  assert.match(surfaces, /surface-user-admin-member-directory/);
   assert.match(surfaces, /userAdminDetailEditSurface/);
-  assert.match(surfaces, /surface-user-admin-detail-admin/);
+  assert.match(surfaces, /surface-user-admin-user-account/);
   assert.match(surfaces, /Tenant Admin account detail/);
   assert.match(surfaces, /userAdminRoleChangePreviewSurface/);
   assert.match(surfaces, /surface-user-admin-role-change-preview/);
@@ -120,9 +123,9 @@ test('User Admin surface actions map to capability ids and trace or audit afford
 
 test('workstream and API clients support dashboard-to-list-to-detail navigation feedback', () => {
   assert.match(workstream, /initialWorkstreamItems: WorkstreamItem\[\] = \[\]/);
-  assert.match(surfaces, /surface-user-admin-list/);
+  assert.match(surfaces, /surface-user-admin-member-directory/);
   assert.match(surfaces, /Display user account detail/);
-  assert.match(surfaces, /surface-user-admin-detail-admin/);
+  assert.match(surfaces, /surface-user-admin-user-account/);
   assert.match(apiClient, /displayUserListActionResult/);
   assert.match(apiClient, /displayUserDetailActionResult/);
   assert.match(apiClient, /action-display-user-list/);
@@ -131,6 +134,12 @@ test('workstream and API clients support dashboard-to-list-to-detail navigation 
   assert.match(apiClient, /action-useradmin-disable-member/);
   assert.match(apiClient, /userAdminMemberStatusActionSurface/);
   assert.match(apiClient, /userAdminRoleChangePreviewSurface/);
+  assert.match(listSearchSurface, /View\/edit user/);
+  assert.match(listSearchSurface, /userDetailInput\(row\)/);
+  assert.match(workstreamService, /detailSurface\(actor, request\.input\(\), request\.correlationId\(\)\)/);
+  assert.match(workstreamService, /user_admin\.user_account\.v1/);
+  assert.match(workstreamService, /membershipId/);
+  assert.match(componentsCss, /\.surface-frame tr:last-child td \{ border-bottom: 1px solid var\(--color-border\); \}/);
   const frontendApiContracts = read('../../app-description/55-ui/frontend-api-contracts.md');
   assert.match(frontendApiContracts, /\/api\/admin\/users\/dashboard/);
   assert.match(frontendApiContracts, /\/api\/admin\/users/);
