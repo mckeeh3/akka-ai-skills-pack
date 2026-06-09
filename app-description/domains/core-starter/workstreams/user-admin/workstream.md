@@ -2,7 +2,15 @@
 
 ## Purpose
 
-Give authorized administrators an AI-first access operations command center for scoped users, memberships, invitations, roles/capabilities, support access, access-review work, identity exceptions, and admin audit evidence. The workstream helps admins answer:
+Give authorized administrators an AI-first access operations command center for scoped users, memberships, invitations, roles/capabilities, support access, access-review work, identity exceptions, and admin audit evidence across three explicit admin levels:
+
+1. **App Admin** — the app-owner administration level. App Admins manage other App Admin users and Tenant Admin users for SMB tenant accounts. App Admin authority is platform/app-owner scoped and does not automatically grant tenant employee, customer admin, or customer user access unless a backend policy explicitly grants that selected context.
+2. **Tenant Admin** — the SMB customer administration level. Tenant Admins manage the tenant's employee access to the app and manage Customer Admin users for customers that the tenant provides access to. Tenant Admin authority is tenant scoped and cannot cross into other tenants.
+3. **Customer Admin** — the SMB customer's customer administration level. Customer Admins manage Customer Users within their assigned customer scope. Customer Admin authority cannot manage tenant employees, tenant-level roles/settings, other customers, or App Admin/Tenant Admin accounts.
+
+The intended hierarchy is `App Admin -> Tenant Admin -> tenant employees and Customer Admins -> Customer Users`, with every step constrained by selected `AuthContext`, backend capability grants, resource ownership, redaction, and audit policy.
+
+The workstream helps admins answer:
 
 1. **Who needs access administration attention in this selected tenant/customer context?**
 2. **Which invitations, memberships, roles, support grants, identity links, or review items can I safely act on?**
@@ -19,7 +27,7 @@ Owns `user-admin-agent` as its exactly-one user-facing functional-agent binding.
 
 Primary capability: `../../capabilities/user-and-access-administration.md`.
 
-Capability families represented by this workstream include scoped directory reads, invitation lifecycle, membership status changes, role/capability preview and mutation, support-access lifecycle, access-review task lifecycle, identity relink review, admin audit/evidence reads, and User Admin agent guidance.
+Capability families represented by this workstream include scoped directory reads, invitation lifecycle, membership status changes, role/capability preview and mutation, support-access lifecycle, access-review task lifecycle, identity relink review, admin audit/evidence reads, and User Admin agent guidance. Each family must preserve the three admin levels: App Admin manages App Admin and Tenant Admin accounts; Tenant Admin manages tenant employees and Customer Admins for that tenant's customers; Customer Admin manages only Customer Users in their assigned customer scope.
 
 ## Attention model
 

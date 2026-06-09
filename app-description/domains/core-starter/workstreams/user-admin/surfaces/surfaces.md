@@ -196,9 +196,9 @@ Payload includes safe reason code, severity, user-safe title/message, selected s
 
 ## Scope-aware variants
 
-- **SaaS Owner Admin** may see SaaS-owner users and platform-safe tenant metadata. Tenant/customer user data requires selected tenant-created support-access context and otherwise returns forbidden/redacted metadata.
-- **Tenant Admin** may see tenant employees, customer admins/users under the tenant, tenant-created support access, invitations, role/capability data, access reviews, and scoped audit queues.
-- **Customer Admin** may see selected customer users, customer invitations, customer roles, customer access-review items, and customer audit excerpts only. Tenant employee rows, tenant-level roles/actions, support-access administration, and tenant-wide audit queues are forbidden.
+- **App Admin** is the app-owner level. App Admin surfaces focus on App Admin users and Tenant Admin users for SMB tenant accounts, plus platform-safe tenant metadata. Tenant employee, Customer Admin, and Customer User data requires an explicit backend-authorized selected tenant/customer context and otherwise returns forbidden/redacted metadata.
+- **Tenant Admin** is the SMB tenant level. Tenant Admin surfaces show tenant employees, Customer Admin users for customers the tenant provides access to, tenant-created support access, invitations, role/capability data, access reviews, and scoped audit queues. Cross-tenant targets and App Admin account administration are forbidden.
+- **Customer Admin** is the customer level. Customer Admin surfaces show selected Customer Users, customer invitations, customer roles, customer access-review items, and customer audit excerpts only. Tenant employee rows, tenant-level roles/actions, other customers, support-access administration, App Admin users, Tenant Admin users, and tenant-wide audit queues are forbidden.
 - **Auditor** may read scoped evidence and traces where permitted and cannot mutate access.
 
 ## Common action rules
