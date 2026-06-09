@@ -69,6 +69,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
   const [realtimeConnection, setRealtimeConnection] = React.useState<RealtimeConnectionState>({ status: 'connecting' });
   const seenEventIds = React.useRef(new Set<string>());
   const realtimeLastEventId = React.useRef<string | undefined>(undefined);
+  const realtimeLastMergedEventId = React.useRef<string | undefined>(undefined);
 
   React.useEffect(() => {
     let active = true;
@@ -142,7 +143,10 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
 
   React.useEffect(() => {
     if (bootstrap.status !== 'ready') return;
-    const stateSubscription = realtimeClient.onState((state) => setRealtimeConnection(state));
+    const stateSubscription = realtimeClient.onState((state) => {
+      setRealtimeConnection(state);
+      if ('lastEventId' in state && state.lastEventId) realtimeLastEventId.current = state.lastEventId;
+    });
     const eventSubscription = realtimeClient.onEvent((event) => {
       markUnseenBackgroundActivity(event);
       if (event.eventType === 'projection.refresh.available' || event.eventType === 'surface.stale') {
@@ -156,13 +160,13 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
             items: current.items,
             seenEventIds: seenEventIds.current,
             diagnostics: [],
-            lastEventId: realtimeLastEventId.current
+            lastEventId: realtimeLastMergedEventId.current
           },
           event,
           current.me.selectedAuthContext.tenantId
         );
         seenEventIds.current = merged.seenEventIds;
-        realtimeLastEventId.current = merged.lastEventId;
+        realtimeLastMergedEventId.current = merged.lastEventId;
         return { ...current, items: merged.items };
       });
     });

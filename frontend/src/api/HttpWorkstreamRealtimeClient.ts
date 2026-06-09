@@ -69,6 +69,16 @@ export class HttpWorkstreamRealtimeClient implements WorkstreamRealtimeClient {
         this.setState({ status: 'stale', lastEventId: this.lastEventId() ?? options.lastEventId, reason: `Realtime stream could not authenticate or connect: HTTP ${response.status}.` });
         return;
       }
+      const contentType = response.headers.get('content-type') ?? '';
+      if (!contentType.toLowerCase().includes('text/event-stream')) {
+        const preview = await response.text().catch(() => 'unreadable response body');
+        this.setState({
+          status: 'stale',
+          lastEventId: this.lastEventId() ?? options.lastEventId,
+          reason: `Realtime endpoint returned ${contentType || 'an unknown content type'} instead of text/event-stream: ${preview.slice(0, 80)}`
+        });
+        return;
+      }
 
       this.setState({ status: 'connected', lastEventId: options.lastEventId });
       await this.readServerSentEvents(response.body, abortController);
@@ -123,23 +133,33 @@ export class HttpWorkstreamRealtimeClient implements WorkstreamRealtimeClient {
   }
 
   private handleMessage(message: MessageEvent<string>) {
+    const resumeEventId = message.lastEventId || this.lastEventId();
     try {
-      const event = JSON.parse(message.data) as WorkstreamEvent;
+      const event = this.parseWorkstreamEvent(message.data);
       if (!event?.eventId || !event.eventType || !event.tenantId || !event.functionalAgentId) {
-        this.setState({ status: 'stale', lastEventId: this.lastEventId(), reason: 'Malformed realtime event was ignored; refresh may be required.' });
+        this.setState({ status: 'stale', lastEventId: resumeEventId, reason: 'Malformed realtime event was ignored; refresh may be required.' });
         return;
       }
       if (event.eventType === WORKSTREAM_SSE_EVENT_TYPES[0]) {
-        this.setState({ status: 'stale', lastEventId: event.eventId, reason: 'Backend marked one or more workstream surfaces stale.' });
-      } else if (event.eventType === WORKSTREAM_SSE_EVENT_TYPES[1]) {
-        this.setState({ status: 'connected', lastEventId: event.eventId });
+        this.setState({ status: 'stale', lastEventId: resumeEventId, reason: 'Backend marked one or more workstream surfaces stale.' });
       } else {
-        this.setState({ status: 'connected', lastEventId: event.eventId });
+        this.setState({ status: 'connected', lastEventId: resumeEventId });
       }
       this.eventHandlers.forEach((handler) => handler(event));
     } catch {
-      this.setState({ status: 'stale', lastEventId: this.lastEventId(), reason: 'Malformed realtime payload was ignored safely.' });
+      this.setState({ status: 'stale', lastEventId: resumeEventId, reason: 'Malformed realtime payload was ignored safely.' });
     }
+  }
+
+  private parseWorkstreamEvent(data: string): WorkstreamEvent {
+    const parsed = JSON.parse(data.trim()) as WorkstreamEvent | { value?: WorkstreamEvent; row?: WorkstreamEvent; data?: WorkstreamEvent };
+    if (parsed && typeof parsed === 'object') {
+      if ('eventId' in parsed) return parsed as WorkstreamEvent;
+      if ('value' in parsed && parsed.value) return parsed.value;
+      if ('row' in parsed && parsed.row) return parsed.row;
+      if ('data' in parsed && parsed.data && typeof parsed.data === 'object') return parsed.data;
+    }
+    return parsed as WorkstreamEvent;
   }
 
   private setState(state: RealtimeConnectionState) {
