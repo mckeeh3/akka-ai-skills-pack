@@ -37,4 +37,9 @@ public class StarterFrontendEndpoint extends AbstractHttpEndpoint {
   public HttpResponse workstream() {
     return HttpResponses.staticResource("index.html");
   }
+
+  @Get("accept")
+  public HttpResponse acceptInvitation() {
+    return HttpResponses.staticResource("index.html");
+  }
 }

@@ -56,6 +56,18 @@ type WorkstreamAppProps = {
   clients?: { workstream: WorkstreamClient; realtime: WorkstreamRealtimeClient };
 };
 
+type InvitationAcceptanceResult = {
+  status: string;
+  reasonCode: string;
+  recoveryHint: string;
+  invitationId?: string;
+  tenantId?: string;
+  customerId?: string;
+  membershipId?: string;
+  expiresAt?: string;
+  correlationId: string;
+};
+
 function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps) {
   const workstreamClient = React.useMemo<WorkstreamClient>(() => clients?.workstream ?? new HttpWorkstreamApiClient(tokenProvider), [clients, tokenProvider]);
   const realtimeClient = React.useMemo<WorkstreamRealtimeClient>(() => clients?.realtime ?? new HttpWorkstreamRealtimeClient(tokenProvider), [clients, tokenProvider]);
@@ -749,18 +761,94 @@ function persistThemeId(themeId: ThemePreference) {
 
 function AuthenticatedRoot() {
   const { isLoading, user, signIn, signOut, getAccessToken } = useAuth();
+  const inviteToken = invitationTokenFromLocation();
   if (isLoading) return <div className="auth-gate"><p>Checking secure session…</p></div>;
   if (!user) {
     return (
       <div className="auth-gate">
-        <h1>Sign in to continue</h1>
+        <h1>{inviteToken ? 'Sign in to accept your invitation' : 'Sign in to continue'}</h1>
         <p>The AI-first SaaS workstream uses WorkOS/AuthKit for browser authentication. Backend capabilities remain authorized by local tenant membership and role state.</p>
+        {inviteToken && <p className="auth-gate__hint">After sign-in, the backend will validate this invitation for the signed-in email address. The raw token is not shown in the browser UI.</p>}
         <button type="button" onClick={() => void signIn()}>Sign in with WorkOS</button>
         <p className="auth-gate__hint">The normal frontend runtime always uses real backend API and realtime clients. Fixture data and clients are test-only assets.</p>
       </div>
     );
   }
+  if (inviteToken) return <InvitationAcceptancePage token={inviteToken} tokenProvider={() => getAccessToken()} onSignOut={() => signOut()} />;
   return <WorkstreamApp tokenProvider={() => getAccessToken()} onSignOut={() => signOut()} />;
+}
+
+function InvitationAcceptancePage({ token, tokenProvider, onSignOut }: { token: string; tokenProvider: TokenProvider; onSignOut: () => void }) {
+  const [result, setResult] = React.useState<{ status: 'loading' } | { status: 'ready'; value: InvitationAcceptanceResult } | { status: 'error'; error: ApiError }>({ status: 'loading' });
+
+  React.useEffect(() => {
+    let active = true;
+    acceptInvitationToken(token, tokenProvider).then((next) => {
+      if (!active) return;
+      setResult(next.ok ? { status: 'ready', value: next.value } : { status: 'error', error: next.error });
+    });
+    return () => {
+      active = false;
+    };
+  }, [token, tokenProvider]);
+
+  if (result.status === 'loading') {
+    return <main className="auth-gate"><h1>Accepting invitation…</h1><p>Checking this invitation against your signed-in WorkOS account.</p></main>;
+  }
+  if (result.status === 'error') {
+    return (
+      <main className="auth-gate">
+        <h1>Invitation could not be accepted</h1>
+        <p>{result.error.message}</p>
+        <p className="auth-gate__hint">Correlation {result.error.correlationId}</p>
+        <button type="button" onClick={onSignOut}>Sign out</button>
+      </main>
+    );
+  }
+  const accepted = result.value.status === 'accepted' || result.value.status === 'already-accepted';
+  return (
+    <main className="auth-gate">
+      <h1>{accepted ? 'Invitation accepted' : 'Invitation needs attention'}</h1>
+      <p>{result.value.recoveryHint}</p>
+      <p className="auth-gate__hint">Status {result.value.status}. Correlation {result.value.correlationId}.</p>
+      {accepted && <a className="button-like" href="/ui">Open app</a>}
+      {!accepted && <button type="button" onClick={onSignOut}>Sign in with a different account</button>}
+    </main>
+  );
+}
+
+function invitationTokenFromLocation(): string | undefined {
+  if (window.location.pathname !== '/accept') return undefined;
+  const token = new URLSearchParams(window.location.search).get('token');
+  return token && token.trim().length > 0 ? token.trim() : undefined;
+}
+
+async function acceptInvitationToken(token: string, tokenProvider: TokenProvider): Promise<{ ok: true; value: InvitationAcceptanceResult } | { ok: false; error: ApiError }> {
+  try {
+    const accessToken = await tokenProvider();
+    const headers = new Headers({ Accept: 'application/json', 'Content-Type': 'application/json' });
+    if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
+    const response = await fetch('/api/workstream/invitations/accept', { method: 'POST', headers, body: JSON.stringify({ token }) });
+    if (!response.ok) return { ok: false, error: await mapInvitationAcceptanceError(response) };
+    return { ok: true, value: await response.json() as InvitationAcceptanceResult };
+  } catch (error) {
+    return { ok: false, error: { code: 'network_error', message: error instanceof Error ? error.message : String(error), correlationId: 'client-network-error' } };
+  }
+}
+
+async function mapInvitationAcceptanceError(response: Response): Promise<ApiError> {
+  let parsed: Partial<ApiError> = {};
+  try {
+    parsed = await response.json() as Partial<ApiError>;
+  } catch {
+    parsed = { message: await response.text() };
+  }
+  return {
+    code: parsed.code ?? `http_${response.status}`,
+    message: parsed.message ?? `HTTP ${response.status}`,
+    correlationId: parsed.correlationId ?? response.headers.get('x-correlation-id') ?? 'missing-correlation-id',
+    fieldErrors: parsed.fieldErrors
+  };
 }
 
 function Root() {
