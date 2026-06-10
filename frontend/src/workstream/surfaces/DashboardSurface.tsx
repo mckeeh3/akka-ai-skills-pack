@@ -5,11 +5,12 @@ import { SurfaceStateFrame } from './SurfaceStateFrame';
 type DashboardSurfaceProps = {
   envelope: SurfaceEnvelope<DashboardSurfaceData>;
   onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
+  onSignOut?: () => void;
 };
 
-export function DashboardSurface({ envelope, onAction }: DashboardSurfaceProps) {
+export function DashboardSurface({ envelope, onAction, onSignOut }: DashboardSurfaceProps) {
   if (envelope.surfaceId === 'surface-my-account-dashboard' || envelope.data.surfaceContract?.startsWith('my_account.')) {
-    return <MyAccountCommandCenter envelope={envelope} onAction={onAction} />;
+    return <MyAccountCommandCenter envelope={envelope} onAction={onAction} onSignOut={onSignOut} />;
   }
   if (envelope.surfaceId === 'surface-user-admin-dashboard' || envelope.data.surfaceContract === 'user_admin.dashboard.v1') {
     return <UserAdminCommandCenter envelope={envelope} onAction={onAction} />;
@@ -201,14 +202,17 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
   );
 }
 
-function MyAccountCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
+function MyAccountCommandCenter({ envelope, onAction, onSignOut }: DashboardSurfaceProps) {
   const data = envelope.data;
   const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
   const counters = data.attentionCounters?.length ? data.attentionCounters : defaultAttentionCounters(data);
   const panels = data.controlPanels?.length ? data.controlPanels : defaultControlPanels(data);
 
   return (
-    <SurfaceStateFrame envelope={envelope}>
+    <SurfaceStateFrame
+      envelope={envelope}
+      headerActions={onSignOut ? <button type="button" className="surface-header-sign-out-button" onClick={onSignOut}>Sign out</button> : undefined}
+    >
       <section className="my-account-command-hero" aria-label="My Account selected authority and command intent">
         <div>
           <p className="eyebrow">Personal command center</p>

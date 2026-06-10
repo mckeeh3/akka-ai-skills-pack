@@ -619,6 +619,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
         onOpenSurface={openSurface}
         onSurfaceAction={handleSurfaceAction}
         onSurfaceFieldValueChange={handleSurfaceFieldValueChange}
+        onSignOut={onSignOut}
         onAutoAnchorPaused={() => {
           if (currentVisualSession) rememberVisualSession(currentVisualSession, { userHasManualScroll: true });
         }}

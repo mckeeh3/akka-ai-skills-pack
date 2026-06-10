@@ -1237,6 +1237,31 @@
 
 .surface-header h3 { margin: 0; font-size: 1rem; }
 .surface-header .eyebrow { margin-bottom: var(--space-2); color: var(--color-muted); }
+.surface-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.surface-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+.surface-header-sign-out-button {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  padding: 0.55rem 0.85rem;
+  font-weight: 800;
+}
+.surface-header-sign-out-button:hover,
+.surface-header-sign-out-button:focus-visible {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
 .surface-frame.dashboard {
   display: grid;
   gap: var(--space-4);

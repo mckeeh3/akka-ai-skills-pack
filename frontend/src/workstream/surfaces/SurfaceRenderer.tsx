@@ -19,9 +19,10 @@ type StructuredSurfaceRendererProps = {
   selectedSurfaceId?: string;
   onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
   onFieldValueChange?: (fieldId: string, value: string, surfaceId: string) => void;
+  onSignOut?: () => void;
 };
 
-export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSurfaceId, onAction, onFieldValueChange }: StructuredSurfaceRendererProps) {
+export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSurfaceId, onAction, onFieldValueChange, onSignOut }: StructuredSurfaceRendererProps) {
   const selectedEnvelope = envelope ?? envelopes.find((candidate) => candidate.surfaceId === selectedSurfaceId) ?? envelopes[0];
 
   if (!selectedEnvelope) {
@@ -34,7 +35,7 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
     case 'system_message':
       return <SystemMessageSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'dashboard':
-      return <DashboardSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+      return <DashboardSurface envelope={selectedEnvelope as never} onAction={onAction} onSignOut={onSignOut} />;
     case 'list-search':
       return <ListSearchSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'detail-edit':

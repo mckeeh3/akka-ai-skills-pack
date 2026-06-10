@@ -13,11 +13,12 @@ type WorkstreamStreamProps = {
   onOpenSurface?: (surfaceId: string) => void;
   onSurfaceAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
   onSurfaceFieldValueChange?: (fieldId: string, value: string, surfaceId: string) => void;
+  onSignOut?: () => void;
   onAutoAnchorPaused?: (requestScrollTargetId: string) => void;
   maxVisibleSurfaces?: number;
 };
 
-export function WorkstreamStream({ items: rawItems, selectedItemId, requestScrollTargetId, autoAnchorPaused = false, surfaces = [], maxVisibleSurfaces = DEFAULT_WORKSTREAM_SURFACE_STREAM_LIMIT, onOpenSurface, onSurfaceAction, onSurfaceFieldValueChange, onAutoAnchorPaused }: WorkstreamStreamProps) {
+export function WorkstreamStream({ items: rawItems, selectedItemId, requestScrollTargetId, autoAnchorPaused = false, surfaces = [], maxVisibleSurfaces = DEFAULT_WORKSTREAM_SURFACE_STREAM_LIMIT, onOpenSurface, onSurfaceAction, onSurfaceFieldValueChange, onSignOut, onAutoAnchorPaused }: WorkstreamStreamProps) {
   const streamRef = useRef<HTMLElement | null>(null);
   const [pausedAnchorTargetId, setPausedAnchorTargetId] = useState<string | undefined>();
   const shouldAutoAnchor = Boolean(requestScrollTargetId && !autoAnchorPaused && pausedAnchorTargetId !== requestScrollTargetId);
@@ -74,7 +75,7 @@ export function WorkstreamStream({ items: rawItems, selectedItemId, requestScrol
           <div key={item.itemId} className="workstream-flow-entry">
             {!renderedSurfaceItem && <WorkstreamItemCard item={item} onOpenSurface={onOpenSurface} />}
             {renderedSurfaceItem && (
-              <SurfaceRenderer envelopes={surfaces} selectedSurfaceId={item.surfaceId} onAction={onSurfaceAction} onFieldValueChange={onSurfaceFieldValueChange} />
+              <SurfaceRenderer envelopes={surfaces} selectedSurfaceId={item.surfaceId} onAction={onSurfaceAction} onFieldValueChange={onSurfaceFieldValueChange} onSignOut={onSignOut} />
             )}
           </div>
         );

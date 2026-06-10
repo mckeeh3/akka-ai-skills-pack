@@ -5,9 +5,10 @@ type SurfaceStateFrameProps<T> = {
   state?: RegionState<SurfaceEnvelope<T>>;
   envelope?: SurfaceEnvelope<T>;
   children?: ReactNode;
+  headerActions?: ReactNode;
 };
 
-export function SurfaceStateFrame<T>({ state, envelope, children }: SurfaceStateFrameProps<T>) {
+export function SurfaceStateFrame<T>({ state, envelope, children, headerActions }: SurfaceStateFrameProps<T>) {
   if (state?.status === 'loading') {
     return <section className="ds-card surface-frame loading" aria-busy="true"><p>Loading surface…</p></section>;
   }
@@ -29,8 +30,13 @@ export function SurfaceStateFrame<T>({ state, envelope, children }: SurfaceState
   return (
     <section id={visibleEnvelope.surfaceId} className={`structured-surface surface-frame ${visibleEnvelope.surfaceType}${visibleEnvelope.stale?.isStale || state?.status === 'stale' ? ' stale' : ''}`} aria-labelledby={`${visibleEnvelope.surfaceId}-title`} data-surface-id={visibleEnvelope.surfaceId} data-surface-version={visibleEnvelope.surfaceVersion} tabIndex={-1}>
       <header className="surface-header">
-        <p className="eyebrow sr-only">{visibleEnvelope.surfaceType} · {visibleEnvelope.surfaceVersion}</p>
-        <h3 id={`${visibleEnvelope.surfaceId}-title`}>{visibleEnvelope.title}</h3>
+        <div className="surface-header-row">
+          <div>
+            <p className="eyebrow sr-only">{visibleEnvelope.surfaceType} · {visibleEnvelope.surfaceVersion}</p>
+            <h3 id={`${visibleEnvelope.surfaceId}-title`}>{visibleEnvelope.title}</h3>
+          </div>
+          {headerActions && <div className="surface-header-actions">{headerActions}</div>}
+        </div>
         {(visibleEnvelope.stale?.isStale || state?.status === 'stale') && <p role="status">Stale: {visibleEnvelope.stale?.reason ?? (state?.status === 'stale' ? state.message : 'Refresh recommended.')}</p>}
       </header>
       {children}
