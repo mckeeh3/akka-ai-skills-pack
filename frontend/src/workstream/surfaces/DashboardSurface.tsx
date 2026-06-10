@@ -164,7 +164,7 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
       {!hasOpenAttention && (
         <section className="surface-empty-state" aria-label="No User Admin attention needed">
           <h4>No admin attention needed in this scope</h4>
-          <p>Visible queues are clear. You can still open the member directory, invite a user, review support access, or inspect audit evidence.</p>
+          <p>Visible queues are clear. You can still open the users list, invite a user, review support access, or inspect audit evidence.</p>
         </section>
       )}
 
@@ -353,11 +353,11 @@ function userAdminPopulationCards(data: DashboardSurfaceData, actionById: Map<st
   const activeUsers = data.cards.find((card) => /active users/i.test(card.label));
   const pendingInvitations = data.cards.find((card) => /pending invitations/i.test(card.label));
   const supportAccess = data.cards.find((card) => /support/i.test(card.label));
-  const directoryAction = actionForTarget('surface-user-admin-member-directory', actionById) ?? actionById.get('action-display-user-list');
-  const invitationAction = actionForTarget('surface-user-admin-invitation-panel', actionById) ?? actionById.get('action-invite-user');
-  const supportAction = actionForTarget('surface-user-admin-support-access', actionById) ?? actionById.get('action-useradmin-read-support-access');
+  const directoryAction = actionForTarget('surface-user-admin-users', actionById) ?? actionById.get('action-display-user-list');
+  const invitationAction = actionForTarget('surface-user-admin-users', actionById) ?? actionById.get('action-display-user-list') ?? actionById.get('action-invite-user');
+  const supportAction = actionForTarget('surface-user-admin-users', actionById) ?? actionById.get('action-display-user-list');
   const cards: Array<{ cardId: string; label: string; value: string | number; scope: string; summary: string; action?: SurfaceAction }> = [];
-  if (activeUsers) cards.push({ cardId: 'population-active-users', label: 'Users and memberships', value: activeUsers.value, scope: 'Visible scope', summary: 'Open the member directory for scoped users, memberships, roles, and review flags.', action: directoryAction });
+  if (activeUsers) cards.push({ cardId: 'population-active-users', label: 'Users and memberships', value: activeUsers.value, scope: 'Visible scope', summary: 'Open users for scoped users, memberships, roles, and review flags.', action: directoryAction });
   if (pendingInvitations) cards.push({ cardId: 'population-invitations', label: 'Invitations', value: pendingInvitations.value, scope: 'Invitation work', summary: 'Create, resend, revoke, or inspect invitation delivery without exposing tokens.', action: invitationAction });
   if (supportAccess) cards.push({ cardId: 'population-support-access', label: 'Support access', value: supportAccess.value, scope: 'Controlled support', summary: 'Review expiring support access and route grants through approval-aware actions.', action: supportAction });
   return cards;
@@ -386,7 +386,7 @@ function userAdminQueuesFromData(data: DashboardSurfaceData): NonNullable<Dashbo
     label: section.label,
     severity: /review|risk|failed|expired/i.test(section.label) ? 'warning' : 'info',
     statusText: section.summary,
-    targetSurfaceId: section.sectionId.includes('invitation') ? 'surface-user-admin-invitation-panel' : section.sectionId.includes('review') ? 'surface-user-admin-access-review-task' : section.sectionId.includes('audit') ? 'surface-audit-trace-dashboard' : 'surface-user-admin-member-directory',
+    targetSurfaceId: section.sectionId.includes('review') ? 'surface-user-admin-access-review-task' : section.sectionId.includes('audit') ? 'surface-audit-trace-dashboard' : 'surface-user-admin-users',
     filter: section.sectionId
   })) ?? [];
   return [...cardQueues, ...sectionQueues];

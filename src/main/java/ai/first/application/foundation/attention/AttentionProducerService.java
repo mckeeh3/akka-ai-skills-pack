@@ -61,7 +61,7 @@ public final class AttentionProducerService {
         AttentionCategory.INVITATION_DELIVERY,
         severity,
         "secure-tenant-user-foundation",
-        "surface-user-admin-invitation-panel",
+        "surface-user-admin-users",
         invitation.invitationId(),
         INVITATION_DELIVERY_PRODUCER_ID,
         "domain_event",

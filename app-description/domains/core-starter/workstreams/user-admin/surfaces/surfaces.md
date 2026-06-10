@@ -16,9 +16,9 @@ All surfaces use the canonical AI-first workstream shell, structured surface env
 | Surface id | Type | Contract | Primary purpose | Status |
 |---|---|---|---|---|
 | `surface-user-admin-dashboard` | `dashboard` | `user_admin.dashboard.v1` | Attention-first User Admin command center for directory, invitation, role, support, review, provider, and audit health. | Rebuilt from archive |
-| `surface-user-admin-member-directory` | `list-search` | `user_admin.member_directory.v1` | Scoped searchable member/user/invitation/support/review table and responsive card list. | Rebuilt from archive |
-| `surface-user-admin-invitation-panel` | `detail-edit` / `workflow-status` | `user_admin.invitation_panel.v1` | Invite, resend, revoke, acceptance, expiry, delivery/outbox visibility, and recovery. | Rebuilt from archive |
-| `surface-user-admin-user-account` | `detail-card-action-panel` | `user_admin.user_account.v1` | Scoped account, membership, invitation, support-access, access-review, and audit detail. | Rebuilt from archive |
+| `surface-user-admin-users` | `list-search` | `user_admin.users.v1` | Scoped searchable member/user/invitation/support/review table and responsive card list. | Rebuilt from archive |
+| `surface-user-admin-invitation-detail` | `detail-edit` / `workflow-status` | `user_admin.invitation_detail.v1` | Invite, resend, revoke, acceptance, expiry, delivery/outbox visibility, and recovery. | Rebuilt from archive |
+| `surface-user-admin-user-detail` | `detail-card-action-panel` | `user_admin.user_detail.v1` | Scoped account, membership, invitation, support-access, access-review, and audit detail. | Rebuilt from archive |
 | `surface-user-admin-role-change-preview` | `decision-card` / `diff` | `user_admin.role_change_preview.v1` | Capability delta, affected workstreams, last-admin impact, policy gate, and approval preview before role mutation. | Rebuilt from archive |
 | `surface-user-admin-access-review-task` | `workflow-status` / `outcome-panel` | `user_admin.access_review_task.v1` | Durable autonomous access-review task progress, result, blockers, and human accept/reject review. | Rebuilt from archive |
 | `surface-user-admin-system-message` | `system-message` | `user_admin.system_message.v1` | Safe denial, validation, provider/outbox/model blocked, stale, conflict, and no-op recovery. | Rebuilt from archive |
@@ -66,27 +66,27 @@ Dashboard payload/content must not include hidden workstream/source names, hidde
 | Action | Governed backend capability/tool | Result behavior |
 |---|---|---|
 | Refresh dashboard | `user_admin.view_overview` / `search-user-directory` | Reload backend-owned overview projection. |
-| Open member directory / filtered queue | `user_admin.list_members` / `search-user-directory` | Render `surface-user-admin-member-directory` with backend-shaped filter context for visible users, memberships, invitations, support-access markers, and review flags. |
-| Manage invitation | `user_admin.invite_user`, `user_admin.resend_invitation`, `user_admin.revoke_invitation` / `create-or-resend-invitation` | Render invitation panel/form, action status, approval step, validation recovery, or system message. |
-| Manage scoped user or membership | `user_admin.read_user_account`, `user_admin.update_member_status` / `change-membership-role-or-status` | Render user account detail, refreshed dashboard/list, action status, approval step, or system message. |
+| Open users list / filtered queue | `user_admin.list_members` / `search-user-directory` | Render `surface-user-admin-users` with backend-shaped filter context for visible users, memberships, invitations, support-access markers, and review flags. |
+| Manage invitation | `user_admin.invite_user`, `user_admin.resend_invitation`, `user_admin.revoke_invitation` / `create-or-resend-invitation` | Render invitation detail/form, action status, approval step, validation recovery, or system message. |
+| Manage scoped user or membership | `user_admin.read_user_account`, `user_admin.update_member_status` / `change-membership-role-or-status` | Render user detail, refreshed dashboard/list, action status, approval step, or system message. |
 | Preview/manage roles and capabilities | `user_admin.preview_role_change`, `user_admin.change_member_roles` / `change-membership-role-or-status` | Render role-change preview, capability delta, decision card, refreshed detail, or system message. |
 | Manage support access | `user_admin.support_access.*` / `grant-or-revoke-support-access` | Render support-access queue/detail, refreshed account detail, decision card, action status, or system message. |
 | Start/open access review | `user_admin.access_review.start`, `user_admin.access_review.read` / `run-access-review` | Render access-review task progress/result, human review step, decision card, or system message. |
-| Review identity exception | `user_admin.identity_exception.read`, identity relink/recovery capability where assigned | Render user account identity section, recovery workflow/status, audit evidence, or system message. |
+| Review identity exception | `user_admin.identity_exception.read`, identity relink/recovery capability where assigned | Render user detail identity section, recovery workflow/status, audit evidence, or system message. |
 | Open admin audit evidence | `admin.audit.read` / Audit Trace capability | Render authorized Audit/Trace surface or safe redacted system message. |
 | Ask User Admin agent | `user_admin.ask_agent` | Invoke governed agent runtime or provider/model blocked system message. |
 
-## Member directory surface
+## Users list surface
 
 ### Intent
 
-`surface-user-admin-member-directory` is a scoped searchable table/card surface for members, accounts, invitations, support-access grants, and access-review flags. It is not an unbounded user export or client-side filtered fixture list.
+`surface-user-admin-users` is a scoped searchable table/card surface for members, accounts, invitations, support-access grants, and access-review flags. It is not an unbounded user export or client-side filtered fixture list.
 
 ### Contract
 
-- Surface id: `surface-user-admin-member-directory`.
+- Surface id: `surface-user-admin-users`.
 - Surface type: `list-search`.
-- Surface contract: `user_admin.member_directory.v1`.
+- Surface contract: `user_admin.users.v1`.
 - Owning functional agent: `user-admin-agent`.
 - Required context: selected `AuthContext` plus directory-read capability.
 
@@ -103,8 +103,8 @@ Forbidden content includes out-of-scope identities, hidden memberships, raw prov
 | Action | Governed backend capability/tool | Result behavior |
 |---|---|---|
 | Search/list users | `user_admin.list_members` / `search-user-directory` | Refresh directory with scoped rows. |
-| Open user account | `user_admin.read_user_account` / `search-user-directory` | Render `surface-user-admin-user-account`. |
-| Create/resend/revoke invitation | `user_admin.invite_user`, `user_admin.resend_invitation`, `user_admin.revoke_invitation` / `create-or-resend-invitation` | Render invitation panel update, no-op, validation, denial, or trace-linked system message. |
+| Open user detail | `user_admin.read_user_account` / `search-user-directory` | Render `surface-user-admin-user-detail`. |
+| Create/resend/revoke invitation | `user_admin.invite_user`, `user_admin.resend_invitation`, `user_admin.revoke_invitation` / `create-or-resend-invitation` | Render invitation detail update, no-op, validation, denial, or trace-linked system message. |
 | Disable/reactivate membership/account | `user_admin.update_member_status` / `change-membership-role-or-status` | Render detail refresh, no-op, last-admin/self-disable denial, or decision card. |
 | Preview/change role | `user_admin.preview_role_change`, `user_admin.change_member_roles` / `change-membership-role-or-status` | Render role-change preview/decision card before mutation. |
 | Grant/revoke/extend support access | `user_admin.support_access.*` / `grant-or-revoke-support-access` | Render detail refresh, decision card, or denial. |
@@ -115,17 +115,17 @@ Forbidden content includes out-of-scope identities, hidden memberships, raw prov
 
 Loading preserves submitted filters and disables mutations. Empty distinguishes no users in scope, no search matches, no queue items, and redacted result set. Forbidden hides result counts and identities. Stale disables mutations until refreshed. Responsive table-to-card fallback preserves authority, role, invitation, support, review, risk, trace, and decision-card affordances.
 
-## Invitation panel surface
+## Invitation detail surface
 
 ### Intent
 
-`surface-user-admin-invitation-panel` governs invite/resend/revoke and invitation delivery/acceptance visibility. It explains expiry, duplicates, open-invite state, outbox/Resend readiness, delivery failure, acceptance status, and recovery without exposing raw tokens or provider secrets.
+`surface-user-admin-invitation-detail` governs invite/resend/revoke and invitation delivery/acceptance visibility. It explains expiry, duplicates, open-invite state, outbox/Resend readiness, delivery failure, acceptance status, and recovery without exposing raw tokens or provider secrets.
 
 ### Contract
 
-- Surface id: `surface-user-admin-invitation-panel`.
+- Surface id: `surface-user-admin-invitation-detail`.
 - Surface type: `detail-edit` / `workflow-status`.
-- Surface contract: `user_admin.invitation_panel.v1`.
+- Surface contract: `user_admin.invitation_detail.v1`.
 - Owning functional agent: `user-admin-agent`.
 
 ### Payload and actions
@@ -136,17 +136,17 @@ Actions map to `user_admin.invite_user`, `user_admin.resend_invitation`, `user_a
 
 Forbidden content includes raw invitation token/token hash, full email body unless explicitly safe preview, Resend secrets, hidden invitees, cross-scope delivery facts, and email-only authorization claims.
 
-## User account detail surface
+## User detail surface
 
 ### Intent
 
-`surface-user-admin-user-account` provides scoped account, membership, invitation, support-access, access-review, identity-link, and admin-audit detail for a target user. It is not the user's My Account profile and cannot expose self-service-only/private settings unless explicit admin policy allows.
+`surface-user-admin-user-detail` provides scoped account, membership, invitation, support-access, access-review, identity-link, and admin-audit detail for a target user. It is not the user's My Account profile and cannot expose self-service-only/private settings unless explicit admin policy allows.
 
 ### Contract
 
-- Surface id: `surface-user-admin-user-account`.
+- Surface id: `surface-user-admin-user-detail`.
 - Surface type: `detail-card-action-panel`.
-- Surface contract: `user_admin.user_account.v1`.
+- Surface contract: `user_admin.user_detail.v1`.
 - Owning functional agent: `user-admin-agent`.
 
 ### Frontend-safe payload

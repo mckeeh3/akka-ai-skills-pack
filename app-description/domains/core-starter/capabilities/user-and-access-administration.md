@@ -17,18 +17,18 @@ Let authorized administrators manage users, memberships, roles/capabilities, inv
 | Capability id | Type | Responsibility | Surface/API exposure |
 |---|---|---|---|
 | `user_admin.view_overview` | protected read | Scoped dashboard projection, attention counts, provider/outbox/model readiness, recent admin activity, redaction. | `surface-user-admin-dashboard`; agent evidence read. |
-| `user_admin.list_members` | protected read | Scoped directory, membership, invitation, support-access, and access-review rows with pagination/filter validation. | `surface-user-admin-member-directory`. |
-| `user_admin.read_user_account` | protected read | Scoped account/member/invitation/support/review/audit detail by backend-authorized target. | `surface-user-admin-user-account`. |
-| `user_admin.invite_user` | command | Email normalization, duplicate/open-invite check, role validation, idempotency, outbox/Resend enqueue, audit. | Invitation panel/form and dashboard actions. |
-| `user_admin.resend_invitation` | command | Resend eligibility, idempotency, outbox enqueue/status update, audit. | Invitation panel and queue row actions. |
-| `user_admin.revoke_invitation` | command | Open/revokable invitation transition, no-op handling, audit. | Invitation panel and queue row actions. |
-| `user_admin.acceptance_status.read` | protected read | Invitation expiry, accepted, failed-delivery, bounced, pending, and recovery evidence shaping. | Dashboard, invitation panel, directory badges. |
+| `user_admin.list_members` | protected read | Scoped directory, membership, invitation, support-access, and access-review rows with pagination/filter validation. | `surface-user-admin-users`. |
+| `user_admin.read_user_account` | protected read | Scoped account/member/invitation/support/review/audit detail by backend-authorized target. | `surface-user-admin-user-detail`. |
+| `user_admin.invite_user` | command | Email normalization, duplicate/open-invite check, role validation, idempotency, outbox/Resend enqueue, audit. | Invitation detail/form and dashboard actions. |
+| `user_admin.resend_invitation` | command | Resend eligibility, idempotency, outbox enqueue/status update, audit. | Invitation detail and queue row actions. |
+| `user_admin.revoke_invitation` | command | Open/revokable invitation transition, no-op handling, audit. | Invitation detail and queue row actions. |
+| `user_admin.acceptance_status.read` | protected read | Invitation expiry, accepted, failed-delivery, bounced, pending, and recovery evidence shaping. | Dashboard, invitation detail, directory badges. |
 | `user_admin.update_member_status` | command | Disable/reactivate/suspend/remove validation, self-disable and last-admin guardrails, no-op/idempotency, audit. | Directory/detail confirmation and system messages. |
 | `user_admin.preview_role_change` | protected read/proposal | Role/capability diff, policy/approval requirement, affected workstreams, last-admin impact, trace evidence. | Role-change preview/decision card. |
 | `user_admin.change_member_roles` | command | Role mutation after authorization/approval, idempotency, last-admin preservation, audit. | Role-change preview commit result. |
 | `user_admin.support_access.read` | protected read | Scoped support grant state, expiry, purpose, visibility limits, audit evidence. | Dashboard, directory, detail. |
 | `user_admin.support_access.grant_revoke_extend` | command | Grant/revoke/extend eligibility, expiry/purpose capture, approval, idempotency, audit. | Detail/action panel and decision card. |
-| `user_admin.identity_relink.review` | proposal/command gated | Exceptional identity link/relink review, policy gate, audit. | User account detail and decision card. |
+| `user_admin.identity_relink.review` | proposal/command gated | Exceptional identity link/relink review, policy gate, audit. | User detail and decision card. |
 | `user_admin.ask_agent` | request/response agent turn | Governed prompt/skill/reference/tool assembly, scoped evidence use, provider/model readiness, fail-closed trace. | Composer, dashboard ask actions, markdown/structured surfaces. |
 | `user_admin.access_review.start` | internal worker start | Scope validation, idempotent task start, provider/model readiness gate. | Access-review task surface. |
 | `user_admin.access_review.read` | protected read | Task progress/result shaping, evidence refs, redaction, trace links. | Access-review task surface. |

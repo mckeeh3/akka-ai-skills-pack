@@ -18,7 +18,7 @@ This map is docs-only. It points to current implementation evidence and does not
 
 ## Surface result mapping
 
-Implementation should map backend outcomes to `surface-user-admin-dashboard`, `surface-user-admin-member-directory`, `surface-user-admin-invitation-panel`, `surface-user-admin-user-account`, `surface-user-admin-role-change-preview`, `surface-user-admin-access-review-task`, reusable decision/audit/workflow/markdown surfaces, or `surface-user-admin-system-message`.
+Implementation should map backend outcomes to `surface-user-admin-dashboard`, `surface-user-admin-users`, `surface-user-admin-invitation-detail`, `surface-user-admin-user-detail`, `surface-user-admin-role-change-preview`, `surface-user-admin-access-review-task`, reusable decision/audit/workflow/markdown surfaces, or `surface-user-admin-system-message`.
 
 ## Validation evidence
 

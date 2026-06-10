@@ -9,7 +9,7 @@ type ListSearchSurfaceProps = {
 };
 
 export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps) {
-  const isUserAdmin = envelope.surfaceId === 'surface-user-admin-users' || envelope.surfaceId === 'surface-user-admin-member-directory' || envelope.surfaceId === 'surface-user-admin-invitation-panel' || envelope.data.surfaceContract === 'user_admin.users.v1' || envelope.data.surfaceContract === 'user_admin.member_directory.v1' || envelope.data.surfaceContract === 'user_admin.invitation_panel.v1' || envelope.data.surfaceContracts?.some((contract) => contract.startsWith('user_admin.'));
+  const isUserAdmin = envelope.surfaceId === 'surface-user-admin-users' || envelope.data.surfaceContract === 'user_admin.users.v1' || envelope.data.surfaceContracts?.some((contract) => contract.startsWith('user_admin.'));
   const columns = Array.from(new Set(envelope.data.rows.flatMap((row) => Object.keys(row))));
   const queryValue = typeof envelope.data.query === 'string' ? envelope.data.query : JSON.stringify(envelope.data.query);
   return (

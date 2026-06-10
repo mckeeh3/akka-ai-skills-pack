@@ -53,7 +53,7 @@ export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceActi
     shellRequest: {
       requestType: 'show_surface',
       targetFunctionalAgentId: 'agent-user-admin',
-      targetSurfaceId: 'surface-user-admin-member-directory',
+      targetSurfaceId: 'surface-user-admin-users',
       displayText: 'Show users list'
     },
     audit: { eventType: 'UserListSurfaceRequested', traceRequired: true }
@@ -151,7 +151,7 @@ export const userAdminSurfaceActions = {
     governedToolId: userAdminCapabilities.listMembers,
     browserToolId: 'action-display-user-list',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-member-directory', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-users', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminListDisplayed', traceRequired: true }
   },
   searchUsers: {
@@ -163,19 +163,19 @@ export const userAdminSurfaceActions = {
     browserToolId: 'action-search-users',
     inputSchemaRef: 'schema.user-admin.search.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-member-directory', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-users', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminDirectorySearched', traceRequired: true }
   },
   displayUserDetail: {
     actionId: 'action-display-user-detail',
-    label: 'Display user account detail',
+    label: 'Display user detail',
     intent: 'read',
     capabilityId: userAdminCapabilities.listMembers,
     governedToolId: userAdminCapabilities.listMembers,
     browserToolId: 'action-display-user-detail',
     inputSchemaRef: 'schema.user-admin.detail.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-user-detail', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminDetailDisplayed', traceRequired: true }
   },
   displayRoleCapabilityMatrix: {
@@ -212,7 +212,7 @@ export const userAdminSurfaceActions = {
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-user-detail', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminMemberRolesChanged', traceRequired: true }
   },
   createInvitation: {
@@ -251,7 +251,7 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.invitation.revoke.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-member-directory', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-users', openPlacement: 'inline' },
     audit: { eventType: 'InvitationRevoked', traceRequired: true }
   },
   addMembership: {
@@ -264,7 +264,7 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.membership.add.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-user-detail', openPlacement: 'inline' },
     audit: { eventType: 'MembershipAddRequested', traceRequired: true }
   },
   suspendMembership: {
@@ -277,7 +277,7 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.user-admin.member-status.update.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-member-directory', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-users', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminMemberStatusChanged', traceRequired: true }
   },
   reactivateMembership: {
@@ -290,7 +290,7 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.user-admin.member-status.update.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-member-directory', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-users', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminMemberStatusChanged', traceRequired: true }
   },
   removeMembership: {
@@ -318,7 +318,7 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.user-admin.profile.update.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-user-detail', openPlacement: 'inline' },
     audit: { eventType: 'UserProfileUpdateRequested', traceRequired: true }
   },
   replaceRole: {
@@ -333,7 +333,7 @@ export const userAdminSurfaceActions = {
     requiresApproval: true,
     disabled: { reasonCode: 'last-admin-risk', message: 'Backend authorization denied this fixture action: cannot remove the last tenant admin without an approved replacement.' },
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-user-detail', openPlacement: 'inline' },
     audit: { eventType: 'MembershipRoleReplacementDenied', traceRequired: true }
   },
   removeRole: {
@@ -376,7 +376,7 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.user-admin.account.reactivate.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-user-detail', openPlacement: 'inline' },
     audit: { eventType: 'AccountReactivateRequested', traceRequired: true }
   },
   requestIdentityRelink: {
@@ -404,7 +404,7 @@ export const userAdminSurfaceActions = {
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'server-issued' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-user-detail', openPlacement: 'inline' },
     audit: { eventType: 'IdentityRelinkCompleted', traceRequired: true }
   },
   readSupportAccess: {
@@ -416,7 +416,7 @@ export const userAdminSurfaceActions = {
     browserToolId: 'action-read-support-access',
     inputSchemaRef: 'schema.support-access.search.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-member-directory', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-users', openPlacement: 'inline' },
     audit: { eventType: 'SupportAccessRead', traceRequired: true }
   },
   grantSupportAccess: {
@@ -444,7 +444,7 @@ export const userAdminSurfaceActions = {
     inputSchemaRef: 'schema.support-access.revoke.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-user-account', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-user-detail', openPlacement: 'inline' },
     audit: { eventType: 'SupportAccessRevoked', traceRequired: true }
   },
   extendSupportAccess: {
@@ -950,8 +950,8 @@ export const myAccountSurfaceActions = {
     browserToolId: 'action-open-user-admin',
     inputSchemaRef: 'schema.my-account.open-workstream.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-user-admin-member-directory', openPlacement: 'deep-link' },
-    shellRequest: { requestType: 'open_workstream', targetFunctionalAgentId: 'agent-user-admin', targetSurfaceId: 'surface-user-admin-member-directory', displayText: 'Open User Admin' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-users', openPlacement: 'deep-link' },
+    shellRequest: { requestType: 'open_workstream', targetFunctionalAgentId: 'agent-user-admin', targetSurfaceId: 'surface-user-admin-users', displayText: 'Open User Admin' },
     audit: { eventType: 'MyAccountOpenUserAdminRequested', traceRequired: true }
   },
   openAgentAdmin: {
@@ -1518,9 +1518,9 @@ export const userAdminDashboardSurface = envelope(
   ]
 );
 
-// Legacy fixture alias preserved for stale-screen quarantine tests: old user-admin-user-list now resolves conceptually to surface-user-admin-member-directory.
+// Legacy fixture alias preserved for stale-screen quarantine tests: old user-admin-user-list now resolves conceptually to surface-user-admin-users.
 export const userAdminListSearchSurface = envelope(
-  'surface-user-admin-member-directory',
+  'surface-user-admin-users',
   'list-search',
   'Users, invitations, and memberships',
   'agent-user-admin',
@@ -1577,7 +1577,7 @@ export const userAdminListSearchSurface = envelope(
 );
 
 export const userAdminDetailEditSurface = envelope(
-  'surface-user-admin-user-account',
+  'surface-user-admin-user-detail',
   'detail-edit',
   'Tenant Admin account detail',
   'agent-user-admin',
@@ -1585,7 +1585,7 @@ export const userAdminDetailEditSurface = envelope(
     recordId: 'user-acct-admin',
     recordLabel: 'Tenant Admin · admin@example.test',
     recordKind: 'account',
-    summary: 'Scoped detail/edit surface for a tenant user account. Field editability is advisory; named User Admin capabilities remain authoritative.',
+    summary: 'Scoped detail/edit surface for a tenant user detail. Field editability is advisory; named User Admin capabilities remain authoritative.',
     fields: [
       { fieldId: 'displayName', label: 'Display name', value: 'Tenant Admin', editable: true, inputType: 'text' },
       { fieldId: 'email', label: 'Email', value: 'admin@example.test', editable: false, inputType: 'email', disabledReason: 'Email changes require an identity-provider reconciliation workflow.' },
@@ -2689,7 +2689,7 @@ export const displayUserListActionResult: CapabilityActionResult = {
 
 export const displayUserDetailActionResult: CapabilityActionResult = {
   status: 'accepted',
-  message: 'Display user account detail for admin@example.test. Backend authority, scoped read, audit, and trace checks remain capability-backed.',
+  message: 'Display user detail for admin@example.test. Backend authority, scoped read, audit, and trace checks remain capability-backed.',
   correlationId: 'corr-display-user-detail',
   traceIds: ['trace-display-user-detail', 'trace-user-admin-detail'],
   resultSurface: userAdminDetailEditSurface

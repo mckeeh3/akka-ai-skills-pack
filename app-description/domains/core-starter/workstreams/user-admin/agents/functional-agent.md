@@ -64,7 +64,7 @@ Help administrators understand scoped User Admin state, allowed actions, denials
 
 ## Surface and tool map
 
-Primary surfaces: `surface-user-admin-dashboard`, `surface-user-admin-member-directory`, `surface-user-admin-invitation-panel`, `surface-user-admin-user-account`, `surface-user-admin-role-change-preview`, `surface-user-admin-access-review-task`, `decision-card`, and Audit/Trace evidence surfaces.
+Primary surfaces: `surface-user-admin-dashboard`, `surface-user-admin-users`, `surface-user-admin-invitation-detail`, `surface-user-admin-user-detail`, `surface-user-admin-role-change-preview`, `surface-user-admin-access-review-task`, `decision-card`, and Audit/Trace evidence surfaces.
 
 Side-effecting tools default to proposal or human confirmation. Last-admin loss, role escalation, support-access expansion, identity relink/reset, access-review resolution, and low-confidence/bulk actions require decision-card or approval policy routing.
 

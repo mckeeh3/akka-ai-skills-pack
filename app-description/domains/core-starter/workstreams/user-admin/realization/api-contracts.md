@@ -17,7 +17,7 @@ Capability: `user-and-access-administration`.
 
 ## Surface result mapping
 
-API responses should render or update these typed surfaces: `surface-user-admin-dashboard`, `surface-user-admin-member-directory`, `surface-user-admin-invitation-panel`, `surface-user-admin-user-account`, `surface-user-admin-role-change-preview`, `surface-user-admin-access-review-task`, `decision-card`, Audit/Trace surfaces, `markdown-response`, and `surface-user-admin-system-message`.
+API responses should render or update these typed surfaces: `surface-user-admin-dashboard`, `surface-user-admin-users`, `surface-user-admin-invitation-detail`, `surface-user-admin-user-detail`, `surface-user-admin-role-change-preview`, `surface-user-admin-access-review-task`, `decision-card`, Audit/Trace surfaces, `markdown-response`, and `surface-user-admin-system-message`.
 
 ## Validation evidence
 

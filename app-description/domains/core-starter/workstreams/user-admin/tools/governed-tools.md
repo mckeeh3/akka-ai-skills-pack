@@ -8,7 +8,7 @@ Global tool inventory: `../../../../../global/tools/foundation-governed-tools.md
 
 Allowed governed tools:
 
-- `search-user-directory` (`browser-tool`, `agent-tool` read): scoped dashboard, member directory, invitation status, support-access, access-review, and audit-evidence views.
+- `search-user-directory` (`browser-tool`, `agent-tool` read): scoped dashboard, users list, invitation status, support-access, access-review, and audit-evidence views.
 - `create-or-resend-invitation` (`browser-tool`; human-confirmed agent preparation only): invitation create/resend/revoke and delivery/outbox visibility.
 - `change-membership-role-or-status` (`browser-tool`; approval/decision-card when risky): membership status changes and role preview/change.
 - `grant-or-revoke-support-access` (`browser-tool`; expiry/purpose/approval required): support-access lifecycle.

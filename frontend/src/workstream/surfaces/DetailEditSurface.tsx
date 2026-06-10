@@ -287,7 +287,7 @@ function UserAdminDetailOverview({ envelope }: { envelope: SurfaceEnvelope<Detai
         <h4>{isRolePreview ? 'Role-change preview boundary' : 'User Admin detail boundary'}</h4>
         <p>{data.message ?? 'Frontend controls are advisory only; selected AuthContext, backend authorization, policy, idempotency, and audit/work traces remain authoritative.'}</p>
         <dl>
-          <div><dt>Surface contract</dt><dd>{data.surfaceContract ?? 'user_admin.user_account.v1'}</dd></div>
+          <div><dt>Surface contract</dt><dd>{data.surfaceContract ?? 'user_admin.user_detail.v1'}</dd></div>
           <div><dt>Status</dt><dd>{data.status ?? 'ready'}</dd></div>
           <div><dt>Correlation</dt><dd>{envelope.correlationId}</dd></div>
           <div><dt>Redaction</dt><dd>{renderSurfaceValue(data.redaction) ?? envelope.redaction.profile}</dd></div>

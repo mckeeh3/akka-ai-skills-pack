@@ -245,7 +245,7 @@ public final class WorkstreamEventPublisher {
         deliveryAttemptId,
         List.of(traceId),
         "agent-user-admin",
-        "surface-user-admin-invitation-panel",
+        "surface-user-admin-users",
         PAYLOAD_INVITATION_DELIVERY,
         Map.of(
             "invitationId", invitation.invitationId(),

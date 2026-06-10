@@ -654,7 +654,7 @@ function isBackendShellAliasPrompt(normalized: string): boolean {
   return [
     'show notifications', 'open notifications', 'show notification center', 'open notification center', 'notifications',
     'show users', 'open users', 'show user list', 'open user list', 'show user directory', 'open user directory', 'users',
-    'show invitations', 'open invitations', 'show invitation panel', 'open invitation panel', 'invitations',
+    'show invitations', 'open invitations', 'invitations',
     'show agent catalog', 'open agent catalog', 'show agents', 'open agents', 'agent catalog',
     'show audit timeline', 'open audit timeline', 'show trace timeline', 'open trace timeline', 'audit timeline',
     'show audit search', 'open audit search', 'show traces', 'open traces', 'show audit traces', 'open audit traces',

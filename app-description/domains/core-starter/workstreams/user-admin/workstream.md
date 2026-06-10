@@ -12,7 +12,7 @@ The intended hierarchy is `App Admin -> Tenant Admin -> tenant employees and Cus
 
 The workstream explicitly covers these access-administration areas:
 
-- **Managing users** — find, inspect, activate/reactivate, disable, and understand scoped user accounts at the App Admin, Tenant Admin, or Customer Admin level allowed by policy.
+- **Managing users** — find, inspect, activate/reactivate, disable, and understand scoped user details at the App Admin, Tenant Admin, or Customer Admin level allowed by policy.
 - **Managing memberships** — add, suspend, reactivate, or remove a user's membership in an app-owner, tenant, or customer context while preserving tenant/customer boundaries and last-admin protections.
 - **Managing invitations** — create, resend, revoke, track, expire, and troubleshoot invitations for Tenant Admins, tenant employees, Customer Admins, or Customer Users according to the caller's admin level.
 - **Managing roles/capabilities** — preview and change role/capability assignments, show capability deltas and affected workstreams, enforce role-escalation and approval gates, and prevent authority expansion outside the caller's scope.
@@ -52,9 +52,9 @@ Default trunk surface: `surface-user-admin-dashboard`.
 
 Primary graph branches:
 
-- `surface-user-admin-member-directory` for scoped search/list and queue-driven filters.
-- `surface-user-admin-invitation-panel` for invite/resend/revoke and delivery/acceptance status.
-- `surface-user-admin-user-account` for scoped user/membership/support/review/audit detail.
+- `surface-user-admin-users` for scoped search/list and queue-driven filters.
+- `surface-user-admin-invitation-detail` for invite/resend/revoke and delivery/acceptance status.
+- `surface-user-admin-user-detail` for scoped user/membership/support/review/audit detail.
 - `surface-user-admin-role-change-preview` for capability delta, last-admin, policy, and approval preview.
 - `surface-user-admin-access-review-task` for autonomous access-review progress/result/human decision.
 - reusable `decision-card`, `audit-timeline`, `workflow-status`, `markdown-response`, and `system-message` patterns for risky actions, evidence, blocked provider/model states, and safe denials.
