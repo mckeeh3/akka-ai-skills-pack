@@ -11,6 +11,7 @@ const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 const httpApiClient = read('./api/HttpWorkstreamApiClient.ts');
 const main = read('./main.tsx');
+const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
 const componentsCss = read('./styles/components.css');
 const workstreamService = read('../../src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
@@ -62,6 +63,20 @@ test('User Admin dashboard, list, and detail surfaces use canonical surface ids 
   }
   assert.match(surfaces, /SAAS_OWNER_NO_SUPPORT_ACCESS|SAAS_OWNER_SUPPORT_ACCESS_REQUIRED/);
   assert.match(surfaces, /CUSTOMER_ADMIN_TENANT_ACTION_DENIED/);
+});
+
+test('User Admin dashboard follows current actionable command-center rules', () => {
+  assert.match(dashboardSurface, /Things that need my attention/);
+  assert.match(dashboardSurface, /attention-counter-strip user-admin-attention-strip/);
+  assert.match(dashboardSurface, /Every counter opens a backend-authorized queue, including zero-count queues/);
+  assert.match(dashboardSurface, /Queue drilldowns/);
+  assert.match(dashboardSurface, /Things I can do/);
+  assert.match(dashboardSurface, /user-admin-work-card/);
+  assert.match(dashboardSurface, /Open scoped administration surfaces/);
+  assert.match(componentsCss, /\.user-admin-attention-strip/);
+  assert.match(componentsCss, /\.user-admin-work-card/);
+  assert.ok(dashboardSurface.indexOf('Things that need my attention') < dashboardSurface.indexOf('Things I can do'));
+  assert.doesNotMatch(dashboardSurface, /Access health and blockers|Primary User Admin next actions|user-admin-next-actions/);
 });
 
 test('User Admin surface actions map to capability ids and trace or audit affordances', () => {

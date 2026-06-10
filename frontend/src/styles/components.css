@@ -2102,8 +2102,11 @@ button.attention-counter-card:focus-visible {
 }
 
 .attention-counter-card.warning,
+.attention-counter-card.urgent,
 .my-account-control-panel.warning { border-color: color-mix(in srgb, var(--color-warning) 44%, var(--color-border)); }
+.attention-counter-card.critical,
 .attention-counter-card.blocked,
+.attention-counter-card.blocked_provider_or_runtime,
 .my-account-control-panel.blocked { border-color: color-mix(in srgb, var(--color-danger) 44%, var(--color-border)); }
 
 .my-account-needs-me,
@@ -2304,21 +2307,20 @@ button.attention-counter-card:focus-visible {
 .user-admin-summary-grid,
 .user-admin-attention-grid,
 .user-admin-population-grid,
+.user-admin-action-grid,
 .user-admin-row-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
   gap: var(--space-3);
 }
 
-.user-admin-next-actions {
-  border: 1px solid color-mix(in srgb, var(--color-primary) 24%, var(--color-border));
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--color-primary-soft) 22%, transparent);
-  padding: var(--space-4);
+.user-admin-attention-strip {
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
 }
 
 .user-admin-attention-card,
 .user-admin-population-card,
+.user-admin-work-card,
 .user-admin-row {
   display: grid;
   gap: var(--space-3);
@@ -2332,14 +2334,17 @@ button.attention-counter-card:focus-visible {
 }
 
 button.user-admin-attention-card,
-button.user-admin-population-card {
+button.user-admin-population-card,
+button.user-admin-work-card {
   cursor: pointer;
 }
 
 button.user-admin-attention-card:hover,
 button.user-admin-attention-card:focus-visible,
 button.user-admin-population-card:hover,
-button.user-admin-population-card:focus-visible {
+button.user-admin-population-card:focus-visible,
+button.user-admin-work-card:hover,
+button.user-admin-work-card:focus-visible {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
@@ -2352,12 +2357,20 @@ button.user-admin-population-card:focus-visible {
 .user-admin-population-card h4,
 .user-admin-population-card p,
 .user-admin-population-card strong,
+.user-admin-work-card h4,
+.user-admin-work-card p,
 .user-admin-attention-card h4,
 .user-admin-attention-card p,
 .user-admin-attention-card strong { margin: 0; }
 
 .user-admin-population-card p,
+.user-admin-work-card p,
 .user-admin-attention-card p { color: var(--color-text-soft); }
+
+.user-admin-work-card {
+  min-height: 9rem;
+  align-content: start;
+}
 
 .user-admin-attention-card.warning,
 .user-admin-row.invitation-queue,
