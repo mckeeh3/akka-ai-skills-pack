@@ -78,9 +78,9 @@ function UserAdminUsersView({ envelope, onAction }: ListSearchSurfaceProps) {
             <div className="surface-section-heading compact">
               <div><p className="eyebrow">New invitation</p><h4>Invite user</h4></div>
             </div>
-            <label>Email<input className="designed-control" type="email" value={inviteDraft.email} placeholder="name@example.com" onChange={(event) => setInviteDraft((draft) => ({ ...draft, email: event.currentTarget.value }))} required /></label>
-            <label>Name<input className="designed-control" type="text" value={inviteDraft.displayName} placeholder="Optional display name" onChange={(event) => setInviteDraft((draft) => ({ ...draft, displayName: event.currentTarget.value }))} /></label>
-            <label>Role<select className="designed-control" value={inviteDraft.role} onChange={(event) => setInviteDraft((draft) => ({ ...draft, role: event.currentTarget.value }))}><option value="TENANT_EMPLOYEE">Employee</option><option value="TENANT_ADMIN">Tenant admin</option><option value="AUDITOR">Auditor</option></select></label>
+            <label>Email<input className="designed-control" type="email" value={inviteDraft.email} placeholder="name@example.com" onChange={(event) => { const value = event.currentTarget.value; setInviteDraft((draft) => ({ ...draft, email: value })); }} required /></label>
+            <label>Name<input className="designed-control" type="text" value={inviteDraft.displayName} placeholder="Optional display name" onChange={(event) => { const value = event.currentTarget.value; setInviteDraft((draft) => ({ ...draft, displayName: value })); }} /></label>
+            <label>Role<select className="designed-control" value={inviteDraft.role} onChange={(event) => { const value = event.currentTarget.value; setInviteDraft((draft) => ({ ...draft, role: value })); }}><option value="TENANT_EMPLOYEE">Employee</option><option value="TENANT_ADMIN">Tenant admin</option><option value="AUDITOR">Auditor</option></select></label>
             <button className="surface-action-link primary" type="submit">Send invitation</button>
           </form>
         )}

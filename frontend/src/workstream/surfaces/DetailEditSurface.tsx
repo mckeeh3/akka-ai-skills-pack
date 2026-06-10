@@ -238,7 +238,7 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
             </div>
             {changeRoleAction && (
               <form className="user-admin-edit-form" aria-label="Edit user role" onSubmit={submitRoleChange}>
-                <label>Role<select className="designed-control" value={roleDraft} onChange={(event) => setRoleDraft(event.currentTarget.value)}><option value="TENANT_EMPLOYEE">Employee</option><option value="TENANT_ADMIN">Tenant admin</option><option value="AUDITOR">Auditor</option></select></label>
+                <label>Role<select className="designed-control" value={roleDraft} onChange={(event) => { const value = event.currentTarget.value; setRoleDraft(value); }}><option value="TENANT_EMPLOYEE">Employee</option><option value="TENANT_ADMIN">Tenant admin</option><option value="AUDITOR">Auditor</option></select></label>
                 <button className="surface-action-link primary" type="submit">Save role</button>
               </form>
             )}
