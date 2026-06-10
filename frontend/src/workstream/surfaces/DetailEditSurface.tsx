@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import type { DetailEditSurfaceData, SurfaceAction, SurfaceEnvelope } from '../types';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
@@ -196,11 +196,20 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
 function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: SurfaceEnvelope<DetailEditSurfaceData>; fieldValues: Record<string, string>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
   const isInvitation = envelope.data.recordKind === 'invitation';
   const backAction = envelope.actions.find((action) => action.actionId === 'action-display-user-list');
-  const primaryActions = envelope.actions.filter((action) => action.actionId !== 'action-display-user-list' && !action.actionId.includes('access-review'));
+  const primaryActions = envelope.actions.filter((action) => action.actionId !== 'action-display-user-list' && !action.actionId.includes('access-review') && action.actionId !== 'action-useradmin-change-member-roles');
+  const changeRoleAction = envelope.actions.find((action) => action.actionId === 'action-useradmin-change-member-roles');
   const fields = envelope.data.fields ?? [];
   const email = fields.find((field) => field.fieldId === 'email')?.value;
   const status = fields.find((field) => field.fieldId === 'status' || field.fieldId === 'membershipStatus')?.value;
   const role = fields.find((field) => field.fieldId === 'role')?.value;
+  const [roleDraft, setRoleDraft] = useState(roleValue(role));
+  const actionContext = { ...(envelope.data.actionContext ?? {}), ...Object.fromEntries(fields.map((field) => [field.fieldId, fieldValues[field.fieldId] ?? field.value])) };
+
+  function submitRoleChange(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!changeRoleAction) return;
+    onAction?.(changeRoleAction, envelope.surfaceId, { ...actionContext, roles: roleDraft, reason: 'Updated from User Admin detail' });
+  }
   return (
     <SurfaceStateFrame envelope={envelope}>
       <section className="user-admin-detail-clean" aria-label={isInvitation ? 'Invitation detail' : 'User detail'}>
@@ -227,6 +236,12 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
             <div className="user-admin-readable-fields">
               {fields.filter((field) => !['membershipId'].includes(field.fieldId)).map((field) => <p key={field.fieldId}><span>{field.label}</span><strong>{fieldValues[field.fieldId] ?? field.value}</strong></p>)}
             </div>
+            {changeRoleAction && (
+              <form className="user-admin-edit-form" aria-label="Edit user role" onSubmit={submitRoleChange}>
+                <label>Role<select className="designed-control" value={roleDraft} onChange={(event) => setRoleDraft(event.currentTarget.value)}><option value="TENANT_EMPLOYEE">Employee</option><option value="TENANT_ADMIN">Tenant admin</option><option value="AUDITOR">Auditor</option></select></label>
+                <button className="surface-action-link primary" type="submit">Save role</button>
+              </form>
+            )}
           </section>
         )}
 
@@ -235,7 +250,7 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
             <div><p className="eyebrow">Actions</p><h4>{isInvitation ? 'Manage invitation' : 'Manage user'}</h4></div>
             <p>{isInvitation ? 'Resend or revoke this invitation when appropriate.' : 'Role, status, and support-access changes are checked before they are applied.'}</p>
           </div>
-          <SurfaceActionBar actions={primaryActions} surfaceId={envelope.surfaceId} actionInput={Object.fromEntries(fields.map((field) => [field.fieldId, fieldValues[field.fieldId] ?? field.value]))} onAction={onAction} />
+          <SurfaceActionBar actions={primaryActions} surfaceId={envelope.surfaceId} actionInput={actionContext} onAction={onAction} />
         </section>
 
         {envelope.data.audit && (
@@ -250,6 +265,13 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
       </section>
     </SurfaceStateFrame>
   );
+}
+
+function roleValue(value: string | undefined) {
+  const normalized = (value ?? 'TENANT_EMPLOYEE').toUpperCase().replace(/\s+/g, '_');
+  if (normalized.includes('TENANT_ADMIN')) return 'TENANT_ADMIN';
+  if (normalized.includes('AUDITOR')) return 'AUDITOR';
+  return 'TENANT_EMPLOYEE';
 }
 
 function humanize(value: string) {

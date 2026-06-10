@@ -2529,3 +2529,39 @@ button.user-admin-population-card:focus-visible {
   .user-admin-detail-clean-header { flex-direction: column; }
   .user-admin-users-header-actions { justify-content: flex-start; }
 }
+
+.user-admin-top-forms {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 28rem);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.user-admin-invite-form,
+.user-admin-edit-form {
+  display: grid;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-raised);
+  padding: var(--space-4);
+}
+
+.user-admin-invite-form label,
+.user-admin-edit-form label {
+  display: grid;
+  gap: var(--space-1);
+  color: var(--color-text-soft);
+  font-weight: 800;
+}
+
+.user-admin-edit-form {
+  margin-top: var(--space-4);
+  grid-template-columns: minmax(12rem, 1fr) auto;
+  align-items: end;
+}
+
+@media (max-width: 900px) {
+  .user-admin-top-forms,
+  .user-admin-edit-form { grid-template-columns: 1fr; }
+}

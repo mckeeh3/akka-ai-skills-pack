@@ -1,3 +1,4 @@
+import { useState, type FormEvent } from 'react';
 import type { ListSearchSurfaceData, SurfaceAction, SurfaceEnvelope } from '../types';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
@@ -41,6 +42,17 @@ function UserAdminUsersView({ envelope, onAction }: ListSearchSurfaceProps) {
   const invitations = rows.filter((row) => isInvitationRow(row));
   const inviteAction = envelope.actions.find((action) => action.actionId === 'action-invite-user');
   const auditAction = envelope.actions.find((action) => action.actionId === 'action-open-audit-trace');
+  const [inviteDraft, setInviteDraft] = useState({ email: '', displayName: '', role: 'TENANT_EMPLOYEE' });
+
+  function submitInvite(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!inviteAction || !inviteDraft.email.trim()) return;
+    onAction?.(inviteAction, envelope.surfaceId, {
+      email: inviteDraft.email.trim(),
+      displayName: inviteDraft.displayName.trim(),
+      roles: inviteDraft.role
+    });
+  }
   return (
     <section className="user-admin-users-surface" aria-label="User Admin users and invitations">
       <div className="user-admin-users-header">
@@ -55,10 +67,24 @@ function UserAdminUsersView({ envelope, onAction }: ListSearchSurfaceProps) {
         </div>
       </div>
 
-      <form className="surface-search-form user-admin-clean-search" role="search">
-        <label htmlFor={`${envelope.surfaceId}-query`}>Search users or invitations</label>
-        <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" placeholder="Name or email" defaultValue="" />
-      </form>
+      <div className="user-admin-top-forms">
+        <form className="surface-search-form user-admin-clean-search" role="search">
+          <label htmlFor={`${envelope.surfaceId}-query`}>Search users or invitations</label>
+          <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" placeholder="Name or email" defaultValue="" />
+        </form>
+
+        {inviteAction && (
+          <form className="user-admin-invite-form" aria-label="Invite a new user" onSubmit={submitInvite}>
+            <div className="surface-section-heading compact">
+              <div><p className="eyebrow">New invitation</p><h4>Invite user</h4></div>
+            </div>
+            <label>Email<input className="designed-control" type="email" value={inviteDraft.email} placeholder="name@example.com" onChange={(event) => setInviteDraft((draft) => ({ ...draft, email: event.currentTarget.value }))} required /></label>
+            <label>Name<input className="designed-control" type="text" value={inviteDraft.displayName} placeholder="Optional display name" onChange={(event) => setInviteDraft((draft) => ({ ...draft, displayName: event.currentTarget.value }))} /></label>
+            <label>Role<select className="designed-control" value={inviteDraft.role} onChange={(event) => setInviteDraft((draft) => ({ ...draft, role: event.currentTarget.value }))}><option value="TENANT_EMPLOYEE">Employee</option><option value="TENANT_ADMIN">Tenant admin</option><option value="AUDITOR">Auditor</option></select></label>
+            <button className="surface-action-link primary" type="submit">Send invitation</button>
+          </form>
+        )}
+      </div>
 
       <div className="user-admin-two-lists">
         <UserAdminList title="Active users" empty="No active users are visible in this scope." rows={activeUsers} actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} kind="user" />

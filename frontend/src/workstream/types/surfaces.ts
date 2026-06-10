@@ -241,6 +241,7 @@ export type DetailEditSurfaceData = {
   availableContexts?: Array<Record<string, unknown>>;
   redaction?: BrowserSafeRedactionMetadata;
   capabilityAliases?: string[];
+  actionContext?: Record<string, string>;
   accessManagement?: {
     memberStatus?: {
       accountStatus: string;
