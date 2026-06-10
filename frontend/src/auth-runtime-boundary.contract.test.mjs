@@ -19,7 +19,10 @@ test('WorkOS/AuthKit frontend fails closed until the public client id is configu
   assert.match(main, /hasConfiguredWorkosClient/);
   assert.match(main, /Configure WorkOS\/AuthKit/);
   assert.match(main, /normal frontend runtime does not provide a fixture mode/i);
-  assert.match(main, /AuthKitProvider clientId=\{workosClientId\} redirectUri=\{workosRedirectUri\}/);
+  assert.match(main, /AuthKitProvider[\s\S]*clientId=\{workosClientId\}[\s\S]*redirectUri=\{workosRedirectUri\}/);
+  assert.match(main, /signIn\(\{ state: \{ returnTo: currentBrowserReturnTo\(\) \} \}\)/);
+  assert.match(main, /onRedirectCallback=\{\(\{ state \}\) =>/);
+  assert.match(main, /safeAuthReturnTo/);
 });
 
 test('frontend WorkOS/AuthKit boundary uses only public Vite configuration and bearer-token API calls', () => {

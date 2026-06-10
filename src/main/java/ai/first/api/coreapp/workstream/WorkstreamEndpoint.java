@@ -77,7 +77,7 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
 
   @Post("/invitations/accept")
   public HttpResponse acceptInvitation(AcceptInvitationRequest request) {
-    return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(StarterSecurityComponents.invitationService().acceptForBrowser(identity, request, correlationId)));
+    return authorizedIdentityOnly((identity, correlationId) -> HttpResponses.ok(StarterSecurityComponents.invitationService().acceptForBrowser(identity, request, correlationId)));
   }
 
   /**
@@ -113,7 +113,7 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
           .map(header -> header.value())
           .or(() -> requestContext().queryParams().getString("selectedContextId"))
           .orElse(null);
-      var correlationId = requestContext().requestHeader("X-Correlation-Id").map(header -> header.value()).orElse("api-workstream");
+      var correlationId = correlationId();
       return call.invoke(identity, selectedContextId, correlationId);
     } catch (AuthorizationException error) {
       if (error.httpStatus() == 401) throw unauthorized(error.reasonCode());
@@ -122,7 +122,26 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
     }
   }
 
+  private HttpResponse authorizedIdentityOnly(IdentityOnlyCall call) {
+    try {
+      var identity = WorkosIdentityResolver.fromClaims(requestContext().getJwtClaims());
+      return call.invoke(identity, correlationId());
+    } catch (AuthorizationException error) {
+      if (error.httpStatus() == 401) throw unauthorized(error.reasonCode());
+      if (error.httpStatus() == 404) throw notFound();
+      throw forbidden(error.reasonCode());
+    }
+  }
+
+  private String correlationId() {
+    return requestContext().requestHeader("X-Correlation-Id").map(header -> header.value()).orElse("api-workstream");
+  }
+
   private interface AuthorizedCall {
     HttpResponse invoke(WorkosIdentity identity, String selectedContextId, String correlationId);
+  }
+
+  private interface IdentityOnlyCall {
+    HttpResponse invoke(WorkosIdentity identity, String correlationId);
   }
 }

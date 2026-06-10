@@ -770,7 +770,7 @@ function AuthenticatedRoot() {
         <h1>{inviteToken ? 'Sign in to accept your invitation' : 'Sign in to continue'}</h1>
         <p>The AI-first SaaS workstream uses WorkOS/AuthKit for browser authentication. Backend capabilities remain authorized by local tenant membership and role state.</p>
         {inviteToken && <p className="auth-gate__hint">After sign-in, the backend will validate this invitation for the signed-in email address. The raw token is not shown in the browser UI.</p>}
-        <button type="button" onClick={() => void signIn()}>Sign in with WorkOS</button>
+        <button type="button" onClick={() => void signIn({ state: { returnTo: currentBrowserReturnTo() } })}>Sign in with WorkOS</button>
         <p className="auth-gate__hint">The normal frontend runtime always uses real backend API and realtime clients. Fixture data and clients are test-only assets.</p>
       </div>
     );
@@ -824,6 +824,15 @@ function invitationTokenFromLocation(): string | undefined {
   return token && token.trim().length > 0 ? token.trim() : undefined;
 }
 
+function currentBrowserReturnTo(): string {
+  return `${window.location.pathname}${window.location.search}${window.location.hash}` || '/ui';
+}
+
+function safeAuthReturnTo(value: unknown): string | undefined {
+  if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) return undefined;
+  return value;
+}
+
 async function acceptInvitationToken(token: string, tokenProvider: TokenProvider): Promise<{ ok: true; value: InvitationAcceptanceResult } | { ok: false; error: ApiError }> {
   try {
     const accessToken = await tokenProvider();
@@ -863,7 +872,14 @@ function Root() {
     );
   }
   return (
-    <AuthKitProvider clientId={workosClientId} redirectUri={workosRedirectUri}>
+    <AuthKitProvider
+      clientId={workosClientId}
+      redirectUri={workosRedirectUri}
+      onRedirectCallback={({ state }) => {
+        const returnTo = safeAuthReturnTo(state?.returnTo);
+        if (returnTo && returnTo !== currentBrowserReturnTo()) window.location.assign(returnTo);
+      }}
+    >
       <AuthenticatedRoot />
     </AuthKitProvider>
   );
