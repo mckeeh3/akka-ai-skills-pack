@@ -180,7 +180,7 @@ public final class StarterSecurityComponents {
     workstreamEventAttentionConsumer = new WorkstreamEventAttentionConsumer(durableAttention, durableIdentity, attentionProducerService, CLOCK);
     workstreamEventPublisher = new WorkstreamEventPublisher(durableWorkstreamEvents, workstreamEventAttentionConsumer, CLOCK);
     personalAttentionDigestService = new MyAccountPersonalAttentionDigestService(durablePersonalAttentionDigests, authContextResolver, attentionService, CLOCK, new ComponentClientMyAccountPersonalAttentionDigestAutonomousAgentRuntime(componentClient, durableRuntime, agentRuntimeToolResolver, new MyAccountService(authContextResolver, attentionService)), attentionProducerService, workstreamEventPublisher);
-    invitationService = new InvitationService(durableIdentity, durableInvitations, CLOCK, attentionProducerService, workstreamEventPublisher);
+    invitationService = new InvitationService(durableIdentity, durableInvitations, CLOCK, attentionProducerService, workstreamEventPublisher, new ResendEmailService(), invitationEmailDeliveryMode());
     invitationView = new InvitationView(invitationService);
     auditTraceService = new AuditTraceService(authContextResolver, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog));
     governancePolicyService = new GovernancePolicyService(durableGovernancePolicy, authContextResolver, CLOCK, attentionProducerService);
@@ -389,6 +389,26 @@ public final class StarterSecurityComponents {
 
   public static ModelProviderClient modelProviderClient() {
     return MODEL_PROVIDER_CLIENT;
+  }
+
+  private static ResendEmailService.DeliveryMode invitationEmailDeliveryMode() {
+    var explicit = System.getenv("INVITATION_EMAIL_DELIVERY_MODE");
+    if (explicit == null || explicit.isBlank()) explicit = System.getenv("EMAIL_DELIVERY_MODE");
+    if (explicit != null && !explicit.isBlank()) {
+      var normalized = explicit.trim().toLowerCase(java.util.Locale.ROOT);
+      if (normalized.equals("production") || normalized.equals("resend")) return ResendEmailService.DeliveryMode.PRODUCTION;
+      if (normalized.equals("local") || normalized.equals("test") || normalized.equals("captured") || normalized.equals("capture")) return ResendEmailService.DeliveryMode.LOCAL_OR_TEST;
+    }
+    var appEnv = System.getenv("APP_ENV");
+    if (appEnv == null || appEnv.isBlank()) appEnv = System.getenv("AKKA_ENVIRONMENT");
+    if (appEnv != null && appEnv.trim().equalsIgnoreCase("production")) return ResendEmailService.DeliveryMode.PRODUCTION;
+    var hasResendConfig = hasText(System.getenv("RESEND_API_KEY"))
+        && (hasText(System.getenv("INVITE_EMAIL_FROM")) || hasText(System.getenv("RESEND_FROM_EMAIL")));
+    return hasResendConfig ? ResendEmailService.DeliveryMode.PRODUCTION : ResendEmailService.DeliveryMode.LOCAL_OR_TEST;
+  }
+
+  private static boolean hasText(String value) {
+    return value != null && !value.isBlank();
   }
 
   private static WorkstreamService unboundWorkstreamService() {

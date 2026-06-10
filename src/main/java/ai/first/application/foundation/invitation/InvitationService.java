@@ -6,6 +6,7 @@ import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
 import ai.first.domain.foundation.email.EmailDeliveryStatus;
 import ai.first.domain.foundation.email.EmailOutboxMessage;
+import ai.first.application.foundation.email.ResendEmailService;
 import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.invitation.Invitation;
 import ai.first.domain.foundation.invitation.InvitationStatus;
@@ -43,6 +44,8 @@ public final class InvitationService {
   private final Clock clock;
   private final AttentionProducerService attentionProducerService;
   private final WorkstreamEventPublisher workstreamEventPublisher;
+  private final ResendEmailService invitationEmailService;
+  private final ResendEmailService.DeliveryMode invitationEmailDeliveryMode;
 
   public InvitationService(IdentityRepository identityRepository, InvitationRepository invitationRepository, Clock clock) {
     this(identityRepository, invitationRepository, clock, null, null);
@@ -53,11 +56,24 @@ public final class InvitationService {
   }
 
   public InvitationService(IdentityRepository identityRepository, InvitationRepository invitationRepository, Clock clock, AttentionProducerService attentionProducerService, WorkstreamEventPublisher workstreamEventPublisher) {
+    this(identityRepository, invitationRepository, clock, attentionProducerService, workstreamEventPublisher, null, null);
+  }
+
+  public InvitationService(
+      IdentityRepository identityRepository,
+      InvitationRepository invitationRepository,
+      Clock clock,
+      AttentionProducerService attentionProducerService,
+      WorkstreamEventPublisher workstreamEventPublisher,
+      ResendEmailService invitationEmailService,
+      ResendEmailService.DeliveryMode invitationEmailDeliveryMode) {
     this.identityRepository = identityRepository;
     this.invitationRepository = invitationRepository;
     this.clock = clock;
     this.attentionProducerService = attentionProducerService;
     this.workstreamEventPublisher = workstreamEventPublisher;
+    this.invitationEmailService = invitationEmailService;
+    this.invitationEmailDeliveryMode = invitationEmailDeliveryMode;
   }
 
   public Invitation createInvitation(AuthContextResolver.ResolvedMe actor, CreateInvitationRequest request) {
@@ -131,10 +147,11 @@ public final class InvitationService {
             request.idempotencyKey(),
             request.correlationId());
     invitationRepository.saveInvitation(invitation);
-    invitationRepository.enqueueEmail(outboxMessage(invitation, rawToken, "delivery-1", request.correlationId()));
+    var emailMessage = outboxMessage(invitation, rawToken, "delivery-1", request.correlationId());
+    invitationRepository.enqueueEmail(emailMessage);
     audit(actor, invitation, "INVITATION_CREATE", AdminAuditEvent.Result.ALLOWED, "created", request.correlationId());
     audit(actor, invitation, "INVITATION_DELIVERY_QUEUED", AdminAuditEvent.Result.ALLOWED, "queued", request.correlationId());
-    return invitation;
+    return deliverInvitationEmailIfConfigured(invitation, emailMessage, request.correlationId());
   }
 
   public Invitation recordDeliveryResult(String invitationId, String deliveryAttemptId, boolean delivered, String providerMessageId, String safeError, String correlationId) {
@@ -183,9 +200,10 @@ public final class InvitationService {
         invite.acceptedByWorkosSubject(), invite.revokedAt(), invite.revokedByAccountId(), invite.revokeReason(), invite.resendCount() + 1,
         invite.createdByAccountId(), invite.createdAt(), invite.idempotencyKey(), correlationId);
     invitationRepository.saveInvitation(updated);
-    invitationRepository.enqueueEmail(outboxMessage(updated, rawToken, attempt, correlationId));
+    var emailMessage = outboxMessage(updated, rawToken, attempt, correlationId);
+    invitationRepository.enqueueEmail(emailMessage);
     audit(actor, updated, "INVITATION_RESEND", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
-    return updated;
+    return deliverInvitationEmailIfConfigured(updated, emailMessage, correlationId);
   }
 
   public Invitation revoke(AuthContextResolver.ResolvedMe actor, String invitationId, String reason, String correlationId) {
@@ -337,6 +355,14 @@ public final class InvitationService {
       return invitationRepository.findByAcceptanceContext(request.acceptanceContextId().trim());
     }
     return java.util.Optional.empty();
+  }
+
+  private Invitation deliverInvitationEmailIfConfigured(Invitation invitation, EmailOutboxMessage message, String correlationId) {
+    if (invitationEmailService == null || invitationEmailDeliveryMode == null) {
+      return invitation;
+    }
+    var result = invitationEmailService.deliver(message, invitationEmailDeliveryMode);
+    return recordDeliveryResult(invitation.invitationId(), message.deliveryAttemptId(), result.success(), result.providerMessageId(), result.safeErrorSummary(), correlationId);
   }
 
   private EmailOutboxMessage outboxMessage(Invitation invitation, String rawToken, String attemptId, String correlationId) {

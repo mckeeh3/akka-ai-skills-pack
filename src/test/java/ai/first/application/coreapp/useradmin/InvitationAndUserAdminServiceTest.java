@@ -77,6 +77,27 @@ class InvitationAndUserAdminServiceTest {
   }
 
   @Test
+  void inviteCreationCanDeliverQueuedEmailThroughConfiguredDeliveryBoundary() {
+    var deliveredInvitations = new InvitationService(
+        identityRepository,
+        invitationRepository,
+        clock,
+        null,
+        null,
+        new ResendEmailService(Map.of(), (message, config) -> ResendEmailService.DeliveryResult.sent("should-not-send")),
+        ResendEmailService.DeliveryMode.LOCAL_OR_TEST);
+
+    var invite = deliveredInvitations.createInvitation(tenantAdmin, inviteRequest("auto-delivery", "auto.user@example.com"));
+
+    assertEquals(InvitationStatus.SENT, invite.status());
+    assertEquals(EmailDeliveryStatus.CAPTURED, invite.deliveryStatus());
+    assertEquals(1, invite.deliveryAttempts());
+    assertEquals(List.of("captured-" + invite.invitationId() + ":delivery-1"), invite.providerMessageIds());
+    assertEquals(1, invitationRepository.queuedEmails().size());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_DELIVERY_CAPTURED")));
+  }
+
+  @Test
   void browserAcceptanceReturnsSafeRecoveryStatesAndAcceptsRawToken() {
     var invite = invitations.createInvitation(tenantAdmin, inviteRequest("accept-token", "token.user@example.com"));
     var rawToken = rawTokenFromOutbox(invite.invitationId() + ":delivery-1");
