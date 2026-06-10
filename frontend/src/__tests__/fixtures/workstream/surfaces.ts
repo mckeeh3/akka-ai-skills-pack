@@ -145,7 +145,7 @@ export const userAdminSurfaceActions = {
   },
   displayUserList: {
     actionId: 'action-display-user-list',
-    label: 'Display user list view',
+    label: 'Show users',
     intent: 'read',
     capabilityId: userAdminCapabilities.listMembers,
     governedToolId: userAdminCapabilities.listMembers,
@@ -1507,14 +1507,7 @@ export const userAdminDashboardSurface = envelope(
     }
   },
   [
-    userAdminSurfaceActions.refreshDashboard,
-    userAdminSurfaceActions.displayUserList,
-    userAdminSurfaceActions.displayRoleCapabilityMatrix,
-    userAdminSurfaceActions.createInvitation,
-    userAdminSurfaceActions.previewRoleChange,
-    userAdminSurfaceActions.startAccessReview,
-    userAdminSurfaceActions.readAccessReview,
-    userAdminSurfaceActions.openAdminAudit
+    userAdminSurfaceActions.displayUserList
   ]
 );
 

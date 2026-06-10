@@ -219,7 +219,7 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
             <h3>{envelope.data.recordLabel ?? email ?? envelope.title}</h3>
             {email && <p>{email}</p>}
           </div>
-          {backAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(backAction, envelope.surfaceId)}>Back to users</button>}
+          {backAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(backAction, envelope.surfaceId)}>Show users</button>}
         </div>
 
         <dl className="user-admin-detail-summary">

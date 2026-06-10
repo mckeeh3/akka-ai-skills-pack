@@ -71,6 +71,7 @@ test('User Admin dashboard follows current actionable command-center rules', () 
   assert.match(dashboardSurface, /Every counter opens a backend-authorized queue, including zero-count queues/);
   assert.match(dashboardSurface, /Things I can do/);
   assert.match(dashboardSurface, /user-admin-work-card/);
+  assert.match(surfaces, /userAdminDashboardSurface[\s\S]*userAdminSurfaceActions\.displayUserList[\s\S]*\]\n\);/);
   assert.match(dashboardSurface, /Open scoped administration surfaces/);
   assert.match(dashboardSurface, /function userAdminQueueAction/);
   assert.match(dashboardSurface, /action-useradmin-read-access-review/);
@@ -85,7 +86,7 @@ test('User Admin dashboard follows current actionable command-center rules', () 
 
 test('User Admin surface actions map to capability ids and trace or audit affordances', () => {
   assert.match(surfaces, /action-display-user-list/);
-  assert.match(surfaces, /Display user list view/);
+  assert.match(surfaces, /Show users/);
   assert.match(surfaces, /UserAdminListDisplayed/);
   assert.match(surfaces, /secureTenantUserFoundation = 'secure-tenant-user-foundation'/);
   for (const capabilityId of [
