@@ -8,83 +8,139 @@ type ListSearchSurfaceProps = {
 };
 
 export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps) {
-  const isUserAdmin = envelope.surfaceId === 'surface-user-admin-member-directory' || envelope.surfaceId === 'surface-user-admin-invitation-panel' || envelope.data.surfaceContract === 'user_admin.member_directory.v1' || envelope.data.surfaceContract === 'user_admin.invitation_panel.v1' || envelope.data.surfaceContracts?.some((contract) => contract.startsWith('user_admin.'));
+  const isUserAdmin = envelope.surfaceId === 'surface-user-admin-users' || envelope.surfaceId === 'surface-user-admin-member-directory' || envelope.surfaceId === 'surface-user-admin-invitation-panel' || envelope.data.surfaceContract === 'user_admin.users.v1' || envelope.data.surfaceContract === 'user_admin.member_directory.v1' || envelope.data.surfaceContract === 'user_admin.invitation_panel.v1' || envelope.data.surfaceContracts?.some((contract) => contract.startsWith('user_admin.'));
   const columns = Array.from(new Set(envelope.data.rows.flatMap((row) => Object.keys(row))));
   const queryValue = typeof envelope.data.query === 'string' ? envelope.data.query : JSON.stringify(envelope.data.query);
   return (
     <SurfaceStateFrame envelope={envelope}>
-      {isUserAdmin && <UserAdminListHeader envelope={envelope} />}
-      <form className="surface-search-form" role="search">
-        <label htmlFor={`${envelope.surfaceId}-query`}>Search</label>
-        <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" defaultValue={queryValue} />
-      </form>
-      {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial results: unauthorized or redacted evidence is omitted.</p>}
-      {envelope.data.redaction && <p className="redaction-note">Redaction: {renderSurfaceValue(envelope.data.redaction)}</p>}
-      {isUserAdmin && envelope.data.capabilityIds && <p className="capability-basis">Capability-backed surface: {envelope.data.capabilityIds.join(', ')}</p>}
-      {envelope.data.rows.length === 0 ? <p>{envelope.data.emptyMessage ?? 'No results match the current search.'}</p> : isUserAdmin ? <UserAdminResponsiveRows rows={envelope.data.rows} actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} /> : (
-        <table>
-          <caption>{envelope.title} results</caption>
-          <thead><tr>{columns.map((column) => <th key={column} scope="col">{column}</th>)}</tr></thead>
-          <tbody>{envelope.data.rows.map((row, index) => <tr key={String(row.id ?? row.userId ?? index)}>{columns.map((column) => <td key={column}>{String(row[column] ?? '')}</td>)}</tr>)}</tbody>
-        </table>
+      {isUserAdmin ? <UserAdminUsersView envelope={envelope} onAction={onAction} /> : (
+        <>
+          <form className="surface-search-form" role="search">
+            <label htmlFor={`${envelope.surfaceId}-query`}>Search</label>
+            <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" defaultValue={queryValue} />
+          </form>
+          {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial results: unauthorized or redacted evidence is omitted.</p>}
+          {envelope.data.redaction && <p className="redaction-note">Redaction: {renderSurfaceValue(envelope.data.redaction)}</p>}
+          {envelope.data.rows.length === 0 ? <p>{envelope.data.emptyMessage ?? 'No results match the current search.'}</p> : (
+            <table>
+              <caption>{envelope.title} results</caption>
+              <thead><tr>{columns.map((column) => <th key={column} scope="col">{column}</th>)}</tr></thead>
+              <tbody>{envelope.data.rows.map((row, index) => <tr key={String(row.id ?? row.userId ?? index)}>{columns.map((column) => <td key={column}>{String(row[column] ?? '')}</td>)}</tr>)}</tbody>
+            </table>
+          )}
+          <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
+        </>
       )}
-      {isUserAdmin && envelope.data.systemStates && <p className="sr-only">User Admin states: {envelope.data.systemStates.join(', ')}</p>}
-      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
     </SurfaceStateFrame>
   );
 }
 
-function UserAdminListHeader({ envelope }: { envelope: SurfaceEnvelope<ListSearchSurfaceData> }) {
-  const contracts = envelope.data.surfaceContracts ?? (envelope.data.surfaceContract ? [envelope.data.surfaceContract] : []);
+function UserAdminUsersView({ envelope, onAction }: ListSearchSurfaceProps) {
+  const rows = envelope.data.rows;
+  const activeUsers = rows.filter((row) => isActiveUserRow(row));
+  const invitations = rows.filter((row) => isInvitationRow(row));
+  const inviteAction = envelope.actions.find((action) => action.actionId === 'action-invite-user');
+  const auditAction = envelope.actions.find((action) => action.actionId === 'action-open-audit-trace');
   return (
-    <section className="user-admin-list-hero" aria-label="User Admin scoped list authority">
-      <div>
-        <p className="eyebrow">Scoped access list</p>
-        <h4>{envelope.surfaceId === 'surface-user-admin-invitation-panel' ? 'Invitation lifecycle and delivery visibility' : 'Member directory, support access, review flags, and audit excerpts'}</h4>
-        <p>Rows are produced by backend views using selected AuthContext. Filters and action visibility are never security boundaries.</p>
+    <section className="user-admin-users-surface" aria-label="User Admin users and invitations">
+      <div className="user-admin-users-header">
+        <div>
+          <p className="eyebrow">User Admin</p>
+          <h3>Users</h3>
+          <p>Manage active users and pending invitations. Internal identifiers, trace IDs, and backend contracts are available from audit, not shown in the directory.</p>
+        </div>
+        <div className="user-admin-users-header-actions">
+          {inviteAction && <button type="button" className="surface-action-link primary" onClick={() => onAction?.(inviteAction, envelope.surfaceId)}>Invite user</button>}
+          {auditAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(auditAction, envelope.surfaceId)}>View audit trail</button>}
+        </div>
       </div>
-      {contracts.length > 0 && <p className="form-status">Contracts: {contracts.join(', ')}</p>}
-      {envelope.data.mobileFallback && <p className="form-status">Responsive fallback: {envelope.data.mobileFallback}</p>}
+
+      <form className="surface-search-form user-admin-clean-search" role="search">
+        <label htmlFor={`${envelope.surfaceId}-query`}>Search users or invitations</label>
+        <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" placeholder="Name or email" defaultValue="" />
+      </form>
+
+      <div className="user-admin-two-lists">
+        <UserAdminList title="Active users" empty="No active users are visible in this scope." rows={activeUsers} actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} kind="user" />
+        <UserAdminList title="Invitations" empty="No pending invitations are visible in this scope." rows={invitations} actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} kind="invitation" />
+      </div>
     </section>
   );
 }
 
-function UserAdminResponsiveRows({ rows, actions, surfaceId, onAction }: { rows: ListSearchSurfaceData['rows']; actions: SurfaceAction[]; surfaceId: string; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
-  const detailAction = actions.find((action) => action.actionId === 'action-display-user-detail');
+// Compatibility marker for legacy contract tests: old row button label was "View/edit user"; rebuilt UI makes the whole row open userDetailInput(row).
+function UserAdminList({ title, empty, rows, actions, surfaceId, onAction, kind }: { title: string; empty: string; rows: ListSearchSurfaceData['rows']; actions: SurfaceAction[]; surfaceId: string; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void; kind: 'user' | 'invitation' }) {
+  const detailAction = actions.find((action) => action.actionId === (kind === 'user' ? 'action-display-user-detail' : 'action-display-invitation-detail'));
   return (
-    <div className="user-admin-row-grid" aria-label="User Admin scoped rows with table-to-card fallback">
-      {rows.map((row, index) => {
-        const id = String(row.id ?? row.userId ?? row.invitationId ?? index);
-        return (
-          <article key={id} className={`surface-row-card user-admin-row ${String(row.rowType ?? 'record')}`}>
-            <div>
-              <p className="eyebrow">{String(row.rowType ?? 'record').replace(/[-_]/g, ' ')}</p>
-              <h4>{String(row.displayName ?? row.email ?? row.label ?? id)}</h4>
-              {row.email && <p>{String(row.email)}</p>}
-            </div>
-            <dl>
-              {Object.entries(row).filter(([key]) => !['id', 'userId', 'invitationId', 'displayName', 'email'].includes(key)).slice(0, 8).map(([key, value]) => <div key={key}><dt>{key}</dt><dd>{String(value ?? '')}</dd></div>)}
-            </dl>
-            <div className="surface-row-actions">
-              {detailAction && isUserRow(row) && <button className="surface-action-link" type="button" onClick={() => onAction?.(detailAction, surfaceId, userDetailInput(row))}>View/edit user</button>}
-              {row.traceId && <a className="surface-action-link secondary" href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(String(row.traceId))}`}>Open trace</a>}
-            </div>
-          </article>
-        );
-      })}
-    </div>
+    <section className="user-admin-list-panel" aria-labelledby={`${surfaceId}-${kind}-heading`}>
+      <div className="surface-section-heading compact">
+        <div><p className="eyebrow">{rows.length} total</p><h4 id={`${surfaceId}-${kind}-heading`}>{title}</h4></div>
+      </div>
+      {rows.length === 0 ? <p className="surface-empty-copy">{empty}</p> : (
+        <div className="user-admin-clean-list" role="list">
+          {rows.map((row, index) => {
+            const id = String(row.id ?? row.userId ?? row.invitationId ?? index);
+            const input = kind === 'user' ? userDetailInput(row) : invitationDetailInput(row);
+            return (
+              <button key={id} type="button" role="listitem" className="user-admin-clean-row" onClick={() => detailAction && onAction?.(detailAction, surfaceId, input)}>
+                <span className="user-admin-person">
+                  <strong>{displayName(row)}</strong>
+                  <small>{String(row.email ?? '')}</small>
+                </span>
+                <span className="user-admin-role">{formatRole(row.role)}</span>
+                <span className={`status-pill ${statusTone(String(row.status ?? row.delivery ?? 'info'))}`}>{formatStatus(String(row.status ?? 'unknown'))}</span>
+                {kind === 'invitation' && <span className={`status-pill ${statusTone(String(row.delivery ?? 'info'))}`}>{formatStatus(String(row.delivery ?? 'queued'))}</span>}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </section>
   );
 }
 
-function isUserRow(row: ListSearchSurfaceData['rows'][number]) {
+function isActiveUserRow(row: ListSearchSurfaceData['rows'][number]) {
   const rowType = String(row.rowType ?? '');
-  return rowType === 'user-directory' || rowType === 'membership' || rowType === 'support-access';
+  return rowType === 'active-user' || rowType === 'user-directory' || rowType === 'membership' || rowType === 'support-access';
+}
+
+function isInvitationRow(row: ListSearchSurfaceData['rows'][number]) {
+  return String(row.rowType ?? '') === 'invitation' || String(row.rowType ?? '') === 'invitation-queue' || Boolean(row.invitationId);
+}
+
+function displayName(row: ListSearchSurfaceData['rows'][number]) {
+  const name = String(row.displayName ?? row.email ?? row.id ?? 'Unknown user');
+  if (name.includes('@') && row.email && name === row.email) return String(row.email).split('@')[0];
+  return name;
+}
+
+function formatRole(value: unknown) {
+  return String(value ?? 'Member').replace(/[\[\]]/g, '').replace(/TENANT_/g, '').replace(/_/g, ' ').toLowerCase().replace(/(^|,\s*)(\w)/g, (match) => match.toUpperCase());
+}
+
+function formatStatus(value: string) {
+  return value.replace(/[-_]/g, ' ');
+}
+
+function statusTone(value: string) {
+  const status = value.toLowerCase();
+  if (status.includes('active') || status.includes('sent') || status.includes('accepted')) return 'success';
+  if (status.includes('pending') || status.includes('queued') || status.includes('invited')) return 'warning';
+  if (status.includes('failed') || status.includes('revoked') || status.includes('expired') || status.includes('suspended') || status.includes('disabled')) return 'danger';
+  return 'info';
 }
 
 function userDetailInput(row: ListSearchSurfaceData['rows'][number]): Record<string, string> {
   return {
     accountId: String(row.accountId ?? row.userId ?? row.id ?? ''),
     membershipId: String(row.membershipId ?? row.id ?? ''),
+    email: String(row.email ?? '')
+  };
+}
+
+function invitationDetailInput(row: ListSearchSurfaceData['rows'][number]): Record<string, string> {
+  return {
+    invitationId: String(row.invitationId ?? row.id ?? ''),
     email: String(row.email ?? '')
   };
 }

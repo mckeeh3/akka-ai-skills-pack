@@ -43,6 +43,10 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
 
   const isMyAccountSurface = envelope.surfaceId === 'surface-my-profile' || envelope.surfaceId === 'surface-my-settings' || envelope.surfaceId === 'surface-my-context';
 
+  if (isUserAdminSurface(envelope) && (envelope.data.recordKind === 'account' || envelope.data.recordKind === 'invitation')) {
+    return <UserAdminCleanDetail envelope={envelope} fieldValues={fieldValues} onAction={onAction} />;
+  }
+
   return (
     <SurfaceStateFrame envelope={envelope}>
       <section className={isMyAccountSurface ? 'my-account-detail-hero detail-heading' : 'detail-heading'} aria-label="Detail record context">
@@ -187,6 +191,69 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={editableActionInput} onAction={onAction} />
     </SurfaceStateFrame>
   );
+}
+
+function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: SurfaceEnvelope<DetailEditSurfaceData>; fieldValues: Record<string, string>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
+  const isInvitation = envelope.data.recordKind === 'invitation';
+  const backAction = envelope.actions.find((action) => action.actionId === 'action-display-user-list');
+  const primaryActions = envelope.actions.filter((action) => action.actionId !== 'action-display-user-list' && !action.actionId.includes('access-review'));
+  const fields = envelope.data.fields ?? [];
+  const email = fields.find((field) => field.fieldId === 'email')?.value;
+  const status = fields.find((field) => field.fieldId === 'status' || field.fieldId === 'membershipStatus')?.value;
+  const role = fields.find((field) => field.fieldId === 'role')?.value;
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="user-admin-detail-clean" aria-label={isInvitation ? 'Invitation detail' : 'User detail'}>
+        <div className="user-admin-detail-clean-header">
+          <div>
+            <p className="eyebrow">{isInvitation ? 'Invitation' : 'User'}</p>
+            <h3>{envelope.data.recordLabel ?? email ?? envelope.title}</h3>
+            {email && <p>{email}</p>}
+          </div>
+          {backAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(backAction, envelope.surfaceId)}>Back to users</button>}
+        </div>
+
+        <dl className="user-admin-detail-summary">
+          {status && <div><dt>Status</dt><dd>{humanize(status)}</dd></div>}
+          {role && <div><dt>Role</dt><dd>{humanize(role)}</dd></div>}
+          {fields.filter((field) => ['delivery', 'expiresAt'].includes(field.fieldId)).map((field) => <div key={field.fieldId}><dt>{field.label}</dt><dd>{humanize(field.value)}</dd></div>)}
+        </dl>
+
+        {!isInvitation && (
+          <section className="detail-edit-form-section" aria-labelledby={`${envelope.surfaceId}-form-heading`}>
+            <div className="surface-section-heading compact">
+              <div><p className="eyebrow">Profile</p><h4 id={`${envelope.surfaceId}-form-heading`}>User information</h4></div>
+            </div>
+            <div className="user-admin-readable-fields">
+              {fields.filter((field) => !['membershipId'].includes(field.fieldId)).map((field) => <p key={field.fieldId}><span>{field.label}</span><strong>{fieldValues[field.fieldId] ?? field.value}</strong></p>)}
+            </div>
+          </section>
+        )}
+
+        <section className="user-admin-context-actions" aria-label={isInvitation ? 'Invitation actions' : 'User actions'}>
+          <div className="surface-section-heading compact">
+            <div><p className="eyebrow">Actions</p><h4>{isInvitation ? 'Manage invitation' : 'Manage user'}</h4></div>
+            <p>{isInvitation ? 'Resend or revoke this invitation when appropriate.' : 'Role, status, and support-access changes are checked before they are applied.'}</p>
+          </div>
+          <SurfaceActionBar actions={primaryActions} surfaceId={envelope.surfaceId} actionInput={Object.fromEntries(fields.map((field) => [field.fieldId, fieldValues[field.fieldId] ?? field.value]))} onAction={onAction} />
+        </section>
+
+        {envelope.data.audit && (
+          <details className="dashboard-evidence-drawer">
+            <summary>Audit details</summary>
+            <section className="trace-link-list" aria-label="Audit trace links">
+              <span>{envelope.data.audit.lastEventType}</span>
+              {envelope.data.audit.traceIds.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-timeline#${traceId}`}>{traceId}</a>)}
+            </section>
+          </details>
+        )}
+      </section>
+    </SurfaceStateFrame>
+  );
+}
+
+function humanize(value: string) {
+  return value.replace(/[\[\]_"]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/(^|\s)\w/g, (letter) => letter.toUpperCase());
 }
 
 function UserAdminDetailOverview({ envelope }: { envelope: SurfaceEnvelope<DetailEditSurfaceData> }) {

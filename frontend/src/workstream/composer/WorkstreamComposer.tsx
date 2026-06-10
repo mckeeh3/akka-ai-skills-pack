@@ -142,7 +142,7 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
         <DashboardIcon />
         <span className="workstream-show-dashboard-tooltip" role="tooltip">Show dashboard</span>
       </button>
-      <button type="button" className="ds-button ghost icon-button clear-screen-button" disabled={clearScreenDisabled} aria-label="Clear screen for current workstream" title="Clear screen" onClick={clearScreen}>
+      <button type="button" className="ds-button ghost icon-button clear-screen-button" disabled={clearScreenDisabled} aria-label="Clear screen for current workstream" onClick={clearScreen}>
         <span aria-hidden="true">+</span>
         <span className="workstream-clear-screen-tooltip" role="tooltip">Clear screen</span>
       </button>

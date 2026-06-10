@@ -168,7 +168,7 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void userAdminDashboardAndInvitationPanelAreBackendDerivedAndScoped() {
+  void userAdminDashboardAndUsersListAreBackendDerivedAndScoped() {
     var dashboard = service.surface(identity(), "membership-admin", "surface-user-admin-dashboard", "corr-useradmin-dashboard");
 
     assertEquals("surface-user-admin-dashboard", dashboard.surfaceId());
@@ -180,12 +180,12 @@ class WorkstreamServiceTest {
     assertTrue(dashboard.toString().contains("blocked_provider_or_runtime"));
     assertTrue(dashboard.traceIds().stream().anyMatch(trace -> trace.contains("trace-surface-user-admin-dashboard")));
 
-    var invitationPanel = service.surface(identity(), "membership-admin", "surface-user-admin-invitation-panel", "corr-useradmin-invitations");
-    assertEquals("list-search", invitationPanel.surfaceType());
-    assertEquals("user_admin.invitation_panel.v1", invitationPanel.data().get("surfaceContract"));
-    assertTrue(invitationPanel.toString().contains("system_message"));
-    assertFalse(invitationPanel.toString().contains("invite-token"));
-    assertFalse(invitationPanel.toString().contains("tokenHash"));
+    var users = service.surface(identity(), "membership-admin", "surface-user-admin-users", "corr-useradmin-users");
+    assertEquals("list-search", users.surfaceType());
+    assertEquals("user_admin.users.v1", users.data().get("surfaceContract"));
+    assertTrue(users.toString().contains("active-user"));
+    assertFalse(users.toString().contains("invite-token"));
+    assertFalse(users.toString().contains("tokenHash"));
   }
 
   @Test
@@ -193,7 +193,7 @@ class WorkstreamServiceTest {
     var created = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-invite-user", "action-invite-user", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", Map.of("email", "invitee@example.test", "displayName", "Invitee"), "idem-workstream-invite", "membership-admin", "surface-user-admin-dashboard", "corr-workstream-invite"));
     assertEquals("accepted", created.status());
-    assertEquals("surface-user-admin-invitation-panel", created.resultSurface().surfaceId());
+    assertEquals("surface-user-admin-invitation-detail", created.resultSurface().surfaceId());
     assertTrue(created.traceIds().get(0).contains("trace-useradmin-invitation"));
     assertTrue(created.resultSurface().toString().contains("invitee@example.test"));
     assertFalse(created.resultSurface().toString().contains("invite-token"));
@@ -202,18 +202,16 @@ class WorkstreamServiceTest {
         "action-invite-user", "action-invite-user", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", Map.of("email", "changed@example.test"), "idem-workstream-invite", "membership-admin", "surface-user-admin-dashboard", "corr-workstream-invite-replay"));
     assertEquals(created, duplicate);
 
-    var invitationId = created.resultSurface().data().get("rows").toString().contains("invitee@example.test")
-        ? identityRepository.auditEvents().stream().filter(event -> event.actionType().equals("INVITATION_CREATE")).findFirst().orElseThrow().targetMembershipId().replace("membership-", "")
-        : "missing";
+    var invitationId = identityRepository.auditEvents().stream().filter(event -> event.actionType().equals("INVITATION_CREATE")).findFirst().orElseThrow().targetMembershipId().replace("membership-", "");
     var resent = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-useradmin-resend-invitation", "action-useradmin-resend-invitation", "USERADMIN_RESEND_INVITATION", "USERADMIN_RESEND_INVITATION", Map.of("invitationId", invitationId, "reason", "delivery repair"), "idem-workstream-resend", "membership-admin", "surface-user-admin-invitation-panel", "corr-workstream-resend"));
     assertEquals("accepted", resent.status());
-    assertTrue(resent.resultSurface().toString().contains("resendCount=1"));
+    assertTrue(resent.resultSurface().toString().contains("delivery"));
 
     var revoked = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-useradmin-revoke-invitation", "action-useradmin-revoke-invitation", "USERADMIN_REVOKE_INVITATION", "USERADMIN_REVOKE_INVITATION", Map.of("invitationId", invitationId, "reason", "wrong recipient"), "idem-workstream-revoke", "membership-admin", "surface-user-admin-invitation-panel", "corr-workstream-revoke"));
     assertEquals("accepted", revoked.status());
-    assertTrue(revoked.resultSurface().toString().contains("status=revoked"));
+    assertTrue(revoked.resultSurface().toString().contains("value=revoked"));
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_RESEND") && event.correlationId().equals("corr-workstream-resend")));
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_REVOKE") && event.correlationId().equals("corr-workstream-revoke")));
   }
@@ -400,7 +398,7 @@ class WorkstreamServiceTest {
 
     assertEquals("denied", result.status());
     assertTrue(result.message().contains("last tenant admin"));
-    assertEquals("surface-user-admin-user-account", result.resultSurface().surfaceId());
+    assertEquals("surface-user-admin-user-detail", result.resultSurface().surfaceId());
   }
 
   @Test
@@ -422,7 +420,7 @@ class WorkstreamServiceTest {
     var changed = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-useradmin-change-member-roles", "action-useradmin-change-member-roles", "USERADMIN_CHANGE_MEMBER_ROLES", "USERADMIN_CHANGE_MEMBER_ROLES", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "promotion"), "idem-useradmin-change", "membership-admin", "surface-user-admin-user-account", "corr-useradmin-change"));
     assertEquals("accepted", changed.status());
-    assertEquals("surface-user-admin-user-account", changed.resultSurface().surfaceId());
+    assertEquals("surface-user-admin-user-detail", changed.resultSurface().surfaceId());
 
     var duplicate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-useradmin-change-member-roles", "action-useradmin-change-member-roles", "USERADMIN_CHANGE_MEMBER_ROLES", "USERADMIN_CHANGE_MEMBER_ROLES", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_EMPLOYEE"), "reason", "ignored replay"), "idem-useradmin-change", "membership-admin", "surface-user-admin-user-account", "corr-useradmin-change-replay"));
@@ -436,9 +434,9 @@ class WorkstreamServiceTest {
     var disabled = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "reason", "leave"), "idem-disable-member", "membership-admin", "surface-user-admin-member-directory", "corr-disable-member"));
     assertEquals("accepted", disabled.status());
-    assertEquals("surface-user-admin-member-directory", disabled.resultSurface().surfaceId());
+    assertEquals("surface-user-admin-user-detail", disabled.resultSurface().surfaceId());
     assertTrue(disabled.traceIds().get(0).contains("trace-useradmin-update-member-status"));
-    assertTrue(disabled.resultSurface().toString().contains("status=suspended"));
+    assertTrue(disabled.resultSurface().toString().contains("value=suspended"));
 
     var duplicate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "reason", "ignored replay"), "idem-disable-member", "membership-admin", "surface-user-admin-member-directory", "corr-disable-member-replay"));
@@ -447,7 +445,7 @@ class WorkstreamServiceTest {
     var reactivated = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-useradmin-reactivate-member", "action-useradmin-reactivate-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "reason", "return"), "idem-reactivate-member", "membership-admin", "surface-user-admin-member-directory", "corr-reactivate-member"));
     assertEquals("accepted", reactivated.status());
-    assertTrue(reactivated.resultSurface().toString().contains("status=active"));
+    assertTrue(reactivated.resultSurface().toString().contains("value=active"));
 
     var selfDisable = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-admin", "reason", "self-disable"), "idem-self-disable", "membership-admin", "surface-user-admin-member-directory", "corr-self-disable")));
@@ -461,8 +459,8 @@ class WorkstreamServiceTest {
         "action-useradmin-grant-support-access", "action-useradmin-grant-support-access", "USERADMIN_SUPPORT_ACCESS_GRANT", "USERADMIN_SUPPORT_ACCESS_GRANT", Map.of("membershipId", "membership-member", "reason", "break glass"), "idem-support-grant", "membership-admin", "surface-user-admin-user-account", "corr-support-grant"));
 
     assertEquals("accepted", grant.status());
-    assertEquals("surface-user-admin-support-access", grant.resultSurface().surfaceId());
-    assertTrue(grant.resultSurface().toString().contains("user_admin.support_access.v1"));
+    assertEquals("surface-user-admin-user-detail", grant.resultSurface().surfaceId());
+    assertTrue(grant.resultSurface().toString().contains("supportAccess=true"));
     assertTrue(grant.resultSurface().toString().contains("supportAccess=true"));
     assertTrue(identityRepository.findMembership("membership-member").orElseThrow().supportAccess());
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("SUPPORT_ACCESS_GRANT") && event.correlationId().equals("corr-support-grant")));
@@ -475,8 +473,8 @@ class WorkstreamServiceTest {
         "action-useradmin-revoke-support-access", "action-useradmin-revoke-support-access", "USERADMIN_SUPPORT_ACCESS_REVOKE", "USERADMIN_SUPPORT_ACCESS_REVOKE", Map.of("membershipId", "membership-member", "reason", "done"), "idem-support-revoke", "membership-admin", "surface-user-admin-support-access", "corr-support-revoke"));
     assertEquals("accepted", revoke.status());
     assertFalse(identityRepository.findMembership("membership-member").orElseThrow().supportAccess());
-    assertEquals("surface-user-admin-support-access", revoke.resultSurface().surfaceId());
-    assertTrue(revoke.resultSurface().toString().contains("user_admin.support_access.v1"));
+    assertEquals("surface-user-admin-user-detail", revoke.resultSurface().surfaceId());
+    assertTrue(revoke.resultSurface().toString().contains("supportAccess=false"));
   }
 
   @Test
@@ -700,7 +698,7 @@ class WorkstreamServiceTest {
     var users = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
         "show_surface", "user_prompt", "show users", null, "agent-user-admin", null, null, "agent-user-admin", null, null, "current_workstream", "corr-shell-users", "membership-admin"));
     assertEquals("accepted", users.status());
-    assertEquals("surface-user-admin-member-directory", users.resultSurface().surfaceId());
+    assertEquals("surface-user-admin-users", users.resultSurface().surfaceId());
     assertEquals("show users", users.request().canonicalPrompt());
 
     var notifications = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
