@@ -132,7 +132,7 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
         </div>
         <div className="user-admin-attention-grid" aria-label="User Admin attention queue drilldowns">
           {queues.map((queue) => {
-            const action = (queue.actionId && actionById.get(queue.actionId)) || (queue.targetSurfaceId ? actionForTarget(queue.targetSurfaceId, actionById) : undefined);
+            const action = userAdminQueueAction(queue, actionById);
             const queueCount = Number(queue.count ?? 0);
             const body = <><span className="eyebrow">{formatQueueEyebrow(queue.severity, queueCount)}</span><h4>{queue.label}</h4><strong>{queue.count ?? 'review'}</strong><p>{queue.statusText ?? (queueCount === 0 ? 'Open empty queue, setup, or history for this scope.' : 'Open with backend authorization before acting.')}</p>{queue.traceRefs?.[0] && <span className="surface-action-link">View trace</span>}</>;
             return action ? <button key={queue.queueId} type="button" className={`user-admin-attention-card ${queue.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId)}>{body}</button> : <article key={queue.queueId} className={`user-admin-attention-card ${queue.severity ?? 'info'}`}>{body}</article>;
@@ -350,7 +350,7 @@ function defaultControlPanels(data: DashboardSurfaceData): NonNullable<Dashboard
 function userAdminAttentionCountersFromQueues(queues: NonNullable<DashboardSurfaceData['attentionQueues']>, actionById: Map<string, SurfaceAction>): NonNullable<DashboardSurfaceData['attentionCounters']> {
   return queues.map((queue) => {
     const queueCount = Number(queue.count ?? 0);
-    const action = (queue.actionId && actionById.get(queue.actionId)) || (queue.targetSurfaceId ? actionForTarget(queue.targetSurfaceId, actionById) : undefined);
+    const action = userAdminQueueAction(queue, actionById);
     return {
       counterId: `counter-${queue.queueId}`,
       label: queue.label,
@@ -365,6 +365,18 @@ function userAdminAttentionCountersFromQueues(queues: NonNullable<DashboardSurfa
 
 function cleanUserAdminActionLabel(label: string): string {
   return label.replace(/ · /g, ' — ');
+}
+
+function userAdminQueueAction(queue: NonNullable<DashboardSurfaceData['attentionQueues']>[number], actionById: Map<string, SurfaceAction>): SurfaceAction | undefined {
+  const explicitAction = (queue.actionId && actionById.get(queue.actionId)) || (queue.targetSurfaceId ? actionForTarget(queue.targetSurfaceId, actionById) : undefined);
+  if (explicitAction) return explicitAction;
+
+  const queueText = `${queue.queueId} ${queue.label} ${queue.filter ?? ''}`.toLowerCase();
+  if (/access.*review|review/.test(queueText)) return actionById.get('action-useradmin-read-access-review') ?? actionById.get('action-useradmin-start-access-review');
+  if (/support/.test(queueText)) return actionById.get('action-read-support-access') ?? actionForTarget('surface-user-admin-users', actionById);
+  if (/audit|denied/.test(queueText)) return actionById.get('action-open-admin-audit') ?? actionById.get('action-open-audit-trace') ?? actionForTarget('surface-audit-trace-dashboard', actionById) ?? actionForTarget('surface-audit-timeline', actionById);
+  if (/invitation|delivery|failed/.test(queueText)) return actionById.get('action-display-user-list') ?? actionById.get('action-search-users') ?? actionById.get('action-invite-user');
+  return actionById.get('action-display-user-list') ?? Array.from(actionById.values()).find((action) => action.intent === 'read');
 }
 
 function userAdminPopulationCards(data: DashboardSurfaceData, actionById: Map<string, SurfaceAction>): Array<{ cardId: string; label: string; value: string | number; scope: string; summary: string; action?: SurfaceAction }> {

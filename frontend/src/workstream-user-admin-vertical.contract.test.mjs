@@ -73,6 +73,11 @@ test('User Admin dashboard follows current actionable command-center rules', () 
   assert.match(dashboardSurface, /Things I can do/);
   assert.match(dashboardSurface, /user-admin-work-card/);
   assert.match(dashboardSurface, /Open scoped administration surfaces/);
+  assert.match(dashboardSurface, /function userAdminQueueAction/);
+  assert.match(dashboardSurface, /action-useradmin-read-access-review/);
+  assert.match(dashboardSurface, /action-read-support-access/);
+  assert.match(dashboardSurface, /action-open-admin-audit/);
+  assert.match(dashboardSurface, /action-display-user-list/);
   assert.match(componentsCss, /\.user-admin-attention-strip/);
   assert.match(componentsCss, /\.user-admin-work-card/);
   assert.ok(dashboardSurface.indexOf('Things that need my attention') < dashboardSurface.indexOf('Things I can do'));
