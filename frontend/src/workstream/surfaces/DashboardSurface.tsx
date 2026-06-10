@@ -108,20 +108,7 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
 
   return (
     <SurfaceStateFrame envelope={envelope}>
-      <section className="user-admin-command-hero" aria-label="User Admin selected scope and authority">
-        <div>
-          <p className="eyebrow">Access operations</p>
-          <h3>Administer scoped users, invitations, roles, support access, and review work.</h3>
-          <p>Start with what needs attention, then open an authorized queue, detail surface, decision card, or audit trace. Backend authorization remains authoritative.</p>
-        </div>
-        <dl className="authority-summary-grid" aria-label="User Admin authority basis">
-          <div><dt>Tenant</dt><dd>{data.accountContext?.tenantId ?? envelope.authContext.tenantId}</dd></div>
-          <div><dt>Scope</dt><dd>{data.accountContext?.customerId ?? envelope.authContext.customerId ?? 'Tenant scope'}</dd></div>
-          <div><dt>Authority</dt><dd>{data.accountContext?.authority ?? data.accountContext?.roles?.join(', ') ?? 'Selected AuthContext'}</dd></div>
-          <div><dt>Traceable read</dt><dd>{data.traceRefs?.length ? 'Trace available' : 'Audit/work traces'}</dd></div>
-        </dl>
-        <p className="sr-only">Surface contract: {data.surfaceContract ?? 'user_admin.dashboard.v1'}. Browser-visible capability count: {data.capabilityIds?.length ?? envelope.authContext.visibleCapabilityIds.length}.</p>
-      </section>
+      <p className="sr-only">Surface contract: {data.surfaceContract ?? 'user_admin.dashboard.v1'}. Browser-visible capability count: {data.capabilityIds?.length ?? envelope.authContext.visibleCapabilityIds.length}. Tenant: {data.accountContext?.tenantId ?? envelope.authContext.tenantId}. Scope: {data.accountContext?.customerId ?? envelope.authContext.customerId ?? 'Tenant scope'}.</p>
 
       <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-attention-heading`}>
         <div className="surface-section-heading">

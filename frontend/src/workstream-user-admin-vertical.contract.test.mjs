@@ -76,7 +76,7 @@ test('User Admin dashboard follows current actionable command-center rules', () 
   assert.match(componentsCss, /\.user-admin-attention-strip/);
   assert.match(componentsCss, /\.user-admin-work-card/);
   assert.ok(dashboardSurface.indexOf('Things that need my attention') < dashboardSurface.indexOf('Things I can do'));
-  assert.doesNotMatch(dashboardSurface, /Access health and blockers|Primary User Admin next actions|user-admin-next-actions/);
+  assert.doesNotMatch(dashboardSurface, /Access operations|Administer scoped users|User Admin selected scope and authority|Access health and blockers|Primary User Admin next actions|user-admin-next-actions/);
 });
 
 test('User Admin surface actions map to capability ids and trace or audit affordances', () => {

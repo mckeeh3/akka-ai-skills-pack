@@ -2286,7 +2286,6 @@ button.attention-counter-card:focus-visible {
   .attention-card-actions { justify-content: flex-start; }
 }
 
-.user-admin-command-hero,
 .user-admin-list-hero,
 .user-admin-detail-overview {
   display: grid;
