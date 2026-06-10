@@ -98,6 +98,25 @@ class InvitationAndUserAdminServiceTest {
   }
 
   @Test
+  void inviteEmailLinkUsesConfiguredPublicBaseUrl() {
+    var configuredInvitations = new InvitationService(
+        identityRepository,
+        invitationRepository,
+        clock,
+        null,
+        null,
+        null,
+        null,
+        "https://tenant.example.com/app/");
+
+    var invite = configuredInvitations.createInvitation(tenantAdmin, inviteRequest("configured-url", "configured.url@example.com"));
+    var inviteUrl = invitationRepository.email(invite.invitationId() + ":delivery-1").orElseThrow().inviteUrl();
+
+    assertTrue(inviteUrl.startsWith("https://tenant.example.com/app/accept?token=invite-token-"));
+    assertFalse(inviteUrl.contains("app.example.test"));
+  }
+
+  @Test
   void browserAcceptanceReturnsSafeRecoveryStatesAndAcceptsRawToken() {
     var invite = invitations.createInvitation(tenantAdmin, inviteRequest("accept-token", "token.user@example.com"));
     var rawToken = rawTokenFromOutbox(invite.invitationId() + ":delivery-1");

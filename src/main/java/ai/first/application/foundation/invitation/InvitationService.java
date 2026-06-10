@@ -44,8 +44,11 @@ public final class InvitationService {
   private final Clock clock;
   private final AttentionProducerService attentionProducerService;
   private final WorkstreamEventPublisher workstreamEventPublisher;
+  private static final String DEFAULT_PUBLIC_BASE_URL = "https://app.example.test";
+
   private final ResendEmailService invitationEmailService;
   private final ResendEmailService.DeliveryMode invitationEmailDeliveryMode;
+  private final String appPublicBaseUrl;
 
   public InvitationService(IdentityRepository identityRepository, InvitationRepository invitationRepository, Clock clock) {
     this(identityRepository, invitationRepository, clock, null, null);
@@ -67,6 +70,18 @@ public final class InvitationService {
       WorkstreamEventPublisher workstreamEventPublisher,
       ResendEmailService invitationEmailService,
       ResendEmailService.DeliveryMode invitationEmailDeliveryMode) {
+    this(identityRepository, invitationRepository, clock, attentionProducerService, workstreamEventPublisher, invitationEmailService, invitationEmailDeliveryMode, System.getenv("APP_PUBLIC_BASE_URL"));
+  }
+
+  public InvitationService(
+      IdentityRepository identityRepository,
+      InvitationRepository invitationRepository,
+      Clock clock,
+      AttentionProducerService attentionProducerService,
+      WorkstreamEventPublisher workstreamEventPublisher,
+      ResendEmailService invitationEmailService,
+      ResendEmailService.DeliveryMode invitationEmailDeliveryMode,
+      String appPublicBaseUrl) {
     this.identityRepository = identityRepository;
     this.invitationRepository = invitationRepository;
     this.clock = clock;
@@ -74,6 +89,7 @@ public final class InvitationService {
     this.workstreamEventPublisher = workstreamEventPublisher;
     this.invitationEmailService = invitationEmailService;
     this.invitationEmailDeliveryMode = invitationEmailDeliveryMode;
+    this.appPublicBaseUrl = normalizePublicBaseUrl(appPublicBaseUrl);
   }
 
   public Invitation createInvitation(AuthContextResolver.ResolvedMe actor, CreateInvitationRequest request) {
@@ -375,10 +391,23 @@ public final class InvitationService {
         invitation.tenantId(),
         invitation.customerId(),
         invitation.normalizedEmail(),
-        "https://app.example.test/accept?token=" + rawToken,
+        inviteUrl(rawToken),
         Map.of("expiresAt", invitation.expiresAt().toString()),
         correlationId,
         clock.instant());
+  }
+
+  private String inviteUrl(String rawToken) {
+    return appPublicBaseUrl + "/accept?token=" + rawToken;
+  }
+
+  private static String normalizePublicBaseUrl(String value) {
+    if (value == null || value.isBlank()) return DEFAULT_PUBLIC_BASE_URL;
+    var trimmed = value.trim();
+    while (trimmed.endsWith("/")) {
+      trimmed = trimmed.substring(0, trimmed.length() - 1);
+    }
+    return trimmed.isBlank() ? DEFAULT_PUBLIC_BASE_URL : trimmed;
   }
 
   private void requireInvitationCapability(ai.first.domain.foundation.identity.AuthContext auth, ScopeType targetScope) {
