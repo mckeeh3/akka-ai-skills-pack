@@ -43,9 +43,9 @@ Read these first if present:
 
 ## Repository examples
 
-### Focused resumable SSE example
+### Focused resumable SSE mechanics example
 - a domain-specific SSE endpoint
-  - finite deterministic stream
+  - finite deterministic stream only for isolated transport/reconnect mechanics tests, not for claimed component-backed realtime features
   - uses `requestContext().lastSeenSseEventId()`
   - sets SSE ids and event type explicitly
   - tested with `SseRouteTester`
@@ -80,6 +80,7 @@ Avoid:
 - using local mutable JVM state as the only source of truth for long-lived streams
 - assuming SSE connections are permanent
 - adding `ORDER BY` to view stream queries that are exposed as SSE
+- claiming a view-backed SSE implementation while returning a finite `List`/`QueryEffect` response; view-backed SSE must forward a streaming view query such as `QueryStreamEffect` plus `queryStreamResult()`, with `streamUpdates = true` when live updates are required
 
 ## Review checklist
 

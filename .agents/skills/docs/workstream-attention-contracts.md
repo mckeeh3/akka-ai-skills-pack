@@ -181,7 +181,7 @@ Lifecycle operations usually return an updated dashboard/attention surface, targ
 
 ## Dashboard and surface graph integration
 
-A role-specific dashboard is attention-first. Its top region should prominently answer what needs the current authorized user's attention now in the selected `AuthContext`. Its second primary region should show what the current user can do next: allowed actions, safe shortcuts, and surface requests backed by governed capabilities. Supporting context such as what is happening, what is blocked/risky/failed/overdue, who or what participates, and what changed recently should reinforce those two actionable goals rather than displacing them. Detailed attention cards should link to their owning source, evidence, traces, capability, and target surface. Dashboard cards, lists, badges, charts, rows, and buttons are actionable graph affordances when they represent attention or available work; clicking them should open an attention item, target structured surface, detail/decision/progress surface, evidence/trace node, or governed capability-backed action result.
+A role-specific dashboard is attention-first. Its top region should prominently answer what needs the current authorized user's attention now in the selected `AuthContext`. Its second primary region should show what the current user can do next: allowed actions, safe shortcuts, and surface requests backed by governed capabilities. Supporting context such as what is happening, what is blocked/risky/failed/overdue, who or what participates, and what changed recently should reinforce those two actionable goals rather than displacing them. Detailed attention cards should link to their owning source, evidence, traces, capability, and target surface. Dashboard cards, lists, badges, charts, counters, rows, task/progress panels, shortcuts, and buttons are actionable graph affordances when they represent attention or available work; clicking or keyboard-activating them should append a request-like workstream item and then append/open an attention item, target structured surface, detail/decision/progress surface, evidence/trace node, governed capability-backed action result, updated dashboard, or typed `system_message`. A rectangular attention/count tile is itself the button, including when the count is `0` and the target is an empty queue, detail, explanation, setup, or history surface. Ready dashboards should show authorized work the actor can do; unauthorized/forbidden attention targets should be omitted from dashboard payloads rather than displayed as disabled work objects, while safe denials still apply for stale clicks, deep links, manual requests, and changed authorization.
 
 Common graph edges:
 
@@ -201,7 +201,7 @@ Attention tests should cover:
 - producer idempotency and duplicate source-event no-op behavior;
 - open, acknowledge, resolve, dismiss, expire, and escalate lifecycle transitions;
 - tenant/customer isolation and hidden-workstream non-enumeration;
-- role-specific dashboard counts and My Account aggregate counts;
+- role-specific dashboard counts, My Account aggregate counts, and dashboard object interaction targets;
 - left rail count, zero, denied, unavailable, and stale states;
 - redaction for support/auditor/customer/self profiles;
 - source refs, evidence refs, correlation ids, and trace ids;

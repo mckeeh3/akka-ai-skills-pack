@@ -15,13 +15,14 @@ Pair with:
 
 1. **Workstream context first.** In the first five seconds, the user should know the selected functional agent, selected tenant/customer context, authority basis, current workstream state, and what needs attention.
 2. **Surfaces are the renderable contract.** Dashboards, decision cards, forms, tables, traces, progress panels, and system messages are structured surfaces with typed state and capability-backed actions.
-3. **The dashboard starts the surface graph.** A role-specific dashboard shows attention items, evidence, freshness, and next browser-tools; each action moves through a human surface graph edge to a result, updated surface, progress surface, decision surface, or `system_message` surface.
-4. **Browser-tools are explicit.** Every consequential UI action, read/query action, surface request, deep link, or recovery action maps to a browser-tool exposure backed by a governed-tool inside a backend capability.
-4. **Primary action dominance.** The main next action should be visible, specific, and stronger than secondary actions.
-5. **Progressive disclosure.** Show decision-driving evidence first; defer diagnostics, raw ids, and rare actions.
-6. **Recoverability.** Users should know how to retry, correct validation errors, request approval, recover from stale state, or return to the workstream.
-7. **State completeness.** Loading, empty, error, success, submitting, forbidden, denied, approval-needed, no-op, stale, reconnecting, and partial-data states are normal UI states.
-8. **Accessible by default.** Semantics, labels, keyboard flow, focus, contrast, status text, and responsive task preservation are required.
+3. **The dashboard starts the surface graph.** A role-specific dashboard is an action router, not a report: it shows things that need the current user's attention first, then things the current user can do. Each attention or next-action work object moves through a human surface graph edge to a result, updated surface, progress surface, decision surface, or `system_message` surface.
+4. **Dashboard content is actionable.** Aside from section labels, control labels, and minimal explanatory microcopy, visible dashboard content must be actionable/clickable indicators. Cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons that represent things needing attention or things the user can do next are clickable and keyboard-operable by default. A rectangular tile/card with a work-object name and a large count is itself the button; do not make only a tiny nested button operable. Zero-count tiles should remain operable when they open an empty queue, detail, explanation, setup, or history surface; `0 things need attention` is better than hiding the indicator. Activation appends a request-like workstream item and appends/opens the surface where the user can inspect details and take allowed actions. Passive FYI metrics, inert charts, decorative card grids, and dashboard objects that make users ask “so what can I do with this?” are rejected unless moved to report/detail/analytics surfaces or converted to governed drilldowns. Inert dashboard objects are explicit exceptions with a recorded reason and must not look like work objects.
+5. **Browser-tools are explicit.** Every consequential UI action, read/query action, surface request, deep link, or recovery action maps to a browser-tool exposure backed by a governed-tool inside a backend capability.
+6. **Primary action dominance.** The main next action should be visible, specific, and stronger than secondary actions.
+7. **Progressive disclosure.** Show decision-driving evidence first; defer diagnostics, raw ids, and rare actions.
+8. **Recoverability.** Users should know how to retry, correct validation errors, request approval, recover from stale state, or return to the workstream.
+9. **State completeness.** Loading, empty, error, success, submitting, forbidden, denied, approval-needed, no-op, stale, reconnecting, and partial-data states are normal UI states.
+10. **Accessible by default.** Semantics, labels, keyboard flow, focus, contrast, status text, and responsive task preservation are required.
 
 ## Workstream shell UX contract
 
@@ -81,8 +82,8 @@ Keyboard/focus path:
 Use this order unless the product context says otherwise:
 
 1. selected functional agent, tenant/customer context, and concise purpose
-2. attention state, pending decision, blocked work, or summary metric, rendered as the first dashboard counter strip when present, with KPI labels large/bold enough to scan and clearly separated from the number/status by deliberate spacing
-3. primary action or next decision
+2. attention state, pending decision, blocked work, or actionable summary metric, rendered as the first dashboard counter strip when present, with KPI labels large/bold enough to scan and clearly separated from the number/status by deliberate spacing
+3. primary action, next decision, or next-action shortcut strip
 4. decision-driving structured surface content
 5. filters/search/sort for dense data when needed
 6. secondary actions
@@ -96,6 +97,10 @@ Avoid:
 - forcing users to inspect dense data before explaining what needs attention
 
 ## Action patterns
+
+### Dashboard work-object interactions
+
+Use for dashboard cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons that represent attention or next work. Treat the whole tile/card/counter hit area as the interaction target, including common rectangular KPI shapes with a label and large count. Count `0` does not make the object inert by itself; it can open the empty queue, detail, explanation, setup, history, or validation surface for that category. Model each object as a human surface graph edge with source dashboard surface, canonical interaction type, target/result surface, browser-tool name where protected data is involved, governed-tool id, capability id, request/result append behavior, correlation/trace ids, and backend authorization. Ready dashboard payloads should contain authorized attention and available work the actor can do; hidden or forbidden targets should normally be omitted rather than shown as disabled dashboard objects. Passive status, analytics, and FYI context must either be subordinate microcopy on an actionable object or live in a report/detail/analytics surface. Denial/system-message states still apply for stale payloads, deep links, manual requests, races, or changed authorization.
 
 ### Surface request actions
 
@@ -160,7 +165,7 @@ Confirm the concrete outcome and next step. If nothing changed, explain why and 
 
 Forms must define labels, helper text, validation, backend error mapping, submit state, idempotency expectations, success behavior, and focus movement after validation failure.
 
-Dense tables, queues, charts, and cards should define default ordering, filters/search needed for realistic volume, item primary action, status treatment, empty-filtered vs truly-empty states, and narrow-screen transformation. Dashboard attention/KPI cards must not compress label, count, and badge into a cramped cluster; use the shared attention-card style with larger semibold/bold labels and visible vertical rhythm so users can read the attention category before acting on the number. Place these counters above dashboard details, profile/settings panels, queues, and lists; detailed investigation belongs below the counter strip or inside the target workstream dashboard.
+Dense tables, queues, charts, and cards should define default ordering, filters/search needed for realistic volume, item primary action, status treatment, empty-filtered vs truly-empty states, and narrow-screen transformation. Dashboard attention/KPI cards must not compress label, count, and badge into a cramped cluster; use the shared attention-card style with larger semibold/bold labels and visible vertical rhythm so users can read the attention category before acting on the number. Cards, counters, badges, rows, and task/progress panels that represent attention or next work should look and behave as modern high-tech operable work buttons, with the whole shape clickable/tappable, visible focus, clear hover/active treatment, and enough visual energy to communicate that tapping the dashboard does real capability-backed work. Place these counters above dashboard details, profile/settings panels, queues, and lists; detailed investigation belongs below the counter strip or inside the target workstream dashboard.
 
 ## Deep links
 
@@ -192,7 +197,7 @@ For narrow screens:
 
 Before coding, the agent should be able to state:
 - which functional agents appear in the rail and which are hidden or denied
-- which role-specific dashboard attention items appear, which sources/evidence/freshness they use, and which browser-tools they offer
+- which role-specific dashboard attention and next-action objects appear, which sources/evidence/freshness they use, which target/result surfaces they open, and which browser-tools they offer
 - which human surface graph nodes and edges exist, including result and system-message surfaces
 - what the user sees first in the selected workstream
 - how the composer behaves and when it is disabled
