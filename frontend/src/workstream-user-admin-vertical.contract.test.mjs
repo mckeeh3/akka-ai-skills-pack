@@ -69,7 +69,6 @@ test('User Admin dashboard follows current actionable command-center rules', () 
   assert.match(dashboardSurface, /Things that need my attention/);
   assert.match(dashboardSurface, /attention-counter-strip user-admin-attention-strip/);
   assert.match(dashboardSurface, /Every counter opens a backend-authorized queue, including zero-count queues/);
-  assert.match(dashboardSurface, /Queue drilldowns/);
   assert.match(dashboardSurface, /Things I can do/);
   assert.match(dashboardSurface, /user-admin-work-card/);
   assert.match(dashboardSurface, /Open scoped administration surfaces/);
@@ -81,7 +80,7 @@ test('User Admin dashboard follows current actionable command-center rules', () 
   assert.match(componentsCss, /\.user-admin-attention-strip/);
   assert.match(componentsCss, /\.user-admin-work-card/);
   assert.ok(dashboardSurface.indexOf('Things that need my attention') < dashboardSurface.indexOf('Things I can do'));
-  assert.doesNotMatch(dashboardSurface, /Access operations|Administer scoped users|User Admin selected scope and authority|Access health and blockers|Primary User Admin next actions|user-admin-next-actions/);
+  assert.doesNotMatch(dashboardSurface, /Open the queue, decision card, or trace|Queue drilldowns|User Admin attention queue drilldowns|Access operations|Administer scoped users|User Admin selected scope and authority|Access health and blockers|Primary User Admin next actions|user-admin-next-actions/);
 });
 
 test('User Admin surface actions map to capability ids and trace or audit affordances', () => {

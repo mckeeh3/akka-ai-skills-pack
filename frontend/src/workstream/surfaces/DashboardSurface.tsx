@@ -125,21 +125,6 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
         </div>
       </section>
 
-      <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-queue-heading`}>
-        <div className="surface-section-heading">
-          <div><p className="eyebrow">Queue drilldowns</p><h4 id={`${envelope.surfaceId}-queue-heading`}>Open the queue, decision card, or trace</h4></div>
-          <p>Queue cards reauthorize their target surface before revealing identities or evidence.</p>
-        </div>
-        <div className="user-admin-attention-grid" aria-label="User Admin attention queue drilldowns">
-          {queues.map((queue) => {
-            const action = userAdminQueueAction(queue, actionById);
-            const queueCount = Number(queue.count ?? 0);
-            const body = <><span className="eyebrow">{formatQueueEyebrow(queue.severity, queueCount)}</span><h4>{queue.label}</h4><strong>{queue.count ?? 'review'}</strong><p>{queue.statusText ?? (queueCount === 0 ? 'Open empty queue, setup, or history for this scope.' : 'Open with backend authorization before acting.')}</p>{queue.traceRefs?.[0] && <span className="surface-action-link">View trace</span>}</>;
-            return action ? <button key={queue.queueId} type="button" className={`user-admin-attention-card ${queue.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId)}>{body}</button> : <article key={queue.queueId} className={`user-admin-attention-card ${queue.severity ?? 'info'}`}>{body}</article>;
-          })}
-        </div>
-      </section>
-
       {!hasOpenAttention && (
         <section className="surface-empty-state" aria-label="No User Admin attention needed">
           <h4>No admin attention needed in this scope</h4>
