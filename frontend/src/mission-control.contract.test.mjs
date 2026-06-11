@@ -34,10 +34,11 @@ test('workstream shell provides mission-control responsibilities through shell r
   assert.match(contextBar, /Roles:/);
   assert.match(contextBar, /Browser-safe capabilities/);
   assert.match(stream, /aria-label="Workstream interaction flow"|aria-label="Workstream items"/);
-  assert.match(stream, /Empty workstream/);
+  assert.doesNotMatch(stream, /Empty workstream|No workstream items yet/);
   assert.doesNotMatch(main, /Reference fixture status/);
   assert.match(main, /withRuntimeNotification/);
   assert.match(main, /realtimeStatusLabel/);
+  assert.match(main, /connection\.status !== 'stale' && connection\.status !== 'disconnected'/);
 });
 
 test('workstream fixtures start empty while richer surfaces remain explicit demos', () => {

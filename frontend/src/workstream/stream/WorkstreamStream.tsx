@@ -44,15 +44,7 @@ export function WorkstreamStream({ items: rawItems, selectedItemId, requestScrol
   }
 
   if (items.length === 0) {
-    return (
-      <section ref={streamRef} className="flow-stack workstream-stream workstream-flow empty" aria-label="Workstream interaction flow">
-        <article className="ds-card workstream-item empty">
-          <p className="eyebrow">Empty workstream</p>
-          <h3>No workstream items yet</h3>
-          <p>Use the persistent composer to ask the selected functional agent for help.</p>
-        </article>
-      </section>
-    );
+    return <section ref={streamRef} className="flow-stack workstream-stream workstream-flow empty" aria-label="Workstream interaction flow" />;
   }
 
   return (
