@@ -110,6 +110,10 @@ class WorkstreamServiceTest {
     identityRepository.putProfile(new UserProfile("member@example.test", "member@example.test", "Member User", "Member", "User", null));
     identityRepository.putSettings(new UserSettings("member@example.test", UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.putMembership(new Membership("membership-member", "member@example.test", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_EMPLOYEE), MembershipStatus.ACTIVE, false, null));
+    identityRepository.saveAccount(new Account("owner@example.test", null, "owner@example.test", "owner@example.test", AccountStatus.ACTIVE, "LINKED"));
+    identityRepository.putProfile(new UserProfile("owner@example.test", "owner@example.test", "SaaS Owner", "SaaS", "Owner", null));
+    identityRepository.putSettings(new UserSettings("owner@example.test", UserSettings.ThemeId.AURORA_LIGHT));
+    identityRepository.putMembership(new Membership("membership-owner", "owner@example.test", ScopeType.SAAS_OWNER, null, null, List.of(FoundationRole.SAAS_OWNER_ADMIN), MembershipStatus.ACTIVE, false, null));
   }
 
   @Test
@@ -174,14 +178,14 @@ class WorkstreamServiceTest {
   void userAdminDashboardAndUsersListAreBackendDerivedAndScoped() {
     var dashboard = service.surface(identity(), "membership-admin", "surface-user-admin-dashboard", "corr-useradmin-dashboard");
 
-    assertEquals("surface-user-admin-dashboard", dashboard.surfaceId());
+    assertEquals("surface-user-admin-tenant-dashboard", dashboard.surfaceId());
     assertEquals("dashboard", dashboard.surfaceType());
-    assertEquals("user_admin.dashboard.v1", dashboard.data().get("surfaceContract"));
-    assertTrue(dashboard.toString().contains("USERADMIN_VIEW_OVERVIEW"));
-    assertTrue(dashboard.toString().contains("USERADMIN_LIST_INVITATIONS"));
-    assertTrue(dashboard.toString().contains("USERADMIN_SEND_INVITATION"));
+    assertEquals("user_admin.tenant_dashboard.v1", dashboard.data().get("surfaceContract"));
+    assertTrue(dashboard.toString().contains("Tenant Admin Dashboard"));
+    assertTrue(dashboard.toString().contains("tenant.invitation.manage"));
+    assertTrue(dashboard.toString().contains("action-invite-user"));
     assertTrue(dashboard.toString().contains("blocked_provider_or_runtime"));
-    assertTrue(dashboard.traceIds().stream().anyMatch(trace -> trace.contains("trace-surface-user-admin-dashboard")));
+    assertTrue(dashboard.traceIds().stream().anyMatch(trace -> trace.contains("trace-surface-user-admin-tenant-dashboard")));
 
     var users = service.surface(identity(), "membership-admin", "surface-user-admin-users", "corr-useradmin-users");
     assertEquals("list-search", users.surfaceType());
@@ -189,6 +193,27 @@ class WorkstreamServiceTest {
     assertTrue(users.toString().contains("active-user"));
     assertFalse(users.toString().contains("invite-token"));
     assertFalse(users.toString().contains("tokenHash"));
+  }
+
+  @Test
+  void saasOwnerUserAdminDashboardExposesOrganizationAdminSurface() {
+    var dashboard = service.surface(ownerIdentity(), "membership-owner", "surface-user-admin-dashboard", "corr-owner-dashboard");
+
+    assertEquals("surface-user-admin-saas-owner-dashboard", dashboard.surfaceId());
+    assertEquals("user_admin.saas_owner_dashboard.v1", dashboard.data().get("surfaceContract"));
+    assertTrue(dashboard.toString().contains("SaaS Owner Admin Dashboard"));
+    assertTrue(dashboard.toString().contains("Open Organization Admin"));
+    assertTrue(dashboard.toString().contains("saas_owner.tenant.read"));
+    assertTrue(dashboard.toString().contains("saas_owner.tenant.manage"));
+
+    var organization = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-display-organization-admin", "action-display-organization-admin", "saas_owner.tenant.read", "saas_owner.tenant.read", null, null, "membership-owner", dashboard.surfaceId(), "corr-open-org-admin"));
+
+    assertEquals("accepted", organization.status());
+    assertEquals("surface-user-admin-organization-admin", organization.resultSurface().surfaceId());
+    assertEquals("user_admin.organization_admin.v1", organization.resultSurface().data().get("surfaceContract"));
+    assertTrue(organization.resultSurface().toString().contains("Create Organization"));
+    assertTrue(organization.resultSurface().toString().contains("Tenant lifecycle boundary"));
   }
 
   @Test
@@ -745,7 +770,7 @@ class WorkstreamServiceTest {
         "show_surface", "user_prompt", "show user admin dashboard", null, "agent-user-admin", "surface-user-admin-dashboard", null, "agent-user-admin", null, null, "current_workstream", "corr-shell-show", "membership-admin"));
     assertEquals("accepted", show.status());
     assertEquals("dashboard", show.resultSurface().surfaceType());
-    assertEquals("surface-user-admin-dashboard", show.resultSurface().surfaceId());
+    assertEquals("surface-user-admin-tenant-dashboard", show.resultSurface().surfaceId());
     assertEquals("agent-user-admin", show.requestItem().functionalAgentId());
     assertEquals("user-request", show.requestItem().kind());
     assertTrue(show.request().canonicalPrompt().contains("show surface"));
@@ -753,7 +778,7 @@ class WorkstreamServiceTest {
     var refresh = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
         "refresh_surface", "surface_action", "Refresh User Admin dashboard", null, "agent-user-admin", "surface-user-admin-dashboard", null, "agent-user-admin", "surface-user-admin-dashboard", "action-display-user-list", "current_workstream", "corr-shell-refresh", "membership-admin"));
     assertEquals("accepted", refresh.status());
-    assertEquals("surface-user-admin-dashboard", refresh.resultSurface().surfaceId());
+    assertEquals("surface-user-admin-tenant-dashboard", refresh.resultSurface().surfaceId());
 
     var openAttention = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
         "open_attention_item", "my_account_panel", "Open Agent Admin readiness", null, "agent-agent-admin", "surface-agent-admin-catalog", "attention-agent-admin-readiness", "agent-my-account", "surface-my-account-dashboard", "action-open-agent-admin", "authorized_cross_workstream", "corr-shell-attention", "membership-admin"));
@@ -1179,5 +1204,9 @@ class WorkstreamServiceTest {
 
   private WorkosIdentity memberIdentity() {
     return new WorkosIdentity("workos-member", "member@example.test", "Member User");
+  }
+
+  private WorkosIdentity ownerIdentity() {
+    return new WorkosIdentity("workos-owner", "owner@example.test", "SaaS Owner");
   }
 }

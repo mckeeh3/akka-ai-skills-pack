@@ -12,7 +12,7 @@ export function DashboardSurface({ envelope, onAction, onSignOut }: DashboardSur
   if (envelope.surfaceId === 'surface-my-account-dashboard' || envelope.data.surfaceContract?.startsWith('my_account.')) {
     return <MyAccountCommandCenter envelope={envelope} onAction={onAction} onSignOut={onSignOut} />;
   }
-  if (envelope.surfaceId === 'surface-user-admin-dashboard' || envelope.data.surfaceContract === 'user_admin.dashboard.v1') {
+  if (envelope.surfaceId.startsWith('surface-user-admin-') || envelope.data.surfaceContract?.startsWith('user_admin.')) {
     return <UserAdminCommandCenter envelope={envelope} onAction={onAction} />;
   }
 
