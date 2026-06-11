@@ -93,6 +93,14 @@ class MeServiceTest {
     assertTrue(owner.selectedAuthContext().roleIds().contains("saas-owner-admin"));
     assertEquals(null, owner.selectedAuthContext().tenantId());
     assertTrue(owner.visibleCapabilityIds().contains("saas_owner.user.manage"));
+    var ownerUserAdmin = owner.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("agent-user-admin")).findFirst().orElseThrow();
+    assertEquals("visible", ownerUserAdmin.availability());
+    assertEquals(List.of("saas_owner.user.manage"), ownerUserAdmin.requiredCapabilityIds());
+    assertTrue(owner.visibleCapabilityIds().containsAll(ownerUserAdmin.requiredCapabilityIds()));
+    var ownerAudit = owner.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("agent-audit-trace")).findFirst().orElseThrow();
+    assertEquals("visible", ownerAudit.availability());
+    assertEquals(List.of("saas_owner.audit.read"), ownerAudit.requiredCapabilityIds());
+    assertTrue(owner.visibleCapabilityIds().containsAll(ownerAudit.requiredCapabilityIds()));
     assertEquals("workos-owner", repository.findAccountByEmail("owner@example.com").orElseThrow().workosUserId());
     assertTrue(repository.tenant(BootstrapAdminSeeder.DEFAULT_TENANT_ID).isEmpty());
 

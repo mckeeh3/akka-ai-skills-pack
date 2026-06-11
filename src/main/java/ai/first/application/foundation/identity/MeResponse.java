@@ -172,10 +172,12 @@ public record MeResponse(
     }
 
     public static List<FunctionalAgentSummary> fromCapabilities(List<String> capabilities) {
-      var userAdminVisible = capabilities.contains("secure-tenant-user-foundation")
+      var userAdminCapability = firstGrantedCapability(capabilities, "secure-tenant-user-foundation", "saas_owner.user.manage", "tenant.user.read", "tenant.user.manage", "customer.user.read", "customer.user.manage");
+      var auditCapability = firstGrantedCapability(capabilities, "audit.trace.read", "saas_owner.audit.read", "tenant.audit.read", "customer.audit.read");
+      var userAdminVisible = userAdminCapability != null
           || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
       var profileVisible = capabilities.contains("my_account.view_summary") || capabilities.contains("profile.read") || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
-      var auditVisible = capabilities.stream().anyMatch(capability -> capability.endsWith("audit.read"));
+      var auditVisible = auditCapability != null || capabilities.stream().anyMatch(capability -> capability.endsWith("audit.read"));
       var governanceVisible = capabilities.stream().anyMatch(capability -> capability.startsWith("governance.") || capability.startsWith("improvements.") || capability.contains("policy"));
       var agentAdminVisible = capabilities.contains("agent_admin.list_definitions")
           && capabilities.contains("agent_admin.get_definition")
@@ -201,7 +203,7 @@ public record MeResponse(
               "users",
               icon("workstream-user-admin", "User Admin", "users-admin", "users and roles", "accent-users", "Open User Admin workstream"),
               "markdown_response",
-              List.of("secure-tenant-user-foundation"),
+              List.of(userAdminCapability == null ? "secure-tenant-user-foundation" : userAdminCapability),
               null,
               userAdminVisible ? "visible" : "denied",
               userAdminVisible ? null : "Missing User Admin read capability."),
@@ -223,7 +225,7 @@ public record MeResponse(
               "audit",
               icon("workstream-audit-trace", "Audit/Trace", "timeline-search", "audit timeline search", "accent-audit", "Open Audit/Trace workstream"),
               "markdown_response",
-              List.of("audit.trace.read"),
+              List.of(auditCapability == null ? "audit.trace.read" : auditCapability),
               null,
               auditVisible ? "visible" : "hidden",
               null),
@@ -241,6 +243,13 @@ public record MeResponse(
     }
 
     public record FunctionalAgentAttention(int count, String severity, String source) {}
+
+    private static String firstGrantedCapability(List<String> capabilities, String... candidates) {
+      for (var candidate : candidates) {
+        if (capabilities.contains(candidate)) return candidate;
+      }
+      return null;
+    }
 
     private static WorkstreamIconDescriptor icon(String workstreamId, String displayName, String iconId, String visualHint, String accentColorToken, String label) {
       return new WorkstreamIconDescriptor(workstreamId, displayName, iconId, visualHint, accentColorToken, label, label, null);
