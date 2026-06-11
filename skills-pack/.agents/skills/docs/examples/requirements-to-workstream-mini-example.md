@@ -5,7 +5,7 @@ Use this compact example as the quickest source-attention pattern for turning a 
 ## Input fragment
 
 ```text
-Build an AI-first SaaS app where tenant admins can manage users and delegated agents can help investigate access risks, summarize pending invitations, and propose safe fixes. Admins need to know what needs their attention each day.
+Build an AI-first SaaS app where organization admins can manage users and delegated agents can help investigate access risks, summarize pending invitations, and propose safe fixes. Admins need to know what needs their attention each day.
 ```
 
 ## Workstream inventory
@@ -97,7 +97,7 @@ workstream: user_admin
 attention category: failed invitation delivery
 surface/action: surface.user_admin.dashboard.v1 / action.user_admin.resend_invitation
 capability id: user_admin.invitations.resend
-AuthContext/scope: Tenant Admin in selected tenant; deny disabled users and cross-tenant targets
+AuthContext/scope: Organization Admin in selected organization; deny disabled users and cross-tenant targets
 substrate: Invitation ESE + InvitationWorkflow + Resend outbox Consumer + InvitationView + HTTP endpoint + React surface action
 events/projections/traces: InvitationResendRequested, EmailDeliveryQueued/Failed/Sent, dashboard attention update, AdminAuditEvent
 tests/local validation: idempotent resend, forbidden tenant, captured local outbox, dashboard count update, audit trace link, UI action smoke

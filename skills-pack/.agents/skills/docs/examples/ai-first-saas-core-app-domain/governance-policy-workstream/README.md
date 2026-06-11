@@ -6,7 +6,7 @@
 - **Backing functional agent:** `functional_agent.governance_policy`
 - **Domain:** `ai_first_saas_core_app`
 - **Purpose:** manage policies, approval rules, thresholds, simulations, behavior-change proposals, learning, and governed activation/rollback
-- **Primary users:** policy owners, tenant admins with governance capability, agent behavior stewards, approvers, auditors with read-only authority
+- **Primary users:** policy owners, organization admins with governance capability, agent behavior stewards, approvers, auditors with read-only authority
 
 ## Invariants
 

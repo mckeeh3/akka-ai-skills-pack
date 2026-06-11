@@ -167,7 +167,7 @@ type AuthContext = {
 };
 ```
 
-The context/authority bar renders selected tenant/customer, role/capability basis, support-access state, disabled/forbidden recovery, pending approvals, and trace links where relevant.
+The context/authority bar renders selected organization/customer, role/capability basis, support-access state, disabled/forbidden recovery, pending approvals, and trace links where relevant.
 
 ### Functional agents
 
@@ -391,7 +391,7 @@ Deep links must render not-found, forbidden, unavailable-agent, stale, and recov
 Fixtures are required to prove contracts and edge cases during UI implementation, but they are not a generated-app completion target. Any named feature shown to users must also be wired to the real local backend/API/realtime path with authorization, denial, audit/trace, and validation behavior before it is called implemented.
 
 The first implementation slice must include fixtures for:
-- `/api/me` active tenant admin, regular member, auditor/support-like viewer, disabled user, and no-membership/forbidden states
+- `/api/me` active organization admin, regular member, auditor/support-like viewer, disabled user, and no-membership/forbidden states
 - selected `AuthContext` with tenant and optional customer scope
 - visible, denied, hidden, disabled, and attention-bearing functional agents
 - initial workstream items for user request, agent response, surface, capability result, workflow progress, decision, audit trace, action feedback, system-message surface, and system status
@@ -406,7 +406,7 @@ Focused contract tests should verify:
 - types/fixtures include `/api/me`, AuthContext, functional agents, workstream items, surface envelopes, actions, and events
 - rail visibility is capability-aware and supports denied/hidden states
 - composer is persistent, selected-agent aware, and restores focus to the enabled prompt input after submission, workstream changes, browser refocus, and response completion so the next user input can be typed without clicking the field
-- context/authority indicators expose selected tenant/customer, role/capability basis, support-access state, pending approvals, and trace/recovery links
+- context/authority indicators expose selected organization/customer, role/capability basis, support-access state, pending approvals, and trace/recovery links
 - surface rendering uses envelope identity/type/version, payload, actions, stale markers, redaction, and trace ids
 - action controls preserve disabled/denied reasons, confirmation, idempotency, browser-tool/governed-tool/capability mapping, audit, trace, and result/system-message surface mappings
 - realtime helpers dedupe and stale-mark without crashing on malformed or unauthorized events

@@ -70,7 +70,7 @@ type AuditTraceExplorerData = {
 
 ## Rendering and capability tests
 
-- Tenant Admin, auditor, support-access, and forbidden variants show correct redactions and actions.
+- Organization Admin, auditor, support-access, and forbidden variants show correct redactions and actions.
 - Search, detail, export, source-surface, and escalation actions carry capability/governed-tool/browser-tool ids.
 - Trace links from all SaaS Foundation App surfaces open through shell request routing.
 - Malformed/missing trace ids produce safe system-message surfaces.

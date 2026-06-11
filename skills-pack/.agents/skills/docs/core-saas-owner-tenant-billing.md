@@ -1,4 +1,4 @@
-# Core SaaS Owner to Tenant billing
+# Core SaaS Owner to Organization billing
 
 Use this doc to model the product-agnostic billing foundation for AI-first SaaS applications.
 
@@ -8,19 +8,19 @@ Related docs:
 
 ## Scope
 
-The core foundation covers only billing between the **SaaS Owner** and **Tenants**.
+The core foundation covers only billing between the **SaaS Owner** and customer-facing **Organizations** backed by internal Tenant boundaries.
 
 ```text
-SaaS Owner sells subscription -> Tenant
-Tenant serves -> Customer organizations
+SaaS Owner sells subscription -> Organization-backed Tenant
+Organization serves -> Customer organizations
 ```
 
-Tenant to Customer billing is explicitly out of scope for the core foundation. It belongs to the specific business application built on top of the core and may differ by product domain.
+Organization to Customer billing is explicitly out of scope for the core foundation. It belongs to the specific business application built on top of the core and may differ by product domain.
 
 ## Billing boundaries
 
-SaaS Owner billing capabilities may use Tenant metadata needed to operate the subscription relationship, such as:
-- Tenant legal/display name;
+SaaS Owner billing capabilities may use billing-safe Organization/Tenant metadata needed to operate the subscription relationship, such as:
+- Organization legal/display name;
 - billing contact information;
 - subscription plan;
 - subscription status;
@@ -28,14 +28,14 @@ SaaS Owner billing capabilities may use Tenant metadata needed to operate the su
 - invoice/payment provider identifiers;
 - usage metrics explicitly defined as platform billing metrics.
 
-SaaS Owner billing capabilities must not access Tenant application data, Customer service data, or user profile/settings data except for explicit billing contact fields stored in the billing account.
+SaaS Owner billing capabilities must not access organization application data, Customer service data, or user profile/settings data except for explicit billing contact fields stored in the billing account.
 
 Examples of forbidden SaaS Owner billing access:
-- Tenant customer records beyond billing-safe aggregate counts explicitly defined as billing metrics;
-- Tenant case/ticket/order/document data;
+- Organization customer records beyond billing-safe aggregate counts explicitly defined as billing metrics;
+- Organization case/ticket/order/document data;
 - Customer user activity content;
 - user profile attributes or settings such as UI mode, unless copied into billing-safe contact fields by an authorized billing flow;
-- AI work traces from Tenant-owned business operations, unless the metric is explicitly redacted/aggregated for platform billing.
+- AI work traces from organization-owned business operations, unless the metric is explicitly redacted/aggregated for platform billing.
 
 ## Core billing objects
 
@@ -53,9 +53,9 @@ Recommended fields:
 - `overagePolicy`, optional
 - `effectiveFrom`, `retiredAt`
 
-### Tenant Subscription
+### Organization/Tenant Subscription
 
-Represents the commercial relationship between SaaS Owner and Tenant.
+Represents the commercial relationship between SaaS Owner and the customer-facing Organization backed by a Tenant boundary.
 
 Recommended fields:
 - `subscriptionId`
@@ -72,7 +72,7 @@ Recommended fields:
 
 ### Billing Account
 
-Stores billing-safe contact and payment-provider linkage for a Tenant.
+Stores billing-safe contact and payment-provider linkage for an Organization/Tenant.
 
 Recommended fields:
 - `billingAccountId`
@@ -101,7 +101,7 @@ Recommended fields:
 ## Subscription lifecycle
 
 ```text
-Create Tenant
+Create Organization
   -> Create billing account
   -> Assign plan
   -> Start trial or active subscription
@@ -123,15 +123,15 @@ Key lifecycle transitions:
 
 Plan changes should be auditable and may require policy checks when they materially affect service limits, price, or access.
 
-## Tenant service status vs subscription status
+## Organization service status vs subscription status
 
 Keep billing status distinct from application service availability.
 
 | Concept | Purpose |
 |---|---|
 | Subscription status | Commercial/payment lifecycle. |
-| Tenant status | Tenant organization lifecycle, such as onboarding, active, suspended, closed. |
-| Service entitlement | What the Tenant can currently use based on plan, subscription, limits, and policy. |
+| Organization status | Customer-facing organization lifecycle, such as onboarding, active, suspended, closed, backed by tenant state. |
+| Service entitlement | What the Organization/Tenant can currently use based on plan, subscription, limits, and policy. |
 
 A past-due subscription should not automatically disable service unless the product policy says so. Prefer an explicit policy-controlled transition such as:
 
@@ -140,7 +140,7 @@ subscription becomes PAST_DUE
   -> notification/reminder workflow
   -> grace period timer
   -> decision/policy gate
-  -> tenant service suspension if approved or policy-authorized
+  -> organization service suspension if approved or policy-authorized
 ```
 
 ## AI-first billing behavior
@@ -151,33 +151,33 @@ Billing operations are a good validation path for AI-first architecture because 
 
 A bounded billing assistant may:
 - summarize subscription state;
-- explain why a Tenant is past due or suspended;
+- explain why an Organization is past due or suspended;
 - draft billing notices;
 - recommend next action based on policy and history;
 - identify anomalous plan changes or payment patterns;
 - prepare decision cards for suspension/reactivation/cancellation;
 - answer SaaS Owner Admin questions using billing-safe data only.
 
-It must not access Tenant application data.
+It must not access organization application data.
 
 ### Decision cards
 
 Use decision cards for high-impact billing actions:
-- suspending a Tenant;
-- reactivating a suspended Tenant;
+- suspending an Organization;
+- reactivating a suspended Organization;
 - canceling a subscription;
 - granting extended trial or grace period;
-- changing a Tenant to a materially different plan;
+- changing an Organization to a materially different plan;
 - overriding payment or dunning policy.
 
 Decision card fields:
-- Tenant and subscription summary;
+- Organization and subscription summary;
 - requested action;
 - policy triggers;
 - payment/invoice evidence;
 - service impact;
-- customer-impact warning without exposing Tenant application data;
-- alternatives, such as extend grace period or contact Tenant Admin;
+- customer-impact warning without exposing organization application data;
+- alternatives, such as extend grace period or contact Organization Admin;
 - approver action and audit trace link.
 
 ### Billing audit trace
@@ -196,7 +196,7 @@ Record audit events for:
 ### Outcome metrics
 
 Track core billing outcomes:
-- Tenant onboarding time to active subscription;
+- Organization onboarding time to active subscription;
 - trial conversion rate;
 - past-due resolution time;
 - suspension rate;
@@ -210,8 +210,8 @@ Track core billing outcomes:
 | Component | Responsibility |
 |---|---|
 | `PlanEntity` | Plan lifecycle and history. |
-| `TenantSubscriptionEntity` | Tenant subscription lifecycle, plan changes, status transitions, audit-grade billing history. |
-| `BillingAccountEntity` | Billing-safe Tenant contact/provider linkage. |
+| `TenantSubscriptionEntity` | Tenant-backed Organization subscription lifecycle, plan changes, status transitions, audit-grade billing history. |
+| `BillingAccountEntity` | Billing-safe Organization/Tenant contact/provider linkage. |
 | `BillingWorkflow` | Trial activation, plan changes, provider event handling, grace periods, suspension/reactivation gates. |
 | `BillingProviderConsumer` | Consume payment provider webhooks or integration events. |
 | `BillingTimedAction` | Trial expiry, invoice due reminders, grace period expiry, periodic billing health checks. |
@@ -243,33 +243,33 @@ POST /api/owner/billing/decision-cards/{decisionId}/approve
 POST /api/owner/billing/decision-cards/{decisionId}/deny
 ```
 
-Tenant Admin billing visibility APIs:
+Organization Admin billing visibility APIs:
 
 ```text
 GET /api/tenant/{tenantId}/subscription
 GET /api/tenant/{tenantId}/billing-contact
 ```
 
-Tenant APIs should expose only that Tenant's own subscription/billing-safe information. They must not expose SaaS Owner internal risk notes, other Tenant data, or payment-provider secrets.
+Organization Admin APIs should expose only that Organization/Tenant's own subscription/billing-safe information. They must not expose SaaS Owner internal risk notes, other organization data, or payment-provider secrets.
 
 ## Authorization rules
 
 - `SAAS_OWNER_ADMIN` may manage plans, billing accounts, subscriptions, invoices/payment summaries, and billing decisions.
-- `TENANT_ADMIN` may view its own Tenant subscription and billing contact information, and may update billing contact details only if product policy allows.
+- `TENANT_ADMIN` may view its own Organization subscription and billing contact information, and may update billing contact details only if product policy allows.
 - `TENANT_ADMIN` cannot change plan, subscription state, suspension state, or billing policy unless the generated app explicitly adds a self-service purchasing flow.
 - Billing contact updates must not silently mutate user profile/settings records; synchronize only through explicit product rules and audit when needed.
 - `CUSTOMER_ADMIN` and `CUSTOMER_USER` have no core billing access.
-- Billing assistants operate with billing-safe data access and cannot read Tenant application data.
+- Billing assistants operate with billing-safe data access and cannot read organization application data.
 
 ## Acceptance checklist
 
 - [ ] SaaS Owner Admin can create and retire plans.
-- [ ] SaaS Owner Admin can create a billing account and subscription for a Tenant.
+- [ ] SaaS Owner Admin can create a billing account and subscription for an Organization/Tenant.
 - [ ] Subscription status transitions are validated and audited.
-- [ ] Billing operations do not expose Tenant application data.
-- [ ] Tenant Admin can view only its own billing/subscription summary when allowed.
+- [ ] Billing operations do not expose organization application data.
+- [ ] Organization Admin can view only its own billing/subscription summary when allowed.
 - [ ] Past-due, grace period, suspension, and reactivation are policy-controlled.
 - [ ] High-impact billing actions can produce decision cards.
 - [ ] Billing assistant uses billing-safe data only.
-- [ ] Tenant entitlement view gives app services the information needed to enforce plan limits without granting SaaS Owner data access.
+- [ ] Tenant entitlement view gives app services the information needed to enforce Organization/Tenant plan limits without granting SaaS Owner data access.
 - [ ] Provider webhook handling is idempotent and auditable.

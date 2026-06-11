@@ -81,9 +81,9 @@ Add invitations. Actually, invitations expire after 7 days. Admins can resend un
 Compiled current intent:
 
 ```text
-Tenant admins may create email invitations.
+Organization admins may create email invitations.
 Invitations expire after 7 days.
-Tenant admins may resend unaccepted invitations.
+Organization admins may resend unaccepted invitations.
 Support users may view invitation status but may not create invitations.
 ```
 

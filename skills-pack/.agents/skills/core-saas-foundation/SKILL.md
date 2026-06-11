@@ -49,12 +49,13 @@ Support Access and Billing may be separate foundation workstreams or surfaces wh
 
 Every generated SaaS app and every SaaS Foundation App extension must preserve or explicitly address:
 
+- Product terminology convention: use **Organization** for customer-facing account/workspace concepts in UI, onboarding, invitations, admin surfaces, app-description surface labels, and end-user docs; use **Tenant** for the internal SaaS isolation boundary, data partition, authorization scope, audit partition, provider/resource scope, and code-level tenancy. In the default foundation an Organization is backed 1:1 by a Tenant boundary.
 - WorkOS/AuthKit browser authentication and WorkOS JWT validation.
-- Akka-owned local authorization state: Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, selected AuthContext, Tenant, Customer, support access, and billing-safe platform records.
+- Akka-owned local authorization state: Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, selected AuthContext, Organization-backed Tenant, Customer, support access, and billing-safe platform records.
 - `/api/me` with browser-safe account, profile, settings, memberships, selected/default context, roles/capabilities, and context switching.
 - Invitation lifecycle and email-invite onboarding using Resend for production email and an explicit captured outbox adapter for local/dev/test.
 - Backend authorization for every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, and timer action.
-- Tenant/customer scoped commands and queries that mechanically reject cross-scope access.
+- Organization/customer scoped commands and queries, backed by tenant/customer isolation, that mechanically reject cross-scope access.
 - AdminAuditEvent and work traces for identity, invitation/email, membership/role, support-access, billing, data access, approval, policy, and consequential AI/tool activity.
 - Governed runtime agent foundation: AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, ReferenceDocument/ReferenceVersion, AgentSkillManifest, AgentReferenceManifest, ToolPermissionBoundary, prompt/skill/reference load traces, and AgentWorkTrace.
 - Bounded AI-assisted admin offload with decision cards for risky changes; agents may draft/recommend but must not autonomously expand authority.
@@ -70,7 +71,7 @@ Model foundation work as user-facing workstream verticals before selecting entit
 1. functional/context-area agent ownership;
 2. structured surfaces and surface actions;
 3. governed capability and governed-tool contracts;
-4. AuthContext, tenant/customer scope, side effects, idempotency, policy/approval, audit/trace, and tests;
+4. AuthContext, organization/customer scope for product language, tenant/customer scope for internal enforcement, side effects, idempotency, policy/approval, audit/trace, and tests;
 5. selected Akka component families from the pack's eleven-component architecture;
 6. frontend workstream shell/API/realtime behavior where user-visible.
 
@@ -101,7 +102,7 @@ Before handing off, verify:
 - The target scope is explicit: SaaS Foundation App maintenance/extension, business-domain extension, app-specific feature work, or another named scope.
 - Foundation workstreams and structured surfaces are present or intentionally out of scope.
 - Capabilities are modeled before Akka component selection.
-- WorkOS/AuthKit, Resend/outbox, `/api/me`, invitation/admin lifecycle, backend authorization, tenant/customer isolation, governed-agent runtime, and audit/work traces are preserved for relevant scope.
+- WorkOS/AuthKit, Resend/outbox, `/api/me`, invitation/admin lifecycle, backend authorization, customer-facing organization language, tenant/customer isolation, governed-agent runtime, and audit/work traces are preserved for relevant scope.
 - User Admin can discover and manage users within authority boundaries when User Admin behavior is in scope.
 - Agent Admin, Audit/Trace, and Governance/Policy boundaries are not bypassed by prompts, tools, or frontend state.
 - Required negative authorization/security tests are planned or implemented.

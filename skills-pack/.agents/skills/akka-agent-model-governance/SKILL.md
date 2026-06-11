@@ -100,7 +100,7 @@ Do not make provider secrets editable through generic agent governance UI. Admin
 
 - Model changes are behavior changes. Treat activation, fallback expansion, provider changes, and higher-capability model access as governed operations.
 - Expanding a model policy to allow more expensive, less constrained, external, or higher-risk models should require approval or a documented safe admin simplification.
-- Tenant admins may manage tenant model policy only if the SaaS product grants that capability; SaaS Owner provider administration remains separate from tenant data access.
+- Organization admins (`TENANT_ADMIN` internally) may manage organization/tenant model policy only if the SaaS product grants that capability; SaaS Owner provider administration remains separate from tenant data access.
 - Test/replay/evaluation model overrides are mode-labeled, permission-checked, side-effect safe by default, and traced.
 - A disabled model config must deny runtime invocation before model call and emit a denial trace.
 

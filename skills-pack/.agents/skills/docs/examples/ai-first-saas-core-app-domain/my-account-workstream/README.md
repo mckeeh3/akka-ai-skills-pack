@@ -86,14 +86,14 @@ The Settings surface should expose named theme selection. Users choose one avail
 
 ## Dashboard surface details
 
-The dashboard is the default surface for `dashboard`, `my account`, `show my account`, and signed-in user tile selection. It should include:
+The dashboard is the default surface for `dashboard`, `my account`, `show my account`, and signed-in user tile selection. It is a personal action router, not an account report. Aside from labels and minimal microcopy, visible content should be clickable indicators or shortcuts. It should include:
 
-- **Attention counter strip first**: render cross-workstream attention counters above profile/settings/details using the same shared dashboard attention-card style as role-specific workstream dashboards: semibold/bold label, large `itemsNeedingAttention` number, and a concise badge/status or open affordance below.
-- **Profile and Settings actions** as secondary shortcuts below the attention counters. These request the Profile or Settings surface in the My Account workstream rather than navigating to a separate shell menu.
+- **Attention counter strip first**: render cross-workstream attention counters above profile/settings/details using the same shared dashboard attention-card style as role-specific workstream dashboards: semibold/bold label, large `itemsNeedingAttention` number, and a concise badge/status or open affordance below. The whole counter opens the filtered workstream attention queue; `0` remains useful when it opens the empty queue, explanation, or history.
 - **Personal queue**: a concise cross-workstream list below the counter strip of the signed-in user's actionable items, such as approvals, decisions, exceptions, reviews, assigned tasks, or overdue items. Each item includes enough context to choose the next action: title, source workstream, item type, priority/due state, and an action that opens the relevant workstream surface or detail.
-- **Workstream status panels**: one compact panel for each workstream visible to the current `/api/me` AuthContext. Each panel uses the shared attention-card counter style and shows only a large `itemsNeedingAttention` number, a short label, and an icon button/open affordance or status badge for the workstream. The panel does not list detailed items; detailed investigation belongs below the counter strip or in that workstream's own dashboard.
+- **Profile and Settings actions** as secondary shortcuts below the attention counters and personal queue. These request the Profile or Settings surface in the My Account workstream rather than navigating to a separate shell menu.
+- **Workstream status panels**: one compact clickable panel for each workstream visible to the current `/api/me` AuthContext. Each panel uses the shared attention-card counter style and shows only a large `itemsNeedingAttention` number, a short label, and an icon button/open affordance or status badge for the workstream. The panel does not list detailed items; detailed investigation belongs below the counter strip or in that workstream's own dashboard.
 - **Workstream icons**: use the universal shell workstream icon metadata. The icon is generated or selected from the workstream name/domain, appears on the panel button, and exposes the full workstream name through tooltip/accessible label text.
-- **Context and authority summary**: selected tenant/customer, role/capability basis, and safe links to capabilities/context selector where useful.
+- **Context and authority indicator**: selected organization/customer and role/capability basis appear as concise microcopy attached to the context selector/capability shortcut, not as a passive summary block.
 
 Dashboard payload guidance:
 

@@ -44,7 +44,7 @@
 
 - app/product name: target app name from app description
 - logo/icon treatment: compact product mark in the functional-agent rail; may use brand accent but must preserve contrast and not replace authority/status semantics
-- copied-demo-content rule: do not copy demo product names, logos, user names, tenant names, screenshots, or metrics from reference material
+- copied-demo-content rule: do not copy demo product names, logos, user names, organization names, screenshots, or metrics from reference material
 - custom brand overrides: limited to token bundles, product name, logo/icon treatment, safe accent tuning, and documented font choices unless the user provides a custom design system
 
 ## Design tokens
@@ -69,7 +69,7 @@
 ## Component style rules
 
 - workstream shell and functional-agent rail: left rail on desktop, selected workstream uses soft accent fill and border, attention badges are prominent but sparse, user/context controls pinned near the bottom when appropriate
-- context/authority bar: shows tenant/customer, role/capability basis, support access, trace links, pending approvals, and stale/sync state in compact bordered fields
+- context/authority bar: shows organization/customer context, role/capability basis, support access, trace links, pending approvals, and stale/sync state in compact bordered fields
 - AI command strip: visually distinct raised surface with AI mark, prompt input affordance, suggested prompt chips, send/action button, and subtle AI glow/border; results must become durable workstream items/surfaces
 - KPI summary cards: strong numbers, label, trend text, status icon/color, optional sparkline; avoid equal visual weight with decision queues
 - decision/exception cards: subject, originating agent/system, risk/policy badge, recommendation, evidence summary, confidence/impact when available, primary action, secondary details/evidence action, visible trace link when available

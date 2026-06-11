@@ -11,7 +11,7 @@ Keep backend secrets in backend runtime environment variables or deployment secr
 Backend runtime variables:
 
 ```bash
-export ADMIN_USERS="jane@example.com:SAAS_OWNER_ADMIN:OWNER,joe@example.com:TENANT_ADMIN:tenant-123"
+export ADMIN_USERS="jane@example.com:SAAS_OWNER_ADMIN:OWNER"
 export WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
 export WORKOS_API_BASE_URL="https://api.workos.com" # optional override for tests/proxies
 export WORKOS_JWT_ISSUER="configured-workos-issuer" # when env-backed JWT config is used
@@ -189,9 +189,9 @@ Example response shape:
   "email": "jane@example.com",
   "displayName": "Jane Example",
   "status": "ACTIVE",
-  "roles": ["TENANT_ADMIN"],
-  "tenantIds": ["tenant-123"],
-  "capabilities": ["users:list", "memberships:manage", "invitations:resend"]
+  "roles": ["SAAS_OWNER_ADMIN"],
+  "tenantIds": [],
+  "capabilities": ["tenants:list", "tenants:create", "tenant_admins:invite"]
 }
 ```
 
@@ -271,10 +271,10 @@ Required browser admin surfaces are Users, Invitations, Roles/Memberships, Acces
 
 ## Startup admin bootstrap
 
-Use backend-only environment variables for initial admin bootstrap, for example:
+Use backend-only environment variables for initial SaaS Owner Admin bootstrap, for example:
 
 ```bash
-export ADMIN_USERS="jane@gmail.com:SAAS_OWNER_ADMIN:OWNER,joe@outlook.com:TENANT_ADMIN:tenant-123"
+export ADMIN_USERS="jane@gmail.com:SAAS_OWNER_ADMIN:OWNER"
 export WORKOS_API_KEY="sk_test_or_sk_live_xxxxxxxxx"
 export WORKOS_API_BASE_URL="https://api.workos.com"
 export WORKOS_JWT_ISSUER="configured-workos-issuer"
@@ -295,14 +295,17 @@ Local/dev/test environments may replace external delivery with an explicit safe 
 Bootstrap behavior:
 - implement startup bootstrap in the service's single Akka `@Setup` class implementing `akka.javasdk.ServiceSetup`; `onStartup()` must load `ADMIN_USERS` before `/api/me` or admin endpoints depend on local admin state
 - keep bootstrap idempotent because Akka invokes `onStartup()` for each service instance and restart; do not rely on endpoint lazy initialization or tests calling the bootstrap helper directly as the production startup path
-- parse configured initial admins at startup using canonical foundation roles (`SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`) plus explicitly mapped app-specific roles when needed
-- create invited local Akka user accounts idempotently
-- create Invitation records with invite token or acceptance context, status, expiry, delivery status, delivery attempts, and audit metadata
+- parse configured bootstrap users as SaaS Owner scope only; production/default bootstrap may create `SAAS_OWNER_ADMIN` accounts and memberships only
+- reject or fail readiness for configured bootstrap entries that request `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, tenant ids, or customer ids, because those roles require existing Organization/Tenant or Customer scope created through governed admin flows
+- create invited local Akka SaaS Owner account records idempotently, with SaaS Owner scoped membership/role state and audit metadata
+- create Invitation records for the initial SaaS Owner Admin with invite token or acceptance context, status, expiry, delivery status, delivery attempts, and audit metadata
 - send invite emails in production or capture them in the local/dev/test outbox adapter
-- surface delivery failures to authorized admins and record AdminAuditEvent facts
-- support idempotent resend and revoke/cancel before acceptance
-- when the user signs in through WorkOS, link WorkOS identity to the invited local account only through a valid invitation or membership policy
+- surface delivery failures through SaaS Owner bootstrap diagnostics/readiness and record AdminAuditEvent facts
+- support idempotent resend and revoke/cancel before acceptance when a bootstrap invite management path is implemented
+- when the user signs in through WorkOS, link WorkOS identity to the invited local account only through a valid invitation or explicit SaaS Owner bootstrap acceptance policy
 - activate the local account after successful link and invitation acceptance
+- create Organization Admins (`TENANT_ADMIN` internally) only after a SaaS Owner Admin creates a customer-facing Organization/Tenant and invites/bootstrap one or more Organization Admins through the mandatory Invitation lifecycle
+- local/dev/test fixture modes may atomically seed demo Organizations and demo Tenant/Customer memberships only when explicitly named as fixtures; fixture seeding must not be the production/default bootstrap path
 
 ## Testing checklist
 

@@ -39,7 +39,7 @@ Routes and deep links support this model; they are not the security boundary and
 - Put frontend source under `frontend/**`; build production assets to `src/main/resources/static-resources/**`.
 - Protected data loads through authorized `/api/...` routes. Static assets may be public; data, actions, streams, and surface payloads are protected.
 - Rendering code consumes frontend-safe DTOs/surface envelopes. It must not import server domain state or secrets.
-- Every consequential surface action and dashboard work-object interaction maps to a backend capability and is rechecked server-side. Dashboard objects representing attention or next work are clickable and keyboard-operable by default; ready dashboards should show authorized work rather than disabled forbidden targets.
+- Every consequential surface action and dashboard work-object interaction maps to a backend capability and is rechecked server-side. Workstream dashboards are action routers, not reports: ready dashboards must show things that need the current user's attention first and things the current user can do second. Aside from labels and minimal microcopy, visible dashboard content must be actionable/clickable indicators; passive FYI metrics, inert charts, and decorative status grids belong in report/detail/analytics surfaces or must become governed drilldowns. Dashboard objects representing attention or next work are clickable and keyboard-operable by default; ready dashboards should show authorized work rather than disabled forbidden targets.
 - Denials, validation failures, approval-required results, stale/reconnect states, and no-ops render as structured feedback, not silent UI failures.
 - Do not use legacy `frontend/src/screens/**`, removed static UI fixtures, copied demo names, or pack examples as generated-app runtime structure. Static reference mockups under `../examples/web-ui/**` are visual guidance only, not runtime source or fixture completion evidence.
 
@@ -50,7 +50,7 @@ Before implementation, produce or update a compact UI plan with:
 - users/personas, scopes, and primary goals
 - selected functional agents and visible/hidden/denied rail behavior
 - workstream shell regions and default selected workstream
-- required structured surfaces with type/version, payload summary, states, actions, dashboard work-object interaction targets, auth basis, traces, and responsive behavior
+- required structured surfaces with type/version, payload summary, states, actions, dashboard action-router hierarchy, dashboard work-object interaction targets, zero-count behavior, auth basis, traces, and responsive behavior
 - API and realtime contracts for each surface/action
 - accessibility, keyboard/focus, loading/empty/error/forbidden/stale states
 - frontend project/build/hosting checks

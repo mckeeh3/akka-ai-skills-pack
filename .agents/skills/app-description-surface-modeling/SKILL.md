@@ -1,6 +1,6 @@
 ---
 name: app-description-surface-modeling
-description: Model structured workstream surfaces in app descriptions, including typed payloads, reusable functional-agent placement, capability-backed actions, rendering states, auth, traces, and tests.
+description: Model structured workstream surfaces in app descriptions, including the mandatory collection-object list/show/create/edit/destructive-lifecycle progression, typed payloads, reusable functional-agent placement, capability-backed actions, rendering states, auth, traces, and tests.
 ---
 
 # App Description Surface Modeling
@@ -29,7 +29,8 @@ Use this skill to update authoritative app-description surface definitions and w
 For each surface, define:
 
 - whether this is a reusable global surface pattern or a workstream-specific surface binding
-- stable id, type, version, owning workstream definition, exactly one owning functional agent, reusable functional agents/workstreams if any, and purpose
+- for durable collection objects, the surface's role in the canonical collection-object progression from `../docs/structured-surface-contracts.md`: domain list/search, lifecycle-aware show/inspection, create, edit, destructive lifecycle confirmation, or domain-specific single-action surface
+- stable domain-semantic id, type, version, owning workstream definition, exactly one owning functional agent, reusable functional agents/workstreams if any, and purpose
 - actor roles/scopes and selected `AuthContext` requirements
 - payload schema summary with frontend-safe fields only
 - loading, empty, ready, submitting, success, validation-error, forbidden, conflict, stale/reconnect, partial-data, and failure states as applicable
@@ -43,6 +44,9 @@ For each surface, define:
 ## Modeling rules
 
 - Model dashboard attention and surface graph edges before conventional route/page details.
+- For any durable collection of domain things such as users, customers, orders, policies, agents, invitations, or governed documents, use the canonical collection-object surface progression in `../docs/structured-surface-contracts.md` by default. Name surfaces domain-semantically, not generically: use names such as `customerDirectory`, `customerProfile`, `newCustomerIntake`, `customerEditForm`, or `customerArchiveConfirmation` instead of `thing.list/show/create/edit/delete`.
+- Treat collection-object discovery as delegated progression: list/search surfaces discover and select; every listed row/card is clickable and keyboard-operable; selection opens the object's lifecycle-appropriate show/inspection surface; show/inspection surfaces expose task entry points; separate create, edit, destructive lifecycle, and domain-specific single-action surfaces perform consequential mutations.
+- Keep each surface single-purpose. Do not combine list, show, create, edit, and destructive lifecycle behavior into one broad surface. Use separate edit and delete/archive/revoke/deactivate/cancel confirmation surfaces, and prefer domain lifecycle language over physical delete unless true deletion is required.
 - Treat every workstream dashboard as an action router, not a report: ready dashboard content must be ordered top-to-bottom as **things that need my attention** followed by **things I can do**.
 - Aside from section labels, control labels, and minimal explanatory microcopy, model only actionable/clickable dashboard indicators. Cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons must declare the surface/action they open, the governed capability/browser-tool if protected, and the request/result surfaces they append. Passive FYI metrics, inert charts, decorative status tiles, and content that does not answer “what can I do with this?” belong in report/detail/analytics surfaces or must become governed drilldowns.
 - A dense labeled counter or metric tile is itself the interaction target, including valid `0` states that open an empty queue, explanation, setup, history, or validation surface. Use `none` with a recorded reason only for explicit non-actionable exceptions; ready dashboards should normally omit forbidden targets instead of displaying disabled work objects.
@@ -61,6 +65,7 @@ For each surface, define:
 Update or propose updates to the app-description with:
 
 - new/changed surface contracts
+- for each durable collection object in scope, the domain-semantic list/show/create/edit/destructive-lifecycle surface progression, including lifecycle-state-dependent show/task routing and any explicit override from the canonical pattern
 - a surface-description sufficiency review result for each new or substantially changed browser-rendered surface, including whether another description pass is required before code generation
 - affected capability/security/test/observability links
 - traceability map or graph-link changes

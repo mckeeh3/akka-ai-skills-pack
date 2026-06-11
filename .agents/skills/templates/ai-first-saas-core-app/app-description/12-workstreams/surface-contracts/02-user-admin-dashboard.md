@@ -7,14 +7,14 @@
 
 ## Placement and graph role
 
-This dashboard is the User Admin human surface graph trunk. It answers what is happening in user administration, what needs this actor's attention, which invitation/access-review/support-access work is blocked or risky, and what actions are authorized next.
+This dashboard is the User Admin human surface graph trunk. It answers what is happening in user and Organization administration, what needs this actor's attention, which Organization bootstrap/invitation/access-review/support-access work is blocked or risky, and what actions are authorized next.
 
 ## Payload summary
 
 Payload must include:
 
 - selected `AuthContext`, visible admin capability ids, `correlationId`, trace ids, generated/stale markers;
-- attention summary by category: pending invitation, failed delivery, expired invitation, disabled account, access-review risk, last-admin risk, support-access review, role-escalation proposal, admin audit anomaly;
+- attention summary by category: Organization onboarding/bootstrap-admin risk, pending invitation, failed delivery, expired invitation, disabled account, access-review risk, last-admin risk, support-access review, role-escalation proposal, admin audit anomaly;
 - summary cards and queue counts from backend views/projections, not frontend-only badges;
 - recent material changes with audit links;
 - action descriptors with browser-tool id, governed-tool id, capability id, confirmation/approval requirements, denial categories, and idempotency requirements.
@@ -36,6 +36,7 @@ type UserAdminDashboardData = {
 | Action | Capability hint | Qualified exposure | Result surface |
 |---|---|---|---|
 | Refresh dashboard | `admin.users.dashboard.read` | browser-tool, agent-tool | update `user-admin-dashboard` |
+| Open SaaS Owner Organization Administration | `tenant:list` / `tenant:create` / `tenant:update_status` | browser-tool surface-request | `saas-owner-organization-admin` |
 | Open invitation queue | `admin.users.search` | browser-tool surface-request | `user-admin-user-list[filter=invitations]` |
 | Open access review queue | `admin.access_review.read` | browser-tool surface-request | `user-admin-user-list[filter=access_review]` or `decision-card` |
 | Start access-risk investigation | `admin.access_review.investigate` | browser-tool, internal-tool | autonomous task progress/result surface or `system_message` SaaS Foundation App fallback |
@@ -47,6 +48,7 @@ type UserAdminDashboardData = {
 | actionId | browserToolId | governedToolId | capabilityId | exposure | resultSurfaceId | idempotency | traceRequired |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `user-admin.refresh-dashboard` | `user-admin.dashboard.refresh` | `useradmin.dashboard.read` | `secure-tenant-user-foundation` | browser-tool, agent-tool | `user-admin-dashboard` | read-only request correlation id | true |
+| `user-admin.open-organization-admin` | `user-admin.organizations.open-admin` | `tenant.list` | `secure-tenant-user-foundation` | browser-tool, surface-request | `saas-owner-organization-admin` | dashboard queue id or selected SaaS Owner context | true |
 | `user-admin.open-invitation-queue` | `user-admin.invitations.open-queue` | `useradmin.users.search` | `secure-tenant-user-foundation` | browser-tool, surface-request | `user-admin-user-list` | dashboard queue id | true |
 | `user-admin.open-access-review-queue` | `user-admin.access-review.open-queue` | `useradmin.access_review.read` | `secure-tenant-user-foundation` | browser-tool, surface-request | `user-admin-user-list` or `decision-card` | dashboard queue id | true |
 | `user-admin.start-access-risk-investigation` | `user-admin.access-risk.investigate` | `useradmin.access_review.investigate` | `secure-tenant-user-foundation` | browser-tool, internal-tool | deferred `task-progress-surface` or `system_message` | client-generated investigation request id | true |
@@ -64,13 +66,14 @@ type UserAdminDashboardData = {
 ## Auth/security
 
 - Tenant/customer scope is enforced by backend views before counts and queue links are produced.
+- SaaS Owner Admin Organization/Tenant lifecycle entrypoints are explicit and limited to platform-safe metadata.
 - SaaS Owner support-access and Customer Admin boundaries are explicit.
 - Risky actions require decision-card/approval flow when policy says so.
 - Frontend visibility does not authorize dashboard reads or actions.
 
 ## Rendering and capability tests
 
-- Role variants produce correct counts, cards, redactions, actions, and forbidden states.
+- Role variants produce correct counts, cards, redactions, actions, and forbidden states, including SaaS Owner Admin Organization Administration entrypoints.
 - Attention count feeds User Admin rail badge and My Account aggregate from backend projection.
 - Queue cards open filtered list surfaces through shell request routing, not page-first navigation.
 - Risky actions produce decision cards or approval-needed system messages.

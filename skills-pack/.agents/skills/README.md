@@ -23,6 +23,8 @@ Java base package for generated code:
 
 Use `domain-specific` or the user's actual domain name for later product features. Never say `DCA-specific` unless DCA is explicitly the user's domain; do not use historical/example domain names as generic placeholders.
 
+Terminology convention: use **Organization** for customer-facing account/workspace concepts in UI, onboarding, invitations, admin surfaces, app-description surface labels, and end-user docs. Use **Tenant** for the internal SaaS isolation boundary, authorization/data/audit partitioning, provider/resource scope, and code-level tenancy. In the default foundation, an Organization is backed 1:1 by a Tenant boundary.
+
 ## Core-app-first routing
 
 For new secure AI-first SaaS apps where the user wants an implementation baseline, prefer fork-and-extend from this runnable SaaS Foundation App repository root. Do not expect the skills install to contain or render a duplicate full-app baseline.
@@ -39,7 +41,7 @@ Do not place new product-specific Java code in legacy top-level `security`, `age
 
 For high-level product input, treat the target as a secure AI-first SaaS **agent workstream application** unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material.
 
-Security is mandatory. Load `core-saas-foundation` early whenever generated-app foundation rules are in scope. The mandatory secure SaaS foundation includes WorkOS/AuthKit browser authentication, local Akka-owned authorization state, account/profile/settings/membership/role/capability state, `/api/me`, email-invite onboarding with Resend, backend authorization checks, tenant/customer scoping, support access, admin audit, audit/work traces, workstream UI surfaces, tenant-isolation tests, and frontend secret boundaries.
+Security is mandatory. Load `core-saas-foundation` early whenever generated-app foundation rules are in scope. The mandatory secure SaaS foundation includes WorkOS/AuthKit browser authentication, local Akka-owned authorization state, account/profile/settings/membership/role/capability state, customer-facing Organization concepts backed by tenant isolation, `/api/me`, email-invite onboarding with Resend, backend authorization checks, tenant/customer scoping, support access, admin audit, audit/work traces, workstream UI surfaces, tenant-isolation tests, and frontend secret boundaries.
 
 AI-first managed agents / governed runtime agent foundation is mandatory for model-backed workstream behavior. Use `docs/governed-agent-substrate.md` for the shared record/runtime/trace model; focused agent-governance skills own only their specific slice.
 

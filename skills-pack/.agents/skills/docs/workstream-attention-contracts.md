@@ -136,7 +136,7 @@ type WorkstreamAttentionSummary = {
 };
 ```
 
-The count means: there are `N` open or escalated items in this workstream that currently require this user's attention, given identity, tenant/customer context, memberships, roles, permissions, workstream availability, redaction, and authority.
+The count means: there are `N` open or escalated items in this workstream that currently require this user's attention, given identity, organization/customer context, memberships, roles, permissions, workstream availability, redaction, and authority.
 
 ## Producers and idempotency
 

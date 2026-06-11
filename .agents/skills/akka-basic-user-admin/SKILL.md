@@ -41,13 +41,14 @@ Required foundation concepts:
 - Account linked to WorkOS subject, UserProfile, and UserSettings
 - status: `INVITED`, `ACTIVE`, `DISABLED`
 - Organization records backed by Tenant isolation with status such as `DRAFT`, `ONBOARDING`, `ACTIVE`, `SUSPENDED`, or `CLOSED`
-- Organization Admin bootstrap through invitation before privileged first sign-in (`TENANT_ADMIN` internally)
+- initial startup bootstrap creates only SaaS Owner Admin account/membership state; Organization Admin bootstrap happens later through invitation after an Organization/Tenant exists (`TENANT_ADMIN` internally)
 - Organization/Tenant and Customer Membership records
 - canonical roles: `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`; app-specific roles extend capabilities but do not replace foundation checks
 - selected `AuthContext` for protected operations
 - support-access grants with expiry and audit
 - AdminAuditEvent metadata for organization/tenant lifecycle, identity, invitation, membership, role, support-access, approval, and data-access changes
 - TenantDirectoryView, TenantAdminView, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView when User Admin is in scope
+- explicit app-description/UI surface contract for SaaS Owner Organization Administration, including Organization directory, create/detail/profile/status actions, Organization Admin bootstrap, platform-safe redaction, and audit timeline links
 
 Use Key Value Entity for simple current state. Use Event Sourced Entity when the state model itself needs audit-grade history; Organization/Tenant lifecycle and status changes are usually audit-grade enough to prefer Event Sourced Entity.
 
@@ -91,7 +92,7 @@ All protected routes require JWT, request-context extraction, active local accou
 ## Authorization rules
 
 - reject disabled users even with a valid JWT
-- require `SAAS_OWNER_ADMIN` for Organization/Tenant creation, status changes, and SaaS Owner bootstrap of Organization Admins
+- require `SAAS_OWNER_ADMIN` for Organization/Tenant creation, status changes, and SaaS Owner-initiated Organization Admin invitation/bootstrap after the target Organization/Tenant exists
 - allow `TENANT_ADMIN` to maintain Organization Admins and users only inside their selected Organization/Tenant context
 - validate target tenant/customer scope on every action
 - prevent privilege escalation, including organization admins assigning SaaS-owner privileges, creating sibling Organizations/Tenants, or assigning out-of-scope roles
@@ -102,15 +103,16 @@ All protected routes require JWT, request-context extraction, active local accou
 
 ## Completion standard
 
-Do not call User Admin implemented unless the stated scope works through the running Akka/API/UI path. A complete foundation slice includes Organization/Tenant create/maintain where SaaS Owner administration is in scope, Organization Admin bootstrap and lifecycle, scoped list/search, invite/resend/revoke/acceptance visibility, role/membership lifecycle, disabled-user denial, last-admin protection, scoped audit/search, access-review queues, required Organization-facing surfaces, backend authorization, tenant/customer isolation, and tests. If any part is deferred, name the slice narrowly or mark it incomplete.
+Do not call User Admin implemented unless the stated scope works through the running Akka/API/UI path. A complete foundation slice includes Organization/Tenant create/maintain where SaaS Owner administration is in scope, explicit SaaS Owner Organization Administration surface(s), Organization Admin bootstrap and lifecycle, scoped list/search, invite/resend/revoke/acceptance visibility, role/membership lifecycle, disabled-user denial, last-admin protection, scoped audit/search, access-review queues, required Organization-facing surfaces, backend authorization, tenant/customer isolation, and tests. If any part is deferred, name the slice narrowly or mark it incomplete.
 
 ## Tests and validation
 
 Cover at least:
 
-- `/api/me` bootstrap for active, invited, disabled, unknown, and multi-scope users
+- `/api/me` bootstrap for active, invited, disabled, unknown, and multi-scope users, including startup bootstrap limited to SaaS Owner Admin accounts only
+- rejection/readiness failure for production/default bootstrap config that tries to create `TENANT_ADMIN`, tenant-scoped, or customer-scoped memberships before the Organization/Tenant exists
 - SaaS Owner Organization/Tenant creation, Organization profile/status maintenance, and TenantDirectoryView/OrganizationDirectoryView list/search
-- SaaS Owner bootstrap invitation for initial Organization Admin
+- SaaS Owner invitation/bootstrap for initial Organization Admin after Organization/Tenant creation
 - Organization Admin management of admins/users only inside the selected Organization/Tenant context
 - cross-tenant Organization Admin attempts, Organization Admin sibling-organization creation, and Organization Admin SaaS Owner role assignment denials
 - tenant/customer isolation for every list/query/action

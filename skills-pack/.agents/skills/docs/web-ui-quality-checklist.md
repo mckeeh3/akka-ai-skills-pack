@@ -7,11 +7,13 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 ## UX completeness
 
 - [ ] For generated AI-first SaaS, primary user goals are represented by role-authorized functional agents, workstream shell regions, structured surfaces, and capability-backed actions.
-- [ ] Each workstream shell region or structured surface communicates selected functional agent, tenant/customer context, what matters, and what the user can do within the first five seconds.
+- [ ] Each workstream shell region or structured surface communicates selected functional agent, organization/customer context, what matters, and what the user can do within the first five seconds.
 - [ ] Each structured surface has one clear purpose or an explicitly read-only purpose.
+- [ ] Workstream dashboards are action routers, not reports: ready-state content is ordered top-to-bottom as things that need my attention, then things I can do.
+- [ ] Aside from labels and minimal microcopy, visible dashboard content is limited to actionable/clickable indicators; passive FYI metrics, inert charts, and decorative card grids are absent or moved to report/detail/analytics surfaces.
 - [ ] Dashboard cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons that represent attention or next work are clickable and keyboard-operable by default.
 - [ ] Rectangular dashboard tiles/cards/counters with a work-object name and prominent count use the whole shape as the button, not just a nested action control.
-- [ ] Zero-count dashboard tiles that represent valid queues/categories remain operable when they should open an empty queue, detail, explanation, setup, or history surface.
+- [ ] Zero-count dashboard tiles that represent valid queues/categories remain operable when they should open an empty queue, detail, explanation, setup, history, or validation surface.
 - [ ] Dashboard interactions append a request-like workstream item and append/open the target detail, decision, progress, evidence/trace, result, updated dashboard, or typed `system_message` surface.
 - [ ] Ready dashboards show authorized work this actor can do; forbidden targets are normally omitted rather than shown as disabled work objects.
 - [ ] Non-actionable dashboard objects are visually distinct from actionable work objects and have a recorded `none` reason.
@@ -72,7 +74,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 - [ ] My Account theme selection, when in scope, lets the user choose one available named theme, previews the selected named theme immediately on field change, and persists only through the governed save/confirm settings path; it does not present dark/light/system mode choices.
 - [ ] Brand adaptations are applied without copying demo names, logos, users, or metrics from reference images.
 - [ ] Status colors, chart colors, shadows, spacing, radius, and component density match the selected style guide closely enough to guide future regeneration; switching themes changes color tokens only, not layout, design language, surface anatomy, spacing, or behavior.
-- [ ] Dashboard attention/KPI cards use the shared attention-card style across all dashboards, have readable semibold/bold labels, strong numeric hierarchy, enough vertical spacing between label, number, and badge/status text, appear above lower-priority dashboard details/lists, and clearly look like modern high-tech operable controls when they represent attention or available work.
+- [ ] Dashboard attention/KPI cards use the shared attention-card style across all dashboards, have readable semibold/bold labels, strong numeric hierarchy, enough vertical spacing between label, number, and badge/status text, appear above lower-priority dashboard details/lists, and clearly look like modern high-tech operable controls when they represent attention or available work; metrics that are not actionable are not rendered as dashboard KPI cards.
 
 ## Visual craft
 

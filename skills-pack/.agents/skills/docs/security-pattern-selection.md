@@ -54,7 +54,7 @@ Authorization answers: what may this caller do?
 - local Akka user status
 - canonical foundation roles: `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR`
 - app-specific roles mapped to capabilities; do not use `APP_ADMIN` as the preferred generic platform role unless it is explicitly documented as an app alias for `SAAS_OWNER_ADMIN`
-- tenant/customer/self scopes
+- organization/customer/self scopes in product language, backed by tenant/customer enforcement scopes
 - business operation-specific rules
 
 Do not let frontend navigation, JWT presence, email domain, route names, hidden fields, prompts, or tool descriptions authorize admin operations.
@@ -63,14 +63,14 @@ Do not let frontend navigation, JWT presence, email domain, route names, hidden 
 
 Use these defaults unless product requirements say otherwise:
 - `GET /api/me` returns current local profile, status, roles, and scopes
-- `SAAS_OWNER_ADMIN` can manage SaaS Owner users, Tenants, Tenant Admin bootstrap, and platform-safe metadata without direct Tenant application-data access
-- `TENANT_ADMIN` can manage users/customers only in assigned tenants
-- `TENANT_EMPLOYEE` can use tenant-owned app features according to mapped capabilities
+- `SAAS_OWNER_ADMIN` can manage SaaS Owner users, Organizations, Organization Admin bootstrap, and platform-safe metadata without direct organization application-data access
+- `TENANT_ADMIN` is the internal role id for customer-facing Organization Admins; it can manage users/customers only in assigned Organizations/Tenants
+- `TENANT_EMPLOYEE` is the internal role id for customer-facing organization members/employees; it can use organization-owned app features according to mapped capabilities
 - `CUSTOMER_ADMIN` can manage users only in assigned customers
 - `CUSTOMER_USER` can access allowed customer-facing features only
 - `AUDITOR` can read scoped audit/search and access-review surfaces without mutation
 - `DISABLED` users are rejected even with valid JWTs
-- startup admin bootstrap is idempotent and backend-only
+- startup admin bootstrap is idempotent, backend-only, and limited to initial `SAAS_OWNER_ADMIN` account/membership state; Organization Admins require a created Organization/Tenant and invitation flow
 
 ## Secret boundary
 
@@ -90,7 +90,7 @@ Backend-only runtime/deployment variables:
 - `INVITE_EMAIL_SUBJECT`
 - JWT key material or deployment secrets
 
-For new project auth setup, require `ADMIN_USERS`, `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, and `APP_PUBLIC_BASE_URL` for real local AuthKit/user-admin testing. Production invitation email delivery additionally requires `RESEND_API_KEY` and `INVITE_EMAIL_FROM` or `RESEND_FROM_EMAIL`. Generated Java config helpers must trim values, treat missing/empty/blank as unset, log an `error` for each missing required backend variable with the full env var name, and never log secret values. `ADMIN_USERS` must be loaded by the single Akka `@Setup` `ServiceSetup.onStartup()` startup hook, not by endpoint lazy initialization.
+For new project auth setup, require `ADMIN_USERS`, `WORKOS_API_KEY`, `WORKOS_JWT_ISSUER`, `WORKOS_JWT_AUDIENCE`, and `APP_PUBLIC_BASE_URL` for real local AuthKit/user-admin testing. Production invitation email delivery additionally requires `RESEND_API_KEY` and `INVITE_EMAIL_FROM` or `RESEND_FROM_EMAIL`. Generated Java config helpers must trim values, treat missing/empty/blank as unset, log an `error` for each missing required backend variable with the full env var name, and never log secret values. `ADMIN_USERS` must be loaded by the single Akka `@Setup` `ServiceSetup.onStartup()` startup hook, not by endpoint lazy initialization. In production/default mode, `ADMIN_USERS` entries must create only SaaS Owner scoped `SAAS_OWNER_ADMIN` bootstrap users; tenant/customer-scoped roles are invalid until their Organization/Tenant or Customer scope exists and should be created through invitation/admin flows.
 
 ## Testing minimum
 
@@ -101,7 +101,7 @@ For new project auth setup, require `ADMIN_USERS`, `WORKOS_API_KEY`, `WORKOS_JWT
 - role and tenant/customer scope checks enforced server-side
 - disabled user rejected
 - forbidden access, cross-tenant/customer access, and role/scope denial behavior verified
-- admin bootstrap runs through `@Setup` `ServiceSetup.onStartup()`, is idempotent, and does not create a permanent bypass
+- admin bootstrap runs through `@Setup` `ServiceSetup.onStartup()`, is idempotent, creates only initial `SAAS_OWNER_ADMIN` state, rejects premature tenant/customer role entries, and does not create a permanent bypass
 - missing required backend env vars produce startup/readiness error logs containing exact env var names and no secret values
 - complete invitation lifecycle tests cover send/capture, resend, revoke/cancel, expiry, acceptance, delivery failure, idempotency, and no raw-token leakage
 - support-access lifecycle tests cover grant, expiry, revoke, visibility, audit, and no SaaS Owner super-admin bypass

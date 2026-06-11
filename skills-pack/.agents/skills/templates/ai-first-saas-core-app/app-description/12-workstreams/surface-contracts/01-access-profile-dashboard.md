@@ -76,7 +76,7 @@ Allowed actions are display hints only; backend authorization remains authoritat
 ## Rendering and capability tests
 
 - My Account opens from the lower-left user tile and is not duplicated in the top rail.
-- Tenant Admin, regular member, auditor/support-like viewer, disabled user, and no-membership variants render correct actions and denials.
+- Organization Admin, regular member, auditor/support-like viewer, disabled user, and no-membership variants render correct actions and denials.
 - Cross-workstream attention items use the shell request pipeline with canonical prompt feedback, origin metadata, and target-workstream-only request rendering.
 - Backend denial does not leak hidden workstream/surface existence.
 - Trace ids and correlation ids appear on protected payload reads and action results.

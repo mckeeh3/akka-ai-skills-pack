@@ -1,6 +1,6 @@
 ---
 name: ai-first-saas-ui-surfaces
-description: Design AI-first SaaS supervision, decision, governance, digest, audit, and goal-to-execution UI surfaces, then route implementation to Akka web UI, HTTP endpoint, view, workflow, agent, trace, and outcome skills.
+description: Design AI-first SaaS supervision, decision, governance, digest, audit, goal-to-execution, and collection-object progression UI surfaces, then route implementation to Akka web UI, HTTP endpoint, view, workflow, agent, trace, and outcome skills.
 ---
 
 # AI-First SaaS UI Surfaces
@@ -18,7 +18,7 @@ Read first:
 - `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
-Use canonical doctrine plus this skill for surface selection. Also use `../docs/agent-workstream-application-architecture.md`, `../docs/structured-surface-contracts.md`, and `../docs/full-core-foundation-readiness.md` when deciding where a surface belongs in the agent workstream model. Use the runnable SaaS Foundation App repository root as the canonical runnable implementation reference and root `frontend/**` as the reusable frontend reference source. Pack examples are available under `.agents/skills/examples/**` after install.
+Use canonical doctrine plus this skill for surface selection. Also use `../docs/agent-workstream-application-architecture.md`, `../docs/structured-surface-contracts.md`, and `../docs/full-core-foundation-readiness.md` when deciding where a surface belongs in the agent workstream model. `../docs/structured-surface-contracts.md` is the canonical source for the mandatory collection-object surface progression. Use the runnable SaaS Foundation App repository root as the canonical runnable implementation reference and root `frontend/**` as the reusable frontend reference source. Pack examples are available under `.agents/skills/examples/**` after install.
 
 Then load focused downstream implementation skills only for the selected UI, API, realtime, and backing component scope.
 
@@ -36,13 +36,15 @@ Use for tasks that mention or imply:
 
 Choose only the surfaces justified by the requested workflow.
 
+For any durable collection of domain things such as users, customers, orders, policies, agents, invitations, or governed documents, start with the canonical collection-object surface progression from `../docs/structured-surface-contracts.md` unless the app-description explicitly records a safer override. Use domain-semantic names, not generic CRUD names. The default progression is: list/search for discovery and selection → lifecycle-aware show/inspection for one object → separate single-purpose create, edit, destructive lifecycle confirmation, or domain-specific task surfaces.
+
 Before selecting any surface family, place it inside one or more functional/context-area agent workstreams:
 
 - identify the owning functional agent responsible for the surface's user outcome;
 - identify reusable functional agents that may render or link the same surface without owning its semantics;
 - record workstream placement: default briefing/dashboard, timeline item, attention queue, embedded card, modal, side panel, drill-in, or direct deep link;
 - define payload/query source expectations: read/evidence capabilities, view/query sources, redaction, selected `AuthContext`, and trace/correlation fields;
-- list capability-backed actions and denial/result surfaces; for dashboard/command-center/attention surfaces, list clickable and keyboard-operable work-object interactions for cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons; frontend controls are exposure details only;
+- list capability-backed actions and denial/result surfaces; for collection-object surfaces, list row/card selection, create, edit, destructive lifecycle, and lifecycle-specific task edges as delegated surface requests or task surfaces; for dashboard/command-center/attention surfaces, list clickable and keyboard-operable work-object interactions for cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons; frontend controls are exposure details only;
 - link audit/work traces for payload access, agent work, decisions, approvals, denials, and side effects;
 - treat routes and deep links only as implementation details that reopen a selected functional agent, workstream item, or structured surface.
 
@@ -151,6 +153,8 @@ Route to:
 ## UI design rules
 
 - Select and describe surfaces through functional-agent workstream placement before frontend routes, pages, or components.
+- Use the canonical collection-object progression for durable object collections: domain list/search surfaces always allow selecting a listed object; selected objects open lifecycle-appropriate show/inspection surfaces; show/inspection surfaces delegate consequential changes to separate edit, destructive lifecycle confirmation, and domain-specific single-action surfaces.
+- Keep each surface single-purpose. Do not design one broad CRUD page that lists, shows, creates, edits, and deletes objects.
 - Center structured surfaces on objectives, decisions, policies, traces, or outcomes; not only raw records.
 - Make autonomy boundaries visible where actions occur.
 - Separate automated work, human-needed work, exceptions, and FYI activity.
@@ -165,6 +169,7 @@ Route to:
 
 Produce a compact UI-surface plan with:
 - selected surfaces, owning functional agent, reusable functional agents, and primary human roles/temporal modes
+- for each durable collection object in scope, the domain-semantic list/show/create/edit/destructive-lifecycle progression, including lifecycle-state-specific show/task routing
 - workstream placement for each surface, plus route/deep-link behavior only as implementation detail
 - payload/query source expectations, backing durable objects, read models, redaction, and trace requirements
 - capability-backed actions per surface, including idempotency, approval/denial/result surfaces, and audit links
@@ -177,6 +182,7 @@ Produce a compact UI-surface plan with:
 
 Before implementation, verify:
 - each selected surface has an owning functional agent, reusable placement if any, and explicit workstream placement
+- every durable collection object uses the canonical progression or records an explicit justified override; list row/card selection opens a show/inspection surface; create, edit, and destructive lifecycle actions are separate surfaces
 - routes/deep links are implementation details for selected functional agents, workstream items, or structured surfaces
 - UI guidance routes to `akka-web-ui-*` and HTTP endpoint skills instead of replacing them
 - approval/decision controls have evidence, policy, risk, impact, capability, and audit backing

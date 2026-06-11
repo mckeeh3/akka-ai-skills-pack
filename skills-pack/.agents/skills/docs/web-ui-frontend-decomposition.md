@@ -17,7 +17,7 @@ Produce a compact plan with these sections before implementation.
 ### 1. Users, authority, and goals
 
 - personas/actors and primary jobs
-- selected tenant/customer/support-access context
+- selected organization/customer/support-access context
 - role/capability differences and hidden/denied workstreams
 - success criteria for key journeys
 

@@ -12,10 +12,12 @@ Related docs:
 The core model supports a three-level SaaS business structure:
 
 ```text
-SaaS Owner -> Tenant -> Customer
+SaaS Owner -> Organization-backed Tenant -> Customer
 ```
 
-A **Tenant** is the SaaS user organization. A **Customer** is always modeled initially as an organization served by a Tenant. Specific generated applications may later adapt this model for individual consumers, but the SaaS Foundation App should start with organization customers.
+Use **Organization** for customer-facing account/workspace concepts: UI labels, onboarding copy, invitation emails, admin surfaces, app-description surfaces, and end-user documentation should say "organization" rather than "tenant." Use **Tenant** for the internal SaaS isolation boundary: backend authorization scope, data partition key, audit partition, platform billing metadata, provider/resource scoping, and code-level tenancy concepts. In the default foundation these are 1:1: an Organization is backed by one Tenant boundary and usually carries an internal `tenantId`.
+
+A **Tenant** is the internal security and data-isolation boundary for a SaaS user organization. A **Customer** is always modeled initially as an organization served by a Tenant/Organization. Specific generated applications may later adapt this model for individual consumers, but the SaaS Foundation App should start with organization customers.
 
 ## Identity and authorization model
 
@@ -33,6 +35,7 @@ WorkOS Identity
 
 Rules:
 - use WorkOS subject/email for authentication and account linking;
+- production/default startup bootstrap creates only initial SaaS Owner scoped `SAAS_OWNER_ADMIN` account/membership state; Tenant/Customer scoped roles require existing scope records and are created through invitation/admin flows;
 - never rely on frontend-only role checks;
 - do not rely on email alone for authorization;
 - allow the same human/email to hold accounts or memberships at multiple levels;
@@ -148,16 +151,74 @@ Canonical foundation roles:
 
 | Role | Scope | Purpose |
 |---|---|---|
-| `SAAS_OWNER_ADMIN` | SaaS Owner | Manage SaaS Owner users, Tenants, Tenant Admin bootstrap, and SaaS Owner to Tenant subscription/billing state. |
-| `TENANT_ADMIN` | Tenant | Manage Tenant users, Customer organizations, Customer Admins, support-access grants, and Tenant-owned configuration/data within the Tenant boundary. |
-| `TENANT_EMPLOYEE` | Tenant | Use Tenant-owned application functionality according to app-specific permissions. |
+| `SAAS_OWNER_ADMIN` | SaaS Owner | Manage SaaS Owner users, Organizations, Organization Admin bootstrap, and SaaS Owner to Organization subscription/billing state. |
+| `TENANT_ADMIN` | Tenant/Organization | Internal role id for the customer-facing **Organization Admin** role; manages organization users, Customer organizations, Customer Admins, support-access grants, and organization-owned configuration/data within the Tenant boundary. |
+| `TENANT_EMPLOYEE` | Tenant/Organization | Internal role id for customer-facing organization members/employees; uses organization-owned application functionality according to app-specific permissions. |
 | `CUSTOMER_ADMIN` | Customer | Manage Customer users and supervise Customer-side service use. |
-| `CUSTOMER_USER` | Customer | Use Customer-facing online services provided by the Tenant. |
-| `AUDITOR` | SaaS Owner, Tenant, or Customer | Read scoped admin audit/search and access-review surfaces without mutation rights. |
+| `CUSTOMER_USER` | Customer | Use Customer-facing online services provided by the Organization/Tenant. |
+| `AUDITOR` | SaaS Owner, Tenant/Organization, or Customer | Read scoped admin audit/search and access-review surfaces without mutation rights. |
 
 App-specific roles are extensions mapped to permissions/capabilities inside these scopes. They may express domain authority such as supervisor, policy owner, dealer owner, reviewer, or operator, but they must not replace the foundation roles, membership status checks, scope checks, or support-access rules.
 
 Do not use `APP_ADMIN` as the preferred generic platform role; use `SAAS_OWNER_ADMIN` for SaaS Owner administration. Existing examples that mention `APP_ADMIN`, dealer roles, or policy roles are app-specific aliases or reference roles and must be documented as such. Do not use a global super-admin role for Tenant data access. SaaS Owner permissions are platform-operations permissions only.
+
+## Organization/Tenant management capabilities
+
+Organization administration is a foundation capability set, not an app-specific business-domain feature. Keep customer-facing organization language separate from internal tenant isolation:
+
+- `SAAS_OWNER_ADMIN` may create customer-facing Organizations, maintain billing-safe tenant metadata and tenant lifecycle/status, and bootstrap one or more Organization Admins through the mandatory Invitation lifecycle.
+- `TENANT_ADMIN` may maintain only their own Organization's allowed profile/settings, invite and manage Organization Admins and organization members/employees within that Tenant boundary, create/manage Customer organizations under that Organization, and grant/revoke scoped support access.
+- `TENANT_ADMIN` must not create sibling Organizations/Tenants, assign SaaS Owner roles, or manage users outside the selected Organization/Tenant context.
+- SaaS Owner users must not access organization application data by virtue of SaaS Owner authority; support requires a separate tenant-scoped membership granted by an Organization Admin.
+
+Recommended Tenant-backed Organization fields:
+- `tenantId`
+- `displayName`, `legalName`, optional slug or public label
+- `status`: `DRAFT`, `ONBOARDING`, `ACTIVE`, `SUSPENDED`, `CLOSED`
+- billing-safe contact or subscription references when the core billing foundation is enabled
+- operational metadata such as created/activated/suspended/closed timestamps
+- audit metadata: created by, status changed by, reason, policy references
+
+Baseline governed capabilities:
+- `tenant:create`
+- `tenant:view`
+- `tenant:list`
+- `tenant:update_profile`
+- `tenant:update_status`
+- `tenant_admin:invite`
+- `tenant_admin:list`
+- `tenant_admin:replace_roles`
+- `tenant_admin:suspend_membership`
+- `tenant_admin:reactivate_membership`
+- `tenant_admin:remove_membership`
+- `tenant_admin:last_admin_protection_check`
+
+Capability rules:
+- organization/tenant creation and status changes require `SAAS_OWNER_ADMIN` and emit `AdminAuditEvent` facts;
+- Organization Admin invitation by a SaaS Owner creates an invited local account if needed, a Tenant-scoped `TENANT_ADMIN` membership intent, and an Invitation with delivery/expiry/revoke/audit state;
+- Organization Admin maintenance by an Organization Admin is limited to the caller's selected Organization/Tenant context and cannot grant SaaS Owner roles;
+- role and membership changes must be idempotent where possible and must run last-admin protection before removing, suspending, disabling, or role-changing the final active Organization Admin;
+- Organization status and billing/subscription state remain separate concepts, even when status changes are driven by billing decisions.
+
+Typical Organization Administration APIs (the API may retain `/api/tenants` and `tenantId` internally, or expose `/api/organizations`/`organizationId` as a customer-facing contract while mapping to the tenant boundary):
+
+```text
+GET    /api/tenants
+POST   /api/tenants
+GET    /api/tenants/{tenantId}
+PATCH  /api/tenants/{tenantId}
+POST   /api/tenants/{tenantId}/activate
+POST   /api/tenants/{tenantId}/suspend
+POST   /api/tenants/{tenantId}/close
+GET    /api/tenants/{tenantId}/admins
+POST   /api/tenants/{tenantId}/admins/invite
+PUT    /api/tenants/{tenantId}/admins/{accountId}/roles
+POST   /api/tenants/{tenantId}/admins/{accountId}/suspend
+POST   /api/tenants/{tenantId}/admins/{accountId}/reactivate
+DELETE /api/tenants/{tenantId}/admins/{accountId}
+```
+
+These endpoints are browser-facing capability surfaces only. Every endpoint must validate JWT identity, resolve local account and selected `AuthContext`, authorize through local Membership/Role/Capability state, scope all queries by authority, return browser-safe DTOs, and emit audit for consequential changes.
 
 ## Administration read models
 
@@ -165,6 +226,8 @@ Admins must be able to discover and repair access state without already knowing 
 
 | View | Purpose |
 |---|---|
+| `TenantDirectoryView` | SaaS Owner Tenant list/search by platform-safe metadata, tenant status, billing-safe subscription indicators, onboarding state, and bootstrap Organization Admin status. |
+| `TenantAdminView` | Organization Admin list/search by tenant, account, role, membership status, invitation state, last-admin risk, and support-access relationship. |
 | `UserDirectoryView` | List/search users by authorized SaaS Owner, Tenant, or Customer scope; filter by email/name, account status, role, membership status, identity link state, and last activity when available. |
 | `MembershipView` | List memberships and role summaries by scope, account, status, role, support-access expiry, and last-admin risk. |
 | `InvitationView` | List invitations by target email, scope, invitation status, delivery status, expiry, inviter, resend count, and delivery failure. |
@@ -174,6 +237,8 @@ Admins must be able to discover and repair access state without already knowing 
 View endpoints must constrain queries with the caller's AuthContext and must redact or omit fields outside the caller's scope. Frontend filtering is never the security boundary.
 
 Required first-slice query paths and filters:
+- `TenantDirectoryView`: tenant id/name, tenant status, onboarding state, subscription/billing-safe status, bootstrap Organization Admin status, and lifecycle risk.
+- `TenantAdminView`: tenant, account/email/name, admin role, membership status, invitation status, identity link state, last-admin risk, support-access relationship, and lifecycle review status.
 - `UserDirectoryView`: tenant, customer, email/name, account status, role, membership status, identity link state, and last activity.
 - `MembershipView`: tenant, customer, account, role, membership status, support-access expiry, last-admin risk, and lifecycle review status.
 - `InvitationView`: target email, tenant/customer scope, invitation status, delivery status, delivery attempts, inviter, expiry/due time, and resend/revoke eligibility.
@@ -182,7 +247,7 @@ Required first-slice query paths and filters:
 
 Authorization and redaction rules:
 - SaaS Owner Admin and Auditor views are limited to platform-safe metadata unless a scoped support-access membership authorizes Tenant data access;
-- Tenant Admin views are limited to their Tenant and authorized Customer scopes;
+- Organization Admin views are limited to their Tenant and authorized Customer scopes;
 - Customer Admin views are limited to their Customer scope;
 - Auditor capabilities allow read-only audit/search and access-review access only within granted scope;
 - raw invitation tokens, provider secrets, private WorkOS/provider ids, unrelated tenant/customer data, and sensitive support details must never be returned to unauthorized callers;
@@ -191,8 +256,10 @@ Authorization and redaction rules:
 ## Administration operations
 
 Required baseline operations:
+- create Organizations, update billing-safe Tenant/Organization profile metadata, and activate/suspend/close Organization status within SaaS Owner authority;
+- bootstrap initial Organization Admins and maintain Organization Admin memberships through the mandatory Invitation lifecycle and last-admin protection;
 - invite users, resend invite, revoke invite, and view invitation status through the mandatory Invitation lifecycle;
-- list users, search/filter users, and view user detail through scoped views rather than requiring caller-supplied user IDs;
+- list Tenants, Organization Admins, users, search/filter them, and view detail through scoped views rather than requiring caller-supplied internal IDs;
 - edit declared profile fields only;
 - assign, replace, and remove roles within caller authority;
 - add, suspend, reactivate, and remove memberships;
@@ -204,33 +271,37 @@ Required baseline operations:
 
 ## Administration UI surfaces
 
-For generated full-stack AI-first SaaS apps, the foundation includes mandatory first-slice User Admin functional-agent surfaces for: Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. These surfaces are capability-gated for SaaS Owner Admin, Tenant Admin, Customer Admin, Auditor, and app-specific admins; backend endpoints remain authoritative. The UI must let admins discover stale/dormant access, failed or expiring invitations, support-access expiry, last-admin risk, and agent-generated admin recommendations without knowing internal ids upfront.
+For generated full-stack AI-first SaaS apps, the foundation includes mandatory first-slice User Admin functional-agent surfaces for: Organization Administration, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Organization/Customer Settings. These surfaces are capability-gated for SaaS Owner Admin, Organization Admin (`TENANT_ADMIN` internally), Customer Admin, Auditor, and app-specific admins; backend endpoints remain authoritative. SaaS Owner Admins need Organization directory, create Organization, Organization detail, Organization status, bootstrap Organization Admin, Organization Admin list, and Organization audit timeline surfaces. Organization Admins need own-organization settings, Organization Admins, organization users, invitations, access review, last-admin warnings, and support-access surfaces. The UI must let admins discover stale/dormant access, failed or expiring invitations, support-access expiry, last-admin risk, and agent-generated admin recommendations without knowing internal ids upfront.
+
+App-description templates and generated app descriptions must model SaaS Owner Organization Administration explicitly rather than leaving tenant creation as hidden seed data, a billing-only side effect, or an implementation note. At minimum, include a `user-admin-agent`-owned Organization Administration surface or equivalent with typed payloads for `TenantDirectoryView` rows, Organization create/detail/profile/status actions, Organization Admin bootstrap invitation state, billing-safe subscription indicators where enabled, denial/stale/approval-required UI states, surface-to-capability mappings for `tenant:create`, `tenant:list`, `tenant:view`, `tenant:update_profile`, `tenant:update_status`, and `tenant_admin:invite`, traceability to AdminAuditEvent/audit search, and tests proving SaaS Owner platform-safe access without organization application-data reads.
 
 ## Administration flows
 
-### SaaS Owner Admin creates a Tenant and initial Tenant Admin
+### SaaS Owner Admin creates an Organization and initial Organization Admin
 
-1. SaaS Owner Admin creates Tenant organization.
+Default startup bootstrap must happen before this flow and may create only the initial SaaS Owner Admin account/membership. It must not create `TENANT_ADMIN` or Customer-scoped memberships because no valid Organization/Tenant or Customer scope exists yet. Local/dev/test fixture modes may seed demo scope plus demo scoped memberships only when explicitly named as fixtures.
+
+1. SaaS Owner Admin creates a customer-facing Organization backed by a Tenant boundary.
 2. SaaS Owner Admin assigns subscription/billing state.
-3. SaaS Owner Admin invites one or more Tenant Admins.
+3. SaaS Owner Admin invites one or more Organization Admins (`TENANT_ADMIN` internally).
 4. Invited human signs in through WorkOS.
 5. Backend validates a non-expired, non-revoked invitation or accepted membership policy, then links WorkOS identity to the local account and activates Tenant membership.
 6. Audit trace records Tenant creation, invitation, link, activation, and subscription state.
 
-### Tenant Admin manages Tenant employees
+### Organization Admin manages organization employees
 
-1. Tenant Admin invites employee by email.
-2. Backend creates local account if needed, Tenant membership in `INVITED` state, and an Invitation with expiry, delivery status, and audit trail.
+1. Organization Admin invites employee by email.
+2. Backend creates local account if needed, Tenant/Organization membership in `INVITED` state, and an Invitation with expiry, delivery status, and audit trail.
 3. Backend sends or captures invite email through the configured delivery adapter.
 4. Employee signs in through WorkOS and links/activates membership only through a valid invitation or membership policy.
-5. Tenant Admin can list/search users, view user detail, edit allowed profile fields, assign/replace/remove roles, suspend membership, reactivate membership, remove membership, disable/reactivate accounts, and run access review actions within Tenant scope.
-6. Last-admin protection rejects any change that would leave the Tenant without an active Tenant Admin.
+5. Organization Admin can list/search users, view user detail, edit allowed profile fields, assign/replace/remove roles, suspend membership, reactivate membership, remove membership, disable/reactivate accounts, and run access review actions within Organization/Tenant scope.
+6. Last-admin protection rejects any change that would leave the Organization without an active Organization Admin.
 7. All changes are Tenant-scoped and auditable.
 
-### Tenant Admin creates Customer organization and Customer Admin
+### Organization Admin creates Customer organization and Customer Admin
 
-1. Tenant Admin creates Customer organization under Tenant.
-2. Tenant Admin invites Customer Admin through the mandatory Invitation lifecycle.
+1. Organization Admin creates Customer organization under the Organization/Tenant boundary.
+2. Organization Admin invites Customer Admin through the mandatory Invitation lifecycle.
 3. Customer Admin signs in through WorkOS and activates Customer membership only through a valid invitation or membership policy.
 4. Customer Admin can then manage Customer users.
 
@@ -244,22 +315,22 @@ For generated full-stack AI-first SaaS apps, the foundation includes mandatory f
 
 ## SaaS Owner support access rule
 
-SaaS Owner users have no direct access to Tenant application data.
+SaaS Owner users have no direct access to organization application data.
 
-If a Tenant wants SaaS Owner personnel to assist with Tenant-owned data or configuration, the Tenant Admin must create a normal Tenant-scoped account or membership for that person.
+If an Organization wants SaaS Owner personnel to assist with organization-owned data or configuration, the Organization Admin must create a normal Tenant-scoped account or membership for that person.
 
 Support-access membership requirements:
-- created by a Tenant Admin, not by SaaS Owner privilege;
-- scoped to the Tenant and optionally narrowed to app-specific permissions;
+- created by an Organization Admin, not by SaaS Owner privilege;
+- scoped to the Organization/Tenant and optionally narrowed to app-specific permissions;
 - assigned to a real WorkOS-authenticated human/email;
 - time-limited by default;
 - includes reason/purpose;
-- visible to Tenant Admins;
+- visible to Organization Admins;
 - fully audited;
-- revocable by Tenant Admins;
+- revocable by Organization Admins;
 - eligible for AI-first risk review and expiry reminders.
 
-This pattern permits the same email to be both a SaaS Owner Admin and a Tenant support user, but those are separate authorization contexts.
+This pattern permits the same email to be both a SaaS Owner Admin and an Organization/Tenant support user, but those are separate authorization contexts.
 
 ## Tenant and Customer data isolation
 
@@ -333,8 +404,8 @@ Core administration should include AI-first features from the start. Generated f
 
 Use decision cards for high-risk or unusual admin actions:
 - granting admin roles;
-- adding a SaaS Owner email as a Tenant support user;
-- disabling the last active Tenant Admin or Customer Admin;
+- adding a SaaS Owner email as an Organization/Tenant support user;
+- disabling the last active Organization Admin or Customer Admin;
 - suspending a Tenant;
 - bulk invitations;
 - unusual cross-level memberships;
@@ -389,12 +460,14 @@ Record audit events for:
 | `UserProfileEntity` | Current profile attributes; use audit-grade history only when required by the app. |
 | `UserSettingsEntity` | Current user preferences, starting with `preferredThemeId` named-theme selection. |
 | `MembershipEntity` or scoped membership state | Role/scope lifecycle with audit-grade changes. |
-| `TenantEntity` | Tenant organization lifecycle and status. |
-| `CustomerEntity` | Customer organization lifecycle under a Tenant. |
+| `TenantEntity` | Tenant-backed Organization lifecycle, billing-safe profile metadata, status transitions, bootstrap state, and audit-grade organization/tenant management history; prefer Event Sourced Entity when lifecycle history matters. |
+| `TenantDirectoryView` | SaaS Owner Organization list/search by platform-safe tenant metadata, status, onboarding, subscription indicators, and bootstrap Organization Admin status. |
+| `TenantAdminView` | Organization Admin list/search by tenant, account, admin role, membership status, invitation state, identity link state, and last-admin risk. |
+| `CustomerEntity` | Customer organization lifecycle under an Organization/Tenant. |
 | `InvitationWorkflow` | Invite creation, email delivery/outbox, WorkOS sign-in/link, activation, expiry, resend, revoke/cancel, acceptance idempotency, delivery status, delivery attempts, and audit. |
 | `AccessReviewTimedAction` | Periodic stale-access/support-access checks. |
 | `UserDirectoryView` | Scoped user list/search and user detail entry points without requiring known user ids. |
-| `MembershipView` | Scoped membership lifecycle, role/status filters, support-access expiry, and last-admin risk rows for SaaS Owner, Tenant Admin, and Customer Admin surfaces. |
+| `MembershipView` | Scoped membership lifecycle, role/status filters, support-access expiry, and last-admin risk rows for SaaS Owner, Organization Admin, and Customer Admin surfaces. |
 | `InvitationView` | Scoped invitation status, delivery status, resend/revoke visibility, expiry, and delivery failure rows. |
 | `AdminAuditView` | Queryable admin audit trail with actor, target user, action type, scope, role, membership status, invitation status, risk/policy metadata, and time-range filters. |
 | `AccessReviewQueueView` | Stale invite, dormant access, risky role combination, support-access, last-admin review queue, due/expiry time, and agent-generated recommendation index. |
@@ -415,10 +488,12 @@ Record audit events for:
 
 ## Acceptance checklist
 
-- [ ] SaaS Owner Admin can create Tenant and invite Tenant Admin with mandatory Resend email delivery or captured outbox behavior.
-- [ ] SaaS Owner Admin cannot read Tenant application data.
-- [ ] Tenant Admin can manage Tenant employees through invite, resend, revoke/cancel, expiry, acceptance, and delivery-failure visibility.
-- [ ] Tenant Admin can create Customer organizations and invite Customer Admins.
+- [ ] SaaS Owner Admin can create Organization, update billing-safe Organization/Tenant profile metadata, change Organization status, and invite/bootstrap Organization Admin with mandatory Resend email delivery or captured outbox behavior.
+- [ ] SaaS Owner Admin can list/search Organizations through `TenantDirectoryView` without reading organization application data.
+- [ ] SaaS Owner Admin cannot read organization application data.
+- [ ] Organization Admin can manage Organization Admins and organization employees only within their own Organization through invite, resend, revoke/cancel, expiry, acceptance, role/membership lifecycle, and delivery-failure visibility.
+- [ ] Cross-tenant Organization Admin attempts and Organization Admin attempts to create sibling Organizations/Tenants or assign SaaS Owner roles are forbidden and audited.
+- [ ] Organization Admin can create Customer organizations and invite Customer Admins.
 - [ ] Customer Admin can manage Customer users through the same Invitation lifecycle.
 - [ ] Same email can hold multiple memberships and must operate in an explicit context.
 - [ ] WorkOS authentication is separate from Akka-owned authorization state.
@@ -427,8 +502,8 @@ Record audit events for:
 - [ ] Profile and settings models can be extended by app-specific requirements.
 - [ ] Admins can list/search users, view user detail, and manage users without already knowing internal user IDs.
 - [ ] Admins can assign/replace/remove roles and add/suspend/reactivate/remove memberships inside their authority boundary.
-- [ ] Last-admin protection prevents removing the final active Tenant Admin or Customer Admin.
-- [ ] Tenant-created support access is scoped, time-limited, auditable, revocable, and visible in support-access and access-review surfaces.
+- [ ] Last-admin protection prevents removing the final active Organization Admin or Customer Admin.
+- [ ] Organization-created support access is scoped, time-limited, auditable, revocable, and visible in support-access and access-review surfaces.
 - [ ] UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView are first-slice read models with required query filters, scoped query authorization, redaction, pagination, stale invite/access-review correctness, and audit trace completeness tests.
 - [ ] Risky admin actions can produce decision cards.
 - [ ] Governed runtime agent foundation is present for foundation agents: `AgentDefinition`, `PromptDocument`/`PromptVersion`, `SkillDocument`/`SkillVersion`, `AgentSkillManifest`, `ToolPermissionBoundary`, authorized `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`.

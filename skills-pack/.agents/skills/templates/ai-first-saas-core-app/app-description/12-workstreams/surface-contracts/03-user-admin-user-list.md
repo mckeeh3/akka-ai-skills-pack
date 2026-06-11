@@ -76,9 +76,9 @@ Allowed actions are display hints only; backend authorization remains authoritat
 
 ## Scope-aware variants
 
-- SaaS Owner Admin: platform-safe rows only unless selected Tenant support-access context is active.
-- Tenant Admin: Tenant employees, Customer Admins/Users, scoped invitations, support-access memberships, and access-review rows.
-- Customer Admin: selected Customer users/invitations only; Tenant-wide actions and support-access administration are forbidden.
+- SaaS Owner Admin: platform-safe rows only unless selected Organization/Tenant support-access context is active.
+- Organization Admin: organization employees, Customer Admins/Users, scoped invitations, support-access memberships, and access-review rows.
+- Customer Admin: selected Customer users/invitations only; Organization-wide actions and support-access administration are forbidden.
 
 ## Auth/security
 
@@ -89,7 +89,7 @@ Allowed actions are display hints only; backend authorization remains authoritat
 
 ## Rendering and capability tests
 
-- SaaS Owner Admin, Tenant Admin, and Customer Admin variants show correct rows, redactions, allowed actions, and forbidden actions.
+- SaaS Owner Admin, Organization Admin, and Customer Admin variants show correct rows, redactions, allowed actions, and forbidden actions.
 - Loading, empty, error, forbidden, stale, and responsive table-to-card states preserve safe context.
 - Dashboard-origin filters open through the shell request pipeline without a page-first route dependency.
 - Row actions include capability ids, governed-tool ids, browser-tool ids, idempotency requirements, trace ids, and decision-card links when risky.

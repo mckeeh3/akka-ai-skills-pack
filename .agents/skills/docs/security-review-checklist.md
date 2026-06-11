@@ -49,7 +49,7 @@ Use before completing security-sensitive Akka changes.
 - [ ] `/api/me` returns a browser-facing DTO, not internal entity state.
 - [ ] Complete Invitation lifecycle exists: create, Resend delivery/captured outbox, resend, revoke/cancel, expiry, acceptance, delivery failure visibility, idempotency, and no raw-token leakage.
 - [ ] Invite and first-login linking are idempotent and require a valid invitation, acceptance context, or explicit membership policy.
-- [ ] Startup admin bootstrap is idempotent, validates malformed config, uses canonical foundation roles, and does not create a permanent bypass.
+- [ ] Startup admin bootstrap is idempotent, validates malformed config, creates only initial `SAAS_OWNER_ADMIN` account/membership state in production/default mode, rejects tenant/customer-scoped bootstrap entries before their scope exists, and does not create a permanent bypass.
 - [ ] Support-access is Organization Admin-created, time-limited, auditable, revocable, visible to Organization admins, and does not create a SaaS Owner super-admin path.
 - [ ] Admin actions emit required AdminAuditEvent records.
 - [ ] First-slice admin read models exist: UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView.
