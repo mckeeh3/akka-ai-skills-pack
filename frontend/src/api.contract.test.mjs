@@ -57,6 +57,8 @@ test('HTTP API client targets same-origin documented API route families', () => 
   assert.match(httpApi, /\/api\/governance\/policies/);
   assert.match(httpApi, /\/api\/audit\/traces/);
   assert.match(httpApi, /Authorization', `Bearer \$\{token\}`/);
+  assert.match(httpApi, /X-Selected-Context-Id/);
+  assert.match(httpApi, /X-Correlation-Id/);
 });
 
 test('realtime client includes connection state, event handler, and idempotent merge helper', () => {

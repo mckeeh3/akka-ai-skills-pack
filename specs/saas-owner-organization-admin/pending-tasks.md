@@ -272,7 +272,7 @@
 
 ### TASK-SOOA-05-001: Wire Organization Admin UI to runtime Admin API
 
-- status: pending
+- status: done
 - source: TASK-SOOA-99-001 verification gap
 - task brief: specs/saas-owner-organization-admin/tasks/05-ui-runtime/01-wire-organization-admin-ui-to-runtime-api.md
 - depends on:
@@ -311,7 +311,11 @@
   - selected context/JWT handling, backend authorization, redaction, idempotency, validation/no-op/denial states, and trace/correlation display are preserved
   - local runtime or smoke evidence demonstrates the intended UI-to-API path
   - changes and queue update are committed
-- notes: []
+- notes:
+  - production Organization Admin runtime actions now call typed `AdminClient` methods for `/api/admin/organizations` instead of `/api/workstream/actions`
+  - smoke path: specs/saas-owner-organization-admin/ui-runtime-smoke.md
+  - checks: `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `npm --prefix frontend run build`; `git diff --check`
+  - commit message: `saas-owner-org-admin: wire organization admin runtime api`
 
 ### TASK-SOOA-99-002: Verify SaaS Owner Organization Admin runtime completion
 

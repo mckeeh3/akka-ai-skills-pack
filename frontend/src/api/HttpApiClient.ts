@@ -2,6 +2,7 @@ import type { AdminClient, ApiClient, AuditClient, DecisionsClient, GoalsClient,
 import type { ApiError, ApiResult, DecisionAction } from './types';
 
 export type TokenProvider = () => Promise<string | undefined> | string | undefined;
+export type SelectedContextIdProvider = () => string | undefined;
 
 export class HttpApiClient implements ApiClient {
   session: SessionClient;
@@ -11,7 +12,7 @@ export class HttpApiClient implements ApiClient {
   governance: GovernanceClient;
   audit: AuditClient;
 
-  constructor(private readonly tokenProvider?: TokenProvider) {
+  constructor(private readonly tokenProvider?: TokenProvider, private readonly selectedContextIdProvider?: SelectedContextIdProvider) {
     this.session = {
       getMe: () => this.get('/api/me'),
       updatePreferences: (request) => this.put('/api/me/preferences', request)
@@ -69,6 +70,9 @@ export class HttpApiClient implements ApiClient {
       headers.set('Accept', 'application/json');
       if (init.body) headers.set('Content-Type', 'application/json');
       if (token) headers.set('Authorization', `Bearer ${token}`);
+      const selectedContextId = this.selectedContextIdProvider?.();
+      if (selectedContextId) headers.set('X-Selected-Context-Id', selectedContextId);
+      if (!headers.has('X-Correlation-Id')) headers.set('X-Correlation-Id', `corr-browser-${Date.now().toString(36)}`);
       const response = await fetch(path, { ...init, headers });
       if (!response.ok) return { ok: false, error: await mapApiError(response) };
       return { ok: true, value: await response.json() as T };

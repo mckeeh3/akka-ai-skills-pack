@@ -12,6 +12,7 @@ const surfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
 const fixtureWorkstreamApi = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const organizationSurface = read('./workstream/surfaces/OrganizationAdminSurface.tsx');
+const main = read('./main.tsx');
 const css = read('./styles/components.css');
 const frontendApiContracts = read('../../app-description/55-ui/frontend-api-contracts.md');
 
@@ -46,6 +47,13 @@ test('Organization Admin workstream surface preserves SaaS Owner authority and b
   assert.match(surfaces, /billing-derived authority/);
   assert.match(surfaces, /hidden-counts-redacted/);
   assert.match(fixtureWorkstreamApi, /displayOrganizationAdminActionResult/);
+  assert.match(main, /isOrganizationAdminRuntimeAction/);
+  assert.match(main, /apiClient\.admin\.listOrganizations/);
+  assert.match(main, /apiClient\.admin\.createOrganization/);
+  assert.match(main, /apiClient\.admin\.renameOrganization/);
+  assert.match(main, /apiClient\.admin\.suspendOrganization/);
+  assert.match(main, /apiClient\.admin\.reactivateOrganization/);
+  assert.match(main, /protected \/api\/admin\/organizations path/);
 });
 
 test('Organization Admin renderer covers safe states, forms, and inaccessible role denials', () => {
