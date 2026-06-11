@@ -102,6 +102,8 @@ class WorkstreamServiceTest {
     service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, workstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService, attentionProducerService, workstreamEventPublisher, eventRepository, new FailClosedAccessReviewAutonomousAgentRuntime(), notificationService);
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
+    identityRepository.putTenant(new Tenant("tenant-starter", "Starter Organization", true));
+    identityRepository.putTenant(new Tenant("tenant-suspended", "Suspended Organization", false));
     identityRepository.saveAccount(new Account("admin@example.test", null, "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));
     identityRepository.putProfile(new UserProfile("admin@example.test", "admin@example.test", "Tenant Admin", "Tenant", "Admin", null));
     identityRepository.putSettings(new UserSettings("admin@example.test", UserSettings.ThemeId.AURORA_LIGHT));
@@ -114,6 +116,7 @@ class WorkstreamServiceTest {
     identityRepository.putProfile(new UserProfile("owner@example.test", "owner@example.test", "SaaS Owner", "SaaS", "Owner", null));
     identityRepository.putSettings(new UserSettings("owner@example.test", UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.putMembership(new Membership("membership-owner", "owner@example.test", ScopeType.SAAS_OWNER, null, null, List.of(FoundationRole.SAAS_OWNER_ADMIN), MembershipStatus.ACTIVE, false, null));
+    StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
   }
 
   @Test
@@ -214,6 +217,41 @@ class WorkstreamServiceTest {
     assertEquals("user_admin.organization_directory.v1", organization.resultSurface().data().get("surfaceContract"));
     assertTrue(organization.resultSurface().toString().contains("Open Organization create form"));
     assertTrue(organization.resultSurface().toString().contains("Tenant lifecycle boundary"));
+  }
+
+  @Test
+  void organizationSurfaceGraphRoutesBySelectedOrganizationLifecycleState() {
+    var create = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-open-organization-create", "action-open-organization-create", "saas_owner.tenant.manage", "saas_owner.tenant.manage", null, null, "membership-owner", "surface-user-admin-organization-directory", "corr-open-create"));
+    assertEquals("accepted", create.status());
+    assertEquals("surface-user-admin-organization-create", create.resultSurface().surfaceId());
+
+    var activeDetail = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-organization-read", "action-organization-read", "saas_owner.tenant.read", "saas_owner.tenant.read", Map.of("organizationId", "tenant-starter"), null, "membership-owner", "surface-user-admin-organization-directory", "corr-read-active"));
+    assertEquals("surface-user-admin-organization-detail", activeDetail.resultSurface().surfaceId());
+    assertTrue(activeDetail.resultSurface().toString().contains("suspend"));
+
+    var suspend = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-open-organization-suspend", "action-open-organization-suspend", "saas_owner.tenant.manage", "saas_owner.tenant.manage", Map.of("organizationId", "tenant-starter"), null, "membership-owner", activeDetail.resultSurface().surfaceId(), "corr-open-suspend"));
+    assertEquals("accepted", suspend.status());
+    assertEquals("surface-user-admin-organization-suspend-confirmation", suspend.resultSurface().surfaceId());
+    assertTrue(suspend.resultSurface().toString().contains("tenant-starter"));
+
+    var suspendedDetail = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-organization-read", "action-organization-read", "saas_owner.tenant.read", "saas_owner.tenant.read", Map.of("organizationId", "tenant-suspended"), null, "membership-owner", "surface-user-admin-organization-directory", "corr-read-suspended"));
+    assertEquals("surface-user-admin-organization-detail", suspendedDetail.resultSurface().surfaceId());
+    assertTrue(suspendedDetail.resultSurface().toString().contains("reactivate"));
+
+    var reactivate = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-open-organization-reactivate", "action-open-organization-reactivate", "saas_owner.tenant.manage", "saas_owner.tenant.manage", Map.of("organizationId", "tenant-suspended"), null, "membership-owner", suspendedDetail.resultSurface().surfaceId(), "corr-open-reactivate"));
+    assertEquals("accepted", reactivate.status());
+    assertEquals("surface-user-admin-organization-reactivate-confirmation", reactivate.resultSurface().surfaceId());
+    assertTrue(reactivate.resultSurface().toString().contains("tenant-suspended"));
+
+    var wrongState = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-open-organization-reactivate", "action-open-organization-reactivate", "saas_owner.tenant.manage", "saas_owner.tenant.manage", Map.of("organizationId", "tenant-starter"), null, "membership-owner", activeDetail.resultSurface().surfaceId(), "corr-wrong-reactivate"));
+    assertEquals("denied", wrongState.status());
+    assertEquals("system_message", wrongState.resultSurface().surfaceType());
   }
 
   @Test

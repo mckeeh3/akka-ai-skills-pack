@@ -1742,8 +1742,6 @@ export const userAdminOrganizationReactivateSurface = envelope(
   [userAdminSurfaceActions.reactivateOrganization]
 );
 
-// Legacy alias retained for stale deep links and migration tests.
-export const userAdminOrganizationAdminSurface = userAdminOrganizationDirectorySurface;
 
 // Legacy fixture alias preserved for stale-screen quarantine tests: old user-admin-user-list now resolves conceptually to surface-user-admin-users.
 export const userAdminListSearchSurface = envelope(

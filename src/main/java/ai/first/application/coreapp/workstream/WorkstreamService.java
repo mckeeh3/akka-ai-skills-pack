@@ -398,6 +398,10 @@ public final class WorkstreamService {
     CapabilityActionResult result = null;
     if ("action-display-organization-admin".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Organization Admin loaded for SaaS Owner tenant lifecycle administration.", request.correlationId(), List.of("trace-organization-admin-" + stableSuffix(request.correlationId())), organizationAdminSurface(actor, request.correlationId()));
+    } else if (request.actionId().startsWith("action-open-organization-")) {
+      result = openOrganizationTaskSurface(actor, request.actionId(), request.input(), request.correlationId());
+    } else if ("action-organization-read".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Organization detail loaded through backend-authoritative Organization surface graph.", request.correlationId(), List.of("trace-organization-read-" + stableSuffix(request.correlationId())), organizationSurface(actor, request.correlationId(), "surface-user-admin-organization-detail", "show-inspection", "Organization Detail", "user_admin.organization_detail.v1", List.of(organizationListAction(), openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), openAuditAction()), readOrganizationDetail(actor, request.input(), request.correlationId())));
     } else if ("action-display-user-detail".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "User detail loaded.", request.correlationId(), List.of("trace-user-admin-detail-" + stableSuffix(stringInput(request.input(), "accountId", actor.account().accountId()))), detailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-display-invitation-detail".equals(request.actionId())) {
@@ -913,9 +917,21 @@ public final class WorkstreamService {
     return organizationSurface(actor, correlationId, "surface-user-admin-organization-rename", "edit-form", "Rename Organization", "user_admin.organization_rename.v1", List.of(organizationRenameAction()));
   }
 
+  private SurfaceEnvelope organizationRenameSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_MANAGE_CAPABILITY);
+    return organizationSurface(actor, correlationId, "surface-user-admin-organization-rename", "edit-form", "Rename Organization", "user_admin.organization_rename.v1", List.of(organizationRenameAction()), readOrganizationDetail(actor, input, correlationId));
+  }
+
   private SurfaceEnvelope organizationSuspendSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_MANAGE_CAPABILITY);
     return organizationSurface(actor, correlationId, "surface-user-admin-organization-suspend-confirmation", "destructive-lifecycle-confirmation", "Suspend Organization", "user_admin.organization_suspend_confirmation.v1", List.of(organizationSuspendAction()));
+  }
+
+  private SurfaceEnvelope organizationSuspendSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_MANAGE_CAPABILITY);
+    var detail = readOrganizationDetail(actor, input, correlationId);
+    requireOrganizationLifecycleAction(detail, "suspend", correlationId);
+    return organizationSurface(actor, correlationId, "surface-user-admin-organization-suspend-confirmation", "destructive-lifecycle-confirmation", "Suspend Organization", "user_admin.organization_suspend_confirmation.v1", List.of(organizationSuspendAction()), detail);
   }
 
   private SurfaceEnvelope organizationReactivateSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -923,25 +939,36 @@ public final class WorkstreamService {
     return organizationSurface(actor, correlationId, "surface-user-admin-organization-reactivate-confirmation", "lifecycle-confirmation", "Reactivate Organization", "user_admin.organization_reactivate_confirmation.v1", List.of(organizationReactivateAction()));
   }
 
+  private SurfaceEnvelope organizationReactivateSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_MANAGE_CAPABILITY);
+    var detail = readOrganizationDetail(actor, input, correlationId);
+    requireOrganizationLifecycleAction(detail, "reactivate", correlationId);
+    return organizationSurface(actor, correlationId, "surface-user-admin-organization-reactivate-confirmation", "lifecycle-confirmation", "Reactivate Organization", "user_admin.organization_reactivate_confirmation.v1", List.of(organizationReactivateAction()), detail);
+  }
+
   private SurfaceEnvelope organizationSurface(AuthContextResolver.ResolvedMe actor, String correlationId, String surfaceId, String surfaceType, String title, String contract, List<SurfaceAction> actions) {
+    return organizationSurface(actor, correlationId, surfaceId, surfaceType, title, contract, actions, null);
+  }
+
+  private SurfaceEnvelope organizationSurface(AuthContextResolver.ResolvedMe actor, String correlationId, String surfaceId, String surfaceType, String title, String contract, List<SurfaceAction> actions, ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail detail) {
     authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_READ_CAPABILITY);
     var boundary = "Organization administration manages the Tenant lifecycle boundary only; it does not grant tenant/customer application-data access, support access, provider secret access, or billing-derived authority.";
-    return envelope(surfaceId, surfaceType, title, actor, correlationId,
-        mapOf(
-            "surfaceContract", contract,
-            "scopeLabel", "SaaS Owner scope",
-            "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT),
-            "authorityBasis", "Backend checks selected AuthContext and saas_owner.tenant.read/manage; browser state cannot grant Organization authority.",
-            "boundaryNotice", boundary,
-            "safeBoundaryNotice", boundary,
-            "traceRefs", List.of("trace-organization-admin-" + stableSuffix(correlationId)),
-            "correlationId", correlationId,
-            "redaction", List.of("tenant-app-data-redacted", "provider-secrets-redacted", "billing-authority-redacted", "support-access-internals-redacted", "hidden-counts-redacted"),
-            "organizations", List.of(),
-            "filters", mapOf("query", "", "status", ""),
-            "systemStates", List.of("empty"),
-            "emptyMessage", "Use Refresh list to load Organizations from the protected Admin API."),
-        actions);
+    var data = mapOf(
+        "surfaceContract", contract,
+        "scopeLabel", "SaaS Owner scope",
+        "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT),
+        "authorityBasis", "Backend checks selected AuthContext and saas_owner.tenant.read/manage; browser state cannot grant Organization authority.",
+        "boundaryNotice", boundary,
+        "safeBoundaryNotice", boundary,
+        "traceRefs", detail == null ? List.of("trace-organization-admin-" + stableSuffix(correlationId)) : detail.traceRefs(),
+        "correlationId", correlationId,
+        "redaction", List.of("tenant-app-data-redacted", "provider-secrets-redacted", "billing-authority-redacted", "support-access-internals-redacted", "hidden-counts-redacted"),
+        "organizations", detail == null ? List.of() : List.of(organizationSummaryMap(detail.organization())),
+        "filters", mapOf("query", "", "status", ""),
+        "systemStates", List.of(detail == null ? "empty" : "ready"),
+        "emptyMessage", "Use Refresh list to load Organizations from the protected Admin API.");
+    if (detail != null) data.put("organizationDetail", organizationDetailMap(detail));
+    return envelope(surfaceId, surfaceType, title, actor, correlationId, data, actions);
   }
 
   private SurfaceEnvelope listSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -1539,6 +1566,40 @@ public final class WorkstreamService {
         .orElseThrow(() -> new AuthorizationException(404, "invitation-not-found-or-forbidden"));
   }
 
+  private ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail readOrganizationDetail(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    return StarterSecurityComponents.saasOwnerOrganizationAdminService().readOrganization(actor, stringInput(input, "organizationId", ""), correlationId);
+  }
+
+  private void requireOrganizationLifecycleAction(ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail detail, String action, String correlationId) {
+    if (!detail.visibleActions().contains(action)) {
+      throw new AuthorizationException(409, "organization-lifecycle-action-unavailable:" + action + ":" + correlationId);
+    }
+  }
+
+  private Map<String, Object> organizationSummaryMap(ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationSummary organization) {
+    return mapOf("organizationId", organization.organizationId(), "organizationName", organization.organizationName(), "status", organization.status(), "safeLifecycleSummary", organization.status().equals("active") ? "Active Tenant boundary" : "Suspended Tenant boundary", "actionAvailability", organization.status().equals("active") ? List.of("rename", "suspend") : List.of("rename", "reactivate"), "traceRefs", organization.traceRefs());
+  }
+
+  private Map<String, Object> organizationDetailMap(ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail detail) {
+    return mapOf("organizationId", detail.organization().organizationId(), "organizationName", detail.organization().organizationName(), "status", detail.organization().status(), "safeBoundaryNotice", detail.safeBoundaryNotice(), "visibleActions", detail.visibleActions(), "recentAuditEvents", List.of(), "traceRefs", detail.traceRefs(), "correlationId", detail.correlationId());
+  }
+
+  private CapabilityActionResult openOrganizationTaskSurface(AuthContextResolver.ResolvedMe actor, String actionId, Object input, String correlationId) {
+    try {
+      var surface = switch (actionId) {
+        case "action-open-organization-create" -> organizationCreateSurface(actor, correlationId);
+        case "action-open-organization-rename" -> organizationRenameSurface(actor, input, correlationId);
+        case "action-open-organization-suspend" -> organizationSuspendSurface(actor, input, correlationId);
+        case "action-open-organization-reactivate" -> organizationReactivateSurface(actor, input, correlationId);
+        default -> null;
+      };
+      if (surface == null) return null;
+      return new CapabilityActionResult("accepted", surface.title() + " opened through backend-authoritative Organization surface graph.", correlationId, surface.traceIds(), surface);
+    } catch (AuthorizationException denied) {
+      return new CapabilityActionResult("denied", "Organization lifecycle surface is unavailable for the selected Organization state or authorization context.", correlationId, List.of("trace-organization-open-denied-" + stableSuffix(correlationId)), shellSystemMessageSurface(actor, "agent-user-admin", denied.getMessage(), "Organization lifecycle surface is unavailable for the selected Organization state or authorization context.", correlationId));
+    }
+  }
+
   private SurfaceEnvelope surfaceForAction(AuthContextResolver.ResolvedMe actor, String actionId, String correlationId) {
     return switch (actionId) {
       case "action-open-audit-trace", "action-open-trace", "action-open-agent-trace", "action-audit-trace-dashboard" -> auditTraceDashboardSurface(actor, correlationId);
@@ -1582,6 +1643,10 @@ public final class WorkstreamService {
       case "action-manage-model-ref" -> agentModelRefsSurface(actor, correlationId);
       case "action-list-agent-seed-material" -> agentSeedMaterialSurface(actor, correlationId);
       case "action-display-organization-admin" -> organizationAdminSurface(actor, correlationId);
+      case "action-open-organization-create" -> organizationCreateSurface(actor, correlationId);
+      case "action-open-organization-rename" -> organizationRenameSurface(actor, correlationId);
+      case "action-open-organization-suspend" -> organizationSuspendSurface(actor, correlationId);
+      case "action-open-organization-reactivate" -> organizationReactivateSurface(actor, correlationId);
       case "action-display-user-detail", "action-replace-membership-role", "action-useradmin-preview-role-change", "action-useradmin-change-member-roles", "action-useradmin-disable-account", "action-useradmin-reactivate-account" -> detailSurface(actor, correlationId);
       case "action-display-invitation-detail", "action-useradmin-resend-invitation", "action-useradmin-revoke-invitation", "action-invite-user" -> invitationDetailSurface(actor, null, correlationId);
       case "action-useradmin-disable-member", "action-useradmin-reactivate-member", "action-useradmin-permanently-remove-user", "action-useradmin-read-support-access", "action-useradmin-grant-support-access", "action-useradmin-revoke-support-access", "action-useradmin-extend-support-access", "action-display-user-list" -> listSurface(actor, correlationId);
@@ -1591,7 +1656,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceAction actionById(String actionId) {
-    return List.of(showDashboardAction(), showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), updateEmailNotificationPreferencesAction(), externalNotificationFailClosedAction(), showProfileAction(), showSettingsAction(), showContextAction(), selectContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), displayOrganizationAdminAction(), organizationListAction(), organizationReadAction(), organizationCreateAction(), organizationRenameAction(), organizationSuspendAction(), organizationReactivateAction(), displayListAction(), displayDetailAction(), displayInvitationDetailAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), permanentlyRemoveUserAction(), disableAccountAction(), reactivateAccountAction(), readSupportAccessAction(), grantSupportAccessAction(), revokeSupportAccessAction(), extendSupportAccessAction(), previewRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSummaryTaskBlockedAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceOutcomeNoteAction(), governanceStartImpactAnalysisAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentCatalogAction(), openAgentDetailAction(), activateAgentDefinitionAction(), deactivateAgentDefinitionAction(), importAgentSeedDefaultsAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
+    return List.of(showDashboardAction(), showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), updateEmailNotificationPreferencesAction(), externalNotificationFailClosedAction(), showProfileAction(), showSettingsAction(), showContextAction(), selectContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), displayOrganizationAdminAction(), openOrganizationCreateAction(), openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), organizationListAction(), organizationReadAction(), organizationCreateAction(), organizationRenameAction(), organizationSuspendAction(), organizationReactivateAction(), displayListAction(), displayDetailAction(), displayInvitationDetailAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), permanentlyRemoveUserAction(), disableAccountAction(), reactivateAccountAction(), readSupportAccessAction(), grantSupportAccessAction(), revokeSupportAccessAction(), extendSupportAccessAction(), previewRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSummaryTaskBlockedAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceOutcomeNoteAction(), governanceStartImpactAnalysisAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentCatalogAction(), openAgentDetailAction(), activateAgentDefinitionAction(), deactivateAgentDefinitionAction(), importAgentSeedDefaultsAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
   }
 
   private SurfaceEnvelope envelope(String id, String type, String title, AuthContextResolver.ResolvedMe actor, String correlationId, Map<String, Object> data, List<SurfaceAction> actions) {
