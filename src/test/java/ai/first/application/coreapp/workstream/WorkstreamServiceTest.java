@@ -477,6 +477,14 @@ class WorkstreamServiceTest {
     assertEquals("accepted", reactivated.status());
     assertTrue(reactivated.resultSurface().toString().contains("value=active"));
 
+    var disabledFromActiveSelect = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "status", "active", "reason", "deactivate button default"), "idem-disable-member-active-select", "membership-admin", "surface-user-admin-users", "corr-disable-member-active-select"));
+    assertEquals("accepted", disabledFromActiveSelect.status());
+    assertTrue(disabledFromActiveSelect.resultSurface().toString().contains("value=removed"));
+    var reactivatedAgain = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-reactivate-member", "action-useradmin-reactivate-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "reason", "return again"), "idem-reactivate-member-again", "membership-admin", "surface-user-admin-users", "corr-reactivate-member-again"));
+    assertEquals("accepted", reactivatedAgain.status());
+
     identityRepository.saveAccount(new Account("purge@example.test", null, "purge@example.test", "purge@example.test", AccountStatus.ACTIVE, "UNLINKED"));
     identityRepository.putProfile(new UserProfile("purge@example.test", "purge@example.test", "Purge User", "Purge", "User", null));
     identityRepository.putSettings(new UserSettings("purge@example.test", UserSettings.ThemeId.AURORA_LIGHT));

@@ -418,7 +418,7 @@ public final class WorkstreamService {
       result = new CapabilityActionResult(changed.status(), changed.message(), request.correlationId(), List.of(changed.traceId()), detailSurface(actor, request.correlationId()));
     } else if ("action-useradmin-disable-member".equals(request.actionId()) || "action-useradmin-reactivate-member".equals(request.actionId())) {
       var requestedStatus = stringInput(request.input(), "status", "action-useradmin-reactivate-member".equals(request.actionId()) ? "active" : "removed");
-      var targetStatus = "action-useradmin-reactivate-member".equals(request.actionId()) ? MembershipStatus.ACTIVE : membershipStatusInput(requestedStatus);
+      var targetStatus = "action-useradmin-reactivate-member".equals(request.actionId()) ? MembershipStatus.ACTIVE : membershipStatusInputForDeactivate(requestedStatus);
       var changed = userAdminService.updateMemberStatus(actor, stringInput(request.input(), "membershipId", actor.selectedContext().membershipId()), targetStatus, stringInput(request.input(), "reason", "workstream member status change"), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult(changed.status(), changed.message(), request.correlationId(), List.of(changed.traceId()), detailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-useradmin-permanently-remove-user".equals(request.actionId())) {
@@ -1641,8 +1641,9 @@ public final class WorkstreamService {
     }
     return List.of(FoundationRole.TENANT_EMPLOYEE);
   }
-  private static MembershipStatus membershipStatusInput(String value) {
+  private static MembershipStatus membershipStatusInputForDeactivate(String value) {
     var normalized = Objects.requireNonNullElse(value, "removed").trim().toUpperCase(Locale.ROOT).replace('-', '_');
+    if (normalized.equals("ACTIVE")) return MembershipStatus.REMOVED;
     if (normalized.equals("DEACTIVATED") || normalized.equals("DELETED")) return MembershipStatus.REMOVED;
     return MembershipStatus.valueOf(normalized);
   }

@@ -207,14 +207,15 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
   const role = fields.find((field) => field.fieldId === 'role')?.value;
   const currentStatus = statusValue(status);
   const isDeactivated = currentStatus === 'REMOVED';
-  const [statusDraft, setStatusDraft] = useState(currentStatus);
+  const defaultStatusDraft = isDeactivated ? 'ACTIVE' : 'REMOVED';
+  const [statusDraft, setStatusDraft] = useState(defaultStatusDraft);
   const [roleDraft, setRoleDraft] = useState(roleValue(role));
   const actionContext = { ...(envelope.data.actionContext ?? {}), ...Object.fromEntries(fields.map((field) => [field.fieldId, fieldValues[field.fieldId] ?? field.value])) };
 
   useEffect(() => {
-    setStatusDraft(currentStatus);
+    setStatusDraft(defaultStatusDraft);
     setRoleDraft(roleValue(role));
-  }, [currentStatus, role]);
+  }, [defaultStatusDraft, role]);
 
   function submitStatusChange(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -263,7 +264,7 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
             {((isDeactivated && reactivateStatusAction) || (!isDeactivated && suspendStatusAction)) && (
               <form className="user-admin-edit-form" aria-label="Edit user status" onSubmit={submitStatusChange}>
                 <label>Change status<select className="designed-control" value={statusDraft} onChange={(event) => { const value = event.currentTarget.value; setStatusDraft(value); }}><option value="ACTIVE">Active</option><option value="REMOVED">Deactivated</option></select></label>
-                <button className="surface-action-link primary" type="submit">{isDeactivated ? 'Reactivate user' : 'Deactivate user'}</button>
+                <button className="surface-action-link primary" type="submit">Save</button>
               </form>
             )}
             {isDeactivated && permanentlyRemoveUserAction && (
@@ -275,7 +276,7 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
             {changeRoleAction && (
               <form className="user-admin-edit-form" aria-label="Edit user role" onSubmit={submitRoleChange}>
                 <label>Change role<select className="designed-control" value={roleDraft} onChange={(event) => { const value = event.currentTarget.value; setRoleDraft(value); }}><option value="TENANT_EMPLOYEE">Employee</option><option value="TENANT_ADMIN">Tenant admin</option><option value="AUDITOR">Auditor</option></select></label>
-                <button className="surface-action-link primary" type="submit">Change role</button>
+                <button className="surface-action-link primary" type="submit">Save</button>
               </form>
             )}
           </section>
