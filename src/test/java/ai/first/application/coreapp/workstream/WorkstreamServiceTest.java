@@ -132,6 +132,7 @@ class WorkstreamServiceTest {
 
     var endpointText = Files.readString(findSource("WorkstreamEndpoint.java"));
     assertTrue(endpointText.contains("workstreamService(componentClient"), "Browser/API message path must construct WorkstreamService with the ComponentClient-backed invoker");
+    assertTrue(endpointText.contains("viewQueryTenantId"), "SaaS-owner My Account SSE must not query the Akka View with a missing tenantId");
 
     var componentsText = Files.readString(findSource("StarterSecurityComponents.java"));
     assertTrue(componentsText.contains("AkkaAuditTraceRepository"), "Normal Audit/Trace runtime must bind the Akka-backed trace repository");

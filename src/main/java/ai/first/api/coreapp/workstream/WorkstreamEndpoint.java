@@ -92,15 +92,16 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
     var functionalAgentId = requestContext().queryParams().getString("functionalAgentId").orElse(null);
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var tenantId = viewQueryTenantId(actor.selectedContext().tenantId());
       var customerId = actor.selectedContext().customerId() == null ? "" : actor.selectedContext().customerId();
       var lastSeen = requestContext().lastSeenSseEventId()
           .or(() -> requestContext().queryParams().getString("lastEventId"))
           .map(java.time.Instant::parse);
       var source = functionalAgentId == null || functionalAgentId.isBlank()
           ? componentClient.forView().stream(WorkstreamEventBackboneView::streamContextEvents)
-              .entriesSource(new WorkstreamEventBackboneView.ContextQuery(actor.selectedContext().tenantId(), customerId), lastSeen)
+              .entriesSource(new WorkstreamEventBackboneView.ContextQuery(tenantId, customerId), lastSeen)
           : componentClient.forView().stream(WorkstreamEventBackboneView::streamFunctionalAgentEvents)
-              .entriesSource(new WorkstreamEventBackboneView.FunctionalAgentQuery(actor.selectedContext().tenantId(), customerId, functionalAgentId), lastSeen);
+              .entriesSource(new WorkstreamEventBackboneView.FunctionalAgentQuery(tenantId, customerId, functionalAgentId), lastSeen);
       return HttpResponses.serverSentEventsForView(source);
     });
   }
@@ -135,6 +136,10 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
 
   private String correlationId() {
     return requestContext().requestHeader("X-Correlation-Id").map(header -> header.value()).orElse("api-workstream");
+  }
+
+  private static String viewQueryTenantId(String tenantId) {
+    return tenantId == null || tenantId.isBlank() ? "__saas_owner_no_tenant__" : tenantId;
   }
 
   private interface AuthorizedCall {
