@@ -19,13 +19,13 @@ Verify closure or accepted blockers for the follow-up tasks appended by `TASK-FC
 
 ## In scope
 
-- Verify provider, billing/timer, and validation-tool statuses against evidence.
+- Verify provider, billing/timer, validation-tool, and Tenant Administration statuses against evidence.
 - Update readiness docs and queue.
 - Append any remaining bounded follow-up tasks if material gaps remain.
 
 ## Out of scope
 
-- Implementing provider, billing, timer, or tooling changes during verification.
+- Implementing provider, billing, timer, tooling, or Tenant Administration changes during verification.
 
 ## Expected outputs
 

@@ -16,13 +16,14 @@ Move the core app from five-core starter alignment toward full-core SaaS readine
 1. Define full-core readiness gap contract and evidence matrix.
 2. Validate WorkOS/AuthKit runtime and frontend secret boundaries.
 3. Complete invitation onboarding with Resend/captured outbox and lifecycle tests.
-4. Complete User Admin structured surface/action coverage for users, invitations, roles/memberships, access review, support access, and admin audit.
-5. Complete Agent Admin managed-agent lifecycle coverage.
-6. Complete governed prompt/skill/reference/manifest/tool-boundary proposal/approval/trace coverage.
-7. Complete Audit/Trace search, detail, timeline, redaction/export, and investigation-note coverage.
-8. Complete Governance/Policy proposal, impact/simulation, approval, activation/rollback, and outcome coverage.
-9. Run full local runtime smoke and update readiness docs.
-10. Verify mini-project completion or append follow-up tasks.
+4. Complete User Admin structured surface/action coverage for users, invitations, roles/memberships, access review, support access, admin audit, and tenant administration.
+5. Implement Tenant Administration foundation follow-up for SaaS Owner Tenant create/maintain and Tenant Admin bootstrap/maintenance if not already covered by User Admin readiness.
+6. Complete Agent Admin managed-agent lifecycle coverage.
+7. Complete governed prompt/skill/reference/manifest/tool-boundary proposal/approval/trace coverage.
+8. Complete Audit/Trace search, detail, timeline, redaction/export, and investigation-note coverage.
+9. Complete Governance/Policy proposal, impact/simulation, approval, activation/rollback, and outcome coverage.
+10. Run full local runtime smoke and update readiness docs.
+11. Verify mini-project completion or append follow-up tasks.
 
 ## Dependencies
 

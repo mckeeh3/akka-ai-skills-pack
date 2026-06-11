@@ -552,6 +552,61 @@
   - evidence: `tools/prove-workstream-icons-v0.sh` now targets `src/main/java/ai/first/application/foundation/identity/MeResponse.java`; runtime smoke and verification notes updated to remove the stale optional-tool blocker
   - checks: `tools/prove-workstream-icons-v0.sh`; `git diff --check`
 
+### TASK-FCSR-08-006: Implement tenant administration foundation slice
+
+- status: pending
+- source: skills-pack tenant-management guidance clarified that SaaS Owner Admins need Tenant create/maintain and Tenant Admin bootstrap/maintenance capabilities
+- task brief: specs/full-core-saas-readiness/tasks/08-follow-up/06-implement-tenant-administration-foundation-slice.md
+- depends on:
+  - TASK-FCSR-02-001
+  - TASK-FCSR-03-001
+  - TASK-FCSR-04-001
+- required reads:
+  - AGENTS.md
+  - skills-pack/docs/core-saas-identity-tenancy-admin.md
+  - skills-pack/skills/akka-basic-user-admin/SKILL.md
+  - specs/full-core-saas-readiness/full-core-readiness-gap-contract.md
+  - specs/full-core-saas-readiness/tasks/08-follow-up/06-implement-tenant-administration-foundation-slice.md
+  - app-description/domains/core-starter/capabilities/user-and-access-administration.md
+  - app-description/domains/core-starter/workstreams/user-admin/behavior.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - app-description/domains/core-starter/workstreams/user-admin/tools/governed-tools.md
+  - src/main/java/ai/first/domain/foundation/identity/**
+  - src/main/java/ai/first/application/foundation/identity/**
+  - src/main/java/ai/first/application/foundation/invitation/**
+  - src/main/java/ai/first/application/coreapp/useradmin/**
+- skills:
+  - core-saas-foundation
+  - akka-basic-user-admin
+  - akka-saas-invitation-onboarding
+  - akka-http-endpoints
+  - akka-http-endpoint-jwt
+  - akka-http-endpoint-component-client
+  - akka-view-query-patterns
+  - akka-http-endpoint-testing
+- expected outputs:
+  - updated app-description User Admin capability/surface/tool/test files for Tenant Administration
+  - backend domain/service/endpoint/workstream changes for Tenant create/list/view/update/status and Tenant Admin bootstrap/maintenance at the selected slice
+  - focused backend tests for authorization, tenant isolation, idempotency, invitation integration, last-admin protection, audit, and redaction
+  - specs/full-core-saas-readiness/tenant-administration-foundation-validation.md
+  - updated queue
+- required checks:
+  - `git diff --check`
+  - focused identity/user-admin/tenant-admin backend tests
+  - `mvn test -Dtest=InvitationAndUserAdminServiceTest,WorkstreamServiceTest` when those paths are touched
+  - frontend tests/typecheck if frontend surfaces change
+- done criteria:
+  - SaaS Owner Admin can create/list/view/update/status-change Tenants through the implemented backend/API/workstream path
+  - SaaS Owner Admin can bootstrap Tenant Admins through the existing Invitation lifecycle without raw token/secret exposure
+  - Tenant Admin can manage Tenant Admin memberships only inside the selected Tenant context
+  - cross-tenant Tenant Admin attempts, sibling Tenant creation attempts, and SaaS Owner role assignment attempts are forbidden and audited
+  - last active Tenant Admin protection is enforced
+  - validation artifact records implemented scope and deferred UI/billing/customer-admin follow-up
+  - changes and queue update are committed
+- notes:
+  - commit message: `full-core-ready: implement tenant admin foundation`
+  - vertical contract: User Admin functional agent plus SaaS Owner Tenant Administration surface; role-specific dashboard/surface: Tenant Administration directory/detail/admins surfaces in User Admin; attention category: tenant onboarding/admin lifecycle risk, failed/stale Tenant Admin invitations, last-admin risk, cross-tenant/privilege-escalation denials; surface graph node/action edge: Tenant Administration surface opens create Tenant, Tenant detail, Tenant Admin list, invite Tenant Admin, update Tenant status, and Tenant Admin membership action surfaces; governed-tool ids: tenant:create, tenant:view, tenant:list, tenant:update_profile, tenant:update_status, tenant_admin:invite, tenant_admin:list, tenant_admin:replace_roles, tenant_admin:suspend_membership, tenant_admin:reactivate_membership, tenant_admin:remove_membership, tenant_admin:last_admin_protection_check; exposure: browser/workstream actions and optional HTTP endpoints; AuthContext / roles / tenant scope: WorkOS-authenticated local Account/Membership/AuthContext authorization for SAAS_OWNER_ADMIN, TENANT_ADMIN, and AUDITOR; Akka substrate: identity/user-admin backend services, invitation lifecycle, repository/view projection or workstream DTO projection, optional HTTP endpoint; API / frontend / realtime path: backend/workstream payload required, frontend rendering only if touched; audit/work trace requirements: AdminAuditEvent and work trace obligations for all consequential actions and denials; local validation path: focused identity/user-admin/tenant-admin tests plus `git diff --check`
+
 ### TASK-FCSR-99-002: Verify follow-up full-core readiness closure
 
 - status: pending
@@ -563,6 +618,7 @@
   - TASK-FCSR-08-003
   - TASK-FCSR-08-004
   - TASK-FCSR-08-005
+  - TASK-FCSR-08-006
 - required reads:
   - AGENTS.md
   - specs/full-core-saas-readiness/pending-tasks.md
