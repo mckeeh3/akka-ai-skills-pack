@@ -143,7 +143,7 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
         <span className="workstream-show-dashboard-tooltip" role="tooltip">Show dashboard</span>
       </button>
       <button type="button" className="ds-button ghost icon-button clear-screen-button" disabled={clearScreenDisabled} aria-label="Clear screen for current workstream" onClick={clearScreen}>
-        <span aria-hidden="true">+</span>
+        <CleanScreenIcon />
         <span className="workstream-clear-screen-tooltip" role="tooltip">Clear screen</span>
       </button>
     </form>
@@ -156,6 +156,19 @@ function DashboardIcon() {
       <rect x="4" y="5" width="16" height="14" rx="3" />
       <path d="M8 10h3M8 14h2M14 10h2M14 14h2" />
       <path d="M4 9h16" />
+    </svg>
+  );
+}
+
+function CleanScreenIcon() {
+  return (
+    <svg className="clear-screen-button-icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+      <path d="M5 18h8" />
+      <path d="M7 18l2-7" />
+      <path d="M11 18l-2-7" />
+      <path d="M8 11h2.8c1.8 0 3.2-1.4 3.2-3.2V6" />
+      <path d="M14 6l2-2 2 2-2 2-2-2Z" />
+      <path d="M18 13l1-1 1 1-1 1-1-1Z" />
     </svg>
   );
 }

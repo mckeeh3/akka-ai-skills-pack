@@ -495,7 +495,8 @@
   color: var(--color-inverse-text);
 }
 
-.dashboard-button-icon {
+.dashboard-button-icon,
+.clear-screen-button-icon {
   width: 1.25rem;
   height: 1.25rem;
   fill: none;
