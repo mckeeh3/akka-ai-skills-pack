@@ -109,6 +109,10 @@ public record IdentityRepositoryState(
     return Optional.ofNullable(tenants.get(tenantId));
   }
 
+  public List<Tenant> tenantRows() {
+    return tenants.values().stream().toList();
+  }
+
   public IdentityRepositoryState saveTenant(Tenant tenant) {
     var updated = new java.util.LinkedHashMap<>(tenants);
     updated.put(tenant.tenantId(), tenant);

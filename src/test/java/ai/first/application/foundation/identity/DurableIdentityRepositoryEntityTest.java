@@ -52,6 +52,7 @@ class DurableIdentityRepositoryEntityTest {
     assertEquals(profile, testKit.method(DurableIdentityRepositoryEntity::profile).invoke("admin@example.com").getReply().orElseThrow());
     assertEquals(settings, testKit.method(DurableIdentityRepositoryEntity::settings).invoke("admin@example.com").getReply().orElseThrow());
     assertEquals(tenant, testKit.method(DurableIdentityRepositoryEntity::tenant).invoke("tenant-1").getReply().orElseThrow());
+    assertEquals(List.of(tenant), testKit.method(DurableIdentityRepositoryEntity::tenantRows).invoke().getReply());
     assertEquals(List.of(membership), testKit.method(DurableIdentityRepositoryEntity::membershipsByAccount).invoke("admin@example.com").getReply());
     assertEquals(membership, testKit.method(DurableIdentityRepositoryEntity::membership).invoke("membership-admin").getReply().orElseThrow());
     assertEquals(List.of(audit), testKit.method(DurableIdentityRepositoryEntity::auditEvents).invoke().getReply());

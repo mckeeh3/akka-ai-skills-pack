@@ -48,6 +48,8 @@ public interface IdentityRepository {
 
   Optional<Tenant> tenant(String tenantId);
 
+  List<Tenant> tenantRows();
+
   Tenant saveTenant(Tenant tenant);
 
   Optional<Customer> customer(String tenantId, String customerId);

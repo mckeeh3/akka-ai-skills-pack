@@ -87,6 +87,11 @@ public final class LocalDemoIdentityRepository implements IdentityRepository {
   }
 
   @Override
+  public List<Tenant> tenantRows() {
+    return tenants.values().stream().toList();
+  }
+
+  @Override
   public Optional<Customer> customer(String tenantId, String customerId) {
     return Optional.ofNullable(customers.get(tenantId + ":" + customerId));
   }

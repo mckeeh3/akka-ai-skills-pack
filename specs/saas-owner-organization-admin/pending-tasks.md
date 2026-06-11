@@ -92,7 +92,7 @@
 
 ### TASK-SOOA-02-001: Implement backend Organization Admin service
 
-- status: pending
+- status: done
 - source: specs/saas-owner-organization-admin/backlog/01-saas-owner-organization-admin-build-backlog.md
 - task brief: specs/saas-owner-organization-admin/tasks/02-backend-service/01-implement-organization-admin-service.md
 - depends on:
@@ -134,7 +134,9 @@
   - mutations require idempotency keys and handle no-op/replay safely
   - no tenant/customer app data, provider secrets, or billing-derived authority are exposed
   - changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `saas-owner-org-admin: implement backend organization admin service`
+  - checks: `mvn -Dtest=DurableIdentityRepositoryEntityTest,SaasOwnerOrganizationAdminServiceTest test`; `mvn test`; `git diff --check`
 
 ### TASK-SOOA-03-001: Add protected Organization Admin API
 

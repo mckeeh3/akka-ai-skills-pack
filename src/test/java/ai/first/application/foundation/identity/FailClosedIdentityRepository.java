@@ -32,6 +32,7 @@ public final class FailClosedIdentityRepository implements IdentityRepository {
   @Override public Membership saveMembership(Membership membership) { throw unavailable(); }
   @Override public void deleteMembership(String membershipId) { throw unavailable(); }
   @Override public Optional<Tenant> tenant(String tenantId) { throw unavailable(); }
+  @Override public List<Tenant> tenantRows() { throw unavailable(); }
   @Override public Tenant saveTenant(Tenant tenant) { throw unavailable(); }
   @Override public Optional<Customer> customer(String tenantId, String customerId) { throw unavailable(); }
   @Override public Customer saveCustomer(Customer customer) { throw unavailable(); }

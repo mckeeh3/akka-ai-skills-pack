@@ -621,6 +621,7 @@ public final class StarterSecurityComponents {
     public Membership saveMembership(Membership membership) { throw unavailable(); }
     public void deleteMembership(String membershipId) { throw unavailable(); }
     public Optional<Tenant> tenant(String tenantId) { throw unavailable(); }
+    public List<Tenant> tenantRows() { throw unavailable(); }
     public Tenant saveTenant(Tenant tenant) { throw unavailable(); }
     public Optional<Customer> customer(String tenantId, String customerId) { throw unavailable(); }
     public Customer saveCustomer(Customer customer) { throw unavailable(); }

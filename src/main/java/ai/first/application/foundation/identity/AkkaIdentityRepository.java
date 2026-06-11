@@ -108,6 +108,11 @@ public final class AkkaIdentityRepository implements IdentityRepository {
   }
 
   @Override
+  public List<Tenant> tenantRows() {
+    return componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::tenantRows).invoke();
+  }
+
+  @Override
   public Tenant saveTenant(Tenant tenant) {
     return componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::saveTenant).invoke(tenant);
   }
