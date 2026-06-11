@@ -74,13 +74,15 @@ class WorkstreamServiceTest {
   private LocalDemoIdentityRepository identityRepository;
   private LocalDemoAgentBehaviorRepository agentRepository;
   private LocalDemoWorkstreamEventRepository eventRepository;
+  private LocalDemoInvitationRepository invitationRepository;
+  private InvitationService invitationService;
   private WorkstreamService service;
   private TrackingWorkstreamAgentRuntimeTestAdapter trackingRuntimeInvoker;
 
   @BeforeEach
   void setUp() {
     identityRepository = new LocalDemoIdentityRepository();
-    var invitationRepository = new LocalDemoInvitationRepository();
+    invitationRepository = new LocalDemoInvitationRepository();
     var resolver = new AuthContextResolver(identityRepository);
     var attentionRepository = new LocalDemoAttentionRepository();
     var attentionService = new AttentionService(attentionRepository, resolver, Clock.systemUTC());
@@ -90,7 +92,7 @@ class WorkstreamServiceTest {
     var workstreamEventPublisher = new WorkstreamEventPublisher(eventRepository, workstreamEventConsumer, Clock.systemUTC());
     var meService = new MeService(resolver, new MyAccountService(resolver, attentionService));
     var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
-    var invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC(), attentionProducerService, workstreamEventPublisher);
+    invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC(), attentionProducerService, workstreamEventPublisher);
     agentRepository = new LocalDemoAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed");
     var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("## " + request.functionalAgentId() + " model response\n\nProvider-backed test markdown.", "test-fake-provider", "test-fake-model", "fake-response-id", "stop", "unit-test fake model invocation"), new LocalDemoAgentRuntimeTraceSink());
@@ -186,6 +188,34 @@ class WorkstreamServiceTest {
     assertTrue(users.toString().contains("active-user"));
     assertFalse(users.toString().contains("invite-token"));
     assertFalse(users.toString().contains("tokenHash"));
+  }
+
+  @Test
+  void userAdminDashboardDoesNotCountAcceptedInvitationsAsPendingAttention() {
+    var created = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-invite-user", "action-invite-user", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", Map.of("email", "accepted.invitee@example.test", "displayName", "Accepted Invitee"), "idem-accepted-invite", "membership-admin", "surface-user-admin-dashboard", "corr-accepted-invite"));
+    assertEquals("accepted", created.status());
+
+    var invite = invitationRepository.invitations().stream()
+        .filter(invitation -> invitation.normalizedEmail().equals("accepted.invitee@example.test"))
+        .findFirst()
+        .orElseThrow();
+    invitationService.accept(new WorkosIdentity("workos-accepted-invitee", "accepted.invitee@example.test", "Accepted Invitee"), invite.acceptanceContextId(), "corr-accept-invite");
+
+    var dashboard = service.surface(identity(), "membership-admin", "surface-user-admin-dashboard", "corr-dashboard-after-accept");
+    @SuppressWarnings("unchecked")
+    var cards = (List<Map<String, Object>>) dashboard.data().get("cards");
+    var pendingCard = cards.stream()
+        .filter(card -> card.get("cardId").equals("card-pending-invitations"))
+        .findFirst()
+        .orElseThrow();
+
+    assertEquals(0L, pendingCard.get("value"));
+    assertEquals("info", pendingCard.get("severity"));
+
+    var users = service.surface(identity(), "membership-admin", "surface-user-admin-users", "corr-users-after-accept");
+    assertTrue(users.toString().contains("accepted.invitee@example.test"));
+    assertTrue(users.toString().contains("status=accepted"));
   }
 
   @Test

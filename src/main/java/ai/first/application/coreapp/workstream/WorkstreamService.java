@@ -7,6 +7,7 @@ import ai.first.domain.foundation.identity.Customer;
 import ai.first.domain.foundation.identity.Membership;
 import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.invitation.Invitation;
+import ai.first.domain.foundation.invitation.InvitationStatus;
 import ai.first.application.coreapp.agentadmin.AgentAdminService;
 import ai.first.application.coreapp.governance.GovernancePolicyImpactService;
 import ai.first.application.coreapp.myaccount.MyAccountPersonalAttentionDigestService;
@@ -823,12 +824,13 @@ public final class WorkstreamService {
     authContextResolver.appendProtectedReadTrace(actor, USERADMIN_VIEW_OVERVIEW, "user_admin.dashboard.v1", correlationId);
     var users = userDirectoryView.list(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId());
     var invites = invitationView.list(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId());
+    var pendingInvites = invites.stream().filter(WorkstreamService::isPendingInvitation).count();
     var failedInvites = invites.stream().filter(invite -> invite.deliveryStatus().name().equals("FAILED")).count();
     seedUserAdminInvitationAttention(actor, failedInvites, correlationId);
     var attentionItems = attentionMaps(attentionService.listWorkstreamItems(actor, USER_ADMIN_AGENT_ID, correlationId));
     var expiringSupport = users.stream().filter(UserDirectoryView.UserDirectoryRow::supportAccess).count();
     return envelope("surface-user-admin-dashboard", "dashboard", "User Admin Dashboard", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.dashboard.v1", "readiness", mapOf("directory", "backend-derived", "invitationOutbox", "backend-derived", "supportAccess", "backend-derived", "adminAudit", "backend-derived", "accessReviewWorker", "autonomous_agent_runtime_projected"), "cards", List.of(mapOf("cardId", "card-pending-invitations", "label", "Pending invitations", "value", invites.size(), "severity", invites.isEmpty() ? "info" : "warning"), mapOf("cardId", "card-active-users", "label", "Active users", "value", users.size(), "severity", "info"), mapOf("cardId", "card-failed-invitations", "label", "Failed invitation delivery", "value", failedInvites, "severity", failedInvites == 0 ? "info" : "warning"), mapOf("cardId", "card-support-access", "label", "Expiring support access", "value", expiringSupport, "severity", expiringSupport == 0 ? "info" : "warning"), mapOf("cardId", "card-admin-audit", "label", "Recent denied admin actions", "value", userAdminService.auditEvents(actor, 25, correlationId).stream().filter(event -> event.result() == ai.first.domain.foundation.audit.AdminAuditEvent.Result.DENIED).count(), "severity", "info"), mapOf("cardId", "card-access-review", "label", "Access review items", "value", 0, "severity", "blocked_provider_or_runtime")), "attentionItems", attentionItems, "attentionSource", AttentionService.LIST_WORKSTREAM_ITEMS_TOOL, "capabilityIds", List.of(USERADMIN_VIEW_OVERVIEW, USERADMIN_LIST_MEMBERS, USERADMIN_LIST_INVITATIONS, USERADMIN_SEND_INVITATION, USERADMIN_RESEND_INVITATION, USERADMIN_REVOKE_INVITATION, USERADMIN_LIST_ROLES_CAPABILITIES, USERADMIN_UPDATE_MEMBER_STATUS, USERADMIN_DISABLE_ACCOUNT, USERADMIN_REACTIVATE_ACCOUNT, USERADMIN_SUPPORT_ACCESS_READ, USERADMIN_SUPPORT_ACCESS_GRANT, USERADMIN_SUPPORT_ACCESS_REVOKE, USERADMIN_SUPPORT_ACCESS_EXTEND, USERADMIN_ACCESS_REVIEW_START, USERADMIN_ACCESS_REVIEW_READ, USERADMIN_ACCESS_REVIEW_CANCEL, USERADMIN_ACCESS_REVIEW_ACCEPT_RESULT, USERADMIN_ACCESS_REVIEW_REJECT_RESULT)),
+        mapOf("surfaceContract", "user_admin.dashboard.v1", "readiness", mapOf("directory", "backend-derived", "invitationOutbox", "backend-derived", "supportAccess", "backend-derived", "adminAudit", "backend-derived", "accessReviewWorker", "autonomous_agent_runtime_projected"), "cards", List.of(mapOf("cardId", "card-pending-invitations", "label", "Pending invitations", "value", pendingInvites, "severity", pendingInvites == 0 ? "info" : "warning"), mapOf("cardId", "card-active-users", "label", "Active users", "value", users.size(), "severity", "info"), mapOf("cardId", "card-failed-invitations", "label", "Failed invitation delivery", "value", failedInvites, "severity", failedInvites == 0 ? "info" : "warning"), mapOf("cardId", "card-support-access", "label", "Expiring support access", "value", expiringSupport, "severity", expiringSupport == 0 ? "info" : "warning"), mapOf("cardId", "card-admin-audit", "label", "Recent denied admin actions", "value", userAdminService.auditEvents(actor, 25, correlationId).stream().filter(event -> event.result() == ai.first.domain.foundation.audit.AdminAuditEvent.Result.DENIED).count(), "severity", "info"), mapOf("cardId", "card-access-review", "label", "Access review items", "value", 0, "severity", "blocked_provider_or_runtime")), "attentionItems", attentionItems, "attentionSource", AttentionService.LIST_WORKSTREAM_ITEMS_TOOL, "capabilityIds", List.of(USERADMIN_VIEW_OVERVIEW, USERADMIN_LIST_MEMBERS, USERADMIN_LIST_INVITATIONS, USERADMIN_SEND_INVITATION, USERADMIN_RESEND_INVITATION, USERADMIN_REVOKE_INVITATION, USERADMIN_LIST_ROLES_CAPABILITIES, USERADMIN_UPDATE_MEMBER_STATUS, USERADMIN_DISABLE_ACCOUNT, USERADMIN_REACTIVATE_ACCOUNT, USERADMIN_SUPPORT_ACCESS_READ, USERADMIN_SUPPORT_ACCESS_GRANT, USERADMIN_SUPPORT_ACCESS_REVOKE, USERADMIN_SUPPORT_ACCESS_EXTEND, USERADMIN_ACCESS_REVIEW_START, USERADMIN_ACCESS_REVIEW_READ, USERADMIN_ACCESS_REVIEW_CANCEL, USERADMIN_ACCESS_REVIEW_ACCEPT_RESULT, USERADMIN_ACCESS_REVIEW_REJECT_RESULT)),
         List.of(displayListAction()));
   }
 
@@ -1384,6 +1386,10 @@ public final class WorkstreamService {
 
   private Map<String, Object> invitationRow(InvitationView.InvitationRow invite) {
     return mapOf("id", invite.invitationId(), "invitationId", invite.invitationId(), "rowType", "invitation", "email", invite.targetEmail(), "displayName", invite.targetEmail(), "role", roleLabels(invite.requestedRoles()), "status", invite.status().name().toLowerCase(), "delivery", invite.deliveryStatus().name().toLowerCase(), "expiresAt", invite.expiresAt().toString(), "canResend", invite.canResend(), "canRevoke", invite.canRevoke(), "traceId", "trace-useradmin-invitation-" + stableSuffix(invite.invitationId()));
+  }
+
+  private static boolean isPendingInvitation(InvitationView.InvitationRow invite) {
+    return invite.status() != InvitationStatus.ACCEPTED && invite.status() != InvitationStatus.REVOKED && invite.status() != InvitationStatus.EXPIRED;
   }
 
   private String roleLabels(List<FoundationRole> roles) {
