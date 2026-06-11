@@ -52,7 +52,7 @@ Default trunk surface: `surface-user-admin-dashboard`.
 
 Primary non-Organization graph branches:
 
-- `surface-user-admin-users` for scoped user/member discovery only; every row/card opens a lifecycle-aware inspection surface.
+- `surface-user-admin-users` for scoped user/member discovery only; it exposes a create/invite action where allowed, and every row/card uses backend-authored state to open the correct lifecycle-aware user detail, invitation detail, role preview, access-review task, identity-exception review, or system-message surface.
 - `surface-user-admin-user-detail` for scoped user/membership/invitation/support/access-review/identity/audit inspection and task entry points; it does not directly mutate access.
 - `surface-user-admin-invitation-create`, `surface-user-admin-invitation-detail`, `surface-user-admin-invitation-resend-confirmation`, and `surface-user-admin-invitation-revoke-confirmation` for invitation create, inspect, resend, and destructive lifecycle flows.
 - `surface-user-admin-membership-status-confirmation` for disable/suspend/reactivate/remove membership or account lifecycle changes with last-admin and self-action protections.

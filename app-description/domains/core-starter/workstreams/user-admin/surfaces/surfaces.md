@@ -175,6 +175,40 @@ The non-Organization User Admin graph follows the canonical durable collection-o
 
 All graph nodes are owned by `user-admin-agent`. Reusable placements are limited to authorized My Account attention summaries and Audit/Trace evidence links unless another workstream explicitly declares a reusable-by edge.
 
+### Dashboard-out flow verification
+
+The User Admin dashboard is the trunk. Every visible dashboard object must declare a target surface and action id. The required dashboard-to-surface flows are:
+
+| Dashboard object/state | Required target flow |
+|---|---|
+| Visible administered population card, such as tenant employees or Customer Users | Opens `surface-user-admin-users` with backend-shaped `populationType` and selected-scope filters. |
+| "Create user" / "Invite user" action for a visible population | Opens `surface-user-admin-invitation-create` with target scope, allowable role options, and outbox/provider readiness. This action is available from the dashboard and from the users directory empty/ready states. |
+| Pending, stale, expired, failed-delivery, or duplicate/open invitation attention | Opens `surface-user-admin-invitation-detail` for the relevant invitation when there is one target; queue variants open `surface-user-admin-users` filtered to invitation rows whose activation opens invitation detail. |
+| Dormant, disabled, risky, or review-needed user/member attention | Opens `surface-user-admin-user-detail` for a single target or `surface-user-admin-users` filtered to the relevant queue. The selected row then opens the lifecycle-aware detail surface. |
+| Role/capability approval or last-admin risk attention | Opens `surface-user-admin-role-change-preview` when the pending preview is known; otherwise opens user detail with a task entry point to preview role change. |
+| Support-access active/expiring/policy attention | Opens user detail for the support-access subject, then routes to `surface-user-admin-support-access-grant` for grant/extend or `surface-user-admin-support-access-revoke-confirmation` for revoke. |
+| Access-review result needing human review | Opens `surface-user-admin-access-review-task`; any follow-up mutation routes to membership, role, or support-access task surfaces. |
+| Identity link/relink exception | Opens `surface-user-admin-identity-exception-review`; approved recovery routes to workflow/status or user detail without provider internals. |
+| Recent denial/no-op/audit evidence | Opens authorized Audit/Trace surfaces or `surface-user-admin-system-message` when evidence is redacted or forbidden. |
+
+### Users directory row-selection routing
+
+`surface-user-admin-users` is the collection list/search surface and must expose a **Create/Invite user** action independent of row selection whenever `user_admin.invite_user` is visible for the selected scope. Row/card activation is state-aware and backend-authored:
+
+| Row state from backend | Row/card activation target |
+|---|---|
+| Active account with active membership | `surface-user-admin-user-detail`, showing role, membership, support-access, access-review, identity, audit summaries, and task entry points. |
+| Invited person with no accepted account yet | `surface-user-admin-invitation-detail`, not user detail, because the durable object is the invitation until acceptance/linkage completes. |
+| Invitation failed delivery, stale, expired, revoked, or duplicate/open-invite conflict | `surface-user-admin-invitation-detail` with resend/revoke/recovery task entry points determined by backend eligibility. |
+| Disabled account, suspended/inactive membership, pending removal, or last-admin risk | `surface-user-admin-user-detail` with lifecycle task entry points; consequential state changes route to `surface-user-admin-membership-status-confirmation`. |
+| Role/capability change pending, approval-required, or escalation-risk row | `surface-user-admin-role-change-preview` when a preview/proposal id is present; otherwise `surface-user-admin-user-detail` with a preview-role-change task entry. |
+| Support access active, expiring, requested, or policy-blocked row | `surface-user-admin-user-detail` with support-access task entries; grant/extend opens `surface-user-admin-support-access-grant`, revoke opens `surface-user-admin-support-access-revoke-confirmation`. |
+| Access review in progress or result-ready row | `surface-user-admin-access-review-task` when a task id is present; otherwise user detail with a start/open review task entry. |
+| Identity exception, provider mismatch, or relink-required row | `surface-user-admin-identity-exception-review` when an exception id is present; otherwise user detail with identity exception summary and recovery entry point. |
+| Hidden, forbidden, redacted, stale, or cross-scope row/deep link | `surface-user-admin-system-message` with safe reason/recovery, no hidden identities/counts, and trace refs where allowed. |
+
+The backend owns row `targetSurfaceId`, `targetSurfaceType`, `targetObjectType`, `openActionId`, eligibility flags, and redaction state. The frontend must not infer target surfaces from labels, hidden role ids, or client-only status checks.
+
 ### Shared authority and language
 
 - Required context: authenticated active account, selected app-owner/tenant/customer `AuthContext`, active membership, and backend capabilities for the exact read, invitation, membership, role, support-access, review, identity, or audit operation.
@@ -184,7 +218,7 @@ All graph nodes are owned by `user-admin-agent`. Reusable placements are limited
 
 ### Surface payloads and task routing
 
-- Directory: `surfaceContract`, selected `AuthContext`, filters, pagination/sort, dashboard-origin queue id, `rows[]`, redaction, trace refs, and correlation id. Each row includes frontend-safe user/member/invitation/support/review badges and action availability, but row activation only opens user detail or an explicitly typed inspection surface.
+- Directory: `surfaceContract`, selected `AuthContext`, filters, pagination/sort, dashboard-origin queue id, `rows[]`, visible create/invite action where allowed, redaction, trace refs, and correlation id. Each row includes frontend-safe user/member/invitation/support/review badges, backend-authored `targetSurfaceId`, `targetObjectType`, `openActionId`, action availability, and redaction state; activation opens the target inspection/task surface and never performs mutation inline.
 - User detail: target account/member id when safe, scoped identity/account/membership summaries, role/capability summary, invitation summaries, support-access state, access-review items, identity exception state, recent browser-safe audit excerpts, visible task entry points, denial categories, trace refs, and correlation id.
 - Invitation create/detail/resend/revoke: normalized email/display label where authorized, requested roles, target scope, status, expiry, accepted timestamp, delivery/outbox state, provider failure summary, eligibility flags, validation messages, idempotency/correlation refs, redaction, and trace refs. Tokens and full email bodies are always forbidden.
 - Membership status confirmation: target membership/account summary, current and proposed lifecycle state, consequence copy, confirmation requirement, reason requirement, last-admin/self-action analysis, stale version, idempotency hint, trace refs, and redaction.
