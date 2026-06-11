@@ -1,0 +1,259 @@
+# Pending Tasks: SaaS Owner Organization Admin
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
+- Commit message format: `saas-owner-org-admin: <short task title>`.
+- Do not commit unrelated `skills-pack/**` changes while executing this app-realization queue.
+
+## Tasks
+
+### TASK-SOOA-00-001: Create SaaS Owner Organization Admin planning scaffold
+
+- status: done
+- source: user agreed to one mini-project for the six-phase SaaS Owner tenant/organization management plan
+- task brief: specs/saas-owner-organization-admin/tasks/00-planning/00-create-saas-owner-organization-admin-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - app-description/app.md
+  - app-description/domains/core-starter/realization/traceability.md
+  - app-description/global/roles/foundation-roles.md
+  - app-description/domains/core-starter/workstreams/user-admin/access.md
+  - app-description/domains/core-starter/capabilities/user-and-access-administration.md
+  - current conversation context
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/saas-owner-organization-admin/README.md
+  - specs/saas-owner-organization-admin/conversation-capture.md
+  - specs/saas-owner-organization-admin/pending-tasks.md
+  - specs/saas-owner-organization-admin/sprints/*.md
+  - specs/saas-owner-organization-admin/backlog/*.md
+  - specs/saas-owner-organization-admin/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - mini-project has captured rationale, sprint sequence, backlog, task briefs, and pending queue
+  - task changes and queue update are committed
+- notes:
+  - commit message: `saas-owner-org-admin: add planning queue`
+
+### TASK-SOOA-01-001: Update Organization Admin intent and contracts
+
+- status: pending
+- source: specs/saas-owner-organization-admin/backlog/01-saas-owner-organization-admin-build-backlog.md
+- task brief: specs/saas-owner-organization-admin/tasks/01-intent-contracts/01-update-organization-admin-contracts.md
+- depends on:
+  - TASK-SOOA-00-001
+- required reads:
+  - AGENTS.md
+  - app-description/app.md
+  - app-description/global/roles/foundation-roles.md
+  - app-description/global/policies/foundation-security-and-governance.md
+  - app-description/55-ui/frontend-api-contracts.md
+  - app-description/domains/core-starter/capabilities/user-and-access-administration.md
+  - app-description/domains/core-starter/workstreams/user-admin/access.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/saas-owner-organization-admin/README.md
+  - specs/saas-owner-organization-admin/conversation-capture.md
+  - specs/saas-owner-organization-admin/sprints/01-intent-contract-sprint.md
+  - specs/saas-owner-organization-admin/backlog/01-saas-owner-organization-admin-build-backlog.md
+  - specs/saas-owner-organization-admin/tasks/01-intent-contracts/01-update-organization-admin-contracts.md
+- skills:
+  - core-saas-foundation
+  - app-description-auth-security
+  - app-description-capability-modeling
+  - app-description-surface-modeling
+  - app-description-test-specification
+- expected outputs:
+  - app-description updates for SaaS Owner Admin Organization management
+  - frontend API contract updates for organization routes/DTOs
+  - updated pending queue if implementation tasks need scope adjustment
+- required checks:
+  - `git diff --check`
+  - focused `rg -n "SaaS Owner|Organization|organization|saas_owner|tenant.manage|support access|billing" app-description specs/saas-owner-organization-admin`
+- done criteria:
+  - Organization-vs-Tenant terminology is explicit
+  - SaaS Owner Organization list/read/create/rename/suspend/reactivate behavior is specified
+  - support-access and billing-boundary non-authority are specified
+  - backend authorization, audit/work trace, idempotency, no-op, denial, and frontend secret-boundary expectations are specified
+  - changes and queue update are committed
+- notes: []
+
+### TASK-SOOA-02-001: Implement backend Organization Admin service
+
+- status: pending
+- source: specs/saas-owner-organization-admin/backlog/01-saas-owner-organization-admin-build-backlog.md
+- task brief: specs/saas-owner-organization-admin/tasks/02-backend-service/01-implement-organization-admin-service.md
+- depends on:
+  - TASK-SOOA-01-001
+- required reads:
+  - AGENTS.md
+  - specs/saas-owner-organization-admin/README.md
+  - specs/saas-owner-organization-admin/conversation-capture.md
+  - specs/saas-owner-organization-admin/sprints/02-backend-api-sprint.md
+  - specs/saas-owner-organization-admin/backlog/01-saas-owner-organization-admin-build-backlog.md
+  - specs/saas-owner-organization-admin/tasks/02-backend-service/01-implement-organization-admin-service.md
+  - app-description files changed by TASK-SOOA-01-001
+  - src/main/java/ai/first/domain/foundation/identity/Tenant.java
+  - src/main/java/ai/first/domain/foundation/identity/IdentityRepositoryState.java
+  - src/main/java/ai/first/domain/foundation/identity/FoundationRole.java
+  - src/main/java/ai/first/application/foundation/identity/IdentityRepository.java
+  - src/main/java/ai/first/application/foundation/identity/DurableIdentityRepositoryEntity.java
+  - src/main/java/ai/first/application/foundation/identity/AkkaIdentityRepository.java
+  - src/main/java/ai/first/application/coreapp/useradmin/UserAdminService.java
+  - src/test/java/ai/first/application/foundation/identity/LocalDemoIdentityRepository.java
+- skills:
+  - capability-first-backend
+  - akka-key-value-entities
+  - akka-kve-domain-modeling
+  - akka-kve-unit-testing
+- expected outputs:
+  - Tenant/Organization list support in identity repository state and adapters
+  - SaaS Owner Organization Admin service or equivalent focused backend service
+  - focused service tests covering authorization, lifecycle, idempotency/no-op, audit, and safe denials
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend tests for identity repository and Organization Admin service
+  - broader `mvn test` if shared identity/domain behavior changes materially
+- done criteria:
+  - SaaS Owner selected context with `saas_owner.tenant.read/manage` can list/read/create/rename/suspend/reactivate Organizations through backend service methods
+  - Tenant Admin and Customer Admin are denied safely
+  - missing capability and hidden target denials are audited and browser-safe
+  - mutations require idempotency keys and handle no-op/replay safely
+  - no tenant/customer app data, provider secrets, or billing-derived authority are exposed
+  - changes and queue update are committed
+- notes: []
+
+### TASK-SOOA-03-001: Add protected Organization Admin API
+
+- status: pending
+- source: specs/saas-owner-organization-admin/backlog/01-saas-owner-organization-admin-build-backlog.md
+- task brief: specs/saas-owner-organization-admin/tasks/03-api/01-add-organization-admin-api.md
+- depends on:
+  - TASK-SOOA-02-001
+- required reads:
+  - AGENTS.md
+  - specs/saas-owner-organization-admin/README.md
+  - specs/saas-owner-organization-admin/sprints/02-backend-api-sprint.md
+  - specs/saas-owner-organization-admin/backlog/01-saas-owner-organization-admin-build-backlog.md
+  - specs/saas-owner-organization-admin/tasks/03-api/01-add-organization-admin-api.md
+  - app-description/API contracts updated by TASK-SOOA-01-001
+  - backend service implemented by TASK-SOOA-02-001
+  - src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java
+  - src/main/java/ai/first/application/foundation/identity/StarterSecurityComponents.java
+  - existing AdminEndpoint/UserAdmin tests under src/test/java/ai/first/application/coreapp/useradmin/
+- skills:
+  - akka-http-endpoint-jwt
+  - akka-http-endpoint-component-client
+  - akka-http-endpoint-testing
+- expected outputs:
+  - protected routes for organization list/detail/create/rename/suspend/reactivate
+  - browser-safe Organization DTOs
+  - API/endpoint tests for success and denial cases
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted endpoint/API tests
+  - `mvn test` if shared endpoint/security paths change materially
+- done criteria:
+  - endpoints require JWT/authenticated selected context and backend SaaS Owner authorization
+  - browser DTOs use Organization terminology and do not leak application data, provider secrets, hidden counts, or raw authority internals
+  - forbidden/not-found behavior is safe for unsupported roles and hidden targets
+  - mutating endpoints require idempotency keys and return auditable trace/correlation references
+  - changes and queue update are committed
+- notes: []
+
+### TASK-SOOA-04-001: Add frontend Organization Admin surface
+
+- status: pending
+- source: specs/saas-owner-organization-admin/backlog/01-saas-owner-organization-admin-build-backlog.md
+- task brief: specs/saas-owner-organization-admin/tasks/04-frontend/01-add-organization-admin-frontend.md
+- depends on:
+  - TASK-SOOA-03-001
+- required reads:
+  - AGENTS.md
+  - specs/saas-owner-organization-admin/README.md
+  - specs/saas-owner-organization-admin/sprints/03-frontend-sprint.md
+  - specs/saas-owner-organization-admin/backlog/01-saas-owner-organization-admin-build-backlog.md
+  - specs/saas-owner-organization-admin/tasks/04-frontend/01-add-organization-admin-frontend.md
+  - app-description surface/API contracts updated by TASK-SOOA-01-001
+  - API DTOs/endpoints implemented by TASK-SOOA-03-001
+  - frontend/src/api/**
+  - frontend/src/workstream/**
+  - existing User Admin frontend contract tests
+- skills:
+  - akka-web-ui-apps
+  - akka-web-ui-api-client
+  - akka-web-ui-forms-validation
+  - akka-web-ui-state-rendering
+  - akka-web-ui-accessibility-responsive
+- expected outputs:
+  - typed frontend API client methods/DTOs for Organization Admin
+  - Organization list/detail/create/rename/suspend/reactivate UI under the User Admin/SaaS Owner workstream area
+  - frontend tests for authorized/forbidden states and safe rendering
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build` if production UI output changes
+- done criteria:
+  - SaaS Owner Admin sees Organization management surfaces/actions when authorized
+  - Tenant Admin/Customer Admin unsupported contexts render safe unavailable/forbidden states and cannot gain authority from UI state
+  - UI copy consistently says Organization and explains the app-data/support-access/billing boundary
+  - loading, empty, validation-error, no-op, forbidden, stale/conflict, success, and failure states are represented where relevant
+  - no secrets, hidden cross-tenant facts, or raw provider details are exposed
+  - changes and queue update are committed
+- notes: []
+
+### TASK-SOOA-99-001: Verify SaaS Owner Organization Admin completion
+
+- status: pending
+- source: mini-project verification loop
+- task brief: specs/saas-owner-organization-admin/tasks/99-verification/01-verify-saas-owner-organization-admin.md
+- depends on:
+  - TASK-SOOA-01-001
+  - TASK-SOOA-02-001
+  - TASK-SOOA-03-001
+  - TASK-SOOA-04-001
+- required reads:
+  - AGENTS.md
+  - specs/saas-owner-organization-admin/README.md
+  - specs/saas-owner-organization-admin/conversation-capture.md
+  - specs/saas-owner-organization-admin/pending-tasks.md
+  - specs/saas-owner-organization-admin/sprints/*.md
+  - specs/saas-owner-organization-admin/backlog/*.md
+  - specs/saas-owner-organization-admin/tasks/**/*.md
+  - app-description files touched by this mini-project
+  - backend/API/frontend tests and implementation touched by this mini-project
+- skills:
+  - app-description-readiness-assessment
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - completion/verification notes under specs/saas-owner-organization-admin/ if needed
+  - updated pending-tasks.md marking verification done only if complete, or appending follow-up tasks plus a new terminal verification task if gaps remain
+- required checks:
+  - `git diff --check`
+  - `mvn test` or targeted backend/API tests sufficient for touched backend scope
+  - `npm --prefix frontend test -- --run` if frontend was changed
+  - `npm --prefix frontend run typecheck` if frontend was changed
+  - `npm --prefix frontend run build` if production frontend output changed
+- done criteria:
+  - current task group goals have been compared against completed work
+  - overall mini-project done state has been compared against completed work
+  - required checks passed or blockers are precise and reflected in follow-up tasks
+  - remaining material gaps are appended as bounded tasks and followed by a new terminal verification task, or the mini-project is declared complete
+  - changes and queue update are committed
+- notes: []
