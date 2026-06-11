@@ -74,8 +74,9 @@
       "managedAgentDefinitionId": "user-admin-agent",
       "defaultSurfaceId": "user-admin-dashboard",
       "readiness": "surface-ready",
-      "instanceScope": "tenantId + selectedContextId + functionalAgentId; optional customerId when customer context is selected",
+      "instanceScope": "selectedContextId + functionalAgentId; SaaS Owner context for Organization/Tenant lifecycle work, tenantId for Organization scope, optional customerId when customer context is selected",
       "authorizedActors": [
+        "SaaS Owner Admin for platform-safe Organization/Tenant lifecycle work",
         "Organization Admin",
         "Customer Admin within scope",
         "SaaS Owner support role with explicit support grant",
@@ -85,10 +86,11 @@
         "iconId": "users-shield",
         "visualHint": "users/shield",
         "accentColorToken": "workstream.user-admin",
-        "tooltip": "Manage users, memberships, invitations, and access reviews",
+        "tooltip": "Manage Organizations, users, memberships, invitations, and access reviews",
         "ariaLabel": "User Admin workstream"
       },
       "attentionCategories": [
+        "organization_onboarding",
         "failed_action",
         "overdue_item",
         "security_review",
@@ -96,6 +98,7 @@
       ],
       "surfaces": [
         "user-admin-dashboard",
+        "saas-owner-organization-admin",
         "user-admin-user-list",
         "user-admin-user-account",
         "decision-card",

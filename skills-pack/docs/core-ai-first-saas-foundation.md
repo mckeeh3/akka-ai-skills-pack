@@ -120,7 +120,7 @@ Use the SaaS Foundation App domain when the requested target is the repository's
 
 The SaaS Foundation App domain must include all of these together:
 
-- bootstrap-authorized human user only; no public self-registration and no prompt- or UI-only privilege grant;
+- bootstrap-authorized human user only; production/default startup bootstrap creates only initial SaaS Owner scoped `SAAS_OWNER_ADMIN` authority, with no public self-registration and no prompt- or UI-only privilege grant;
 - selected local `AuthContext` containing account/user identity, bootstrap scope, roles/capabilities, tenant/customer boundary when applicable, and actor metadata;
 - role/capability checks for protected workstream, surface, API, component, and agent-tool actions;
 - bounded core functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy that answer and guide within established bootstrap scope, deny or defer unsupported SaaS Foundation App actions, and never expand privileges autonomously;
@@ -133,7 +133,7 @@ Any intentionally deferred foundation-domain behavior must become explicit follo
 
 ### SaaS Foundation App foundation slices
 
-1. WorkOS-backed `/api/me` account bootstrap, membership selection, base profile, and base user settings.
+1. WorkOS-backed `/api/me` account bootstrap, startup bootstrap limited to initial SaaS Owner Admin account/membership state, membership selection, base profile, and base user settings.
 2. Mandatory invitation lifecycle: `Invitation` record, invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, audit trail, and idempotent duplicate handling.
 3. Mandatory email delivery foundation: Resend (resend.com) production email service configuration, plus a safe local/dev/test adapter that captures messages in an outbox without external delivery. This reusable foundation sends invitation/account emails first and must support future app-specific email features and governed agent `@FunctionTool` email tools.
 4. SaaS Owner Admin organization creation and initial Organization Admin (`TENANT_ADMIN`) invitation.

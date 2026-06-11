@@ -35,6 +35,7 @@ WorkOS Identity
 
 Rules:
 - use WorkOS subject/email for authentication and account linking;
+- production/default startup bootstrap creates only initial SaaS Owner scoped `SAAS_OWNER_ADMIN` account/membership state; Tenant/Customer scoped roles require existing scope records and are created through invitation/admin flows;
 - never rely on frontend-only role checks;
 - do not rely on email alone for authorization;
 - allow the same human/email to hold accounts or memberships at multiple levels;
@@ -272,9 +273,13 @@ Required baseline operations:
 
 For generated full-stack AI-first SaaS apps, the foundation includes mandatory first-slice User Admin functional-agent surfaces for: Organization Administration, Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Organization/Customer Settings. These surfaces are capability-gated for SaaS Owner Admin, Organization Admin (`TENANT_ADMIN` internally), Customer Admin, Auditor, and app-specific admins; backend endpoints remain authoritative. SaaS Owner Admins need Organization directory, create Organization, Organization detail, Organization status, bootstrap Organization Admin, Organization Admin list, and Organization audit timeline surfaces. Organization Admins need own-organization settings, Organization Admins, organization users, invitations, access review, last-admin warnings, and support-access surfaces. The UI must let admins discover stale/dormant access, failed or expiring invitations, support-access expiry, last-admin risk, and agent-generated admin recommendations without knowing internal ids upfront.
 
+App-description templates and generated app descriptions must model SaaS Owner Organization Administration explicitly rather than leaving tenant creation as hidden seed data, a billing-only side effect, or an implementation note. At minimum, include a `user-admin-agent`-owned Organization Administration surface or equivalent with typed payloads for `TenantDirectoryView` rows, Organization create/detail/profile/status actions, Organization Admin bootstrap invitation state, billing-safe subscription indicators where enabled, denial/stale/approval-required UI states, surface-to-capability mappings for `tenant:create`, `tenant:list`, `tenant:view`, `tenant:update_profile`, `tenant:update_status`, and `tenant_admin:invite`, traceability to AdminAuditEvent/audit search, and tests proving SaaS Owner platform-safe access without organization application-data reads.
+
 ## Administration flows
 
 ### SaaS Owner Admin creates an Organization and initial Organization Admin
+
+Default startup bootstrap must happen before this flow and may create only the initial SaaS Owner Admin account/membership. It must not create `TENANT_ADMIN` or Customer-scoped memberships because no valid Organization/Tenant or Customer scope exists yet. Local/dev/test fixture modes may seed demo scope plus demo scoped memberships only when explicitly named as fixtures.
 
 1. SaaS Owner Admin creates a customer-facing Organization backed by a Tenant boundary.
 2. SaaS Owner Admin assigns subscription/billing state.
