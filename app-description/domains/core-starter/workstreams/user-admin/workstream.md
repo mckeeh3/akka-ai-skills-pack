@@ -50,14 +50,17 @@ Attention counts feed the User Admin rail tile and User Admin dashboard. Persona
 
 Default trunk surface: `surface-user-admin-dashboard`.
 
-Primary graph branches:
+Primary non-Organization graph branches:
 
-- `surface-user-admin-users` for scoped search/list and queue-driven filters.
-- `surface-user-admin-invitation-detail` for invite/resend/revoke and delivery/acceptance status.
-- `surface-user-admin-user-detail` for scoped user/membership/support/review/audit detail.
-- `surface-user-admin-role-change-preview` for capability delta, last-admin, policy, and approval preview.
-- `surface-user-admin-access-review-task` for autonomous access-review progress/result/human decision.
-- reusable `decision-card`, `audit-timeline`, `workflow-status`, `markdown-response`, and `system-message` patterns for risky actions, evidence, blocked provider/model states, and safe denials.
+- `surface-user-admin-users` for scoped user/member discovery only; every row/card opens a lifecycle-aware inspection surface.
+- `surface-user-admin-user-detail` for scoped user/membership/invitation/support/access-review/identity/audit inspection and task entry points; it does not directly mutate access.
+- `surface-user-admin-invitation-create`, `surface-user-admin-invitation-detail`, `surface-user-admin-invitation-resend-confirmation`, and `surface-user-admin-invitation-revoke-confirmation` for invitation create, inspect, resend, and destructive lifecycle flows.
+- `surface-user-admin-membership-status-confirmation` for disable/suspend/reactivate/remove membership or account lifecycle changes with last-admin and self-action protections.
+- `surface-user-admin-role-change-preview` for capability delta, affected workstreams, last-admin, policy, approval, and the only role-change commit path.
+- `surface-user-admin-support-access-grant` and `surface-user-admin-support-access-revoke-confirmation` for support-access grant/extend/revoke flows with purpose, expiry, approval, idempotency, and audit.
+- `surface-user-admin-access-review-task` for access-review progress/result/human decision; worker output cannot directly mutate access.
+- `surface-user-admin-identity-exception-review` for identity-link/relink exception review and approved recovery routing.
+- reusable `decision-card`, `audit-timeline`, `workflow-status`, `markdown-response`, and `system-message` patterns for risky actions, evidence, blocked provider/model/outbox states, no-ops, stale/conflict, and safe denials.
 
 ## Readiness posture
 

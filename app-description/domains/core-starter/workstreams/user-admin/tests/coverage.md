@@ -4,8 +4,9 @@
 
 - Given an authorized caller with selected `AuthContext`, when they open User Admin, then `surface-user-admin-dashboard` renders scoped data, safe attention queues, trace refs, and only authorized actions.
 - Given dashboard queue filters, when a user opens a queue, then `surface-user-admin-users`, `surface-user-admin-user-detail`, `surface-user-admin-invitation-detail`, or `surface-user-admin-access-review-task` renders with backend-shaped filters and no cross-scope leakage.
-- Given an allowed invitation action, when submitted with valid input and idempotency/correlation data, then the invitation lifecycle returns updated structured surfaces, outbox/Resend boundary state, and audit/work traces.
-- Given an allowed membership/status/role/support-access action, when submitted, then backend policy produces success, no-op, approval-required decision card, validation, denial, stale/conflict, or failure with trace refs.
+- Given a scoped directory row/card, when activated by click or keyboard, then it opens lifecycle-aware `surface-user-admin-user-detail`; the list does not perform consequential mutation inline.
+- Given an allowed invitation action, when opened/submitted with valid input and idempotency/correlation data, then the create, resend-confirmation, revoke-confirmation, or detail surface returns updated structured surfaces, outbox/Resend boundary state, no-op/denial states, and audit/work traces.
+- Given an allowed membership/status/role/support-access action, when opened/submitted, then dedicated membership lifecycle, role preview, support grant, or support revoke surfaces enforce backend policy and produce success, no-op, approval-required decision card, validation, denial, stale/conflict, or failure with trace refs.
 - Given a User Admin agent guidance request, when provider/model/security configuration is valid, then the governed runtime uses scoped evidence/tool boundaries and returns structured guidance; when config is missing, it fails closed with a blocked system message and trace.
 - Given an access-review task, when started/read/cancelled/accepted/rejected, then task progress/result/review surfaces render and no worker output directly mutates access.
 
@@ -17,9 +18,9 @@
 
 ## Surface rendering
 
-- Dashboard, users list, user detail, invitation detail, role-change preview, access-review task, decision-card, markdown-response, audit-link, and system-message variants render loading, empty, ready, submitting, validation-error, forbidden, not_found_or_redacted, conflict, stale/reconnect, partial-data, provider/model/outbox fail-closed, no-op, approval-required, and failure states.
+- Dashboard, users directory, user detail, invitation create/detail/resend-confirmation/revoke-confirmation, membership lifecycle confirmation, role-change preview, support-access grant/revoke, access-review task, identity-exception review, decision-card, markdown-response, audit-link, and system-message variants render loading, empty, ready, submitting, validation-error, forbidden, not_found_or_redacted, conflict, stale/reconnect, partial-data, provider/model/outbox fail-closed, no-op, approval-required, and failure states.
 - Tenant Admin, Customer Admin, SaaS Owner support, Auditor, disabled-user, forbidden, redacted, empty, stale, and error variants show correct scope labels, queues, rows, redactions, actions, and denials.
-- Responsive table-to-card fallback preserves authority, role, invitation, support-access, access-review, risk, trace, and decision-card affordances.
+- Responsive table-to-card fallback preserves authority, role, invitation, support-access, access-review, risk, trace, and decision-card affordances; each card remains a discovery/selection control that opens the correct inspection or task surface.
 
 ## Idempotency and observability
 

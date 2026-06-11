@@ -8,10 +8,12 @@ Capability: `user-and-access-administration`.
 |---|---|---|
 | User Admin functional-agent rail and workstream panel | `frontend/src/workstream/rail/**`, `frontend/src/workstream/shell/WorkstreamPanel.tsx` | Rail visibility does not grant backend authority. Default surface is `surface-user-admin-dashboard`. |
 | Dashboard command center | `frontend/src/workstream/surfaces/DashboardSurface.tsx` | Renders `user_admin.dashboard.v1` attention cards, summary cards, recent activity, readiness, provider/model/outbox blockers, and safe action bars. |
-| Users list/list-search | `frontend/src/workstream/surfaces/ListSearchSurface.tsx` | Renders `user_admin.users.v1` scoped rows, filters, pagination, table-to-card fallback, row action availability, denial categories, and trace refs. |
-| Invitation detail and user detail | `frontend/src/workstream/surfaces/DetailEditSurface.tsx`, `WorkflowStatusSurface.tsx` | Renders `user_admin.invitation_detail.v1` and `user_admin.user_detail.v1` with validation/no-op/conflict/blocked states and no raw tokens/secrets. |
-| Role preview, risky access decision cards, and action feedback | `DecisionSurface.tsx`, `ActionFeedbackItem.tsx`, `SurfaceActionBar.tsx` | Human approval/denial feedback remains backend-policy governed. |
-| Access-review task progress/result | `WorkflowStatusSurface.tsx`, outcome/decision surface components | Renders durable worker status/result/review without direct mutation by worker output. |
+| Users directory/list-search | `frontend/src/workstream/surfaces/ListSearchSurface.tsx` | Renders `user_admin.users.v1` scoped rows, filters, pagination, table-to-card fallback, row action availability, denial categories, and trace refs. Row/card activation opens `surface-user-admin-user-detail`; list rendering must not mutate access inline. |
+| User detail inspection | `frontend/src/workstream/surfaces/DetailEditSurface.tsx` or split show/inspection component | Renders `user_admin.user_detail.v1` as browser-safe inspection and task router with no raw provider data, tokens, or hidden memberships. |
+| Invitation create/detail/resend/revoke | Form, workflow-status, and confirmation surface components | Renders `user_admin.invitation_create.v1`, `user_admin.invitation_detail.v1`, `user_admin.invitation_resend_confirmation.v1`, and `user_admin.invitation_revoke_confirmation.v1` with validation/no-op/conflict/outbox-blocked states and no raw tokens/secrets. |
+| Membership lifecycle and role preview | Confirmation, `DecisionSurface.tsx`, `ActionFeedbackItem.tsx`, `SurfaceActionBar.tsx` | Renders `user_admin.membership_status_confirmation.v1` and `user_admin.role_change_preview.v1`; human approval/denial feedback remains backend-policy governed. |
+| Support access task surfaces | Form/confirmation and decision surface components | Renders `user_admin.support_access_grant.v1` and `user_admin.support_access_revoke_confirmation.v1` with purpose, expiry, approval, idempotency, and trace states. |
+| Access-review and identity-exception task surfaces | `WorkflowStatusSurface.tsx`, outcome/decision surface components | Renders `user_admin.access_review_task.v1` and `user_admin.identity_exception_review.v1`; worker output and identity recovery cannot directly mutate access outside deterministic User Admin capabilities. |
 | Trace links and admin audit context | `frontend/src/workstream/stream/TraceLinkList.tsx`, `AuditTimelineSurface.tsx` | User Admin actions link to audit/work traces and reauthorize trace opens. |
 | Typed browser API client | `frontend/src/api/HttpWorkstreamApiClient.ts`, `WorkstreamApiClient.ts`, `types.ts` | DTOs and error mapping distinguish unauthorized, forbidden, validation, conflict, stale, provider/model/outbox blocked, and server errors. |
 
@@ -19,7 +21,7 @@ Capability: `user-and-access-administration`.
 
 Routes and deep links reopen the User Admin functional agent, selected surface id, safe filter context, or typed target reference. They must not expose hidden resource ids, skip backend authorization, or define product meaning outside the workstream/surface contracts.
 
-Deep links to directory filters, user detail, invitation records, access-review tasks, decision cards, and audit evidence are reauthorized server-side. Hidden/not-found targets render `surface-user-admin-system-message` with safe recovery.
+Deep links to directory filters, user detail, invitation records/forms/confirmations, membership lifecycle confirmations, role previews, support-access forms/confirmations, access-review tasks, identity-exception reviews, decision cards, and audit evidence are reauthorized server-side. Hidden/not-found targets render `surface-user-admin-system-message` with safe recovery.
 
 ## Validation evidence
 
