@@ -10,7 +10,7 @@ Canonical doctrine:
 - `./agent-workstream-application-architecture.md`
 - `./workstream-contract.md`
 - `./workstream-attention-contracts.md`
-- `./structured-surface-contracts.md`
+- `./structured-surface-contracts.md` — canonical source for surface contracts, including the mandatory collection-object surface progression
 - `./workstream-visual-sessions.md`
 - `./web-ui-frontend-decomposition.md`
 - source-checkout/root-only migration inventory: `specs/workstream-ui-implementation-migration/frontend-stale-code-inventory.md`
@@ -88,8 +88,11 @@ frontend/src/workstream/
   surfaces/
     SurfaceRenderer.tsx
     DashboardSurface.tsx
-    ListSearchSurface.tsx
-    DetailEditSurface.tsx
+    CollectionListSearchSurface.tsx
+    ObjectShowSurface.tsx
+    ObjectCreateSurface.tsx
+    ObjectEditSurface.tsx
+    DestructiveLifecycleConfirmationSurface.tsx
     DecisionSurface.tsx
     AuditTimelineSurface.tsx
     WorkflowStatusSurface.tsx
@@ -278,13 +281,18 @@ type SurfaceEnvelope<TData, TAction extends SurfaceAction = SurfaceAction> = {
 
 Canonical reusable surface components:
 - dashboard / attention
-- list and search results
-- detail and edit
+- collection list and search results
+- object show/inspection
+- object create
+- object edit
+- destructive lifecycle confirmation, such as archive, revoke, deactivate, cancel, or true delete
 - decision / approval / exception
 - audit or work-trace timeline
 - workflow status / progress
 - governance diff / proposal review
 - outcome review / metrics
+
+For durable collection objects, implement the progression defined in `./structured-surface-contracts.md`: domain-semantically named list/search surfaces delegate selection to lifecycle-aware show/inspection surfaces; show surfaces delegate consequential mutation to separate create, edit, destructive lifecycle, or domain-specific single-action surfaces. Do not rebuild a combined CRUD page/component as the canonical workstream UI.
 
 Each surface renders loading, empty, ready, submitting, success, pending, approval-needed, error, forbidden, conflict, stale, reconnecting, partial-data, and no-op states where applicable.
 
@@ -395,7 +403,7 @@ The first implementation slice must include fixtures for:
 - selected `AuthContext` with tenant and optional customer scope
 - visible, denied, hidden, disabled, and attention-bearing functional agents
 - initial workstream items for user request, agent response, surface, capability result, workflow progress, decision, audit trace, action feedback, system-message surface, and system status
-- surface envelopes for every canonical surface type listed above, aligned to `templates/ai-first-saas-core-app/app-description/12-workstreams/**` when implementing SaaS Foundation App surfaces
+- surface envelopes for every canonical surface type listed above, including collection list/search, object show, create, edit, and destructive lifecycle confirmation surfaces when a collection object is in scope, aligned to `templates/ai-first-saas-core-app/app-description/12-workstreams/**` when implementing SaaS Foundation App surfaces
 - surface actions covering read, command, proposal, approval, workflow, governance, and trace intents, each with browser-tool/governed-tool/capability ids and source/result surface graph behavior
 - action results for accepted, denied, validation error, approval required, conflict, no-op, and failed outcomes
 - realtime events for created, updated, accepted, denied, workflow progressed, stale, reconnected, duplicate/replay, out-of-order, malformed-safe, and cross-context-denied cases

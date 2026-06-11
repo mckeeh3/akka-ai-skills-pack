@@ -6,6 +6,8 @@ Source-controlled SaaS Foundation App assets live under `templates/ai-first-saas
 
 A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear. All renderable system feedback in a workstream is also a surface, not an ad hoc UI string. Internal activity records, tool-call details, trace bookkeeping, and response metadata are not separate user-visible surfaces unless the product contract deliberately exposes them as a typed audit/progress/detail surface.
 
+If asked to summarize workstream surfaces, always include the collection-object progression: durable collections such as users, customers, orders, policies, agents, invitations, and governed documents use delegated, single-purpose surfaces by default. A domain list/search surface discovers and selects objects; every listed row/card opens a lifecycle-aware show/inspection surface; show/inspection surfaces delegate mutation to separate create, edit, destructive lifecycle confirmation, or domain-specific task surfaces. Do not describe generic combined CRUD pages as the default workstream surface model.
+
 ## Contract rule
 
 Every surface contract must preserve this chain:
@@ -20,7 +22,7 @@ functional/context-area agent workstream placement
 → frontend rendering and tests
 ```
 
-For broad requirements, surfaces are discovered through the canonical process: workstream → attention categories → role-specific dashboard/`WorkstreamAttentionSummary` → human surface graph → structured surfaces/actions → governed backend capabilities and governed-tools → Akka substrate. Do not design surfaces as page-first or CRUD-first artifacts.
+For broad requirements, surfaces are discovered through the canonical process: workstream → attention categories → role-specific dashboard/`WorkstreamAttentionSummary` → delegated human surface graph → single-purpose structured surfaces/actions → governed backend capabilities and governed-tools → Akka substrate. Do not design surfaces as page-first or CRUD-first artifacts. CRUD-like collection objects are allowed only through the canonical collection-object surface progression below, not as generic catch-all CRUD screens.
 
 Frontend action visibility is advisory only. The linked backend capability and governed-tool contract remain authoritative for authentication, selected `AuthContext`, tenant/customer scope, membership status, role/capability checks, approval policy, idempotency, side effects, audit, and denial behavior.
 
@@ -44,7 +46,7 @@ Activation should append a request-like workstream item and then append/open a s
 
 Define the graph explicitly enough that implementation can preserve navigation, authority, and traceability:
 
-- **Nodes:** dashboard surfaces, attention-item surfaces, tables, forms, detail cards, decision/approval cards, workflow/task progress surfaces, audit/trace timelines, `markdown_response`, and `system_message` surfaces. Each node has exactly one owner functional agent; reusable surfaces declare explicit reusable-by functional agents/workstreams.
+- **Nodes:** dashboard surfaces, attention-item surfaces, domain list/search surfaces, show/inspection surfaces, create forms, edit forms, destructive lifecycle confirmation surfaces, decision/approval cards, workflow/task progress surfaces, audit/trace timelines, `markdown_response`, and `system_message` surfaces. Each node has exactly one owner functional agent; reusable surfaces declare explicit reusable-by functional agents/workstreams.
 - **Edges:** surface actions, surface-request actions, deep links, prompt-entered requests, realtime refreshes, workflow/AutonomousAgent progress updates, and system-message results.
 - **Dashboard object interactions:** every attention or next-action dashboard object declares an interaction such as `open_attention_item`, `show_surface`, `refresh_surface`, `open_trace`, governed browser-tool action, or `none` with a reason. Non-actionable objects are explicit exceptions and should not look like actionable work objects.
 - **Edge contract:** every edge maps to a governed backend capability and, when executable, to a governed-tool exposure such as a human surface action/browser-tool, agent-tool, workflow-tool, timer-tool, consumer-tool, MCP-tool, or internal-tool. If the same governed tool is exposed to both human-backed and AI-backed actors, the mapping must preserve one operation id while declaring separate actor adapters, input mediation, approval behavior, and trace source.
@@ -61,6 +63,41 @@ Before moving a new or substantially changed dashboard, command center, queue, d
 > Is this surface definition sufficiently unambiguous that a developer or generator can implement and review the surface without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics?
 
 If the answer is no, make another pass on the surface description first. The developer review loop should inspect both artifacts: the generated surface in the running app and the current-intent surface description that drives code generation. Fixes to UI behavior should normally refine the description, then use that refined description to revise or repair surface-related code.
+
+## Canonical collection-object surface progression
+
+When a workstream exposes a durable collection of domain things such as users, customers, orders, policies, agents, invitations, or governed documents, use this pattern by default unless an app-description explicitly records why a different surface graph is safer. Name each surface domain-semantically, such as `customerDirectory`, `customerProfile`, `newCustomerIntake`, `customerEditForm`, or `customerArchiveConfirmation`; do not use generic `thing.list/show/create` names in app-facing contracts.
+
+The progression is a delegated surface graph, not a page stack:
+
+```text
+owning functional-agent workstream
+→ domain list/search surface
+  → select one listed object
+    → domain show/inspection surface, chosen by object lifecycle state when needed
+      → domain-specific single-action surfaces such as edit, archive, revoke, approve, retry, or activate
+→ domain create surface
+  → created-object show/inspection surface
+```
+
+Mandatory surfaces for a collection object:
+
+| Surface role | One job | Required graph behavior |
+|---|---|---|
+| List/search surface | Discover and select existing objects. | May search, filter, sort, and paginate. Every listed row/card is clickable and keyboard-operable, maps to a `show_surface`/read capability, and opens the appropriate show/inspection surface for that object's current lifecycle state. |
+| Show/inspection surface | Inspect one object and choose the next allowed task. | Shows frontend-safe identity, status, summary, relationships, traces, and available task entry points. It does not directly perform consequential edits or deletion; it delegates to dedicated action surfaces. The selected show surface may vary by object lifecycle state, such as active, inactive, pending, failed, or archived. |
+| Create surface | Create one new object. | Owns the creation form, validation, idempotency, submission, success/failure states, authorization, and audit. Success opens the created object's show/inspection surface. |
+| Edit surface | Update mutable fields for one existing object. | Separate from show/inspection. Owns editable fields, validation, conflict/stale handling, idempotency, success/failure states, authorization, and audit. Success returns to or refreshes the object's show/inspection surface. |
+| Destructive lifecycle confirmation surface | Perform one destructive or access-affecting lifecycle action. | Separate from show/inspection. Covers delete, archive, revoke, deactivate, cancel, or equivalent domain action with consequence copy, confirmation, authorization, idempotency, audit/work trace, and a typed result surface. Prefer domain lifecycle language over physical delete unless true deletion is required. |
+
+Rules:
+
+- Each surface does one thing well. Do not combine list, show, create, edit, and destructive lifecycle work into one broad surface.
+- Show surfaces expose task entry points; dedicated task surfaces perform consequential mutation.
+- Lifecycle state may determine the next show or task surface. For example, clicking an active customer may open an active-customer profile, while clicking an inactive customer may open a reactivation-focused inspection surface.
+- Domain-specific task surfaces extend the pattern for non-CRUD lifecycles: approve, reject, suspend, resume, retry, invite, activate version, request evidence, merge, export, or similar single-purpose tasks.
+- Bulk selection may appear on a list surface only as selection/discovery. Any bulk mutation must open a separate bulk-action surface contract; do not make bulk behavior implicit in the list.
+- Every row/card selection, create/edit/delete submission, lifecycle transition, and result maps to a governed capability, browser-tool/governed-tool id, authorization decision, audit/work trace, and denial/result surface.
 
 ## Minimum contract fields
 
