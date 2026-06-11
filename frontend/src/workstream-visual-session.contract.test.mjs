@@ -67,7 +67,7 @@ test('visual sessions are keyed by account, selected auth context, functional ag
 });
 
 test('workstream surface streams persist on the user device across refreshes and workstream switches', () => {
-  assert.match(devicePersistence, /workstreamSurfaceStreamStorageKey = 'workstream-surface-streams-v1'/);
+  assert.match(devicePersistence, /workstreamSurfaceStreamStorageKey = 'workstream-surface-streams-v2'/);
   assert.match(devicePersistence, /restoreDevicePersistedSurfaceStreams/);
   assert.match(devicePersistence, /persistDeviceSurfaceStreams/);
   assert.match(devicePersistence, /window\.localStorage\.getItem\(workstreamSurfaceStreamStorageKey\)/);

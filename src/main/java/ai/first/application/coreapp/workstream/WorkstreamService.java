@@ -1315,7 +1315,7 @@ public final class WorkstreamService {
       case "surface-my-account-personal-attention-digest-result" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
       case "surface-my-account-personal-attention-digest-blocked" -> personalAttentionDigestBlockedSurface(actor, null, correlationId);
       case "surface-user-admin-dashboard", "surface-user-admin-saas-owner-dashboard", "surface-user-admin-tenant-dashboard", "surface-user-admin-customer-dashboard" -> dashboardSurface(actor, correlationId);
-      case "surface-user-admin-organization-admin", "surface-user-admin-organization-directory" -> organizationDirectorySurface(actor, correlationId);
+      case "surface-user-admin-organization-directory" -> organizationDirectorySurface(actor, correlationId);
       case "surface-user-admin-organization-detail" -> organizationDetailSurface(actor, correlationId);
       case "surface-user-admin-organization-create" -> organizationCreateSurface(actor, correlationId);
       case "surface-user-admin-organization-rename" -> organizationRenameSurface(actor, correlationId);

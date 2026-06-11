@@ -136,7 +136,7 @@ All graph nodes are owned by `user-admin-agent`. Reusable placements are limited
 
 Each graph node defines loading, empty, ready, submitting, success, validation-error, forbidden, hidden-not-found, no-op, conflict/stale, partial-data, and failure states as applicable. Acceptance tests must cover dashboard-to-directory traversal, directory-to-detail traversal, create/rename/suspend/reactivate dedicated form or confirmation surfaces, Organization-vs-Tenant language, idempotent replay/no-op transitions, safe Tenant Admin and Customer Admin denials, missing capability denial, audit/work trace emission, frontend secret boundary, support-access/billing-boundary non-authority, keyboard operation, focus movement, and typed `system_message` results.
 
-Surface-description sufficiency review: revised after implementation review. The prior combined `list-detail-action` panel is not sufficient for durable collection-object readiness because it combines discovery, inspection, create, edit, and lifecycle mutation. This revised graph is sufficient for developers/generators to implement and review without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics; existing implementation tasks should be repaired to match the split graph.
+Surface-description sufficiency review: sufficient for durable collection-object readiness. The split graph is sufficiently unambiguous for developers/generators to implement and review without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics.
 
 ## Users list surface
 

@@ -10,8 +10,6 @@ const renameSurfaceId = 'surface-user-admin-organization-rename';
 const suspendSurfaceId = 'surface-user-admin-organization-suspend-confirmation';
 const reactivateSurfaceId = 'surface-user-admin-organization-reactivate-confirmation';
 
-// Legacy contract marker retained for migration tests: surface-user-admin-organization-admin / user_admin.organization_admin.v1.
-
 type Props = {
   envelope: SurfaceEnvelope<OrganizationAdminSurfaceData>;
   onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
@@ -23,7 +21,7 @@ export function OrganizationAdminSurface({ envelope, onAction }: Props) {
   const data = envelope.data;
   const detail = data.organizationDetail;
   const selectedOrganization = organizationFromDetail(detail) ?? data.organizations?.[0];
-  const isDirectory = envelope.surfaceId === directorySurfaceId || data.surfaceContract === 'user_admin.organization_directory.v1' || envelope.surfaceId === 'surface-user-admin-organization-admin';
+  const isDirectory = envelope.surfaceId === directorySurfaceId || data.surfaceContract === 'user_admin.organization_directory.v1';
   const isDetail = envelope.surfaceId === detailSurfaceId || data.surfaceContract === 'user_admin.organization_detail.v1';
   const isCreate = envelope.surfaceId === createSurfaceId || data.surfaceContract === 'user_admin.organization_create.v1';
   const isRename = envelope.surfaceId === renameSurfaceId || data.surfaceContract === 'user_admin.organization_rename.v1';

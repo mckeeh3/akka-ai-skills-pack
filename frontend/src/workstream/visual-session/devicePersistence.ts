@@ -10,7 +10,7 @@ export type PersistedWorkstreamSurfaceStream = {
 
 export type PersistedWorkstreamSurfaceStreamStore = Record<string, PersistedWorkstreamSurfaceStream>;
 
-export const workstreamSurfaceStreamStorageKey = 'workstream-surface-streams-v1';
+export const workstreamSurfaceStreamStorageKey = 'workstream-surface-streams-v2';
 
 export function restoreDevicePersistedSurfaceStreams(input: { me: MeResponse; items: WorkstreamItem[]; surfaces: SurfaceEnvelope<unknown>[] }): { items: WorkstreamItem[]; surfaces: SurfaceEnvelope<unknown>[] } {
   const stored = readPersistedWorkstreamSurfaceStreamStore();
