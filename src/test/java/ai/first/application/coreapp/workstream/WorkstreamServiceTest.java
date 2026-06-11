@@ -191,6 +191,18 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void userAdminUserRowOpensSelectedUserDetail() {
+    var detail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-display-user-detail", "action-display-user-detail", "USERADMIN_LIST_MEMBERS", "USERADMIN_LIST_MEMBERS", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", "surface-user-admin-users", "corr-member-detail"));
+
+    assertEquals("accepted", detail.status());
+    assertEquals("surface-user-admin-user-detail", detail.resultSurface().surfaceId());
+    assertTrue(detail.resultSurface().toString().contains("recordLabel=Member User"));
+    assertTrue(detail.resultSurface().toString().contains("membershipId=membership-member"));
+    assertFalse(detail.resultSurface().toString().contains("recordLabel=Tenant Admin"));
+  }
+
+  @Test
   void userAdminDashboardDoesNotCountAcceptedInvitationsAsPendingAttention() {
     var created = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-invite-user", "action-invite-user", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", Map.of("email", "accepted.invitee@example.test", "displayName", "Accepted Invitee"), "idem-accepted-invite", "membership-admin", "surface-user-admin-dashboard", "corr-accepted-invite"));

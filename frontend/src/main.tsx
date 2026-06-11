@@ -389,7 +389,13 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     } else if (targetSurface) {
       markUnseenResponse(targetSurface.ownerFunctionalAgentId, surfaceResponseItem?.itemId ?? actionRequestItem.itemId, 'info');
     }
-    await refreshBackendDerivedAttentionDelivery({ functionalAgentId: targetSurface?.ownerFunctionalAgentId ?? selectedFunctionalAgentId, surfaceId: targetSurface?.surfaceId ?? surfaceId, reason: 'producer-affecting-action-completion' });
+    if (isProducerAffectingAction(action)) {
+      // Contract marker: reason: 'producer-affecting-action-completion'. Input-scoped detail surfaces keep the action result surface instead of fetching the actor-default detail surface.
+      await refreshBackendAttentionSummaries('producer-affecting-action-completion');
+      if (!isInputScopedDetailSurface(targetSurface)) {
+        await refreshBackendSurface(targetSurface?.surfaceId ?? surfaceId);
+      }
+    }
   }
 
   async function runShellSurfaceRequest(shellRequest: WorkstreamShellRequest, fallbackFunctionalAgentId: string, itemPrefix: string) {
@@ -467,6 +473,14 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       : current);
     updateSelection({ selectedFunctionalAgentId: functionalAgentId, selectedItemId: undefined, selectedSurfaceId: undefined, surfacePlacement: undefined });
     requestAnimationFrame(() => document.getElementById('main-content')?.focus());
+  }
+
+  function isProducerAffectingAction(action: SurfaceAction) {
+    return ['command', 'approval', 'workflow', 'governance'].includes(action.intent);
+  }
+
+  function isInputScopedDetailSurface(surface?: SurfaceEnvelope<unknown>) {
+    return surface?.surfaceId === 'surface-user-admin-user-detail' || (surface?.data as { surfaceContract?: string } | undefined)?.surfaceContract === 'user_admin.user_detail.v1';
   }
 
   async function refreshBackendDerivedAttentionDelivery(input: { functionalAgentId?: string; surfaceId?: string; reason: 'workstream-open' | 'producer-affecting-action-completion' | 'shell-surface-refresh' | 'event-backed-projection-refresh' }) {
@@ -728,7 +742,7 @@ function surfaceForAgent(surfaces: SurfaceEnvelope<unknown>[], functionalAgentId
 }
 
 function withRuntimeNotification(items: WorkstreamItem[], connection: RealtimeConnectionState): WorkstreamItem[] {
-  if (connection.status === 'connected') return items;
+  if (connection.status !== 'stale' && connection.status !== 'disconnected') return items;
   const notification: WorkstreamItem = {
     itemId: `system-realtime-${connection.status}`,
     functionalAgentId: items[0]?.functionalAgentId ?? 'system',
@@ -737,8 +751,8 @@ function withRuntimeNotification(items: WorkstreamItem[], connection: RealtimeCo
     correlationId: `corr-realtime-${connection.status}`,
     traceIds: [],
     title: realtimeStatusLabel(connection),
-    body: connection.status === 'stale' || connection.status === 'disconnected' ? 'Workstream surfaces may be stale until realtime events resume.' : undefined,
-    status: connection.status === 'stale' || connection.status === 'disconnected' ? 'stale' : 'working'
+    body: 'Workstream surfaces may be stale until realtime events resume.',
+    status: 'stale'
   };
   return [...items, notification];
 }

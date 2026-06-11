@@ -210,7 +210,7 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
   const defaultStatusDraft = isDeactivated ? 'ACTIVE' : 'REMOVED';
   const [statusDraft, setStatusDraft] = useState(defaultStatusDraft);
   const [roleDraft, setRoleDraft] = useState(roleValue(role));
-  const actionContext = { ...(envelope.data.actionContext ?? {}), ...Object.fromEntries(fields.map((field) => [field.fieldId, fieldValues[field.fieldId] ?? field.value])) };
+  const actionContext = { ...(envelope.data.actionContext ?? {}), ...Object.fromEntries(fields.map((field) => [field.fieldId, field.value])) };
 
   useEffect(() => {
     setStatusDraft(defaultStatusDraft);
@@ -259,7 +259,7 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
               <div><p className="eyebrow">Profile</p><h4 id={`${envelope.surfaceId}-form-heading`}>User information</h4></div>
             </div>
             <div className="user-admin-readable-fields">
-              {fields.filter((field) => !['membershipId'].includes(field.fieldId)).map((field) => <p key={field.fieldId}><span>{field.label}</span><strong>{fieldValues[field.fieldId] ?? field.value}</strong></p>)}
+              {fields.filter((field) => !['membershipId'].includes(field.fieldId)).map((field) => <p key={field.fieldId}><span>{field.label}</span><strong>{field.value}</strong></p>)}
             </div>
             {((isDeactivated && reactivateStatusAction) || (!isDeactivated && suspendStatusAction)) && (
               <form className="user-admin-edit-form" aria-label="Edit user status" onSubmit={submitStatusChange}>

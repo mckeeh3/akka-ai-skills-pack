@@ -415,7 +415,7 @@ public final class WorkstreamService {
       result = new CapabilityActionResult(preview.allowed() ? (preview.noOp() ? "no-op" : "accepted") : "denied", preview.message(), request.correlationId(), List.of(preview.traceId()), roleChangePreviewSurface(actor, preview, request.correlationId()));
     } else if ("action-useradmin-change-member-roles".equals(request.actionId())) {
       var changed = userAdminService.changeMemberRoles(actor, stringInput(request.input(), "membershipId", actor.selectedContext().membershipId()), rolesInput(request.input()), stringInput(request.input(), "reason", "workstream role change"), request.idempotencyKey(), request.correlationId());
-      result = new CapabilityActionResult(changed.status(), changed.message(), request.correlationId(), List.of(changed.traceId()), detailSurface(actor, request.correlationId()));
+      result = new CapabilityActionResult(changed.status(), changed.message(), request.correlationId(), List.of(changed.traceId()), detailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-useradmin-disable-member".equals(request.actionId()) || "action-useradmin-reactivate-member".equals(request.actionId())) {
       var requestedStatus = stringInput(request.input(), "status", "action-useradmin-reactivate-member".equals(request.actionId()) ? "active" : "removed");
       var targetStatus = "action-useradmin-reactivate-member".equals(request.actionId()) ? MembershipStatus.ACTIVE : membershipStatusInputForDeactivate(requestedStatus);
@@ -426,10 +426,10 @@ public final class WorkstreamService {
       result = new CapabilityActionResult(removed.status(), removed.message(), request.correlationId(), List.of(removed.traceId()), listSurface(actor, request.correlationId()));
     } else if ("action-useradmin-disable-account".equals(request.actionId())) {
       var account = userAdminService.disableAccount(actor, stringInput(request.input(), "accountId", actor.account().accountId()), stringInput(request.input(), "reason", "workstream account disable"), request.correlationId());
-      result = new CapabilityActionResult("accepted", "Account disabled by backend-authoritative User Admin capability.", request.correlationId(), List.of("trace-useradmin-account-disable-" + stableSuffix(request.correlationId())), detailSurface(actor, request.correlationId()));
+      result = new CapabilityActionResult("accepted", "Account disabled by backend-authoritative User Admin capability.", request.correlationId(), List.of("trace-useradmin-account-disable-" + stableSuffix(request.correlationId())), detailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-useradmin-reactivate-account".equals(request.actionId())) {
       var account = userAdminService.reactivateAccount(actor, stringInput(request.input(), "accountId", actor.account().accountId()), stringInput(request.input(), "reason", "workstream account reactivate"), request.correlationId());
-      result = new CapabilityActionResult("accepted", "Account reactivated by backend-authoritative User Admin capability.", request.correlationId(), List.of("trace-useradmin-account-reactivate-" + stableSuffix(request.correlationId())), detailSurface(actor, request.correlationId()));
+      result = new CapabilityActionResult("accepted", "Account reactivated by backend-authoritative User Admin capability.", request.correlationId(), List.of("trace-useradmin-account-reactivate-" + stableSuffix(request.correlationId())), detailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-useradmin-read-support-access".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Support-access state loaded.", request.correlationId(), List.of("trace-useradmin-support-access-read-" + stableSuffix(request.correlationId())), listSurface(actor, request.correlationId()));
     } else if ("action-useradmin-grant-support-access".equals(request.actionId()) || "action-useradmin-revoke-support-access".equals(request.actionId()) || "action-useradmin-extend-support-access".equals(request.actionId())) {
