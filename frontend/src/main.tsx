@@ -781,11 +781,13 @@ function AuthenticatedRoot() {
   if (!user) {
     return (
       <div className="auth-gate">
-        <h1>{inviteToken ? 'Sign in to accept your invitation' : 'Sign in to continue'}</h1>
-        <p>The AI-first SaaS workstream uses WorkOS/AuthKit for browser authentication. Backend capabilities remain authorized by local tenant membership and role state.</p>
-        {inviteToken && <p className="auth-gate__hint">After sign-in, the backend will validate this invitation for the signed-in email address. The raw token is not shown in the browser UI.</p>}
-        <button type="button" onClick={() => void signIn({ state: { returnTo: currentBrowserReturnTo() } })}>Sign in with WorkOS</button>
-        <p className="auth-gate__hint">The normal frontend runtime always uses real backend API and realtime clients. Fixture data and clients are test-only assets.</p>
+        <h1>{inviteToken ? 'Sign in to accept your invitation' : 'Welcome back'}</h1>
+        <p>{inviteToken ? 'Sign in with the email address that received this invitation.' : 'Sign in to access your workspace and continue your work.'}</p>
+        <button type="button" onClick={() => void signIn({ state: { returnTo: currentBrowserReturnTo() } })}>Sign in</button>
+        <div className="auth-gate__hint" role="note" aria-label="Invitation required">
+          <strong>Don’t have an invitation?</strong>
+          <span> Access is invite-only. Contact your workspace admin to be invited.</span>
+        </div>
       </div>
     );
   }
