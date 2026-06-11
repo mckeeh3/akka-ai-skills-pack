@@ -4,7 +4,7 @@
 
 This is the compact canonical contract for workstreams in generated secure AI-first SaaS applications. Use it as the schema-style source below `./agent-workstream-application-architecture.md` and alongside `./requirements-to-workstream-development-process.md`, `./structured-surface-contracts.md`, `./workstream-attention-contracts.md`, and `./workstream-expertise-model.md`. Use `./workstream-manifest-schema.md` for the machine-readable app-description index and `./minimum-implementable-workstream-slice.md` for one-slice implementation tasks.
 
-A **workstream definition** is the design-time product vertical for authenticated consequential work. A **workstream instance** is the durable runtime timeline/log for one workstream definition in a selected tenant/customer/AuthContext scope. A **workstream view/session** is the browser's current rendering of an instance. Keep these terms separate when writing app descriptions, specs, APIs, and tests.
+A **workstream definition** is the design-time product vertical for authenticated consequential work. A **workstream instance** is the durable runtime timeline/log for one workstream definition in a selected organization/customer/AuthContext scope. A **workstream view/session** is the browser's current rendering of an instance. Keep these terms separate when writing app descriptions, specs, APIs, and tests.
 
 ## Core invariant
 

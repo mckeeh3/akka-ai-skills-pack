@@ -66,14 +66,14 @@ type UserAdminUserAccountData = {
 
 ## Auth/security
 
-- Detail reads enforce selected tenant/customer scope before loading target memberships.
+- Detail reads enforce selected organization/customer scope before loading target memberships.
 - Last-admin and role-escalation protections fail closed.
 - Support-access state is visible only to authorized actors and auditors according to policy.
 - Provider ids, raw tokens, invitation secrets, hidden memberships, and out-of-scope roles are never sent to the browser.
 
 ## Rendering and capability tests
 
-- Authorized Tenant Admin and Customer Admin detail variants show scoped fields only.
+- Authorized Organization Admin and Customer Admin detail variants show scoped fields only.
 - Cross-tenant/customer detail requests produce hidden-not-found or forbidden without identity leakage.
 - Last-admin and role-escalation actions route to decision/denial surfaces and produce audit traces.
 - Mutation actions preserve idempotency keys and update dashboard/list attention projections.

@@ -13,7 +13,7 @@ Pair with:
 
 ## UX principles
 
-1. **Workstream context first.** In the first five seconds, the user should know the selected functional agent, selected tenant/customer context, authority basis, current workstream state, and what needs attention.
+1. **Workstream context first.** In the first five seconds, the user should know the selected functional agent, selected organization/customer context, authority basis, current workstream state, and what needs attention.
 2. **Surfaces are the renderable contract.** Dashboards, decision cards, forms, tables, traces, progress panels, and system messages are structured surfaces with typed state and capability-backed actions.
 3. **The dashboard starts the surface graph.** A role-specific dashboard is an action router, not a report: it shows things that need the current user's attention first, then things the current user can do. Each attention or next-action work object moves through a human surface graph edge to a result, updated surface, progress surface, decision surface, or `system_message` surface.
 4. **Dashboard content is actionable.** Aside from section labels, control labels, and minimal explanatory microcopy, visible dashboard content must be actionable/clickable indicators. Cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons that represent things needing attention or things the user can do next are clickable and keyboard-operable by default. A rectangular tile/card with a work-object name and a large count is itself the button; do not make only a tiny nested button operable. Zero-count tiles should remain operable when they open an empty queue, detail, explanation, setup, or history surface; `0 things need attention` is better than hiding the indicator. Activation appends a request-like workstream item and appends/opens the surface where the user can inspect details and take allowed actions. Passive FYI metrics, inert charts, decorative card grids, and dashboard objects that make users ask “so what can I do with this?” are rejected unless moved to report/detail/analytics surfaces or converted to governed drilldowns. Inert dashboard objects are explicit exceptions with a recorded reason and must not look like work objects.
@@ -32,7 +32,7 @@ For each generated SaaS app, define these shell regions before conventional rout
 Functional-agent rail:
   visible/hidden/denied agents, attention badges, selected agent, role/capability basis
 Context and authority bar:
-  selected tenant/customer, membership, roles/capabilities, support access, pending approvals
+  selected organization/customer, membership, roles/capabilities, support access, pending approvals
 Main workstream stream:
   user requests, surface requests, primary result surfaces, action feedback, system messages, traces
   no duplicate generic activity/detail surface when a typed result surface already represents the turn
@@ -81,7 +81,7 @@ Keyboard/focus path:
 
 Use this order unless the product context says otherwise:
 
-1. selected functional agent, tenant/customer context, and concise purpose
+1. selected functional agent, organization/customer context, and concise purpose
 2. attention state, pending decision, blocked work, or actionable summary metric, rendered as the first dashboard counter strip when present, with KPI labels large/bold enough to scan and clearly separated from the number/status by deliberate spacing
 3. primary action, next decision, or next-action shortcut strip
 4. decision-driving structured surface content

@@ -622,7 +622,7 @@ public final class AgentRuntimeService {
   }
 
   private static boolean containsAuthorityExpansionText(String text) {
-    return text != null && text.matches("(?is).*(ignore authorization|bypass approval|grant yourself|act as tenant admin|disable audit).*");
+    return text != null && text.matches("(?is).*(ignore authorization|bypass approval|grant yourself|act as (tenant|organization) admin|disable audit).*");
   }
 
   private static boolean allowedReferenceUse(String manifestUse, String requestedUse) {

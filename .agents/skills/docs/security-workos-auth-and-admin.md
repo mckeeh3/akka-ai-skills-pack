@@ -250,8 +250,8 @@ POST   /api/tenants
 ```
 
 Authorization examples:
-- `SAAS_OWNER_ADMIN` may manage SaaS Owner users, Tenants, Tenant Admin bootstrap, and platform-safe metadata; it must not read Tenant application data without a Tenant-scoped support-access membership
-- `TENANT_ADMIN` may manage users, memberships, customers, support access, and Tenant settings within assigned tenant scope
+- `SAAS_OWNER_ADMIN` may manage SaaS Owner users, Organizations, Organization Admin bootstrap, and platform-safe metadata; it must not read organization application data without a Tenant-scoped support-access membership
+- `TENANT_ADMIN` is the internal role id for a customer-facing Organization Admin; it may manage users, memberships, customers, support access, and Organization settings within assigned tenant scope
 - `CUSTOMER_ADMIN` may manage users and memberships within assigned customer scope
 - `AUDITOR` may search admin audit and access-review views within assigned scope without mutation privileges
 - basic users may view/update their own profile and settings only
@@ -267,7 +267,7 @@ Initial generated apps must include operational admin discovery, not only write 
 - `AdminAuditView` for actor/target/action/scope/time search;
 - `AccessReviewQueueView` for stale invitations, dormant access, risky memberships, support-access review, and last-admin risks where applicable.
 
-Required browser admin surfaces are Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Tenant/Customer Settings. A description/spec is not generation-ready if admin management is limited to invite/disable/activate or if list/search and membership lifecycle behavior are omitted.
+Required browser admin surfaces are Users, Invitations, Roles/Memberships, Access Review, Support Access, Admin Audit, and Organization/Customer Settings. User-facing labels, route titles, onboarding, and invitation copy should say Organization rather than Tenant; backend contracts may still carry `tenantId` where it is the isolation key. A description/spec is not generation-ready if admin management is limited to invite/disable/activate or if list/search and membership lifecycle behavior are omitted.
 
 ## Startup admin bootstrap
 

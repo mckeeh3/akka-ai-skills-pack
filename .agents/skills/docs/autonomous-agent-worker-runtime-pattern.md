@@ -124,7 +124,7 @@ A worker progress/result surface should include:
 - domain task id and optional `autonomousAgentTaskId`;
 - status, progress summary, blocker/failure reason, stale/reconnect metadata, and human-needed state;
 - initiating capability id and authorized next actions;
-- selected tenant/customer/AuthContext scope;
+- selected organization/customer/AuthContext scope;
 - evidence/source refs and trace ids;
 - typed findings/recommendations only after a valid typed Akka task result;
 - `noDirectMutation=true` for advisory review workers;

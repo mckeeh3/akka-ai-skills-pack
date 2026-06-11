@@ -101,7 +101,7 @@ class WorkstreamServiceTest {
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.saveAccount(new Account("admin@example.test", null, "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));
-    identityRepository.putProfile(new UserProfile("admin@example.test", "admin@example.test", "Tenant Admin", "Tenant", "Admin", null));
+    identityRepository.putProfile(new UserProfile("admin@example.test", "admin@example.test", "Organization Admin", "Tenant", "Admin", null));
     identityRepository.putSettings(new UserSettings("admin@example.test", UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.putMembership(new Membership("membership-admin", "admin@example.test", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN, FoundationRole.AUDITOR), MembershipStatus.ACTIVE, false, null));
     identityRepository.saveAccount(new Account("member@example.test", null, "member@example.test", "member@example.test", AccountStatus.ACTIVE, "UNLINKED"));
@@ -399,7 +399,7 @@ class WorkstreamServiceTest {
         "action-replace-membership-role", "action-replace-membership-role", "secure-tenant-user-foundation", "secure-tenant-user-foundation", null, "idem-1", "membership-admin", "surface-user-admin-detail-admin", "corr-role"));
 
     assertEquals("denied", result.status());
-    assertTrue(result.message().contains("last tenant admin"));
+    assertTrue(result.message().contains("last organization admin"));
     assertEquals("surface-user-admin-detail-admin", result.resultSurface().surfaceId());
   }
 
@@ -651,13 +651,13 @@ class WorkstreamServiceTest {
         "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("roleIds", List.of("tenant-admin")), "idem-my-account-denied", "membership-admin", "surface-my-settings", "corr-my-account-denied")));
 
     assertTrue(denied.reasonCode().contains("MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD"));
-    assertEquals("Tenant Admin", service.bootstrap(identity(), "membership-admin", "corr-my-account-denied-read").me().profile().displayName());
+    assertEquals("Organization Admin", service.bootstrap(identity(), "membership-admin", "corr-my-account-denied-read").me().profile().displayName());
   }
 
   @Test
   void myAccountProfileSettingsNoOpIsTracedAndReturnsCurrentSurface() {
     var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("displayName", "Tenant Admin", "preferredThemeId", "aurora-light"), "idem-my-account-noop", "membership-admin", "surface-my-settings", "corr-my-account-noop"));
+        "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("displayName", "Organization Admin", "preferredThemeId", "aurora-light"), "idem-my-account-noop", "membership-admin", "surface-my-settings", "corr-my-account-noop"));
 
     assertEquals("no-op", result.status());
     assertEquals("surface-my-settings", result.resultSurface().surfaceId());
@@ -1114,7 +1114,7 @@ class WorkstreamServiceTest {
   }
 
   private WorkosIdentity identity() {
-    return new WorkosIdentity("workos-admin", "admin@example.test", "Tenant Admin");
+    return new WorkosIdentity("workos-admin", "admin@example.test", "Organization Admin");
   }
 
   private WorkosIdentity memberIdentity() {

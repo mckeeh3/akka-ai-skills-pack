@@ -93,7 +93,7 @@ The dashboard is the default surface for `dashboard`, `my account`, `show my acc
 - **Profile and Settings actions** as secondary shortcuts below the attention counters and personal queue. These request the Profile or Settings surface in the My Account workstream rather than navigating to a separate shell menu.
 - **Workstream status panels**: one compact clickable panel for each workstream visible to the current `/api/me` AuthContext. Each panel uses the shared attention-card counter style and shows only a large `itemsNeedingAttention` number, a short label, and an icon button/open affordance or status badge for the workstream. The panel does not list detailed items; detailed investigation belongs below the counter strip or in that workstream's own dashboard.
 - **Workstream icons**: use the universal shell workstream icon metadata. The icon is generated or selected from the workstream name/domain, appears on the panel button, and exposes the full workstream name through tooltip/accessible label text.
-- **Context and authority indicator**: selected tenant/customer and role/capability basis appear as concise microcopy attached to the context selector/capability shortcut, not as a passive summary block.
+- **Context and authority indicator**: selected organization/customer and role/capability basis appear as concise microcopy attached to the context selector/capability shortcut, not as a passive summary block.
 
 Dashboard payload guidance:
 

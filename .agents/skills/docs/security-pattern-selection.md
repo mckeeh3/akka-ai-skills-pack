@@ -54,7 +54,7 @@ Authorization answers: what may this caller do?
 - local Akka user status
 - canonical foundation roles: `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, and `AUDITOR`
 - app-specific roles mapped to capabilities; do not use `APP_ADMIN` as the preferred generic platform role unless it is explicitly documented as an app alias for `SAAS_OWNER_ADMIN`
-- tenant/customer/self scopes
+- organization/customer/self scopes in product language, backed by tenant/customer enforcement scopes
 - business operation-specific rules
 
 Do not let frontend navigation, JWT presence, email domain, route names, hidden fields, prompts, or tool descriptions authorize admin operations.
@@ -63,9 +63,9 @@ Do not let frontend navigation, JWT presence, email domain, route names, hidden 
 
 Use these defaults unless product requirements say otherwise:
 - `GET /api/me` returns current local profile, status, roles, and scopes
-- `SAAS_OWNER_ADMIN` can manage SaaS Owner users, Tenants, Tenant Admin bootstrap, and platform-safe metadata without direct Tenant application-data access
-- `TENANT_ADMIN` can manage users/customers only in assigned tenants
-- `TENANT_EMPLOYEE` can use tenant-owned app features according to mapped capabilities
+- `SAAS_OWNER_ADMIN` can manage SaaS Owner users, Organizations, Organization Admin bootstrap, and platform-safe metadata without direct organization application-data access
+- `TENANT_ADMIN` is the internal role id for customer-facing Organization Admins; it can manage users/customers only in assigned Organizations/Tenants
+- `TENANT_EMPLOYEE` is the internal role id for customer-facing organization members/employees; it can use organization-owned app features according to mapped capabilities
 - `CUSTOMER_ADMIN` can manage users only in assigned customers
 - `CUSTOMER_USER` can access allowed customer-facing features only
 - `AUDITOR` can read scoped audit/search and access-review surfaces without mutation

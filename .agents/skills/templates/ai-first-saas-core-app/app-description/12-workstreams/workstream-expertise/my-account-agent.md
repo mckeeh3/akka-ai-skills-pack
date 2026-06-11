@@ -14,7 +14,7 @@ Help the signed-in user understand their selected context, profile/settings opti
 ## Skill/reference families
 
 - skills: context selection guidance, profile/settings help, denial recovery, personal queue explanation
-- references: tenant/customer context policy, account settings policy, support-access visibility note
+- references: organization/customer context policy, account settings policy, support-access visibility note
 
 ## Capability/tool boundary
 
