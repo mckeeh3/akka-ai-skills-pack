@@ -319,7 +319,7 @@
 
 ### TASK-SOOA-99-002: Verify SaaS Owner Organization Admin runtime completion
 
-- status: pending
+- status: done
 - source: TASK-SOOA-99-001 verification follow-up
 - task brief: specs/saas-owner-organization-admin/tasks/99-verification/02-verify-saas-owner-organization-admin-runtime-completion.md
 - depends on:
@@ -351,4 +351,9 @@
   - required checks pass or blockers are precise and reflected in follow-up tasks
   - remaining material gaps are appended as bounded tasks, or the mini-project is declared complete
   - changes and queue update are committed
-- notes: []
+- notes:
+  - verification result: complete for the selected mini-project scope
+  - verification notes: specs/saas-owner-organization-admin/verification.md
+  - prior runtime UI/API gap closed by TASK-SOOA-05-001; production browser actions route through typed `AdminClient` `/api/admin/organizations` calls
+  - checks: `mvn -Dtest=AdminEndpointIntegrationTest,SaasOwnerOrganizationAdminServiceTest test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `npm --prefix frontend run build`; `git diff --check`
+  - commit message: `saas-owner-org-admin: verify runtime completion`
