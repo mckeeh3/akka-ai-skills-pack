@@ -183,6 +183,44 @@ export type ListSearchSurfaceData = {
   redaction?: BrowserSafeRedactionMetadata;
 };
 
+export type OrganizationAdminSurfaceData = {
+  surfaceContract: 'user_admin.organization_admin.v1' | string;
+  selectedAuthContext?: Record<string, unknown>;
+  scopeLabel?: string;
+  scopeType?: string;
+  authorityBasis?: string;
+  boundaryNotice?: string;
+  safeBoundaryNotice?: string;
+  traceRefs?: string[];
+  correlationId?: string;
+  redaction?: BrowserSafeRedactionMetadata;
+  organizations?: Array<{
+    organizationId: string;
+    organizationName: string;
+    status: string;
+    updatedAt?: string;
+    safeLifecycleSummary?: string;
+    visibleTenantAdminCount?: number;
+    actionAvailability?: string[];
+    traceRefs?: string[];
+  }>;
+  organizationDetail?: {
+    organizationId?: string;
+    organizationName?: string;
+    status?: string;
+    safeBoundaryNotice?: string;
+    visibleActions?: string[];
+    recentAuditEvents?: Array<Record<string, unknown>>;
+    traceRefs?: string[];
+    correlationId?: string;
+  };
+  filters?: Record<string, string | number | boolean | undefined>;
+  systemStates?: string[];
+  emptyMessage?: string;
+  forbiddenMessage?: string;
+  lastResult?: { status: string; message: string; correlationId?: string; traceRefs?: string[] };
+};
+
 export type DetailEditSurfaceData = {
   recordId?: string;
   recordLabel?: string;

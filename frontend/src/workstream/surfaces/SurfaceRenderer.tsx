@@ -8,6 +8,7 @@ import { ListSearchSurface } from './ListSearchSurface';
 import { MarkdownResponseSurface } from './MarkdownResponseSurface';
 import { OutcomeSurface } from './OutcomeSurface';
 import { NotificationCenterSurface } from './NotificationCenterSurface';
+import { OrganizationAdminSurface } from './OrganizationAdminSurface';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
 import { SystemMessageSurface } from './SystemMessageSurface';
@@ -27,6 +28,10 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
 
   if (!selectedEnvelope) {
     return <SurfaceStateFrame />;
+  }
+
+  if (selectedEnvelope.surfaceId === 'surface-user-admin-organization-admin' || (selectedEnvelope.data as { surfaceContract?: string } | undefined)?.surfaceContract === 'user_admin.organization_admin.v1') {
+    return <OrganizationAdminSurface envelope={selectedEnvelope as never} onAction={onAction} />;
   }
 
   switch (selectedEnvelope.surfaceType) {

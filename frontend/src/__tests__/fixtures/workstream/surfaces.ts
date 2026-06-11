@@ -27,7 +27,13 @@ const userAdminCapabilities = {
   cancelAccessReviewTask: 'user_admin.access_review.cancel',
   acceptAccessReviewResult: 'user_admin.access_review.accept_result',
   rejectAccessReviewResult: 'user_admin.access_review.reject_result',
-  viewTraceReference: 'USERADMIN_VIEW_TRACE_REFERENCE'
+  viewTraceReference: 'USERADMIN_VIEW_TRACE_REFERENCE',
+  listOrganizations: 'saas_owner.organization.list',
+  readOrganization: 'saas_owner.organization.read',
+  createOrganization: 'saas_owner.organization.create',
+  renameOrganization: 'saas_owner.organization.rename',
+  suspendOrganization: 'saas_owner.organization.suspend',
+  reactivateOrganization: 'saas_owner.organization.reactivate'
 } as const;
 
 export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceAction> = {
@@ -153,6 +159,91 @@ export const userAdminSurfaceActions = {
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-user-admin-users', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminListDisplayed', traceRequired: true }
+  },
+  displayOrganizationAdmin: {
+    actionId: 'action-display-organization-admin',
+    label: 'Open Organization Admin',
+    intent: 'read',
+    capabilityId: userAdminCapabilities.listOrganizations,
+    governedToolId: 'manage-organizations',
+    browserToolId: 'action-display-organization-admin',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-organization-admin', openPlacement: 'inline' },
+    audit: { eventType: 'OrganizationAdminDisplayed', traceRequired: true }
+  },
+  listOrganizations: {
+    actionId: 'action-organization-list',
+    label: 'Refresh Organizations',
+    intent: 'read',
+    capabilityId: userAdminCapabilities.listOrganizations,
+    governedToolId: 'manage-organizations',
+    browserToolId: 'action-organization-list',
+    inputSchemaRef: 'schema.organization-admin.search.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-organization-admin', openPlacement: 'inline' },
+    audit: { eventType: 'OrganizationListDisplayed', traceRequired: true }
+  },
+  readOrganization: {
+    actionId: 'action-organization-read',
+    label: 'Open Organization detail',
+    intent: 'read',
+    capabilityId: userAdminCapabilities.readOrganization,
+    governedToolId: 'manage-organizations',
+    browserToolId: 'action-organization-read',
+    inputSchemaRef: 'schema.organization-admin.detail.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-organization-admin', openPlacement: 'inline' },
+    audit: { eventType: 'OrganizationDetailDisplayed', traceRequired: true }
+  },
+  createOrganization: {
+    actionId: 'action-organization-create',
+    label: 'Create Organization',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.createOrganization,
+    governedToolId: 'manage-organizations',
+    browserToolId: 'action-organization-create',
+    inputSchemaRef: 'schema.organization-admin.create.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-organization-admin', openPlacement: 'inline' },
+    audit: { eventType: 'ORGANIZATION_CREATE', traceRequired: true }
+  },
+  renameOrganization: {
+    actionId: 'action-organization-rename',
+    label: 'Rename Organization',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.renameOrganization,
+    governedToolId: 'manage-organizations',
+    browserToolId: 'action-organization-rename',
+    inputSchemaRef: 'schema.organization-admin.rename.v1',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-organization-admin', openPlacement: 'inline' },
+    audit: { eventType: 'ORGANIZATION_RENAME', traceRequired: true }
+  },
+  suspendOrganization: {
+    actionId: 'action-organization-suspend',
+    label: 'Suspend Organization',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.suspendOrganization,
+    governedToolId: 'manage-organizations',
+    browserToolId: 'action-organization-suspend',
+    inputSchemaRef: 'schema.organization-admin.lifecycle.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-organization-admin', openPlacement: 'inline' },
+    audit: { eventType: 'ORGANIZATION_SUSPEND', traceRequired: true }
+  },
+  reactivateOrganization: {
+    actionId: 'action-organization-reactivate',
+    label: 'Reactivate Organization',
+    intent: 'command',
+    capabilityId: userAdminCapabilities.reactivateOrganization,
+    governedToolId: 'manage-organizations',
+    browserToolId: 'action-organization-reactivate',
+    inputSchemaRef: 'schema.organization-admin.lifecycle.v1',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-organization-admin', openPlacement: 'inline' },
+    audit: { eventType: 'ORGANIZATION_REACTIVATE', traceRequired: true }
   },
   searchUsers: {
     actionId: 'action-search-users',
@@ -1507,7 +1598,49 @@ export const userAdminDashboardSurface = envelope(
     }
   },
   [
-    userAdminSurfaceActions.displayUserList
+    userAdminSurfaceActions.displayUserList,
+    userAdminSurfaceActions.displayOrganizationAdmin
+  ]
+);
+
+export const userAdminOrganizationAdminSurface = envelope(
+  'surface-user-admin-organization-admin',
+  'list-detail-action',
+  'Organization Admin',
+  'agent-user-admin',
+  {
+    surfaceContract: 'user_admin.organization_admin.v1',
+    scopeLabel: 'SaaS Owner scope',
+    scopeType: 'SAAS_OWNER',
+    authorityBasis: 'Backend checks selected AuthContext and saas_owner.tenant.read/manage; browser state cannot grant Organization authority.',
+    boundaryNotice: 'Organization administration manages the Tenant lifecycle boundary only; it does not grant tenant/customer application-data access, support access, provider secret access, or billing-derived authority.',
+    organizations: [
+      { organizationId: 'tenant-starter', organizationName: 'Starter Organization', status: 'active', safeLifecycleSummary: 'Active Tenant boundary', actionAvailability: ['rename', 'suspend'], traceRefs: ['trace-organization-tenant-starter'] },
+      { organizationId: 'tenant-suspended', organizationName: 'Suspended Organization', status: 'suspended', safeLifecycleSummary: 'Suspended Tenant boundary', actionAvailability: ['rename', 'reactivate'], traceRefs: ['trace-organization-tenant-suspended'] }
+    ],
+    organizationDetail: {
+      organizationId: 'tenant-starter',
+      organizationName: 'Starter Organization',
+      status: 'active',
+      safeBoundaryNotice: 'Safe detail omits tenant application data, customer records, hidden counts, provider secrets, support-access internals, and billing-derived authority.',
+      visibleActions: ['rename', 'suspend'],
+      recentAuditEvents: [],
+      traceRefs: ['trace-organization-detail'],
+      correlationId: 'corr-organization-detail'
+    },
+    filters: { query: '', status: '' },
+    systemStates: ['loading', 'empty', 'ready', 'submitting', 'success', 'validation-error', 'forbidden', 'not_found_or_redacted', 'no-op', 'conflict', 'stale', 'error'],
+    lastResult: { status: 'no-op', message: 'Requested Organization name already matches current state.', correlationId: 'corr-organization-no-op', traceRefs: ['trace-organization-no-op'] },
+    redaction: ['tenant-app-data-redacted', 'provider-secrets-redacted', 'billing-authority-redacted', 'support-access-internals-redacted', 'hidden-counts-redacted']
+  },
+  [
+    userAdminSurfaceActions.listOrganizations,
+    userAdminSurfaceActions.readOrganization,
+    userAdminSurfaceActions.createOrganization,
+    userAdminSurfaceActions.renameOrganization,
+    userAdminSurfaceActions.suspendOrganization,
+    userAdminSurfaceActions.reactivateOrganization,
+    userAdminSurfaceActions.openAdminAudit
   ]
 );
 
@@ -2623,6 +2756,7 @@ export const outcomeSurface = envelope('surface-outcome-review', 'outcome', 'Out
 export const fullCoreDemoSurfaceEnvelopes = [
   ...myAccountStructuredSurfaces,
   userAdminDashboardSurface,
+  userAdminOrganizationAdminSurface,
   userAdminListSearchSurface,
   userAdminRoleChangePreviewSurface,
   userAdminRoleCapabilityMatrixSurface,
@@ -2678,6 +2812,14 @@ export const displayUserListActionResult: CapabilityActionResult = {
   correlationId: 'corr-display-user-list',
   traceIds: ['trace-display-user-list'],
   resultSurface: userAdminListSearchSurface
+};
+
+export const displayOrganizationAdminActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Display Organization Admin. Backend authority, SaaS Owner scope, idempotency, audit, and trace checks remain capability-backed.',
+  correlationId: 'corr-display-organization-admin',
+  traceIds: ['trace-display-organization-admin'],
+  resultSurface: userAdminOrganizationAdminSurface
 };
 
 export const displayUserDetailActionResult: CapabilityActionResult = {

@@ -19,6 +19,12 @@ import type {
   LaunchGoalRequest,
   LaunchGoalResponse,
   MeResponse,
+  OrganizationActionResponse,
+  OrganizationCreateRequest,
+  OrganizationDetailPayload,
+  OrganizationLifecycleRequest,
+  OrganizationListPayload,
+  OrganizationRenameRequest,
   PoliciesResponse,
   PolicySimulationResponse,
   TraceDetailResponse,
@@ -38,6 +44,12 @@ export interface AdminClient {
   listUsers(): Promise<ApiResult<AdminUsersResponse>>;
   inviteUser(request: InviteUserRequest): Promise<ApiResult<InviteUserResponse>>;
   updateRoles(userId: string, request: UpdateRolesRequest): Promise<ApiResult<UpdateRolesResponse>>;
+  listOrganizations(query?: Record<string, string | undefined>): Promise<ApiResult<OrganizationListPayload>>;
+  getOrganization(organizationId: string): Promise<ApiResult<OrganizationDetailPayload>>;
+  createOrganization(request: OrganizationCreateRequest): Promise<ApiResult<OrganizationActionResponse>>;
+  renameOrganization(organizationId: string, request: OrganizationRenameRequest): Promise<ApiResult<OrganizationActionResponse>>;
+  suspendOrganization(organizationId: string, request: OrganizationLifecycleRequest): Promise<ApiResult<OrganizationActionResponse>>;
+  reactivateOrganization(organizationId: string, request: OrganizationLifecycleRequest): Promise<ApiResult<OrganizationActionResponse>>;
 }
 
 export interface GoalsClient {

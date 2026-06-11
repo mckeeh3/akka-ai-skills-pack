@@ -7,6 +7,7 @@ export * from './ListSearchSurface';
 export * from './MarkdownResponseSurface';
 export * from './OutcomeSurface';
 export * from './NotificationCenterSurface';
+export * from './OrganizationAdminSurface';
 export * from './SurfaceActionBar';
 export * from './SurfaceRenderer';
 export * from './SurfaceStateFrame';

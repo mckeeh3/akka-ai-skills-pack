@@ -8,6 +8,8 @@ import type {
   GoalDetailResponse,
   GoalSummary,
   MeResponse,
+  OrganizationDetailPayload,
+  OrganizationSummary,
   PolicySummary,
   TraceDetailResponse,
   TraceSummary
@@ -26,6 +28,11 @@ export class FixtureApiClient implements ApiClient {
   private users: AdminUser[] = [
     { userId: 'seed-user-1', email: 'supervisor@example.test', displayName: 'Seed Supervisor', membershipStatus: 'active', roles: ['supervisor', 'reviewer'], version: 1 },
     { userId: 'seed-user-2', email: 'auditor@example.test', displayName: 'Seed Auditor', membershipStatus: 'invited', roles: ['auditor'], version: 1 }
+  ];
+
+  private organizations: OrganizationSummary[] = [
+    { organizationId: 'tenant-starter', organizationName: 'Starter Organization', status: 'active', traceRefs: ['trace-organization-tenant-starter'] },
+    { organizationId: 'tenant-suspended', organizationName: 'Suspended Organization', status: 'suspended', traceRefs: ['trace-organization-tenant-suspended'] }
   ];
 
   private goalRows: GoalSummary[] = [
@@ -75,7 +82,37 @@ export class FixtureApiClient implements ApiClient {
       user.roles = request.roleIds;
       user.version += 1;
       return delayedOk({ userId, roleIds: user.roles, version: user.version, auditTraceId: 'trace-role-update', correlationId: correlationId() });
-    }
+    },
+    listOrganizations: (query?: Record<string, string | undefined>) => {
+      const search = query?.query?.toLowerCase();
+      const status = query?.status?.toLowerCase();
+      const organizations = this.organizations.filter((organization) => (!search || organization.organizationName.toLowerCase().includes(search)) && (!status || organization.status.toLowerCase() === status));
+      return delayedOk({ organizations, safeBoundaryNotice: organizationBoundaryNotice, traceRefs: ['trace-organization-list'], correlationId: correlationId(), redactions: organizationRedactions });
+    },
+    getOrganization: (organizationId: string) => {
+      const organization = this.organizations.find((candidate) => candidate.organizationId === organizationId);
+      if (!organization) return delayedError('not_found', 'Organization is not visible for this SaaS Owner context.');
+      return delayedOk(organizationDetail(organization));
+    },
+    createOrganization: (request: { organizationName: string; idempotencyKey: string; reason?: string }) => {
+      if (!request.organizationName.trim()) return delayedError('validation_error', 'Organization name is required.', { organizationName: ['Organization name is required.'] });
+      if (!request.idempotencyKey.trim()) return delayedError('validation_error', 'Idempotency key is required.', { idempotencyKey: ['Required for Organization mutations.'] });
+      const existing = this.organizations.find((candidate) => candidate.organizationName === request.organizationName);
+      if (existing) return delayedOk({ status: 'no-op', message: 'Organization create replay returned the existing browser-safe Organization.', organization: organizationDetail(existing), traceRefs: ['trace-organization-create-no-op'], correlationId: correlationId() });
+      const organization = { organizationId: `tenant-${this.organizations.length + 1}`, organizationName: request.organizationName, status: 'active', traceRefs: ['trace-organization-create'] };
+      this.organizations.push(organization);
+      return delayedOk({ status: 'accepted', message: 'Organization created as an active Tenant lifecycle boundary.', organization: organizationDetail(organization), traceRefs: ['trace-organization-create'], correlationId: correlationId() });
+    },
+    renameOrganization: (organizationId: string, request: { organizationName: string; idempotencyKey: string; reason?: string }) => {
+      const organization = this.organizations.find((candidate) => candidate.organizationId === organizationId);
+      if (!organization) return delayedError('not_found', 'Organization is not visible for this SaaS Owner context.');
+      if (!request.organizationName.trim()) return delayedError('validation_error', 'Organization name is required.', { organizationName: ['Organization name is required.'] });
+      if (organization.organizationName === request.organizationName) return delayedOk({ status: 'no-op', message: 'Requested Organization name already matches current state.', organization: organizationDetail(organization), traceRefs: ['trace-organization-rename-no-op'], correlationId: correlationId() });
+      organization.organizationName = request.organizationName;
+      return delayedOk({ status: 'accepted', message: 'Organization display name updated without changing Tenant isolation or support access.', organization: organizationDetail(organization), traceRefs: ['trace-organization-rename'], correlationId: correlationId() });
+    },
+    suspendOrganization: (organizationId: string, request: { reason: string; idempotencyKey: string }) => organizationLifecycle(this.organizations, organizationId, request, 'suspended'),
+    reactivateOrganization: (organizationId: string, request: { reason: string; idempotencyKey: string }) => organizationLifecycle(this.organizations, organizationId, request, 'active')
   };
 
   goals = {
@@ -135,6 +172,31 @@ export class FixtureApiClient implements ApiClient {
       return delayedOk(detail);
     }
   };
+}
+
+const organizationBoundaryNotice = 'Organization administration manages the Tenant lifecycle boundary only; it does not grant tenant/customer application-data access, support access, provider secret access, or billing-derived authority.';
+const organizationRedactions = ['tenant-app-data-redacted', 'provider-secrets-redacted', 'billing-authority-redacted', 'support-access-internals-redacted', 'hidden-counts-redacted'];
+
+function organizationDetail(organization: OrganizationSummary): OrganizationDetailPayload {
+  return {
+    organization,
+    safeBoundaryNotice: organizationBoundaryNotice,
+    visibleActions: organization.status === 'suspended' ? ['rename', 'reactivate'] : ['rename', 'suspend'],
+    recentAuditEvents: [],
+    traceRefs: organization.traceRefs,
+    correlationId: correlationId(),
+    redactions: organizationRedactions
+  };
+}
+
+function organizationLifecycle(organizations: OrganizationSummary[], organizationId: string, request: { reason: string; idempotencyKey: string }, nextStatus: 'active' | 'suspended') {
+  const organization = organizations.find((candidate) => candidate.organizationId === organizationId);
+  if (!organization) return delayedError('not_found', 'Organization is not visible for this SaaS Owner context.');
+  if (!request.reason?.trim()) return delayedError('validation_error', 'Reason is required for Organization lifecycle changes.', { reason: ['Reason is required.'] });
+  if (!request.idempotencyKey?.trim()) return delayedError('validation_error', 'Idempotency key is required.', { idempotencyKey: ['Required for Organization mutations.'] });
+  if (organization.status === nextStatus) return delayedOk({ status: 'no-op', message: `Organization is already ${nextStatus}; idempotency preserved.`, organization: organizationDetail(organization), traceRefs: [`trace-organization-${nextStatus}-no-op`], correlationId: correlationId() });
+  organization.status = nextStatus;
+  return delayedOk({ status: 'accepted', message: `Organization ${nextStatus === 'active' ? 'reactivated' : 'suspended'} at the Tenant lifecycle boundary.`, organization: organizationDetail(organization), traceRefs: [`trace-organization-${nextStatus}`], correlationId: correlationId() });
 }
 
 function goalDetail(goal: GoalSummary): GoalDetailResponse {

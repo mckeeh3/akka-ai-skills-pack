@@ -21,6 +21,9 @@ test('DTOs include starter frontend API contract families', () => {
   assert.match(types, /export type DecisionDetailResponse/);
   assert.match(types, /export type PolicySummary/);
   assert.match(types, /export type TraceDetailResponse/);
+  assert.match(types, /export type OrganizationListPayload/);
+  assert.match(types, /export type OrganizationDetailPayload/);
+  assert.match(types, /export type OrganizationActionResponse/);
   assert.match(types, /export type RealtimeEvent/);
 });
 
@@ -45,6 +48,10 @@ test('fixture API client simulates success, validation, forbidden/conflict style
 test('HTTP API client targets same-origin documented API route families', () => {
   assert.match(httpApi, /\/api\/me/);
   assert.match(httpApi, /\/api\/admin\/users/);
+  assert.match(httpApi, /\/api\/admin\/organizations/);
+  assert.match(httpApi, /\/organizations\/\$\{encodeURIComponent\(organizationId\)\}\/rename/);
+  assert.match(httpApi, /\/organizations\/\$\{encodeURIComponent\(organizationId\)\}\/suspend/);
+  assert.match(httpApi, /\/organizations\/\$\{encodeURIComponent\(organizationId\)\}\/reactivate/);
   assert.match(httpApi, /\/api\/goals/);
   assert.match(httpApi, /\/api\/decisions/);
   assert.match(httpApi, /\/api\/governance\/policies/);

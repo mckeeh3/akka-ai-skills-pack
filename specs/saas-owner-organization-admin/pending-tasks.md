@@ -181,7 +181,7 @@
 
 ### TASK-SOOA-04-001: Add frontend Organization Admin surface
 
-- status: pending
+- status: done
 - source: specs/saas-owner-organization-admin/backlog/01-saas-owner-organization-admin-build-backlog.md
 - task brief: specs/saas-owner-organization-admin/tasks/04-frontend/01-add-organization-admin-frontend.md
 - depends on:
@@ -220,7 +220,9 @@
   - loading, empty, validation-error, no-op, forbidden, stale/conflict, success, and failure states are represented where relevant
   - no secrets, hidden cross-tenant facts, or raw provider details are exposed
   - changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `saas-owner-org-admin: add frontend organization admin surface`
+  - checks: `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `npm --prefix frontend run build`; `git diff --check`
 
 ### TASK-SOOA-99-001: Verify SaaS Owner Organization Admin completion
 

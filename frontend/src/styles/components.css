@@ -2250,6 +2250,7 @@ button.attention-counter-card:focus-visible {
 }
 
 .surface-action-link.secondary { color: var(--color-text-soft); }
+.surface-action-link.danger { border-color: var(--color-danger); color: var(--color-danger); }
 
 .available-workstream-grid {
   display: grid;
@@ -2602,4 +2603,82 @@ button.user-admin-work-card:focus-visible {
 @media (max-width: 900px) {
   .user-admin-top-forms,
   .user-admin-edit-form { grid-template-columns: 1fr; }
+}
+
+.organization-admin-surface {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.organization-admin-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.organization-admin-header h3,
+.organization-admin-header p { margin: 0; }
+.organization-admin-header p:not(.eyebrow) { color: var(--color-text-soft); margin-top: var(--space-1); }
+
+.organization-admin-scope {
+  display: grid;
+  gap: var(--space-1);
+  max-width: 22rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-soft);
+  padding: var(--space-3);
+  color: var(--color-text-soft);
+}
+.organization-admin-scope strong { color: var(--color-text); }
+
+.organization-admin-search {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) minmax(10rem, 0.4fr) auto;
+  align-items: end;
+  gap: var(--space-3);
+}
+
+.organization-admin-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr);
+  gap: var(--space-4);
+}
+
+.organization-admin-row {
+  grid-template-columns: minmax(0, 1.4fr) minmax(8rem, 1fr) auto;
+}
+
+.organization-admin-detail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+}
+.organization-admin-detail dt {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+.organization-admin-detail dd { margin: 0; font-weight: 750; overflow-wrap: anywhere; }
+
+.organization-admin-command-form,
+.organization-admin-lifecycle-actions {
+  display: grid;
+  gap: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-3);
+}
+.organization-admin-command-form h5 { margin: 0; }
+.organization-admin-command-form label { display: grid; gap: var(--space-1); font-weight: 800; }
+.organization-admin-lifecycle-actions { grid-template-columns: repeat(auto-fit, minmax(8rem, max-content)); }
+
+@media (max-width: 860px) {
+  .organization-admin-header,
+  .organization-admin-search,
+  .organization-admin-grid { grid-template-columns: 1fr; display: grid; }
+  .organization-admin-scope { max-width: none; }
 }

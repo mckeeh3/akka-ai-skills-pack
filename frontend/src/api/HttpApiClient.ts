@@ -19,7 +19,13 @@ export class HttpApiClient implements ApiClient {
     this.admin = {
       listUsers: () => this.get('/api/admin/users'),
       inviteUser: (request) => this.post('/api/admin/users/invitations', request),
-      updateRoles: (userId, request) => this.put(`/api/admin/users/${encodeURIComponent(userId)}/roles`, request)
+      updateRoles: (userId, request) => this.put(`/api/admin/users/${encodeURIComponent(userId)}/roles`, request),
+      listOrganizations: (query) => this.get(`/api/admin/organizations${queryString(query)}`),
+      getOrganization: (organizationId) => this.get(`/api/admin/organizations/${encodeURIComponent(organizationId)}`),
+      createOrganization: (request) => this.post('/api/admin/organizations', request),
+      renameOrganization: (organizationId, request) => this.post(`/api/admin/organizations/${encodeURIComponent(organizationId)}/rename`, request),
+      suspendOrganization: (organizationId, request) => this.post(`/api/admin/organizations/${encodeURIComponent(organizationId)}/suspend`, request),
+      reactivateOrganization: (organizationId, request) => this.post(`/api/admin/organizations/${encodeURIComponent(organizationId)}/reactivate`, request)
     };
     this.goals = {
       listGoals: () => this.get('/api/goals'),

@@ -84,6 +84,52 @@ export type UpdateRolesResponse = {
   correlationId: string;
 };
 
+export type OrganizationSummary = {
+  organizationId: string;
+  organizationName: string;
+  status: 'active' | 'suspended' | string;
+  traceRefs: string[];
+};
+
+export type OrganizationListPayload = {
+  organizations: OrganizationSummary[];
+  safeBoundaryNotice: string;
+  traceRefs: string[];
+  correlationId: string;
+  redactions: string[];
+};
+
+export type OrganizationDetailPayload = {
+  organization: OrganizationSummary;
+  safeBoundaryNotice: string;
+  visibleActions: string[];
+  recentAuditEvents: Array<Record<string, unknown>>;
+  traceRefs: string[];
+  correlationId: string;
+  redactions: string[];
+};
+
+export type OrganizationActionResponse = {
+  status: 'accepted' | 'no-op' | string;
+  message: string;
+  organization: OrganizationDetailPayload;
+  traceRefs: string[];
+  correlationId: string;
+};
+
+export type OrganizationCreateRequest = {
+  organizationName: string;
+  idempotencyKey: string;
+  reason?: string;
+};
+
+export type OrganizationRenameRequest = OrganizationCreateRequest;
+
+export type OrganizationLifecycleRequest = {
+  reason: string;
+  idempotencyKey: string;
+};
+
 export type GoalSummary = {
   goalId: string;
   objective: string;

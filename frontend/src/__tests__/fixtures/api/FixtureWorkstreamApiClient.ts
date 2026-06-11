@@ -30,6 +30,7 @@ import {
   displayGovernancePolicyImpactResultActionResult,
   displayGovernancePolicyImpactTaskActionResult,
   displayGovernancePolicySimulationActionResult,
+  displayOrganizationAdminActionResult,
   displayUserDetailActionResult,
   displayUserListActionResult,
   initialWorkstreamItems,
@@ -206,6 +207,8 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
           ? displayAgentCatalogActionResult
           : request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'
             ? displayUserListActionResult
+            : request.actionId === 'action-display-organization-admin' || request.actionId.startsWith('action-organization-') || request.capabilityId?.startsWith('saas_owner.organization.')
+              ? displayOrganizationAdminActionResult
             : ['action-invite-user', 'action-useradmin-resend-invitation', 'action-useradmin-revoke-invitation'].includes(request.actionId)
               ? { status: request.actionId === 'action-useradmin-revoke-invitation' ? 'no-op' as const : 'accepted' as const, message: 'Invitation action result came from the backend-aligned workstream action contract with safe system_message fallback states.', correlationId: request.correlationId, traceIds: ['trace-useradmin-invitation-action', 'trace-useradmin'], resultSurface: userAdminInvitationActionStatusSurface }
               : ['action-useradmin-disable-member', 'action-useradmin-reactivate-member'].includes(request.actionId)
