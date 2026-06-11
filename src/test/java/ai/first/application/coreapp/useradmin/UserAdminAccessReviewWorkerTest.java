@@ -110,7 +110,7 @@ class UserAdminAccessReviewWorkerTest {
     var identityRepository = new LocalDemoIdentityRepository();
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
     StarterSecurityComponents.bindTestInvitationRepository(new ai.first.application.foundation.invitation.LocalDemoInvitationRepository());
-    BootstrapAdminSeeder.seedConfiguredAdmins(identityRepository, "admin@example.test:TENANT_ADMIN:tenant-starter");
+    BootstrapAdminSeeder.seedFixtureAdmins(identityRepository, "admin@example.test:TENANT_ADMIN:tenant-starter");
     seedTenantMember(identityRepository);
     StarterSecurityComponents.agentBehaviorSeedLoader().importStarterDefaults("tenant-starter", "test-bootstrap", correlationId + "-seed");
     return StarterSecurityComponents.authContextResolver().resolveMe(

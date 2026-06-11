@@ -83,10 +83,8 @@ class MeServiceTest {
   }
 
   @Test
-  void configuredBootstrapAdminLinksOnlyExplicitLocalAccount() {
-    BootstrapAdminSeeder.seedConfiguredAdmins(
-        repository,
-        "owner@example.com:SAAS_OWNER_ADMIN:OWNER,tenant-admin@example.com:TENANT_ADMIN:tenant-starter");
+  void configuredBootstrapAdminLinksOnlyExplicitSaasOwnerLocalAccount() {
+    BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:SAAS_OWNER_ADMIN:OWNER");
 
     var owner = meService.me(identity("workos-owner", "owner@example.com"), null, "corr-owner-bootstrap");
 
@@ -96,11 +94,7 @@ class MeServiceTest {
     assertEquals(null, owner.selectedAuthContext().tenantId());
     assertTrue(owner.visibleCapabilityIds().contains("saas_owner.user.manage"));
     assertEquals("workos-owner", repository.findAccountByEmail("owner@example.com").orElseThrow().workosUserId());
-
-    var tenantAdmin = meService.me(identity("workos-tenant-admin", "tenant-admin@example.com"), null, "corr-tenant-bootstrap");
-    assertEquals("tenant-starter", tenantAdmin.selectedAuthContext().tenantId());
-    assertTrue(tenantAdmin.visibleCapabilityIds().contains("tenant.user.manage"));
-    assertTrue(tenantAdmin.visibleCapabilityIds().contains("secure-tenant-user-foundation"));
+    assertTrue(repository.tenant(BootstrapAdminSeeder.DEFAULT_TENANT_ID).isEmpty());
 
     var unknown = assertThrows(
         AuthorizationException.class,
@@ -109,15 +103,15 @@ class MeServiceTest {
   }
 
   @Test
-  void configuredBootstrapAdminDoesNotOverwriteExistingProfileOrSettings() {
-    BootstrapAdminSeeder.seedConfiguredAdmins(repository, "tenant-admin@example.com:TENANT_ADMIN:tenant-starter");
-    repository.saveProfile(new UserProfile("tenant-admin@example.com", "tenant-admin@example.com", "Renamed Admin", null, null, null));
-    repository.saveSettings(new UserSettings("tenant-admin@example.com", UserSettings.ThemeId.OBSIDIAN_DARK));
+  void configuredSaasOwnerBootstrapDoesNotOverwriteExistingProfileOrSettings() {
+    BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:SAAS_OWNER_ADMIN:OWNER");
+    repository.saveProfile(new UserProfile("owner@example.com", "owner@example.com", "Renamed Owner", null, null, null));
+    repository.saveSettings(new UserSettings("owner@example.com", UserSettings.ThemeId.OBSIDIAN_DARK));
 
-    BootstrapAdminSeeder.seedConfiguredAdmins(repository, "tenant-admin@example.com:TENANT_ADMIN:tenant-starter");
+    BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:SAAS_OWNER_ADMIN:OWNER");
 
-    assertEquals("Renamed Admin", repository.profile("tenant-admin@example.com").displayName());
-    assertEquals(UserSettings.ThemeId.OBSIDIAN_DARK, repository.settings("tenant-admin@example.com").themeId());
+    assertEquals("Renamed Owner", repository.profile("owner@example.com").displayName());
+    assertEquals(UserSettings.ThemeId.OBSIDIAN_DARK, repository.settings("owner@example.com").themeId());
   }
 
   @Test
@@ -125,6 +119,9 @@ class MeServiceTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:SAAS_OWNER_ADMIN:tenant-starter"));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> BootstrapAdminSeeder.seedConfiguredAdmins(repository, "tenant-admin@example.com:TENANT_ADMIN:tenant-starter"));
     assertThrows(
         IllegalArgumentException.class,
         () -> BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:CUSTOMER_ADMIN:tenant-only"));

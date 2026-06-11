@@ -44,7 +44,7 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
   @BeforeEach
   void bindIdentityTestDouble() {
     var identityRepository = new LocalDemoIdentityRepository();
-    BootstrapAdminSeeder.seedConfiguredAdmins(identityRepository, "admin@example.test:TENANT_ADMIN:" + TENANT_ID);
+    BootstrapAdminSeeder.seedFixtureAdmins(identityRepository, "admin@example.test:TENANT_ADMIN:" + TENANT_ID);
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
     StarterSecurityComponents.bindTestAgentBehaviorRepository(new LocalDemoAgentBehaviorRepository());
     StarterSecurityComponents.bindTestAgentRuntimeTraceSink(new LocalDemoAgentRuntimeTraceSink());

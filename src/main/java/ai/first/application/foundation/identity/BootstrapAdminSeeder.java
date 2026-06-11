@@ -18,7 +18,24 @@ public final class BootstrapAdminSeeder {
   public static final String DEFAULT_TENANT_NAME = "Starter Tenant";
   private BootstrapAdminSeeder() {}
 
+  /**
+   * Production/default startup bootstrap. ADMIN_USERS is intentionally limited to SaaS Owner
+   * authority; Tenant and Customer scoped admins must be created later through governed
+   * Organization/Invitation flows after a valid scope exists.
+   */
   public static void seedConfiguredAdmins(IdentityRepository repository, String adminUsersConfig) {
+    var normalizedConfig = adminUsersConfig == null ? "" : adminUsersConfig.trim();
+    if (normalizedConfig.isBlank()) {
+      return;
+    }
+
+    for (String entry : normalizedConfig.split(",")) {
+      seedConfiguredSaasOwnerAdminEntry(repository, entry.trim());
+    }
+  }
+
+  /** Explicit local/test fixture seeding for tests and demos; never use for production startup. */
+  public static void seedFixtureAdmins(IdentityRepository repository, String adminUsersConfig) {
     repository.saveTenant(new Tenant(DEFAULT_TENANT_ID, DEFAULT_TENANT_NAME, true));
     var normalizedConfig = adminUsersConfig == null ? "" : adminUsersConfig.trim();
     if (normalizedConfig.isBlank()) {
@@ -26,13 +43,36 @@ public final class BootstrapAdminSeeder {
     }
 
     for (String entry : normalizedConfig.split(",")) {
-      seedConfiguredAdminEntry(repository, entry.trim());
+      seedFixtureAdminEntry(repository, entry.trim());
     }
   }
 
-  private static void seedConfiguredAdminEntry(IdentityRepository repository, String entry) {
-    if (entry.isBlank()) {
+  private static void seedConfiguredSaasOwnerAdminEntry(IdentityRepository repository, String entry) {
+    var parsed = parseEntry(entry);
+    if (parsed == null) {
       return;
+    }
+    if (parsed.role() != FoundationRole.SAAS_OWNER_ADMIN) {
+      throw new IllegalArgumentException("ADMIN_USERS production bootstrap supports only SAAS_OWNER_ADMIN; create Tenant/Customer admins through invitation flows");
+    }
+    if (!"OWNER".equalsIgnoreCase(parsed.scope())) {
+      throw new IllegalArgumentException("SAAS_OWNER_ADMIN scope must be OWNER");
+    }
+    seedScopedUser(repository, parsed.email(), null, membership(parsed.email(), ScopeType.SAAS_OWNER, null, null, parsed.role()));
+  }
+
+  private static void seedFixtureAdminEntry(IdentityRepository repository, String entry) {
+    var parsed = parseEntry(entry);
+    if (parsed == null) {
+      return;
+    }
+    var scopedMembership = fixtureScopedMembership(parsed.email(), parsed.role(), parsed.scope());
+    seedScopedUser(repository, parsed.email(), null, scopedMembership);
+  }
+
+  private static ParsedAdminEntry parseEntry(String entry) {
+    if (entry.isBlank()) {
+      return null;
     }
     var parts = entry.split(":", -1);
     if (parts.length != 3) {
@@ -47,11 +87,10 @@ public final class BootstrapAdminSeeder {
     if (!role.name().endsWith("_ADMIN")) {
       throw new IllegalArgumentException("ADMIN_USERS roles must be admin roles");
     }
-    var scopedMembership = scopedMembership(email, role, scope);
-    seedScopedUser(repository, email, null, scopedMembership);
+    return new ParsedAdminEntry(email, role, scope);
   }
 
-  private static Membership scopedMembership(String email, FoundationRole role, String scope) {
+  private static Membership fixtureScopedMembership(String email, FoundationRole role, String scope) {
     if (role == FoundationRole.SAAS_OWNER_ADMIN) {
       if (!"OWNER".equalsIgnoreCase(scope)) {
         throw new IllegalArgumentException("SAAS_OWNER_ADMIN scope must be OWNER");
@@ -71,7 +110,7 @@ public final class BootstrapAdminSeeder {
       }
       return membership(email, ScopeType.CUSTOMER, scopeParts[0], scopeParts[1], role);
     }
-    throw new IllegalArgumentException("Unsupported ADMIN_USERS role: " + role);
+    throw new IllegalArgumentException("Unsupported ADMIN_USERS fixture role: " + role);
   }
 
   private static Membership membership(String email, ScopeType scopeType, String tenantId, String customerId, FoundationRole role) {
@@ -126,6 +165,8 @@ public final class BootstrapAdminSeeder {
     }
     repository.saveMembership(membership);
   }
+
+  private record ParsedAdminEntry(String email, FoundationRole role, String scope) {}
 
   private static String displayName(String email) {
     var localPart = email.contains("@") ? email.substring(0, email.indexOf('@')) : email;

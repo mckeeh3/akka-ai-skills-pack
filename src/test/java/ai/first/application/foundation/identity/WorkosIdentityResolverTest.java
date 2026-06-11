@@ -36,7 +36,7 @@ class WorkosIdentityResolverTest {
     System.setProperty("WORKOS_API_BASE_URL", "http://127.0.0.1:1");
 
     var repository = new LocalDemoIdentityRepository();
-    BootstrapAdminSeeder.seedConfiguredAdmins(repository, "admin@example.com:TENANT_ADMIN:tenant-starter");
+    BootstrapAdminSeeder.seedFixtureAdmins(repository, "admin@example.com:TENANT_ADMIN:tenant-starter");
     var meService = new MeService(new AuthContextResolver(repository));
     var identity = WorkosIdentityResolver.fromClaims(claims(Map.of("sub", "user-1", "email", "admin@example.com", "name", "Admin User")));
     var me = meService.me(identity, null, "corr-email-token");
@@ -64,7 +64,7 @@ class WorkosIdentityResolverTest {
     System.setProperty("WORKOS_API_BASE_URL", "http://127.0.0.1:" + server.getAddress().getPort());
 
     var repository = new LocalDemoIdentityRepository();
-    BootstrapAdminSeeder.seedConfiguredAdmins(repository, "resolved@example.com:TENANT_ADMIN:tenant-starter");
+    BootstrapAdminSeeder.seedFixtureAdmins(repository, "resolved@example.com:TENANT_ADMIN:tenant-starter");
     var meService = new MeService(new AuthContextResolver(repository));
     var first = WorkosIdentityResolver.fromClaims(claims(Map.of("sub", "user-2")));
     var me = meService.me(first, null, "corr-profile-token");

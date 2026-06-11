@@ -51,7 +51,7 @@ class RealModelProviderSmokeTest extends TestKitSupport {
 
     StarterSecurityComponents.startup();
     StarterSecurityComponents.bindAkkaRuntime(componentClient);
-    BootstrapAdminSeeder.seedConfiguredAdmins(
+    BootstrapAdminSeeder.seedFixtureAdmins(
         StarterSecurityComponents.identityRepository(),
         "admin@example.test:TENANT_ADMIN:" + BootstrapAdminSeeder.DEFAULT_TENANT_ID);
     StarterSecurityComponents.agentBehaviorSeedLoader()
