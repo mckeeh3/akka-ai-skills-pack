@@ -226,7 +226,7 @@
 
 ### TASK-SOOA-99-001: Verify SaaS Owner Organization Admin completion
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/saas-owner-organization-admin/tasks/99-verification/01-verify-saas-owner-organization-admin.md
 - depends on:
@@ -262,5 +262,89 @@
   - overall mini-project done state has been compared against completed work
   - required checks passed or blockers are precise and reflected in follow-up tasks
   - remaining material gaps are appended as bounded tasks and followed by a new terminal verification task, or the mini-project is declared complete
+  - changes and queue update are committed
+- notes:
+  - verification result: follow-up required before declaring the mini-project complete
+  - verification notes: specs/saas-owner-organization-admin/verification.md
+  - material gap: production Organization Admin surface actions are currently proven through fixture workstream action results, not the real protected `/api/admin/organizations` browser path
+  - checks: `git diff --check`; `mvn test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `npm --prefix frontend run build`
+  - commit message: `saas-owner-org-admin: verify organization admin completion`
+
+### TASK-SOOA-05-001: Wire Organization Admin UI to runtime Admin API
+
+- status: pending
+- source: TASK-SOOA-99-001 verification gap
+- task brief: specs/saas-owner-organization-admin/tasks/05-ui-runtime/01-wire-organization-admin-ui-to-runtime-api.md
+- depends on:
+  - TASK-SOOA-99-001
+- required reads:
+  - AGENTS.md
+  - specs/saas-owner-organization-admin/README.md
+  - specs/saas-owner-organization-admin/verification.md
+  - specs/saas-owner-organization-admin/tasks/05-ui-runtime/01-wire-organization-admin-ui-to-runtime-api.md
+  - app-description/55-ui/frontend-api-contracts.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java
+  - src/test/java/ai/first/application/coreapp/useradmin/AdminEndpointIntegrationTest.java
+  - frontend/src/api/ApiClient.ts
+  - frontend/src/api/HttpApiClient.ts
+  - frontend/src/workstream/surfaces/OrganizationAdminSurface.tsx
+  - frontend/src/workstream/**
+- skills:
+  - akka-web-ui-api-client
+  - akka-web-ui-state-rendering
+  - akka-web-ui-testing
+- expected outputs:
+  - production Organization Admin UI/workstream action handling calls typed AdminClient methods for Organization lifecycle actions
+  - focused frontend/contract tests proving production path is not fixture-only
+  - automated or documented local Akka-hosted UI/API smoke path
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build`
+  - targeted backend/API tests if endpoint contracts change
+- done criteria:
+  - browser Organization Admin actions invoke the real protected Admin API/client path in production mode
+  - fixture-only behavior remains test/demo-scoped
+  - selected context/JWT handling, backend authorization, redaction, idempotency, validation/no-op/denial states, and trace/correlation display are preserved
+  - local runtime or smoke evidence demonstrates the intended UI-to-API path
+  - changes and queue update are committed
+- notes: []
+
+### TASK-SOOA-99-002: Verify SaaS Owner Organization Admin runtime completion
+
+- status: pending
+- source: TASK-SOOA-99-001 verification follow-up
+- task brief: specs/saas-owner-organization-admin/tasks/99-verification/02-verify-saas-owner-organization-admin-runtime-completion.md
+- depends on:
+  - TASK-SOOA-05-001
+- required reads:
+  - AGENTS.md
+  - specs/saas-owner-organization-admin/README.md
+  - specs/saas-owner-organization-admin/verification.md
+  - specs/saas-owner-organization-admin/pending-tasks.md
+  - specs/saas-owner-organization-admin/tasks/99-verification/02-verify-saas-owner-organization-admin-runtime-completion.md
+  - follow-up task briefs and files changed after TASK-SOOA-99-001
+  - backend/API/frontend tests and implementation touched by follow-up tasks
+- skills:
+  - app-description-readiness-assessment
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - updated verification notes under specs/saas-owner-organization-admin/
+  - updated pending queue marking terminal verification done only if complete or appending precise bounded follow-up tasks
+- required checks:
+  - `git diff --check`
+  - backend/API tests sufficient for any changed backend scope
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build`
+- done criteria:
+  - real browser UI/workstream actions are verified against protected Admin API behavior, not fixture-only behavior
+  - mini-project done state has been compared against completed work
+  - required checks pass or blockers are precise and reflected in follow-up tasks
+  - remaining material gaps are appended as bounded tasks, or the mini-project is declared complete
   - changes and queue update are committed
 - notes: []
