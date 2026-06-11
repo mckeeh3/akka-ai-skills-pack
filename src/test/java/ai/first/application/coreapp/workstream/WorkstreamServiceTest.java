@@ -210,9 +210,9 @@ class WorkstreamServiceTest {
         "action-display-organization-admin", "action-display-organization-admin", "saas_owner.tenant.read", "saas_owner.tenant.read", null, null, "membership-owner", dashboard.surfaceId(), "corr-open-org-admin"));
 
     assertEquals("accepted", organization.status());
-    assertEquals("surface-user-admin-organization-admin", organization.resultSurface().surfaceId());
-    assertEquals("user_admin.organization_admin.v1", organization.resultSurface().data().get("surfaceContract"));
-    assertTrue(organization.resultSurface().toString().contains("Create Organization"));
+    assertEquals("surface-user-admin-organization-directory", organization.resultSurface().surfaceId());
+    assertEquals("user_admin.organization_directory.v1", organization.resultSurface().data().get("surfaceContract"));
+    assertTrue(organization.resultSurface().toString().contains("Open Organization create form"));
     assertTrue(organization.resultSurface().toString().contains("Tenant lifecycle boundary"));
   }
 

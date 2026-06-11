@@ -31,14 +31,18 @@ test('Organization Admin has typed browser-safe API clients aligned with protect
   assert.match(frontendApiContracts, /SaaS Owner Organization Admin contracts/);
 });
 
-test('Organization Admin workstream surface preserves SaaS Owner authority and boundary copy', () => {
-  assert.match(surfaces, /surface-user-admin-organization-admin/);
-  assert.match(surfaces, /user_admin\.organization_admin\.v1/);
+test('Organization Admin workstream surface graph preserves SaaS Owner authority and boundary copy', () => {
+  for (const surfaceId of ['surface-user-admin-organization-directory', 'surface-user-admin-organization-detail', 'surface-user-admin-organization-create', 'surface-user-admin-organization-rename', 'surface-user-admin-organization-suspend-confirmation', 'surface-user-admin-organization-reactivate-confirmation']) {
+    assert.match(surfaces, new RegExp(surfaceId));
+  }
+  for (const contract of ['user_admin.organization_directory.v1', 'user_admin.organization_detail.v1', 'user_admin.organization_create.v1', 'user_admin.organization_rename.v1', 'user_admin.organization_suspend_confirmation.v1', 'user_admin.organization_reactivate_confirmation.v1']) {
+    assert.match(surfaces, new RegExp(contract.replace(/\./g, '\\.')));
+  }
   assert.match(surfaces, /Open Organization Admin/);
   for (const capability of ['saas_owner.organization.list', 'saas_owner.organization.read', 'saas_owner.organization.create', 'saas_owner.organization.rename', 'saas_owner.organization.suspend', 'saas_owner.organization.reactivate']) {
     assert.match(surfaces, new RegExp(capability.replace(/\./g, '\\.')));
   }
-  for (const action of ['action-organization-list', 'action-organization-read', 'action-organization-create', 'action-organization-rename', 'action-organization-suspend', 'action-organization-reactivate']) {
+  for (const action of ['action-organization-list', 'action-organization-read', 'action-organization-create', 'action-organization-rename', 'action-organization-suspend', 'action-organization-reactivate', 'action-open-organization-create', 'action-open-organization-rename', 'action-open-organization-suspend', 'action-open-organization-reactivate']) {
     assert.match(surfaces, new RegExp(action));
     assert.match(organizationSurface, new RegExp(action));
   }

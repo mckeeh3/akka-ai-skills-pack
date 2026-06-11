@@ -30,7 +30,7 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
     return <SurfaceStateFrame />;
   }
 
-  if (selectedEnvelope.surfaceId === 'surface-user-admin-organization-admin' || (selectedEnvelope.data as { surfaceContract?: string } | undefined)?.surfaceContract === 'user_admin.organization_admin.v1') {
+  if (selectedEnvelope.surfaceId.startsWith('surface-user-admin-organization-') || ((selectedEnvelope.data as { surfaceContract?: string } | undefined)?.surfaceContract ?? '').startsWith('user_admin.organization_')) {
     return <OrganizationAdminSurface envelope={selectedEnvelope as never} onAction={onAction} />;
   }
 

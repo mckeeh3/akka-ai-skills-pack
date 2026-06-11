@@ -444,7 +444,9 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     setBootstrap((current) => {
       if (current.status !== 'ready') return current;
       const nextSurfaces = updatedSurface
-        ? current.surfaces.map((surface) => surface.surfaceId === updatedSurface.surfaceId ? updatedSurface : surface)
+        ? current.surfaces.some((surface) => surface.surfaceId === updatedSurface.surfaceId)
+          ? current.surfaces.map((surface) => surface.surfaceId === updatedSurface.surfaceId ? updatedSurface : surface)
+          : [...current.surfaces, updatedSurface]
         : current.surfaces;
       return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
     });
@@ -485,11 +487,16 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       const payload = result.value as OrganizationListPayload;
       return {
         ...surface,
+        surfaceId: 'surface-user-admin-organization-directory',
+        surfaceType: 'list-search',
+        surfaceVersion: surface.surfaceVersion ?? '1.0.0',
+        title: 'Organization Directory',
         correlationId: payload.correlationId,
         traceIds: payload.traceRefs,
         generatedAt: new Date().toISOString(),
         data: {
           ...data,
+          surfaceContract: 'user_admin.organization_directory.v1',
           organizations: payload.organizations,
           filters: { query: input.query, status: input.status },
           boundaryNotice: payload.safeBoundaryNotice,
@@ -515,11 +522,16 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     const organizations = upsertOrganization(data.organizations ?? [], organization);
     return {
       ...surface,
+      surfaceId: 'surface-user-admin-organization-detail',
+      surfaceType: 'show-inspection',
+      surfaceVersion: surface.surfaceVersion ?? '1.0.0',
+      title: 'Organization Detail',
       correlationId,
       traceIds: traceRefs,
       generatedAt: new Date().toISOString(),
       data: {
         ...data,
+        surfaceContract: 'user_admin.organization_detail.v1',
         organizations,
         organizationDetail: { ...organization, safeBoundaryNotice: detailPayload.safeBoundaryNotice, visibleActions: detailPayload.visibleActions, recentAuditEvents: detailPayload.recentAuditEvents, traceRefs: detailPayload.traceRefs, correlationId: detailPayload.correlationId },
         boundaryNotice: detailPayload.safeBoundaryNotice,
@@ -534,7 +546,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
   }
 
   function isOrganizationAdminRuntimeAction(action: SurfaceAction) {
-    return action.actionId.startsWith('action-organization-') || action.capabilityId.startsWith('saas_owner.organization.');
+    return action.intent !== 'surface-request' && (action.actionId.startsWith('action-organization-') || action.capabilityId.startsWith('saas_owner.organization.'));
   }
 
   function inputRecord(input: unknown): Record<string, string> {

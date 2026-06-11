@@ -2,7 +2,7 @@ import type { SurfaceAction } from './actions';
 
 export type SurfaceRedactionProfile = 'self' | 'tenant-admin' | 'support' | 'auditor' | 'agent';
 export type SurfaceUiStatus = 'loading' | 'empty' | 'ready' | 'submitting' | 'success' | 'pending' | 'approval-needed' | 'error' | 'forbidden' | 'conflict' | 'stale' | 'reconnecting' | 'partial-data' | 'no-op' | 'blocked_provider_or_runtime' | 'not_found_or_redacted' | 'validation-error';
-export type CanonicalSurfaceType = 'markdown_response' | 'system_message' | 'dashboard' | 'list-search' | 'detail-edit' | 'decision' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome' | 'outcome-panel' | 'notification-center';
+export type CanonicalSurfaceType = 'markdown_response' | 'system_message' | 'dashboard' | 'list-search' | 'show-inspection' | 'create-form' | 'edit-form' | 'destructive-lifecycle-confirmation' | 'lifecycle-confirmation' | 'detail-edit' | 'decision' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome' | 'outcome-panel' | 'notification-center';
 
 export type SurfaceLink = {
   label: string;
@@ -184,7 +184,7 @@ export type ListSearchSurfaceData = {
 };
 
 export type OrganizationAdminSurfaceData = {
-  surfaceContract: 'user_admin.organization_admin.v1' | string;
+  surfaceContract: 'user_admin.organization_directory.v1' | 'user_admin.organization_detail.v1' | 'user_admin.organization_create.v1' | 'user_admin.organization_rename.v1' | 'user_admin.organization_suspend_confirmation.v1' | 'user_admin.organization_reactivate_confirmation.v1' | 'user_admin.organization_admin.v1' | string;
   selectedAuthContext?: Record<string, unknown>;
   scopeLabel?: string;
   scopeType?: string;
