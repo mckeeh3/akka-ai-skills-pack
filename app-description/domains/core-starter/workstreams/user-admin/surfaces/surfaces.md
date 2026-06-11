@@ -17,6 +17,7 @@ All surfaces use the canonical AI-first workstream shell, structured surface env
 |---|---|---|---|---|
 | `surface-user-admin-dashboard` | `dashboard` | `user_admin.dashboard.v1` | Attention-first User Admin command center for directory, invitation, role, support, review, provider, and audit health. | Rebuilt from archive |
 | `surface-user-admin-users` | `list-search` | `user_admin.users.v1` | Scoped searchable member/user/invitation/support/review table and responsive card list. | Rebuilt from archive |
+| `surface-user-admin-organization-admin` | `list-detail-action` | `user_admin.organization_admin.v1` | SaaS Owner Organization administration for platform-safe Organization list/read/create/rename/suspend/reactivate actions backed by internal Tenant authorization. | Planned by SaaS Owner Organization Admin |
 | `surface-user-admin-invitation-detail` | `detail-edit` / `workflow-status` | `user_admin.invitation_detail.v1` | Invite, resend, revoke, acceptance, expiry, delivery/outbox visibility, and recovery. | Rebuilt from archive |
 | `surface-user-admin-user-detail` | `detail-card-action-panel` | `user_admin.user_detail.v1` | Scoped account, membership, invitation, support-access, access-review, and audit detail. | Rebuilt from archive |
 | `surface-user-admin-role-change-preview` | `decision-card` / `diff` | `user_admin.role_change_preview.v1` | Capability delta, affected workstreams, last-admin impact, policy gate, and approval preview before role mutation. | Rebuilt from archive |
@@ -73,8 +74,53 @@ Dashboard payload/content must not include hidden workstream/source names, hidde
 | Manage support access | `user_admin.support_access.*` / `grant-or-revoke-support-access` | Render support-access queue/detail, refreshed account detail, decision card, action status, or system message. |
 | Start/open access review | `user_admin.access_review.start`, `user_admin.access_review.read` / `run-access-review` | Render access-review task progress/result, human review step, decision card, or system message. |
 | Review identity exception | `user_admin.identity_exception.read`, identity relink/recovery capability where assigned | Render user detail identity section, recovery workflow/status, audit evidence, or system message. |
+| Open Organization Admin | `saas_owner.organization.list` / `manage-organizations` | Render `surface-user-admin-organization-admin` for SaaS Owner Admins with backend-authorized Organization list/search and boundary notice; omitted for unsupported scopes. |
 | Open admin audit evidence | `admin.audit.read` / Audit Trace capability | Render authorized Audit/Trace surface or safe redacted system message. |
 | Ask User Admin agent | `user_admin.ask_agent` | Invoke governed agent runtime or provider/model blocked system message. |
+
+## Organization Admin surface
+
+### Intent
+
+`surface-user-admin-organization-admin` is a SaaS Owner surface inside the User Admin workstream for managing customer-facing Organizations backed 1:1 by internal Tenant isolation boundaries. It lets authorized SaaS Owner Admins list/search Organizations, open safe Organization detail, create new Organizations, rename display labels, suspend Organizations, and reactivate suspended Organizations. It is not a tenant app-data browser, support-access shortcut, billing console, or client-side authority source.
+
+### Contract
+
+- Surface id: `surface-user-admin-organization-admin`.
+- Surface type: `list-detail-action`.
+- Surface contract: `user_admin.organization_admin.v1`.
+- Owning workstream: User Admin.
+- Owning functional agent: `user-admin-agent`.
+- Required context: authenticated active account, selected SaaS Owner `AuthContext`, and backend `saas_owner.tenant.read` for reads or `saas_owner.tenant.manage` for mutations.
+- Product/runtime language: browser copy, route labels, DTOs, and forms use **Organization**; backend enforcement, audit partitioning, and persisted isolation use **Tenant**.
+
+### Frontend-safe payload
+
+- `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType`, `authorityBasis`, `boundaryNotice`, `traceRefs`, `correlationId`, `redaction`.
+- `organizations[]`: `{ organizationId, organizationName, status, updatedAt?, safeLifecycleSummary?, visibleTenantAdminCount?, actionAvailability[], traceRefs[] }` where counts are omitted unless backend marks them safe and non-enumerating.
+- `organizationDetail?`: `{ organizationId, organizationName, status, safeBoundaryNotice, visibleActions[], recentAuditEvents[], traceRefs[], correlationId }`.
+- `filters`: query, status, page size, page token, sort, and backend-shaped empty/forbidden labels.
+- `forms`: create/rename/suspend/reactivate fields include validation messages, required idempotency key behavior, reason where consequential, and confirmation text.
+
+Forbidden payload content includes tenant/customer application data, customer records, provider ids/secrets, raw billing provider state, raw JWT/session data, hidden Organization counts, support-access internals, unredacted audit evidence, or any field that would let a browser infer hidden tenant/customer existence.
+
+### Actions
+
+| Action | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| List/search Organizations | `saas_owner.organization.list` / `manage-organizations` | Refresh list with safe empty state, forbidden state, or redacted system message. |
+| Open Organization detail | `saas_owner.organization.read` / `manage-organizations` | Render safe detail and lifecycle actions, or hidden/not-found system message. |
+| Create Organization | `saas_owner.organization.create` / `manage-organizations` | Validate name, require idempotency key/correlation id, create active Organization/Tenant, audit, refresh detail/list, or render validation/duplicate/forbidden/no-op result. |
+| Rename Organization | `saas_owner.organization.rename` / `manage-organizations` | Validate display label, handle no-op/replay safely, audit, refresh detail/list, or render stale/conflict/forbidden result. |
+| Suspend Organization | `saas_owner.organization.suspend` / `manage-organizations` | Require confirmation and reason, suspend lifecycle boundary without exposing app data, audit, refresh detail/list, or render no-op/forbidden/result warning. |
+| Reactivate Organization | `saas_owner.organization.reactivate` / `manage-organizations` | Require confirmation, handle no-op/replay safely, audit, refresh detail/list, or render stale/conflict/forbidden result. |
+| Open Organization audit evidence | `admin.audit.read` | Render authorized Audit/Trace evidence or safe redacted denial. |
+
+### States and tests
+
+The surface defines loading, empty, ready, submitting, success, validation-error, forbidden, hidden-not-found, no-op, conflict/stale, partial-data, and failure states. Acceptance tests must cover SaaS Owner list/read/create/rename/suspend/reactivate, Organization-vs-Tenant language, idempotent replay/no-op transitions, safe Tenant Admin and Customer Admin denials, missing capability denial, audit/work trace emission, frontend secret boundary, and support-access/billing-boundary non-authority.
+
+Surface-description sufficiency review: sufficient for the first implementation slice. Backend/API/frontend implementers should not need to invent payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual semantics beyond the named style guide/component catalog realization.
 
 ## Users list surface
 

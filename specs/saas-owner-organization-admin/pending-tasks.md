@@ -49,7 +49,7 @@
 
 ### TASK-SOOA-01-001: Update Organization Admin intent and contracts
 
-- status: pending
+- status: done
 - source: specs/saas-owner-organization-admin/backlog/01-saas-owner-organization-admin-build-backlog.md
 - task brief: specs/saas-owner-organization-admin/tasks/01-intent-contracts/01-update-organization-admin-contracts.md
 - depends on:
@@ -87,7 +87,8 @@
   - support-access and billing-boundary non-authority are specified
   - backend authorization, audit/work trace, idempotency, no-op, denial, and frontend secret-boundary expectations are specified
   - changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `saas-owner-org-admin: update organization admin contracts`
 
 ### TASK-SOOA-02-001: Implement backend Organization Admin service
 
