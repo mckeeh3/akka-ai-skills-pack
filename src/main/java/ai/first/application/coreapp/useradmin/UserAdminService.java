@@ -106,7 +106,7 @@ public final class UserAdminService {
     if (idempotencyKey == null || idempotencyKey.isBlank()) {
       throw new AuthorizationException(400, "idempotency-key-required");
     }
-    if (targetStatus != MembershipStatus.ACTIVE && targetStatus != MembershipStatus.SUSPENDED) {
+    if (targetStatus != MembershipStatus.ACTIVE && targetStatus != MembershipStatus.SUSPENDED && targetStatus != MembershipStatus.REMOVED) {
       throw new AuthorizationException(400, "unsupported-membership-status");
     }
     var existing = membership(membershipId);
@@ -126,8 +126,51 @@ public final class UserAdminService {
     var updated = new Membership(existing.membershipId(), existing.accountId(), existing.scopeType(), existing.tenantId(), existing.customerId(), existing.roles(), targetStatus, existing.supportAccess(), existing.expiresAt());
     put(updated);
     audit(actor, updated, "USERADMIN_UPDATE_MEMBER_STATUS", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
-    var label = targetStatus == MembershipStatus.ACTIVE ? "reactivated" : "disabled";
+    var label = targetStatus == MembershipStatus.ACTIVE ? "reactivated" : targetStatus == MembershipStatus.REMOVED ? "deactivated" : "disabled";
     return new StatusTransitionResult("accepted", "Member " + label + " by backend-authoritative User Admin capability.", updated, "trace-useradmin-update-member-status-" + stableSuffix(idempotencyKey));
+  }
+
+  public PermanentRemoveResult permanentlyRemoveUser(AuthContextResolver.ResolvedMe actor, String membershipId, String reason, String idempotencyKey, String correlationId) {
+    if (idempotencyKey == null || idempotencyKey.isBlank()) {
+      throw new AuthorizationException(400, "idempotency-key-required");
+    }
+    var existing = membership(membershipId);
+    requireManage(actor, existing.scopeType(), existing.tenantId(), existing.customerId());
+    var blockers = purgeBlockers(actor, existing);
+    if (!blockers.isEmpty()) {
+      audit(actor, existing, "USERADMIN_PERMANENTLY_REMOVE_USER", AdminAuditEvent.Result.DENIED, String.join(",", blockers), correlationId);
+      throw new AuthorizationException(403, "purge-blocked:" + String.join(",", blockers));
+    }
+    repository.deleteMembership(existing.membershipId());
+    if (repository.membershipsByAccount(existing.accountId()).isEmpty()) {
+      repository.deleteSettings(existing.accountId());
+      repository.deleteProfile(existing.accountId());
+      repository.deleteAccount(existing.accountId());
+    }
+    audit(actor, existing, "USERADMIN_PERMANENTLY_REMOVE_USER", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
+    return new PermanentRemoveResult("accepted", "User record permanently removed; profile, settings, account, and membership data were discarded where no other memberships remain.", existing.accountId(), existing.membershipId(), "trace-useradmin-permanently-remove-user-" + stableSuffix(idempotencyKey));
+  }
+
+  private List<String> purgeBlockers(AuthContextResolver.ResolvedMe actor, Membership target) {
+    var blockers = new java.util.ArrayList<String>();
+    if (target.status() != MembershipStatus.REMOVED) blockers.add("not-deactivated");
+    if (actor.account().accountId().equals(target.accountId())) blockers.add("self-purge-denied");
+    if (wouldRemoveLastAdmin(target, target.roles(), MembershipStatus.REMOVED)) blockers.add("last-admin-denied");
+    if (target.supportAccess()) blockers.add("active-support-access");
+    if (repository.membershipsByAccount(target.accountId()).stream().anyMatch(m -> !m.membershipId().equals(target.membershipId()) && m.status() == MembershipStatus.ACTIVE)) blockers.add("active-membership-ownership");
+    if (hasAuditBackedPurgeBlocker(target, "LEGAL_HOLD_ACTIVE")) blockers.add("legal-hold");
+    if (hasAuditBackedPurgeBlocker(target, "RETENTION_POLICY_HOLD")) blockers.add("retention-policy-hold");
+    if (hasAuditBackedPurgeBlocker(target, "BILLING_OBLIGATION_OPEN")) blockers.add("pending-billing");
+    if (hasAuditBackedPurgeBlocker(target, "PENDING_APPROVAL_OWNERSHIP")) blockers.add("pending-approval");
+    if (hasAuditBackedPurgeBlocker(target, "OPEN_WORKFLOW_OWNERSHIP")) blockers.add("open-workflow-ownership");
+    if (hasAuditBackedPurgeBlocker(target, "CRITICAL_RESOURCE_OWNER")) blockers.add("critical-resource-owner");
+    return blockers;
+  }
+
+  private boolean hasAuditBackedPurgeBlocker(Membership target, String actionType) {
+    return repository.auditEvents().stream()
+        .filter(event -> actionType.equals(event.actionType()))
+        .anyMatch(event -> target.accountId().equals(event.targetAccountId()) || target.membershipId().equals(event.targetMembershipId()));
   }
 
   public Membership suspendMembership(AuthContextResolver.ResolvedMe actor, String membershipId, String reason, String correlationId) {
@@ -351,5 +394,6 @@ public final class UserAdminService {
   public record RoleChangePreview(boolean allowed, boolean noOp, String message, String traceId, List<String> capabilityDelta, List<String> affectedWorkstreams, List<String> policyHints, String lastAdminImpact) {}
   public record RoleChangeResult(String status, String message, Membership membership, String traceId) {}
   public record StatusTransitionResult(String status, String message, Membership membership, String traceId) {}
+  public record PermanentRemoveResult(String status, String message, String accountId, String membershipId, String traceId) {}
   public record IdentityRelinkResult(String status, String message, String accountId, String traceId) {}
 }

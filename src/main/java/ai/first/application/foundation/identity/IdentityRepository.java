@@ -18,13 +18,19 @@ public interface IdentityRepository {
 
   Account saveAccount(Account account);
 
+  void deleteAccount(String accountId);
+
   UserProfile profile(String accountId);
 
   UserProfile saveProfile(UserProfile profile);
 
+  void deleteProfile(String accountId);
+
   UserSettings settings(String accountId);
 
   UserSettings saveSettings(UserSettings settings);
+
+  void deleteSettings(String accountId);
 
   List<Membership> membershipsByAccount(String accountId);
 
@@ -37,6 +43,8 @@ public interface IdentityRepository {
   List<Membership> membershipRows();
 
   Membership saveMembership(Membership membership);
+
+  void deleteMembership(String membershipId);
 
   Optional<Tenant> tenant(String tenantId);
 

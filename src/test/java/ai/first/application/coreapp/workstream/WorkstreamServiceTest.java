@@ -466,7 +466,7 @@ class WorkstreamServiceTest {
     assertEquals("accepted", disabled.status());
     assertEquals("surface-user-admin-user-detail", disabled.resultSurface().surfaceId());
     assertTrue(disabled.traceIds().get(0).contains("trace-useradmin-update-member-status"));
-    assertTrue(disabled.resultSurface().toString().contains("value=suspended"));
+    assertTrue(disabled.resultSurface().toString().contains("value=removed"));
 
     var duplicate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "reason", "ignored replay"), "idem-disable-member", "membership-admin", "surface-user-admin-users", "corr-disable-member-replay"));
@@ -476,6 +476,20 @@ class WorkstreamServiceTest {
         "action-useradmin-reactivate-member", "action-useradmin-reactivate-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-member", "reason", "return"), "idem-reactivate-member", "membership-admin", "surface-user-admin-users", "corr-reactivate-member"));
     assertEquals("accepted", reactivated.status());
     assertTrue(reactivated.resultSurface().toString().contains("value=active"));
+
+    identityRepository.saveAccount(new Account("purge@example.test", null, "purge@example.test", "purge@example.test", AccountStatus.ACTIVE, "UNLINKED"));
+    identityRepository.putProfile(new UserProfile("purge@example.test", "purge@example.test", "Purge User", "Purge", "User", null));
+    identityRepository.putSettings(new UserSettings("purge@example.test", UserSettings.ThemeId.AURORA_LIGHT));
+    identityRepository.putMembership(new Membership("membership-purge", "purge@example.test", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_EMPLOYEE), MembershipStatus.ACTIVE, false, null));
+    var deactivatedForRemoval = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-purge", "status", "removed", "reason", "offboard"), "idem-deactivate-before-purge", "membership-admin", "surface-user-admin-users", "corr-deactivate-before-purge"));
+    assertEquals("accepted", deactivatedForRemoval.status());
+    var removed = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-permanently-remove-user", "action-useradmin-permanently-remove-user", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-purge", "reason", "purge"), "idem-permanent-remove", "membership-admin", "surface-user-admin-user-detail", "corr-permanent-remove"));
+    assertEquals("accepted", removed.status());
+    assertEquals("surface-user-admin-users", removed.resultSurface().surfaceId());
+    assertTrue(identityRepository.findMembership("membership-purge").isEmpty());
+    assertTrue(identityRepository.findAccountByEmail("purge@example.test").isEmpty());
 
     var selfDisable = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-admin", "reason", "self-disable"), "idem-self-disable", "membership-admin", "surface-user-admin-users", "corr-self-disable")));

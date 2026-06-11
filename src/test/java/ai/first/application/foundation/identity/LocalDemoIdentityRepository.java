@@ -40,6 +40,11 @@ public final class LocalDemoIdentityRepository implements IdentityRepository {
   }
 
   @Override
+  public void deleteAccount(String accountId) {
+    accounts.remove(accountId);
+  }
+
+  @Override
   public UserProfile profile(String accountId) {
     return profiles.get(accountId);
   }
@@ -51,6 +56,11 @@ public final class LocalDemoIdentityRepository implements IdentityRepository {
   }
 
   @Override
+  public void deleteProfile(String accountId) {
+    profiles.remove(accountId);
+  }
+
+  @Override
   public UserSettings settings(String accountId) {
     return settings.get(accountId);
   }
@@ -59,6 +69,11 @@ public final class LocalDemoIdentityRepository implements IdentityRepository {
   public UserSettings saveSettings(UserSettings userSettings) {
     settings.put(userSettings.accountId(), userSettings);
     return userSettings;
+  }
+
+  @Override
+  public void deleteSettings(String accountId) {
+    settings.remove(accountId);
   }
 
   @Override
@@ -112,6 +127,11 @@ public final class LocalDemoIdentityRepository implements IdentityRepository {
   public Membership saveMembership(Membership membership) {
     memberships.put(membership.membershipId(), membership);
     return membership;
+  }
+
+  @Override
+  public void deleteMembership(String membershipId) {
+    memberships.remove(membershipId);
   }
 
   public void putMembership(Membership membership) {

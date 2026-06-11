@@ -41,6 +41,11 @@ public final class AkkaIdentityRepository implements IdentityRepository {
   }
 
   @Override
+  public void deleteAccount(String accountId) {
+    componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::deleteAccount).invoke(accountId);
+  }
+
+  @Override
   public UserProfile profile(String accountId) {
     Optional<UserProfile> profile = componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::profile).invoke(accountId);
     return profile.orElse(null);
@@ -52,6 +57,11 @@ public final class AkkaIdentityRepository implements IdentityRepository {
   }
 
   @Override
+  public void deleteProfile(String accountId) {
+    componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::deleteProfile).invoke(accountId);
+  }
+
+  @Override
   public UserSettings settings(String accountId) {
     Optional<UserSettings> settings = componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::settings).invoke(accountId);
     return settings.orElse(null);
@@ -60,6 +70,11 @@ public final class AkkaIdentityRepository implements IdentityRepository {
   @Override
   public UserSettings saveSettings(UserSettings settings) {
     return componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::saveSettings).invoke(settings);
+  }
+
+  @Override
+  public void deleteSettings(String accountId) {
+    componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::deleteSettings).invoke(accountId);
   }
 
   @Override
@@ -80,6 +95,11 @@ public final class AkkaIdentityRepository implements IdentityRepository {
   @Override
   public Membership saveMembership(Membership membership) {
     return componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::saveMembership).invoke(membership);
+  }
+
+  @Override
+  public void deleteMembership(String membershipId) {
+    componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::deleteMembership).invoke(membershipId);
   }
 
   @Override

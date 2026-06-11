@@ -200,24 +200,33 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
   const changeRoleAction = envelope.actions.find((action) => action.actionId === 'action-useradmin-change-member-roles');
   const suspendStatusAction = envelope.actions.find((action) => action.actionId === 'action-useradmin-disable-member');
   const reactivateStatusAction = envelope.actions.find((action) => action.actionId === 'action-useradmin-reactivate-member');
+  const permanentlyRemoveUserAction = envelope.actions.find((action) => action.actionId === 'action-useradmin-permanently-remove-user');
   const fields = envelope.data.fields ?? [];
   const email = fields.find((field) => field.fieldId === 'email')?.value;
   const status = fields.find((field) => field.fieldId === 'status' || field.fieldId === 'membershipStatus')?.value;
   const role = fields.find((field) => field.fieldId === 'role')?.value;
-  const [statusDraft, setStatusDraft] = useState(statusValue(status));
+  const currentStatus = statusValue(status);
+  const isDeactivated = currentStatus === 'REMOVED';
+  const [statusDraft, setStatusDraft] = useState(currentStatus);
   const [roleDraft, setRoleDraft] = useState(roleValue(role));
   const actionContext = { ...(envelope.data.actionContext ?? {}), ...Object.fromEntries(fields.map((field) => [field.fieldId, fieldValues[field.fieldId] ?? field.value])) };
 
   useEffect(() => {
-    setStatusDraft(statusValue(status));
+    setStatusDraft(currentStatus);
     setRoleDraft(roleValue(role));
-  }, [status, role]);
+  }, [currentStatus, role]);
 
   function submitStatusChange(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const statusAction = statusDraft === 'ACTIVE' ? reactivateStatusAction : suspendStatusAction;
     if (!statusAction) return;
     onAction?.(statusAction, envelope.surfaceId, { ...actionContext, status: statusDraft.toLowerCase(), reason: 'Updated from User Admin detail' });
+  }
+
+  function submitPermanentRemove(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!permanentlyRemoveUserAction) return;
+    onAction?.(permanentlyRemoveUserAction, envelope.surfaceId, { ...actionContext, reason: 'Permanently removed from User Admin detail' });
   }
 
   function submitRoleChange(event: FormEvent<HTMLFormElement>) {
@@ -251,10 +260,16 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
             <div className="user-admin-readable-fields">
               {fields.filter((field) => !['membershipId'].includes(field.fieldId)).map((field) => <p key={field.fieldId}><span>{field.label}</span><strong>{fieldValues[field.fieldId] ?? field.value}</strong></p>)}
             </div>
-            {(suspendStatusAction || reactivateStatusAction) && (
+            {((isDeactivated && reactivateStatusAction) || (!isDeactivated && suspendStatusAction)) && (
               <form className="user-admin-edit-form" aria-label="Edit user status" onSubmit={submitStatusChange}>
-                <label>Change status<select className="designed-control" value={statusDraft} onChange={(event) => { const value = event.currentTarget.value; setStatusDraft(value); }}><option value="ACTIVE">Active</option><option value="SUSPENDED">Suspended</option></select></label>
-                <button className="surface-action-link primary" type="submit">Change status</button>
+                <label>Change status<select className="designed-control" value={statusDraft} onChange={(event) => { const value = event.currentTarget.value; setStatusDraft(value); }}><option value="ACTIVE">Active</option><option value="REMOVED">Deactivated</option></select></label>
+                <button className="surface-action-link primary" type="submit">{isDeactivated ? 'Reactivate user' : 'Deactivate user'}</button>
+              </form>
+            )}
+            {isDeactivated && permanentlyRemoveUserAction && (
+              <form className="user-admin-edit-form" aria-label="Permanently remove user" onSubmit={submitPermanentRemove}>
+                <p>Permanently remove user discards this user's record after backend purge blockers are checked.</p>
+                <button className="surface-action-link danger" type="submit">Permanently remove user</button>
               </form>
             )}
             {changeRoleAction && (
@@ -292,7 +307,8 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
 
 function statusValue(value: string | undefined) {
   const normalized = (value ?? 'ACTIVE').toUpperCase().replace(/[\[\]"-]+/g, '_').replace(/\s+/g, '_');
-  if (normalized.includes('SUSPENDED') || normalized.includes('DISABLED') || normalized.includes('INACTIVE')) return 'SUSPENDED';
+  if (normalized.includes('REMOVED') || normalized.includes('DEACTIVATED') || normalized.includes('DELETED')) return 'REMOVED';
+  if (normalized.includes('SUSPENDED') || normalized.includes('DISABLED') || normalized.includes('INACTIVE')) return 'REMOVED';
   return 'ACTIVE';
 }
 

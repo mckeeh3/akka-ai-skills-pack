@@ -249,6 +249,39 @@ class InvitationAndUserAdminServiceTest {
   }
 
   @Test
+  void userAdminPermanentRemoveRequiresDeactivatedUserAndEnforcesPurgeBlockers() {
+    seedAdmin("second-admin@example.com", "membership-second-admin", FoundationRole.TENANT_ADMIN);
+    seedAdmin("member@example.com", "membership-member", FoundationRole.TENANT_EMPLOYEE);
+
+    var activeDenied = assertThrows(AuthorizationException.class, () -> userAdmin.permanentlyRemoveUser(tenantAdmin, "membership-member", "active purge", "idem-active-purge", "corr-active-purge"));
+    assertTrue(activeDenied.reasonCode().contains("not-deactivated"));
+
+    var deactivated = userAdmin.updateMemberStatus(tenantAdmin, "membership-member", MembershipStatus.REMOVED, "offboard", "idem-deactivate", "corr-deactivate");
+    assertEquals(MembershipStatus.REMOVED, deactivated.membership().status());
+    var purged = userAdmin.permanentlyRemoveUser(tenantAdmin, "membership-member", "purge", "idem-purge", "corr-purge");
+    assertEquals("accepted", purged.status());
+    assertTrue(identityRepository.findMembership("membership-member").isEmpty());
+    assertTrue(identityRepository.findAccountByEmail("member@example.com").isEmpty());
+    assertEquals(null, identityRepository.profile("member@example.com"));
+    assertEquals(null, identityRepository.settings("member@example.com"));
+
+    var selfDenied = assertThrows(AuthorizationException.class, () -> userAdmin.permanentlyRemoveUser(tenantAdmin, "membership-admin", "self purge", "idem-self-purge", "corr-self-purge"));
+    assertTrue(selfDenied.reasonCode().contains("self-purge-denied"));
+
+    identityRepository.putMembership(new Membership("membership-admin", "admin@example.com", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_EMPLOYEE), MembershipStatus.ACTIVE, false, null));
+    identityRepository.putMembership(new Membership("membership-second-admin", "second-admin@example.com", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), MembershipStatus.REMOVED, false, null));
+    var lastAdminDenied = assertThrows(AuthorizationException.class, () -> userAdmin.permanentlyRemoveUser(tenantAdmin, "membership-second-admin", "last admin purge", "idem-last-admin-purge", "corr-last-admin-purge"));
+    assertTrue(lastAdminDenied.reasonCode().contains("last-admin-denied"));
+
+    seedAdmin("held@example.com", "membership-held", FoundationRole.TENANT_EMPLOYEE);
+    identityRepository.putMembership(new Membership("membership-held", "held@example.com", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_EMPLOYEE), MembershipStatus.REMOVED, false, null));
+    identityRepository.appendAudit(new AdminAuditEvent("audit-legal-hold", clock.instant(), "corr-legal-hold", "compliance@example.com", "membership-admin", ScopeType.TENANT, "tenant-1", null, "held@example.com", "membership-held", "LEGAL_HOLD_ACTIVE", AdminAuditEvent.Result.ALLOWED, "legal-hold", "legal-hold", "BROWSER_SAFE"));
+    var legalHoldDenied = assertThrows(AuthorizationException.class, () -> userAdmin.permanentlyRemoveUser(tenantAdmin, "membership-held", "legal hold purge", "idem-legal-hold-purge", "corr-legal-hold-purge"));
+    assertTrue(legalHoldDenied.reasonCode().contains("legal-hold"));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("USERADMIN_PERMANENTLY_REMOVE_USER") && event.result() == AdminAuditEvent.Result.DENIED));
+  }
+
+  @Test
   void userAdminRolePreviewShowsCapabilityDeltaAndDeniesSelfAdminRemoval() {
     seedAdmin("second-admin@example.com", "membership-second-admin", FoundationRole.TENANT_ADMIN);
 

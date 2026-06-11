@@ -35,6 +35,10 @@ public class DurableIdentityRepositoryEntity extends KeyValueEntity<IdentityRepo
     return effects().updateState(currentState().saveAccount(account)).thenReply(() -> account);
   }
 
+  public Effect<String> deleteAccount(String accountId) {
+    return effects().updateState(currentState().deleteAccount(accountId)).thenReply(() -> accountId);
+  }
+
   public ReadOnlyEffect<Optional<UserProfile>> profile(String accountId) {
     return effects().reply(Optional.ofNullable(currentState().profile(accountId)));
   }
@@ -43,12 +47,20 @@ public class DurableIdentityRepositoryEntity extends KeyValueEntity<IdentityRepo
     return effects().updateState(currentState().saveProfile(profile)).thenReply(() -> profile);
   }
 
+  public Effect<String> deleteProfile(String accountId) {
+    return effects().updateState(currentState().deleteProfile(accountId)).thenReply(() -> accountId);
+  }
+
   public ReadOnlyEffect<Optional<UserSettings>> settings(String accountId) {
     return effects().reply(Optional.ofNullable(currentState().settings(accountId)));
   }
 
   public Effect<UserSettings> saveSettings(UserSettings settings) {
     return effects().updateState(currentState().saveSettings(settings)).thenReply(() -> settings);
+  }
+
+  public Effect<String> deleteSettings(String accountId) {
+    return effects().updateState(currentState().deleteSettings(accountId)).thenReply(() -> accountId);
   }
 
   public ReadOnlyEffect<List<Membership>> membershipsByAccount(String accountId) {
@@ -65,6 +77,10 @@ public class DurableIdentityRepositoryEntity extends KeyValueEntity<IdentityRepo
 
   public Effect<Membership> saveMembership(Membership membership) {
     return effects().updateState(currentState().saveMembership(membership)).thenReply(() -> membership);
+  }
+
+  public Effect<String> deleteMembership(String membershipId) {
+    return effects().updateState(currentState().deleteMembership(membershipId)).thenReply(() -> membershipId);
   }
 
   public ReadOnlyEffect<Optional<Tenant>> tenant(String tenantId) {

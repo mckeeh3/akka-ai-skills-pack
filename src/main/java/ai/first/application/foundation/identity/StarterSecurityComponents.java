@@ -608,14 +608,18 @@ public final class StarterSecurityComponents {
     public Optional<Account> findAccountByWorkosSubject(String workosUserId) { throw unavailable(); }
     public Optional<Account> findAccountByEmail(String normalizedEmail) { throw unavailable(); }
     public Account saveAccount(Account account) { throw unavailable(); }
+    public void deleteAccount(String accountId) { throw unavailable(); }
     public UserProfile profile(String accountId) { throw unavailable(); }
     public UserProfile saveProfile(UserProfile profile) { throw unavailable(); }
+    public void deleteProfile(String accountId) { throw unavailable(); }
     public UserSettings settings(String accountId) { throw unavailable(); }
     public UserSettings saveSettings(UserSettings settings) { throw unavailable(); }
+    public void deleteSettings(String accountId) { throw unavailable(); }
     public List<Membership> membershipsByAccount(String accountId) { throw unavailable(); }
     public Optional<Membership> membership(String membershipId) { throw unavailable(); }
     public List<Membership> membershipRows() { throw unavailable(); }
     public Membership saveMembership(Membership membership) { throw unavailable(); }
+    public void deleteMembership(String membershipId) { throw unavailable(); }
     public Optional<Tenant> tenant(String tenantId) { throw unavailable(); }
     public Tenant saveTenant(Tenant tenant) { throw unavailable(); }
     public Optional<Customer> customer(String tenantId, String customerId) { throw unavailable(); }

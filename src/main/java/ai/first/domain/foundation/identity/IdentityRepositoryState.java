@@ -43,6 +43,12 @@ public record IdentityRepositoryState(
     return new IdentityRepositoryState(updated, profiles, settings, memberships, tenants, customers, auditEvents);
   }
 
+  public IdentityRepositoryState deleteAccount(String accountId) {
+    var updated = new java.util.LinkedHashMap<>(accounts);
+    updated.remove(accountId);
+    return new IdentityRepositoryState(updated, profiles, settings, memberships, tenants, customers, auditEvents);
+  }
+
   public UserProfile profile(String accountId) {
     return profiles.get(accountId);
   }
@@ -53,6 +59,12 @@ public record IdentityRepositoryState(
     return new IdentityRepositoryState(accounts, updated, settings, memberships, tenants, customers, auditEvents);
   }
 
+  public IdentityRepositoryState deleteProfile(String accountId) {
+    var updated = new java.util.LinkedHashMap<>(profiles);
+    updated.remove(accountId);
+    return new IdentityRepositoryState(accounts, updated, settings, memberships, tenants, customers, auditEvents);
+  }
+
   public UserSettings settings(String accountId) {
     return settings.get(accountId);
   }
@@ -60,6 +72,12 @@ public record IdentityRepositoryState(
   public IdentityRepositoryState saveSettings(UserSettings userSettings) {
     var updated = new java.util.LinkedHashMap<>(settings);
     updated.put(userSettings.accountId(), userSettings);
+    return new IdentityRepositoryState(accounts, profiles, updated, memberships, tenants, customers, auditEvents);
+  }
+
+  public IdentityRepositoryState deleteSettings(String accountId) {
+    var updated = new java.util.LinkedHashMap<>(settings);
+    updated.remove(accountId);
     return new IdentityRepositoryState(accounts, profiles, updated, memberships, tenants, customers, auditEvents);
   }
 
@@ -78,6 +96,12 @@ public record IdentityRepositoryState(
   public IdentityRepositoryState saveMembership(Membership membership) {
     var updated = new java.util.LinkedHashMap<>(memberships);
     updated.put(membership.membershipId(), membership);
+    return new IdentityRepositoryState(accounts, profiles, settings, updated, tenants, customers, auditEvents);
+  }
+
+  public IdentityRepositoryState deleteMembership(String membershipId) {
+    var updated = new java.util.LinkedHashMap<>(memberships);
+    updated.remove(membershipId);
     return new IdentityRepositoryState(accounts, profiles, settings, updated, tenants, customers, auditEvents);
   }
 
