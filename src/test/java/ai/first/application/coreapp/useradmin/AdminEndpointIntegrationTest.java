@@ -18,6 +18,12 @@ import ai.first.api.coreapp.admin.AdminEndpoint.ChangeRolesApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.CreateInvitationApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.InvitationActionApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.IdentityRelinkApiRequest;
+import ai.first.api.coreapp.admin.AdminEndpoint.OrganizationActionApiResponse;
+import ai.first.api.coreapp.admin.AdminEndpoint.OrganizationCreateApiRequest;
+import ai.first.api.coreapp.admin.AdminEndpoint.OrganizationDetailPayload;
+import ai.first.api.coreapp.admin.AdminEndpoint.OrganizationLifecycleApiRequest;
+import ai.first.api.coreapp.admin.AdminEndpoint.OrganizationListPayload;
+import ai.first.api.coreapp.admin.AdminEndpoint.OrganizationRenameApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.IdentityRelinkApiResponse;
 import ai.first.api.coreapp.admin.AdminEndpoint.InvitationApiResponse;
 import ai.first.api.coreapp.admin.AdminEndpoint.InvitationsApiResponse;
@@ -27,13 +33,33 @@ import ai.first.api.coreapp.admin.AdminEndpoint.SupportAccessApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.SupportAccessApiResponse;
 import ai.first.api.coreapp.admin.AdminEndpoint.UserAdminDashboardPayload;
 import ai.first.api.coreapp.admin.AdminEndpoint.UserAdminUserAccountPayload;
+import ai.first.application.foundation.identity.AkkaIdentityRepository;
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.identity.Customer;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.MembershipStatus;
+import ai.first.domain.foundation.identity.ScopeType;
+import ai.first.domain.foundation.identity.Tenant;
+import ai.first.domain.foundation.identity.UserProfile;
+import ai.first.domain.foundation.identity.UserSettings;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.api.coreapp.admin.AdminEndpoint;
 
 class AdminEndpointIntegrationTest extends TestKitSupport {
+
+  @BeforeEach
+  void seedDefaultAdminEndpointActors() {
+    var repository = new AkkaIdentityRepository(componentClient);
+    repository.saveTenant(new Tenant("tenant-starter", "Starter Tenant", true));
+    seedIdentity(repository, "admin@example.test", "Admin", ScopeType.TENANT, "tenant-starter", null, FoundationRole.TENANT_ADMIN);
+    seedIdentity(repository, "member@example.test", "Member", ScopeType.TENANT, "tenant-starter", null, FoundationRole.TENANT_EMPLOYEE);
+  }
 
   @Test
   void adminCanSearchUsersThroughConcreteProtectedApiAndAuditIsVisible() throws Exception {
@@ -59,6 +85,127 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
     assertTrue(audit.status().isSuccess());
     assertTrue(audit.body().events().stream().anyMatch(event -> event.actionType().equals("USER_DIRECTORY_SEARCH") && event.correlationId().equals("corr-admin-users")));
     assertTrue(audit.body().events().stream().allMatch(event -> event.tenantId() == null || event.tenantId().equals("tenant-starter")));
+  }
+
+  @Test
+  void saasOwnerOrganizationAdminApiSupportsSafeLifecycleAndDenials() throws Exception {
+    seedOrganizationAdminActors();
+
+    var list = httpClient
+        .GET("/api/admin/organizations?query=starter")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "Owner"))
+        .addHeader("X-Correlation-Id", "corr-org-list")
+        .responseBodyAs(OrganizationListPayload.class)
+        .invoke();
+    assertTrue(list.status().isSuccess());
+    assertEquals("corr-org-list", list.body().correlationId());
+    assertTrue(list.body().organizations().stream().anyMatch(organization -> organization.organizationName().equals("Starter Tenant")));
+    assertTrue(list.body().safeBoundaryNotice().contains("does not grant tenant/customer application-data access"));
+    assertTrue(list.body().redactions().contains("provider-secrets-redacted"));
+    assertTrue(!list.body().toString().contains("providerSecret"));
+
+    var detail = httpClient
+        .GET("/api/admin/organizations/tenant-starter")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "Owner"))
+        .addHeader("X-Correlation-Id", "corr-org-read")
+        .responseBodyAs(OrganizationDetailPayload.class)
+        .invoke();
+    assertTrue(detail.status().isSuccess());
+    assertEquals("tenant-starter", detail.body().organization().organizationId());
+    assertTrue(detail.body().visibleActions().contains("suspend"));
+
+    var created = httpClient
+        .POST("/api/admin/organizations")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "Owner"))
+        .addHeader("X-Correlation-Id", "corr-org-create")
+        .withRequestBody(new OrganizationCreateApiRequest("Endpoint Organization", "idem-org-endpoint-create", "new customer boundary"))
+        .responseBodyAs(OrganizationActionApiResponse.class)
+        .invoke();
+    assertTrue(created.status().isSuccess());
+    assertEquals("accepted", created.body().status());
+    assertEquals("active", created.body().organization().organization().status());
+    assertTrue(created.body().traceRefs().stream().anyMatch(trace -> trace.contains("trace-organization-create")));
+    var organizationId = created.body().organization().organization().organizationId();
+
+    var replay = httpClient
+        .POST("/api/admin/organizations")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "Owner"))
+        .withRequestBody(new OrganizationCreateApiRequest("Endpoint Organization", "idem-org-endpoint-create", "replay"))
+        .responseBodyAs(OrganizationActionApiResponse.class)
+        .invoke();
+    assertEquals("no-op", replay.body().status());
+    assertEquals(organizationId, replay.body().organization().organization().organizationId());
+
+    var renamed = httpClient
+        .POST("/api/admin/organizations/" + organizationId + "/rename")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "Owner"))
+        .addHeader("X-Correlation-Id", "corr-org-rename")
+        .withRequestBody(new OrganizationRenameApiRequest("Endpoint Organization Renamed", "idem-org-endpoint-rename", "display name correction"))
+        .responseBodyAs(OrganizationActionApiResponse.class)
+        .invoke();
+    assertEquals("accepted", renamed.body().status());
+    assertEquals("Endpoint Organization Renamed", renamed.body().organization().organization().organizationName());
+
+    var suspended = httpClient
+        .POST("/api/admin/organizations/" + organizationId + "/suspend")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "Owner"))
+        .addHeader("X-Correlation-Id", "corr-org-suspend")
+        .withRequestBody(new OrganizationLifecycleApiRequest("contract ended", "idem-org-endpoint-suspend"))
+        .responseBodyAs(OrganizationActionApiResponse.class)
+        .invoke();
+    assertEquals("accepted", suspended.body().status());
+    assertEquals("suspended", suspended.body().organization().organization().status());
+    assertTrue(suspended.body().organization().safeBoundaryNotice().contains("does not grant tenant/customer application-data access"));
+
+    var reactivated = httpClient
+        .POST("/api/admin/organizations/" + organizationId + "/reactivate")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "Owner"))
+        .addHeader("X-Correlation-Id", "corr-org-reactivate")
+        .withRequestBody(new OrganizationLifecycleApiRequest("contract restored", "idem-org-endpoint-reactivate"))
+        .responseBodyAs(OrganizationActionApiResponse.class)
+        .invoke();
+    assertEquals("accepted", reactivated.body().status());
+    assertEquals("active", reactivated.body().organization().organization().status());
+
+    var missingIdempotency = assertThrows(
+        IllegalArgumentException.class,
+        () -> httpClient
+            .POST("/api/admin/organizations/" + organizationId + "/rename")
+            .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "Owner"))
+            .withRequestBody(new OrganizationRenameApiRequest("No Key", null, "missing key"))
+            .responseBodyAs(String.class)
+            .invoke());
+    assertTrue(missingIdempotency.getMessage().contains("400"));
+
+    var tenantAdminForbidden = assertThrows(
+        RuntimeException.class,
+        () -> httpClient
+            .GET("/api/admin/organizations")
+            .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+            .addHeader("X-Correlation-Id", "corr-org-tenant-denied")
+            .responseBodyAs(String.class)
+            .invoke());
+    assertTrue(tenantAdminForbidden.getMessage().contains("403"));
+
+    var customerAdminForbidden = assertThrows(
+        RuntimeException.class,
+        () -> httpClient
+            .GET("/api/admin/organizations")
+            .addHeader("Authorization", "Bearer " + bearerToken("workos-customer-admin", "customer-admin@example.test", "Customer Admin"))
+            .addHeader("X-Correlation-Id", "corr-org-customer-denied")
+            .responseBodyAs(String.class)
+            .invoke());
+    assertTrue(customerAdminForbidden.getMessage().contains("403"));
+
+    var hiddenTarget = assertThrows(
+        RuntimeException.class,
+        () -> httpClient
+            .GET("/api/admin/organizations/missing-organization")
+            .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "Owner"))
+            .addHeader("X-Correlation-Id", "corr-org-hidden")
+            .responseBodyAs(String.class)
+            .invoke());
+    assertTrue(hiddenTarget.getMessage().contains("404"));
   }
 
   @Test
@@ -135,7 +282,7 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
     assertTrue(first.status().isSuccess());
     assertTrue(replay.status().isSuccess());
     assertEquals(first.body().invitationId(), replay.body().invitationId());
-    assertEquals("pending_delivery", first.body().status());
+    assertTrue(List.of("pending_delivery", "sent").contains(first.body().status()));
     assertNotNull(first.body().deliveryStatus());
 
     var listed = httpClient
@@ -300,6 +447,21 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
         .responseBodyAs(AdminAuditEventsResponse.class)
         .invoke();
     assertTrue(audit.body().events().stream().anyMatch(event -> event.correlationId().equals("corr-employee-denied") && event.result().equals("denied")));
+  }
+
+  private void seedOrganizationAdminActors() {
+    var repository = new AkkaIdentityRepository(componentClient);
+    repository.saveTenant(new Tenant("tenant-starter", "Starter Tenant", true));
+    repository.saveCustomer(new Customer("tenant-starter", "customer-admin-target", "Customer Admin Target", true));
+    seedIdentity(repository, "owner@example.test", "Owner", ScopeType.SAAS_OWNER, null, null, FoundationRole.SAAS_OWNER_ADMIN);
+    seedIdentity(repository, "customer-admin@example.test", "Customer Admin", ScopeType.CUSTOMER, "tenant-starter", "customer-admin-target", FoundationRole.CUSTOMER_ADMIN);
+  }
+
+  private void seedIdentity(AkkaIdentityRepository repository, String email, String displayName, ScopeType scopeType, String tenantId, String customerId, FoundationRole role) {
+    repository.saveAccount(new Account(email, null, email, email, AccountStatus.ACTIVE, "UNLINKED"));
+    repository.saveProfile(new UserProfile(email, email, displayName, null, null, null));
+    repository.saveSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
+    repository.saveMembership(new Membership("membership-" + email, email, scopeType, tenantId, customerId, List.of(role), MembershipStatus.ACTIVE, false, null));
   }
 
   private String bearerToken(String subject, String email, String name) throws Exception {

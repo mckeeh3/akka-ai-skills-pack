@@ -87,6 +87,7 @@ import ai.first.application.coreapp.myaccount.MyAccountPersonalAttentionDigestTa
 import ai.first.application.coreapp.myaccount.MyAccountService;
 import ai.first.application.coreapp.useradmin.UserAdminAccessReviewService;
 import ai.first.application.coreapp.useradmin.UserAdminService;
+import ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService;
 import ai.first.application.coreapp.useradmin.UserDirectoryView;
 import ai.first.application.coreapp.workstream.WorkstreamService;
 
@@ -100,6 +101,7 @@ public final class StarterSecurityComponents {
   private static volatile AuthContextResolver authContextResolver = new AuthContextResolver(identityRepository);
   private static volatile MeService meService;
   private static volatile UserAdminService userAdminService = new UserAdminService(identityRepository, CLOCK);
+  private static volatile SaasOwnerOrganizationAdminService saasOwnerOrganizationAdminService = new SaasOwnerOrganizationAdminService(identityRepository, CLOCK);
   private static volatile EnterpriseIdentityAdminService enterpriseIdentityAdminService = new EnterpriseIdentityAdminService(identityRepository, CLOCK);
   private static volatile InvitationRepository invitationRepository = new UnboundInvitationRepository();
   private static volatile AgentBehaviorRepository agentBehaviorRepository = new UnboundAgentBehaviorRepository();
@@ -150,6 +152,7 @@ public final class StarterSecurityComponents {
     authContextResolver = new AuthContextResolver(durableIdentity);
     meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     userAdminService = new UserAdminService(durableIdentity, CLOCK);
+    saasOwnerOrganizationAdminService = new SaasOwnerOrganizationAdminService(durableIdentity, CLOCK);
     enterpriseIdentityAdminService = new EnterpriseIdentityAdminService(durableIdentity, CLOCK);
     BootstrapAdminSeeder.seedConfiguredAdmins(durableIdentity, System.getenv("ADMIN_USERS"));
     var durableWorkstreamLog = new AkkaWorkstreamLogRepository(componentClient);
@@ -216,6 +219,10 @@ public final class StarterSecurityComponents {
     return userAdminService;
   }
 
+  public static SaasOwnerOrganizationAdminService saasOwnerOrganizationAdminService() {
+    return saasOwnerOrganizationAdminService;
+  }
+
   public static UserAdminAccessReviewService userAdminAccessReviewService() {
     return new UserAdminAccessReviewService(accessReviewTaskRepository(), userAdminService, CLOCK, attentionProducerService, workstreamEventPublisher, new FailClosedAccessReviewAutonomousAgentRuntime());
   }
@@ -235,6 +242,7 @@ public final class StarterSecurityComponents {
     authContextResolver = new AuthContextResolver(testRepository);
     meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     userAdminService = new UserAdminService(testRepository, CLOCK);
+    saasOwnerOrganizationAdminService = new SaasOwnerOrganizationAdminService(testRepository, CLOCK);
     enterpriseIdentityAdminService = new EnterpriseIdentityAdminService(testRepository, CLOCK);
     invitationRepository = new UnboundInvitationRepository();
     attentionProducerService = new AttentionProducerService(attentionRepository, testRepository, CLOCK);

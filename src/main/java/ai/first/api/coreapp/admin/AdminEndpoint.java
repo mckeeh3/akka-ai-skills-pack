@@ -17,6 +17,7 @@ import static akka.javasdk.http.HttpException.unauthorized;
 import ai.first.application.foundation.audit.AdminAuditView;
 import ai.first.application.foundation.audit.AdminAuditView.AdminAuditRow;
 import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService;
 import ai.first.application.coreapp.useradmin.UserAdminService.RoleChangePreview;
 import ai.first.application.coreapp.myaccount.DigestExportService;
 import ai.first.application.foundation.invitation.InvitationService;
@@ -93,6 +94,68 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
           .map(AdminUserResponse::from)
           .toList();
       return HttpResponses.ok(new AdminUsersResponse(rows, correlationId));
+    });
+  }
+
+  @Get("/organizations")
+  public HttpResponse organizations() {
+    var query = requestContext().queryParams().getString("query").orElse(null);
+    var status = requestContext().queryParams().getString("status").orElse(null);
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      return HttpResponses.ok(OrganizationListPayload.from(StarterSecurityComponents.saasOwnerOrganizationAdminService().listOrganizations(actor, query, status, correlationId)));
+    });
+  }
+
+  @Get("/organizations/{organizationId}")
+  public HttpResponse organization(String organizationId) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      return HttpResponses.ok(OrganizationDetailPayload.from(StarterSecurityComponents.saasOwnerOrganizationAdminService().readOrganization(actor, organizationId, correlationId)));
+    });
+  }
+
+  @Post("/organizations")
+  public HttpResponse createOrganization(OrganizationCreateApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.saasOwnerOrganizationAdminService().createOrganization(actor, request == null ? null : request.organizationName(), stableIdempotencyKey, request == null ? null : request.reason(), correlationId);
+      return HttpResponses.ok(OrganizationActionApiResponse.from(result));
+    });
+  }
+
+  @Post("/organizations/{organizationId}/rename")
+  public HttpResponse renameOrganization(String organizationId, OrganizationRenameApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.saasOwnerOrganizationAdminService().renameOrganization(actor, organizationId, request == null ? null : request.organizationName(), stableIdempotencyKey, request == null ? null : request.reason(), correlationId);
+      return HttpResponses.ok(OrganizationActionApiResponse.from(result));
+    });
+  }
+
+  @Post("/organizations/{organizationId}/suspend")
+  public HttpResponse suspendOrganization(String organizationId, OrganizationLifecycleApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.saasOwnerOrganizationAdminService().suspendOrganization(actor, organizationId, request == null ? null : request.reason(), stableIdempotencyKey, correlationId);
+      return HttpResponses.ok(OrganizationActionApiResponse.from(result));
+    });
+  }
+
+  @Post("/organizations/{organizationId}/reactivate")
+  public HttpResponse reactivateOrganization(String organizationId, OrganizationLifecycleApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.saasOwnerOrganizationAdminService().reactivateOrganization(actor, organizationId, request == null ? null : request.reason(), stableIdempotencyKey, correlationId);
+      return HttpResponses.ok(OrganizationActionApiResponse.from(result));
     });
   }
 
@@ -499,6 +562,7 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
       var correlationId = requestContext().requestHeader("X-Correlation-Id").map(header -> header.value()).orElse("api-admin");
       return call.invoke(identity, selectedContextId, correlationId);
     } catch (AuthorizationException error) {
+      if (error.httpStatus() == 400) return HttpResponses.badRequest(error.reasonCode());
       if (error.httpStatus() == 401) throw unauthorized(error.reasonCode());
       if (error.httpStatus() == 404) throw notFound();
       throw forbidden(error.reasonCode());
@@ -539,6 +603,30 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public record UserAdminDashboardPayload(SelectedAdminScope selectedScope, UserAdminDashboardCounts counts, List<InvitationApiResponse> invitationQueue, List<AdminUserResponse> recentUsers, List<AdminAuditEventResponse> recentAuditEvents, List<String> visibleActions, List<String> traceIds, String correlationId) {}
   public record UserAdminUserAccountPayload(AdminUserResponse account, List<InvitationApiResponse> invitationHistory, List<AdminAuditEventResponse> auditEvents, List<String> visibleActions, List<String> redactions, List<String> traceIds, String correlationId) {}
   public record AdminUsersResponse(List<AdminUserResponse> users, String correlationId) {}
+  public record OrganizationSummaryApiResponse(String organizationId, String organizationName, String status, List<String> traceRefs) {
+    static OrganizationSummaryApiResponse from(SaasOwnerOrganizationAdminService.OrganizationSummary organization) {
+      return new OrganizationSummaryApiResponse(organization.organizationId(), organization.organizationName(), organization.status(), organization.traceRefs());
+    }
+  }
+  public record OrganizationListPayload(List<OrganizationSummaryApiResponse> organizations, String safeBoundaryNotice, List<String> traceRefs, String correlationId, List<String> redactions) {
+    static OrganizationListPayload from(SaasOwnerOrganizationAdminService.OrganizationListResult result) {
+      return new OrganizationListPayload(result.organizations().stream().map(OrganizationSummaryApiResponse::from).toList(), result.safeBoundaryNotice(), List.of(result.traceId()), result.correlationId(), ORGANIZATION_REDACTIONS);
+    }
+  }
+  public record OrganizationDetailPayload(OrganizationSummaryApiResponse organization, String safeBoundaryNotice, List<String> visibleActions, List<AdminAuditEventResponse> recentAuditEvents, List<String> traceRefs, String correlationId, List<String> redactions) {
+    static OrganizationDetailPayload from(SaasOwnerOrganizationAdminService.OrganizationDetail detail) {
+      return new OrganizationDetailPayload(OrganizationSummaryApiResponse.from(detail.organization()), detail.safeBoundaryNotice(), detail.visibleActions(), List.of(), detail.traceRefs(), detail.correlationId(), ORGANIZATION_REDACTIONS);
+    }
+  }
+  public record OrganizationActionApiResponse(String status, String message, OrganizationDetailPayload organization, List<String> traceRefs, String correlationId) {
+    static OrganizationActionApiResponse from(SaasOwnerOrganizationAdminService.OrganizationActionResult result) {
+      return new OrganizationActionApiResponse(result.status(), result.message(), OrganizationDetailPayload.from(result.organization()), List.of(result.traceId()), result.correlationId());
+    }
+  }
+  public record OrganizationCreateApiRequest(String organizationName, String idempotencyKey, String reason) {}
+  public record OrganizationRenameApiRequest(String organizationName, String idempotencyKey, String reason) {}
+  public record OrganizationLifecycleApiRequest(String reason, String idempotencyKey) {}
+  private static final List<String> ORGANIZATION_REDACTIONS = List.of("tenant-app-data-redacted", "provider-secrets-redacted", "billing-authority-redacted", "support-access-internals-redacted", "hidden-counts-redacted");
   public record AdminUserResponse(String accountId, String displayName, String membershipId, List<String> roles, String status, String scopeType, String tenantId, String customerId) {
     static AdminUserResponse from(UserDirectoryRow row) {
       return new AdminUserResponse(row.accountId(), row.displayName(), row.membershipId(), row.roles().stream().map(Enum::name).toList(), row.status().name().toLowerCase(), row.scopeType().name().toLowerCase(), row.tenantId(), row.customerId());

@@ -140,7 +140,7 @@
 
 ### TASK-SOOA-03-001: Add protected Organization Admin API
 
-- status: pending
+- status: done
 - source: specs/saas-owner-organization-admin/backlog/01-saas-owner-organization-admin-build-backlog.md
 - task brief: specs/saas-owner-organization-admin/tasks/03-api/01-add-organization-admin-api.md
 - depends on:
@@ -175,7 +175,9 @@
   - forbidden/not-found behavior is safe for unsupported roles and hidden targets
   - mutating endpoints require idempotency keys and return auditable trace/correlation references
   - changes and queue update are committed
-- notes: []
+- notes:
+  - commit message: `saas-owner-org-admin: add protected organization admin api`
+  - checks: `mvn -Dtest=AdminEndpointIntegrationTest,SaasOwnerOrganizationAdminServiceTest test`; `mvn test`; `git diff --check`
 
 ### TASK-SOOA-04-001: Add frontend Organization Admin surface
 
