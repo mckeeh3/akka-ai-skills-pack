@@ -11,8 +11,9 @@ Companion docs:
 | Term | Meaning |
 |---|---|
 | SaaS Owner | The platform operator that sells and operates the SaaS product. |
-| Tenant | The SaaS user organization that subscribes to the platform and uses it to serve its own customers. This is the canonical internal/architectural term for “SaaS user.” |
-| Customer | An organization served by a Tenant through app-specific online services. Customers always start as organizations in the SaaS Foundation App model. |
+| Organization | Customer-facing account/workspace term for the SaaS user organization. Use this in UI, onboarding, invitations, admin surfaces, app-description surface labels, and end-user docs. |
+| Tenant | Internal SaaS isolation boundary backing an Organization. Use this for backend authorization scope, data partitioning, audit partitioning, provider/resource scoping, billing-safe platform metadata, and code-level tenancy. |
+| Customer | An organization served by an Organization/Tenant through app-specific online services. Customers always start as organizations in the SaaS Foundation App model. |
 | Account | A local Akka-owned authorization record linked to a WorkOS-authenticated human identity. |
 | User Profile | Human-facing account information and scoped profile attributes shown in the application, separate from authentication and authorization facts. |
 | User Settings | User-controlled preferences that affect application experience, such as UI appearance, without changing authorization. |
@@ -23,14 +24,14 @@ Companion docs:
 
 ```text
 SaaS Owner
-  sells subscriptions to Tenants
-  manages Tenant admin accounts and Tenant billing
-  has no access to Tenant application data
+  sells subscriptions to Organizations backed by Tenants
+  manages Organization admin accounts and Tenant-backed billing
+  has no access to organization application data
 
-Tenant
+Organization-backed Tenant
   owns its application data
   provides services to Customer organizations
-  manages Tenant employee accounts
+  manages Organization employee accounts
   creates and manages Customer admin accounts
 
 Customer
@@ -42,28 +43,28 @@ Customer
 
 ```text
 SaaS Owner Admin
-  -> creates and maintains Tenant records
-  -> creates and maintains initial Tenant Admin accounts
-  -> manages Tenant subscription and billing state
+  -> creates and maintains Organization records backed by Tenant boundaries
+  -> creates and maintains initial Organization Admin accounts (`TENANT_ADMIN` internally)
+  -> manages Organization subscription and billing state
 
-Tenant Admin
-  -> manages Tenant employee accounts
+Organization Admin (`TENANT_ADMIN` internally)
+  -> manages Organization employee accounts
   -> creates and maintains Customer organizations
   -> creates and maintains Customer Admin accounts
-  -> manages Tenant-owned application data and services
+  -> manages organization-owned application data and services
 
 Customer Admin
   -> manages Customer user accounts within the Customer organization
   -> supervises Customer-side use of Tenant-provided services
 ```
 
-The same human/email may have separate local accounts or memberships at multiple levels. For example, a person may be a SaaS Owner Admin for platform operations, a Tenant Admin in a demo tenant, and a Customer Admin in a test customer organization. Authorization must be based on the selected account/membership context, not email alone.
+The same human/email may have separate local accounts or memberships at multiple levels. For example, a person may be a SaaS Owner Admin for platform operations, an Organization Admin (`TENANT_ADMIN` internally) in a demo organization, and a Customer Admin in a test customer organization. Authorization must be based on the selected account/membership context, not email alone.
 
 ## Non-negotiable boundaries
 
-- SaaS Owner users do not have platform-level access to Tenant application data.
-- Tenant data belongs to the Tenant.
-- Customer data belongs within a Tenant-owned Customer organization boundary.
+- SaaS Owner users do not have platform-level access to organization application data.
+- Organization data belongs to the Organization and is isolated by the backing Tenant boundary.
+- Customer data belongs within an Organization/Tenant-owned Customer organization boundary.
 - All backend commands and queries must enforce scope mechanically.
 - Frontend navigation is only UX; backend authorization is authoritative.
 - WorkOS authenticates humans; Akka-owned state authorizes business actions.
@@ -91,17 +92,17 @@ Example AI-first core scenarios:
 
 | Scenario | AI-first behavior |
 |---|---|
-| Tenant onboarding | Assistant drafts setup checklist, missing configuration summary, and next-best action recommendations. |
+| Organization onboarding | Assistant drafts setup checklist, missing configuration summary, and next-best action recommendations. |
 | Access review | UserAdminAgent with an `access-review` skill, or a specialized AccessReviewAgent, flags stale admins, excessive roles, unusual cross-level memberships, dormant customer admins, and last-admin risks. |
 | Billing issue | Agent summarizes subscription state, payment issue, service impact, prior notices, and recommended action. |
-| Tenant-created support account | Agent verifies purpose, expiry, permissions, and audit readiness before activation. |
+| Organization-created support account | Agent verifies purpose, expiry, permissions, and audit readiness before activation. |
 | Role change | Decision card shows requested role, scope, risk, policy triggers, affected data boundary, and approver actions. |
 
 ## Suggested Akka substrate
 
 | Concern | Preferred Akka substrate |
 |---|---|
-| Tenant, Customer, Account, Membership lifecycle | Event Sourced Entity when audit-grade history is required; Key Value Entity for low-risk current state only. |
+| Organization/Tenant, Customer, Account, Membership lifecycle | Event Sourced Entity when audit-grade history is required; Key Value Entity for low-risk current state only. |
 | User profiles and settings | Key Value Entity for current editable profile/settings state; Event Sourced Entity if the app requires audit-grade profile or preference history. |
 | Subscription lifecycle | Event Sourced Entity for plan changes, trial, activation, suspension, cancellation, and billing state history. |
 | Invitations and onboarding | Workflow for mandatory email invite delivery, token/acceptance context, link/activate, resend, revoke/cancel, expiry, idempotency, and multi-step onboarding. |
@@ -135,9 +136,9 @@ Any intentionally deferred foundation-domain behavior must become explicit follo
 1. WorkOS-backed `/api/me` account bootstrap, membership selection, base profile, and base user settings.
 2. Mandatory invitation lifecycle: `Invitation` record, invite token or acceptance context, status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, audit trail, and idempotent duplicate handling.
 3. Mandatory email delivery foundation: Resend (resend.com) production email service configuration, plus a safe local/dev/test adapter that captures messages in an outbox without external delivery. This reusable foundation sends invitation/account emails first and must support future app-specific email features and governed agent `@FunctionTool` email tools.
-4. SaaS Owner Admin tenant creation and initial Tenant Admin invitation.
-5. Tenant Admin employee invitation and role management.
-6. Tenant Admin customer organization creation and Customer Admin invitation.
+4. SaaS Owner Admin organization creation and initial Organization Admin (`TENANT_ADMIN`) invitation.
+5. Organization Admin employee invitation and role management.
+6. Organization Admin customer organization creation and Customer Admin invitation.
 7. Customer Admin customer user invitation and role management.
 8. User profile and settings APIs, starting with editable display profile fields and named UI theme preferences. Themes are named color-token bundles, not dark/light/system modes.
 9. SaaS Owner to Tenant subscription creation, plan assignment, status changes, and billing audit.

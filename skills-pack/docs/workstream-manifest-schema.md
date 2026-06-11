@@ -80,7 +80,7 @@ Required for `capability-ready`, `expertise-ready`, `runtime-ready`, and `produc
   "capabilityId": "secure-tenant-user-foundation",
   "governedToolId": "useradmin.invitation.create",
   "exposureChannel": "browser-tool",
-  "authBasis": "Tenant Admin or Customer Admin within selected AuthContext scope",
+  "authBasis": "Organization Admin or Customer Admin within selected AuthContext scope",
   "idempotency": "client-generated invitation request id",
   "resultSurfaceId": "system_message",
   "traceRequired": true
@@ -96,7 +96,7 @@ Allowed `exposureChannel` values are `browser-tool`, `agent-tool`, `workflow-too
 ```json
 {
   "localCommands": ["mvn test", "npm --prefix frontend run build"],
-  "apiUiSmokePath": "signed-in Tenant Admin opens User Admin and completes invite denial/success smoke through /api and UI",
+  "apiUiSmokePath": "signed-in Organization Admin opens User Admin and completes invite denial/success smoke through /api and UI",
   "providerSecurityFailClosedCheck": "missing provider/security config returns actionable fail-closed system_message and audit trace",
   "traceEvidence": "AdminAuditEvent and AgentWorkTrace ids visible from audit-trace-explorer"
 }

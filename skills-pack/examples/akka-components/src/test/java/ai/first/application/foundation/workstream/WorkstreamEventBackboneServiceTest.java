@@ -431,7 +431,7 @@ class WorkstreamEventBackboneServiceTest {
         "membership.role.changed",
         "membership",
         "membership-admin",
-        "Tenant Admin membership role changed token=secret",
+        "Organization Admin membership role changed token=secret",
         "secure-tenant-user-foundation",
         tenantAdmin.account().accountId(),
         "agent-user-admin",
@@ -458,7 +458,7 @@ class WorkstreamEventBackboneServiceTest {
     assertEquals(AttentionCategory.AUDIT_FAILURE_EVIDENCE, attentionRepository.find("tenant-1", exportEvent.projectionHints().get("attentionItemId")).orElseThrow().category());
     assertEquals(AttentionCategory.PROVIDER_READINESS, attentionRepository.find("tenant-1", notificationEvent.projectionHints().get("attentionItemId")).orElseThrow().category());
 
-    var replay = publisher.publishGovernedLifecycle("tenant-1", null, WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN, "membership.role.changed", "membership", "membership-admin", "Tenant Admin membership role changed", "secure-tenant-user-foundation", tenantAdmin.account().accountId(), "agent-user-admin", "surface-user-admin-list", "changed", Map.of(), Map.of(), "corr-membership-role-replay");
+    var replay = publisher.publishGovernedLifecycle("tenant-1", null, WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN, "membership.role.changed", "membership", "membership-admin", "Organization Admin membership role changed", "secure-tenant-user-foundation", tenantAdmin.account().accountId(), "agent-user-admin", "surface-user-admin-list", "changed", Map.of(), Map.of(), "corr-membership-role-replay");
     assertEquals(membershipEvent.eventId(), replay.eventId());
     assertEquals(6, eventRepository.listTenant("tenant-1").size());
     assertEquals(1, attentionRepository.find("tenant-1", membershipEvent.projectionHints().get("attentionItemId")).orElseThrow().sourceRefs().stream().filter(ref -> ref.kind().equals("workstream_event") && ref.refId().equals(membershipEvent.eventId())).count());

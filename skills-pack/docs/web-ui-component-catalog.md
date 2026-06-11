@@ -106,10 +106,10 @@ States:
 
 ### Authority/context panel
 
-Use when users need to understand tenant/customer scope, role/capability basis, support access, or retained human authority.
+Use when users need to understand organization/customer scope, role/capability basis, support access, or retained human authority.
 
 Anatomy:
-- selected tenant/customer or account context
+- selected organization/customer or account context
 - role/capability summary
 - support-access or elevated-access state when applicable
 - safe context-switch or request-access actions

@@ -48,7 +48,7 @@
           "workerId": "personal-attention-digest-worker",
           "substrate": "AutonomousAgent task or workflow-backed worker, finalized during runtime implementation",
           "trigger": "my-account-dashboard action, attention producer, or scheduled signal defined in internal-agents.md",
-          "authorityBasis": "service actor constrained to secure-tenant-user-foundation within selected tenant/AuthContext scope",
+          "authorityBasis": "service actor constrained to secure-tenant-user-foundation within selected organization/AuthContext scope",
           "capabilityId": "secure-tenant-user-foundation",
           "governedToolId": "myaccount.personal_attention.digest",
           "progressSurfaceId": "system_message",
@@ -76,7 +76,7 @@
       "readiness": "surface-ready",
       "instanceScope": "tenantId + selectedContextId + functionalAgentId; optional customerId when customer context is selected",
       "authorizedActors": [
-        "Tenant Admin",
+        "Organization Admin",
         "Customer Admin within scope",
         "SaaS Owner support role with explicit support grant",
         "Auditor read-only where permitted"
@@ -114,7 +114,7 @@
           "workerId": "access-review-triage-worker",
           "substrate": "AutonomousAgent task or workflow-backed worker, finalized during runtime implementation",
           "trigger": "user-admin-dashboard action, attention producer, or scheduled signal defined in internal-agents.md",
-          "authorityBasis": "service actor constrained to secure-tenant-user-foundation within selected tenant/AuthContext scope",
+          "authorityBasis": "service actor constrained to secure-tenant-user-foundation within selected organization/AuthContext scope",
           "capabilityId": "secure-tenant-user-foundation",
           "governedToolId": "useradmin.internal_worker.run",
           "progressSurfaceId": "system_message",
@@ -125,7 +125,7 @@
           "workerId": "invitation-delivery-investigation-worker",
           "substrate": "AutonomousAgent task or workflow-backed worker, finalized during runtime implementation",
           "trigger": "user-admin-dashboard action, attention producer, or scheduled signal defined in internal-agents.md",
-          "authorityBasis": "service actor constrained to secure-tenant-user-foundation within selected tenant/AuthContext scope",
+          "authorityBasis": "service actor constrained to secure-tenant-user-foundation within selected organization/AuthContext scope",
           "capabilityId": "secure-tenant-user-foundation",
           "governedToolId": "useradmin.internal_worker.run",
           "progressSurfaceId": "system_message",
@@ -154,7 +154,7 @@
       "instanceScope": "tenantId + selectedContextId + functionalAgentId",
       "authorizedActors": [
         "Agent Steward",
-        "Tenant Admin",
+        "Organization Admin",
         "Policy Owner",
         "Reviewer",
         "Auditor read-only where permitted"
@@ -189,7 +189,7 @@
           "workerId": "behavior-change-risk-worker",
           "substrate": "AutonomousAgent task or workflow-backed worker, finalized during runtime implementation",
           "trigger": "agent-governance-center action, attention producer, or scheduled signal defined in internal-agents.md",
-          "authorityBasis": "service actor constrained to managed-agent-foundation within selected tenant/AuthContext scope",
+          "authorityBasis": "service actor constrained to managed-agent-foundation within selected organization/AuthContext scope",
           "capabilityId": "managed-agent-foundation",
           "governedToolId": "agentadmin.behavior_change.risk_review",
           "progressSurfaceId": "system_message",
@@ -218,7 +218,7 @@
       "instanceScope": "tenantId + selectedContextId + functionalAgentId; support grants may narrow visible trace evidence",
       "authorizedActors": [
         "Auditor",
-        "Tenant Admin",
+        "Organization Admin",
         "scoped Supervisor",
         "SaaS Owner support role with explicit support grant"
       ],
@@ -251,7 +251,7 @@
           "workerId": "trace-correlation-summarizer",
           "substrate": "AutonomousAgent task or workflow-backed worker, finalized during runtime implementation",
           "trigger": "audit-trace-explorer action, attention producer, or scheduled signal defined in internal-agents.md",
-          "authorityBasis": "service actor constrained to governance-decisions-audit within selected tenant/AuthContext scope",
+          "authorityBasis": "service actor constrained to governance-decisions-audit within selected organization/AuthContext scope",
           "capabilityId": "governance-decisions-audit",
           "governedToolId": "audittrace.correlation.summarize",
           "progressSurfaceId": "system_message",
@@ -281,7 +281,7 @@
       "authorizedActors": [
         "Policy Owner",
         "Reviewer/Approver",
-        "Tenant Admin",
+        "Organization Admin",
         "Auditor read-only where permitted"
       ],
       "icon": {
@@ -314,7 +314,7 @@
           "workerId": "policy-impact-simulation-worker",
           "substrate": "AutonomousAgent task or workflow-backed worker, finalized during runtime implementation",
           "trigger": "agent-governance-center action, attention producer, or scheduled signal defined in internal-agents.md",
-          "authorityBasis": "service actor constrained to governance-decisions-audit within selected tenant/AuthContext scope",
+          "authorityBasis": "service actor constrained to governance-decisions-audit within selected organization/AuthContext scope",
           "capabilityId": "governance-decisions-audit",
           "governedToolId": "governance.policy.simulate_impact",
           "progressSurfaceId": "system_message",

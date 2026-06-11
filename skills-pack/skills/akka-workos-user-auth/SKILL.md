@@ -48,7 +48,7 @@ Return only browser-safe data:
 
 - account id, email/display name/avatar if safe
 - account status and safe recovery state
-- selected tenant/customer/support-access context
+- selected organization/customer/support-access context, backed by tenant/customer isolation keys where applicable
 - available contexts and role/capability hints
 - visible workstreams/functional agents if UI bootstrap owns that concern
 - trace/correlation ids for denied or recovery states when useful
@@ -73,7 +73,7 @@ Cover:
 - valid WorkOS identity with active local account
 - unknown identity recovery/denial path
 - disabled local account denial despite valid JWT
-- selected tenant/customer scope allowed and denied cases
+- selected organization/customer scope allowed and denied cases, including tenant/customer enforcement keys where applicable
 - `/api/me` redaction and frontend-safe DTO shape
 - frontend API client attaches bearer token and handles 401/403/recovery states
 - committed/static assets do not contain WorkOS secrets

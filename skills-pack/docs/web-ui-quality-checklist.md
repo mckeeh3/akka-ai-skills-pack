@@ -7,7 +7,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 ## UX completeness
 
 - [ ] For generated AI-first SaaS, primary user goals are represented by role-authorized functional agents, workstream shell regions, structured surfaces, and capability-backed actions.
-- [ ] Each workstream shell region or structured surface communicates selected functional agent, tenant/customer context, what matters, and what the user can do within the first five seconds.
+- [ ] Each workstream shell region or structured surface communicates selected functional agent, organization/customer context, what matters, and what the user can do within the first five seconds.
 - [ ] Each structured surface has one clear purpose or an explicitly read-only purpose.
 - [ ] Workstream dashboards are action routers, not reports: ready-state content is ordered top-to-bottom as things that need my attention, then things I can do.
 - [ ] Aside from labels and minimal microcopy, visible dashboard content is limited to actionable/clickable indicators; passive FYI metrics, inert charts, and decorative card grids are absent or moved to report/detail/analytics surfaces.

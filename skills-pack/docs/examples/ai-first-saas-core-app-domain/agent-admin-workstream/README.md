@@ -6,7 +6,7 @@
 - **Backing functional agent:** `functional_agent.agent_admin`
 - **Domain:** `ai_first_saas_core_app`
 - **Purpose:** govern runtime agents, prompts, skills, references, manifests, tool boundaries, lifecycle, behavior proposals, approvals, deterministic prompt assembly, and agent work traces
-- **Primary users:** tenant admins, agent behavior stewards, governance admins, auditors with read-only authority
+- **Primary users:** organization admins, agent behavior stewards, governance admins, auditors with read-only authority
 
 ## Invariants
 

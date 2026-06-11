@@ -73,7 +73,7 @@ Use it for:
 
 Treat security as part of the app's authoritative meaning, not as a later implementation hardening step.
 
-For every generated SaaS app, start from the `core-saas-foundation` baseline: Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary, tenant/customer scoping, and tenant isolation. WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the supported production email service for invite/account emails and future app email features. WorkOS/Resend runtime settings may remain open questions during description maintenance, but generated SaaS apps must not choose different auth or production email services unless the skills pack is extended with provider-specific guidance. Local authorization, tenancy, audit, and denial semantics are mandatory.
+For every generated SaaS app, start from the `core-saas-foundation` baseline: Account/Profile/Settings, customer-facing Organization backed by Tenant isolation, Customer, Membership/Role/Permission, Invitation, AuthContext, `/api/me`, backend authorization, AdminAuditEvent, support-access, billing boundary, organization/customer product scoping, and tenant/customer internal isolation. WorkOS/AuthKit is the supported browser authentication provider and Resend (resend.com) is the supported production email service for invite/account emails and future app email features. WorkOS/Resend runtime settings may remain open questions during description maintenance, but generated SaaS apps must not choose different auth or production email services unless the skills pack is extended with provider-specific guidance. Local authorization, tenancy, audit, and denial semantics are mandatory.
 
 This skill should define:
 - who the actors are
@@ -86,7 +86,7 @@ This skill should define:
 ## What this skill must capture
 
 For each requested change, identify and describe as applicable:
-- secure SaaS foundation impact: Account, UserProfile, UserSettings, Tenant, Customer, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, billing boundary, `/api/me`, backend authorization, and tenant/customer scoping
+- secure SaaS foundation impact: Account, UserProfile, UserSettings, customer-facing Organization backed by Tenant isolation, Customer, Membership, Role, Permission/Capability, Invitation, AuthContext, AdminAuditEvent, support-access, billing boundary, `/api/me`, backend authorization, organization/customer product scoping, and tenant/customer internal isolation
 - caller identities or principal categories
 - authentication mechanism or trust source, using WorkOS/AuthKit for generated browser users
 - frontend-to-backend token propagation expectations

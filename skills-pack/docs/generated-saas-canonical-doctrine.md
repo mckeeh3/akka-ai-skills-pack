@@ -15,7 +15,7 @@ Use this as the short shared doctrine for generated secure AI-first SaaS work. F
 Generated full-stack apps are secure AI-first SaaS workstream applications by default:
 
 - fixed Java base package `ai.first`;
-- mandatory secure SaaS foundation: WorkOS/AuthKit, `/api/me`, tenant/customer scoping, roles/capabilities, invitations, Resend email boundary, user/admin surfaces, support access, admin audit, and backend authorization;
+- mandatory secure SaaS foundation: WorkOS/AuthKit, `/api/me`, customer-facing Organization/account-workspace language backed by internal tenant/customer scoping, roles/capabilities, invitations, Resend email boundary, user/admin surfaces, support access, admin audit, and backend authorization;
 - role-authorized functional-agent workstreams with structured surfaces, attention, traces, and governed backend capabilities;
 - governed runtime agents for model-backed behavior: active agent definitions, governed prompts/skills/references, manifests, tool boundaries, model config, traces, and safe failure surfaces.
 

@@ -1,11 +1,11 @@
 ---
 name: akka-basic-user-admin
-description: Implement complete foundation user and tenant administration for WorkOS-authenticated Akka web apps, including /api/me, invites, user directory/search, memberships, roles, access state, support access, admin audit, and backend authorization checks.
+description: Implement complete foundation user and organization administration for WorkOS-authenticated Akka web apps, backed by tenant isolation and including /api/me, invites, user directory/search, memberships, roles, access state, support access, admin audit, and backend authorization checks.
 ---
 
 # Akka Basic User Administration
 
-Use this skill for the local authorization and admin-management foundation after WorkOS/AuthKit authentication. It owns Account/Profile/Settings, Tenant creation/maintenance, Tenant Admin bootstrap and lifecycle, Tenant/Customer memberships, roles/capabilities, user directory/search, support access, admin audit, access review, disabled-user behavior, and backend authorization checks.
+Use this skill for the local authorization and admin-management foundation after WorkOS/AuthKit authentication. It owns Account/Profile/Settings, customer-facing Organization creation/maintenance backed by Tenant isolation, Organization Admin (`TENANT_ADMIN`) bootstrap and lifecycle, Organization/Customer memberships, roles/capabilities, user directory/search, support access, admin audit, access review, disabled-user behavior, and backend authorization checks.
 
 ## Required reading
 
@@ -40,20 +40,20 @@ Required foundation concepts:
 
 - Account linked to WorkOS subject, UserProfile, and UserSettings
 - status: `INVITED`, `ACTIVE`, `DISABLED`
-- Tenant organization records with status such as `DRAFT`, `ONBOARDING`, `ACTIVE`, `SUSPENDED`, or `CLOSED`
-- Tenant Admin bootstrap through invitation before privileged first sign-in
-- Tenant and Customer Membership records
+- Organization records backed by Tenant isolation with status such as `DRAFT`, `ONBOARDING`, `ACTIVE`, `SUSPENDED`, or `CLOSED`
+- Organization Admin bootstrap through invitation before privileged first sign-in (`TENANT_ADMIN` internally)
+- Organization/Tenant and Customer Membership records
 - canonical roles: `SAAS_OWNER_ADMIN`, `TENANT_ADMIN`, `TENANT_EMPLOYEE`, `CUSTOMER_ADMIN`, `CUSTOMER_USER`, `AUDITOR`; app-specific roles extend capabilities but do not replace foundation checks
 - selected `AuthContext` for protected operations
 - support-access grants with expiry and audit
-- AdminAuditEvent metadata for tenant lifecycle, identity, invitation, membership, role, support-access, approval, and data-access changes
+- AdminAuditEvent metadata for organization/tenant lifecycle, identity, invitation, membership, role, support-access, approval, and data-access changes
 - TenantDirectoryView, TenantAdminView, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, and AccessReviewQueueView when User Admin is in scope
 
-Use Key Value Entity for simple current state. Use Event Sourced Entity when the state model itself needs audit-grade history; Tenant lifecycle and status changes are usually audit-grade enough to prefer Event Sourced Entity.
+Use Key Value Entity for simple current state. Use Event Sourced Entity when the state model itself needs audit-grade history; Organization/Tenant lifecycle and status changes are usually audit-grade enough to prefer Event Sourced Entity.
 
 ## Typical API shape
 
-Browser-facing admin APIs usually include:
+Browser-facing admin APIs may expose `/api/organizations`/`organizationId` for product clarity or retain `/api/tenants`/`tenantId` as the internal contract. Prefer Organization labels in UI/copy even when the isolation key is `tenantId`. Typical internal API shape:
 
 ```text
 GET    /api/me
@@ -86,15 +86,15 @@ GET    /api/admin/audit
 GET    /api/admin/access-review
 ```
 
-All protected routes require JWT, request-context extraction, active local account, selected tenant/customer scope validation, capability checks, redacted DTOs, pagination for lists, and forbidden responses for out-of-scope data. Tenant APIs must distinguish SaaS Owner platform administration from Tenant-scoped administration: SaaS Owner Admins can create and maintain Tenant organizations and bootstrap Tenant Admins; Tenant Admins can manage admins/users only inside their selected Tenant context.
+All protected routes require JWT, request-context extraction, active local account, selected organization/customer scope validation backed by tenant/customer enforcement, capability checks, redacted DTOs, pagination for lists, and forbidden responses for out-of-scope data. Organization/Tenant APIs must distinguish SaaS Owner platform administration from Tenant-scoped administration: SaaS Owner Admins can create and maintain Organizations and bootstrap Organization Admins; Organization Admins (`TENANT_ADMIN`) can manage admins/users only inside their selected Organization/Tenant context.
 
 ## Authorization rules
 
 - reject disabled users even with a valid JWT
-- require `SAAS_OWNER_ADMIN` for Tenant creation, Tenant status changes, and SaaS Owner bootstrap of Tenant Admins
-- allow `TENANT_ADMIN` to maintain Tenant Admins and users only inside their selected Tenant context
+- require `SAAS_OWNER_ADMIN` for Organization/Tenant creation, status changes, and SaaS Owner bootstrap of Organization Admins
+- allow `TENANT_ADMIN` to maintain Organization Admins and users only inside their selected Organization/Tenant context
 - validate target tenant/customer scope on every action
-- prevent privilege escalation, including tenant admins assigning SaaS-owner privileges, creating sibling tenants, or assigning out-of-scope roles
+- prevent privilege escalation, including organization admins assigning SaaS-owner privileges, creating sibling Organizations/Tenants, or assigning out-of-scope roles
 - preserve last-admin safeguards for tenant/customer/admin scopes
 - make invite/resend/membership/role commands idempotent where possible
 - separate support access from ordinary tenant membership and require expiry, reason, approver/actor, and audit
@@ -102,17 +102,17 @@ All protected routes require JWT, request-context extraction, active local accou
 
 ## Completion standard
 
-Do not call User Admin implemented unless the stated scope works through the running Akka/API/UI path. A complete foundation slice includes Tenant create/maintain where SaaS Owner administration is in scope, Tenant Admin bootstrap and lifecycle, scoped list/search, invite/resend/revoke/acceptance visibility, role/membership lifecycle, disabled-user denial, last-admin protection, scoped audit/search, access-review queues, required surfaces, backend authorization, tenant/customer isolation, and tests. If any part is deferred, name the slice narrowly or mark it incomplete.
+Do not call User Admin implemented unless the stated scope works through the running Akka/API/UI path. A complete foundation slice includes Organization/Tenant create/maintain where SaaS Owner administration is in scope, Organization Admin bootstrap and lifecycle, scoped list/search, invite/resend/revoke/acceptance visibility, role/membership lifecycle, disabled-user denial, last-admin protection, scoped audit/search, access-review queues, required Organization-facing surfaces, backend authorization, tenant/customer isolation, and tests. If any part is deferred, name the slice narrowly or mark it incomplete.
 
 ## Tests and validation
 
 Cover at least:
 
 - `/api/me` bootstrap for active, invited, disabled, unknown, and multi-scope users
-- SaaS Owner Tenant creation, Tenant profile/status maintenance, and TenantDirectoryView list/search
-- SaaS Owner bootstrap invitation for initial Tenant Admin
-- Tenant Admin management of admins/users only inside the selected Tenant context
-- cross-tenant Tenant Admin attempts, Tenant Admin sibling-tenant creation, and Tenant Admin SaaS Owner role assignment denials
+- SaaS Owner Organization/Tenant creation, Organization profile/status maintenance, and TenantDirectoryView/OrganizationDirectoryView list/search
+- SaaS Owner bootstrap invitation for initial Organization Admin
+- Organization Admin management of admins/users only inside the selected Organization/Tenant context
+- cross-tenant Organization Admin attempts, Organization Admin sibling-organization creation, and Organization Admin SaaS Owner role assignment denials
 - tenant/customer isolation for every list/query/action
 - role/capability escalation denials
 - disabled-user denial after valid JWT

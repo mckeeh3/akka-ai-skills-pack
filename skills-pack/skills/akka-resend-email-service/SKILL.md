@@ -98,7 +98,7 @@ Example shape:
 
 ```java
 public final class ResendEmailTools {
-  @FunctionTool(description = "Preview an approved email template for the selected tenant/customer context. No email is sent.")
+  @FunctionTool(description = "Preview an approved email template for the selected organization/customer context. No email is sent.")
   public EmailPreviewResult previewEmail(PreviewEmailRequest request) {
     // enforce AuthContext + ToolPermissionBoundary + template allowlist
     // render redacted preview using approved template/version

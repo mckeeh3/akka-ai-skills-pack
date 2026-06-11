@@ -26,7 +26,7 @@
 
     <main class="workspace">
       <h1 class="page-title">User Administration</h1>
-      <p class="page-subtitle">Manage tenant and customer memberships, roles, invitations, support access, and auditable account lifecycle controls.</p>
+      <p class="page-subtitle">Manage organization and customer memberships, roles, invitations, support access, and auditable account lifecycle controls.</p>
 
       <div class="toolbar" role="search">
         <input class="control" style="max-width: 25rem" aria-label="Search users" placeholder="Search users, email, organization..." />
@@ -36,10 +36,10 @@
         <button class="btn">Export audit</button>
         <button class="btn primary">Invite / Add user</button>
       </div>
-      <p class="muted">Selected context · <strong style="color: var(--color-text)">Tenant Admin</strong> · Customer-scoped memberships visible · Backend auth enforced on every action</p>
+      <p class="muted">Selected context · <strong style="color: var(--color-text)">Organization Admin</strong> · Customer-scoped memberships visible · Backend auth enforced on every action</p>
 
       <section class="table" aria-label="User search results">
-        <article class="table-row"><div class="person"><span class="avatar">SL</span><div><strong>Sofia Liu</strong><span>sofia@globex.example · last active 12m ago<br>Account linked through accepted invitation · MFA enabled</span></div></div><span class="badge success">Active</span><span class="badge info">Tenant Admin</span><span>3 memberships<br><span class="muted">Tenant + 2 customers</span></span><button class="btn">View</button></article>
+        <article class="table-row"><div class="person"><span class="avatar">SL</span><div><strong>Sofia Liu</strong><span>sofia@globex.example · last active 12m ago<br>Account linked through accepted invitation · MFA enabled</span></div></div><span class="badge success">Active</span><span class="badge info">Organization Admin</span><span>3 memberships<br><span class="muted">Tenant + 2 customers</span></span><button class="btn">View</button></article>
         <article class="table-row"><div class="person"><span class="avatar">JR</span><div><strong>Jon Reyes</strong><span>jon@northwind.example · last active 1h ago<br>Customer-scoped operator · AI decision reviewer</span></div></div><span class="badge success">Active</span><span class="badge warning">Reviewer</span><span>1 membership<br><span class="muted">Northwind Architecture</span></span><button class="btn">Review</button></article>
         <article class="table-row"><div class="person"><span class="avatar">AP</span><div><strong>Amina Patel</strong><span>amina@acmelegal.example · Invitation accepted yesterday<br>Profile incomplete · default context pending confirmation</span></div></div><span class="badge warning">Limited</span><span class="badge info">Approver</span><span>1 membership<br><span class="muted">Acme Legal</span></span><button class="btn warning">Resolve</button></article>
         <article class="table-row"><div class="person"><span class="avatar">TK</span><div><strong>Theo King</strong><span>theo@stark.example · Invite expires in 19h<br>Reminder sent · captured outbox delivery id msg-1842</span></div></div><span class="badge warning">Invited</span><span class="badge info">Service Lead</span><span>1 pending membership<br><span class="muted">Stark Building</span></span><button class="btn">Resend</button></article>
@@ -47,7 +47,7 @@
 
       <div class="grid-12" style="margin-top: var(--space-5)">
         <section class="panel panel-pad span-4"><h2 class="panel-title">Access health</h2><p class="panel-note">Mandatory SaaS foundation signals</p><div class="summary-grid" style="grid-template-columns: repeat(2, 1fr)"><div><span class="kpi-value">142</span><br><span class="muted">active users</span></div><div><span class="kpi-value">9</span><br><span class="muted">pending invites</span></div></div><p>✓ Tenant isolation filters active</p><p>✓ Backend authorization required</p><p>● 3 access reviews due this week</p></section>
-        <section class="panel panel-pad span-4"><h2 class="panel-title">Recent admin audit</h2><p>Sofia Liu granted Tenant Admin <span class="muted">12m</span></p><p>Theo King invitation resent <span class="muted">1h</span></p><p>Support access approved for case #8821h</p><p><a href="#" style="color: var(--color-accent-strong)">Open admin audit trace ›</a></p></section>
+        <section class="panel panel-pad span-4"><h2 class="panel-title">Recent admin audit</h2><p>Sofia Liu granted Organization Admin <span class="muted">12m</span></p><p>Theo King invitation resent <span class="muted">1h</span></p><p>Support access approved for case #8821h</p><p><a href="#" style="color: var(--color-accent-strong)">Open admin audit trace ›</a></p></section>
         <section class="panel panel-pad span-4"><h2 class="panel-title">AI admin assistance</h2><p class="panel-note">Agents draft; humans approve authority changes</p><p><button class="btn" style="width: 100%">Review risky role changes ›</button></p><p><button class="btn" style="width: 100%">Summarize pending invitations ›</button></p><p class="muted">AdminRiskAgent · AccessReviewAgent enabled</p></section>
       </div>
     </main>

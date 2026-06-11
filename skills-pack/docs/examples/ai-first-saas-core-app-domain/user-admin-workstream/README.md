@@ -27,7 +27,7 @@ The workstream agent must handle:
 - `view user`, `edit this user`, `show roles for this user`
 - `invite user`, `resend invitation`, `revoke invitation`
 - `disable user`, `reactivate user`, `suspend membership`
-- `assign role`, `why can't I grant tenant admin`, `explain this denial`
+- `assign role`, `why can't I grant organization admin`, `explain this denial`
 - `show access review`, `who has admin access`
 - `show recent admin audit`
 - help/how-to questions for user management

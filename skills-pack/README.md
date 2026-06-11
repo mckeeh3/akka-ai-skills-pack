@@ -25,4 +25,6 @@ The repository root is the canonical runnable SaaS Foundation App. Pack users cl
 
 The pack targets one full-stack system: Akka Java SDK backend components plus a React/Vite/TypeScript frontend hosted by the Akka service when appropriate. Backend guidance should prefer explicit Akka write paths, read paths, event reactions, workflows, timers, endpoints, and governed agent/tool boundaries over generic CRUD. Frontend guidance should preserve typed API contracts, structured workstream surfaces, realtime state where needed, accessibility, responsive behavior, and production build output under `src/main/resources/static-resources/`.
 
+Terminology convention: generated apps should use **Organization** for customer-facing account/workspace concepts in UI, onboarding, invitations, admin surfaces, app-description surface labels, and end-user docs. Use **Tenant** for the internal SaaS isolation boundary, authorization/data/audit partitioning, provider/resource scope, and code-level tenancy. In the default foundation, an Organization is backed 1:1 by a Tenant boundary.
+
 Use focused skills for implementation mechanics; this README is only the source map. Keep repeated generated-app, governed-agent, UI, and retired-content rules in shared docs rather than copying them into every skill.
