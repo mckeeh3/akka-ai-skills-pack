@@ -13,6 +13,7 @@ public record IdentityRepositoryState(
     Map<String, Membership> memberships,
     Map<String, Tenant> tenants,
     Map<String, Customer> customers,
+    Map<String, IdentityRecoveryCase> identityRecoveryCases,
     List<AdminAuditEvent> auditEvents) {
 
   public IdentityRepositoryState {
@@ -22,11 +23,12 @@ public record IdentityRepositoryState(
     memberships = Map.copyOf(memberships == null ? Map.of() : memberships);
     tenants = Map.copyOf(tenants == null ? Map.of() : tenants);
     customers = Map.copyOf(customers == null ? Map.of() : customers);
+    identityRecoveryCases = Map.copyOf(identityRecoveryCases == null ? Map.of() : identityRecoveryCases);
     auditEvents = List.copyOf(auditEvents == null ? List.of() : auditEvents);
   }
 
   public static IdentityRepositoryState empty() {
-    return new IdentityRepositoryState(Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), List.of());
+    return new IdentityRepositoryState(Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), Map.of(), List.of());
   }
 
   public Optional<Account> findAccountByWorkosSubject(String workosUserId) {
@@ -40,13 +42,13 @@ public record IdentityRepositoryState(
   public IdentityRepositoryState saveAccount(Account account) {
     var updated = new java.util.LinkedHashMap<>(accounts);
     updated.put(account.accountId(), account);
-    return new IdentityRepositoryState(updated, profiles, settings, memberships, tenants, customers, auditEvents);
+    return new IdentityRepositoryState(updated, profiles, settings, memberships, tenants, customers, identityRecoveryCases, auditEvents);
   }
 
   public IdentityRepositoryState deleteAccount(String accountId) {
     var updated = new java.util.LinkedHashMap<>(accounts);
     updated.remove(accountId);
-    return new IdentityRepositoryState(updated, profiles, settings, memberships, tenants, customers, auditEvents);
+    return new IdentityRepositoryState(updated, profiles, settings, memberships, tenants, customers, identityRecoveryCases, auditEvents);
   }
 
   public UserProfile profile(String accountId) {
@@ -56,13 +58,13 @@ public record IdentityRepositoryState(
   public IdentityRepositoryState saveProfile(UserProfile profile) {
     var updated = new java.util.LinkedHashMap<>(profiles);
     updated.put(profile.accountId(), profile);
-    return new IdentityRepositoryState(accounts, updated, settings, memberships, tenants, customers, auditEvents);
+    return new IdentityRepositoryState(accounts, updated, settings, memberships, tenants, customers, identityRecoveryCases, auditEvents);
   }
 
   public IdentityRepositoryState deleteProfile(String accountId) {
     var updated = new java.util.LinkedHashMap<>(profiles);
     updated.remove(accountId);
-    return new IdentityRepositoryState(accounts, updated, settings, memberships, tenants, customers, auditEvents);
+    return new IdentityRepositoryState(accounts, updated, settings, memberships, tenants, customers, identityRecoveryCases, auditEvents);
   }
 
   public UserSettings settings(String accountId) {
@@ -72,13 +74,13 @@ public record IdentityRepositoryState(
   public IdentityRepositoryState saveSettings(UserSettings userSettings) {
     var updated = new java.util.LinkedHashMap<>(settings);
     updated.put(userSettings.accountId(), userSettings);
-    return new IdentityRepositoryState(accounts, profiles, updated, memberships, tenants, customers, auditEvents);
+    return new IdentityRepositoryState(accounts, profiles, updated, memberships, tenants, customers, identityRecoveryCases, auditEvents);
   }
 
   public IdentityRepositoryState deleteSettings(String accountId) {
     var updated = new java.util.LinkedHashMap<>(settings);
     updated.remove(accountId);
-    return new IdentityRepositoryState(accounts, profiles, updated, memberships, tenants, customers, auditEvents);
+    return new IdentityRepositoryState(accounts, profiles, updated, memberships, tenants, customers, identityRecoveryCases, auditEvents);
   }
 
   public List<Membership> membershipsByAccount(String accountId) {
@@ -96,13 +98,13 @@ public record IdentityRepositoryState(
   public IdentityRepositoryState saveMembership(Membership membership) {
     var updated = new java.util.LinkedHashMap<>(memberships);
     updated.put(membership.membershipId(), membership);
-    return new IdentityRepositoryState(accounts, profiles, settings, updated, tenants, customers, auditEvents);
+    return new IdentityRepositoryState(accounts, profiles, settings, updated, tenants, customers, identityRecoveryCases, auditEvents);
   }
 
   public IdentityRepositoryState deleteMembership(String membershipId) {
     var updated = new java.util.LinkedHashMap<>(memberships);
     updated.remove(membershipId);
-    return new IdentityRepositoryState(accounts, profiles, settings, updated, tenants, customers, auditEvents);
+    return new IdentityRepositoryState(accounts, profiles, settings, updated, tenants, customers, identityRecoveryCases, auditEvents);
   }
 
   public Optional<Tenant> tenant(String tenantId) {
@@ -116,7 +118,7 @@ public record IdentityRepositoryState(
   public IdentityRepositoryState saveTenant(Tenant tenant) {
     var updated = new java.util.LinkedHashMap<>(tenants);
     updated.put(tenant.tenantId(), tenant);
-    return new IdentityRepositoryState(accounts, profiles, settings, memberships, updated, customers, auditEvents);
+    return new IdentityRepositoryState(accounts, profiles, settings, memberships, updated, customers, identityRecoveryCases, auditEvents);
   }
 
   public Optional<Customer> customer(String tenantId, String customerId) {
@@ -126,12 +128,26 @@ public record IdentityRepositoryState(
   public IdentityRepositoryState saveCustomer(Customer customer) {
     var updated = new java.util.LinkedHashMap<>(customers);
     updated.put(customer.tenantId() + ":" + customer.customerId(), customer);
-    return new IdentityRepositoryState(accounts, profiles, settings, memberships, tenants, updated, auditEvents);
+    return new IdentityRepositoryState(accounts, profiles, settings, memberships, tenants, updated, identityRecoveryCases, auditEvents);
+  }
+
+  public Optional<IdentityRecoveryCase> identityRecovery(String recoveryId) {
+    return Optional.ofNullable(identityRecoveryCases.get(recoveryId));
+  }
+
+  public List<IdentityRecoveryCase> listIdentityRecoveries() {
+    return identityRecoveryCases.values().stream().toList();
+  }
+
+  public IdentityRepositoryState saveIdentityRecovery(IdentityRecoveryCase recoveryCase) {
+    var updated = new java.util.LinkedHashMap<>(identityRecoveryCases);
+    updated.put(recoveryCase.recoveryId(), recoveryCase);
+    return new IdentityRepositoryState(accounts, profiles, settings, memberships, tenants, customers, updated, auditEvents);
   }
 
   public IdentityRepositoryState appendAudit(AdminAuditEvent event) {
     var updated = new java.util.ArrayList<>(auditEvents);
     updated.add(event);
-    return new IdentityRepositoryState(accounts, profiles, settings, memberships, tenants, customers, updated);
+    return new IdentityRepositoryState(accounts, profiles, settings, memberships, tenants, customers, identityRecoveryCases, updated);
   }
 }

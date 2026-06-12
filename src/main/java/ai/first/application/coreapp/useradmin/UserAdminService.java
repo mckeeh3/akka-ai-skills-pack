@@ -4,6 +4,8 @@ import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
 import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.IdentityRecoveryCase;
+import ai.first.domain.foundation.identity.IdentityRecoveryStatus;
 import ai.first.domain.foundation.identity.Membership;
 import ai.first.domain.foundation.identity.MembershipStatus;
 import ai.first.domain.foundation.identity.ScopeType;
@@ -244,21 +246,110 @@ public final class UserAdminService {
 
   public IdentityRelinkResult requestIdentityRelink(AuthContextResolver.ResolvedMe actor, String accountId, String reason, String idempotencyKey, String correlationId) {
     if (idempotencyKey == null || idempotencyKey.isBlank()) throw new AuthorizationException(400, "idempotency-key-required");
-    var memberships = repository.membershipsByAccount(accountId);
-    for (var membership : memberships) requireManage(actor, membership.scopeType(), membership.tenantId(), membership.customerId());
-    var target = account(accountId);
-    audit(actor, memberships.isEmpty() ? null : memberships.get(0), "IDENTITY_RELINK_REQUEST", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
-    return new IdentityRelinkResult("approval-required", "Identity relink requested; completion requires backend policy approval evidence.", target.accountId(), "trace-useradmin-identity-relink-request-" + stableSuffix(idempotencyKey));
+    var target = scopedTarget(actor, accountId, "IDENTITY_RELINK_REQUEST", correlationId);
+    var existing = repository.identityRecoveries().stream()
+        .filter(recovery -> recovery.accountId().equals(target.account().accountId()))
+        .filter(recovery -> !recovery.terminal())
+        .findFirst();
+    if (existing.isPresent()) {
+      audit(actor, target.membership(), "IDENTITY_RELINK_REQUEST", AdminAuditEvent.Result.NO_OP, "open-recovery-exists", correlationId);
+      return IdentityRelinkResult.from(existing.get(), "no-op", "Identity recovery request already exists; backend durable lifecycle is preserved.");
+    }
+    var now = Instant.now(clock);
+    var recovery = new IdentityRecoveryCase(
+        "identity-recovery-" + stableSuffix(target.account().accountId() + ":" + idempotencyKey),
+        target.account().accountId(),
+        target.membership().membershipId(),
+        target.membership().scopeType(),
+        target.membership().tenantId(),
+        target.membership().customerId(),
+        IdentityRecoveryStatus.NEEDS_REVIEW,
+        safeReason(reason),
+        null,
+        "provider-account-mismatch-or-stale-link requires authorized human recovery review",
+        List.of("account:" + target.account().accountId(), "membership:" + target.membership().membershipId(), "provider-boundary:redacted"),
+        actor.account().accountId(),
+        null,
+        null,
+        idempotencyKey,
+        null,
+        null,
+        null,
+        List.of("trace-useradmin-identity-relink-request-" + stableSuffix(idempotencyKey)),
+        now,
+        now);
+    repository.saveIdentityRecovery(recovery);
+    audit(actor, target.membership(), "IDENTITY_RELINK_REQUEST", AdminAuditEvent.Result.ALLOWED, safeReason(reason), correlationId);
+    return IdentityRelinkResult.from(recovery, "approval-required", "Identity recovery requested; review, approval, and completion are now durable backend state.");
+  }
+
+  public IdentityRelinkResult readIdentityRelink(AuthContextResolver.ResolvedMe actor, String recoveryIdOrAccountId, String correlationId) {
+    var recovery = findRecovery(recoveryIdOrAccountId);
+    requireManage(actor, recovery.scopeType(), recovery.tenantId(), recovery.customerId());
+    audit(actor, repository.membership(recovery.membershipId()).orElse(null), "IDENTITY_RELINK_READ", AdminAuditEvent.Result.ALLOWED, "browser-safe-review", correlationId);
+    return IdentityRelinkResult.from(recovery, recovery.status().name().toLowerCase().replace('_', '-'), "Identity recovery state loaded with provider-boundary redaction.");
+  }
+
+  public IdentityRelinkResult approveIdentityRelink(AuthContextResolver.ResolvedMe actor, String recoveryIdOrAccountId, String reason, String approvalRef, String idempotencyKey, String correlationId) {
+    if (idempotencyKey == null || idempotencyKey.isBlank()) throw new AuthorizationException(400, "idempotency-key-required");
+    if (approvalRef == null || approvalRef.isBlank()) throw new AuthorizationException(400, "approval-ref-required");
+    var recovery = findRecovery(recoveryIdOrAccountId);
+    requireManage(actor, recovery.scopeType(), recovery.tenantId(), recovery.customerId());
+    if (recovery.status() == IdentityRecoveryStatus.APPROVED_FOR_RECOVERY || recovery.status() == IdentityRecoveryStatus.RECOVERY_IN_PROGRESS || recovery.status() == IdentityRecoveryStatus.COMPLETED) {
+      audit(actor, repository.membership(recovery.membershipId()).orElse(null), "IDENTITY_RELINK_APPROVE", AdminAuditEvent.Result.NO_OP, "already-approved", correlationId);
+      return IdentityRelinkResult.from(recovery, "no-op", "Identity recovery was already approved; replay preserved durable state.");
+    }
+    if (recovery.terminal()) {
+      audit(actor, repository.membership(recovery.membershipId()).orElse(null), "IDENTITY_RELINK_APPROVE", AdminAuditEvent.Result.DENIED, "identity-recovery-terminal", correlationId);
+      throw new AuthorizationException(400, "identity-recovery-terminal");
+    }
+    var updated = saveRecovery(recovery, IdentityRecoveryStatus.APPROVED_FOR_RECOVERY, safeReason(reason), approvalRef, null, null, actor.account().accountId(), null);
+    audit(actor, repository.membership(updated.membershipId()).orElse(null), "IDENTITY_RELINK_APPROVE", AdminAuditEvent.Result.ALLOWED, safeReason(reason), correlationId);
+    return IdentityRelinkResult.from(updated, "approved-for-recovery", "Identity recovery approved; provider mutation remains blocked until deterministic completion.");
+  }
+
+  public IdentityRelinkResult denyIdentityRelink(AuthContextResolver.ResolvedMe actor, String recoveryIdOrAccountId, String reason, String idempotencyKey, String correlationId) {
+    if (idempotencyKey == null || idempotencyKey.isBlank()) throw new AuthorizationException(400, "idempotency-key-required");
+    var recovery = findRecovery(recoveryIdOrAccountId);
+    requireManage(actor, recovery.scopeType(), recovery.tenantId(), recovery.customerId());
+    if (recovery.status() == IdentityRecoveryStatus.DENIED) {
+      audit(actor, repository.membership(recovery.membershipId()).orElse(null), "IDENTITY_RELINK_DENY", AdminAuditEvent.Result.NO_OP, "already-denied", correlationId);
+      return IdentityRelinkResult.from(recovery, "no-op", "Identity recovery was already denied; replay preserved durable state.");
+    }
+    if (recovery.terminal()) {
+      audit(actor, repository.membership(recovery.membershipId()).orElse(null), "IDENTITY_RELINK_DENY", AdminAuditEvent.Result.DENIED, "identity-recovery-terminal", correlationId);
+      throw new AuthorizationException(400, "identity-recovery-terminal");
+    }
+    var updated = saveRecovery(recovery, IdentityRecoveryStatus.DENIED, safeReason(reason), recovery.approvalRef(), safeReason(reason), null, actor.account().accountId(), null);
+    audit(actor, repository.membership(updated.membershipId()).orElse(null), "IDENTITY_RELINK_DENY", AdminAuditEvent.Result.ALLOWED, safeReason(reason), correlationId);
+    return IdentityRelinkResult.from(updated, "denied", "Identity recovery denied; identity state was not mutated.");
   }
 
   public IdentityRelinkResult completeIdentityRelink(AuthContextResolver.ResolvedMe actor, String accountId, String approvalRef, String idempotencyKey, String correlationId) {
     if (idempotencyKey == null || idempotencyKey.isBlank()) throw new AuthorizationException(400, "idempotency-key-required");
     if (approvalRef == null || approvalRef.isBlank()) throw new AuthorizationException(400, "approval-ref-required");
-    var memberships = repository.membershipsByAccount(accountId);
-    for (var membership : memberships) requireManage(actor, membership.scopeType(), membership.tenantId(), membership.customerId());
-    var target = account(accountId);
-    audit(actor, memberships.isEmpty() ? null : memberships.get(0), "IDENTITY_RELINK_COMPLETE", AdminAuditEvent.Result.ALLOWED, "approval:" + approvalRef, correlationId);
-    return new IdentityRelinkResult("accepted", "Identity relink completion recorded with approval evidence; WorkOS subject mutation remains provider-boundary controlled.", target.accountId(), "trace-useradmin-identity-relink-complete-" + stableSuffix(idempotencyKey));
+    var recovery = findRecovery(accountId);
+    requireManage(actor, recovery.scopeType(), recovery.tenantId(), recovery.customerId());
+    if (recovery.status() == IdentityRecoveryStatus.COMPLETED) {
+      audit(actor, repository.membership(recovery.membershipId()).orElse(null), "IDENTITY_RELINK_COMPLETE", AdminAuditEvent.Result.NO_OP, "already-completed", correlationId);
+      return IdentityRelinkResult.from(recovery, "no-op", "Identity recovery completion was already recorded; replay preserved durable state.");
+    }
+    if (recovery.status() != IdentityRecoveryStatus.APPROVED_FOR_RECOVERY && recovery.status() != IdentityRecoveryStatus.RECOVERY_IN_PROGRESS) {
+      audit(actor, repository.membership(recovery.membershipId()).orElse(null), "IDENTITY_RELINK_COMPLETE", AdminAuditEvent.Result.DENIED, "identity-recovery-approval-required", correlationId);
+      throw new AuthorizationException(400, "identity-recovery-approval-required");
+    }
+    if (recovery.approvalRef() != null && !recovery.approvalRef().equals(approvalRef)) {
+      audit(actor, repository.membership(recovery.membershipId()).orElse(null), "IDENTITY_RELINK_COMPLETE", AdminAuditEvent.Result.DENIED, "approval-ref-mismatch", correlationId);
+      throw new AuthorizationException(403, "approval-ref-mismatch");
+    }
+    var inProgress = saveRecovery(recovery, IdentityRecoveryStatus.RECOVERY_IN_PROGRESS, recovery.reviewReason(), approvalRef, null, null, recovery.reviewedByAccountId(), null);
+    var target = account(inProgress.accountId());
+    if (!"RECOVERY_COMPLETED".equals(target.identityLinkState())) {
+      repository.saveAccount(new Account(target.accountId(), target.workosUserId(), target.normalizedEmail(), target.displayEmail(), target.status(), "RECOVERY_COMPLETED"));
+    }
+    var completed = saveRecovery(inProgress, IdentityRecoveryStatus.COMPLETED, recovery.reviewReason(), approvalRef, null, null, recovery.reviewedByAccountId(), actor.account().accountId());
+    audit(actor, repository.membership(completed.membershipId()).orElse(null), "IDENTITY_RELINK_COMPLETE", AdminAuditEvent.Result.ALLOWED, "approval:" + approvalRef, correlationId);
+    return IdentityRelinkResult.from(completed, "accepted", "Identity recovery completion recorded with provider-boundary redaction and approval evidence.");
   }
 
   void requireAccessReviewRead(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
@@ -374,6 +465,54 @@ public final class UserAdminService {
     return repository.findAccountByEmail(accountId).orElseThrow(() -> new AuthorizationException(404, "target-not-found-or-forbidden"));
   }
 
+  private ScopedTarget scopedTarget(AuthContextResolver.ResolvedMe actor, String accountId, String action, String correlationId) {
+    var target = repository.findAccountByEmail(accountId).orElse(null);
+    var visibleMembership = target == null ? null : repository.membershipsByAccount(target.accountId()).stream()
+        .filter(membership -> sameScope(actor, membership))
+        .findFirst()
+        .orElse(null);
+    if (target == null || visibleMembership == null) {
+      audit(actor, null, action, AdminAuditEvent.Result.DENIED, "target-not-found-or-forbidden", correlationId);
+      throw new AuthorizationException(404, "target-not-found-or-forbidden");
+    }
+    requireManage(actor, visibleMembership.scopeType(), visibleMembership.tenantId(), visibleMembership.customerId());
+    return new ScopedTarget(target, visibleMembership);
+  }
+
+  private boolean sameScope(AuthContextResolver.ResolvedMe actor, Membership membership) {
+    var auth = actor.selectedContext();
+    return auth.scopeType() == membership.scopeType()
+        && java.util.Objects.equals(auth.tenantId(), membership.tenantId())
+        && java.util.Objects.equals(auth.customerId(), membership.customerId());
+  }
+
+  private IdentityRecoveryCase findRecovery(String recoveryIdOrAccountId) {
+    return repository.identityRecovery(recoveryIdOrAccountId)
+        .or(() -> repository.identityRecoveries().stream()
+            .filter(recovery -> recovery.accountId().equals(recoveryIdOrAccountId))
+            .filter(recovery -> !recovery.terminal())
+            .findFirst())
+        .or(() -> repository.identityRecoveries().stream()
+            .filter(recovery -> recovery.accountId().equals(recoveryIdOrAccountId))
+            .max(Comparator.comparing(IdentityRecoveryCase::updatedAt)))
+        .orElseThrow(() -> new AuthorizationException(404, "identity-recovery-not-found-or-forbidden"));
+  }
+
+  private IdentityRecoveryCase saveRecovery(IdentityRecoveryCase current, IdentityRecoveryStatus status, String reviewReason, String approvalRef, String denialReason, String failureReason, String reviewedByAccountId, String completedByAccountId) {
+    var updated = new IdentityRecoveryCase(
+        current.recoveryId(), current.accountId(), current.membershipId(), current.scopeType(), current.tenantId(), current.customerId(), status,
+        current.reason(), reviewReason, current.riskSummary(), current.evidenceRefs(), current.requestedByAccountId(), reviewedByAccountId,
+        completedByAccountId, current.idempotencyKey(), approvalRef, denialReason, failureReason,
+        java.util.stream.Stream.concat(current.traceRefs().stream(), java.util.stream.Stream.of("trace-useradmin-identity-relink-" + status.name().toLowerCase() + "-" + stableSuffix(current.recoveryId()))).distinct().toList(),
+        current.createdAt(), Instant.now(clock));
+    return repository.saveIdentityRecovery(updated);
+  }
+
+  private String safeReason(String reason) {
+    if (reason == null || reason.isBlank()) return "not-specified";
+    return reason.length() > 160 ? reason.substring(0, 160) : reason;
+  }
+
   private Membership membership(String membershipId) {
     return repository.membership(membershipId).orElseThrow(() -> new AuthorizationException(404, "target-not-found-or-forbidden"));
   }
@@ -395,5 +534,10 @@ public final class UserAdminService {
   public record RoleChangeResult(String status, String message, Membership membership, String traceId) {}
   public record StatusTransitionResult(String status, String message, Membership membership, String traceId) {}
   public record PermanentRemoveResult(String status, String message, String accountId, String membershipId, String traceId) {}
-  public record IdentityRelinkResult(String status, String message, String accountId, String traceId) {}
+  private record ScopedTarget(Account account, Membership membership) {}
+  public record IdentityRelinkResult(String status, String message, String accountId, String recoveryId, String lifecycleStatus, String traceId, List<String> evidenceRefs, List<String> redactions) {
+    static IdentityRelinkResult from(IdentityRecoveryCase recovery, String status, String message) {
+      return new IdentityRelinkResult(status, message, recovery.accountId(), recovery.recoveryId(), recovery.status().name().toLowerCase().replace('_', '-'), recovery.traceRefs().isEmpty() ? "trace-useradmin-identity-relink" : recovery.traceRefs().get(recovery.traceRefs().size() - 1), recovery.evidenceRefs(), List.of("workos-subject-redacted", "raw-jwt-redacted", "provider-payload-redacted"));
+    }
+  }
 }

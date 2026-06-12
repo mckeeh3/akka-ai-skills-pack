@@ -307,6 +307,61 @@ class InvitationAndUserAdminServiceTest {
   }
 
   @Test
+  void identityRecoveryLifecycleIsDurableAuditedIdempotentAndProviderRedacted() {
+    seedAdmin("member@example.com", "membership-member", FoundationRole.TENANT_EMPLOYEE);
+
+    var requested = userAdmin.requestIdentityRelink(tenantAdmin, "member@example.com", "provider mismatch", "idem-identity-request", "corr-identity-request");
+    assertEquals("approval-required", requested.status());
+    assertEquals("needs-review", requested.lifecycleStatus());
+    assertTrue(requested.redactions().contains("workos-subject-redacted"));
+    assertFalse(requested.toString().contains("workos-member@example.com"));
+
+    var duplicate = userAdmin.requestIdentityRelink(tenantAdmin, "member@example.com", "replay", "idem-identity-request-replay", "corr-identity-request-replay");
+    assertEquals("no-op", duplicate.status());
+    assertEquals(requested.recoveryId(), duplicate.recoveryId());
+
+    var read = userAdmin.readIdentityRelink(tenantAdmin, requested.recoveryId(), "corr-identity-read");
+    assertEquals("needs-review", read.lifecycleStatus());
+
+    var approved = userAdmin.approveIdentityRelink(tenantAdmin, requested.recoveryId(), "reviewed evidence", "approval-123", "idem-identity-approve", "corr-identity-approve");
+    assertEquals("approved-for-recovery", approved.status());
+    assertEquals("approved-for-recovery", approved.lifecycleStatus());
+
+    var completed = userAdmin.completeIdentityRelink(tenantAdmin, "member@example.com", "approval-123", "idem-identity-complete", "corr-identity-complete");
+    assertEquals("accepted", completed.status());
+    assertEquals("completed", completed.lifecycleStatus());
+    assertEquals("RECOVERY_COMPLETED", identityRepository.findAccountByEmail("member@example.com").orElseThrow().identityLinkState());
+
+    var completionReplay = userAdmin.completeIdentityRelink(tenantAdmin, "member@example.com", "approval-123", "idem-identity-complete-replay", "corr-identity-complete-replay");
+    assertEquals("no-op", completionReplay.status());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("IDENTITY_RELINK_REQUEST") && event.result() == AdminAuditEvent.Result.ALLOWED));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("IDENTITY_RELINK_APPROVE") && event.result() == AdminAuditEvent.Result.ALLOWED));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("IDENTITY_RELINK_COMPLETE") && event.result() == AdminAuditEvent.Result.NO_OP));
+  }
+
+  @Test
+  void identityRecoveryDeniesHiddenCrossScopeAndTerminalReplaysSafely() {
+    identityRepository.putTenant(new Tenant("tenant-2", "Tenant Two", true));
+    identityRepository.saveAccount(new Account("other@example.com", "workos-other", "other@example.com", "other@example.com", AccountStatus.ACTIVE, "LINKED"));
+    identityRepository.putProfile(new UserProfile("other@example.com", "other@example.com", "Other", null, null, null));
+    identityRepository.putSettings(new UserSettings("other@example.com", UserSettings.ThemeId.AURORA_LIGHT));
+    identityRepository.putMembership(new Membership("membership-other", "other@example.com", ScopeType.TENANT, "tenant-2", null, List.of(FoundationRole.TENANT_EMPLOYEE), MembershipStatus.ACTIVE, false, null));
+
+    var hidden = assertThrows(AuthorizationException.class, () -> userAdmin.requestIdentityRelink(tenantAdmin, "other@example.com", "cross", "idem-hidden", "corr-hidden-identity"));
+    assertEquals("target-not-found-or-forbidden", hidden.reasonCode());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("IDENTITY_RELINK_REQUEST") && event.result() == AdminAuditEvent.Result.DENIED && event.targetAccountId() == null));
+
+    seedAdmin("denied@example.com", "membership-denied", FoundationRole.TENANT_EMPLOYEE);
+    var requested = userAdmin.requestIdentityRelink(tenantAdmin, "denied@example.com", "provider stale", "idem-deny-request", "corr-deny-request");
+    var denied = userAdmin.denyIdentityRelink(tenantAdmin, requested.recoveryId(), "risk too high", "idem-deny", "corr-deny");
+    assertEquals("denied", denied.status());
+    var deniedReplay = userAdmin.denyIdentityRelink(tenantAdmin, requested.recoveryId(), "risk too high", "idem-deny-replay", "corr-deny-replay");
+    assertEquals("no-op", deniedReplay.status());
+    assertThrows(AuthorizationException.class, () -> userAdmin.completeIdentityRelink(tenantAdmin, "denied@example.com", "approval-denied", "idem-complete-denied", "corr-complete-denied"));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("IDENTITY_RELINK_DENY") && event.result() == AdminAuditEvent.Result.NO_OP));
+  }
+
+  @Test
   void userAdminPermanentRemoveRequiresDeactivatedUserAndEnforcesPurgeBlockers() {
     seedAdmin("second-admin@example.com", "membership-second-admin", FoundationRole.TENANT_ADMIN);
     seedAdmin("member@example.com", "membership-member", FoundationRole.TENANT_EMPLOYEE);

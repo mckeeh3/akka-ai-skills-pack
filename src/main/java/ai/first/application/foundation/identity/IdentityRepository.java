@@ -4,6 +4,7 @@ import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
 import ai.first.domain.foundation.identity.Customer;
 import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.IdentityRecoveryCase;
 import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.identity.UserProfile;
 import ai.first.domain.foundation.identity.UserSettings;
@@ -59,4 +60,16 @@ public interface IdentityRepository {
   void appendAudit(AdminAuditEvent event);
 
   List<AdminAuditEvent> auditEvents();
+
+  default Optional<IdentityRecoveryCase> identityRecovery(String recoveryId) {
+    return Optional.empty();
+  }
+
+  default List<IdentityRecoveryCase> identityRecoveries() {
+    return List.of();
+  }
+
+  default IdentityRecoveryCase saveIdentityRecovery(IdentityRecoveryCase recoveryCase) {
+    throw new IllegalStateException("identity recovery repository is not configured");
+  }
 }

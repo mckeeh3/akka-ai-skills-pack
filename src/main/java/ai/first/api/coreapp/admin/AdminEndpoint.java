@@ -321,7 +321,37 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
       var result = StarterSecurityComponents.userAdminService().requestIdentityRelink(actor, accountId, textOr(request == null ? null : request.reason(), "admin-api-identity-relink"), stableIdempotencyKey, correlationId);
-      return HttpResponses.ok(new IdentityRelinkApiResponse(result.status(), result.message(), result.accountId(), result.traceId(), correlationId));
+      return HttpResponses.ok(IdentityRelinkApiResponse.from(result, correlationId));
+    });
+  }
+
+  @Get("/users/{accountId}/identity-relink")
+  public HttpResponse readIdentityRelink(String accountId) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      return HttpResponses.ok(IdentityRelinkApiResponse.from(StarterSecurityComponents.userAdminService().readIdentityRelink(actor, accountId, correlationId), correlationId));
+    });
+  }
+
+  @Post("/users/{accountId}/identity-relink/approve")
+  public HttpResponse approveIdentityRelink(String accountId, IdentityRelinkApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.userAdminService().approveIdentityRelink(actor, accountId, textOr(request == null ? null : request.reason(), "admin-api-identity-approve"), request == null ? null : request.approvalRef(), stableIdempotencyKey, correlationId);
+      return HttpResponses.ok(IdentityRelinkApiResponse.from(result, correlationId));
+    });
+  }
+
+  @Post("/users/{accountId}/identity-relink/deny")
+  public HttpResponse denyIdentityRelink(String accountId, IdentityRelinkApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.userAdminService().denyIdentityRelink(actor, accountId, textOr(request == null ? null : request.reason(), "admin-api-identity-deny"), stableIdempotencyKey, correlationId);
+      return HttpResponses.ok(IdentityRelinkApiResponse.from(result, correlationId));
     });
   }
 
@@ -332,7 +362,7 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
       var result = StarterSecurityComponents.userAdminService().completeIdentityRelink(actor, accountId, request == null ? null : request.approvalRef(), stableIdempotencyKey, correlationId);
-      return HttpResponses.ok(new IdentityRelinkApiResponse(result.status(), result.message(), result.accountId(), result.traceId(), correlationId));
+      return HttpResponses.ok(IdentityRelinkApiResponse.from(result, correlationId));
     });
   }
 
@@ -693,7 +723,11 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   }
   public record AccountActionApiResponse(String status, String accountId, String accountStatus, List<String> traceIds, String correlationId) {}
   public record SupportAccessApiResponse(String status, String membershipId, String accountId, boolean supportAccess, String expiresAt, List<String> traceIds, String correlationId) {}
-  public record IdentityRelinkApiResponse(String status, String message, String accountId, String traceId, String correlationId) {}
+  public record IdentityRelinkApiResponse(String status, String message, String accountId, String recoveryId, String lifecycleStatus, String traceId, List<String> evidenceRefs, List<String> redactions, String correlationId) {
+    static IdentityRelinkApiResponse from(UserAdminService.IdentityRelinkResult result, String correlationId) {
+      return new IdentityRelinkApiResponse(result.status(), result.message(), result.accountId(), result.recoveryId(), result.lifecycleStatus(), result.traceId(), result.evidenceRefs(), result.redactions(), correlationId);
+    }
+  }
   public record AccessReviewApiResponse(String taskId, String status, int progressPercent, String summary, String blockerCode, List<String> evidenceRefs, List<String> recommendationRefs, List<String> traceIds, String correlationId) {
     static AccessReviewApiResponse from(AccessReviewTask task, String correlationId) {
       return new AccessReviewApiResponse(task.taskId(), task.status().name().toLowerCase(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.recommendationRefs(), task.traceIds(), correlationId);

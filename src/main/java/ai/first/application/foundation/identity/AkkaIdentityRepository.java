@@ -5,6 +5,7 @@ import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
 import ai.first.domain.foundation.identity.Customer;
 import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.IdentityRecoveryCase;
 import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.identity.UserProfile;
 import ai.first.domain.foundation.identity.UserSettings;
@@ -135,5 +136,20 @@ public final class AkkaIdentityRepository implements IdentityRepository {
   @Override
   public List<AdminAuditEvent> auditEvents() {
     return componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::auditEvents).invoke();
+  }
+
+  @Override
+  public Optional<IdentityRecoveryCase> identityRecovery(String recoveryId) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::identityRecovery).invoke(recoveryId);
+  }
+
+  @Override
+  public List<IdentityRecoveryCase> identityRecoveries() {
+    return componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::identityRecoveries).invoke();
+  }
+
+  @Override
+  public IdentityRecoveryCase saveIdentityRecovery(IdentityRecoveryCase recoveryCase) {
+    return componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::saveIdentityRecovery).invoke(recoveryCase);
   }
 }

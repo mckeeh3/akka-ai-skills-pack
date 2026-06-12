@@ -140,7 +140,7 @@
 
 ### TASK-UAPRH-03-001: Implement durable identity exception recovery backend
 
-- status: pending
+- status: done
 - source: specs/user-admin-production-runtime-hardening/backlog/01-user-admin-production-runtime-hardening-build-backlog.md
 - task brief: specs/user-admin-production-runtime-hardening/tasks/02-identity-recovery/01-identity-exception-recovery-backend.md
 - depends on:

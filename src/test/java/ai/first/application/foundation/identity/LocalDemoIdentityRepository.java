@@ -4,6 +4,7 @@ import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
 import ai.first.domain.foundation.identity.Customer;
 import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.IdentityRecoveryCase;
 import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.identity.UserProfile;
 import ai.first.domain.foundation.identity.UserSettings;
@@ -21,6 +22,7 @@ public final class LocalDemoIdentityRepository implements IdentityRepository {
   private final Map<String, Membership> memberships = new ConcurrentHashMap<>();
   private final Map<String, Tenant> tenants = new ConcurrentHashMap<>();
   private final Map<String, Customer> customers = new ConcurrentHashMap<>();
+  private final Map<String, IdentityRecoveryCase> identityRecoveries = new ConcurrentHashMap<>();
   private final List<AdminAuditEvent> auditEvents = new ArrayList<>();
 
   @Override
@@ -104,6 +106,22 @@ public final class LocalDemoIdentityRepository implements IdentityRepository {
   @Override
   public synchronized List<AdminAuditEvent> auditEvents() {
     return List.copyOf(auditEvents);
+  }
+
+  @Override
+  public Optional<IdentityRecoveryCase> identityRecovery(String recoveryId) {
+    return Optional.ofNullable(identityRecoveries.get(recoveryId));
+  }
+
+  @Override
+  public List<IdentityRecoveryCase> identityRecoveries() {
+    return identityRecoveries.values().stream().toList();
+  }
+
+  @Override
+  public IdentityRecoveryCase saveIdentityRecovery(IdentityRecoveryCase recoveryCase) {
+    identityRecoveries.put(recoveryCase.recoveryId(), recoveryCase);
+    return recoveryCase;
   }
 
   public void putProfile(UserProfile profile) {

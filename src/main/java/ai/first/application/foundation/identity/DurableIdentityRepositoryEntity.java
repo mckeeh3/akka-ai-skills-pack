@@ -5,6 +5,7 @@ import akka.javasdk.keyvalueentity.KeyValueEntity;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
 import ai.first.domain.foundation.identity.Customer;
+import ai.first.domain.foundation.identity.IdentityRecoveryCase;
 import ai.first.domain.foundation.identity.IdentityRepositoryState;
 import ai.first.domain.foundation.identity.Membership;
 import ai.first.domain.foundation.identity.Tenant;
@@ -109,6 +110,18 @@ public class DurableIdentityRepositoryEntity extends KeyValueEntity<IdentityRepo
 
   public ReadOnlyEffect<List<AdminAuditEvent>> auditEvents() {
     return effects().reply(currentState().auditEvents());
+  }
+
+  public ReadOnlyEffect<Optional<IdentityRecoveryCase>> identityRecovery(String recoveryId) {
+    return effects().reply(currentState().identityRecovery(recoveryId));
+  }
+
+  public ReadOnlyEffect<List<IdentityRecoveryCase>> identityRecoveries() {
+    return effects().reply(currentState().listIdentityRecoveries());
+  }
+
+  public Effect<IdentityRecoveryCase> saveIdentityRecovery(IdentityRecoveryCase recoveryCase) {
+    return effects().updateState(currentState().saveIdentityRecovery(recoveryCase)).thenReply(() -> recoveryCase);
   }
 
   public record CustomerKey(String tenantId, String customerId) {}

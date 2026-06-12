@@ -9,6 +9,8 @@ import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
 import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.IdentityRecoveryCase;
+import ai.first.domain.foundation.identity.IdentityRecoveryStatus;
 import ai.first.domain.foundation.identity.IdentityRepositoryState;
 import ai.first.domain.foundation.identity.Membership;
 import ai.first.domain.foundation.identity.MembershipStatus;
@@ -56,6 +58,32 @@ class DurableIdentityRepositoryEntityTest {
     assertEquals(List.of(membership), testKit.method(DurableIdentityRepositoryEntity::membershipsByAccount).invoke("admin@example.com").getReply());
     assertEquals(membership, testKit.method(DurableIdentityRepositoryEntity::membership).invoke("membership-admin").getReply().orElseThrow());
     assertEquals(List.of(audit), testKit.method(DurableIdentityRepositoryEntity::auditEvents).invoke().getReply());
+
+    var recovery = new IdentityRecoveryCase(
+        "identity-recovery-1",
+        "admin@example.com",
+        "membership-admin",
+        ScopeType.TENANT,
+        "tenant-1",
+        null,
+        IdentityRecoveryStatus.NEEDS_REVIEW,
+        "provider mismatch",
+        null,
+        "provider-boundary",
+        List.of("provider-boundary:redacted"),
+        "admin@example.com",
+        null,
+        null,
+        "idem-recovery",
+        null,
+        null,
+        null,
+        List.of("trace-identity-recovery"),
+        Instant.parse("2026-05-30T00:00:00Z"),
+        Instant.parse("2026-05-30T00:00:00Z"));
+    assertTrue(testKit.method(DurableIdentityRepositoryEntity::saveIdentityRecovery).invoke(recovery).stateWasUpdated());
+    assertEquals(recovery, testKit.method(DurableIdentityRepositoryEntity::identityRecovery).invoke("identity-recovery-1").getReply().orElseThrow());
+    assertEquals(List.of(recovery), testKit.method(DurableIdentityRepositoryEntity::identityRecoveries).invoke().getReply());
   }
 
   @Test
