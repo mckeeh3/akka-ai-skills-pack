@@ -224,7 +224,7 @@
 
 ### TASK-UASCC-99-001: Verify User Admin surface conformance cleanup
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-conformance-cleanup/backlog/01-user-admin-surface-conformance-build-backlog.md
 - task brief: specs/user-admin-surface-conformance-cleanup/tasks/99-verification/01-verify-user-admin-surface-conformance.md
 - depends on:
@@ -255,3 +255,6 @@
   - verification compares completed work against README done state, backlog, app-description, prior navigation-tree verification, task criteria, and command evidence; mini-project is marked complete only if no material gaps remain
 - notes:
   - vertical contract: User Admin / `user-admin-agent` concept and runtime normalization/alias result; terminal verification for User Admin structured-surface conformance; dashboard/list/detail/task/decision/workflow/system-message graph; governed browser-tool mappings; role/scope allow/deny; backend/frontend/API evidence; audit/work trace and redaction validation; append follow-ups if gaps remain
+  - completed verification: `specs/user-admin-surface-conformance-cleanup/conformance-verification.md`; no material gaps or follow-up tasks appended
+  - completed checks: `mvn -q -Dtest=WorkstreamServiceTest test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `git diff --check`
+  - commit: `user-admin-surface-conformance: verify cleanup completion`
