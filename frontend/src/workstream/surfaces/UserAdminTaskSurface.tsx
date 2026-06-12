@@ -199,7 +199,7 @@ function MembershipStatusTask({ envelope, onAction }: Props) {
 }
 
 function SupportAccessGrantTask({ envelope, onAction }: Props) {
-  const grantAction = findAction(envelope.actions, 'action-grant-support-access') ?? findAction(envelope.actions, 'action-extend-support-access');
+  const grantAction = findAction(envelope.actions, 'action-useradmin-grant-support-access') ?? findAction(envelope.actions, 'action-useradmin-extend-support-access') ?? findAction(envelope.actions, 'action-grant-support-access') ?? findAction(envelope.actions, 'action-extend-support-access');
   const [purpose, setPurpose] = useState('');
   const [expiryHours, setExpiryHours] = useState('24');
   const [error, setError] = useState<string>();
@@ -223,7 +223,7 @@ function SupportAccessGrantTask({ envelope, onAction }: Props) {
 }
 
 function SupportAccessRevokeTask({ envelope, onAction }: Props) {
-  const action = findAction(envelope.actions, 'action-revoke-support-access');
+  const action = findAction(envelope.actions, 'action-useradmin-revoke-support-access') ?? findAction(envelope.actions, 'action-revoke-support-access');
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string>();
   function submit(event: FormEvent<HTMLFormElement>) {

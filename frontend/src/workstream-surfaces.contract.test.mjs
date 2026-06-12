@@ -172,6 +172,8 @@ test('canonical surface components include dashboard, list/search, detail/edit, 
   assert.match(userAdminTaskSurface, /function SupportAccessGrantTask/);
   assert.match(userAdminTaskSurface, /function IdentityExceptionReview/);
   assert.match(userAdminTaskSurface, /action-user-admin-show-users/);
+  assert.match(userAdminTaskSurface, /action-useradmin-grant-support-access/);
+  assert.match(userAdminTaskSurface, /action-useradmin-revoke-support-access/);
   assert.match(allSurfaceComponents, /user-admin-branch-return/);
   assert.match(surfaceStyles, /\.user-admin-branch-return/);
   assert.match(surfaceTypes, /NotificationCenterSurfaceData/);

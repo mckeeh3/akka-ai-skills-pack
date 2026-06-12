@@ -395,7 +395,7 @@
 
 ### TASK-UASNT-03-007: Add fullstack tests for User branch dedicated descendants
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
 - task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/07-fullstack-user-branch-descendant-tests.md
 - depends on:
@@ -425,6 +425,11 @@
   - tests prove safe denials/system-message states, trace/correlation metadata, audit expectations, and frontend secret boundaries
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; fullstack validation for User branch dedicated descendants
+  - expanded backend `WorkstreamServiceTest` coverage so every dedicated User branch descendant opens through the backend action path, carries `action-user-admin-show-users` return metadata, returns to `surface-user-admin-users`, preserves correlation/trace evidence, and keeps browser payloads safe
+  - added backend hidden-target and missing-capability denial coverage for User branch task surfaces without leaking hidden users, memberships, or submitted invite target data
+  - updated frontend contract tests to assert dedicated task surfaces use backend-authored support-access action ids and branch-return metadata; fixed `UserAdminTaskSurface` support grant/revoke lookup to prefer backend `action-useradmin-*` ids
+  - checks: `mvn -q -Dtest=WorkstreamServiceTest test` passed; `npm --prefix frontend test -- --run` passed; `npm --prefix frontend run typecheck` passed; `git diff --check` passed
+  - commit message: `user-admin-nav-tree: add user descendant fullstack tests`
 
 ### TASK-UASNT-99-002: Re-verify User Admin navigation tree mini-project
 

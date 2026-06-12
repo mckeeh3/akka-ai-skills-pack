@@ -202,11 +202,16 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.match(userAdminTaskSurface, /function SupportAccessRevokeTask/);
   assert.match(userAdminTaskSurface, /function IdentityExceptionReview/);
   assert.match(userAdminTaskSurface, /action-user-admin-show-users/);
+  assert.match(userAdminTaskSurface, /action-useradmin-grant-support-access/);
+  assert.match(userAdminTaskSurface, /action-useradmin-extend-support-access/);
+  assert.match(userAdminTaskSurface, /action-useradmin-revoke-support-access/);
   assert.match(userAdminTaskSurface, /branchRootSurfaceId: branch\?\.branchRootSurfaceId \?\? envelope\.data\.branchRootSurfaceId \?\? 'surface-user-admin-users'/);
   assert.match(userAdminTaskSurface, /safeFilterPreservation: branch\?\.safeFilterPreservation \?\? envelope\.data\.safeFilterPreservation \?\? 'backend-authored-only'/);
   assert.match(userAdminTaskSurface, /aria-label="User Admin branch navigation"/);
   assert.match(userAdminTaskSurface, /raw JWTs, invitation tokens, provider payloads, and secrets are omitted/);
   assert.match(userAdminTaskSurface, /No direct mutation: recovery must route to deterministic backend approval\/status flows or safe user detail/);
+  assert.match(workstreamService, /withUserBranchReturn\(List\.of\(grantSupportAccessAction\(\), extendSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);
+  assert.match(workstreamService, /withUserBranchReturn\(List\.of\(revokeSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);
   assert.match(componentsCss, /\.user-admin-task-surface/);
   assert.match(componentsCss, /\.user-admin-task-form label/);
   assert.doesNotMatch(userAdminTaskSurface, /JSON\.stringify|dangerouslySetInnerHTML|Authorization:\s*Bearer|RESEND_API_KEY|sk-secret|api_key=/);
