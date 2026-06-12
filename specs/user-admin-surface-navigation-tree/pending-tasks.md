@@ -46,7 +46,7 @@
 
 ### TASK-UASNT-01-001: Survey existing User Admin and Organization Admin surfaces
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
 - task brief: specs/user-admin-surface-navigation-tree/tasks/01-survey/01-survey-existing-user-admin-surfaces.md
 - depends on:
@@ -79,6 +79,9 @@
   - next implementation/spec task can proceed without guessing what exists
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; docs-only survey of dashboard trunk, user branch, organization branch; no runtime mutation; validation by search evidence and `git diff --check`
+  - survey output: `specs/user-admin-surface-navigation-tree/existing-surface-inventory.md`
+  - checks: `git diff --check` passed
+  - commit message: `user-admin-nav-tree: survey existing surfaces`
 
 ### TASK-UASNT-02-001: Revise app-description User Admin surface tree
 
