@@ -9,6 +9,11 @@
 
 This is the SaaS Owner Admin workspace for creating and maintaining customer-facing Organizations backed by internal Tenant isolation boundaries. It is part of the foundation User Admin workstream, not a business-domain extension. It makes Organization/Tenant lifecycle work explicit in the surface graph so generated apps do not treat tenant creation as an implicit setup script or billing-only side effect.
 
+
+## User-visible/internal metadata boundary
+
+Default rendering must use SaaS product language and show only information the current actor needs to decide, act, recover, or understand the business outcome. Internal ids, raw trace/event/correlation data, governed-tool/capability ids, backend component names, prompt/provider/model details, and policy implementation references are implementation metadata. Expose them only in authorized admin, support, auditor, or developer drilldowns, and keep them visually subordinate to user-meaningful labels.
+
 ## Payload summary
 
 Payload must include:
@@ -80,7 +85,7 @@ type SaaSOwnerOrganizationAdminData = {
 
 - `loading`: keep existing rows visible with stale markers until refresh completes.
 - `empty`: explain that no Organizations exist yet and show Create Organization only to authorized SaaS Owner Admins.
-- `error`: show retry and safe diagnostic `correlationId`; do not synthesize Organization counts.
+- `error`: show retry and a readable support/reference label; raw `correlationId` appears only in authorized diagnostic detail, and do not synthesize Organization counts.
 - `forbidden`: show a user-safe denial without revealing hidden Organization names, tenant ids, billing status, or admin identities.
 - `stale`: mark directory, status, billing indicators, and bootstrap-admin counts independently when their projections age differently.
 - `approval-required`: route high-impact status changes or unusual bootstrap/admin actions to `decision-card` before mutation.

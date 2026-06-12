@@ -69,7 +69,7 @@
 ## Component style rules
 
 - workstream shell and functional-agent rail: left rail on desktop, selected workstream uses soft accent fill and border, attention badges are prominent but sparse, user/context controls pinned near the bottom when appropriate
-- context/authority bar: shows organization/customer context, role/capability basis, support access, trace links, pending approvals, and stale/sync state in compact bordered fields
+- context/authority bar: shows organization/customer context, user-readable role/authority summary, support access, role-appropriate trace links, pending approvals, and stale/sync state in compact bordered fields; raw capability/policy/tool ids are diagnostic drilldown content, not default labels
 - AI command strip: visually distinct raised surface with AI mark, prompt input affordance, suggested prompt chips, send/action button, and subtle AI glow/border; results must become durable workstream items/surfaces
 - KPI summary cards: strong numbers, label, trend text, status icon/color, optional sparkline; avoid equal visual weight with decision queues
 - decision/exception cards: subject, originating agent/system, risk/policy badge, recommendation, evidence summary, confidence/impact when available, primary action, secondary details/evidence action, visible trace link when available
@@ -80,7 +80,7 @@
 - forms: semantic labels, helper/error text, tokenized control backgrounds/borders/focus/disabled/validation states; raw browser-default controls are unacceptable
 - tables/lists: default ordering and filters, clear row primary action, status text plus badge, narrow-screen card transformation or intentional technical scroll
 - charts/data visualization: chart tokens only, legends for multi-series/donut/map, tabular numerals for critical metrics
-- loading/empty/error/success states: structured surfaces with user-safe copy, recovery actions, and trace/correlation ids where visible
+- loading/empty/error/success states: structured surfaces with user-safe copy, recovery actions, and trace/correlation ids only where useful and visible to the current role; ordinary users get readable support/reference labels
 - motion/transition rules: state-driven transition for append/update/approval/stale/reconnect; a small number of meaningful high-impact transitions; respects reduced motion
 - background/texture/elevation rules: subtle depth fields, grain, radial glow, atmospheric panels, and hairline grids are allowed only when readability, contrast, and focus remain strong
 

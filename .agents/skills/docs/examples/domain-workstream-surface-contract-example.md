@@ -26,11 +26,12 @@ The Domain Operations dashboard is the surface graph trunk. It summarizes open d
 
 ### Payload summary
 
-- work item id, requester, amount or value, counterpart, category, period, target date, and current lifecycle state;
-- policy evaluation summary with clause ids, threshold values, deviation reason, and active policy version;
-- AI recommendation with confidence, risk, impact, alternatives, and evidence refs;
-- missing evidence list, counterpart/budget signals, trace ids, `correlationId`, stale marker, and redaction profile;
-- action descriptors with `browserToolId`, `governedToolId`, `capabilityId`, confirmation/approval requirements, idempotency, and result-surface behavior.
+- default-visible work item label, requester display name, amount or value, counterpart label, category, period, target date, and current lifecycle state;
+- user-readable policy evaluation summary with deviation reason, consequence, and active policy version label;
+- AI recommendation with confidence, risk, impact, alternatives, and evidence summaries;
+- missing evidence list, counterpart/budget signals, stale marker, and redaction profile;
+- role-gated diagnostics for work item id, policy clause ids, threshold values, evidence refs, trace ids, `correlationId`, and other implementation metadata;
+- action descriptors with `browserToolId`, `governedToolId`, `capabilityId`, confirmation/approval requirements, idempotency, and result-surface behavior for implementation mapping, rendered as user-safe action labels by default.
 
 ### Actions and capability mapping
 
