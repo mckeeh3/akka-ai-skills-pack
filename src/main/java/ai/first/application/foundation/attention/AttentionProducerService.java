@@ -34,6 +34,7 @@ public final class AttentionProducerService {
   public static final String INVITATION_DELIVERY_PRODUCER_ID = "attention.producer.user_admin.invitation_delivery";
   public static final String GOVERNANCE_POLICY_APPROVAL_PRODUCER_ID = "attention.producer.governance.policy_approval";
   public static final String WORKER_TASK_STATE_PRODUCER_ID = "attention.producer.worker.task_state";
+  private static final String PLATFORM_SCOPE_TENANT_ID = "platform";
 
   private final AttentionRepository attentionRepository;
   private final IdentityRepository identityRepository;
@@ -53,7 +54,7 @@ public final class AttentionProducerService {
     var summary = attempts + " delivery attempt(s) for " + invitation.normalizedEmail() + " need authorized review: " + safe(invitation.lastDeliveryErrorSummary(), "delivery failed") + ".";
     return upsert(item(
         itemId,
-        invitation.tenantId(),
+        invitationAttentionTenantId(invitation),
         invitation.customerId(),
         "agent-user-admin",
         title,
@@ -73,7 +74,7 @@ public final class AttentionProducerService {
   }
 
   public AttentionItem resolveInvitationDelivery(Invitation invitation, String reason, String correlationId) {
-    return resolve(invitation.tenantId(), invitationDeliveryItemId(invitation.invitationId()), INVITATION_DELIVERY_PRODUCER_ID, safe(reason, "source-cleared"), correlationId);
+    return resolve(invitationAttentionTenantId(invitation), invitationDeliveryItemId(invitation.invitationId()), INVITATION_DELIVERY_PRODUCER_ID, safe(reason, "source-cleared"), correlationId);
   }
 
   public AttentionItem upsertGovernanceApproval(GovernancePolicyProposal proposal, String correlationId) {
@@ -114,7 +115,7 @@ public final class AttentionProducerService {
         .filter(invitation -> !invitation.expiresAt().isAfter(now.plus(window)))
         .map(invitation -> invitation.expiresAt().isAfter(now)
             ? upsertTimedInvitationDelivery(invitation, timerId, correlationId)
-            : expire(invitation.tenantId(), invitationDeliveryItemId(invitation.invitationId()), INVITATION_DELIVERY_PRODUCER_ID, "timer-expired:" + safe(timerId, "invitation-delivery-expiry"), correlationId))
+            : expire(invitationAttentionTenantId(invitation), invitationDeliveryItemId(invitation.invitationId()), INVITATION_DELIVERY_PRODUCER_ID, "timer-expired:" + safe(timerId, "invitation-delivery-expiry"), correlationId))
         .toList();
   }
 
@@ -491,6 +492,10 @@ public final class AttentionProducerService {
 
   private static String stableSuffix(String value) {
     return Integer.toUnsignedString(Objects.requireNonNullElse(value, "attention-producer").hashCode(), 36);
+  }
+
+  private static String invitationAttentionTenantId(Invitation invitation) {
+    return invitation.tenantId() == null || invitation.tenantId().isBlank() ? PLATFORM_SCOPE_TENANT_ID : invitation.tenantId();
   }
 
   private static String safe(String value, String fallback) {

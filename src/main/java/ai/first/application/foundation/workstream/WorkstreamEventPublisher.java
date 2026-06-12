@@ -33,6 +33,7 @@ public final class WorkstreamEventPublisher {
   public static final String PAYLOAD_GOVERNANCE_POLICY_IMPACT_LIFECYCLE = "GovernancePolicyImpactLifecycleEventPayload";
   public static final String PAYLOAD_MY_ACCOUNT_PERSONAL_ATTENTION_DIGEST_LIFECYCLE = "MyAccountPersonalAttentionDigestLifecycleEventPayload";
   public static final String PAYLOAD_GOVERNED_LIFECYCLE = "GovernedLifecycleEventPayload";
+  public static final String PLATFORM_SCOPE_TENANT_ID = "platform";
 
   private final WorkstreamEventRepository repository;
   private final WorkstreamEventAttentionConsumer attentionConsumer;
@@ -46,8 +47,9 @@ public final class WorkstreamEventPublisher {
 
   public WorkstreamEventEnvelope publishInvitationDelivery(Invitation invitation, boolean delivered, String deliveryAttemptId, String deliveryStatus, String safeErrorSummary, String correlationId) {
     var semanticTransition = delivered ? "sent" : "failed";
-    var idempotencyKey = idempotencyKey(EVENT_FAMILY_DOMAIN, "invitation.delivery." + semanticTransition, invitation.tenantId(), invitation.customerId(), invitation.invitationId(), semanticTransition);
-    var existing = repository.findByIdempotencyKey(invitation.tenantId(), idempotencyKey).orElse(null);
+    var eventTenantId = eventTenantId(invitation.tenantId());
+    var idempotencyKey = idempotencyKey(EVENT_FAMILY_DOMAIN, "invitation.delivery." + semanticTransition, eventTenantId, invitation.customerId(), invitation.invitationId(), semanticTransition);
+    var existing = repository.findByIdempotencyKey(eventTenantId, idempotencyKey).orElse(null);
     var event = existing == null
         ? repository.publish(invitationDeliveryEnvelope(invitation, semanticTransition, deliveryAttemptId, safeErrorSummary, idempotencyKey, correlationId))
         : existing;
@@ -228,11 +230,12 @@ public final class WorkstreamEventPublisher {
         1,
         now,
         now,
-        invitation.tenantId(),
+        eventTenantId(invitation.tenantId()),
         invitation.customerId(),
         Map.of(
             "scopeType", invitation.scopeType().name(),
-            "tenantId", invitation.tenantId(),
+            "tenantId", eventTenantId(invitation.tenantId()),
+            "sourceTenantId", safe(invitation.tenantId(), ""),
             "customerId", safe(invitation.customerId(), ""),
             "capabilityIds", capabilityId + ",secure-tenant-user-foundation"),
         Map.of("actorType", "provider", "accountId", "system", "label", "Invitation delivery provider"),
@@ -614,6 +617,10 @@ public final class WorkstreamEventPublisher {
 
   private static String safe(String value, String fallback) {
     return value == null || value.isBlank() ? fallback : value;
+  }
+
+  private static String eventTenantId(String tenantId) {
+    return safe(tenantId, PLATFORM_SCOPE_TENANT_ID);
   }
 
   private static String stableSuffix(String value) {

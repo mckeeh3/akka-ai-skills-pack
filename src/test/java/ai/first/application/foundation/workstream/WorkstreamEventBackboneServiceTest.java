@@ -144,6 +144,41 @@ class WorkstreamEventBackboneServiceTest {
   }
 
   @Test
+  void saasOwnerInvitationDeliveryUsesPlatformEventScopeInsteadOfNullTenant() {
+    identityRepository.saveAccount(new Account("owner@example.test", "workos-owner@example.test", "owner@example.test", "owner@example.test", AccountStatus.ACTIVE, "LINKED"));
+    identityRepository.putProfile(new UserProfile("owner@example.test", "Owner", "owner@example.test", null, null, null));
+    identityRepository.putSettings(new UserSettings("owner@example.test", UserSettings.ThemeId.AURORA_LIGHT));
+    identityRepository.putMembership(new Membership("membership-owner", "owner@example.test", ScopeType.SAAS_OWNER, null, null, List.of(FoundationRole.SAAS_OWNER_ADMIN), MembershipStatus.ACTIVE, false, null));
+    var owner = resolver.resolveMe(new WorkosIdentity("workos-owner@example.test", "owner@example.test", "Owner"), "membership-owner", "corr-owner");
+    var invite = invitations.createInvitation(owner, new InvitationService.CreateInvitationRequest(
+        "invite-platform-owner",
+        ScopeType.SAAS_OWNER,
+        null,
+        null,
+        "platform-invite@example.test",
+        "Platform Invite",
+        List.of(FoundationRole.SAAS_OWNER_ADMIN),
+        clock.instant().plusSeconds(3600),
+        "platform-admin",
+        "corr-platform-invite"));
+
+    var failed = invitations.recordDeliveryResult(invite.invitationId(), "delivery-1", false, null, "provider unavailable", "corr-platform-delivery");
+
+    var events = eventRepository.listTenant(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID);
+    assertEquals(1, events.size());
+    var event = events.get(0);
+    assertEquals("invitation.delivery.failed", event.eventType());
+    assertEquals(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, event.tenantId());
+    assertEquals("SAAS_OWNER", event.authContext().get("scopeType"));
+    assertEquals("", event.authContext().get("sourceTenantId"));
+    assertEquals(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, event.authContext().get("tenantId"));
+    assertTrue(event.idempotencyKey().startsWith("workstream-event:domain:invitation.delivery.failed:platform:none:"));
+    var item = attentionRepository.find(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, "attention:user-admin:invitation-delivery:" + failed.invitationId()).orElseThrow();
+    assertEquals(AttentionItemStatus.OPEN, item.status());
+    assertTrue(item.sourceRefs().stream().anyMatch(ref -> ref.kind().equals("workstream_event") && ref.refId().equals(event.eventId())));
+  }
+
+  @Test
   void accessReviewProviderBlockedLifecyclePublishesWorkflowEventAndProjectsAttention() {
     var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
     var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);

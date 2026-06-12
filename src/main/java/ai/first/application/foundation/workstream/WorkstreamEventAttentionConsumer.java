@@ -54,7 +54,7 @@ public final class WorkstreamEventAttentionConsumer {
       appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "unsupported-event-type");
       return null;
     }
-    if (!event.tenantId().equals(sourceInvitation.tenantId()) || !Objects.equals(event.customerId(), sourceInvitation.customerId())) {
+    if (!event.tenantId().equals(eventTenantId(sourceInvitation.tenantId())) || !Objects.equals(event.customerId(), sourceInvitation.customerId())) {
       appendAudit("WORKSTREAM_EVENT_CONSUMER_DENIED", AdminAuditEvent.Result.DENIED, event, "scope-mismatch");
       return null;
     }
@@ -361,6 +361,10 @@ public final class WorkstreamEventAttentionConsumer {
 
   private static String stableSuffix(String value) {
     return Integer.toUnsignedString(Objects.requireNonNullElse(value, "workstream-event").hashCode(), 36);
+  }
+
+  private static String eventTenantId(String tenantId) {
+    return tenantId == null || tenantId.isBlank() ? WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID : tenantId;
   }
 
   private record GovernedLifecycleMetadata(String capabilityPrefix, AttentionCategory category, AttentionSeverity severity, String assigneeRole, String defaultSurfaceId, String surfaceType, String surfaceAction, String defaultTitle, String defaultSummary) {
