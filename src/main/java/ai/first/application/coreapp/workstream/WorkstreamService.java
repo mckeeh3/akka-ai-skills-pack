@@ -867,12 +867,20 @@ public final class WorkstreamService {
                 mapOf("cardId", "card-support-access", "label", "Expiring support access", "value", expiringSupport, "severity", expiringSupport == 0 ? "info" : "warning", "surfaceId", "surface-user-admin-users", "actionId", "action-display-user-list"),
                 mapOf("cardId", "card-admin-audit", "label", "Recent denied admin actions", "value", deniedAdminActions, "severity", "info", "surfaceId", "surface-audit-trace-dashboard", "actionId", "action-open-audit-trace"),
                 mapOf("cardId", "card-access-review", "label", "Access review items", "value", 0, "severity", "blocked_provider_or_runtime", "surfaceId", "surface-user-admin-access-review-task", "actionId", "action-useradmin-read-access-review")),
+            "attentionCounts", userAdminAttentionCounts(pendingInvites, failedInvites, expiringSupport, deniedAdminActions, correlationId),
+            "administeredPopulations", userAdminAdministeredPopulations(layer, users, invites, correlationId),
             "attentionItems", attentionItems,
             "attentionSource", AttentionService.LIST_WORKSTREAM_ITEMS_TOOL,
             "accountContext", mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "roles", actor.selectedContext().roles().stream().map(role -> role.name().toLowerCase(Locale.ROOT).replace('_', '-')).sorted().toList(), "authority", layer.scopeLabel()),
+            "selectedAuthContext", mapOf("selectedContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId()),
+            "adminLevel", layer.layerId(),
+            "authorityBasis", "Backend-authored User Admin dashboard variant of surface-user-admin-dashboard; unavailable actions and hidden counts are omitted by selected AuthContext.",
+            "canonicalSurface", mapOf("canonicalSurfaceId", "surface-user-admin-dashboard", "canonicalSurfaceType", "dashboard", "runtimeVariantSurfaceId", layer.surfaceId(), "compatibility", "role-specific dashboard variant"),
+            "defaultView", mapOf("summary", layer.boundaryNotice(), "diagnosticMetadataVisible", false),
+            "diagnosticMetadata", mapOf("visibility", "role-gated", "traceRefs", List.of("trace-" + layer.surfaceId()), "omittedFromDefault", List.of("rawCapabilityDiagnostics", "correlationMechanics", "internalProviderState")),
             "sections", layer.sections(),
             "navigationTree", mapOf("trunkSurfaceId", "surface-user-admin-dashboard", "branchActions", actions.stream().filter(action -> List.of("surface-user-admin-users", "surface-user-admin-organization-directory").contains(action.resultSurface() == null ? null : action.resultSurface().updateSurfaceId())).map(this::navigationActionMap).toList(), "authorization", "Branch actions are backend-authored from the selected AuthContext; unauthorized Organization Directory access is omitted."),
-            "authorizedActions", actions.stream().map(action -> mapOf("actionId", action.actionId(), "label", action.label(), "capabilityId", action.capabilityId(), "governedToolId", action.governedToolId(), "resultSurfaceId", action.resultSurface() == null ? null : action.resultSurface().updateSurfaceId(), "approvalRequired", action.requiresApproval())).toList(),
+            "authorizedActions", actions.stream().map(this::authorizedActionMap).toList(),
             "capabilityIds", layer.capabilityIds()),
         actions);
   }
@@ -885,21 +893,21 @@ public final class WorkstreamService {
           "Platform administrators",
           "Administer tenant/organization lifecycle and platform-level user administration. This does not grant tenant application-data access, provider secret access, support internals, or billing-derived authority.",
           List.of(SAAS_OWNER_ORGANIZATION_LIST_CAPABILITY, SAAS_OWNER_ORGANIZATION_READ_CAPABILITY, SAAS_OWNER_TENANT_READ_CAPABILITY, SAAS_OWNER_TENANT_MANAGE_CAPABILITY, SAAS_OWNER_USER_MANAGE_CAPABILITY, "saas_owner.audit.read"),
-          List.of(showOrganizationsAction(), displayListAction(), openInvitationCreateAction(), openAuditAction(), readAccessReviewAction()));
+          List.of(showOrganizationsAction(), showUsersAction(), displayListAction(), openInvitationCreateAction(), openAuditAction(), readAccessReviewAction()));
       case CUSTOMER -> new UserAdminLayer(
           "customer", "surface-user-admin-customer-dashboard", "user_admin.customer_dashboard.v1", "Customer Admin Dashboard", "Customer scope", false,
           "customer.user.read",
           "Customer users",
           "Administer users, invitations, roles, audit, and access review only for the selected customer within its tenant.",
           List.of("customer.user.read", "customer.user.manage", "customer.role.manage", "customer.invitation.manage", "customer.audit.read", "customer.access_review.manage"),
-          List.of(displayListAction(), openInvitationCreateAction(), readSupportAccessAction(), openAuditAction(), startAccessReviewAction(), readAccessReviewAction()));
+          List.of(showUsersAction(), displayListAction(), openInvitationCreateAction(), readSupportAccessAction(), openAuditAction(), startAccessReviewAction(), readAccessReviewAction()));
       default -> new UserAdminLayer(
           "tenant", "surface-user-admin-tenant-dashboard", "user_admin.tenant_dashboard.v1", "Tenant Admin Dashboard", "Tenant scope", false,
           USER_ADMIN_CAPABILITY,
           "Tenant users",
           "Administer tenant users, invitations, roles, support access, audit, and access review for the selected tenant.",
           List.of(USER_ADMIN_CAPABILITY, "tenant.user.read", "tenant.user.manage", "tenant.role.manage", "tenant.invitation.manage", "tenant.support_access.manage", "tenant.audit.read", "tenant.access_review.manage"),
-          List.of(displayListAction(), openInvitationCreateAction(), readSupportAccessAction(), openAuditAction(), startAccessReviewAction(), readAccessReviewAction()));
+          List.of(showUsersAction(), displayListAction(), openInvitationCreateAction(), readSupportAccessAction(), openAuditAction(), startAccessReviewAction(), readAccessReviewAction()));
     };
   }
 
@@ -1006,14 +1014,52 @@ public final class WorkstreamService {
     return mapOf("actionId", action.actionId(), "label", action.label(), "capabilityId", action.capabilityId(), "browserToolId", action.browserToolId(), "governedToolId", action.governedToolId(), "targetSurfaceId", action.resultSurface() == null ? null : action.resultSurface().updateSurfaceId());
   }
 
+  private Map<String, Object> authorizedActionMap(SurfaceAction action) {
+    return mapOf("actionId", action.actionId(), "label", action.label(), "capabilityId", action.capabilityId(), "browserToolId", action.browserToolId(), "governedToolId", action.governedToolId(), "administeredPopulationType", administeredPopulationTypeForAction(action), "attentionType", attentionTypeForAction(action), "requiresIdempotency", action.idempotency().required(), "idempotencyKeySource", action.idempotency().keySource(), "resultSurfaceId", action.resultSurface() == null ? null : action.resultSurface().updateSurfaceId(), "approvalRequired", action.requiresApproval(), "nextStepGuidance", action.requiresApproval() ? "Opens a dedicated approval or confirmation surface before any state changes." : "Opens or refreshes the backend-authorized surface for this selected context.");
+  }
+
+  private String administeredPopulationTypeForAction(SurfaceAction action) {
+    return switch (action.actionId()) {
+      case "action-user-admin-show-organizations", "action-display-organization-admin" -> "organizations";
+      default -> "visible_user_admin_population";
+    };
+  }
+
+  private String attentionTypeForAction(SurfaceAction action) {
+    if (action.resultSurface() == null) return null;
+    return switch (action.resultSurface().updateSurfaceId()) {
+      case "surface-user-admin-invitation-create", "surface-user-admin-invitation-detail" -> "invitation_lifecycle";
+      case "surface-user-admin-access-review-task" -> "access_review";
+      case "surface-audit-trace-dashboard" -> "admin_audit";
+      default -> null;
+    };
+  }
+
+  private List<Map<String, Object>> userAdminAttentionCounts(long pendingInvites, long failedInvites, long expiringSupport, long deniedAdminActions, String correlationId) {
+    return List.of(
+        attentionCount("pending_invitations", "Pending invitations", pendingInvites, pendingInvites == 0 ? "info" : "warning", "surface-user-admin-users", "action-display-user-list", USERADMIN_LIST_INVITATIONS, correlationId),
+        attentionCount("failed_invitation_delivery", "Failed invitation delivery", failedInvites, failedInvites == 0 ? "info" : "warning", "surface-user-admin-users", "action-display-user-list", USERADMIN_LIST_INVITATIONS, correlationId),
+        attentionCount("support_access_expiring", "Expiring support access", expiringSupport, expiringSupport == 0 ? "info" : "warning", "surface-user-admin-users", "action-display-user-list", USERADMIN_SUPPORT_ACCESS_READ, correlationId),
+        attentionCount("recent_denied_admin_actions", "Recent denied admin actions", deniedAdminActions, "info", "surface-audit-trace-dashboard", "action-open-audit-trace", AUDIT_TRACE_READ_CAPABILITY, correlationId),
+        attentionCount("access_review_blocked_runtime", "Access review runtime readiness", 0, "blocked_provider_or_runtime", "surface-user-admin-access-review-task", "action-useradmin-read-access-review", USERADMIN_ACCESS_REVIEW_READ, correlationId));
+  }
+
+  private Map<String, Object> attentionCount(String type, String label, long count, String severity, String targetSurfaceId, String openActionId, String capabilityId, String correlationId) {
+    return mapOf("attentionType", type, "label", label, "count", count, "severity", severity, "statusText", count == 0 ? "No visible items need attention." : count + " visible item(s) need review.", "targetSurfaceId", targetSurfaceId, "openActionId", openActionId, "filter", mapOf("attentionType", type), "sourceCapabilityId", capabilityId, "traceRefs", List.of("trace-useradmin-attention-" + type + "-" + stableSuffix(correlationId)), "redactionState", "visible-scope-only");
+  }
+
+  private List<Map<String, Object>> userAdminAdministeredPopulations(UserAdminLayer layer, List<UserDirectoryView.UserDirectoryRow> users, List<InvitationView.InvitationRow> invites, String correlationId) {
+    return List.of(mapOf("populationType", layer.saasOwner() ? "app_admin_users" : "tenant_employees", "label", layer.activeUsersLabel(), "visibleCount", users.size(), "attentionCount", invites.stream().filter(WorkstreamService::isPendingInvitation).count(), "activeCount", users.stream().filter(user -> user.membershipStatus() == MembershipStatus.ACTIVE).count(), "pendingInvitationCount", invites.stream().filter(WorkstreamService::isPendingInvitation).count(), "suspendedOrDisabledCount", users.stream().filter(user -> user.membershipStatus() != MembershipStatus.ACTIVE).count(), "staleOrExpiredCount", invites.stream().filter(invite -> invite.status() == InvitationStatus.EXPIRED).count(), "reviewCount", 0, "roleCoverageSummary", "Backend-authored visible roles only", "targetSurfaceId", "surface-user-admin-users", "openActionId", "action-display-user-list", "capabilityIds", List.of(USERADMIN_LIST_MEMBERS, layer.readCapability()), "traceRefs", List.of("trace-useradmin-population-" + stableSuffix(correlationId))));
+  }
+
   private SurfaceEnvelope listSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.appendProtectedReadTrace(actor, USERADMIN_LIST_MEMBERS, "user_admin.users.v1", correlationId);
     var rows = new ArrayList<Map<String, Object>>();
     var users = userDirectoryView.list(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId());
     var invites = invitationView.list(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId());
-    for (var user : users) rows.add(mapOf("id", user.accountId(), "accountId", user.accountId(), "membershipId", user.membershipId(), "rowType", "active-user", "email", user.accountId(), "displayName", user.displayName(), "role", roleLabels(user.roles()), "status", user.membershipStatus().name().toLowerCase(), "supportAccess", user.supportAccess(), "supportAccessExpiresAt", user.expiresAt() == null ? "" : user.expiresAt().toString(), "traceId", "trace-useradmin-user-" + stableSuffix(user.accountId())));
+    for (var user : users) rows.add(userDirectoryRow(user));
     for (var invite : invites) rows.add(invitationRow(invite));
-    return envelope("surface-user-admin-users", "list-search", "Users", actor, correlationId, mapOf("surfaceContract", "user_admin.users.v1", "branchNavigation", userBranchNavigation(correlationId), "query", "", "rows", rows, "pageInfo", mapOf("activeUserCount", users.size(), "invitationCount", invites.size(), "totalKnownCount", rows.size()), "emptyMessage", "No active users or invitations are visible in this scope."), List.of(displayDetailAction(), displayInvitationDetailAction(), openInvitationCreateAction(), inviteAction(), openAuditAction()));
+    return envelope("surface-user-admin-users", "list-search", "Users", actor, correlationId, mapOf("surfaceContract", "user_admin.users.v1", "branchNavigation", userBranchNavigation(correlationId), "query", "", "rows", rows, "filters", mapOf("backendAuthored", true, "selectedScopeOnly", true), "pageInfo", mapOf("activeUserCount", users.size(), "invitationCount", invites.size(), "totalKnownCount", rows.size()), "createAction", mapOf("actionId", "action-open-useradmin-invitation-create", "targetSurfaceId", "surface-user-admin-invitation-create", "capabilityId", USERADMIN_SEND_INVITATION), "redaction", List.of("hidden-users-redacted", "cross-scope-counts-redacted"), "diagnosticMetadata", mapOf("visibility", "role-gated", "traceRefs", List.of("trace-surface-user-admin-users")), "emptyMessage", "No active users or invitations are visible in this scope."), List.of(displayDetailAction(), displayInvitationDetailAction(), openInvitationCreateAction(), inviteAction(), openAuditAction()));
   }
 
 
@@ -1057,7 +1103,7 @@ public final class WorkstreamService {
   private SurfaceEnvelope invitationCreateSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     authContextResolver.appendProtectedReadTrace(actor, USERADMIN_SEND_INVITATION, "user_admin.invitation_create.v1", correlationId);
     return envelope("surface-user-admin-invitation-create", "create-form", "Invite user", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.invitation_create.v1", "branchNavigation", userBranchNavigation(correlationId), "status", "ready", "summary", "Create a scoped invitation through the backend InvitationService. Submission requires a client idempotency key and returns invitation detail or a safe validation/denial result.", "targetScope", mapOf("scopeType", actor.selectedContext().scopeType().name(), "tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId()), "draft", mapOf("email", stringInput(input, "email", ""), "displayName", stringInput(input, "displayName", ""), "roles", rolesInput(input).stream().map(FoundationRole::name).toList()), "validationMessages", List.of(), "idempotencyKeyHint", "client-generated", "outboxBoundary", "Invitation email delivery is queued through the backend outbox/provider path; tokens and provider payloads are never exposed.", "traceRefs", List.of("trace-useradmin-invitation-create-" + stableSuffix(correlationId)), "correlationId", correlationId, "redaction", List.of("invitation-token-redacted", "provider-payload-redacted", "raw-jwt-redacted")),
+        mapOf("surfaceContract", "user_admin.invitation_create.v1", "branchNavigation", userBranchNavigation(correlationId), "status", "ready", "summary", "Create a scoped invitation through the backend InvitationService. Submission requires a client idempotency key and returns invitation detail or a safe validation/denial result.", "targetScope", mapOf("scopeType", actor.selectedContext().scopeType().name(), "tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId()), "draft", mapOf("email", stringInput(input, "email", ""), "displayName", stringInput(input, "displayName", ""), "roles", rolesInput(input).stream().map(FoundationRole::name).toList()), "roleOptions", roleOptionsForSelectedContext(actor), "policyOptions", mapOf("expiryOptions", invitationExpiryOptions(), "idempotency", "client-generated", "outboxReadiness", "backend-derived"), "validationMessages", List.of(), "idempotencyKeyHint", "client-generated", "outboxBoundary", "Invitation email delivery is queued through the backend outbox/provider path; tokens and provider payloads are never exposed.", "traceRefs", List.of("trace-useradmin-invitation-create-" + stableSuffix(correlationId)), "correlationId", correlationId, "redaction", List.of("invitation-token-redacted", "provider-payload-redacted", "raw-jwt-redacted")),
         withUserBranchReturn(List.of(inviteAction(), openAuditAction())));
   }
 
@@ -1081,7 +1127,7 @@ public final class WorkstreamService {
     var target = userForTaskSurface(actor, input);
     authContextResolver.appendProtectedReadTrace(actor, USERADMIN_UPDATE_MEMBER_STATUS, "user_admin.membership_status_confirmation.v1", correlationId);
     return envelope("surface-user-admin-membership-status-confirmation", "destructive-lifecycle-confirmation", "Confirm membership status", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.membership_status_confirmation.v1", "branchNavigation", userBranchNavigation(correlationId), "recordId", target.membershipId(), "recordLabel", target.displayName(), "recordKind", "membership", "currentStatus", target.membershipStatus().name().toLowerCase(Locale.ROOT), "proposedStatus", stringInput(input, "status", "removed"), "consequenceCopy", "Membership/account lifecycle changes are reauthorized by UserAdminService and enforce self-action, last-admin, scope, idempotency, and audit guardrails before changing state.", "actionContext", mapOf("accountId", target.accountId(), "membershipId", target.membershipId()), "reasonRequired", true, "confirmationRequired", true, "idempotencyKeyHint", "client-generated", "denialHints", List.of("self-disable-denied", "last-admin-denied", "scope-forbidden", "idempotency-key-required"), "traceRefs", List.of("trace-useradmin-membership-status-confirmation-" + stableSuffix(target.membershipId() + correlationId)), "correlationId", correlationId, "redaction", List.of("cross-scope-users-redacted", "raw-jwt-redacted")),
+        mapOf("surfaceContract", "user_admin.membership_status_confirmation.v1", "branchNavigation", userBranchNavigation(correlationId), "recordId", target.membershipId(), "recordLabel", target.displayName(), "recordKind", "membership", "currentStatus", target.membershipStatus().name().toLowerCase(Locale.ROOT), "proposedStatus", stringInput(input, "status", "removed"), "statusOptions", membershipStatusOptions(), "consequenceCopy", "Membership/account lifecycle changes are reauthorized by UserAdminService and enforce self-action, last-admin, scope, idempotency, and audit guardrails before changing state.", "actionContext", mapOf("accountId", target.accountId(), "membershipId", target.membershipId()), "reasonRequired", true, "confirmationRequired", true, "idempotencyKeyHint", "client-generated", "denialHints", List.of("self-disable-denied", "last-admin-denied", "scope-forbidden", "idempotency-key-required"), "traceRefs", List.of("trace-useradmin-membership-status-confirmation-" + stableSuffix(target.membershipId() + correlationId)), "correlationId", correlationId, "redaction", List.of("cross-scope-users-redacted", "raw-jwt-redacted")),
         withUserBranchReturn(List.of(updateMemberStatusAction(), reactivateMemberStatusAction(), disableAccountAction(), reactivateAccountAction(), displayDetailAction(), openAuditAction())));
   }
 
@@ -1089,7 +1135,7 @@ public final class WorkstreamService {
     var target = userForTaskSurface(actor, input);
     authContextResolver.appendProtectedReadTrace(actor, USERADMIN_SUPPORT_ACCESS_GRANT, "user_admin.support_access_grant.v1", correlationId);
     return envelope("surface-user-admin-support-access-grant", "create-form", "Grant support access", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.support_access_grant.v1", "branchNavigation", userBranchNavigation(correlationId), "recordId", target.membershipId(), "recordLabel", target.displayName(), "recordKind", "support-access", "currentSupportAccess", target.supportAccess(), "expiresAt", target.expiresAt() == null ? null : target.expiresAt().toString(), "summary", "Grant or extend time-boxed support access through backend UserAdminService; SaaS Owner support access remains denied without explicit tenant-created support grant authority.", "actionContext", mapOf("accountId", target.accountId(), "membershipId", target.membershipId()), "purposeRequired", true, "idempotencyKeyHint", "client-generated", "approverPolicy", "backend-authorized selected AuthContext and support-access capability", "traceRefs", List.of("trace-useradmin-support-access-grant-surface-" + stableSuffix(target.membershipId() + correlationId)), "correlationId", correlationId, "redaction", List.of("support-provider-internals-redacted", "raw-jwt-redacted")),
+        mapOf("surfaceContract", "user_admin.support_access_grant.v1", "branchNavigation", userBranchNavigation(correlationId), "recordId", target.membershipId(), "recordLabel", target.displayName(), "recordKind", "support-access", "currentSupportAccess", target.supportAccess(), "expiresAt", target.expiresAt() == null ? null : target.expiresAt().toString(), "summary", "Grant or extend time-boxed support access through backend UserAdminService; SaaS Owner support access remains denied without explicit tenant-created support grant authority.", "actionContext", mapOf("accountId", target.accountId(), "membershipId", target.membershipId()), "purposeRequired", true, "supportExpiryOptions", supportExpiryOptions(), "purposeOptions", List.of("incident-response", "customer-requested-support", "access-review-remediation"), "policyOptions", mapOf("maxDurationHours", 8, "requiresReason", true, "requiresBackendApproval", true), "idempotencyKeyHint", "client-generated", "approverPolicy", "backend-authorized selected AuthContext and support-access capability", "traceRefs", List.of("trace-useradmin-support-access-grant-surface-" + stableSuffix(target.membershipId() + correlationId)), "correlationId", correlationId, "redaction", List.of("support-provider-internals-redacted", "raw-jwt-redacted")),
         withUserBranchReturn(List.of(grantSupportAccessAction(), extendSupportAccessAction(), displayDetailAction(), openAuditAction())));
   }
 
@@ -1673,8 +1719,33 @@ public final class WorkstreamService {
     return new CapabilityActionResult(status, message, correlationId, task.traceIds(), accessReviewSurface(actor, task, correlationId));
   }
 
+  private Map<String, Object> userDirectoryRow(UserDirectoryView.UserDirectoryRow user) {
+    return mapOf("id", user.accountId(), "accountId", user.accountId(), "membershipId", user.membershipId(), "rowType", "active-user", "targetObjectType", "account", "targetSurfaceId", "surface-user-admin-user-detail", "targetSurfaceType", "show-inspection", "openActionId", "action-display-user-detail", "activation", mapOf("actionId", "action-display-user-detail", "targetSurfaceId", "surface-user-admin-user-detail", "targetObjectType", "account", "safeActionContext", mapOf("accountId", user.accountId(), "membershipId", user.membershipId())), "eligibility", mapOf("canOpen", true, "canMutateInline", false, "redactionState", "visible"), "safeActionContext", mapOf("accountId", user.accountId(), "membershipId", user.membershipId()), "email", user.accountId(), "displayName", user.displayName(), "role", roleLabels(user.roles()), "status", user.membershipStatus().name().toLowerCase(), "supportAccess", user.supportAccess(), "supportAccessExpiresAt", user.expiresAt() == null ? "" : user.expiresAt().toString(), "traceId", "trace-useradmin-user-" + stableSuffix(user.accountId()), "traceRefs", List.of("trace-useradmin-user-" + stableSuffix(user.accountId())), "redactionState", "visible");
+  }
+
   private Map<String, Object> invitationRow(InvitationView.InvitationRow invite) {
-    return mapOf("id", invite.invitationId(), "invitationId", invite.invitationId(), "rowType", "invitation", "email", invite.targetEmail(), "displayName", invite.targetEmail(), "role", roleLabels(invite.requestedRoles()), "status", invite.status().name().toLowerCase(), "delivery", invite.deliveryStatus().name().toLowerCase(), "expiresAt", invite.expiresAt().toString(), "canResend", invite.canResend(), "canRevoke", invite.canRevoke(), "traceId", "trace-useradmin-invitation-" + stableSuffix(invite.invitationId()));
+    return mapOf("id", invite.invitationId(), "invitationId", invite.invitationId(), "rowType", "invitation", "targetObjectType", "invitation", "targetSurfaceId", "surface-user-admin-invitation-detail", "targetSurfaceType", "show-inspection", "openActionId", "action-display-invitation-detail", "activation", mapOf("actionId", "action-display-invitation-detail", "targetSurfaceId", "surface-user-admin-invitation-detail", "targetObjectType", "invitation", "safeActionContext", mapOf("invitationId", invite.invitationId())), "eligibility", mapOf("canOpen", true, "canResend", invite.canResend(), "canRevoke", invite.canRevoke(), "canMutateInline", false, "redactionState", "visible"), "safeActionContext", mapOf("invitationId", invite.invitationId()), "email", invite.targetEmail(), "displayName", invite.targetEmail(), "role", roleLabels(invite.requestedRoles()), "status", invite.status().name().toLowerCase(), "delivery", invite.deliveryStatus().name().toLowerCase(), "expiresAt", invite.expiresAt().toString(), "canResend", invite.canResend(), "canRevoke", invite.canRevoke(), "traceId", "trace-useradmin-invitation-" + stableSuffix(invite.invitationId()), "traceRefs", List.of("trace-useradmin-invitation-" + stableSuffix(invite.invitationId())), "redactionState", "visible");
+  }
+
+  private List<Map<String, Object>> roleOptionsForSelectedContext(AuthContextResolver.ResolvedMe actor) {
+    var roles = actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER
+        ? List.of(FoundationRole.SAAS_OWNER_ADMIN)
+        : actor.selectedContext().scopeType() == ScopeType.CUSTOMER
+            ? List.of(FoundationRole.CUSTOMER_ADMIN, FoundationRole.CUSTOMER_USER)
+            : List.of(FoundationRole.TENANT_ADMIN, FoundationRole.TENANT_EMPLOYEE, FoundationRole.AUDITOR);
+    return roles.stream().map(role -> mapOf("roleId", role.name(), "label", roleLabel(role), "capabilitySummary", "Backend-authorized option for the selected AuthContext", "requiresApproval", role == FoundationRole.SAAS_OWNER_ADMIN || role == FoundationRole.TENANT_ADMIN)).toList();
+  }
+
+  private List<Map<String, Object>> invitationExpiryOptions() {
+    return List.of(mapOf("optionId", "seven-days", "label", "7 days", "durationDays", 7), mapOf("optionId", "fourteen-days", "label", "14 days", "durationDays", 14));
+  }
+
+  private List<Map<String, Object>> supportExpiryOptions() {
+    return List.of(mapOf("optionId", "two-hours", "label", "2 hours", "durationHours", 2), mapOf("optionId", "eight-hours", "label", "8 hours", "durationHours", 8));
+  }
+
+  private List<Map<String, Object>> membershipStatusOptions() {
+    return List.of(mapOf("status", "active", "label", "Reactivate", "actionId", "action-useradmin-reactivate-member"), mapOf("status", "removed", "label", "Deactivate", "actionId", "action-useradmin-disable-member"));
   }
 
   private static boolean isPendingInvitation(InvitationView.InvitationRow invite) {
@@ -1682,7 +1753,12 @@ public final class WorkstreamService {
   }
 
   private String roleLabels(List<FoundationRole> roles) {
-    return roles.stream().map(role -> role.name().toLowerCase(Locale.ROOT).replace('_', ' ')).map(label -> label.substring(0, 1).toUpperCase(Locale.ROOT) + label.substring(1)).sorted().collect(Collectors.joining(", "));
+    return roles.stream().map(this::roleLabel).sorted().collect(Collectors.joining(", "));
+  }
+
+  private String roleLabel(FoundationRole role) {
+    var label = role.name().toLowerCase(Locale.ROOT).replace('_', ' ');
+    return label.substring(0, 1).toUpperCase(Locale.ROOT) + label.substring(1);
   }
 
   private String latestInvitationId(AuthContextResolver.ResolvedMe actor) {

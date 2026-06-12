@@ -78,7 +78,7 @@
 
 ### TASK-UASCC-02-001: Repair backend canonical surface envelopes and authored payloads
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-conformance-cleanup/backlog/01-user-admin-surface-conformance-build-backlog.md
 - task brief: specs/user-admin-surface-conformance-cleanup/tasks/02-backend/01-backend-canonical-payloads.md
 - depends on:
@@ -107,6 +107,9 @@
   - backend provides canonical surface semantics, authored dashboard attention/populations/actions, authored row routing metadata, backend-shaped form options, and default/diagnostic metadata separation
 - notes:
   - vertical contract: User Admin / `agent-user-admin`; dashboard attention queues and User Directory routing; browser-tool/workstream action exposure; capabilities `user_admin.list_members`, invitation, role, support, access-review, identity, audit, and organization capabilities; selected AuthContext allow/deny; backend workstream/API substrate; audit/work trace and redaction validation
+  - implemented backend-authored `attentionCounts`, `administeredPopulations`, canonical dashboard-variant metadata, branch/authorized action metadata, list row activation metadata, backend-shaped invitation/support/status options, and default/diagnostic metadata separation
+  - completed checks: `git diff --check`; `mvn -q -Dtest=WorkstreamServiceTest test`
+  - commit: `user-admin-surface-conformance: repair backend canonical payloads`
 
 ### TASK-UASCC-02-002: Repair backend task routing and typed system-message outcomes
 

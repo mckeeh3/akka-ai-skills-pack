@@ -194,13 +194,47 @@ class WorkstreamServiceTest {
     assertEquals("surface-user-admin-access-review-task", accessReviewStatus.resultSurface().surfaceId());
     assertTrue(dashboard.toString().contains("blocked_provider_or_runtime"));
     assertTrue(dashboard.traceIds().stream().anyMatch(trace -> trace.contains("trace-surface-user-admin-tenant-dashboard")));
+    assertEquals("surface-user-admin-dashboard", ((Map<?, ?>) dashboard.data().get("canonicalSurface")).get("canonicalSurfaceId"));
+    assertTrue(((List<?>) dashboard.data().get("attentionCounts")).stream().anyMatch(count -> count.toString().contains("failed_invitation_delivery")));
+    assertTrue(((List<?>) dashboard.data().get("administeredPopulations")).stream().anyMatch(population -> population.toString().contains("targetSurfaceId=surface-user-admin-users")));
+    assertTrue(((List<?>) dashboard.data().get("authorizedActions")).stream().anyMatch(action -> action.toString().contains("browserToolId=user-admin.show-users") && action.toString().contains("resultSurfaceId=surface-user-admin-users")));
+    assertTrue(dashboard.toString().contains("diagnosticMetadataVisible=false"));
 
     var users = service.surface(identity(), "membership-admin", "surface-user-admin-users", "corr-useradmin-users");
     assertEquals("list-search", users.surfaceType());
     assertEquals("user_admin.users.v1", users.data().get("surfaceContract"));
     assertTrue(users.toString().contains("active-user"));
+    assertTrue(users.toString().contains("targetSurfaceId=surface-user-admin-user-detail"));
+    assertTrue(users.toString().contains("targetSurfaceType=show-inspection"));
+    assertTrue(users.toString().contains("openActionId=action-display-user-detail"));
+    assertTrue(users.toString().contains("safeActionContext"));
+    assertTrue(users.toString().contains("canMutateInline=false"));
+    assertTrue(users.toString().contains("createAction"));
     assertFalse(users.toString().contains("invite-token"));
     assertFalse(users.toString().contains("tokenHash"));
+  }
+
+  @Test
+  void userAdminBackendAuthoredFormOptionsAreExposedForFrontendRendering() {
+    var invite = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-useradmin-invitation-create", "action-open-useradmin-invitation-create", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", null, null, "membership-admin", "surface-user-admin-users", "corr-options-invite"));
+    assertEquals("surface-user-admin-invitation-create", invite.resultSurface().surfaceId());
+    assertTrue(invite.resultSurface().toString().contains("roleOptions"));
+    assertTrue(invite.resultSurface().toString().contains("roleId=TENANT_EMPLOYEE"));
+    assertTrue(invite.resultSurface().toString().contains("expiryOptions"));
+
+    var support = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-useradmin-support-access-grant", "action-open-useradmin-support-access-grant", "USERADMIN_SUPPORT_ACCESS_GRANT", "USERADMIN_SUPPORT_ACCESS_GRANT", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", "surface-user-admin-user-detail", "corr-options-support"));
+    assertEquals("surface-user-admin-support-access-grant", support.resultSurface().surfaceId());
+    assertTrue(support.resultSurface().toString().contains("supportExpiryOptions"));
+    assertTrue(support.resultSurface().toString().contains("purposeOptions"));
+    assertTrue(support.resultSurface().toString().contains("maxDurationHours=8"));
+
+    var status = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-useradmin-membership-status-confirmation", "action-open-useradmin-membership-status-confirmation", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", "surface-user-admin-user-detail", "corr-options-status"));
+    assertEquals("surface-user-admin-membership-status-confirmation", status.resultSurface().surfaceId());
+    assertTrue(status.resultSurface().toString().contains("statusOptions"));
+    assertTrue(status.resultSurface().toString().contains("action-useradmin-disable-member"));
   }
 
   @Test
