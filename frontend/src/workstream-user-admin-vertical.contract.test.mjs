@@ -143,6 +143,10 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /result_accepted/);
   assert.match(surfaces, /must not fake progress|not fake progress/);
   assert.match(surfaces, /displayUserListActionResult/);
+  assert.match(surfaces, /action-open-useradmin-invitation-create/);
+  assert.match(surfaces, /targetSurfaceId: 'surface-user-admin-invitation-create'/);
+  assert.match(listSearchSurface, /inviteSurfaceAction/);
+  assert.doesNotMatch(listSearchSurface, /user-admin-invite-form|submitInvite|Create scoped invitation/);
   assert.match(surfaces, /targetSurfaceId: 'surface-user-admin-user-detail'/);
   assert.match(surfaces, /openActionId: 'action-display-user-detail'/);
   assert.match(surfaces, /targetSurfaceId: 'surface-user-admin-invitation-detail'/);

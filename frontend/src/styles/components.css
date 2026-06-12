@@ -2653,14 +2653,12 @@ button.user-admin-work-card:focus-visible {
   .user-admin-users-header-actions { justify-content: flex-start; }
 }
 
-.user-admin-top-forms {
+.user-admin-directory-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 28rem);
   gap: var(--space-4);
   align-items: start;
 }
 
-.user-admin-invite-form,
 .user-admin-edit-form {
   display: grid;
   gap: var(--space-3);
@@ -2670,7 +2668,6 @@ button.user-admin-work-card:focus-visible {
   padding: var(--space-4);
 }
 
-.user-admin-invite-form label,
 .user-admin-edit-form label {
   display: grid;
   gap: var(--space-1);
@@ -2685,7 +2682,7 @@ button.user-admin-work-card:focus-visible {
 }
 
 @media (max-width: 900px) {
-  .user-admin-top-forms,
+  .user-admin-directory-controls,
   .user-admin-edit-form { grid-template-columns: 1fr; }
 }
 

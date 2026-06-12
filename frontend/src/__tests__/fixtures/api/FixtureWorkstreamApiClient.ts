@@ -22,6 +22,7 @@ import {
   updateMyAccountSettingsActionResult,
   userAdminAccessReviewSurface,
   userAdminInvitationActionStatusSurface,
+  userAdminInvitationCreateSurface,
   userAdminMemberStatusActionSurface,
   userAdminRoleChangeActionSurface,
   userAdminRoleChangePreviewSurface,
@@ -209,6 +210,8 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
             ? displayUserListActionResult
             : request.actionId === 'action-display-organization-admin' || request.actionId.startsWith('action-organization-') || request.capabilityId?.startsWith('saas_owner.organization.')
               ? displayOrganizationAdminActionResult
+            : request.actionId === 'action-open-useradmin-invitation-create'
+              ? { status: 'accepted' as const, message: 'Invite user surface opened as a separate user_admin.invitation_create.v1 task surface.', correlationId: request.correlationId, traceIds: ['trace-useradmin-invitation-create', 'trace-useradmin'], resultSurface: userAdminInvitationCreateSurface }
             : ['action-invite-user', 'action-useradmin-resend-invitation', 'action-useradmin-revoke-invitation'].includes(request.actionId)
               ? { status: request.actionId === 'action-useradmin-revoke-invitation' ? 'no-op' as const : 'accepted' as const, message: 'Invitation action result came from the backend-aligned workstream action contract with safe system_message fallback states.', correlationId: request.correlationId, traceIds: ['trace-useradmin-invitation-action', 'trace-useradmin'], resultSurface: userAdminInvitationActionStatusSurface }
               : ['action-useradmin-disable-member', 'action-useradmin-reactivate-member'].includes(request.actionId)
