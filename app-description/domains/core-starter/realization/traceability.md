@@ -20,6 +20,13 @@ This traceability map links the reconstructed current-intent graph to known root
 - Audit/Trace: `workstreams/audit-trace/realization/`
 - Governance/Policy: `workstreams/governance-policy/realization/`
 
+## User Admin navigation-tree traceability
+
+| Intent area | Implementation evidence | Validation evidence / gaps |
+|---|---|---|
+| User Admin dashboard trunk and User Directory branch | `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`, `src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java`, `frontend/src/workstream/surfaces/**` | Mini-project `specs/user-admin-surface-navigation-tree/**`; implementation follow-up must prove dashboard -> `surface-user-admin-users`, descendant **Show users** / **Back to users**, stale/forbidden `surface-user-admin-system-message`, and no frontend-only authority. |
+| User Admin Organization Directory branch | `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`, `src/main/java/ai/first/application/coreapp/useradmin/SaasOwnerOrganizationAdminService.java`, `frontend/src/workstream/surfaces/OrganizationAdminSurface.tsx` | Mini-project `specs/user-admin-surface-navigation-tree/**`; implementation follow-up must align product capabilities on `saas_owner.organization.*`, prove authorized dashboard -> `surface-user-admin-organization-directory`, descendant **Show organizations** / **Back to organizations**, and Tenant/Customer omission or safe denial. |
+
 ## Explicit drift and deferred scope
 
 - `frontend/src/screens/**` remains legacy/page-style reference or fixture evidence, not primary workstream runtime architecture.

@@ -36,6 +36,44 @@ All surfaces use the canonical AI-first workstream shell, structured surface env
 | `surface-user-admin-organization-reactivate-confirmation` | `lifecycle-confirmation` | `user_admin.organization_reactivate_confirmation.v1` | Organization reactivation confirmation surface. | Revised surface graph |
 | `surface-user-admin-system-message` | `system-message` | `user_admin.system_message.v1` | Safe denial, validation, provider/outbox/model blocked, stale, conflict, and no-op recovery. | Rebuilt from archive |
 
+## Navigation tree contract
+
+The User Admin human surface graph is a tree for navigation and auditability:
+
+```text
+surface-user-admin-dashboard (trunk)
+├── surface-user-admin-users (User Directory branch root)
+│   ├── surface-user-admin-user-detail
+│   ├── surface-user-admin-invitation-create
+│   ├── surface-user-admin-invitation-detail
+│   ├── surface-user-admin-invitation-resend-confirmation
+│   ├── surface-user-admin-invitation-revoke-confirmation
+│   ├── surface-user-admin-membership-status-confirmation
+│   ├── surface-user-admin-role-change-preview
+│   ├── surface-user-admin-support-access-grant
+│   ├── surface-user-admin-support-access-revoke-confirmation
+│   ├── surface-user-admin-access-review-task
+│   └── surface-user-admin-identity-exception-review
+└── surface-user-admin-organization-directory (Organization Directory branch root; SaaS Owner/App Admin only)
+    ├── surface-user-admin-organization-detail
+    ├── surface-user-admin-organization-create
+    ├── surface-user-admin-organization-rename
+    ├── surface-user-admin-organization-suspend-confirmation
+    └── surface-user-admin-organization-reactivate-confirmation
+```
+
+Graph rules:
+
+- `surface-user-admin-dashboard` is the trunk and must declare backend-authored branch actions for **Show users** / open User Directory and, when authorized, **Show organizations** / open Organization Directory.
+- `surface-user-admin-users` and `surface-user-admin-organization-directory` are the only first-level branch roots. They own discovery, filtering, pagination, row/card activation, and create entry points for their branches.
+- Every descendant surface includes branch navigation metadata in its browser-safe payload: `branchRootSurfaceId`, `branchReturnActionId`, `branchReturnLabel`, safe filter/context preservation hints, trace refs, and correlation id.
+- User branch descendants expose `action-user-admin-show-users` with label **Show users** or **Back to users**, `browserToolId: user-admin.show-users`, governed tool `search-user-directory`, capability `user_admin.list_members`, result surface `surface-user-admin-users`, and backend-authored safe filters only.
+- Organization branch descendants expose `action-user-admin-show-organizations` with label **Show organizations** or **Back to organizations**, `browserToolId: user-admin.show-organizations`, governed tool `manage-organizations`, capability `saas_owner.organization.list`, result surface `surface-user-admin-organization-directory`, and backend-authored safe filters only.
+- Dashboard, deep-link, row/card, and branch-return traversal is always reauthorized server-side. Unsupported, stale, hidden, cross-scope, or unauthorized traversal returns `surface-user-admin-system-message` with user-safe recovery and trace/correlation links; ready dashboards normally omit forbidden Organization branch actions instead of displaying disabled privileged work.
+- Frontend rendering may use the branch metadata for buttons, breadcrumbs, and focus recovery, but frontend visibility is advisory only and must not infer authority or hidden object existence.
+
+Surface-description sufficiency review: sufficient for tree-navigation implementation. The trunk, branch roots, descendant nodes, branch-return action ids/labels, capability mappings, auth behavior, stale/forbidden result surface, trace/correlation requirements, and tests are explicit enough for developers/generators to implement without inventing surface ids, action ids, states, auth/tenant behavior, or trace links.
+
 ## User Admin dashboard surface
 
 ### Intent
@@ -91,7 +129,7 @@ Dashboard payload/content must not include hidden workstream/source names, hidde
 | Revoke support access | `user_admin.support_access.grant_revoke_extend` / `grant-or-revoke-support-access` | Open `surface-user-admin-support-access-revoke-confirmation`; submission returns refreshed user detail, no-op, or denial. |
 | Start/open access review | `user_admin.access_review.start`, `user_admin.access_review.read` / `run-access-review` | Render access-review task progress/result; accept/reject actions record human review and route further access changes through deterministic User Admin task surfaces. |
 | Review identity exception | `user_admin.identity_relink.review` | Render `surface-user-admin-identity-exception-review`; approved recovery routes to workflow/status or user detail without exposing provider internals. |
-| Open Organization Admin | `saas_owner.organization.list` / `manage-organizations` | Render `surface-user-admin-organization-directory` for SaaS Owner Admins with backend-authorized Organization list/search and boundary notice; omitted for unsupported scopes. |
+| Show organizations / Open Organization Directory | `saas_owner.organization.list` / `manage-organizations` | Render `surface-user-admin-organization-directory` for SaaS Owner/App Admin selected contexts with backend-authorized Organization list/search and boundary notice; omitted for Tenant Admin/Customer Admin or unsupported scopes. |
 | Open admin audit evidence | `admin.audit.read` / Audit Trace capability | Render authorized Audit/Trace surface or safe redacted system message. |
 | Ask User Admin agent | `user_admin.ask_agent` | Invoke governed agent runtime or provider/model blocked system message. |
 
@@ -116,7 +154,7 @@ All graph nodes are owned by `user-admin-agent`. Reusable placements are limited
 
 ### Shared authority and language
 
-- Required context: authenticated active account, selected SaaS Owner `AuthContext`, and backend `saas_owner.tenant.read` for directory/detail reads or `saas_owner.tenant.manage` for create/rename/suspend/reactivate.
+- Required context: authenticated active account, selected SaaS Owner/App Admin `AuthContext`, and backend `saas_owner.organization.list` / `saas_owner.organization.read` for directory/detail reads or `saas_owner.organization.create`, `saas_owner.organization.rename`, `saas_owner.organization.suspend`, and `saas_owner.organization.reactivate` for create/rename/suspend/reactivate. Implementation may map these product capabilities to internal Tenant services, but browser payloads, surface actions, tests, and denial copy use Organization capability language.
 - Product/runtime language: browser copy, route labels, DTOs, and forms use **Organization**; backend enforcement, audit partitioning, and persisted isolation use **Tenant**.
 - Forbidden payload content: tenant/customer application data, customer records, provider ids/secrets, raw billing provider state, raw JWT/session data, hidden Organization counts, support-access internals, unredacted audit evidence, or fields that would let a browser infer hidden tenant/customer existence.
 
@@ -127,6 +165,14 @@ All graph nodes are owned by `user-admin-agent`. Reusable placements are limited
 - Create: `{ organizationNameDraft?, reasonDraft?, validationMessages?, idempotencyKeyHint, confirmationCopy, boundaryNotice, traceRefs, correlationId, redaction }`. Success opens detail for the created Organization.
 - Rename: `{ organizationId, organizationName, proposedOrganizationName?, reasonDraft?, validationMessages?, staleVersion?, idempotencyKeyHint, boundaryNotice, traceRefs, correlationId, redaction }`. Success refreshes detail.
 - Suspend/reactivate confirmation: `{ organizationId, organizationName, currentStatus, consequenceCopy, confirmationRequired, reasonRequired, reasonDraft?, validationMessages?, idempotencyKeyHint, boundaryNotice, traceRefs, correlationId, redaction }`. Success refreshes detail; no-op/denied/conflict uses typed `system_message` or refreshed detail with `lastResult`.
+
+### Branch-return actions
+
+Every Organization branch descendant (`surface-user-admin-organization-detail`, `surface-user-admin-organization-create`, `surface-user-admin-organization-rename`, `surface-user-admin-organization-suspend-confirmation`, and `surface-user-admin-organization-reactivate-confirmation`) includes the following return action unless the selected context is no longer authorized, in which case the same action returns `surface-user-admin-system-message`:
+
+| Action id | Label | Governed backend capability/tool | Result behavior |
+|---|---|---|---|
+| `action-user-admin-show-organizations` | `Show organizations` or `Back to organizations` | `saas_owner.organization.list` / `manage-organizations` | Reopen `surface-user-admin-organization-directory` with backend-shaped safe filter/context preservation; no hidden Organization counts or cross-tenant facts are exposed. |
 
 ### Actions and result surfaces
 
@@ -191,6 +237,14 @@ The User Admin dashboard is the trunk. Every visible dashboard object must decla
 | Identity link/relink exception | Opens `surface-user-admin-identity-exception-review`; approved recovery routes to workflow/status or user detail without provider internals. |
 | Recent denial/no-op/audit evidence | Opens authorized Audit/Trace surfaces or `surface-user-admin-system-message` when evidence is redacted or forbidden. |
 
+### Branch-return actions
+
+Every User branch descendant (`surface-user-admin-user-detail`, `surface-user-admin-invitation-create`, `surface-user-admin-invitation-detail`, `surface-user-admin-invitation-resend-confirmation`, `surface-user-admin-invitation-revoke-confirmation`, `surface-user-admin-membership-status-confirmation`, `surface-user-admin-role-change-preview`, `surface-user-admin-support-access-grant`, `surface-user-admin-support-access-revoke-confirmation`, `surface-user-admin-access-review-task`, and `surface-user-admin-identity-exception-review`) includes the following return action unless the selected context is no longer authorized, in which case the same action returns `surface-user-admin-system-message`:
+
+| Action id | Label | Governed backend capability/tool | Result behavior |
+|---|---|---|---|
+| `action-user-admin-show-users` | `Show users` or `Back to users` | `user_admin.list_members` / `search-user-directory` | Reopen `surface-user-admin-users` with backend-shaped safe filter/context preservation; no hidden users, memberships, invitations, counts, roles, or cross-scope facts are exposed. |
+
 ### Users directory row-selection routing
 
 `surface-user-admin-users` is the collection list/search surface and must expose a **Create/Invite user** action independent of row selection whenever `user_admin.invite_user` is visible for the selected scope. Row/card activation is state-aware and backend-authored:
@@ -252,7 +306,7 @@ The backend owns row `targetSurfaceId`, `targetSurfaceType`, `targetObjectType`,
 
 Each user-admin graph node defines loading, empty, ready, submitting, success, validation-error, forbidden, hidden-not-found, no-op, conflict/stale, partial-data, provider-fail-closed, model-fail-closed, outbox-fail-closed, approval-required, and failure states as applicable. Acceptance tests must cover dashboard-to-directory traversal, directory-to-detail traversal, each dedicated invitation/membership/role/support/access-review/identity surface, role-specific variants, idempotent replay/no-op transitions, last-admin/self-action denials, cross-tenant/customer denials, audit/work trace emission, frontend secret boundary, keyboard operation, focus movement, responsive table-to-card behavior, and typed `system_message` results.
 
-Surface-description sufficiency review: the previous broad list/detail/action panels are not sufficient for durable collection-object readiness because they combined discovery, inspection, create/edit, and lifecycle mutation. This revised user-admin graph is sufficient for developers/generators to implement and review without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics; existing implementation tasks should be repaired to match the split graph. Organization Admin is intentionally out of scope for this revision.
+Surface-description sufficiency review: the previous broad list/detail/action panels are not sufficient for durable collection-object readiness because they combined discovery, inspection, create/edit, and lifecycle mutation. This revised user-admin graph is sufficient for developers/generators to implement and review without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics; existing implementation tasks should be repaired to match the split graph. Organization Admin is included in this navigation-tree revision through the Organization Directory branch contract above.
 
 ## System-message requirements
 
@@ -269,7 +323,7 @@ Payload includes safe reason code, severity, user-safe title/message, selected s
 
 ## Common action rules
 
-Every consequential browser action has a stable action id, maps to a governed backend capability/tool, carries correlation and idempotency behavior where needed, recomputes authorization server-side, emits audit/work traces for allow/deny/no-op/failure, and returns a typed result surface, decision card, workflow status, outcome panel, markdown response, or safe system message. Frontend visibility and disabled state are UX hints only.
+Every consequential browser action and every navigation/read surface-request action has a stable action id, maps to a governed backend capability/tool, carries correlation and idempotency behavior where needed, recomputes authorization server-side, emits audit/work traces for allow/deny/no-op/failure, and returns a typed result surface, decision card, workflow status, outcome panel, markdown response, or safe system message. Frontend visibility and disabled state are UX hints only.
 
 ## Common states
 

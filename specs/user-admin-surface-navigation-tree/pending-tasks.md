@@ -85,7 +85,7 @@
 
 ### TASK-UASNT-02-001: Revise app-description User Admin surface tree
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
 - task brief: specs/user-admin-surface-navigation-tree/tasks/02-app-description/01-revise-user-admin-surface-tree.md
 - depends on:
@@ -114,6 +114,10 @@
   - implementation tasks can inherit required surface ids/action ids/auth/states/traces/tests
 - notes:
   - vertical contract: app-description capture for `surface-user-admin-dashboard` trunk, `surface-user-admin-users` and `surface-user-admin-organization-directory` branch roots, descendant branch-return actions, browser-tool mappings, and User Admin/SaaS Owner/Tenant/Customer auth expectations
+  - updated `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md` with explicit navigation tree, branch-return action ids, branch metadata, `saas_owner.organization.*` capability language, system-message denial behavior, tests, and sufficiency review
+  - updated `app-description/domains/core-starter/realization/traceability.md` with User Admin navigation-tree traceability rows
+  - checks: `git diff --check` passed; focused `rg` proof captured dashboard trunk, directory branches, Show users/Show organizations return actions, authorization expectations, and system-message denial behavior
+  - commit message: `user-admin-nav-tree: revise app-description surface tree`
 
 ### TASK-UASNT-03-001: Add backend workstream navigation metadata and branch actions
 
