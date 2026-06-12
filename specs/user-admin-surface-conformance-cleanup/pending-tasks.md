@@ -113,7 +113,7 @@
 
 ### TASK-UASCC-02-002: Repair backend task routing and typed system-message outcomes
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-conformance-cleanup/backlog/01-user-admin-surface-conformance-build-backlog.md
 - task brief: specs/user-admin-surface-conformance-cleanup/tasks/02-backend/02-backend-task-router-system-messages.md
 - depends on:
@@ -140,6 +140,9 @@
   - detail surfaces are inspection/task routers only; role/status/support/invitation/access-review/identity operations route through dedicated task/result/system-message surfaces; representative denials/no-ops/blocked states return typed safe system messages
 - notes:
   - vertical contract: User Admin / `agent-user-admin`; task/action outcomes for role/status/support/invitation/access-review/identity; dedicated surface graph edges; browser-tool action path; exact `user_admin.*` capabilities; tenant/customer hidden-target and last-admin/self-action denials; workstream service/API substrate; audit/work trace and secret redaction
+  - implemented inspection-only user/invitation detail surfaces, direct task-entry actions only on details, canonical `system-message` action failure surface, role preview decision-card typing, and self-action denial system-message tests
+  - completed checks: `git diff --check`; `mvn -q -Dtest=WorkstreamServiceTest test`
+  - commit: `user-admin-surface-conformance: repair task router system messages`
 
 ### TASK-UASCC-03-001: Repair frontend structured rendering and retire legacy admin page
 

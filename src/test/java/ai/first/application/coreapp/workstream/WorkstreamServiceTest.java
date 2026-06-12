@@ -472,8 +472,13 @@ class WorkstreamServiceTest {
 
     assertEquals("accepted", detail.status());
     assertEquals("surface-user-admin-user-detail", detail.resultSurface().surfaceId());
+    assertEquals("show-inspection", detail.resultSurface().surfaceType());
     assertTrue(detail.resultSurface().toString().contains("recordLabel=Member User"));
     assertTrue(detail.resultSurface().toString().contains("membershipId=membership-member"));
+    assertTrue(detail.resultSurface().toString().contains("canMutateInline=false"));
+    assertTrue(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-membership-status-confirmation")));
+    assertFalse(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-change-member-roles")));
+    assertFalse(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-disable-member")));
     assertFalse(detail.resultSurface().toString().contains("recordLabel=Tenant Admin"));
   }
 
@@ -511,8 +516,12 @@ class WorkstreamServiceTest {
         "action-invite-user", "action-invite-user", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", Map.of("email", "invitee@example.test", "displayName", "Invitee"), "idem-workstream-invite", "membership-admin", "surface-user-admin-dashboard", "corr-workstream-invite"));
     assertEquals("accepted", created.status());
     assertEquals("surface-user-admin-invitation-detail", created.resultSurface().surfaceId());
+    assertEquals("show-inspection", created.resultSurface().surfaceType());
     assertTrue(created.traceIds().get(0).contains("trace-useradmin-invitation"));
     assertTrue(created.resultSurface().toString().contains("invitee@example.test"));
+    assertTrue(created.resultSurface().toString().contains("canMutateInline=false"));
+    assertTrue(created.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-invitation-resend-confirmation")));
+    assertFalse(created.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-resend-invitation")));
     assertFalse(created.resultSurface().toString().contains("invite-token"));
 
     var duplicate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
@@ -786,9 +795,13 @@ class WorkstreamServiceTest {
     assertTrue(identityRepository.findMembership("membership-purge").isEmpty());
     assertTrue(identityRepository.findAccountByEmail("purge@example.test").isEmpty());
 
-    var selfDisable = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-admin", "reason", "self-disable"), "idem-self-disable", "membership-admin", "surface-user-admin-users", "corr-self-disable")));
-    assertEquals("self-disable-denied", selfDisable.reasonCode());
+    var selfDisable = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-disable-member", "action-useradmin-disable-member", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("membershipId", "membership-admin", "reason", "self-disable"), "idem-self-disable", "membership-admin", "surface-user-admin-users", "corr-self-disable"));
+    assertEquals("denied", selfDisable.status());
+    assertEquals("surface-user-admin-system-message", selfDisable.resultSurface().surfaceId());
+    assertEquals("user_admin.system_message.v1", selfDisable.resultSurface().data().get("surfaceContract"));
+    assertEquals("self-disable-denied", selfDisable.resultSurface().data().get("reasonCode"));
+    assertEquals(true, selfDisable.resultSurface().data().get("noFakeSuccess"));
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("USERADMIN_UPDATE_MEMBER_STATUS") && event.reasonCode().equals("self-disable-denied")));
   }
 
