@@ -181,7 +181,7 @@
 
 ### TASK-UABWS-99-001: Verify User Admin browser workstream smoke mini-project
 
-- status: pending
+- status: done
 - source: specs/user-admin-browser-workstream-smoke/backlog/01-user-admin-browser-smoke-build-backlog.md
 - task brief: specs/user-admin-browser-workstream-smoke/tasks/99-verification/01-verify-user-admin-browser-smoke.md
 - depends on:
@@ -213,3 +213,4 @@
   - verification compares completed work against README done state, backlog, task criteria, and app-description/conformance evidence; command evidence is recorded; mini-project complete only if no material gaps remain
 - notes:
   - vertical contract: User Admin / `agent-user-admin`; terminal verification of browser smoke coverage for dashboard/list/detail/task/system-message graph; governed browser-tool/workstream action path; deterministic AuthContext and hidden-target denial; hosted frontend/workstream endpoint; safe trace/redaction assertions
+  - completed: wrote `specs/user-admin-browser-workstream-smoke/browser-smoke-verification.md`; verified README done state, backlog/task criteria, archived conformance evidence, smoke command, deterministic AuthContext, hosted `/ui` and `/api/workstream` path, and browser-safe redaction coverage; no follow-up tasks appended; checks passed: `npm --prefix frontend run smoke:user-admin-workstream`; `git diff --check`; `env -u ADMIN_USERS mvn test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `npm --prefix frontend run build`; commit message: `user-admin-browser-smoke: verify smoke project`
