@@ -115,7 +115,7 @@
 
 ### TASK-UABWS-03-001: Implement User Admin browser/workstream smoke tests
 
-- status: pending
+- status: done
 - source: specs/user-admin-browser-workstream-smoke/backlog/01-user-admin-browser-smoke-build-backlog.md
 - task brief: specs/user-admin-browser-workstream-smoke/tasks/03-browser-smoke/01-implement-user-admin-browser-smoke.md
 - depends on:
@@ -145,6 +145,7 @@
   - smoke loads hosted app/workstream shell, opens User Admin and User Directory, opens read-only detail, opens at least one task surface, validates typed system-message denied/blocked path, and asserts no visible raw secrets/tokens/provider ids
 - notes:
   - vertical contract: User Admin / `agent-user-admin`; browser smoke for dashboard attention/action routing and task outcomes; dashboard -> users -> row detail -> task/system-message; workstream browser-tool action path; deterministic AuthContext; hosted frontend/workstream endpoint substrate; trace/redaction checks
+  - completed: added Maven-driven `UserAdminBrowserWorkstreamSmokeTest` exercising Akka-hosted `/ui` and protected `/api/workstream` bootstrap/surface/action routes through dashboard -> users -> user detail -> invitation task -> typed system-message denial, with browser-safe redaction assertions; checks passed: `env -u ADMIN_USERS mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `git diff --check`; commit message: `user-admin-browser-smoke: implement browser workstream smoke tests`
 
 ### TASK-UABWS-04-001: Document and integrate User Admin smoke command
 
