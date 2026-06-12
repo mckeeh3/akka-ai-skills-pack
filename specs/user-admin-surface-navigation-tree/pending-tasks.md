@@ -121,7 +121,7 @@
 
 ### TASK-UASNT-03-001: Add backend workstream navigation metadata and branch actions
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
 - task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/01-backend-navigation-payloads.md
 - depends on:
@@ -152,6 +152,10 @@
   - unauthorized Organization Directory access is omitted or denied safely server-side
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; human-backed browser-tool/surface actions via workstream API; capabilities include `user_admin.list_members`, `saas_owner.organization.list`, and descendant read/action capabilities; selected AuthContext and audit/trace expectations preserved
+  - updated `WorkstreamService` dashboard payloads with backend-authored navigation tree branch actions; added user/organization branch return metadata and explicit `action-user-admin-show-users` / `action-user-admin-show-organizations` actions
+  - added focused `WorkstreamServiceTest` coverage for SaaS Owner Organization Directory access, Tenant omission/direct denial, Organization descendant branch return metadata, and User descendant return-to-users action
+  - checks: `mvn -q -Dtest=WorkstreamServiceTest test` passed; `git diff --check` passed
+  - commit message: `user-admin-nav-tree: add backend navigation payloads`
 
 ### TASK-UASNT-03-002: Implement dashboard and User Directory branch frontend navigation
 

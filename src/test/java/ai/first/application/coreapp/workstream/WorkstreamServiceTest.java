@@ -205,18 +205,33 @@ class WorkstreamServiceTest {
     assertEquals("surface-user-admin-saas-owner-dashboard", dashboard.surfaceId());
     assertEquals("user_admin.saas_owner_dashboard.v1", dashboard.data().get("surfaceContract"));
     assertTrue(dashboard.toString().contains("SaaS Owner Admin Dashboard"));
-    assertTrue(dashboard.toString().contains("Open Organization Admin"));
-    assertTrue(dashboard.toString().contains("saas_owner.tenant.read"));
+    assertTrue(dashboard.toString().contains("Show organizations"));
+    assertTrue(dashboard.toString().contains("saas_owner.organization.list"));
     assertTrue(dashboard.toString().contains("saas_owner.tenant.manage"));
+    assertTrue(dashboard.toString().contains("navigationTree"));
 
     var organization = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
-        "action-display-organization-admin", "action-display-organization-admin", "saas_owner.tenant.read", "saas_owner.tenant.read", null, null, "membership-owner", dashboard.surfaceId(), "corr-open-org-admin"));
+        "action-user-admin-show-organizations", "user-admin.show-organizations", "manage-organizations", "saas_owner.organization.list", null, null, "membership-owner", dashboard.surfaceId(), "corr-open-org-admin"));
 
     assertEquals("accepted", organization.status());
     assertEquals("surface-user-admin-organization-directory", organization.resultSurface().surfaceId());
     assertEquals("user_admin.organization_directory.v1", organization.resultSurface().data().get("surfaceContract"));
     assertTrue(organization.resultSurface().toString().contains("Open Organization create form"));
     assertTrue(organization.resultSurface().toString().contains("Tenant lifecycle boundary"));
+    assertTrue(organization.resultSurface().toString().contains("branchRootSurfaceId=surface-user-admin-organization-directory"));
+  }
+
+  @Test
+  void tenantUserAdminOmitsOrganizationBranchAndDirectAccessIsDeniedSafely() {
+    var dashboard = service.surface(identity(), "membership-admin", "surface-user-admin-dashboard", "corr-tenant-dashboard-no-org");
+
+    assertFalse(dashboard.toString().contains("action-user-admin-show-organizations"));
+    assertFalse(dashboard.toString().contains("saas_owner.organization.list"));
+    assertTrue(dashboard.toString().contains("action-display-user-list"));
+
+    var denied = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-organizations", "user-admin.show-organizations", "manage-organizations", "saas_owner.organization.list", null, null, "membership-admin", dashboard.surfaceId(), "corr-tenant-org-denied")));
+    assertTrue(denied.reasonCode().contains("CAPABILITY_FORBIDDEN"));
   }
 
   @Test
@@ -227,18 +242,20 @@ class WorkstreamServiceTest {
     assertEquals("surface-user-admin-organization-create", create.resultSurface().surfaceId());
 
     var activeDetail = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
-        "action-organization-read", "action-organization-read", "saas_owner.tenant.read", "saas_owner.tenant.read", Map.of("organizationId", "tenant-starter"), null, "membership-owner", "surface-user-admin-organization-directory", "corr-read-active"));
+        "action-organization-read", "action-organization-read", "saas_owner.organization.read", "saas_owner.organization.read", Map.of("organizationId", "tenant-starter"), null, "membership-owner", "surface-user-admin-organization-directory", "corr-read-active"));
     assertEquals("surface-user-admin-organization-detail", activeDetail.resultSurface().surfaceId());
     assertTrue(activeDetail.resultSurface().toString().contains("suspend"));
+    assertTrue(activeDetail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-organizations"));
 
     var suspend = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
         "action-open-organization-suspend", "action-open-organization-suspend", "saas_owner.tenant.manage", "saas_owner.tenant.manage", Map.of("organizationId", "tenant-starter"), null, "membership-owner", activeDetail.resultSurface().surfaceId(), "corr-open-suspend"));
     assertEquals("accepted", suspend.status());
     assertEquals("surface-user-admin-organization-suspend-confirmation", suspend.resultSurface().surfaceId());
     assertTrue(suspend.resultSurface().toString().contains("tenant-starter"));
+    assertTrue(suspend.resultSurface().toString().contains("Back to organizations"));
 
     var suspendedDetail = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
-        "action-organization-read", "action-organization-read", "saas_owner.tenant.read", "saas_owner.tenant.read", Map.of("organizationId", "tenant-suspended"), null, "membership-owner", "surface-user-admin-organization-directory", "corr-read-suspended"));
+        "action-organization-read", "action-organization-read", "saas_owner.organization.read", "saas_owner.organization.read", Map.of("organizationId", "tenant-suspended"), null, "membership-owner", "surface-user-admin-organization-directory", "corr-read-suspended"));
     assertEquals("surface-user-admin-organization-detail", suspendedDetail.resultSurface().surfaceId());
     assertTrue(suspendedDetail.resultSurface().toString().contains("reactivate"));
 
@@ -252,6 +269,21 @@ class WorkstreamServiceTest {
         "action-open-organization-reactivate", "action-open-organization-reactivate", "saas_owner.tenant.manage", "saas_owner.tenant.manage", Map.of("organizationId", "tenant-starter"), null, "membership-owner", activeDetail.resultSurface().surfaceId(), "corr-wrong-reactivate"));
     assertEquals("denied", wrongState.status());
     assertEquals("system_message", wrongState.resultSurface().surfaceType());
+  }
+
+  @Test
+  void userAdminUserBranchDescendantsExposeBackendReturnAction() {
+    var detail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-display-user-detail", "action-display-user-detail", "USERADMIN_LIST_MEMBERS", "USERADMIN_LIST_MEMBERS", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", "surface-user-admin-users", "corr-member-branch-detail"));
+
+    assertEquals("surface-user-admin-user-detail", detail.resultSurface().surfaceId());
+    assertTrue(detail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-users"));
+    assertTrue(detail.resultSurface().toString().contains("Back to users"));
+
+    var users = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-users", "user-admin.show-users", "search-user-directory", "USERADMIN_LIST_MEMBERS", null, null, "membership-admin", detail.resultSurface().surfaceId(), "corr-member-branch-return"));
+    assertEquals("accepted", users.status());
+    assertEquals("surface-user-admin-users", users.resultSurface().surfaceId());
   }
 
   @Test
