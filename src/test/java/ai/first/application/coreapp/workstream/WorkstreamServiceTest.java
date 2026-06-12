@@ -235,6 +235,67 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void userAdminNavigationTreeTraversesBranchesWithTraceCorrelationAndSafePayloads() {
+    var tenantDashboard = service.surface(identity(), "membership-admin", "surface-user-admin-dashboard", "corr-tree-tenant-dashboard");
+    var users = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-users", "user-admin.show-users", "search-user-directory", "USERADMIN_LIST_MEMBERS", null, null, "membership-admin", tenantDashboard.surfaceId(), "corr-tree-users"));
+    assertEquals("accepted", users.status());
+    assertEquals("surface-user-admin-users", users.resultSurface().surfaceId());
+    assertEquals("corr-tree-users", users.resultSurface().correlationId());
+    assertTrue(users.resultSurface().traceIds().contains("trace-surface-user-admin-users"));
+    assertTrue(users.resultSurface().toString().contains("action-display-user-detail"));
+    assertBrowserPayloadSafe(users.resultSurface());
+
+    var detail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-display-user-detail", "action-display-user-detail", "USERADMIN_LIST_MEMBERS", "USERADMIN_LIST_MEMBERS", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", users.resultSurface().surfaceId(), "corr-tree-user-detail"));
+    assertEquals("surface-user-admin-user-detail", detail.resultSurface().surfaceId());
+    assertEquals("corr-tree-user-detail", detail.resultSurface().correlationId());
+    assertTrue(detail.resultSurface().toString().contains("branchRootSurfaceId=surface-user-admin-users"));
+    assertTrue(detail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-users"));
+    assertBrowserPayloadSafe(detail.resultSurface());
+
+    var returnedUsers = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-users", "user-admin.show-users", "search-user-directory", "USERADMIN_LIST_MEMBERS", null, null, "membership-admin", detail.resultSurface().surfaceId(), "corr-tree-users-return"));
+    assertEquals("surface-user-admin-users", returnedUsers.resultSurface().surfaceId());
+    assertEquals("corr-tree-users-return", returnedUsers.resultSurface().correlationId());
+
+    var ownerDashboard = service.surface(ownerIdentity(), "membership-owner", "surface-user-admin-dashboard", "corr-tree-owner-dashboard");
+    var organizations = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-organizations", "user-admin.show-organizations", "manage-organizations", "saas_owner.organization.list", null, null, "membership-owner", ownerDashboard.surfaceId(), "corr-tree-orgs"));
+    assertEquals("surface-user-admin-organization-directory", organizations.resultSurface().surfaceId());
+    assertEquals("corr-tree-orgs", organizations.resultSurface().correlationId());
+    assertTrue(organizations.resultSurface().toString().contains("branchRootSurfaceId=surface-user-admin-organization-directory"));
+    assertTrue(organizations.resultSurface().toString().contains("action-user-admin-show-organizations"));
+    assertBrowserPayloadSafe(organizations.resultSurface());
+
+    var organizationDetail = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-organization-read", "action-organization-read", "saas_owner.organization.read", "saas_owner.organization.read", Map.of("organizationId", "tenant-starter"), null, "membership-owner", organizations.resultSurface().surfaceId(), "corr-tree-org-detail"));
+    assertEquals("surface-user-admin-organization-detail", organizationDetail.resultSurface().surfaceId());
+    assertTrue(organizationDetail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-organizations"));
+    assertTrue(organizationDetail.resultSurface().toString().contains("Back to organizations"));
+    assertBrowserPayloadSafe(organizationDetail.resultSurface());
+
+    var returnedOrganizations = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-organizations", "user-admin.show-organizations", "manage-organizations", "saas_owner.organization.list", null, null, "membership-owner", organizationDetail.resultSurface().surfaceId(), "corr-tree-orgs-return"));
+    assertEquals("surface-user-admin-organization-directory", returnedOrganizations.resultSurface().surfaceId());
+    assertEquals("corr-tree-orgs-return", returnedOrganizations.resultSurface().correlationId());
+  }
+
+  @Test
+  void userAdminOrganizationDeepLinkDenialUsesSafeSystemMessageForHiddenTargets() {
+    var denied = service.runShellRequest(memberIdentity(), "membership-member", new WorkstreamService.WorkstreamShellRequest(
+        "show_surface", "deep_link", "Open Organization Directory", null, "agent-user-admin", "surface-user-admin-organization-directory", null, "agent-my-account", null, null, "current_workstream", "corr-member-org-deeplink", "membership-member"));
+
+    assertEquals("denied", denied.status());
+    assertEquals("system_message", denied.resultSurface().surfaceType());
+    assertEquals("TARGET_NOT_FOUND_OR_FORBIDDEN", denied.resultSurface().data().get("code"));
+    assertEquals("corr-member-org-deeplink", denied.resultSurface().correlationId());
+    assertFalse(denied.resultSurface().toString().contains("tenant-starter"));
+    assertFalse(denied.resultSurface().toString().contains("saas_owner.organization.list"));
+    assertBrowserPayloadSafe(denied.resultSurface());
+  }
+
+  @Test
   void organizationSurfaceGraphRoutesBySelectedOrganizationLifecycleState() {
     var create = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
         "action-open-organization-create", "action-open-organization-create", "saas_owner.tenant.manage", "saas_owner.tenant.manage", null, null, "membership-owner", "surface-user-admin-organization-directory", "corr-open-create"));
@@ -1232,6 +1293,20 @@ class WorkstreamServiceTest {
     assertTrue(response.surface().data().get("message").toString().contains("blocked before a response was produced"));
     assertTrue(response.surface().toString().contains("model-provider-config-missing"));
     assertFalse(response.surface().toString().contains("should not be used"));
+  }
+
+  private static void assertBrowserPayloadSafe(WorkstreamService.SurfaceEnvelope surface) {
+    var rendered = surface.toString();
+    assertNotNull(surface.correlationId());
+    assertFalse(surface.traceIds().isEmpty());
+    assertFalse(rendered.contains("invite-token"));
+    assertFalse(rendered.contains("tokenHash"));
+    assertFalse(rendered.contains("Bearer "));
+    assertFalse(rendered.contains("Authorization="));
+    assertFalse(rendered.contains("providerSecret"));
+    assertFalse(rendered.contains("RESEND_API_KEY"));
+    assertFalse(rendered.contains("sk-secret"));
+    assertFalse(rendered.contains("api_key="));
   }
 
   private static Path findSource(String fileName) throws Exception {

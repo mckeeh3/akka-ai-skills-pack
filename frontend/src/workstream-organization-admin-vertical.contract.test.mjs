@@ -63,6 +63,23 @@ test('Organization Admin workstream surface graph preserves SaaS Owner authority
   assert.match(main, /protected \/api\/admin\/organizations path/);
 });
 
+test('Organization Admin frontend contract proves dashboard-to-organization-branch traversal and safe payload boundaries', () => {
+  assert.match(surfaces, /displayOrganizationAdmin[\s\S]*action-display-organization-admin[\s\S]*surface-user-admin-organization-directory/);
+  assert.match(surfaces, /showOrganizations[\s\S]*action-user-admin-show-organizations[\s\S]*surface-user-admin-organization-directory/);
+  assert.match(surfaces, /userAdminOrganizationDirectorySurface[\s\S]*readOrganization/);
+  assert.match(surfaces, /readOrganization[\s\S]*action-organization-read[\s\S]*surface-user-admin-organization-detail/);
+  for (const descendant of ['userAdminOrganizationDetailSurface', 'userAdminOrganizationCreateSurface', 'userAdminOrganizationRenameSurface', 'userAdminOrganizationSuspendSurface', 'userAdminOrganizationReactivateSurface']) {
+    assert.match(surfaces, new RegExp(`${descendant}[\\s\\S]*showOrganizations`));
+  }
+  assert.match(surfaces, /branchReturnActionId: 'action-user-admin-show-organizations'/);
+  assert.match(organizationSurface, /OrganizationBranchReturn/);
+  assert.match(organizationSurface, /organizationBranchReturnInput/);
+  assert.match(organizationSurface, /Correlation \$\{data\.lastResult\.correlationId\}/);
+  assert.match(organizationSurface, /provider secrets/);
+  assert.match(organizationSurface, /Tenant Admin and Customer Admin contexts cannot gain SaaS Owner authority from browser state/);
+  assert.doesNotMatch(`${surfaces}\n${organizationSurface}\n${main}\n${apiClient}\n${httpApiClient}`, /Authorization:\s*Bearer|RESEND_API_KEY|sk-secret|api_key=|tenant\/customer application data/);
+});
+
 test('Organization Admin renderer covers safe states, forms, and inaccessible role denials', () => {
   assert.match(renderer, /OrganizationAdminSurface/);
   assert.match(organizationSurface, /Organization Admin is unavailable for this selected context/);

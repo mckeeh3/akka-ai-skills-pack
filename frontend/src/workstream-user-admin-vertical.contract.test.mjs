@@ -13,6 +13,7 @@ const httpApiClient = read('./api/HttpWorkstreamApiClient.ts');
 const main = read('./main.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
+const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
 const componentsCss = read('./styles/components.css');
 const workstreamService = read('../../src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
 
@@ -148,6 +149,22 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /Display user detail/);
   assert.match(surfaces, /UserAdminDetailDisplayed/);
   assert.match(surfaces, /displayUserDetailActionResult/);
+});
+
+test('User Admin frontend contract proves dashboard-to-user-branch traversal and safe trace metadata', () => {
+  assert.match(surfaces, /userAdminDashboardSurface[\s\S]*action-user-admin-show-users[\s\S]*surface-user-admin-users/);
+  assert.match(surfaces, /userAdminListSearchSurface[\s\S]*targetSurfaceId: 'surface-user-admin-user-detail'/);
+  assert.match(surfaces, /userAdminListSearchSurface[\s\S]*openActionId: 'action-display-user-detail'/);
+  assert.match(surfaces, /userAdminDetailEditSurface[\s\S]*userAdminSurfaceActions\.showUsers/);
+  assert.match(detailEditSurface, /branchRootSurfaceId: branch\?\.branchRootSurfaceId \?\? envelope\.data\.branchRootSurfaceId \?\? 'surface-user-admin-users'/);
+  assert.match(detailEditSurface, /branchReturnActionId: branch\?\.branchReturnActionId \?\? envelope\.data\.branchReturnActionId \?\? 'action-user-admin-show-users'/);
+  assert.match(dashboardSurface, /userDirectoryAction/);
+  assert.match(dashboardSurface, /action-user-admin-show-users/);
+  assert.match(listSearchSurface, /row\.openActionId/);
+  assert.match(listSearchSurface, /row\.targetSurfaceId/);
+  assert.match(surfaces, /trace-user-admin-detail/);
+  assert.match(componentsCss, /user-admin-branch-return/);
+  assert.doesNotMatch(`${surfaces}\n${dashboardSurface}\n${listSearchSurface}`, /invite-token|tokenHash|Authorization:\s*Bearer|RESEND_API_KEY|sk-secret|api_key=/);
 });
 
 test('workstream and API clients support dashboard-to-list-to-detail navigation feedback', () => {

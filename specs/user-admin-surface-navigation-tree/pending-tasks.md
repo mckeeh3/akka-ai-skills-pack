@@ -241,7 +241,7 @@
 
 ### TASK-UASNT-03-004: Add fullstack navigation tree tests
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
 - task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/04-fullstack-navigation-tests.md
 - depends on:
@@ -270,6 +270,10 @@
   - tests prove User Directory and Organization Directory branches, unauthorized Organization Directory omission/denial, stale/deep-link safe denial, trace/correlation rendering, and frontend secret boundaries at focused scope
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; validation for dashboard -> directories -> descendants -> directories; browser-tool/surface-action coverage; user-admin and organization-admin capability mappings; backend/API/frontend evidence
+  - added `WorkstreamServiceTest` coverage for dashboard -> users -> user detail -> users and dashboard -> organizations -> organization detail -> organizations traversal, trace/correlation propagation, browser-safe payload checks, and safe hidden-target system-message denial
+  - added frontend contract coverage for User branch and Organization branch traversal metadata, backend-authored branch-return controls, trace/correlation evidence, unauthorized role denial copy, and frontend secret-boundary assertions
+  - checks: `mvn -q -Dtest=WorkstreamServiceTest test` passed; `npm --prefix frontend test -- --run` passed; `npm --prefix frontend run typecheck` passed; `git diff --check` passed
+  - commit message: `user-admin-nav-tree: add fullstack navigation tests`
 
 ### TASK-UASNT-99-001: Verify User Admin navigation tree mini-project
 
