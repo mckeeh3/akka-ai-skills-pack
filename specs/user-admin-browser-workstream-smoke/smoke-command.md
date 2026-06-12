@@ -14,10 +14,14 @@ The script delegates to:
 env -u ADMIN_USERS mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest test
 ```
 
-## Invitation delivery coverage
+## Integrated production-runtime hardening coverage
 
-The smoke exercises Akka-served `/ui` assets and protected `/api/workstream` calls, then creates an invitation through `/api/workstream/actions`. The returned invitation detail surface must include browser-safe delivery state, retry recovery routing, trace references, and no raw invitation tokens, provider message ids, Resend payloads, provider secrets, bearer tokens, or WorkOS provider payloads.
+The smoke exercises Akka-served `/ui` assets and protected `/api/workstream` calls, then validates representative User Admin hardening paths through `/api/workstream/actions`:
 
-## Real-provider behavior
+- invitation create returns a browser-safe invitation detail surface with backend-authored delivery state, retry recovery routing, trace references, and no raw invitation tokens, provider message ids, Resend payloads, provider secrets, bearer tokens, or WorkOS provider payloads;
+- identity recovery opens the durable exception surface, requests review, approves recovery, and completes recovery while keeping provider identities/JWT details redacted;
+- access review start returns the typed `blocked_provider_or_runtime` task surface when model/provider/tool-boundary runtime prerequisites are unavailable, including safe model/tool/data/policy usage summaries, trace links, and explicit no-direct-mutation copy.
 
-External WorkOS, Resend, and model-provider credentials are not required for this deterministic smoke. Without real provider credentials, production Resend/model paths remain fail-closed and are not treated as successful runtime behavior. Real-provider validation should be run only in a credentialed environment with backend-only secrets; this smoke intentionally skips that path when credentials are absent.
+## Optional real-provider/model behavior
+
+External WorkOS, Resend, and model-provider credentials are not required for this deterministic smoke. Without real provider/model credentials, production Resend and access-review agent paths remain fail-closed and are not treated as successful runtime behavior. Credentialed validation should be run only in an environment with backend-only secrets and approved model/provider configuration; this smoke intentionally skips those external calls when credentials are absent.

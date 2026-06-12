@@ -192,6 +192,36 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(identityRequested.resultSurface().toString().contains("Bearer "));
     assertBrowserSafe(identityRequested.resultSurface());
 
+    var identityApproved = runAction(new CapabilityActionRequest(
+        "action-useradmin-approve-identity-relink",
+        "action-useradmin-approve-identity-relink",
+        "user_admin.identity_relink.approve",
+        "user_admin.identity_relink.approve",
+        Map.of("accountId", "member@example.test", "reason", "reviewed browser smoke evidence", "approvalRef", "approval-browser-smoke-identity"),
+        "idem-browser-smoke-identity-approve",
+        SELECTED_CONTEXT_ID,
+        identityRequested.resultSurface().surfaceId(),
+        "corr-browser-smoke-identity-approve"));
+    assertEquals("approved-for-recovery", identityApproved.status());
+    assertEquals("approved-for-recovery", identityApproved.resultSurface().data().get("lifecycleStatus"));
+    assertBrowserSafe(identityApproved.resultSurface());
+
+    var identityCompleted = runAction(new CapabilityActionRequest(
+        "action-useradmin-complete-identity-relink",
+        "action-useradmin-complete-identity-relink",
+        "user_admin.identity_relink.complete",
+        "user_admin.identity_relink.complete",
+        Map.of("accountId", "member@example.test", "approvalRef", "approval-browser-smoke-identity"),
+        "idem-browser-smoke-identity-complete",
+        SELECTED_CONTEXT_ID,
+        identityApproved.resultSurface().surfaceId(),
+        "corr-browser-smoke-identity-complete"));
+    assertEquals("accepted", identityCompleted.status());
+    assertEquals("completed", identityCompleted.resultSurface().data().get("lifecycleStatus"));
+    assertFalse(identityCompleted.resultSurface().toString().contains("workos-admin"));
+    assertFalse(identityCompleted.resultSurface().toString().contains("Bearer "));
+    assertBrowserSafe(identityCompleted.resultSurface());
+
     var denied = runAction(new CapabilityActionRequest(
         "action-display-invitation-detail",
         "action-display-invitation-detail",

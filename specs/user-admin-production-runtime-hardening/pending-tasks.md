@@ -278,7 +278,7 @@
 
 ### TASK-UAPRH-05-001: Run integrated User Admin production runtime tests and update smoke coverage
 
-- status: pending
+- status: done
 - source: specs/user-admin-production-runtime-hardening/backlog/01-user-admin-production-runtime-hardening-build-backlog.md
 - task brief: specs/user-admin-production-runtime-hardening/tasks/04-integration/01-integrated-production-runtime-tests.md
 - depends on:
@@ -309,6 +309,8 @@
   - integrated tests cover representative success and fail-closed paths for all three production hardening areas; smoke command remains passing and includes safe updated assertions; optional real-provider/model smoke behavior is documented/skipped without credentials
 - notes:
   - vertical contract: User Admin / `agent-user-admin`; invitation delivery, identity exception, access review attention; dashboard/list/detail/task/workflow/system-message surfaces; invitation/outbox, identity, access-review, audit/work-trace, model/tool boundaries; selected-scope hidden-target denials; integrated backend/agent/frontend smoke validation
+  - completed: extended hosted User Admin browser smoke to traverse invitation delivery, access-review fail-closed state, and durable identity recovery request/approve/complete in one protected API flow; updated smoke docs to document optional credentialed Resend/WorkOS/model-provider behavior.
+  - checks: `git diff --check`; `env -u ADMIN_USERS mvn -q -Dtest=WorkstreamServiceTest,InvitationAndUserAdminServiceTest,UserAdminAccessReviewAutonomousAgentTest,UserAdminBrowserWorkstreamSmokeTest test`; `npm --prefix frontend run smoke:user-admin-workstream`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`
 
 ### TASK-UAPRH-99-001: Verify User Admin production runtime hardening
 
