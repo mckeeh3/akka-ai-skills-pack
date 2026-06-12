@@ -458,7 +458,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
 
   async function callOrganizationAdminApi(actionId: string, input: Record<string, string>) {
     // Production Organization Admin actions intentionally use the typed AdminClient and protected /api/admin/organizations path.
-    if (actionId === 'action-organization-list') return apiClient.admin.listOrganizations({ query: input.query, status: input.status });
+    if (isOrganizationDirectoryAction(actionId)) return apiClient.admin.listOrganizations({ query: input.query, status: input.status });
     if (actionId === 'action-organization-read') return apiClient.admin.getOrganization(requiredInput(input, 'organizationId'));
     if (actionId === 'action-organization-create') return apiClient.admin.createOrganization({ organizationName: requiredInput(input, 'organizationName'), reason: input.reason, idempotencyKey: requiredInput(input, 'idempotencyKey') });
     if (actionId === 'action-organization-rename') return apiClient.admin.renameOrganization(requiredInput(input, 'organizationId'), { organizationName: requiredInput(input, 'organizationName'), reason: input.reason, idempotencyKey: requiredInput(input, 'idempotencyKey') });
@@ -483,7 +483,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
         }
       };
     }
-    if (actionId === 'action-organization-list') {
+    if (isOrganizationDirectoryAction(actionId)) {
       const payload = result.value as OrganizationListPayload;
       return {
         ...surface,
@@ -543,6 +543,10 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
         lastResult: { status: status === 'no-op' ? 'no-op' : 'success', message, correlationId, traceRefs }
       }
     };
+  }
+
+  function isOrganizationDirectoryAction(actionId: string) {
+    return actionId === 'action-organization-list' || actionId === 'action-display-organization-admin' || actionId === 'action-user-admin-show-organizations';
   }
 
   function isOrganizationAdminRuntimeAction(action: SurfaceAction) {

@@ -185,6 +185,11 @@ export type ListSearchSurfaceData = {
 
 export type OrganizationAdminSurfaceData = {
   surfaceContract: 'user_admin.organization_directory.v1' | 'user_admin.organization_detail.v1' | 'user_admin.organization_create.v1' | 'user_admin.organization_rename.v1' | 'user_admin.organization_suspend_confirmation.v1' | 'user_admin.organization_reactivate_confirmation.v1' | string;
+  branchNavigation?: UserAdminBranchNavigation;
+  branchRootSurfaceId?: string;
+  branchReturnActionId?: string;
+  branchReturnLabel?: string;
+  safeFilterPreservation?: string;
   selectedAuthContext?: Record<string, unknown>;
   scopeLabel?: string;
   scopeType?: string;

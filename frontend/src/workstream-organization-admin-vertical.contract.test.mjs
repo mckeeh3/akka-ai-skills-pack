@@ -42,7 +42,7 @@ test('Organization Admin workstream surface graph preserves SaaS Owner authority
   for (const capability of ['saas_owner.organization.list', 'saas_owner.organization.read', 'saas_owner.organization.create', 'saas_owner.organization.rename', 'saas_owner.organization.suspend', 'saas_owner.organization.reactivate']) {
     assert.match(surfaces, new RegExp(capability.replace(/\./g, '\\.')));
   }
-  for (const action of ['action-organization-list', 'action-organization-read', 'action-organization-create', 'action-organization-rename', 'action-organization-suspend', 'action-organization-reactivate', 'action-open-organization-create', 'action-open-organization-rename', 'action-open-organization-suspend', 'action-open-organization-reactivate']) {
+  for (const action of ['action-user-admin-show-organizations', 'action-organization-list', 'action-organization-read', 'action-organization-create', 'action-organization-rename', 'action-organization-suspend', 'action-organization-reactivate', 'action-open-organization-create', 'action-open-organization-rename', 'action-open-organization-suspend', 'action-open-organization-reactivate']) {
     assert.match(surfaces, new RegExp(action));
     assert.match(organizationSurface, new RegExp(action));
   }
@@ -50,6 +50,9 @@ test('Organization Admin workstream surface graph preserves SaaS Owner authority
   assert.match(surfaces, /support access/);
   assert.match(surfaces, /billing-derived authority/);
   assert.match(surfaces, /hidden-counts-redacted/);
+  assert.match(surfaces, /branchReturnActionId: 'action-user-admin-show-organizations'/);
+  assert.match(surfaces, /browserToolId: 'user-admin\.show-organizations'/);
+  assert.match(surfaces, /branchRootSurfaceId: 'surface-user-admin-organization-directory'/);
   assert.match(fixtureWorkstreamApi, /displayOrganizationAdminActionResult/);
   assert.match(main, /isOrganizationAdminRuntimeAction/);
   assert.match(main, /apiClient\.admin\.listOrganizations/);
@@ -67,11 +70,16 @@ test('Organization Admin renderer covers safe states, forms, and inaccessible ro
   for (const state of ['loading', 'empty', 'success', 'validation-error', 'forbidden', 'not_found_or_redacted', 'no-op', 'conflict', 'stale', 'error']) {
     assert.match(surfaces, new RegExp(state));
   }
-  for (const label of ['Search Organizations', 'Create Organization', 'Rename selected Organization', 'Suspend', 'Reactivate']) {
+  for (const label of ['Search Organizations', 'Create Organization', 'Rename selected Organization', 'Suspend', 'Reactivate', 'Back to organizations']) {
     assert.match(organizationSurface, new RegExp(label));
   }
   assert.match(organizationSurface, /idempotencyKey/);
   assert.match(organizationSurface, /Reason is required/);
+  assert.match(organizationSurface, /OrganizationBranchReturn/);
+  assert.match(organizationSurface, /organizationBranchReturnInput/);
+  assert.match(organizationSurface, /action-user-admin-show-organizations/);
+  assert.match(main, /isOrganizationDirectoryAction/);
+  assert.match(main, /action-user-admin-show-organizations/);
   assert.match(css, /organization-admin-surface/);
   assert.match(css, /organization-admin-grid/);
 });

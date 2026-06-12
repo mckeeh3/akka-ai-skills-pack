@@ -200,7 +200,7 @@
 
 ### TASK-UASNT-03-003: Implement Organization Directory branch frontend navigation
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
 - task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/03-frontend-organization-branch-navigation.md
 - depends on:
@@ -233,6 +233,11 @@
   - Tenant/Customer contexts do not receive unauthorized organization branch access
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; Organization administration branch for SaaS Owner/App Admin; dashboard -> organization directory and organization descendants -> organization directory; `manage-organizations` browser-tool/surface actions; organization capabilities and selected AuthContext denials
+  - added frontend Organization branch return rendering for detail, create, rename, suspend, and reactivate descendants using backend-authored `action-user-admin-show-organizations` metadata with legacy `action-organization-list` fallback
+  - updated Organization Admin fixture surfaces and contract tests to cover dashboard-provided Show organizations action metadata, branch-root metadata, descendant Back to organizations controls, and safe Tenant/Customer denial copy
+  - updated runtime action mapping so Organization directory actions including `action-display-organization-admin` and `action-user-admin-show-organizations` map safely to the protected Organization list path when handled by the Admin API route
+  - checks: `npm --prefix frontend test -- --run` passed; `npm --prefix frontend run typecheck` passed; `git diff --check` passed
+  - commit message: `user-admin-nav-tree: implement organization branch frontend navigation`
 
 ### TASK-UASNT-03-004: Add fullstack navigation tree tests
 

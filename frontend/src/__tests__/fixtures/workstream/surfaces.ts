@@ -242,6 +242,19 @@ export const userAdminSurfaceActions = {
     resultSurface: { updateSurfaceId: 'surface-user-admin-organization-directory', openPlacement: 'inline' },
     audit: { eventType: 'OrganizationListDisplayed', traceRequired: true }
   },
+  showOrganizations: {
+    actionId: 'action-user-admin-show-organizations',
+    label: 'Back to organizations',
+    intent: 'surface-request',
+    capabilityId: userAdminCapabilities.listOrganizations,
+    governedToolId: 'manage-organizations',
+    browserToolId: 'user-admin.show-organizations',
+    shellRequest: { requestType: 'show_surface', targetFunctionalAgentId: 'agent-user-admin', targetSurfaceId: 'surface-user-admin-organization-directory', displayText: 'Show organizations' },
+    inputSchemaRef: 'schema.organization-admin.open.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-organization-directory', openPlacement: 'inline' },
+    audit: { eventType: 'OrganizationDirectoryDisplayed', traceRequired: true }
+  },
   readOrganization: {
     actionId: 'action-organization-read',
     label: 'Open Organization detail',
@@ -1671,7 +1684,8 @@ export const userAdminDashboardSurface = envelope(
   [
     userAdminSurfaceActions.showUsers,
     userAdminSurfaceActions.displayUserList,
-    userAdminSurfaceActions.displayOrganizationAdmin
+    userAdminSurfaceActions.displayOrganizationAdmin,
+    userAdminSurfaceActions.showOrganizations
   ]
 );
 
@@ -1698,6 +1712,17 @@ const organizationAdminSurfaceData = {
     filters: { query: '', status: '' },
     systemStates: ['loading', 'empty', 'ready', 'submitting', 'success', 'validation-error', 'forbidden', 'not_found_or_redacted', 'no-op', 'conflict', 'stale', 'error'],
     lastResult: { status: 'no-op', message: 'Requested Organization name already matches current state.', correlationId: 'corr-organization-no-op', traceRefs: ['trace-organization-no-op'] },
+    branchNavigation: {
+      branchRootSurfaceId: 'surface-user-admin-organization-directory',
+      branchReturnActionId: 'action-user-admin-show-organizations',
+      branchReturnLabel: 'Back to organizations',
+      browserToolId: 'user-admin.show-organizations',
+      governedToolId: 'manage-organizations',
+      capabilityId: 'saas_owner.organization.list',
+      safeFilterPreservation: 'backend-authored-only',
+      traceRefs: ['trace-organization-branch-return'],
+      correlationId: 'corr-organization-detail'
+    },
     redaction: ['tenant-app-data-redacted', 'provider-secrets-redacted', 'billing-authority-redacted', 'support-access-internals-redacted', 'hidden-counts-redacted']
   };
 
@@ -1722,7 +1747,7 @@ export const userAdminOrganizationDetailSurface = envelope(
   'agent-user-admin',
   { ...organizationAdminSurfaceData, surfaceContract: 'user_admin.organization_detail.v1' },
   [
-    userAdminSurfaceActions.listOrganizations,
+    userAdminSurfaceActions.showOrganizations,
     userAdminSurfaceActions.openOrganizationRename,
     userAdminSurfaceActions.openOrganizationSuspend,
     userAdminSurfaceActions.openOrganizationReactivate,
@@ -1736,7 +1761,7 @@ export const userAdminOrganizationCreateSurface = envelope(
   'Create Organization',
   'agent-user-admin',
   { ...organizationAdminSurfaceData, surfaceContract: 'user_admin.organization_create.v1' },
-  [userAdminSurfaceActions.createOrganization]
+  [userAdminSurfaceActions.showOrganizations, userAdminSurfaceActions.createOrganization]
 );
 
 export const userAdminOrganizationRenameSurface = envelope(
@@ -1745,7 +1770,7 @@ export const userAdminOrganizationRenameSurface = envelope(
   'Rename Organization',
   'agent-user-admin',
   { ...organizationAdminSurfaceData, surfaceContract: 'user_admin.organization_rename.v1' },
-  [userAdminSurfaceActions.renameOrganization]
+  [userAdminSurfaceActions.showOrganizations, userAdminSurfaceActions.renameOrganization]
 );
 
 export const userAdminOrganizationSuspendSurface = envelope(
@@ -1754,7 +1779,7 @@ export const userAdminOrganizationSuspendSurface = envelope(
   'Suspend Organization',
   'agent-user-admin',
   { ...organizationAdminSurfaceData, surfaceContract: 'user_admin.organization_suspend_confirmation.v1' },
-  [userAdminSurfaceActions.suspendOrganization]
+  [userAdminSurfaceActions.showOrganizations, userAdminSurfaceActions.suspendOrganization]
 );
 
 export const userAdminOrganizationReactivateSurface = envelope(
@@ -1763,7 +1788,7 @@ export const userAdminOrganizationReactivateSurface = envelope(
   'Reactivate Organization',
   'agent-user-admin',
   { ...organizationAdminSurfaceData, surfaceContract: 'user_admin.organization_reactivate_confirmation.v1' },
-  [userAdminSurfaceActions.reactivateOrganization]
+  [userAdminSurfaceActions.showOrganizations, userAdminSurfaceActions.reactivateOrganization]
 );
 
 

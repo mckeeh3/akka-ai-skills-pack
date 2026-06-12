@@ -17,6 +17,9 @@ type Props = {
 
 type OrganizationLike = NonNullable<OrganizationAdminSurfaceData['organizations']>[number];
 
+const organizationBranchRootSurfaceId = 'surface-user-admin-organization-directory';
+const organizationBranchReturnActionId = 'action-user-admin-show-organizations';
+
 export function OrganizationAdminSurface({ envelope, onAction }: Props) {
   const data = envelope.data;
   const detail = data.organizationDetail;
@@ -56,7 +59,7 @@ function OrganizationHeader({ envelope }: { envelope: SurfaceEnvelope<Organizati
       </div>
       <div className="organization-admin-scope" aria-label="Authority basis">
         <strong>{data.scopeLabel ?? 'SaaS Owner scope'}</strong>
-        <span>{data.authorityBasis ?? 'Backend checks selected AuthContext and saas_owner.tenant.read/manage.'}</span>
+        <span>{data.authorityBasis ?? 'Backend checks selected AuthContext and saas_owner.organization.list/read.'}</span>
       </div>
     </div>
   );
@@ -131,12 +134,12 @@ function OrganizationDetail({ envelope, organization, onAction }: Props & { orga
       <div className="surface-section-heading compact"><div><p className="eyebrow">Safe detail</p><h4 id={`${envelope.surfaceId}-detail-heading`}>{organization?.organizationName ?? 'Select an Organization'}</h4></div></div>
       <p className="surface-empty-copy">{detail?.safeBoundaryNotice ?? envelope.data.boundaryNotice ?? boundaryFallback}</p>
       {organization && <dl className="organization-admin-detail"><div><dt>Status</dt><dd>{organization.status}</dd></div><div><dt>Trace refs</dt><dd>{(organization.traceRefs ?? detail?.traceRefs ?? []).join(' · ') || 'Trace available after backend action'}</dd></div></dl>}
-      {organization && <div className="organization-admin-lifecycle-actions" aria-label="Organization task entry points">
-        <button className="surface-action-link secondary" type="button" onClick={() => run(envelope, onAction, 'action-open-organization-rename', { organizationId: organization.organizationId })}>Rename selected Organization</button>
-        {(detail?.visibleActions ?? organization.actionAvailability ?? []).includes('suspend') && <button className="surface-action-link danger" type="button" onClick={() => run(envelope, onAction, 'action-open-organization-suspend', { organizationId: organization.organizationId })}>Open suspend confirmation</button>}
-        {(detail?.visibleActions ?? organization.actionAvailability ?? []).includes('reactivate') && <button className="surface-action-link secondary" type="button" onClick={() => run(envelope, onAction, 'action-open-organization-reactivate', { organizationId: organization.organizationId })}>Open reactivate confirmation</button>}
-        <button className="surface-action-link secondary" type="button" onClick={() => run(envelope, onAction, 'action-organization-list', {})}>Back to Organization directory</button>
-      </div>}
+      <div className="organization-admin-lifecycle-actions" aria-label="Organization task entry points">
+        {organization && <button className="surface-action-link secondary" type="button" onClick={() => run(envelope, onAction, 'action-open-organization-rename', { organizationId: organization.organizationId })}>Rename selected Organization</button>}
+        {organization && (detail?.visibleActions ?? organization.actionAvailability ?? []).includes('suspend') && <button className="surface-action-link danger" type="button" onClick={() => run(envelope, onAction, 'action-open-organization-suspend', { organizationId: organization.organizationId })}>Open suspend confirmation</button>}
+        {organization && (detail?.visibleActions ?? organization.actionAvailability ?? []).includes('reactivate') && <button className="surface-action-link secondary" type="button" onClick={() => run(envelope, onAction, 'action-open-organization-reactivate', { organizationId: organization.organizationId })}>Open reactivate confirmation</button>}
+        <OrganizationBranchReturn envelope={envelope} onAction={onAction} />
+      </div>
     </section>
   );
 }
@@ -158,7 +161,10 @@ function OrganizationCreateForm({ envelope, onAction }: Props) {
       <p className="surface-empty-copy">This single-purpose surface creates an active Organization/Tenant boundary through the protected Admin API.</p>
       <label>Name<input className="designed-control" value={createName} onChange={(event) => setCreateName(event.currentTarget.value)} required /></label>
       <label>Reason<input className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} placeholder="Reason for audit/work trace" /></label>
-      <button className="surface-action-link primary" type="submit">Create Organization</button>
+      <div className="organization-admin-lifecycle-actions">
+        <button className="surface-action-link primary" type="submit">Create Organization</button>
+        <OrganizationBranchReturn envelope={envelope} onAction={onAction} compact />
+      </div>
     </form>
   );
 }
@@ -181,7 +187,10 @@ function OrganizationRenameForm({ envelope, organization, onAction }: Props & { 
       <p className="surface-empty-copy">Rename updates the Organization display label only and returns to safe detail.</p>
       <label>New Organization name<input className="designed-control" value={renameName} onChange={(event) => setRenameName(event.currentTarget.value)} required /></label>
       <label>Reason<input className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} placeholder="Reason for audit/work trace" /></label>
-      <button className="surface-action-link secondary" type="submit">Rename</button>
+      <div className="organization-admin-lifecycle-actions">
+        <button className="surface-action-link secondary" type="submit">Rename</button>
+        <OrganizationBranchReturn envelope={envelope} onAction={onAction} compact />
+      </div>
     </form>
   );
 }
@@ -204,6 +213,7 @@ function OrganizationLifecycleConfirmation({ envelope, organization, actionId, t
       <label>Reason<input className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} placeholder="Required reason for audit/work trace" required /></label>
       <div className="organization-admin-lifecycle-actions">
         <button className={`surface-action-link ${actionId === 'action-organization-suspend' ? 'danger' : 'secondary'}`} type="button" onClick={submitLifecycle}>{submitLabel}</button>
+        <OrganizationBranchReturn envelope={envelope} onAction={onAction} compact />
       </div>
     </section>
   );
@@ -212,6 +222,47 @@ function OrganizationLifecycleConfirmation({ envelope, organization, actionId, t
 function organizationFromDetail(detail: OrganizationAdminSurfaceData['organizationDetail']): OrganizationLike | undefined {
   if (!detail?.organizationId || !detail.organizationName || !detail.status) return undefined;
   return { organizationId: detail.organizationId, organizationName: detail.organizationName, status: detail.status, traceRefs: detail.traceRefs, actionAvailability: detail.visibleActions };
+}
+
+function OrganizationBranchReturn({ envelope, onAction, compact = false }: Props & { compact?: boolean }) {
+  const action = organizationBranchReturnAction(envelope.actions);
+  if (!action) return null;
+  return (
+    <nav className={compact ? 'organization-admin-branch-return compact' : 'organization-admin-branch-return'} aria-label="Organization branch navigation">
+      <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(action, envelope.surfaceId, organizationBranchReturnInput(envelope))}>{organizationBranchReturnLabel(envelope, action)}</button>
+      {!compact && <p className="capability-basis">{organizationBranchCapability(envelope, action)} · safe filters: {organizationSafeFilterPreservation(envelope)}</p>}
+    </nav>
+  );
+}
+
+function organizationBranchReturnAction(actions: SurfaceAction[]): SurfaceAction | undefined {
+  return actions.find((action) => action.actionId === organizationBranchReturnActionId) ?? actions.find((action) => action.actionId === 'action-organization-list');
+}
+
+function organizationBranchReturnLabel(envelope: SurfaceEnvelope<OrganizationAdminSurfaceData>, action: SurfaceAction): string {
+  const data = envelope.data as OrganizationAdminSurfaceData & { branchNavigation?: { branchReturnLabel?: string }; branchReturnLabel?: string };
+  return data.branchNavigation?.branchReturnLabel ?? data.branchReturnLabel ?? (action.actionId === organizationBranchReturnActionId ? action.label : 'Back to organizations');
+}
+
+function organizationBranchReturnInput(envelope: SurfaceEnvelope<OrganizationAdminSurfaceData>): Record<string, string> {
+  const data = envelope.data as OrganizationAdminSurfaceData & { branchNavigation?: { branchRootSurfaceId?: string; branchReturnActionId?: string; safeFilterPreservation?: string; correlationId?: string }; branchRootSurfaceId?: string; branchReturnActionId?: string; safeFilterPreservation?: string };
+  const branch = data.branchNavigation;
+  return {
+    branchRootSurfaceId: branch?.branchRootSurfaceId ?? data.branchRootSurfaceId ?? organizationBranchRootSurfaceId,
+    branchReturnActionId: branch?.branchReturnActionId ?? data.branchReturnActionId ?? organizationBranchReturnActionId,
+    safeFilterPreservation: branch?.safeFilterPreservation ?? data.safeFilterPreservation ?? 'backend-authored-only',
+    correlationId: branch?.correlationId ?? envelope.correlationId
+  };
+}
+
+function organizationBranchCapability(envelope: SurfaceEnvelope<OrganizationAdminSurfaceData>, action: SurfaceAction): string {
+  const data = envelope.data as OrganizationAdminSurfaceData & { branchNavigation?: { capabilityId?: string } };
+  return data.branchNavigation?.capabilityId ?? action.capabilityId ?? 'saas_owner.organization.list';
+}
+
+function organizationSafeFilterPreservation(envelope: SurfaceEnvelope<OrganizationAdminSurfaceData>): string {
+  const data = envelope.data as OrganizationAdminSurfaceData & { branchNavigation?: { safeFilterPreservation?: string }; safeFilterPreservation?: string };
+  return data.branchNavigation?.safeFilterPreservation ?? data.safeFilterPreservation ?? 'backend-authored-only';
 }
 
 function run(envelope: SurfaceEnvelope<OrganizationAdminSurfaceData>, onAction: Props['onAction'], actionId: string, input: Record<string, string>) {
