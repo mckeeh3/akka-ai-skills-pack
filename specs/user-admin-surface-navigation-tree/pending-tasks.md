@@ -354,7 +354,7 @@
 
 ### TASK-UASNT-03-006: Implement frontend User branch task/confirmation surfaces
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
 - task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/06-frontend-user-branch-task-surfaces.md
 - depends on:
@@ -387,6 +387,11 @@
   - branch returns use backend-provided `action-user-admin-show-users` metadata and do not infer authority frontend-side
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; frontend realization for User branch dedicated task/confirmation descendants
+  - added `UserAdminTaskSurface` and renderer routing for invitation create/resend/revoke, membership status, support-access grant/revoke, and identity exception descendants using backend-provided surface ids/contracts
+  - task surfaces render purpose-specific forms/confirmation/decision states with backend-authored `action-user-admin-show-users` branch-return controls, trace/redaction evidence, client-side required-field validation, and no raw JSON fallback
+  - added focused frontend contract coverage for all required User branch descendant ids/contracts, branch-return metadata, no-direct-mutation identity exception copy, styling hooks, and frontend secret boundaries
+  - checks: `npm --prefix frontend test -- --run` passed; `npm --prefix frontend run typecheck` passed; `git diff --check` passed
+  - commit message: `user-admin-nav-tree: implement frontend user task surfaces`
 
 ### TASK-UASNT-03-007: Add fullstack tests for User branch dedicated descendants
 

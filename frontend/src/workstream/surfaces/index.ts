@@ -12,4 +12,5 @@ export * from './SurfaceActionBar';
 export * from './SurfaceRenderer';
 export * from './SurfaceStateFrame';
 export * from './SystemMessageSurface';
+export * from './UserAdminTaskSurface';
 export * from './WorkflowStatusSurface';

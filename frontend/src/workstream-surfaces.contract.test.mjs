@@ -17,6 +17,7 @@ const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
 const notificationCenterSurface = read('./workstream/surfaces/NotificationCenterSurface.tsx');
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
+const userAdminTaskSurface = read('./workstream/surfaces/UserAdminTaskSurface.tsx');
 const surfaceStyles = read('./styles/components.css');
 const packageJson = read('../package.json');
 const surfaceTypes = read('./workstream/types/surfaces.ts');
@@ -35,7 +36,8 @@ const surfaceComponentFiles = [
   './workstream/surfaces/WorkflowStatusSurface.tsx',
   './workstream/surfaces/GovernanceDiffSurface.tsx',
   './workstream/surfaces/OutcomeSurface.tsx',
-  './workstream/surfaces/NotificationCenterSurface.tsx'
+  './workstream/surfaces/NotificationCenterSurface.tsx',
+  './workstream/surfaces/UserAdminTaskSurface.tsx'
 ].map(read);
 
 const allSurfaceComponents = surfaceComponentFiles.join('\n');
@@ -64,6 +66,8 @@ test('structured surface renderer routes every canonical surface type', () => {
   }
   assert.match(renderer, /MarkdownResponseSurface/);
   assert.match(renderer, /SystemMessageSurface/);
+  assert.match(renderer, /UserAdminTaskSurface/);
+  assert.match(renderer, /isUserAdminTaskSurface\(selectedEnvelope\)/);
   assert.match(renderer, /JSON\.stringify/);
 });
 
@@ -134,7 +138,7 @@ test('base surface frame and action bar preserve envelope, stale, redaction, dis
 });
 
 test('canonical surface components include dashboard, list/search, detail/edit, decision, audit, workflow, governance diff, and outcome patterns', () => {
-  for (const componentName of ['MarkdownResponseSurface', 'SystemMessageSurface', 'DashboardSurface', 'ListSearchSurface', 'DetailEditSurface', 'DecisionSurface', 'AuditTimelineSurface', 'WorkflowStatusSurface', 'GovernanceDiffSurface', 'OutcomeSurface', 'NotificationCenterSurface']) {
+  for (const componentName of ['MarkdownResponseSurface', 'SystemMessageSurface', 'DashboardSurface', 'ListSearchSurface', 'DetailEditSurface', 'DecisionSurface', 'AuditTimelineSurface', 'WorkflowStatusSurface', 'GovernanceDiffSurface', 'OutcomeSurface', 'NotificationCenterSurface', 'UserAdminTaskSurface']) {
     assert.match(surfaceIndex, new RegExp(componentName));
     assert.match(allSurfaceComponents, new RegExp(`function ${componentName}`));
   }
@@ -162,6 +166,12 @@ test('canonical surface components include dashboard, list/search, detail/edit, 
   assert.match(detailEditSurface, /UserAdminBranchReturn/);
   assert.match(detailEditSurface, /action-user-admin-show-users/);
   assert.match(detailEditSurface, /backend-authored-only/);
+  assert.match(userAdminTaskSurface, /requiredUserTaskSurfaceIds/);
+  assert.match(userAdminTaskSurface, /function InvitationCreateTask/);
+  assert.match(userAdminTaskSurface, /function MembershipStatusTask/);
+  assert.match(userAdminTaskSurface, /function SupportAccessGrantTask/);
+  assert.match(userAdminTaskSurface, /function IdentityExceptionReview/);
+  assert.match(userAdminTaskSurface, /action-user-admin-show-users/);
   assert.match(allSurfaceComponents, /user-admin-branch-return/);
   assert.match(surfaceStyles, /\.user-admin-branch-return/);
   assert.match(surfaceTypes, /NotificationCenterSurfaceData/);

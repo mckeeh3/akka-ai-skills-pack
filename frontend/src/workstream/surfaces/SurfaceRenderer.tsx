@@ -12,6 +12,7 @@ import { OrganizationAdminSurface } from './OrganizationAdminSurface';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
 import { SystemMessageSurface } from './SystemMessageSurface';
+import { UserAdminTaskSurface, isUserAdminTaskSurface } from './UserAdminTaskSurface';
 import { WorkflowStatusSurface } from './WorkflowStatusSurface';
 
 type StructuredSurfaceRendererProps = {
@@ -32,6 +33,10 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
 
   if (selectedEnvelope.surfaceId.startsWith('surface-user-admin-organization-') || ((selectedEnvelope.data as { surfaceContract?: string } | undefined)?.surfaceContract ?? '').startsWith('user_admin.organization_')) {
     return <OrganizationAdminSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+  }
+
+  if (isUserAdminTaskSurface(selectedEnvelope)) {
+    return <UserAdminTaskSurface envelope={selectedEnvelope as never} onAction={onAction} />;
   }
 
   switch (selectedEnvelope.surfaceType) {

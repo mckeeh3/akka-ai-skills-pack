@@ -14,6 +14,8 @@ const main = read('./main.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
+const userAdminTaskSurface = read('./workstream/surfaces/UserAdminTaskSurface.tsx');
+const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const componentsCss = read('./styles/components.css');
 const workstreamService = read('../../src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
 
@@ -165,6 +167,49 @@ test('User Admin frontend contract proves dashboard-to-user-branch traversal and
   assert.match(surfaces, /trace-user-admin-detail/);
   assert.match(componentsCss, /user-admin-branch-return/);
   assert.doesNotMatch(`${surfaces}\n${dashboardSurface}\n${listSearchSurface}`, /invite-token|tokenHash|Authorization:\s*Bearer|RESEND_API_KEY|sk-secret|api_key=/);
+});
+
+test('User Admin task/confirmation descendants render purpose-specific frontend surfaces', () => {
+  for (const surfaceId of [
+    'surface-user-admin-invitation-create',
+    'surface-user-admin-invitation-resend-confirmation',
+    'surface-user-admin-invitation-revoke-confirmation',
+    'surface-user-admin-membership-status-confirmation',
+    'surface-user-admin-support-access-grant',
+    'surface-user-admin-support-access-revoke-confirmation',
+    'surface-user-admin-identity-exception-review'
+  ]) {
+    assert.match(userAdminTaskSurface, new RegExp(surfaceId));
+    assert.match(workstreamService, new RegExp(surfaceId));
+  }
+  for (const contract of [
+    'user_admin.invitation_create.v1',
+    'user_admin.invitation_resend_confirmation.v1',
+    'user_admin.invitation_revoke_confirmation.v1',
+    'user_admin.membership_status_confirmation.v1',
+    'user_admin.support_access_grant.v1',
+    'user_admin.support_access_revoke_confirmation.v1',
+    'user_admin.identity_exception_review.v1'
+  ]) {
+    assert.match(userAdminTaskSurface, new RegExp(contract.replaceAll('.', '\\.')));
+    assert.match(workstreamService, new RegExp(contract.replaceAll('.', '\\.')));
+  }
+  assert.match(renderer, /isUserAdminTaskSurface\(selectedEnvelope\)/);
+  assert.match(userAdminTaskSurface, /function InvitationCreateTask/);
+  assert.match(userAdminTaskSurface, /function InvitationConfirmationTask/);
+  assert.match(userAdminTaskSurface, /function MembershipStatusTask/);
+  assert.match(userAdminTaskSurface, /function SupportAccessGrantTask/);
+  assert.match(userAdminTaskSurface, /function SupportAccessRevokeTask/);
+  assert.match(userAdminTaskSurface, /function IdentityExceptionReview/);
+  assert.match(userAdminTaskSurface, /action-user-admin-show-users/);
+  assert.match(userAdminTaskSurface, /branchRootSurfaceId: branch\?\.branchRootSurfaceId \?\? envelope\.data\.branchRootSurfaceId \?\? 'surface-user-admin-users'/);
+  assert.match(userAdminTaskSurface, /safeFilterPreservation: branch\?\.safeFilterPreservation \?\? envelope\.data\.safeFilterPreservation \?\? 'backend-authored-only'/);
+  assert.match(userAdminTaskSurface, /aria-label="User Admin branch navigation"/);
+  assert.match(userAdminTaskSurface, /raw JWTs, invitation tokens, provider payloads, and secrets are omitted/);
+  assert.match(userAdminTaskSurface, /No direct mutation: recovery must route to deterministic backend approval\/status flows or safe user detail/);
+  assert.match(componentsCss, /\.user-admin-task-surface/);
+  assert.match(componentsCss, /\.user-admin-task-form label/);
+  assert.doesNotMatch(userAdminTaskSurface, /JSON\.stringify|dangerouslySetInnerHTML|Authorization:\s*Bearer|RESEND_API_KEY|sk-secret|api_key=/);
 });
 
 test('workstream and API clients support dashboard-to-list-to-detail navigation feedback', () => {
