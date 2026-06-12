@@ -44,7 +44,7 @@
 
 ### TASK-ODR-01-001: Inventory environment, config, docs, and scripts
 
-- status: pending
+- status: done
 - source: specs/operational-deployment-readiness/backlog/01-operational-deployment-readiness-build-backlog.md
 - task brief: specs/operational-deployment-readiness/tasks/01-env-config/01-inventory-env-config-docs-scripts.md
 - depends on:
@@ -75,6 +75,8 @@
   - next task can document/validate config without rediscovery
 - notes:
   - vertical contract: cross-cutting docs/survey; no runtime behavior change; inventory preserves auth/provider boundaries; validation by diff check
+  - completed: created `specs/operational-deployment-readiness/env-config-inventory.md` covering env vars, scripts, provider/model config, static asset behavior, and known follow-up gaps
+  - checks: `git diff --check`
 
 ### TASK-ODR-02-001: Document environment/secret configuration and add validation
 
