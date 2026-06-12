@@ -186,7 +186,12 @@ class WorkstreamServiceTest {
     assertEquals("user_admin.tenant_dashboard.v1", dashboard.data().get("surfaceContract"));
     assertTrue(dashboard.toString().contains("Tenant Admin Dashboard"));
     assertTrue(dashboard.toString().contains("tenant.invitation.manage"));
-    assertTrue(dashboard.toString().contains("action-invite-user"));
+    assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-invitation-create") && action.resultSurface().updateSurfaceId().equals("surface-user-admin-invitation-create")));
+    assertFalse(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-invite-user")), "Dashboard Invite user shortcut must open the invite form rather than firing the create command without invitee input.");
+    assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-read-access-review") && action.resultSurface().updateSurfaceId().equals("surface-user-admin-access-review-task")));
+    var accessReviewStatus = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-read-access-review", "action-useradmin-read-access-review", "user_admin.access_review.read", "user_admin.access_review.read", null, null, "membership-admin", dashboard.surfaceId(), "corr-dashboard-access-review-status"));
+    assertEquals("surface-user-admin-access-review-task", accessReviewStatus.resultSurface().surfaceId());
     assertTrue(dashboard.toString().contains("blocked_provider_or_runtime"));
     assertTrue(dashboard.traceIds().stream().anyMatch(trace -> trace.contains("trace-surface-user-admin-tenant-dashboard")));
 

@@ -456,8 +456,10 @@ public final class WorkstreamService {
       var task = accessReviewService.start(actor, request.idempotencyKey(), request.correlationId());
       result = accessReviewActionResult(task, task.status() == AccessReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked-runtime" : accessReviewStatus(task), task.status() == AccessReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "Access-review task failed closed; governed AutonomousAgent provider/runtime configuration is unavailable." : "Access-review Akka AutonomousAgent task accepted; backend projection remains source of truth.", request.correlationId(), actor);
     } else if ("action-useradmin-read-access-review".equals(request.actionId())) {
-      var task = accessReviewService.read(actor, stringInput(request.input(), "taskId", ""), request.correlationId());
-      result = accessReviewActionResult(task, "accepted", "Access-review task read through backend-authoritative User Admin capability.", request.correlationId(), actor);
+      var taskId = stringInput(request.input(), "taskId", "");
+      result = taskId.isBlank()
+          ? new CapabilityActionResult("accepted", "Access-review status surface loaded; no task id was selected from the dashboard queue.", request.correlationId(), List.of("trace-useradmin-access-review-status-" + stableSuffix(request.correlationId())), accessReviewBlockedSurface(actor, request.correlationId()))
+          : accessReviewActionResult(accessReviewService.read(actor, taskId, request.correlationId()), "accepted", "Access-review task read through backend-authoritative User Admin capability.", request.correlationId(), actor);
     } else if ("action-useradmin-cancel-access-review".equals(request.actionId())) {
       var task = accessReviewService.cancel(actor, stringInput(request.input(), "taskId", ""), stringInput(request.input(), "reason", "workstream cancel"), request.correlationId());
       result = accessReviewActionResult(task, "accepted", "Access-review task cancellation recorded; access state unchanged.", request.correlationId(), actor);
@@ -883,21 +885,21 @@ public final class WorkstreamService {
           "Platform administrators",
           "Administer tenant/organization lifecycle and platform-level user administration. This does not grant tenant application-data access, provider secret access, support internals, or billing-derived authority.",
           List.of(SAAS_OWNER_ORGANIZATION_LIST_CAPABILITY, SAAS_OWNER_ORGANIZATION_READ_CAPABILITY, SAAS_OWNER_TENANT_READ_CAPABILITY, SAAS_OWNER_TENANT_MANAGE_CAPABILITY, SAAS_OWNER_USER_MANAGE_CAPABILITY, "saas_owner.audit.read"),
-          List.of(showOrganizationsAction(), displayListAction(), inviteAction(), openAuditAction()));
+          List.of(showOrganizationsAction(), displayListAction(), openInvitationCreateAction(), openAuditAction(), readAccessReviewAction()));
       case CUSTOMER -> new UserAdminLayer(
           "customer", "surface-user-admin-customer-dashboard", "user_admin.customer_dashboard.v1", "Customer Admin Dashboard", "Customer scope", false,
           "customer.user.read",
           "Customer users",
           "Administer users, invitations, roles, audit, and access review only for the selected customer within its tenant.",
           List.of("customer.user.read", "customer.user.manage", "customer.role.manage", "customer.invitation.manage", "customer.audit.read", "customer.access_review.manage"),
-          List.of(displayListAction(), inviteAction(), readSupportAccessAction(), openAuditAction(), startAccessReviewAction()));
+          List.of(displayListAction(), openInvitationCreateAction(), readSupportAccessAction(), openAuditAction(), startAccessReviewAction(), readAccessReviewAction()));
       default -> new UserAdminLayer(
           "tenant", "surface-user-admin-tenant-dashboard", "user_admin.tenant_dashboard.v1", "Tenant Admin Dashboard", "Tenant scope", false,
           USER_ADMIN_CAPABILITY,
           "Tenant users",
           "Administer tenant users, invitations, roles, support access, audit, and access review for the selected tenant.",
           List.of(USER_ADMIN_CAPABILITY, "tenant.user.read", "tenant.user.manage", "tenant.role.manage", "tenant.invitation.manage", "tenant.support_access.manage", "tenant.audit.read", "tenant.access_review.manage"),
-          List.of(displayListAction(), inviteAction(), readSupportAccessAction(), openAuditAction(), startAccessReviewAction()));
+          List.of(displayListAction(), openInvitationCreateAction(), readSupportAccessAction(), openAuditAction(), startAccessReviewAction(), readAccessReviewAction()));
     };
   }
 
