@@ -241,6 +241,16 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.match(adminUsersPage, /quarantined-legacy-screen/);
   assert.match(adminUsersPage, /not be used as a normal runtime path/);
   assert.match(userAdminTaskSurface, /No direct mutation: recovery must route to deterministic backend approval\/status flows or safe user detail/);
+  assert.match(userAdminTaskSurface, /action-useradmin-request-identity-relink/);
+  assert.match(userAdminTaskSurface, /action-useradmin-approve-identity-relink/);
+  assert.match(userAdminTaskSurface, /action-useradmin-deny-identity-relink/);
+  assert.match(userAdminTaskSurface, /action-useradmin-complete-identity-relink/);
+  assert.match(userAdminTaskSurface, /Raw WorkOS ids, JWTs, and provider payloads are hidden/);
+  assert.match(workstreamService, /requestIdentityRelinkAction\(\)/);
+  assert.match(workstreamService, /approveIdentityRelinkAction\(\)/);
+  assert.match(workstreamService, /completeIdentityRelinkAction\(\)/);
+  assert.match(workstreamService, /lifecycleStatus/);
+  assert.match(workstreamService, /provider-boundary:redacted/);
   assert.match(workstreamService, /withUserBranchReturn\(List\.of\(grantSupportAccessAction\(\), extendSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);
   assert.match(workstreamService, /withUserBranchReturn\(List\.of\(revokeSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);
   assert.match(componentsCss, /\.user-admin-task-surface/);

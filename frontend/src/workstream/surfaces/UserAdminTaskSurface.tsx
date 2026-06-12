@@ -27,6 +27,7 @@ type UserAdminTaskSurfaceData = Record<string, unknown> & {
   deliveryState?: Record<string, unknown>;
   delivery?: Record<string, unknown>;
   recoverySteps?: string[];
+  evidenceRefs?: string[];
   systemStates?: string[];
   traceRefs?: string[];
   correlationId?: string;
@@ -263,18 +264,46 @@ function SupportAccessRevokeTask({ envelope, onAction }: Props) {
 }
 
 function IdentityExceptionReview({ envelope, onAction }: Props) {
+  const requestAction = findAction(envelope.actions, 'action-useradmin-request-identity-relink');
+  const readAction = findAction(envelope.actions, 'action-useradmin-read-identity-relink');
+  const approveAction = findAction(envelope.actions, 'action-useradmin-approve-identity-relink');
+  const denyAction = findAction(envelope.actions, 'action-useradmin-deny-identity-relink');
+  const completeAction = findAction(envelope.actions, 'action-useradmin-complete-identity-relink');
   const detailAction = findAction(envelope.actions, 'action-display-user-detail');
+  const [reason, setReason] = useState('');
+  const [approvalRef, setApprovalRef] = useState('');
+  const [error, setError] = useState<string>();
+  const context = stringRecord(envelope.data.actionContext);
+  const seed = String(envelope.data.recordId ?? envelope.data.recoveryId ?? envelope.correlationId);
+  function submit(action: SurfaceAction | undefined, prefix: string, requireApprovalRef = false) {
+    if (!action || action.disabled) return;
+    if (requireApprovalRef && !approvalRef.trim()) return setError('Approval reference is required before approving or completing identity recovery.');
+    setError(undefined);
+    runAction(envelope, onAction, action, { ...context, reason: reason.trim(), approvalRef: approvalRef.trim(), idempotencyKey: idempotencyKey(prefix, seed) });
+  }
   return (
     <section className="user-admin-task-decision" aria-label="Identity exception review">
       <h4>Identity exception review</h4>
       <p>{String(envelope.data.summary ?? 'Review identity-link/relink evidence without exposing provider internals.')}</p>
+      {error && <p className="surface-state-inline validation-error" role="alert">{error}</p>}
       <dl>
+        <div><dt>Lifecycle</dt><dd>{String(envelope.data.lifecycleStatus ?? envelope.data.status ?? 'not started').replace(/[_-]/g, ' ')}</dd></div>
         <div><dt>Risk</dt><dd>{String(envelope.data.risk ?? 'provider-boundary')}</dd></div>
         <div><dt>Direct mutation</dt><dd>{envelope.data.noDirectMutation ? 'Not allowed' : 'Not reported'}</dd></div>
         <div><dt>Provider boundary</dt><dd>{String(envelope.data.providerBoundary ?? 'Provider identifiers and payloads are redacted.')}</dd></div>
       </dl>
-      <p className="surface-state-inline forbidden">No direct mutation: recovery must route to deterministic backend approval/status flows or safe user detail.</p>
-      {detailAction && <button type="button" className="surface-action-link secondary" disabled={Boolean(detailAction.disabled)} onClick={() => runAction(envelope, onAction, detailAction, stringRecord(envelope.data.actionContext))}>Open user detail</button>}
+      {(envelope.data.evidenceRefs ?? []).length > 0 && <ul aria-label="Identity recovery evidence">{(envelope.data.evidenceRefs ?? []).map((evidence) => <li key={evidence}>{evidence}</li>)}</ul>}
+      <label>Reason<textarea className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} /></label>
+      <label>Approval reference<input className="designed-control" value={approvalRef} onChange={(event) => setApprovalRef(event.currentTarget.value)} /></label>
+      <div className="surface-action-row" aria-label="Identity recovery actions">
+        <button type="button" className="surface-action-link secondary" disabled={!requestAction || Boolean(requestAction.disabled)} onClick={() => submit(requestAction, 'identity-request')}>Request recovery</button>
+        <button type="button" className="surface-action-link secondary" disabled={!readAction || Boolean(readAction.disabled)} onClick={() => runAction(envelope, onAction, readAction, context)}>Refresh status</button>
+        <button type="button" className="surface-action-link primary" disabled={!approveAction || Boolean(approveAction.disabled)} onClick={() => submit(approveAction, 'identity-approve', true)}>Approve recovery</button>
+        <button type="button" className="surface-action-link danger" disabled={!denyAction || Boolean(denyAction.disabled)} onClick={() => submit(denyAction, 'identity-deny')}>Deny recovery</button>
+        <button type="button" className="surface-action-link primary" disabled={!completeAction || Boolean(completeAction.disabled)} onClick={() => submit(completeAction, 'identity-complete', true)}>Complete recovery</button>
+        {detailAction && <button type="button" className="surface-action-link secondary" disabled={Boolean(detailAction.disabled)} onClick={() => runAction(envelope, onAction, detailAction, context)}>Open user detail</button>}
+      </div>
+      <p className="surface-state-inline forbidden">No direct mutation: recovery must route to deterministic backend approval/status flows or safe user detail. Raw WorkOS ids, JWTs, and provider payloads are hidden.</p>
     </section>
   );
 }

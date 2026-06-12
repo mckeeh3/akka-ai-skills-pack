@@ -143,6 +143,37 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(invited.resultSurface().toString().contains("providerMessageId"));
     assertBrowserSafe(invited.resultSurface());
 
+    var identityReview = runAction(new CapabilityActionRequest(
+        "action-open-useradmin-identity-exception-review",
+        "action-open-useradmin-identity-exception-review",
+        "user_admin.identity_relink.review",
+        "user_admin.identity_relink.review",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member"),
+        null,
+        SELECTED_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-browser-smoke-identity-open"));
+    assertEquals("accepted", identityReview.status());
+    assertEquals("surface-user-admin-identity-exception-review", identityReview.resultSurface().surfaceId());
+    assertEquals("request-required", identityReview.resultSurface().data().get("status"));
+    assertBrowserSafe(identityReview.resultSurface());
+
+    var identityRequested = runAction(new CapabilityActionRequest(
+        "action-useradmin-request-identity-relink",
+        "action-useradmin-request-identity-relink",
+        "user_admin.identity_relink.request",
+        "user_admin.identity_relink.request",
+        Map.of("accountId", "member@example.test", "reason", "provider mismatch smoke"),
+        "idem-browser-smoke-identity-request",
+        SELECTED_CONTEXT_ID,
+        identityReview.resultSurface().surfaceId(),
+        "corr-browser-smoke-identity-request"));
+    assertEquals("approval-required", identityRequested.status());
+    assertEquals("needs-review", identityRequested.resultSurface().data().get("lifecycleStatus"));
+    assertFalse(identityRequested.resultSurface().toString().contains("workos-admin"));
+    assertFalse(identityRequested.resultSurface().toString().contains("Bearer "));
+    assertBrowserSafe(identityRequested.resultSurface());
+
     var denied = runAction(new CapabilityActionRequest(
         "action-display-invitation-detail",
         "action-display-invitation-detail",

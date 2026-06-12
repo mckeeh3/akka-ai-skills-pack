@@ -173,7 +173,7 @@
 
 ### TASK-UAPRH-03-002: Wire identity recovery surfaces and tests
 
-- status: pending
+- status: done
 - source: specs/user-admin-production-runtime-hardening/backlog/01-user-admin-production-runtime-hardening-build-backlog.md
 - task brief: specs/user-admin-production-runtime-hardening/tasks/02-identity-recovery/02-identity-recovery-surfaces-tests.md
 - depends on:
@@ -201,6 +201,8 @@
   - identity exception surface shows durable lifecycle/status and actions; denied/hidden/provider-boundary states are safe; tests prove no raw WorkOS/JWT/provider payload exposure
 - notes:
   - vertical contract: User Admin / `agent-user-admin`; identity exception review/recovery attention; identity exception review/workflow/status/system-message; role/scope allow/deny; workstream/frontend/smoke validation
+  - completed: wired identity recovery request/read/approve/deny/complete actions through durable backend lifecycle surfaces, frontend controls, browser-safe redaction, WorkstreamService and hosted smoke tests
+  - checks: `git diff --check`; `env -u ADMIN_USERS mvn -q compile`; `env -u ADMIN_USERS mvn -q -Dtest=WorkstreamServiceTest,UserAdminBrowserWorkstreamSmokeTest test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`
 
 ### TASK-UAPRH-04-001: Implement model-backed access-review agent runtime path
 

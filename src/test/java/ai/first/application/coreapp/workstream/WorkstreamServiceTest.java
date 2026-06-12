@@ -519,6 +519,39 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void userAdminIdentityRecoverySurfaceShowsDurableLifecycleAndSafeActions() {
+    var opened = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-useradmin-identity-exception-review", "action-open-useradmin-identity-exception-review", "user_admin.identity_relink.review", "user_admin.identity_relink.review", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", "surface-user-admin-user-detail", "corr-identity-open"));
+    assertEquals("accepted", opened.status());
+    assertEquals("surface-user-admin-identity-exception-review", opened.resultSurface().surfaceId());
+    assertEquals("request-required", opened.resultSurface().data().get("status"));
+    assertTrue(opened.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-request-identity-relink")));
+    assertBrowserPayloadSafe(opened.resultSurface());
+
+    var requested = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-request-identity-relink", "action-useradmin-request-identity-relink", "user_admin.identity_relink.request", "user_admin.identity_relink.request", Map.of("accountId", "member@example.test", "reason", "browser smoke provider mismatch"), "idem-identity-request", "membership-admin", opened.resultSurface().surfaceId(), "corr-identity-request"));
+    assertEquals("approval-required", requested.status());
+    assertEquals("approval-required", requested.resultSurface().data().get("status"));
+    assertEquals("needs-review", requested.resultSurface().data().get("lifecycleStatus"));
+    assertTrue(requested.resultSurface().toString().contains("provider-boundary:redacted"));
+    assertBrowserPayloadSafe(requested.resultSurface());
+
+    var approved = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-approve-identity-relink", "action-useradmin-approve-identity-relink", "user_admin.identity_relink.approve", "user_admin.identity_relink.approve", Map.of("accountId", "member@example.test", "reason", "reviewed evidence", "approvalRef", "approval-identity-1"), "idem-identity-approve", "membership-admin", requested.resultSurface().surfaceId(), "corr-identity-approve"));
+    assertEquals("approved-for-recovery", approved.status());
+    assertEquals("approved-for-recovery", approved.resultSurface().data().get("lifecycleStatus"));
+    assertBrowserPayloadSafe(approved.resultSurface());
+
+    var completed = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-complete-identity-relink", "action-useradmin-complete-identity-relink", "user_admin.identity_relink.complete", "user_admin.identity_relink.complete", Map.of("accountId", "member@example.test", "approvalRef", "approval-identity-1"), "idem-identity-complete", "membership-admin", approved.resultSurface().surfaceId(), "corr-identity-complete"));
+    assertEquals("accepted", completed.status());
+    assertEquals("completed", completed.resultSurface().data().get("lifecycleStatus"));
+    assertFalse(completed.resultSurface().toString().contains("workos-admin"));
+    assertFalse(completed.resultSurface().toString().contains("Bearer "));
+    assertBrowserPayloadSafe(completed.resultSurface());
+  }
+
+  @Test
   void userAdminDedicatedUserBranchTaskSurfacesDenyHiddenTargetsSafely() {
     var hidden = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-open-useradmin-membership-status-confirmation", "action-open-useradmin-membership-status-confirmation", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("accountId", "hidden@example.test", "membershipId", "membership-hidden"), null, "membership-admin", "surface-user-admin-user-detail", "corr-hidden-user-task"));
