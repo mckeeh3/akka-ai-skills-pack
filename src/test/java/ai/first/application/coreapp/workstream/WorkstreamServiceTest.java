@@ -348,6 +348,59 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void userAdminDedicatedUserBranchTaskSurfacesOpenWithBackendReturnMetadata() {
+    var create = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-useradmin-invitation-create", "action-open-useradmin-invitation-create", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", null, null, "membership-admin", "surface-user-admin-users", "corr-open-invite-create"));
+    assertUserBranchTaskSurface(create, "surface-user-admin-invitation-create", "user_admin.invitation_create.v1");
+
+    var created = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-invite-user", "action-invite-user", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", Map.of("email", "branch.invitee@example.test", "displayName", "Branch Invitee"), "idem-branch-invite", "membership-admin", create.resultSurface().surfaceId(), "corr-branch-invite"));
+    assertEquals("surface-user-admin-invitation-detail", created.resultSurface().surfaceId());
+    var invitationId = created.resultSurface().data().get("recordId").toString();
+
+    var resend = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-useradmin-invitation-resend-confirmation", "action-open-useradmin-invitation-resend-confirmation", "USERADMIN_RESEND_INVITATION", "USERADMIN_RESEND_INVITATION", Map.of("invitationId", invitationId), null, "membership-admin", created.resultSurface().surfaceId(), "corr-open-resend-confirmation"));
+    assertUserBranchTaskSurface(resend, "surface-user-admin-invitation-resend-confirmation", "user_admin.invitation_resend_confirmation.v1");
+    assertTrue(resend.resultSurface().toString().contains("invitation-token-redacted"));
+
+    var revoke = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-useradmin-invitation-revoke-confirmation", "action-open-useradmin-invitation-revoke-confirmation", "USERADMIN_REVOKE_INVITATION", "USERADMIN_REVOKE_INVITATION", Map.of("invitationId", invitationId), null, "membership-admin", created.resultSurface().surfaceId(), "corr-open-revoke-confirmation"));
+    assertUserBranchTaskSurface(revoke, "surface-user-admin-invitation-revoke-confirmation", "user_admin.invitation_revoke_confirmation.v1");
+
+    var membership = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-useradmin-membership-status-confirmation", "action-open-useradmin-membership-status-confirmation", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "removed"), null, "membership-admin", "surface-user-admin-user-detail", "corr-open-membership-confirmation"));
+    assertUserBranchTaskSurface(membership, "surface-user-admin-membership-status-confirmation", "user_admin.membership_status_confirmation.v1");
+    assertTrue(membership.resultSurface().toString().contains("last-admin-denied"));
+
+    var supportGrant = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-useradmin-support-access-grant", "action-open-useradmin-support-access-grant", "USERADMIN_SUPPORT_ACCESS_GRANT", "USERADMIN_SUPPORT_ACCESS_GRANT", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", "surface-user-admin-user-detail", "corr-open-support-grant"));
+    assertUserBranchTaskSurface(supportGrant, "surface-user-admin-support-access-grant", "user_admin.support_access_grant.v1");
+
+    var supportRevoke = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-useradmin-support-access-revoke-confirmation", "action-open-useradmin-support-access-revoke-confirmation", "USERADMIN_SUPPORT_ACCESS_REVOKE", "USERADMIN_SUPPORT_ACCESS_REVOKE", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", "surface-user-admin-user-detail", "corr-open-support-revoke"));
+    assertUserBranchTaskSurface(supportRevoke, "surface-user-admin-support-access-revoke-confirmation", "user_admin.support_access_revoke_confirmation.v1");
+
+    var identityException = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-useradmin-identity-exception-review", "action-open-useradmin-identity-exception-review", "user_admin.identity_relink.review", "user_admin.identity_relink.review", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", "surface-user-admin-user-detail", "corr-open-identity-exception"));
+    assertUserBranchTaskSurface(identityException, "surface-user-admin-identity-exception-review", "user_admin.identity_exception_review.v1");
+    assertEquals(true, identityException.resultSurface().data().get("noDirectMutation"));
+
+    var returnedUsers = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-users", "user-admin.show-users", "search-user-directory", "USERADMIN_LIST_MEMBERS", null, null, "membership-admin", identityException.resultSurface().surfaceId(), "corr-return-from-identity-exception"));
+    assertEquals("surface-user-admin-users", returnedUsers.resultSurface().surfaceId());
+  }
+
+  private void assertUserBranchTaskSurface(WorkstreamService.CapabilityActionResult result, String surfaceId, String contract) {
+    assertEquals("accepted", result.status());
+    assertEquals(surfaceId, result.resultSurface().surfaceId());
+    assertEquals(contract, result.resultSurface().data().get("surfaceContract"));
+    assertEquals("surface-user-admin-users", ((Map<?, ?>) result.resultSurface().data().get("branchNavigation")).get("branchRootSurfaceId"));
+    assertTrue(result.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-users"));
+    assertTrue(result.resultSurface().toString().contains("correlationId"));
+    assertBrowserPayloadSafe(result.resultSurface());
+  }
+
+  @Test
   void userAdminUserRowOpensSelectedUserDetail() {
     var detail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-display-user-detail", "action-display-user-detail", "USERADMIN_LIST_MEMBERS", "USERADMIN_LIST_MEMBERS", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", "surface-user-admin-users", "corr-member-detail"));

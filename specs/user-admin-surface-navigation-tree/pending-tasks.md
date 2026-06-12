@@ -315,7 +315,7 @@
 
 ### TASK-UASNT-03-005: Implement backend User branch task/confirmation navigation surfaces
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
 - task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/05-backend-user-branch-task-surfaces.md
 - depends on:
@@ -345,6 +345,12 @@
   - forbidden/stale/blocked paths fail closed without leaking hidden data or secrets
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; backend realization for User branch dedicated invitation, membership, support-access, and identity exception descendants
+  - added backend-authored open actions and dynamic surfaces for invitation create/resend/revoke, membership status confirmation, support-access grant/revoke, and identity exception review descendants
+  - every new descendant carries `branchRootSurfaceId=surface-user-admin-users`, `branchReturnActionId=action-user-admin-show-users`, correlation/trace metadata, redaction notes, and safe branch-return action routing
+  - consequential submissions still use existing idempotent/audited backend services or fail closed; identity exception review is read/review-only with `noDirectMutation=true`
+  - added focused `WorkstreamServiceTest` coverage for opening all new User branch descendants, returning to User Directory, and browser-safe payload boundaries
+  - checks: `mvn -q -Dtest=WorkstreamServiceTest test` passed; `git diff --check` passed
+  - commit message: `user-admin-nav-tree: implement backend user branch task surfaces`
 
 ### TASK-UASNT-03-006: Implement frontend User branch task/confirmation surfaces
 
