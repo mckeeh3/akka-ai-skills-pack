@@ -433,7 +433,7 @@
 
 ### TASK-UASNT-99-002: Re-verify User Admin navigation tree mini-project
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
 - task brief: specs/user-admin-surface-navigation-tree/tasks/99-verification/02-reverify-navigation-tree.md
 - depends on:
@@ -464,3 +464,7 @@
   - verification output and queue update are committed
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; terminal re-verification after User branch descendant realization
+  - verification addendum appended to `specs/user-admin-surface-navigation-tree/navigation-tree-verification.md`
+  - result: mini-project complete for the stated User Admin navigation-tree scope; no material gaps remain and no follow-up tasks were appended
+  - checks: `mvn -q -Dtest=WorkstreamServiceTest test` passed; `npm --prefix frontend test -- --run` passed; `npm --prefix frontend run typecheck` passed; `git diff --check` passed
+  - commit message: `user-admin-nav-tree: reverify navigation tree completion`

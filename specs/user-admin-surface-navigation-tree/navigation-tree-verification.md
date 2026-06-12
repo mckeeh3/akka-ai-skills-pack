@@ -108,3 +108,94 @@ Because material mini-project gaps remain, this verification appended:
 4. `TASK-UASNT-99-002`: re-verify the mini-project after those implementation tasks.
 
 The mini-project should not be considered complete until the new terminal verification task passes without material gaps.
+
+---
+
+## Re-verification addendum: TASK-UASNT-99-002
+
+### Overall result
+
+- Current follow-up task group verification: **complete**.
+- Mini-project done state: **complete for the stated User Admin navigation-tree scope**.
+- App-description readiness for the navigation tree contract: **ready**.
+- Realization completeness: **ready/complete at starter scope** because the previously missing User branch task/confirmation descendants now have backend workstream action paths, purpose-specific frontend rendering, and focused fullstack contract coverage.
+
+### Evidence reviewed
+
+Required mini-project and app-description artifacts reviewed:
+
+- `specs/user-admin-surface-navigation-tree/README.md`
+- `specs/user-admin-surface-navigation-tree/conversation-capture.md`
+- `specs/user-admin-surface-navigation-tree/pending-tasks.md`
+- `specs/user-admin-surface-navigation-tree/existing-surface-inventory.md`
+- `specs/user-admin-surface-navigation-tree/navigation-tree-verification.md`
+- `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`
+
+Implementation/test evidence reviewed from prior task outputs and focused source/test reads:
+
+- `src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java`
+- `src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java`
+- `frontend/src/workstream/surfaces/UserAdminTaskSurface.tsx`
+- `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+- `frontend/src/workstream-surfaces.contract.test.mjs`
+
+Focused search evidence:
+
+```bash
+rg -n "surface-user-admin-(invitation-create|invitation-resend-confirmation|invitation-revoke-confirmation|membership-status-confirmation|support-access-grant|support-access-revoke-confirmation|identity-exception-review)|action-user-admin-show-users|branchRootSurfaceId|branchReturnActionId|trace|correlation|hidden|missing capability|frontend secret|SECRET|token" \
+  src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java \
+  frontend/src/workstream-user-admin-vertical.contract.test.mjs \
+  frontend/src/workstream-surfaces.contract.test.mjs \
+  frontend/src/workstream/surfaces \
+  frontend/src/workstream/types/surfaces.ts \
+  src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+```
+
+The search and focused reads show all previously missing User branch descendants are present in backend `WorkstreamService`, backend `WorkstreamServiceTest`, `UserAdminTaskSurface`, and frontend contract tests. Backend tests cover opening each descendant through the workstream action path, `action-user-admin-show-users` branch returns to `surface-user-admin-users`, hidden-target/system-message denials, missing-capability denial, trace/correlation propagation, and browser-safe payload checks. Frontend tests cover purpose-specific rendering, no raw JSON fallback, branch-return metadata, styling hooks, support-access action ids, identity-exception no-direct-mutation copy, and frontend secret-boundary assertions.
+
+### README done-state comparison
+
+| README done item | Re-verification result |
+|---|---|
+| 1. Existing User Admin and Organization Admin surfaces surveyed and classified. | **Done.** Inventory remains the source for original gap classification. |
+| 2. App-description and traceability docs describe tree, branch returns, auth, payloads, traces, states, and tests. | **Done.** The app-description surface graph remains ready and no semantic follow-up edit is required. |
+| 3. Backend/workstream payloads include explicit navigation metadata/actions for dashboard -> directories, directory -> descendants, and descendant -> directory returns. | **Done.** Backend now includes the previously missing User branch task/confirmation descendants plus existing dashboard, User Directory, user detail, invitation detail, access-review, and Organization branch paths. |
+| 4. Frontend surfaces implement tree navigation and all required branch descendant surfaces at the stated scope. | **Done.** `UserAdminTaskSurface` renders dedicated invitation create/resend/revoke, membership status, support-access grant/revoke, and identity-exception states with backend-authored return actions. |
+| 5. Obsolete/conflicting surfaces removed, deprecated, or routed safely. | **Done for this scope.** Existing compatibility entry points route into dedicated task surfaces or safe backend results; broad fixture/legacy surfaces are quarantined by existing contract tests. |
+| 6. Tests prove dashboard-to-directory, directory-to-descendant, descendant-back-to-directory, auth/forbidden, stale/reconnect, audit/trace, and no frontend secret behavior. | **Done at focused scope.** Backend and frontend checks cover both directory branches, dedicated User descendants, safe denial/system-message behavior, trace/correlation, and secret boundaries. |
+| 7. Final verification compares implementation against README/app-description and appends follow-up tasks if material gaps remain. | **Done.** No material mini-project gaps remain, so no follow-up tasks were appended. |
+
+### App-description change impact
+
+No additional authoritative app-description graph change is required. The implementation now matches the existing surface graph for the stated navigation-tree scope. Derived/realization artifacts affected by the appended tasks are complete at the tested scope:
+
+- backend workstream action/surface payloads;
+- frontend structured surface rendering;
+- backend and frontend contract tests;
+- this verification output and pending-task queue status.
+
+Realization can remain closed to this localized mini-project. Any future redesign of User Admin capability semantics, invitation delivery infrastructure, or full browser smoke automation should be handled as a separate mini-project rather than appended here.
+
+### Readiness assessment
+
+1. Overall state: **ready**.
+2. Declared scope label: SaaS Foundation App maintenance — User Admin dashboard-trunk/directory-branch surface navigation tree.
+3. Blocking gaps by current-intent graph area: **none for this mini-project scope**.
+4. Acceptable assumptions: starter-scope task surfaces may continue to use existing deterministic backend services and typed system-message/confirmation surfaces for provider/outbox/model blocked states; this is already represented in app-description and tests.
+5. Unsafe assumptions/questions: none requiring queue follow-up for this mini-project.
+6. Recommendation: close the mini-project; route unrelated User Admin capability expansion or browser end-to-end smoke automation to a new scoped mini-project if needed.
+
+### Checks run
+
+```bash
+mvn -q -Dtest=WorkstreamServiceTest test
+npm --prefix frontend test -- --run
+npm --prefix frontend run typecheck
+git diff --check
+```
+
+Results: Maven focused test, frontend tests, frontend typecheck, and diff whitespace check passed during re-verification.
+
+### Follow-up tasks appended
+
+None. No material gaps remain for the User Admin surface navigation tree mini-project.
