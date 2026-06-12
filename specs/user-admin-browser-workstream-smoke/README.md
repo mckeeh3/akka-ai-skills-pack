@@ -55,6 +55,16 @@ This mini-project is complete when:
 - `frontend/package.json`
 - `frontend/vite.config.ts`
 
+## Smoke command
+
+Run the integrated smoke from the repository root:
+
+```bash
+npm --prefix frontend run smoke:user-admin-workstream
+```
+
+See [`smoke-command.md`](smoke-command.md) for prerequisites, caveats, expected coverage, and troubleshooting. The command uses deterministic test-only identity data and unsets `ADMIN_USERS`; it does not require WorkOS, Resend, or model-provider credentials and must not be treated as a fixture-only substitute for production provider validation.
+
 ## Task execution rules
 
 Use `specs/user-admin-browser-workstream-smoke/pending-tasks.md`. Execute one task per fresh harness context, update task status before implementation edits, run the task's checks, and commit each completed task with the queue update.

@@ -54,6 +54,14 @@ npm --prefix frontend run typecheck
 npm --prefix frontend run build
 ```
 
+User Admin hosted UI/workstream smoke from the repository root:
+
+```bash
+npm --prefix frontend run smoke:user-admin-workstream
+```
+
+This smoke uses deterministic test-only User Admin identity data, unsets `ADMIN_USERS`, and does not require WorkOS, Resend, or model-provider credentials. See [`specs/user-admin-browser-workstream-smoke/smoke-command.md`](specs/user-admin-browser-workstream-smoke/smoke-command.md) for coverage and caveats.
+
 The frontend build writes Akka static assets to `src/main/resources/static-resources/`. Do not hand-edit generated static output; rebuild from `frontend/` source.
 
 For production-like local runtime smoke testing, configure the backend-only secrets and browser-public `VITE_` values described in `.env.example` and `frontend/.env.example`, then validate the authenticated shell, `/api/me`, five workstreams, authorization denials, audit/work traces, notifications/email behavior, and provider fail-closed paths through normal runtime APIs and UI.

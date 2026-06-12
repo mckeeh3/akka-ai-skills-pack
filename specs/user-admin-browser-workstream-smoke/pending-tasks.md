@@ -149,7 +149,7 @@
 
 ### TASK-UABWS-04-001: Document and integrate User Admin smoke command
 
-- status: pending
+- status: done
 - source: specs/user-admin-browser-workstream-smoke/backlog/01-user-admin-browser-smoke-build-backlog.md
 - task brief: specs/user-admin-browser-workstream-smoke/tasks/04-ci-docs/01-document-and-integrate-smoke-command.md
 - depends on:
@@ -177,6 +177,7 @@
   - future fresh harness session can run smoke without rediscovering setup; docs explain `ADMIN_USERS` caveat and provider credential non-requirements; smoke command is not conflated with fixture-only tests
 - notes:
   - vertical contract: User Admin / `agent-user-admin`; docs/integration for smoke validation; local UI/API smoke command; deterministic smoke AuthContext; expected trace/redaction assertions documented
+  - completed: added `npm --prefix frontend run smoke:user-admin-workstream` delegating to `env -u ADMIN_USERS mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest test`; documented prerequisites, provider credential non-requirements, `ADMIN_USERS` caveat, coverage, artifacts, and troubleshooting in `specs/user-admin-browser-workstream-smoke/smoke-command.md` plus README links; checks passed: `npm --prefix frontend run smoke:user-admin-workstream`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `git diff --check`; commit message: `user-admin-browser-smoke: document smoke command`
 
 ### TASK-UABWS-99-001: Verify User Admin browser workstream smoke mini-project
 

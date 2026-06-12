@@ -9,6 +9,7 @@
     "prebuild": "node scripts/clean-static-assets.mjs",
     "build": "vite build --outDir ../src/main/resources/static-resources --emptyOutDir false",
     "analyze:bundle": "node scripts/report-bundle-size.mjs",
+    "smoke:user-admin-workstream": "cd .. && env -u ADMIN_USERS mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest test",
     "test": "node --test src/*.test.mjs"
   },
   "dependencies": {
