@@ -44,7 +44,7 @@
 
 ### TASK-UABWS-01-001: Survey smoke tooling and choose implementation approach
 
-- status: pending
+- status: done
 - source: specs/user-admin-browser-workstream-smoke/backlog/01-user-admin-browser-smoke-build-backlog.md
 - task brief: specs/user-admin-browser-workstream-smoke/tasks/01-scope/01-survey-smoke-tooling.md
 - depends on:
@@ -77,6 +77,7 @@
   - next task can implement deterministic local smoke setup without guessing
 - notes:
   - vertical contract: User Admin / `agent-user-admin`; tooling survey for hosted frontend/workstream API smoke traversal; planned dashboard/list/detail/task/system-message surfaces; User Admin capability and selected AuthContext requirements; docs-only validation by diff check
+  - completed: wrote `specs/user-admin-browser-workstream-smoke/smoke-tooling-survey.md`; selected staged Akka HTTP preflight + deterministic authorized setup + later browser/manual smoke fallback approach; check passed: `git diff --check`; commit message: `user-admin-browser-smoke: survey smoke tooling`
 
 ### TASK-UABWS-02-001: Implement deterministic local smoke setup
 
