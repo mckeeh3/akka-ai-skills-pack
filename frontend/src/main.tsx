@@ -285,12 +285,30 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     if (!ready) return;
     const surface = ready.surfaces.find((candidate) => candidate.surfaceId === surfaceId);
     if (!surface) return;
-    appendSurfaceRequestAndResponse(surface, `Show ${surface.title}`);
+    appendSurfaceRequestAndResponse(surface, surfaceRequestTitle(surface));
     updateSelection({
       selectedFunctionalAgentId: surface.ownerFunctionalAgentId ?? selectedFunctionalAgentId,
       selectedSurfaceId: surfaceId,
       surfacePlacement: 'inline'
     });
+  }
+
+  function surfaceRequestTitle(surface: SurfaceEnvelope<unknown>) {
+    return `Show ${titleCaseSurfaceName(surface.title)}`;
+  }
+
+  function actionRequestTitle(action: SurfaceAction, input: unknown, targetSurface: SurfaceEnvelope<unknown> | undefined) {
+    if (action.intent === 'surface-request') return action.shellRequest?.displayText ?? (targetSurface ? surfaceRequestTitle(targetSurface) : action.label);
+    if (action.actionId === 'action-invite-user') {
+      const values = inputRecord(input);
+      const invitee = values.displayName?.trim() || values.email?.trim();
+      return invitee ? `Invite user ${invitee}` : 'Invite user';
+    }
+    return action.label;
+  }
+
+  function titleCaseSurfaceName(title: string | undefined) {
+    return (title ?? 'surface').replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1));
   }
 
   function appendSurfaceRequestAndResponse(surface: SurfaceEnvelope<unknown>, title: string, body?: string) {
@@ -354,7 +372,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       createdAt: new Date().toISOString(),
       correlationId: result.ok ? result.value.correlationId : result.error.correlationId,
       traceIds: result.ok ? result.value.traceIds : [],
-      title: action.label,
+      title: actionRequestTitle(action, input, targetSurface),
       status: result.ok && result.value.status === 'accepted' ? 'ready' : 'blocked'
     };
     const surfaceResponseItem: WorkstreamItem | undefined = targetSurface ? {

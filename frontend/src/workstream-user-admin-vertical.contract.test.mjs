@@ -93,7 +93,7 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /action-display-user-list/);
   assert.match(surfaces, /action-user-admin-show-users/);
   assert.match(surfaces, /user-admin\.show-users/);
-  assert.match(surfaces, /Back to users/);
+  assert.match(surfaces, /Show Users/);
   assert.match(surfaces, /Show users/);
   assert.match(surfaces, /UserAdminListDisplayed/);
   assert.match(surfaces, /secureTenantUserFoundation = 'secure-tenant-user-foundation'/);
@@ -212,7 +212,7 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.match(userAdminTaskSurface, /branchRootSurfaceId: branch\?\.branchRootSurfaceId \?\? envelope\.data\.branchRootSurfaceId \?\? 'surface-user-admin-users'/);
   assert.match(userAdminTaskSurface, /safeFilterPreservation: branch\?\.safeFilterPreservation \?\? envelope\.data\.safeFilterPreservation \?\? 'backend-authored-only'/);
   assert.match(userAdminTaskSurface, /aria-label="User Admin branch navigation"/);
-  assert.match(userAdminTaskSurface, /raw JWTs, invitation tokens, provider payloads, and secrets are omitted/);
+  assert.doesNotMatch(userAdminTaskSurface, /raw JWTs, invitation tokens, provider payloads, and secrets are omitted|Browser redaction|Target scope/);
   assert.match(userAdminTaskSurface, /No direct mutation: recovery must route to deterministic backend approval\/status flows or safe user detail/);
   assert.match(workstreamService, /withUserBranchReturn\(List\.of\(grantSupportAccessAction\(\), extendSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);
   assert.match(workstreamService, /withUserBranchReturn\(List\.of\(revokeSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);

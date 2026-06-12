@@ -58,7 +58,6 @@ const requiredUserTaskContracts = new Set([
 ]);
 
 export function UserAdminTaskSurface({ envelope, onAction }: Props) {
-  const data = envelope.data;
   const isInvitationCreate = matches(envelope, 'surface-user-admin-invitation-create', 'user_admin.invitation_create.v1');
   const isInvitationResend = matches(envelope, 'surface-user-admin-invitation-resend-confirmation', 'user_admin.invitation_resend_confirmation.v1');
   const isInvitationRevoke = matches(envelope, 'surface-user-admin-invitation-revoke-confirmation', 'user_admin.invitation_revoke_confirmation.v1');
@@ -71,7 +70,7 @@ export function UserAdminTaskSurface({ envelope, onAction }: Props) {
     <SurfaceStateFrame envelope={envelope}>
       <section className="user-admin-task-surface" aria-labelledby={`${envelope.surfaceId}-heading`}>
         <UserAdminTaskHeader envelope={envelope} />
-        <UserAdminTaskState envelope={envelope} />
+        <UserAdminTaskValidationMessages envelope={envelope} />
         {isInvitationCreate && <InvitationCreateTask envelope={envelope} onAction={onAction} />}
         {isInvitationResend && <InvitationConfirmationTask envelope={envelope} onAction={onAction} actionId="action-useradmin-resend-invitation" verb="Resend invitation" />}
         {isInvitationRevoke && <InvitationConfirmationTask envelope={envelope} onAction={onAction} actionId="action-useradmin-revoke-invitation" verb="Revoke invitation" requireReason />}
@@ -79,7 +78,6 @@ export function UserAdminTaskSurface({ envelope, onAction }: Props) {
         {isSupportGrant && <SupportAccessGrantTask envelope={envelope} onAction={onAction} />}
         {isSupportRevoke && <SupportAccessRevokeTask envelope={envelope} onAction={onAction} />}
         {isIdentityException && <IdentityExceptionReview envelope={envelope} onAction={onAction} />}
-        <TraceAndRedaction data={data} />
         <UserAdminBranchReturn envelope={envelope} onAction={onAction} />
       </section>
     </SurfaceStateFrame>
@@ -95,31 +93,18 @@ function UserAdminTaskHeader({ envelope }: { envelope: SurfaceEnvelope<UserAdmin
   return (
     <div className="user-admin-task-header">
       <div>
-        <p className="eyebrow">User Admin task surface</p>
+        <p className="eyebrow">User Admin</p>
         <h3 id={`${envelope.surfaceId}-heading`}>{envelope.title}</h3>
-        <p>{envelope.data.summary ?? taskPurpose(envelope)}</p>
-      </div>
-      <div className="user-admin-task-authority" aria-label="Backend authority">
-        <strong>{envelope.data.surfaceContract ?? envelope.surfaceId}</strong>
-        <span>Selected AuthContext, backend authorization, idempotency, and audit/work traces remain authoritative.</span>
+        <p>{userFacingTaskPurpose(envelope)}</p>
       </div>
     </div>
   );
 }
 
-function UserAdminTaskState({ envelope }: { envelope: SurfaceEnvelope<UserAdminTaskSurfaceData> }) {
-  const status = String(envelope.data.status ?? 'ready');
-  return (
-    <section className="user-admin-task-state" aria-label="Task state and target">
-      <dl>
-        <div><dt>Status</dt><dd>{formatStatus(status)}</dd></div>
-        <div><dt>Target</dt><dd>{String(envelope.data.recordLabel ?? envelope.data.recordId ?? 'selected scope')}</dd></div>
-        <div><dt>Correlation</dt><dd>{envelope.data.correlationId ?? envelope.correlationId}</dd></div>
-        <div><dt>Idempotency</dt><dd>{String(envelope.data.idempotencyKeyHint ?? 'backend-required when commanded')}</dd></div>
-      </dl>
-      {envelope.data.validationMessages && envelope.data.validationMessages.length > 0 && <ul className="form-error" aria-label="Server validation messages">{envelope.data.validationMessages.map((message) => <li key={message}>{message}</li>)}</ul>}
-    </section>
-  );
+function UserAdminTaskValidationMessages({ envelope }: { envelope: SurfaceEnvelope<UserAdminTaskSurfaceData> }) {
+  const messages = envelope.data.validationMessages ?? [];
+  if (messages.length === 0) return null;
+  return <ul className="form-error" aria-label="Server validation messages">{messages.map((message) => <li key={message}>{message}</li>)}</ul>;
 }
 
 function InvitationCreateTask({ envelope, onAction }: Props) {
@@ -136,15 +121,13 @@ function InvitationCreateTask({ envelope, onAction }: Props) {
   }
   return (
     <form className="user-admin-task-form" aria-label="Create invitation" onSubmit={submit}>
-      <h4>Create scoped invitation</h4>
+      <h4>Invite a user</h4>
       {error && <p className="surface-state-inline validation-error" role="alert">{error}</p>}
-      <p className="surface-empty-copy">This form captures browser-safe invitation inputs only. Tokens, provider payloads, raw JWTs, and full email bodies are never rendered.</p>
       <label>Email<input className="designed-control" type="email" value={email} onChange={(event) => setEmail(event.currentTarget.value)} required /></label>
       <label>Display name<input className="designed-control" value={displayName} onChange={(event) => setDisplayName(event.currentTarget.value)} /></label>
       <label>Requested role<select className="designed-control" value={role} onChange={(event) => setRole(event.currentTarget.value)}><option value="TENANT_EMPLOYEE">Employee</option><option value="TENANT_ADMIN">Tenant admin</option><option value="AUDITOR">Auditor</option></select></label>
       <button className="surface-action-link primary" type="submit" disabled={!action || Boolean(action.disabled)}>Create invitation</button>
       {action?.disabled && <p className="form-error">{action.disabled.message}</p>}
-      <ScopeSummary scope={envelope.data.targetScope} />
     </form>
   );
 }
@@ -261,21 +244,6 @@ function IdentityExceptionReview({ envelope, onAction }: Props) {
   );
 }
 
-function TraceAndRedaction({ data }: { data: UserAdminTaskSurfaceData }) {
-  const traceRefs = data.traceRefs ?? data.branchNavigation?.traceRefs ?? [];
-  return (
-    <section className="user-admin-task-evidence" aria-label="Trace and redaction evidence">
-      {traceRefs.length > 0 && <div className="trace-link-list" aria-label="User Admin task trace links">{traceRefs.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-timeline#${encodeURIComponent(traceId)}`}>{traceId}</a>)}</div>}
-      {data.redaction !== undefined && <p className="redaction-note">Browser redaction: {renderValue(data.redaction)}. Hidden users, cross-scope facts, raw JWTs, invitation tokens, provider payloads, and secrets are omitted.</p>}
-    </section>
-  );
-}
-
-function ScopeSummary({ scope }: { scope: Record<string, unknown> | undefined }) {
-  if (!scope) return null;
-  return <p className="capability-basis">Target scope: {renderValue(scope)}</p>;
-}
-
 function UserAdminBranchReturn({ envelope, onAction }: Props) {
   const action = findAction(envelope.actions, 'action-user-admin-show-users') ?? findAction(envelope.actions, 'action-display-user-list');
   if (!action) return null;
@@ -288,7 +256,7 @@ function UserAdminBranchReturn({ envelope, onAction }: Props) {
         safeFilterPreservation: branch?.safeFilterPreservation ?? envelope.data.safeFilterPreservation ?? 'backend-authored-only',
         correlationId: branch?.correlationId ?? envelope.correlationId
       })}>{branch?.branchReturnLabel ?? envelope.data.branchReturnLabel ?? action.label}</button>
-      <p className="capability-basis">{branch?.capabilityId ?? action.capabilityId} · safe filters: {branch?.safeFilterPreservation ?? envelope.data.safeFilterPreservation ?? 'backend-authored-only'}</p>
+
     </nav>
   );
 }
@@ -321,25 +289,14 @@ function idempotencyKey(prefix: string, seed: string) {
   return `ui-${prefix}-${seed.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') || Date.now()}`;
 }
 
-function taskPurpose(envelope: SurfaceEnvelope<UserAdminTaskSurfaceData>) {
-  if (envelope.surfaceId.includes('invitation-create')) return 'Create one scoped invitation and let the backend own validation, outbox, provider, audit, and result routing.';
-  if (envelope.surfaceId.includes('invitation-resend')) return 'Confirm invitation resend through backend outbox/provider policy.';
-  if (envelope.surfaceId.includes('invitation-revoke')) return 'Confirm invitation revocation without changing existing accounts or memberships.';
-  if (envelope.surfaceId.includes('membership-status')) return 'Confirm a membership/account lifecycle change with last-admin and self-action guardrails.';
-  if (envelope.surfaceId.includes('support-access-grant')) return 'Grant or extend time-boxed support access through a governed backend path.';
-  if (envelope.surfaceId.includes('support-access-revoke')) return 'Revoke time-boxed support access without changing ordinary membership or roles.';
-  return 'Review User Admin exception evidence without exposing provider internals or performing direct mutation.';
-}
-
-function formatStatus(value: string) {
-  return value.replace(/[-_]/g, ' ');
-}
-
-function renderValue(value: unknown): string {
-  if (value == null) return 'none';
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
-  if (Array.isArray(value)) return value.map(renderValue).join(' · ');
-  return Object.entries(value as Record<string, unknown>).map(([key, entry]) => `${key}: ${renderValue(entry)}`).join(' · ');
+function userFacingTaskPurpose(envelope: SurfaceEnvelope<UserAdminTaskSurfaceData>) {
+  if (envelope.surfaceId.includes('invitation-create')) return 'Enter the person’s details and requested role. We will send the invitation after you create it.';
+  if (envelope.surfaceId.includes('invitation-resend')) return 'Send this invitation again to the selected person.';
+  if (envelope.surfaceId.includes('invitation-revoke')) return 'Cancel this invitation so it can no longer be accepted.';
+  if (envelope.surfaceId.includes('membership-status')) return 'Confirm the membership change before it takes effect.';
+  if (envelope.surfaceId.includes('support-access-grant')) return 'Grant temporary support access for a clear purpose.';
+  if (envelope.surfaceId.includes('support-access-revoke')) return 'End temporary support access.';
+  return 'Review the user account issue and choose the next safe action.';
 }
 
 export type { UserAdminTaskSurfaceData };
