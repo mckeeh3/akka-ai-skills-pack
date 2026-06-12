@@ -1,0 +1,285 @@
+# Pending Tasks: User Admin Surface Navigation Tree
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Read this mini-project's README, conversation capture, selected backlog, selected task entry, and task brief before editing.
+- Mark exactly one selected task `in-progress` before implementation edits.
+- Update this file before finishing the harness response.
+- Each completed task must make one focused git commit including that task's intended changes and queue-status update.
+- Commit message format: `user-admin-nav-tree: <short task title>`.
+
+## Tasks
+
+### TASK-UASNT-00-001: Create User Admin navigation tree planning scaffold
+
+- status: done
+- source: user requested mini-project for dashboard-trunk/directory-branch User Admin surface navigation work
+- task brief: specs/user-admin-surface-navigation-tree/tasks/00-planning/00-create-navigation-tree-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - skills-pack/docs/pending-task-queue.md
+  - skills-pack/docs/structured-surface-contracts.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - current conversation context
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/user-admin-surface-navigation-tree/README.md
+  - specs/user-admin-surface-navigation-tree/conversation-capture.md
+  - specs/user-admin-surface-navigation-tree/sprints/01-navigation-tree-sprint.md
+  - specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
+  - specs/user-admin-surface-navigation-tree/tasks/**/*.md
+  - specs/user-admin-surface-navigation-tree/pending-tasks.md
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - mini-project has captured rationale, sprint sequence, backlog, task briefs, and pending queue
+  - first non-done task is a runnable survey/inventory task
+  - planning scaffold is committed
+- notes:
+  - commit message: `user-admin-nav-tree: add mini-project queue`
+  - vertical contract: docs/planning only for User Admin dashboard-trunk/directory-branch surface navigation tree
+
+### TASK-UASNT-01-001: Survey existing User Admin and Organization Admin surfaces
+
+- status: pending
+- source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
+- task brief: specs/user-admin-surface-navigation-tree/tasks/01-survey/01-survey-existing-user-admin-surfaces.md
+- depends on:
+  - TASK-UASNT-00-001
+- required reads:
+  - AGENTS.md
+  - specs/user-admin-surface-navigation-tree/README.md
+  - specs/user-admin-surface-navigation-tree/conversation-capture.md
+  - specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
+  - specs/user-admin-surface-navigation-tree/tasks/01-survey/01-survey-existing-user-admin-surfaces.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - frontend/src/workstream/surfaces/**
+  - frontend/src/workstream/types/surfaces.ts
+  - frontend/src/workstream-user-admin-vertical.contract.test.mjs
+  - frontend/src/workstream-organization-admin-vertical.contract.test.mjs
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - src/main/java/ai/first/application/coreapp/useradmin/**
+- skills:
+  - app-description-surface-modeling
+  - akka-web-ui-state-rendering
+  - akka-web-ui-testing
+- expected outputs:
+  - specs/user-admin-surface-navigation-tree/existing-surface-inventory.md
+  - updated queue if survey discovers task-blocking gaps or ordering repair is needed
+- required checks:
+  - `git diff --check`
+  - recorded search/survey evidence for app-description, frontend, backend/workstream, and tests
+- done criteria:
+  - every expected dashboard, user-branch, organization-branch, and system-message surface is classified as usable as-is, revise, remove/deprecate, or missing/new
+  - next implementation/spec task can proceed without guessing what exists
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; docs-only survey of dashboard trunk, user branch, organization branch; no runtime mutation; validation by search evidence and `git diff --check`
+
+### TASK-UASNT-02-001: Revise app-description User Admin surface tree
+
+- status: pending
+- source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
+- task brief: specs/user-admin-surface-navigation-tree/tasks/02-app-description/01-revise-user-admin-surface-tree.md
+- depends on:
+  - TASK-UASNT-01-001
+- required reads:
+  - AGENTS.md
+  - specs/user-admin-surface-navigation-tree/README.md
+  - specs/user-admin-surface-navigation-tree/conversation-capture.md
+  - specs/user-admin-surface-navigation-tree/existing-surface-inventory.md
+  - specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
+  - specs/user-admin-surface-navigation-tree/tasks/02-app-description/01-revise-user-admin-surface-tree.md
+  - skills-pack/docs/structured-surface-contracts.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - app-description/domains/core-starter/realization/traceability.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-change-impact
+  - app-description-ui
+- expected outputs:
+  - updated app-description User Admin surface graph and traceability docs if needed
+- required checks:
+  - `git diff --check`
+  - focused `rg` proof for dashboard trunk, directory branches, branch-return actions, and auth expectations
+- done criteria:
+  - surface-description sufficiency review passes for revised navigation tree
+  - implementation tasks can inherit required surface ids/action ids/auth/states/traces/tests
+- notes:
+  - vertical contract: app-description capture for `surface-user-admin-dashboard` trunk, `surface-user-admin-users` and `surface-user-admin-organization-directory` branch roots, descendant branch-return actions, browser-tool mappings, and User Admin/SaaS Owner/Tenant/Customer auth expectations
+
+### TASK-UASNT-03-001: Add backend workstream navigation metadata and branch actions
+
+- status: pending
+- source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
+- task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/01-backend-navigation-payloads.md
+- depends on:
+  - TASK-UASNT-02-001
+- required reads:
+  - AGENTS.md
+  - specs/user-admin-surface-navigation-tree/README.md
+  - specs/user-admin-surface-navigation-tree/existing-surface-inventory.md
+  - specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
+  - specs/user-admin-surface-navigation-tree/tasks/03-implementation/01-backend-navigation-payloads.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - src/main/java/ai/first/application/coreapp/useradmin/**
+  - src/test/java/ai/first/application/coreapp/useradmin/**
+  - src/test/java/ai/first/application/coreapp/workstream/**
+- skills:
+  - akka-basic-user-admin
+  - akka-http-endpoint-component-client
+  - akka-http-endpoint-testing
+- expected outputs:
+  - backend/workstream DTO or payload changes for branch navigation metadata
+  - focused backend tests
+- required checks:
+  - `git diff --check`
+  - focused `mvn test` for changed User Admin/workstream tests
+- done criteria:
+  - backend returns authorized dashboard-to-directory and descendant-to-directory return actions
+  - unauthorized Organization Directory access is omitted or denied safely server-side
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; human-backed browser-tool/surface actions via workstream API; capabilities include `user_admin.list_members`, `saas_owner.organization.list`, and descendant read/action capabilities; selected AuthContext and audit/trace expectations preserved
+
+### TASK-UASNT-03-002: Implement dashboard and User Directory branch frontend navigation
+
+- status: pending
+- source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
+- task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/02-frontend-user-branch-navigation.md
+- depends on:
+  - TASK-UASNT-03-001
+- required reads:
+  - AGENTS.md
+  - specs/user-admin-surface-navigation-tree/README.md
+  - specs/user-admin-surface-navigation-tree/existing-surface-inventory.md
+  - specs/user-admin-surface-navigation-tree/tasks/03-implementation/02-frontend-user-branch-navigation.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - frontend/src/workstream/surfaces/**
+  - frontend/src/workstream/types/surfaces.ts
+  - frontend/src/workstream-user-admin-vertical.contract.test.mjs
+  - frontend/src/workstream-surfaces.contract.test.mjs
+- skills:
+  - akka-web-ui-apps
+  - akka-web-ui-state-rendering
+  - akka-web-ui-forms-validation
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - frontend User Admin dashboard/list/detail/task surface revisions
+  - frontend tests for user branch traversal and back navigation
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - dashboard-to-User Directory works through backend-provided action metadata
+  - user branch descendants expose working Show users/Back to users navigation
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; user access administration surface graph; dashboard -> user directory and user descendants -> user directory; browser-tool/surface-action adapters; selected AuthContext; frontend workstream shell/API path; trace ids rendered and no frontend-only authority
+
+### TASK-UASNT-03-003: Implement Organization Directory branch frontend navigation
+
+- status: pending
+- source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
+- task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/03-frontend-organization-branch-navigation.md
+- depends on:
+  - TASK-UASNT-03-001
+- required reads:
+  - AGENTS.md
+  - specs/user-admin-surface-navigation-tree/README.md
+  - specs/user-admin-surface-navigation-tree/existing-surface-inventory.md
+  - specs/user-admin-surface-navigation-tree/tasks/03-implementation/03-frontend-organization-branch-navigation.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - frontend/src/workstream/surfaces/**
+  - frontend/src/workstream/types/surfaces.ts
+  - frontend/src/workstream-organization-admin-vertical.contract.test.mjs
+- skills:
+  - akka-web-ui-apps
+  - akka-web-ui-state-rendering
+  - akka-web-ui-forms-validation
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - frontend Organization Directory/detail/create/rename/suspend/reactivate surface revisions or implementation
+  - frontend tests for organization branch traversal and unauthorized omission/denial
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - authorized SaaS Owner/App Admin dashboard-to-Organization Directory works
+  - organization branch descendants expose working Show organizations/Back to organizations navigation
+  - Tenant/Customer contexts do not receive unauthorized organization branch access
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; Organization administration branch for SaaS Owner/App Admin; dashboard -> organization directory and organization descendants -> organization directory; `manage-organizations` browser-tool/surface actions; organization capabilities and selected AuthContext denials
+
+### TASK-UASNT-03-004: Add fullstack navigation tree tests
+
+- status: pending
+- source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
+- task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/04-fullstack-navigation-tests.md
+- depends on:
+  - TASK-UASNT-03-002
+  - TASK-UASNT-03-003
+- required reads:
+  - AGENTS.md
+  - specs/user-admin-surface-navigation-tree/README.md
+  - specs/user-admin-surface-navigation-tree/existing-surface-inventory.md
+  - specs/user-admin-surface-navigation-tree/tasks/03-implementation/04-fullstack-navigation-tests.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - relevant backend and frontend tests changed by prior tasks
+- skills:
+  - akka-http-endpoint-testing
+  - akka-web-ui-testing
+  - akka-basic-user-admin
+- expected outputs:
+  - focused backend tests for surface/action payloads and authorization
+  - focused frontend/contract tests for dashboard -> directory -> descendant -> directory traversal
+- required checks:
+  - `git diff --check`
+  - focused `mvn test` for changed User Admin/workstream tests
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - tests prove User Directory and Organization Directory branches, unauthorized Organization Directory omission/denial, stale/deep-link safe denial, trace/correlation rendering, and frontend secret boundaries at focused scope
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; validation for dashboard -> directories -> descendants -> directories; browser-tool/surface-action coverage; user-admin and organization-admin capability mappings; backend/API/frontend evidence
+
+### TASK-UASNT-99-001: Verify User Admin navigation tree mini-project
+
+- status: pending
+- source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
+- task brief: specs/user-admin-surface-navigation-tree/tasks/99-verification/01-verify-navigation-tree.md
+- depends on:
+  - TASK-UASNT-03-004
+- required reads:
+  - AGENTS.md
+  - specs/user-admin-surface-navigation-tree/README.md
+  - specs/user-admin-surface-navigation-tree/conversation-capture.md
+  - specs/user-admin-surface-navigation-tree/pending-tasks.md
+  - specs/user-admin-surface-navigation-tree/existing-surface-inventory.md
+  - specs/user-admin-surface-navigation-tree/tasks/99-verification/01-verify-navigation-tree.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - tests and validation notes produced by prior tasks
+- skills:
+  - app-description-readiness-assessment
+  - app-description-change-impact
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
+  - updated pending-tasks.md with done status if complete, or appended follow-up tasks plus a new terminal verification task if gaps remain
+- required checks:
+  - `git diff --check`
+  - run or review required checks from implementation tasks; rerun focused Maven/npm checks when needed
+- done criteria:
+  - verification compares completed work against README done state, backlog, app-description, tests, and conversation decisions
+  - no material mini-project gaps remain, or follow-up tasks and a new terminal verification task are appended
+  - verification output and queue update are committed
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; verification/review of dashboard trunk, user branch, organization branch, capability mappings, role/scope behavior, trace/correlation/audit expectations, and backend/API/frontend evidence
