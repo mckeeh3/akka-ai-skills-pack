@@ -221,7 +221,24 @@ export type OrganizationAdminSurfaceData = {
   lastResult?: { status: string; message: string; correlationId?: string; traceRefs?: string[] };
 };
 
+export type UserAdminBranchNavigation = {
+  branchRootSurfaceId?: string;
+  branchReturnActionId?: string;
+  branchReturnLabel?: string;
+  browserToolId?: string;
+  governedToolId?: string;
+  capabilityId?: string;
+  safeFilterPreservation?: string;
+  traceRefs?: string[];
+  correlationId?: string;
+};
+
 export type DetailEditSurfaceData = {
+  branchNavigation?: UserAdminBranchNavigation;
+  branchRootSurfaceId?: string;
+  branchReturnActionId?: string;
+  branchReturnLabel?: string;
+  safeFilterPreservation?: string;
   recordId?: string;
   recordLabel?: string;
   recordKind?: 'account' | 'membership' | 'invitation' | 'support-access' | string;
@@ -343,6 +360,11 @@ export type AuditTimelineSurfaceData = {
 };
 
 export type WorkflowStatusSurfaceData = {
+  branchNavigation?: UserAdminBranchNavigation;
+  branchRootSurfaceId?: string;
+  branchReturnActionId?: string;
+  branchReturnLabel?: string;
+  safeFilterPreservation?: string;
   surfaceContract?: 'user_admin.access_review_task.v1' | string;
   workflowId?: string;
   digestTaskId?: string;

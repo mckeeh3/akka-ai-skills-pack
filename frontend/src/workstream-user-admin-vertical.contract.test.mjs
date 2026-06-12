@@ -78,6 +78,8 @@ test('User Admin dashboard follows current actionable command-center rules', () 
   assert.match(dashboardSurface, /action-read-support-access/);
   assert.match(dashboardSurface, /action-open-admin-audit/);
   assert.match(dashboardSurface, /action-display-user-list/);
+  assert.match(dashboardSurface, /function userDirectoryAction/);
+  assert.match(dashboardSurface, /action-user-admin-show-users/);
   assert.match(componentsCss, /\.user-admin-attention-strip/);
   assert.match(componentsCss, /\.user-admin-work-card/);
   assert.ok(dashboardSurface.indexOf('Things that need my attention') < dashboardSurface.indexOf('Things I can do'));
@@ -86,6 +88,9 @@ test('User Admin dashboard follows current actionable command-center rules', () 
 
 test('User Admin surface actions map to capability ids and trace or audit affordances', () => {
   assert.match(surfaces, /action-display-user-list/);
+  assert.match(surfaces, /action-user-admin-show-users/);
+  assert.match(surfaces, /user-admin\.show-users/);
+  assert.match(surfaces, /Back to users/);
   assert.match(surfaces, /Show users/);
   assert.match(surfaces, /UserAdminListDisplayed/);
   assert.match(surfaces, /secureTenantUserFoundation = 'secure-tenant-user-foundation'/);
@@ -135,6 +140,10 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /result_accepted/);
   assert.match(surfaces, /must not fake progress|not fake progress/);
   assert.match(surfaces, /displayUserListActionResult/);
+  assert.match(surfaces, /targetSurfaceId: 'surface-user-admin-user-detail'/);
+  assert.match(surfaces, /openActionId: 'action-display-user-detail'/);
+  assert.match(surfaces, /targetSurfaceId: 'surface-user-admin-invitation-detail'/);
+  assert.match(surfaces, /openActionId: 'action-display-invitation-detail'/);
   assert.match(surfaces, /action-display-user-detail/);
   assert.match(surfaces, /Display user detail/);
   assert.match(surfaces, /UserAdminDetailDisplayed/);
@@ -155,6 +164,9 @@ test('workstream and API clients support dashboard-to-list-to-detail navigation 
   assert.match(apiClient, /userAdminMemberStatusActionSurface/);
   assert.match(apiClient, /userAdminRoleChangePreviewSurface/);
   assert.match(listSearchSurface, /View\/edit user/);
+  assert.match(listSearchSurface, /function userAdminRowAction/);
+  assert.match(listSearchSurface, /row\.openActionId/);
+  assert.match(listSearchSurface, /row\.targetSurfaceId/);
   assert.match(listSearchSurface, /userDetailInput\(row\)/);
   assert.match(workstreamService, /detailSurface\(actor, request\.input\(\), request\.correlationId\(\)\)/);
   assert.match(workstreamService, /user_admin\.user_detail\.v1/);

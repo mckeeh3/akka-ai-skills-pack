@@ -52,6 +52,7 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
       {isMyAccountDigest && <MyAccountDigestProgress data={envelope.data} />}
       {!isMyAccountDigest && <p role="status">Workflow {envelope.data.workflowId} is {statusText}.</p>}
       {isMyAccountDigest && <p role="status">Personal attention digest {envelope.data.digestTaskId ?? envelope.data.workflowId ?? 'request'} is {statusText}.</p>}
+      {isUserAdminWorkflow(envelope) && <UserAdminWorkflowBranchReturn envelope={envelope} onAction={onAction} />}
       {envelope.data.surfaceContract && <p className="form-status">Surface contract: {envelope.data.surfaceContract}</p>}
       {(envelope.data.taskId || envelope.data.digestTaskId || envelope.data.autonomousAgentTaskId) && <p className="form-status">Task id: {envelope.data.taskId ?? envelope.data.digestTaskId ?? envelope.data.autonomousAgentTaskId}</p>}
       {envelope.data.summary && <p className="surface-state-inline forbidden">{envelope.data.summary}</p>}
@@ -112,6 +113,27 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
     </SurfaceStateFrame>
   );
+}
+
+function UserAdminWorkflowBranchReturn({ envelope, onAction }: { envelope: SurfaceEnvelope<WorkflowStatusSurfaceData>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
+  const action = envelope.actions.find((candidate) => candidate.actionId === 'action-user-admin-show-users') ?? envelope.actions.find((candidate) => candidate.actionId === 'action-display-user-list');
+  if (!action) return null;
+  const branch = envelope.data.branchNavigation;
+  return (
+    <nav className="user-admin-branch-return" aria-label="User Admin branch navigation">
+      <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(action, envelope.surfaceId, {
+        branchRootSurfaceId: branch?.branchRootSurfaceId ?? envelope.data.branchRootSurfaceId ?? 'surface-user-admin-users',
+        branchReturnActionId: branch?.branchReturnActionId ?? envelope.data.branchReturnActionId ?? 'action-user-admin-show-users',
+        safeFilterPreservation: branch?.safeFilterPreservation ?? envelope.data.safeFilterPreservation ?? 'backend-authored-only',
+        correlationId: branch?.correlationId ?? envelope.correlationId
+      })}>{branch?.branchReturnLabel ?? envelope.data.branchReturnLabel ?? action.label}</button>
+      <p className="capability-basis">{branch?.capabilityId ?? action.capabilityId} · safe filters: {branch?.safeFilterPreservation ?? envelope.data.safeFilterPreservation ?? 'backend-authored-only'}</p>
+    </nav>
+  );
+}
+
+function isUserAdminWorkflow(envelope: SurfaceEnvelope<WorkflowStatusSurfaceData>) {
+  return envelope.ownerFunctionalAgentId === 'agent-user-admin' || envelope.surfaceId.startsWith('surface-user-admin-') || envelope.data.surfaceContract?.startsWith('user_admin.');
 }
 
 function MyAccountDigestProgress({ data }: { data: WorkflowStatusSurfaceData }) {

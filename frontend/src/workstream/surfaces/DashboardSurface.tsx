@@ -368,9 +368,9 @@ function userAdminPopulationCards(data: DashboardSurfaceData, actionById: Map<st
   const activeUsers = data.cards.find((card) => /active users/i.test(card.label));
   const pendingInvitations = data.cards.find((card) => /pending invitations/i.test(card.label));
   const supportAccess = data.cards.find((card) => /support/i.test(card.label));
-  const directoryAction = actionForTarget('surface-user-admin-users', actionById) ?? actionById.get('action-display-user-list');
-  const invitationAction = actionForTarget('surface-user-admin-users', actionById) ?? actionById.get('action-display-user-list') ?? actionById.get('action-invite-user');
-  const supportAction = actionForTarget('surface-user-admin-users', actionById) ?? actionById.get('action-display-user-list');
+  const directoryAction = userDirectoryAction(actionById);
+  const invitationAction = userDirectoryAction(actionById) ?? actionById.get('action-invite-user');
+  const supportAction = userDirectoryAction(actionById);
   const cards: Array<{ cardId: string; label: string; value: string | number; scope: string; summary: string; action?: SurfaceAction }> = [];
   if (activeUsers) cards.push({ cardId: 'population-active-users', label: 'Users and memberships', value: activeUsers.value, scope: 'Visible scope', summary: 'Open users for scoped users, memberships, roles, and review flags.', action: directoryAction });
   if (pendingInvitations) cards.push({ cardId: 'population-invitations', label: 'Invitations', value: pendingInvitations.value, scope: 'Invitation work', summary: 'Create, resend, revoke, or inspect invitation delivery without exposing tokens.', action: invitationAction });
@@ -409,6 +409,10 @@ function userAdminQueuesFromData(data: DashboardSurfaceData): NonNullable<Dashbo
 
 function actionForTarget(targetSurfaceId: string, actionById: Map<string, SurfaceAction>): SurfaceAction | undefined {
   return Array.from(actionById.values()).find((action) => action.resultSurface?.updateSurfaceId === targetSurfaceId || action.resultSurface?.appendSurfaceType === targetSurfaceId || action.shellRequest?.targetSurfaceId === targetSurfaceId);
+}
+
+function userDirectoryAction(actionById: Map<string, SurfaceAction>): SurfaceAction | undefined {
+  return actionById.get('action-user-admin-show-users') ?? actionById.get('action-display-user-list') ?? actionForTarget('surface-user-admin-users', actionById);
 }
 
 function actionsForIds(ids: string[] | undefined, actionById: Map<string, SurfaceAction>): SurfaceAction[] {

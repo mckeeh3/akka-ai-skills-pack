@@ -2450,6 +2450,22 @@ button.user-admin-work-card:focus-visible {
   color: var(--color-text);
 }
 
+.user-admin-branch-return {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin-block: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 18%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-primary-soft) 16%, var(--color-surface));
+}
+
+.user-admin-branch-return .capability-basis {
+  margin: 0;
+}
+
 .user-admin-clean-search {
   max-width: 44rem;
 }

@@ -160,6 +160,17 @@ export const userAdminSurfaceActions = {
     resultSurface: { updateSurfaceId: 'surface-user-admin-users', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminListDisplayed', traceRequired: true }
   },
+  showUsers: {
+    actionId: 'action-user-admin-show-users',
+    label: 'Back to users',
+    intent: 'read',
+    capabilityId: userAdminCapabilities.listMembers,
+    governedToolId: 'search-user-directory',
+    browserToolId: 'user-admin.show-users',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-users', openPlacement: 'inline' },
+    audit: { eventType: 'UserAdminBranchReturnDisplayed', traceRequired: true }
+  },
   displayOrganizationAdmin: {
     actionId: 'action-display-organization-admin',
     label: 'Open Organization Admin',
@@ -316,6 +327,18 @@ export const userAdminSurfaceActions = {
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-user-admin-user-detail', openPlacement: 'inline' },
     audit: { eventType: 'UserAdminDetailDisplayed', traceRequired: true }
+  },
+  displayInvitationDetail: {
+    actionId: 'action-display-invitation-detail',
+    label: 'View invitation',
+    intent: 'read',
+    capabilityId: userAdminCapabilities.listInvitations,
+    governedToolId: userAdminCapabilities.listInvitations,
+    browserToolId: 'action-display-invitation-detail',
+    inputSchemaRef: 'schema.user-admin.invitation-detail.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-invitation-detail', openPlacement: 'inline' },
+    audit: { eventType: 'InvitationDetailDisplayed', traceRequired: true }
   },
   displayRoleCapabilityMatrix: {
     actionId: 'action-display-role-capability-matrix',
@@ -1595,8 +1618,8 @@ export const userAdminDashboardSurface = envelope(
   'agent-user-admin',
   {
     cards: [
-      { cardId: 'card-pending-invitations', label: 'Pending invitations', value: 3, severity: 'warning' },
-      { cardId: 'card-active-users', label: 'Active users', value: 18, severity: 'info' },
+      { cardId: 'card-pending-invitations', label: 'Pending invitations', value: 3, severity: 'warning', targetSurfaceId: 'surface-user-admin-users', actionId: 'action-user-admin-show-users' },
+      { cardId: 'card-active-users', label: 'Active users', value: 18, severity: 'info', targetSurfaceId: 'surface-user-admin-users', actionId: 'action-user-admin-show-users' },
       { cardId: 'card-access-review', label: 'Access review items', value: 2, severity: 'critical' },
       { cardId: 'card-support-access', label: 'Expiring support grants', value: 1, severity: 'warning' }
     ],
@@ -1646,6 +1669,7 @@ export const userAdminDashboardSurface = envelope(
     }
   },
   [
+    userAdminSurfaceActions.showUsers,
     userAdminSurfaceActions.displayUserList,
     userAdminSurfaceActions.displayOrganizationAdmin
   ]
@@ -1752,8 +1776,8 @@ export const userAdminListSearchSurface = envelope(
   {
     query: 'status:active OR invitation:pending',
     rows: [
-      { id: 'user-acct-admin', rowType: 'user-directory', email: 'admin@example.test', displayName: 'Tenant Admin', role: 'Tenant Admin', status: 'active', lastAdmin: true, traceId: 'trace-user-admin-row' },
-      { id: 'invite-robin', rowType: 'invitation-queue', email: 'robin@example.test', displayName: 'Robin Reviewer', role: 'Reviewer', status: 'pending', delivery: 'failed', expiresInHours: 18, traceId: 'trace-invite-robin' },
+      { id: 'user-acct-admin', rowType: 'user-directory', email: 'admin@example.test', displayName: 'Tenant Admin', role: 'Tenant Admin', status: 'active', targetSurfaceId: 'surface-user-admin-user-detail', openActionId: 'action-display-user-detail', lastAdmin: true, traceId: 'trace-user-admin-row' },
+      { id: 'invite-robin', rowType: 'invitation-queue', email: 'robin@example.test', displayName: 'Robin Reviewer', role: 'Reviewer', status: 'pending', delivery: 'failed', targetSurfaceId: 'surface-user-admin-invitation-detail', openActionId: 'action-display-invitation-detail', expiresInHours: 18, traceId: 'trace-invite-robin' },
       { id: 'membership-member', rowType: 'membership', email: 'member@example.test', displayName: 'Member User', role: 'Member', status: 'active', supportAccess: false, traceId: 'trace-membership-member' },
       { id: 'support-grant-1', rowType: 'support-access', email: 'support@example.test', displayName: 'Support Engineer', role: 'Support', status: 'expiring', supportAccess: true, expiresInHours: 6, traceId: 'trace-support-grant' },
       { id: 'audit-invite-1', rowType: 'admin-audit-excerpt', email: 'admin@example.test', displayName: 'Tenant Admin', role: 'Audit actor', status: 'invited-user', traceId: 'trace-invite' }
@@ -1778,6 +1802,7 @@ export const userAdminListSearchSurface = envelope(
   [
     userAdminSurfaceActions.searchUsers,
     userAdminSurfaceActions.displayUserDetail,
+    userAdminSurfaceActions.displayInvitationDetail,
     userAdminSurfaceActions.displayRoleCapabilityMatrix,
     userAdminSurfaceActions.createInvitation,
     userAdminSurfaceActions.resendInvitation,
@@ -1867,6 +1892,7 @@ export const userAdminDetailEditSurface = envelope(
     }
   },
   [
+    userAdminSurfaceActions.showUsers,
     userAdminSurfaceActions.updateUserProfile,
     userAdminSurfaceActions.previewRoleChange,
     userAdminSurfaceActions.changeMemberRoles,
@@ -1934,7 +1960,7 @@ export const userAdminRoleChangePreviewSurface = envelope(
     },
     traceLinks: ['trace-useradmin-role-preview', 'trace-useradmin-last-admin-denied']
   },
-  [userAdminSurfaceActions.previewRoleChange, userAdminSurfaceActions.changeMemberRoles, userAdminSurfaceActions.openAdminAudit]
+  [userAdminSurfaceActions.showUsers, userAdminSurfaceActions.previewRoleChange, userAdminSurfaceActions.changeMemberRoles, userAdminSurfaceActions.openAdminAudit]
 );
 
 export const userAdminRoleCapabilityMatrixSurface = envelope(
@@ -2012,7 +2038,7 @@ export const userAdminAccessReviewSurface = envelope(
       { stepId: 'await-human-review', label: 'Accept/reject remains disabled until a model-backed result exists', status: 'waiting-for-human' }
     ]
   },
-  [userAdminSurfaceActions.startAccessReview, userAdminSurfaceActions.readAccessReview, userAdminSurfaceActions.cancelAccessReview, userAdminSurfaceActions.acceptAccessReviewResult, userAdminSurfaceActions.rejectAccessReviewResult, userAdminSurfaceActions.openAdminAudit]
+  [userAdminSurfaceActions.showUsers, userAdminSurfaceActions.startAccessReview, userAdminSurfaceActions.readAccessReview, userAdminSurfaceActions.cancelAccessReview, userAdminSurfaceActions.acceptAccessReviewResult, userAdminSurfaceActions.rejectAccessReviewResult, userAdminSurfaceActions.openAdminAudit]
 );
 
 export const agentAdminCatalogSurface = envelope(

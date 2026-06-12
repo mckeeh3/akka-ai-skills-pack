@@ -188,6 +188,7 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
           {envelope.data.audit.traceIds.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-timeline#${traceId}`}>{traceId}</a>)}
         </section>
       )}
+      {isUserAdminSurface(envelope) && <UserAdminBranchReturn envelope={envelope} onAction={onAction} />}
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={editableActionInput} onAction={onAction} />
     </SurfaceStateFrame>
   );
@@ -195,8 +196,8 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
 
 function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: SurfaceEnvelope<DetailEditSurfaceData>; fieldValues: Record<string, string>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
   const isInvitation = envelope.data.recordKind === 'invitation';
-  const backAction = envelope.actions.find((action) => action.actionId === 'action-display-user-list');
-  const invitationActions = envelope.actions.filter((action) => action.actionId !== 'action-display-user-list');
+  const backAction = userAdminShowUsersAction(envelope.actions);
+  const invitationActions = envelope.actions.filter((action) => !isUserAdminShowUsersAction(action));
   const changeRoleAction = envelope.actions.find((action) => action.actionId === 'action-useradmin-change-member-roles');
   const suspendStatusAction = envelope.actions.find((action) => action.actionId === 'action-useradmin-disable-member');
   const reactivateStatusAction = envelope.actions.find((action) => action.actionId === 'action-useradmin-reactivate-member');
@@ -244,7 +245,7 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
             <h3>{envelope.data.recordLabel ?? email ?? envelope.title}</h3>
             {email && <p>{email}</p>}
           </div>
-          {backAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(backAction, envelope.surfaceId)}>Show users</button>}
+          {backAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(backAction, envelope.surfaceId, userAdminBranchReturnInput(envelope))}>{userAdminBranchReturnLabel(envelope, backAction)}</button>}
         </div>
 
         {isInvitation && (
@@ -304,6 +305,40 @@ function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: S
       </section>
     </SurfaceStateFrame>
   );
+}
+
+function UserAdminBranchReturn({ envelope, onAction }: { envelope: SurfaceEnvelope<DetailEditSurfaceData>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
+  const backAction = userAdminShowUsersAction(envelope.actions);
+  if (!backAction) return null;
+  const branch = envelope.data.branchNavigation;
+  return (
+    <nav className="user-admin-branch-return" aria-label="User Admin branch navigation">
+      <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(backAction, envelope.surfaceId, userAdminBranchReturnInput(envelope))}>{userAdminBranchReturnLabel(envelope, backAction)}</button>
+      <p className="capability-basis">{branch?.capabilityId ?? envelope.data.branchReturnActionId ?? backAction.capabilityId} · safe filters: {branch?.safeFilterPreservation ?? envelope.data.safeFilterPreservation ?? 'backend-authored-only'}</p>
+    </nav>
+  );
+}
+
+function userAdminShowUsersAction(actions: SurfaceAction[]): SurfaceAction | undefined {
+  return actions.find((action) => action.actionId === 'action-user-admin-show-users') ?? actions.find((action) => action.actionId === 'action-display-user-list');
+}
+
+function isUserAdminShowUsersAction(action: SurfaceAction): boolean {
+  return action.actionId === 'action-user-admin-show-users' || action.actionId === 'action-display-user-list';
+}
+
+function userAdminBranchReturnLabel(envelope: SurfaceEnvelope<DetailEditSurfaceData>, action: SurfaceAction): string {
+  return envelope.data.branchNavigation?.branchReturnLabel ?? envelope.data.branchReturnLabel ?? (action.actionId === 'action-user-admin-show-users' ? action.label : 'Show users');
+}
+
+function userAdminBranchReturnInput(envelope: SurfaceEnvelope<DetailEditSurfaceData>): Record<string, string> {
+  const branch = envelope.data.branchNavigation;
+  return {
+    branchRootSurfaceId: branch?.branchRootSurfaceId ?? envelope.data.branchRootSurfaceId ?? 'surface-user-admin-users',
+    branchReturnActionId: branch?.branchReturnActionId ?? envelope.data.branchReturnActionId ?? 'action-user-admin-show-users',
+    safeFilterPreservation: branch?.safeFilterPreservation ?? envelope.data.safeFilterPreservation ?? 'backend-authored-only',
+    correlationId: branch?.correlationId ?? envelope.correlationId
+  };
 }
 
 function statusValue(value: string | undefined) {

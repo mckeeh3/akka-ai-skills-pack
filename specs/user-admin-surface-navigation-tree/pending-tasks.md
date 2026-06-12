@@ -159,7 +159,7 @@
 
 ### TASK-UASNT-03-002: Implement dashboard and User Directory branch frontend navigation
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
 - task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/02-frontend-user-branch-navigation.md
 - depends on:
@@ -192,6 +192,11 @@
   - user branch descendants expose working Show users/Back to users navigation
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; user access administration surface graph; dashboard -> user directory and user descendants -> user directory; browser-tool/surface-action adapters; selected AuthContext; frontend workstream shell/API path; trace ids rendered and no frontend-only authority
+  - updated dashboard population routing to prefer backend-authored `action-user-admin-show-users` branch metadata while preserving legacy `action-display-user-list` compatibility
+  - updated User Directory row activation to consume backend-authored `openActionId`/`targetSurfaceId` before fallback heuristics
+  - added User branch return controls for detail/edit and workflow descendants with safe filter/correlation metadata, plus fixture and contract-test coverage
+  - checks: `npm --prefix frontend test -- --run` passed; `npm --prefix frontend run typecheck` passed; `git diff --check` passed
+  - commit message: `user-admin-nav-tree: implement user branch frontend navigation`
 
 ### TASK-UASNT-03-003: Implement Organization Directory branch frontend navigation
 

@@ -157,6 +157,13 @@ test('canonical surface components include dashboard, list/search, detail/edit, 
   assert.match(surfaceTypes, /user_admin\.access_review_task\.v1/);
   assert.match(surfaceTypes, /evidenceRefs\?: Array<string \|/);
   assert.match(surfaceTypes, /recommendations\?: Array<string \|/);
+  assert.match(surfaceTypes, /UserAdminBranchNavigation/);
+  assert.match(surfaceTypes, /branchReturnActionId\?: string/);
+  assert.match(detailEditSurface, /UserAdminBranchReturn/);
+  assert.match(detailEditSurface, /action-user-admin-show-users/);
+  assert.match(detailEditSurface, /backend-authored-only/);
+  assert.match(allSurfaceComponents, /user-admin-branch-return/);
+  assert.match(surfaceStyles, /\.user-admin-branch-return/);
   assert.match(surfaceTypes, /NotificationCenterSurfaceData/);
   assert.match(notificationCenterSurface, /Notification triage lanes/);
   assert.match(notificationCenterSurface, /notification\.list_my_account_center/);

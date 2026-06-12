@@ -96,7 +96,6 @@ function UserAdminUsersView({ envelope, onAction }: ListSearchSurfaceProps) {
 
 // Compatibility marker for legacy contract tests: old row button label was "View/edit user"; rebuilt UI makes the whole row open userDetailInput(row).
 function UserAdminList({ title, empty, rows, actions, surfaceId, onAction, kind }: { title: string; empty: string; rows: ListSearchSurfaceData['rows']; actions: SurfaceAction[]; surfaceId: string; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void; kind: 'user' | 'invitation' }) {
-  const detailAction = actions.find((action) => action.actionId === (kind === 'user' ? 'action-display-user-detail' : 'action-display-invitation-detail'));
   return (
     <section className="user-admin-list-panel" aria-labelledby={`${surfaceId}-${kind}-heading`}>
       <div className="surface-section-heading compact">
@@ -107,8 +106,9 @@ function UserAdminList({ title, empty, rows, actions, surfaceId, onAction, kind 
           {rows.map((row, index) => {
             const id = String(row.id ?? row.userId ?? row.invitationId ?? index);
             const input = kind === 'user' ? userDetailInput(row) : invitationDetailInput(row);
+            const rowAction = userAdminRowAction(row, actions, kind);
             return (
-              <button key={id} type="button" role="listitem" className="user-admin-clean-row" onClick={() => detailAction && onAction?.(detailAction, surfaceId, input)}>
+              <button key={id} type="button" role="listitem" className="user-admin-clean-row" onClick={() => rowAction && onAction?.(rowAction, surfaceId, input)} aria-label={`Open ${displayName(row)} through backend-authored ${String(row.openActionId ?? rowAction?.actionId ?? 'row action')}`}>
                 <span className="user-admin-person">
                   <strong>{displayName(row)}</strong>
                   <small>{String(row.email ?? '')}</small>
@@ -123,6 +123,14 @@ function UserAdminList({ title, empty, rows, actions, surfaceId, onAction, kind 
       )}
     </section>
   );
+}
+
+function userAdminRowAction(row: ListSearchSurfaceData['rows'][number], actions: SurfaceAction[], kind: 'user' | 'invitation'): SurfaceAction | undefined {
+  const explicitActionId = typeof row.openActionId === 'string' ? row.openActionId : undefined;
+  const targetSurfaceId = typeof row.targetSurfaceId === 'string' ? row.targetSurfaceId : undefined;
+  return (explicitActionId ? actions.find((action) => action.actionId === explicitActionId) : undefined)
+    ?? (targetSurfaceId ? actions.find((action) => action.resultSurface?.updateSurfaceId === targetSurfaceId || action.shellRequest?.targetSurfaceId === targetSurfaceId) : undefined)
+    ?? actions.find((action) => action.actionId === (kind === 'user' ? 'action-display-user-detail' : 'action-display-invitation-detail'));
 }
 
 function isActiveUserRow(row: ListSearchSurfaceData['rows'][number]) {
