@@ -25,6 +25,12 @@ Trace records include:
 - prompt, skill, reference, model, tool-boundary ids for model-backed turns;
 - redaction state, evidence refs, and browser-safe summaries.
 
+## Production runtime trace obligations
+
+- Invitation delivery traces record invitation lifecycle command, outbox message id, delivery attempt number, retry/no-op/revoke relationship, provider-safe status, fail-closed reason, selected `AuthContext`, actor, capability/tool/action id, idempotency/correlation id, and redacted error summary. Raw invitation tokens, Resend keys, webhook secrets, and full email bodies are excluded.
+- Identity exception traces record request/review/approval/denial/recovery lifecycle, provider-boundary redaction state, policy decision, reviewer reason, recovery result, stale/replay/no-op outcome, selected `AuthContext`, and safe evidence refs. Raw WorkOS/JWT/provider payloads are excluded.
+- Model-backed access-review traces record AgentDefinition/profile, ModelConfigRef, model policy decision, prompt assembly, skill/reference load attempts, ToolPermissionBoundary allow/deny decisions, scoped evidence reads, recommendation/result summary, blocker/fail-closed reason, human accept/reject decision, and no-direct-mutation guarantee. Raw prompts, model secrets, provider internals, hidden evidence, and denied tool/loader contents are excluded from browser-safe summaries.
+
 ## Redaction and investigation
 
 Trace links in User Admin surfaces are browser-safe references, not proof of read authority. Opening trace detail reauthorizes through Audit/Trace capability. Hidden users, hidden tenants/customers, raw invitation tokens, WorkOS/provider internals, Resend/provider secrets, model secrets, full email bodies, and unredacted audit evidence must not appear in User Admin browser payloads.

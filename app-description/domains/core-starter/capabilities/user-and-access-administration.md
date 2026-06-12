@@ -55,6 +55,10 @@ Let authorized administrators manage users, memberships, roles/capabilities, inv
 - `run-access-review` (`agent-tool`, `internal-tool`): durable access-review recommendations and review decisions; no autonomous access mutation.
 - `readSkill` / `readReferenceDoc` (`agent-tool` where assigned): governed User Admin expertise loaders with manifest/boundary/status/redaction checks.
 
+## Production runtime contract links
+
+Invitation delivery, identity exception recovery, and model-backed access-review automation are governed by `specs/user-admin-production-runtime-hardening/production-runtime-contract.md`. Implementation tasks must preserve these capability-level meanings: Resend/outbox invitation side effects fail closed when unconfigured; identity exception recovery is durable and provider-redacted; access-review automation invokes a governed Akka Agent path when configured and remains advisory until explicit human review.
+
 ## Authorization and denials
 
 Every command/query is scoped by selected `AuthContext`, active account, non-disabled actor status, tenant/customer ids, resource ownership, membership status, role/capability grants, support-access state, and approval policy. Cross-tenant/customer access, disabled users, inactive memberships, email-only authorization, prompt-only privilege grants, hidden-target enumeration, raw token/secret access, unredacted audit export, unsupported bulk side effects, last-admin loss, self-disable/self-admin-role-removal, role escalation, tenant/customer application-data access through Organization Admin, support access through Organization Admin, billing-derived authority, and provider/model/outbox fake success are forbidden.

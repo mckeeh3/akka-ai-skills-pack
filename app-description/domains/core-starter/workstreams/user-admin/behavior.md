@@ -24,6 +24,13 @@ Keep these responsibilities out of model-only behavior:
 
 Internal/autonomous access-review work may collect scoped evidence, summarize risk, and produce recommendations with progress/result surfaces. Worker output cannot directly mutate memberships, roles, invitations, support access, identity links, or policy. Human acceptance/rejection records the review decision; follow-up changes route through deterministic User Admin capabilities and policy gates.
 
+## Production runtime hardening behavior
+
+- Invitation create and resend use the supported outbox/Resend delivery path when configured. Missing Resend or outbox configuration is fail-closed and returns provider/outbox blocked status; normal runtime must not report fake sent success. Revoked, expired, accepted, duplicate/open, stale, replayed, and hidden/cross-scope invitations have explicit no-op, validation, conflict, or denial outcomes.
+- Identity exception recovery is durable workflow/state behavior. Requests, review, approve, deny, recovery start, completion, failure, cancellation, stale conflict, and replay/no-op transitions are tracked with provider-boundary redaction and audit/work traces; raw WorkOS/JWT/provider payloads are never exposed to browser users or prompts.
+- Access-review automation is model-backed in production. When active configuration exists it invokes a governed Akka Agent path with model policy, prompt/skill/reference governance where used, scoped evidence tools, ToolPermissionBoundary, and work traces. Missing model/provider/profile/boundary/governed-doc configuration is model-fail-closed and produces a blocker/system-message rather than deterministic normal success.
+- Access-review results remain advisory. Human accept/reject records the review outcome only; membership, role, invitation, support-access, identity, or policy mutations still route through deterministic User Admin capability surfaces and approval gates.
+
 ## Edge cases
 
 Repeated commands are idempotent where side-effecting. Stale data returns stale/reconnect or conflict state. Provider, model, outbox, or security misconfiguration returns actionable fail-closed feedback and traces without fixture/model-less success. Unsupported business-domain requests are routed to extension guidance rather than silently added. Direct API/deep-link attempts are authorized server-side and return safe `not_found_or_redacted`/forbidden system messages where appropriate.

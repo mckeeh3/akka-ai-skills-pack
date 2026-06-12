@@ -44,7 +44,7 @@
 
 ### TASK-UAPRH-01-001: Align production runtime contracts
 
-- status: pending
+- status: done
 - source: specs/user-admin-production-runtime-hardening/backlog/01-user-admin-production-runtime-hardening-build-backlog.md
 - task brief: specs/user-admin-production-runtime-hardening/tasks/01-invitation-delivery/01-align-production-runtime-contracts.md
 - depends on:

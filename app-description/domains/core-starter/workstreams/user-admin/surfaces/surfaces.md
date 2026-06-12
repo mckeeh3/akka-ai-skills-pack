@@ -321,6 +321,15 @@ Each user-admin graph node defines loading, empty, ready, submitting, success, v
 
 Surface-description sufficiency review: the previous broad list/detail/action panels are not sufficient for durable collection-object readiness because they combined discovery, inspection, create/edit, and lifecycle mutation. This revised user-admin graph is sufficient for developers/generators to implement and review without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics; existing implementation tasks should be repaired to match the split graph. Organization Admin is included in this navigation-tree revision through the Organization Directory branch contract above.
 
+## Production runtime surface requirements
+
+- Invitation surfaces (`surface-user-admin-invitation-create`, `surface-user-admin-invitation-detail`, `surface-user-admin-invitation-resend-confirmation`, and `surface-user-admin-invitation-revoke-confirmation`) expose user-safe delivery status, retry/recovery eligibility, provider/outbox blocked states, no-op/replay outcomes, audit/work trace refs, and correlation ids. They never expose raw invitation tokens, Resend secrets, provider error bodies, full email bodies, or email-only authorization.
+- `surface-user-admin-identity-exception-review` is a durable workflow/status surface for identity exception review and recovery. It shows scoped lifecycle state, review decision, recovery blocker/result, provider-boundary redaction, risk/evidence summaries, and approve/deny/recovery actions where authorized; raw WorkOS/JWT/provider payloads are hidden.
+- `surface-user-admin-access-review-task` shows model-backed task progress/result or a typed fail-closed blocker. It summarizes model/tool/data/policy usage through safe trace links, keeps human accept/reject explicit, and marks recommendations as advisory with no direct access mutation.
+- Dashboard attention includes visible invitation delivery failures, identity exception reviews, access-review results, and provider/outbox/model blockers. Hidden scopes and hidden counts remain omitted.
+
+Surface-description sufficiency review: these production runtime additions are sufficient for implementation tasks. The affected surfaces have explicit status, blocker, action, redaction, trace, auth/scope, and no-fake-success semantics; no implementation task should invent provider/model/workflow behavior beyond the production runtime contract.
+
 ## System-message requirements
 
 `surface-user-admin-system-message` handles forbidden access, missing context, disabled actor, inactive membership, validation failure, duplicate/open invitation, last-admin protection, self-disable denial, role escalation denial, unsupported bulk action, no-op mutation, stale/outbox/provider/model failure, tenant isolation denial, missing support grant, hidden/not-found target, missing tool-boundary grant, denied skill/reference load, and recovery guidance.

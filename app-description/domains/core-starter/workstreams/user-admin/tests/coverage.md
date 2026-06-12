@@ -23,6 +23,16 @@
 - Tenant Admin, Customer Admin, SaaS Owner support, Auditor, disabled-user, forbidden, redacted, empty, stale, and error variants show correct scope labels, queues, rows, redactions, actions, and denials.
 - Responsive table-to-card fallback preserves authority, role, invitation, support-access, access-review, identity-exception, risk, trace, create/invite, and decision-card affordances; each card remains a discovery/selection control that opens the backend-authored target inspection or task surface.
 
+## Production runtime hardening scenarios
+
+- Invitation delivery: configured captured-provider tests prove create/resend queues through the outbox/Resend path, records delivery attempts/status/audit/work traces, and refreshes invitation detail; missing Resend config returns fail-closed provider/outbox system-message without fake success; failure/retry/replay/revoke/expired/accepted paths are idempotent and safe.
+- Invitation security: cross-scope targets, hidden invitations, duplicate/open invites, disabled actors, missing capability, and raw-token/full-email/provider-secret requests are denied or redacted without exposing tokens, provider ids, secrets, hidden counts, or full email bodies to browser payloads.
+- Identity exception recovery: request, review, approve, deny, recovery start, completion, cancellation, provider failure, stale conflict, and replay/no-op are covered as durable lifecycle transitions with provider-boundary redaction and audit/work trace evidence.
+- Identity security: hidden/cross-scope targets, denied identity relink policy, raw WorkOS/JWT/provider payload requests, and unauthorized recovery attempts return safe `system-message` or workflow-status results without existence leakage.
+- Model-backed access review: configured test-model/provider path invokes the governed Akka Agent runtime, enforces model policy and ToolPermissionBoundary, emits prompt/model/tool/data/policy/result traces, and returns advisory progress/result surfaces.
+- Access-review fail-closed/security: missing model/provider/profile/boundary/governed-doc config, denied evidence access, denied skill/reference load, and cross-scope evidence attempts produce blocker/system-message states; agent results cannot directly mutate access and require explicit human accept/reject review.
+- Frontend/secret boundary: User Admin surfaces render invitation delivery, identity exception, access-review result, and blocked system-message states without exposing Resend keys, raw invitation tokens, WorkOS/JWT payloads, raw prompts, model provider internals, hidden evidence, or unredacted trace detail.
+
 ## Idempotency and observability
 
 - Repeated side-effecting actions do not duplicate effects.
