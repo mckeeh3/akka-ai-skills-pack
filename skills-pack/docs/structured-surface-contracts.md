@@ -4,7 +4,7 @@ Use this document when defining or implementing typed surfaces in an agent works
 
 Source-controlled SaaS Foundation App assets live under `templates/ai-first-saas-core-app/app-description/**`. Use them as copy/adapt examples for the five-core workstream domain surface layer when a target project lacks an app-description surface baseline. Validate adapted target-project contracts with `tools/validate-surface-contracts.sh --mode template <app-description-dir>` for process/template baselines or `tools/validate-surface-contracts.sh --mode implementation <app-description-dir>` for app-level contracts. Implementation validation is readiness-aware; `capability-ready` and higher scopes must not rely on unresolved deferred result surfaces.
 
-A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear. All renderable system feedback in a workstream is also a surface, not an ad hoc UI string. Internal activity records, tool-call details, trace bookkeeping, and response metadata are not separate user-visible surfaces unless the product contract deliberately exposes them as a typed audit/progress/detail surface.
+A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear. All renderable system feedback in a workstream is also a surface, not an ad hoc UI string. Internal activity records, tool-call details, trace bookkeeping, and response metadata are not separate user-visible surfaces unless the product contract deliberately exposes them as a typed audit/progress/detail surface. Even then, the contract must distinguish default user-readable summaries from privileged raw audit/support diagnostics.
 
 If asked to summarize workstream surfaces, always include the collection-object progression: durable collections such as users, customers, orders, policies, agents, invitations, and governed documents use delegated, single-purpose surfaces by default. A domain list/search surface discovers and selects objects; every listed row/card opens a lifecycle-aware show/inspection surface; show/inspection surfaces delegate mutation to separate create, edit, destructive lifecycle confirmation, or domain-specific task surfaces. Do not describe generic combined CRUD pages as the default workstream surface model.
 
@@ -24,7 +24,7 @@ functional/context-area agent workstream placement
 
 For broad requirements, surfaces are discovered through the canonical process: workstream → attention categories → role-specific dashboard/`WorkstreamAttentionSummary` → delegated human surface graph → single-purpose structured surfaces/actions → governed backend capabilities and governed-tools → Akka substrate. Do not design surfaces as page-first or CRUD-first artifacts. CRUD-like collection objects are allowed only through the canonical collection-object surface progression below, not as generic catch-all CRUD screens.
 
-Frontend action visibility is advisory only. The linked backend capability and governed-tool contract remain authoritative for authentication, selected `AuthContext`, tenant/customer scope, membership status, role/capability checks, approval policy, idempotency, side effects, audit, and denial behavior.
+Frontend action visibility is advisory only. The linked backend capability and governed-tool contract remain authoritative for authentication, selected `AuthContext`, tenant/customer scope, membership status, role/capability checks, approval policy, idempotency, side effects, audit, and denial behavior. Those internal ids and mechanics must not become normal SaaS user copy; surface contracts translate them into task-oriented language and expose raw identifiers only in role-gated diagnostics, audit, support, or developer surfaces.
 
 Surfaces are the human-backed actor's tool-use interface. A surface action should be understood as a human-facing adapter for a governed workstream tool: it supplies labels, fields, validation, evidence, confirmations, disabled/denied states, result surfaces, and trace links so the authenticated human supervisor can safely use the operation. The same governed tool may also be exposed as an AI agent tool, workflow/internal tool, API, or MCP tool, but those exposures must be declared separately in the capability/governed-tool map and tool boundary. Do not duplicate business semantics between the surface action and the agent tool; both should point back to the same capability-backed operation.
 
@@ -58,11 +58,15 @@ In app-description trees, surface ownership belongs in `12-workstreams/`: surfac
 
 A browser-rendered surface is not implementation-ready until its realization path names the selected app UI style artifact and the component-catalog anatomy it uses, or a blocking UI question records why that selection is missing. Intent-compiler planning must route such work through `app-description-ui` and `akka-web-ui-ux-design` before frontend implementation tasks.
 
-Before moving a new or substantially changed dashboard, command center, queue, decision, audit, workflow/progress, form, table, detail, or other browser-rendered surface from description to implementation, ask this surface-description sufficiency review question:
+Before moving a new or substantially changed dashboard, command center, queue, decision, audit, workflow/progress, form, table, detail, or other browser-rendered surface from description to implementation, ask these surface-description sufficiency review questions:
 
 > Is this surface definition sufficiently unambiguous that a developer or generator can implement and review the surface without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics?
+>
+> Would the target SaaS user understand the default surface without knowing the app's architecture, policies, tool ids, trace model, provider/model setup, or backend component names?
+>
+> Does every default-visible field, badge, chart, id, trace/evidence item, and action help the user decide, act, recover, or understand a business outcome?
 
-If the answer is no, make another pass on the surface description first. The developer review loop should inspect both artifacts: the generated surface in the running app and the current-intent surface description that drives code generation. Fixes to UI behavior should normally refine the description, then use that refined description to revise or repair surface-related code.
+If any answer is no, make another pass on the surface description first. The developer review loop should inspect both artifacts: the generated surface in the running app and the current-intent surface description that drives code generation. Fixes to UI behavior should normally refine the description, then use that refined description to revise or repair surface-related code.
 
 ## Canonical collection-object surface progression
 
@@ -108,13 +112,13 @@ For each surface, define these fields before implementation:
 | Surface identity | Stable `surfaceId`, display name, canonical type, semantic version, exactly one owner functional agent, explicit reusable-by agents/workstreams, lifecycle status. |
 | Placement | Owning functional agent, reusable functional agents, workstream entry point, embedded/drill-in/modal/side-panel/deep-link placement. |
 | Purpose | User outcome, business context, and when the surface should appear or refresh. |
-| Payload schema | Typed render payload, field formats, required/optional fields, nested records, pagination/sort/filter metadata, trace/correlation ids, version/stale markers. |
-| Redaction | Role-dependent fields, PII/secret boundaries, support/auditor visibility, frontend-safe fields, agent-safe fields. |
+| Payload schema | Typed render payload, field formats, required/optional fields, nested records, pagination/sort/filter metadata, version/stale markers, and any trace/correlation ids required by authorized diagnostic or audit views. Split fields into default user-visible, user-requested drilldown, admin/support/auditor-only, and internal-only implementation metadata. |
+| Redaction | Role-dependent fields, PII/secret boundaries, support/auditor visibility, frontend-safe fields, agent-safe fields, and explicit rules that prevent normal user views from showing raw policy ids, governed-tool ids, backend component names, provider/model details, prompt internals, raw event ids, or correlation/idempotency mechanics. |
 | Data source | Read/evidence capabilities and view/query sources that produce the payload; no raw unscoped state dumps by default. |
 | Actions | Allowed human-backed and AI-backed actor actions, labels, input payloads, confirmation/approval requirements, idempotency keys, result states, linked capability ids, governed-tool ids, exposure channel, and trace source such as `surface_action` or `agent_tool_call`. Dashboard cards/rows/counters/badges/charts/task panels/shortcuts that represent attention or next work must declare their interaction target, full-shape hit area, request/result append behavior, zero-count behavior where applicable, and `none` reason only when intentionally non-actionable. |
 | Events | Realtime/update events, event ids, ordering/dedupe rules, reconnect behavior, partial update semantics, stale markers. |
 | Authority | AuthContext assumptions, tenant/customer scope, role/capability requirements, policy gates, denial shape, disabled-user behavior. |
-| Audit/trace | Audit event types, work-trace fields, visible trace links, correlation ids, evidence references, retention/redaction expectations. |
+| Audit/trace | Audit event types, work-trace fields, user-readable trace summaries, role-gated trace links, correlation ids/evidence references only when visible to the current actor, retention/redaction expectations, and raw-audit/support detail boundaries. |
 | UI states | Loading, empty, ready, submitting, success, pending, approval-needed, error, forbidden, conflict, stale, reconnecting, partial-data, and no-op states. |
 | Accessibility/responsive | Keyboard path, labels, focus behavior, status announcements, narrow-layout strategy, chart/table alternatives. |
 | Style/catalog binding | Selected UI style guide artifact, named theme/default theme expectation, component-catalog anatomy used for the surface, and forbidden ad hoc/generic visual patterns. |
@@ -138,8 +142,8 @@ type SurfaceEnvelope<TData, TAction extends SurfaceAction = SurfaceAction> = {
     selectedContextId: string;
     visibleCapabilityIds: string[];
   };
-  correlationId: string;
-  traceIds: string[];
+  correlationId?: string;
+  traceIds?: string[];
   generatedAt: string;
   stale?: {
     isStale: boolean;
@@ -149,6 +153,12 @@ type SurfaceEnvelope<TData, TAction extends SurfaceAction = SurfaceAction> = {
   redaction: {
     profile: "self" | "tenant-admin" | "support" | "auditor" | "agent";
     omittedFieldKeys?: string[];
+  };
+  visibility?: {
+    defaultVisibleFieldKeys?: string[];
+    drilldownFieldKeys?: string[];
+    adminSupportAuditorFieldKeys?: string[];
+    internalOnlyFieldKeys?: string[];
   };
   data: TData;
   actions: TAction[];
@@ -161,9 +171,9 @@ Payload rules:
 - Each user turn or surface action should produce at most one primary browser-visible result surface for the same content. A progress surface followed by a final result is allowed only when durable/background work is intentionally visible.
 - Activity-log rows, tool-call records, trace metadata, and response bookkeeping should be stored as workstream/audit history or collapsed details, not duplicated as sibling surfaces.
 - Include `surfaceVersion` and type-specific schema version when payload semantics change.
-- Include `correlationId` and trace ids for audit/debugging surfaces and consequential actions.
+- Include `correlationId` and trace ids for audit/debugging surfaces and consequential actions only when they are needed by the browser contract and visible to the current role. Do not make diagnostic ids prominent in ordinary user views.
 - Include stale/reconnect markers when rendered data may lag event streams or command results.
-- Return frontend-safe, scoped, redacted fields only. Do not send hidden secrets or cross-tenant data and rely on the UI not to display them.
+- Return frontend-safe, scoped, redacted fields only. Do not send hidden secrets, cross-tenant data, privileged evidence, prompt internals, raw provider/model data, or internal-only metadata and rely on the UI not to display them.
 - Use role-specific action lists only as a UX hint; backend denial must still be correct if an action is submitted manually.
 
 ## Attention, dashboard, and task progress surfaces
@@ -226,9 +236,9 @@ Contract:
 | Field | Requirement |
 |---|---|
 | Surface identity | `surfaceType: "system_message"`; stable `surfaceId`; semantic `surfaceVersion`; owner functional agent; workstream entry id. |
-| Payload data | Severity, message code, user-safe title/body, optional details, recovery actions, related surface/action ids, related capability id, correlation id, and trace ids. |
+| Payload data | Severity, message code, user-safe title/body, optional details, recovery actions, and related surface/action/capability/correlation/trace ids only as role-appropriate diagnostic metadata rather than primary user copy. |
 | Authority | Denial and forbidden messages must come from backend capability decisions where protected data or actions are involved; frontend-only hiding is not authorization. |
-| Redaction | Do not leak secrets, missing privileged facts, prompt content, provider details, cross-tenant data, or hidden fields in error/recovery text. |
+| Redaction | Do not leak secrets, missing privileged facts, prompt content, provider details, internal policy/capability ids, cross-tenant data, or hidden fields in error/recovery text. |
 | Actions | Recovery, retry, open trace, request approval, request help, or navigate-to-surface actions use normal `SurfaceAction` with capability ids. |
 | Tests | Cover success, warning, validation, forbidden, approval-required, deferred, stale/reconnect, no-op, redaction, trace-link, and action-to-capability behavior. |
 
@@ -296,8 +306,8 @@ type SurfaceAction = {
 
 Action rules:
 
-- `browserToolId`, `governedToolId`, and `capabilityId` are required for every action, including read/query actions and surface-request actions such as show surface, show dashboard, open workstream, search, open detail, row-click-to-open-detail, refresh, open trace, and view audit timeline.
-- `browserToolId` identifies the human-facing surface-action exposure, `governedToolId` identifies the executable semantic operation, and `capabilityId` identifies the product-level capability grouping that owns the governed-tool contract.
+- `browserToolId`, `governedToolId`, and `capabilityId` are required implementation contract fields for every action, including read/query actions and surface-request actions such as show surface, show dashboard, open workstream, search, open detail, row-click-to-open-detail, refresh, open trace, and view audit timeline.
+- `browserToolId` identifies the human-facing surface-action exposure, `governedToolId` identifies the executable semantic operation, and `capabilityId` identifies the product-level capability grouping that owns the governed-tool contract. These ids support implementation, tests, audit, and diagnostics; normal UI labels must use user-facing verbs and object names instead.
 - The capability definition owns the governed-tool contract: input validation, authorization, idempotency, side effects, policy/approval, audit, and denial shape.
 - In browser realization, a surface action usually invokes a backend API; the API returns an accepted/denied/error result plus a new surface, updated surface, workstream item, workflow/progress surface, or `system_message` surface.
 - Side-effecting actions should default to proposal or approval flows unless a bounded autonomous policy is explicitly accepted.
@@ -387,9 +397,10 @@ Use that template for SaaS Foundation App surface shape and field density; copy 
 
 Before moving from surface design to code generation, verify:
 
-- [ ] Human surface-description sufficiency question was asked and answered yes, or another description pass is queued/blocked before implementation.
-- [ ] Surface has stable identity, type, version, exactly one owner functional agent, explicit reuse, placement, and purpose.
-- [ ] Payload schema is typed, scoped, redacted, traceable, and frontend-safe.
+- [ ] Human surface-description sufficiency questions were asked and answered yes, or another description pass is queued/blocked before implementation.
+- [ ] Surface has stable identity, type, version, exactly one owner functional agent, explicit reuse, placement, purpose, user goal, and primary user outcome.
+- [ ] Payload schema is typed, scoped, redacted, traceable where appropriate, frontend-safe, and split into default user-visible, drilldown, role-gated diagnostic/audit, and internal-only metadata.
+- [ ] Default-visible fields and copy use SaaS product language rather than internal component names, raw policy/tool/capability ids, prompt/provider details, or diagnostic ids.
 - [ ] Every action, including surface-request/read actions, maps to a governed backend capability.
 - [ ] Backend authorization remains authoritative over UI visibility, prompt text, and tool descriptions.
 - [ ] Events define ordering, dedupe, reconnect, stale, and cross-context handling.

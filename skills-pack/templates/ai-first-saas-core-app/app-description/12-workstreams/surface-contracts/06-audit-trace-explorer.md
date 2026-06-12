@@ -7,25 +7,38 @@
 
 ## Placement and graph role
 
-This surface is the investigation and evidence graph node for audit events, work traces, authorization decisions, prompt/skill/reference loads, tool calls, decisions, denials, and side effects. It may open from trace links, decision cards, dashboard anomaly cards, or prompt requests.
+This surface is the investigation and evidence graph node for audit events, work traces, authorization decisions, prompt/skill/reference loads, tool calls, decisions, denials, and side effects. It may open from trace links, decision cards, dashboard anomaly cards, or prompt requests. Its default UX is an investigation summary for the authorized actor; raw event/tool/policy/correlation diagnostics are role-gated drilldowns, not ordinary user-facing content.
+
+
+## User-visible/internal metadata boundary
+
+Default rendering must use SaaS product language and show only information the current actor needs to decide, act, recover, or understand the business outcome. Internal ids, raw trace/event/correlation data, governed-tool/capability ids, backend component names, prompt/provider/model details, and policy implementation references are implementation metadata. Expose them only in authorized admin, support, auditor, or developer drilldowns, and keep them visually subordinate to user-meaningful labels.
 
 ## Payload summary
 
 Payload must include:
 
-- selected `AuthContext`, trace query/filter state, `correlationId`, trace ids, redaction profile, freshness marker;
-- query results or selected timeline: event ids, event types, actor/service/agent/workflow ids, source surface/action/capability ids, timestamps, authorization basis, policy refs, data-access summaries, tool/model usage summaries, outcome, and redacted evidence links;
+- selected scope label, trace query/filter state, redaction profile, freshness marker, and user-readable investigation summary;
+- query results or selected timeline as business/audit events with actor label, time, user-safe action/outcome label, data-access summary, evidence summary, and redaction/omission markers;
+- role-gated diagnostics: selected `AuthContext`, `correlationId`, trace ids, event ids/types, actor/service/agent/workflow ids, source surface/action/capability ids, authorization basis, policy refs, tool/model usage summaries, and raw evidence links;
 - pagination/sort/filter metadata;
-- export and evidence-open action descriptors with capability ids, governed-tool ids, browser-tool ids, and denial categories.
+- export and evidence-open action descriptors with capability ids, governed-tool ids, browser-tool ids, and denial categories for implementation mapping, translated to user-safe labels in the default UI.
 
 ## Compact payload schema
 
 ```ts
 type AuditTraceExplorerData = {
-  authContext: SurfaceAuthContext;
-  query: { text?: string; correlationId?: string; eventTypes: string[]; from?: string; to?: string; redactionProfile: string };
-  results: Array<{ traceId: string; eventType: string; actorLabel: string; sourceSurfaceId?: string; sourceActionId?: string; capabilityId?: string; occurredAt: string; outcome: string; omittedFieldKeys: string[] }>;
-  selectedTimeline?: Array<{ eventId: string; sequence?: number; label: string; evidenceRefs: string[]; redactionMarkers: string[] }>;
+  scopeLabel: string;
+  query: { text?: string; from?: string; to?: string; redactionProfile: string };
+  results: Array<{ displayId: string; actorLabel: string; actionLabel: string; occurredAt: string; outcome: string; evidenceSummary?: string; omittedFieldKeys: string[] }>;
+  selectedTimeline?: Array<{ label: string; occurredAt?: string; evidenceSummary?: string; redactionMarkers: string[] }>;
+  diagnostics?: {
+    authContext: SurfaceAuthContext;
+    correlationId?: string;
+    traceIds?: string[];
+    eventTypes?: string[];
+    rawTimelineRefs?: Array<{ eventId: string; sequence?: number; sourceSurfaceId?: string; sourceActionId?: string; capabilityId?: string; evidenceRefs: string[] }>;
+  };
   pagination: { pageToken?: string; nextPageToken?: string; pageSize: number; sort: string };
 };
 ```
@@ -56,7 +69,7 @@ type AuditTraceExplorerData = {
 
 - `loading`: preserve submitted filters and show timeline skeletons.
 - `empty`: no visible traces for this query/scope; do not imply global absence.
-- `error`: safe error category and `correlationId`.
+- `error`: safe error category and a user-readable support/reference label; raw `correlationId` appears only in authorized diagnostic detail.
 - `forbidden`: no matched count or hidden trace existence leakage.
 - `partial-data`: show omitted-field markers and role-specific redaction.
 - `stale`: mark results stale after reconnect or projection lag.
@@ -64,14 +77,14 @@ type AuditTraceExplorerData = {
 ## Auth/security
 
 - Audit reads enforce tenant/customer/support/auditor boundaries before result counts.
-- Sensitive payloads, prompts, provider secrets, tokens, and cross-tenant facts are redacted or omitted.
+- Sensitive payloads, prompts, prompt internals, provider/model details, provider secrets, tokens, raw ids not needed by the actor, and cross-tenant facts are redacted or omitted.
 - Export requires explicit capability and may require decision-card approval.
 - Reading sensitive traces may itself create an audit event.
 
 ## Rendering and capability tests
 
-- Organization Admin, auditor, support-access, and forbidden variants show correct redactions and actions.
-- Search, detail, export, source-surface, and escalation actions carry capability/governed-tool/browser-tool ids.
+- Organization Admin, auditor, support-access, ordinary authorized user, and forbidden variants show correct redactions, summary/detail split, and actions.
+- Search, detail, export, source-surface, and escalation actions carry capability/governed-tool/browser-tool ids for implementation/tests, while rendering user-safe labels by default.
 - Trace links from all SaaS Foundation App surfaces open through shell request routing.
 - Malformed/missing trace ids produce safe system-message surfaces.
 - Sensitive-read, export denial, and investigation actions produce audit/work traces.

@@ -1,6 +1,8 @@
 # Surfaces Index
 
-Structured surfaces are the browser/user-visible contract for workstream state. This skills-pack template is a process-oriented `surface-ready` baseline: it defines the shape, ownership, graph role, and compact mappings needed to guide app-development cleanup, but it does not claim that the foundation workstream surfaces are fully implemented or `capability-ready`.
+Structured surfaces are the browser/user-visible contract for workstream state. This skills-pack template is a process-oriented `surface-ready` baseline: it defines the shape, ownership, graph role, compact mappings, and user-visible/internal-metadata boundaries needed to guide app-development cleanup, but it does not claim that the foundation workstream surfaces are fully implemented or `capability-ready`.
+
+Template contracts intentionally include internal ids for generation and traceability. Runtime surfaces must translate those ids into role-appropriate SaaS UX copy and expose raw diagnostic metadata only in authorized support, audit, admin, or developer drilldowns.
 
 ## Contracted foundation surface examples
 

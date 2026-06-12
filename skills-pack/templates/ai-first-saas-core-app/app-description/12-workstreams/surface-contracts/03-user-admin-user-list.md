@@ -10,6 +10,11 @@
 
 This surface is a graph node reached from dashboard queues, prompt-entered requests such as `show users`, row/detail back links, and deep links through the shell request pipeline.
 
+
+## User-visible/internal metadata boundary
+
+Default rendering must use SaaS product language and show only information the current actor needs to decide, act, recover, or understand the business outcome. Internal ids, raw trace/event/correlation data, governed-tool/capability ids, backend component names, prompt/provider/model details, and policy implementation references are implementation metadata. Expose them only in authorized admin, support, auditor, or developer drilldowns, and keep them visually subordinate to user-meaningful labels.
+
 ## Payload summary
 
 Payload must include:
@@ -70,7 +75,7 @@ Allowed actions are display hints only; backend authorization remains authoritat
 
 - `loading`: preserve submitted filters and show table skeletons; disable mutation buttons.
 - `empty`: distinguish no users in scope, no search matches, no queue items, and redacted result set.
-- `error`: show retry with `correlationId`, submitted filters, and safe error category.
+- `error`: show retry, submitted filters, safe error category, and readable support/reference label; raw `correlationId` appears only in authorized diagnostic detail.
 - `forbidden`: show selected scope and denial category; do not show result counts or matched identities.
 - `stale`: show stale page token/reconnect banner; mutation actions disabled until fresh payload returns.
 
@@ -92,4 +97,4 @@ Allowed actions are display hints only; backend authorization remains authoritat
 - SaaS Owner Admin, Organization Admin, and Customer Admin variants show correct rows, redactions, allowed actions, and forbidden actions.
 - Loading, empty, error, forbidden, stale, and responsive table-to-card states preserve safe context.
 - Dashboard-origin filters open through the shell request pipeline without a page-first route dependency.
-- Row actions include capability ids, governed-tool ids, browser-tool ids, idempotency requirements, trace ids, and decision-card links when risky.
+- Row actions include capability ids, governed-tool ids, browser-tool ids, idempotency requirements, trace ids, and decision-card links for implementation/tests, while rendering user-safe labels and hiding diagnostic ids by default.

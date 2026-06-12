@@ -19,10 +19,11 @@ Pair with:
 4. **Dashboard content is actionable.** Aside from section labels, control labels, and minimal explanatory microcopy, visible dashboard content must be actionable/clickable indicators. Cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons that represent things needing attention or things the user can do next are clickable and keyboard-operable by default. A rectangular tile/card with a work-object name and a large count is itself the button; do not make only a tiny nested button operable. Zero-count tiles should remain operable when they open an empty queue, detail, explanation, setup, or history surface; `0 things need attention` is better than hiding the indicator. Activation appends a request-like workstream item and appends/opens the surface where the user can inspect details and take allowed actions. Passive FYI metrics, inert charts, decorative card grids, and dashboard objects that make users ask “so what can I do with this?” are rejected unless moved to report/detail/analytics surfaces or converted to governed drilldowns. Inert dashboard objects are explicit exceptions with a recorded reason and must not look like work objects.
 5. **Browser-tools are explicit.** Every consequential UI action, read/query action, surface request, deep link, or recovery action maps to a browser-tool exposure backed by a governed-tool inside a backend capability.
 6. **Primary action dominance.** The main next action should be visible, specific, and stronger than secondary actions.
-7. **Progressive disclosure.** Show decision-driving evidence first; defer diagnostics, raw ids, and rare actions.
-8. **Recoverability.** Users should know how to retry, correct validation errors, request approval, recover from stale state, or return to the workstream.
-9. **State completeness.** Loading, empty, error, success, submitting, forbidden, denied, approval-needed, no-op, stale, reconnecting, and partial-data states are normal UI states.
-10. **Accessible by default.** Semantics, labels, keyboard flow, focus, contrast, status text, and responsive task preservation are required.
+7. **Progressive disclosure.** Show decision-driving evidence first; defer diagnostics, raw ids, implementation metadata, and rare actions to role-gated drilldowns.
+8. **User language over internal mechanics.** Default SaaS views translate capability, policy, trace, tool, provider/model, prompt, event, correlation, and idempotency details into user-safe outcomes, reasons, next steps, and recovery paths. Raw internal identifiers are diagnostic metadata, not primary UX copy.
+9. **Recoverability.** Users should know how to retry, correct validation errors, request approval, recover from stale state, or return to the workstream.
+10. **State completeness.** Loading, empty, error, success, submitting, forbidden, denied, approval-needed, no-op, stale, reconnecting, and partial-data states are normal UI states.
+11. **Accessible by default.** Semantics, labels, keyboard flow, focus, contrast, status text, and responsive task preservation are required.
 
 ## Workstream shell UX contract
 
@@ -73,6 +74,7 @@ No-op state:
 Stale/reconnect state:
 Success/system-message result:
 Trace and audit links:
+User-visible vs internal metadata:
 Responsive strategy:
 Keyboard/focus path:
 ```
@@ -87,12 +89,12 @@ Use this order unless the product context says otherwise:
 4. decision-driving structured surface content
 5. filters/search/sort for dense data when needed
 6. secondary actions
-7. details, diagnostics, metadata, audit/history, and trace links
+7. role-appropriate drilldowns, audit/history, trace links, and diagnostic metadata that are visually subordinate and hidden from ordinary users unless useful and authorized
 
 Avoid:
 - rare admin actions beside primary user actions
 - internal component names as labels
-- raw IDs or timestamps before user-meaningful labels
+- raw IDs, policy/tool/capability ids, correlation ids, or timestamps before user-meaningful labels
 - equal visual weight for everything
 - forcing users to inspect dense data before explaining what needs attention
 
@@ -116,16 +118,16 @@ Decision-card actions should show recommendation, evidence, risk, alternatives, 
 
 ### Trace and governance actions
 
-Governance and audit surfaces should make policy versions, proposed diffs, simulations, rollback/commit state, trace ids, and evidence links visible without exposing secrets or privileged hidden facts.
+Governance and audit surfaces should make user-readable policy versions, proposed diffs, simulations, rollback/commit state, and evidence links visible without exposing secrets or privileged hidden facts. Raw trace ids, event ids, governed-tool ids, prompt/model/provider metadata, and correlation ids belong in role-gated diagnostic details and should not dominate the default view.
 
 ## System-message surfaces
 
 System feedback is a structured surface, not a toast-only string. Browser-tool results that do not navigate to a normal target surface should return or append a `system_message` surface. Define success, warning, validation, forbidden, approval-required, background-work-started, deferred-capability, stale/reconnect, no-op, and failure messages with:
 - severity and message code
 - user-safe title/body
-- related surface/action/capability ids
+- related surface/action/capability ids as diagnostic metadata, not primary copy
 - allowed recovery actions
-- trace/correlation ids when visible
+- trace/correlation ids only when useful and visible to the current role
 - redaction rules
 
 ## AutonomousAgent progress/result surfaces
@@ -155,7 +157,7 @@ Say what failed, whether user work is preserved, and what can be retried or reco
 
 ### Forbidden/denied
 
-Explain the denial in user-safe language without leaking hidden workstream existence, privileged facts, prompt text, provider details, or cross-tenant data.
+Explain the denial in user-safe language without leaking hidden workstream existence, privileged facts, prompt text, provider details, internal policy/capability ids, or cross-tenant data.
 
 ### Success and no-op
 
@@ -197,7 +199,7 @@ For narrow screens:
 
 Before coding, the agent should be able to state:
 - which functional agents appear in the rail and which are hidden or denied
-- which role-specific dashboard attention and next-action objects appear, which sources/evidence/freshness they use, which target/result surfaces they open, and which browser-tools they offer
+- which role-specific dashboard attention and next-action objects appear, which sources/evidence/freshness they use, which target/result surfaces they open, which browser-tools they offer, and which internal details are hidden, summarized, or role-gated
 - which human surface graph nodes and edges exist, including result and system-message surfaces
 - what the user sees first in the selected workstream
 - how the composer behaves and when it is disabled

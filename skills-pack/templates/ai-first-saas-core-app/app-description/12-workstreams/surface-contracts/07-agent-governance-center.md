@@ -9,6 +9,11 @@
 
 This surface is the governance workspace for managed agent definitions, prompts, skills, references, manifests, tool boundaries, behavior proposals, tests, simulations, approvals, and activation history.
 
+
+## User-visible/internal metadata boundary
+
+Default rendering must use SaaS product language and show only information the current actor needs to decide, act, recover, or understand the business outcome. Internal ids, raw trace/event/correlation data, governed-tool/capability ids, backend component names, prompt/provider/model details, and policy implementation references are implementation metadata. Expose them only in authorized admin, support, auditor, or developer drilldowns, and keep them visually subordinate to user-meaningful labels.
+
 ## Payload summary
 
 Payload must include:
@@ -59,7 +64,7 @@ type AgentGovernanceCenterData = {
 
 - `loading`: governance workspace skeleton without showing stale secrets.
 - `empty`: no managed agents or no proposals in selected scope.
-- `error`: safe category and `correlationId`.
+- `error`: safe category and readable support/reference label; raw `correlationId` appears only in authorized diagnostic detail.
 - `forbidden`: no hidden agent/document existence leakage.
 - `conflict`: proposal/version changed; require refresh.
 - `approval-needed`: high-risk change requires reviewer decision.

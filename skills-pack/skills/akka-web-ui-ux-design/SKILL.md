@@ -70,9 +70,10 @@ For each workstream shell region, structured surface, or major region, define:
 11. **Destructive/irreversible actions** — confirmation and recovery expectations.
 12. **Responsive behavior** — how the primary task survives on narrow screens.
 13. **Keyboard/focus path** — how a keyboard-only user completes the primary flow.
-14. **UX copy** — labels, button text, helper text, empty/error/success messages.
-15. **Style guide and component catalog application** — how selected style tokens, named themes, reusable component catalog anatomy, reference mockup anatomy, visual hierarchy, typography, texture/depth, and purposeful motion support feedback, structured-surface form controls, and My Account preference behavior when in scope.
-16. **Browser-tool/capability mapping** — which browser-tool invokes which governed-tool/backend capability for each consequential action and how forbidden/denied states are shown.
+14. **UX copy** — labels, button text, helper text, empty/error/success messages in SaaS user language, not internal component/tool/policy terminology.
+15. **User-visible vs internal metadata** — default-visible fields, progressive drilldowns, role-gated audit/support/developer diagnostics, and internal-only metadata that must never be rendered to ordinary users.
+16. **Style guide and component catalog application** — how selected style tokens, named themes, reusable component catalog anatomy, reference mockup anatomy, visual hierarchy, typography, texture/depth, and purposeful motion support feedback, structured-surface form controls, and My Account preference behavior when in scope.
+17. **Browser-tool/capability mapping** — which browser-tool invokes which governed-tool/backend capability for each consequential action and how forbidden/denied states are shown without leaking raw ids or hidden facts.
 
 ## UX copy rules
 
@@ -85,13 +86,14 @@ Prefer specific, actionable copy:
 - Success messages confirm the concrete outcome.
 - Destructive confirmations name the object and consequence.
 
-Avoid generic copy:
+Avoid generic or internal copy:
 
 - `Submit` when a more specific action exists
 - `Error occurred`
 - `Invalid input`
 - `Success`
 - unexplained disabled controls
+- raw capability/tool/policy ids, backend component names, provider/model details, prompt internals, trace ids, or correlation ids as primary copy for ordinary users
 
 ## Interaction quality rules
 
@@ -152,6 +154,7 @@ Agent/system activity shown:
 Evidence/risk/policy shown:
 Approval/exception actions:
 Trace/outcome links:
+User-visible vs internal metadata:
 Realtime/stale behavior:
 ```
 
@@ -172,6 +175,6 @@ Before coding or accepting UI work, verify:
 - dashboard KPI/attention cards and next-action work objects use the shared attention-card style across dashboards, appear above lower-priority details/lists, have readable semibold/bold labels plus enough gap between label, value, and status badge for fast scanning, and are clickable/keyboard-operable when they represent attention or available work; the whole rectangular tile/card/counter is the control, including valid zero-count states
 - dashboard ready states contain only actionable/clickable indicators plus labels and minimal microcopy; passive FYI metrics, inert charts, and decorative card grids are rejected unless converted into governed drilldowns or moved to report/detail/analytics surfaces
 - left rail, workstream panel, composer, and surface actions remain usable by keyboard and at narrow widths
-- AI-first surfaces show delegated work, retained authority, evidence, policy triggers, trace links, and outcome context when those concepts are in scope
+- AI-first surfaces show delegated work, retained authority, evidence, policy triggers, trace links, and outcome context when those concepts are in scope, using user-readable summaries by default and role-gated raw audit/support detail only when appropriate
 - the UI avoids generic AI/SaaS visual cliches and has a clearly recorded memorable motif
-- consequential surface actions and dashboard object interactions map to browser-tool exposures backed by governed-tools and backend capabilities; UI gating is not treated as authorization, and forbidden dashboard targets are normally omitted from ready dashboard payloads rather than shown as disabled work objects
+- consequential surface actions and dashboard object interactions map to browser-tool exposures backed by governed-tools and backend capabilities, but those internal mappings are not exposed as normal user copy; UI gating is not treated as authorization, and forbidden dashboard targets are normally omitted from ready dashboard payloads rather than shown as disabled work objects

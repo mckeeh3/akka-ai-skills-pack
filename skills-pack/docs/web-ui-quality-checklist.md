@@ -9,6 +9,9 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 - [ ] For generated AI-first SaaS, primary user goals are represented by role-authorized functional agents, workstream shell regions, structured surfaces, and capability-backed actions.
 - [ ] Each workstream shell region or structured surface communicates selected functional agent, organization/customer context, what matters, and what the user can do within the first five seconds.
 - [ ] Each structured surface has one clear purpose or an explicitly read-only purpose.
+- [ ] Default surface content is designed for the target SaaS user: every visible field, badge, chart, trace/evidence item, and action helps the user decide, act, recover, or understand a business outcome.
+- [ ] Internal policy ids, capability/governed-tool ids, backend component names, provider/model details, prompt internals, raw event ids, and correlation/idempotency mechanics are hidden, translated, or role-gated instead of shown as ordinary user-facing copy.
+- [ ] Audit/trace surfaces provide user-readable summaries first and expose raw audit/support/developer detail only through authorized drilldowns.
 - [ ] Workstream dashboards are action routers, not reports: ready-state content is ordered top-to-bottom as things that need my attention, then things I can do.
 - [ ] Aside from labels and minimal microcopy, visible dashboard content is limited to actionable/clickable indicators; passive FYI metrics, inert charts, and decorative card grids are absent or moved to report/detail/analytics surfaces.
 - [ ] Dashboard cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons that represent attention or next work are clickable and keyboard-operable by default.
@@ -38,7 +41,8 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 
 - [ ] Structured surfaces, when used, have explicit payload, action, event, auth, trace/audit, and rendering-test contracts per `./structured-surface-contracts.md`.
 - [ ] Every surface action and dashboard work-object interaction maps to a governed backend capability, including read/query and surface-request actions; frontend visibility, disabled controls, prompt text, and route names are not treated as authorization.
-- [ ] Browser-facing DTOs are intentional and not accidental domain leaks.
+- [ ] Browser-facing DTOs are intentional and not accidental domain or implementation leaks.
+- [ ] DTOs distinguish default user-visible fields, user-requested drilldowns, admin/support/auditor diagnostics, and internal-only metadata that should never be sent to ordinary browser views.
 - [ ] API routes use clear `/api/...` paths.
 - [ ] Validation errors have a documented shape.
 - [ ] Unauthorized, forbidden, not-found, conflict, and server errors are handled.
@@ -53,6 +57,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 - [ ] Success messages confirm the concrete outcome.
 - [ ] Destructive confirmations name the object and consequence.
 - [ ] Disabled controls have visible explanation when the reason is not obvious.
+- [ ] Permission, policy, trace, and runtime messages use user-safe product language rather than raw internal identifiers.
 
 ## Forms and validation
 
@@ -124,7 +129,7 @@ For generated SaaS applications, the browser UI inherits the mandatory secure fo
 
 - [ ] Public UI asset routes and backend API routes are intentionally separated.
 - [ ] Sensitive data is not embedded in static assets.
-- [ ] Unauthorized/expired-session and forbidden-action UX is covered for protected routes, including tenant/customer mismatch, disabled users, and role/scope denial.
+- [ ] Unauthorized/expired-session and forbidden-action UX is covered for protected routes, including tenant/customer mismatch, disabled users, and role/scope denial, without leaking hidden workstreams, privileged facts, or raw policy/capability ids.
 - [ ] `/api/me`, selected context, browser-safe capabilities, profile, settings, and context-switch behavior are represented for generated full-stack AI-first SaaS.
 
 ## Build and tests
