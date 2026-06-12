@@ -314,7 +314,7 @@
 
 ### TASK-UAPRH-99-001: Verify User Admin production runtime hardening
 
-- status: pending
+- status: done
 - source: specs/user-admin-production-runtime-hardening/backlog/01-user-admin-production-runtime-hardening-build-backlog.md
 - task brief: specs/user-admin-production-runtime-hardening/tasks/99-verification/01-verify-production-runtime-hardening.md
 - depends on:
@@ -347,3 +347,5 @@
   - verification compares completed work against README done state, backlog, app-description, task criteria, and command evidence; no feature is marked complete based on fixture-only/model-less/provider-less normal runtime behavior; follow-up tasks are appended if gaps remain
 - notes:
   - vertical contract: User Admin / `agent-user-admin`; terminal verification for invitation delivery, identity exception, access-review blocker/result production paths; all production hardening surfaces; invitation/outbox, identity recovery, access-review agent/model/tool boundary, audit/work trace; App/Tenant/Customer scoped allow/deny; broad Maven/npm/smoke/build validation
+  - completed: wrote terminal production runtime verification, repaired invitation delivery failure attention so repeated provider failures preserve urgent User Admin attention and count retry attempts, and confirmed no material follow-up tasks are needed.
+  - checks: `env -u ADMIN_USERS mvn -q -Dtest=AttentionProducerServiceTest test`; `env -u ADMIN_USERS mvn test`; `npm --prefix frontend run smoke:user-admin-workstream`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `npm --prefix frontend run build`; `git diff --check`

@@ -182,10 +182,6 @@ public final class InvitationService {
       appendSystemAudit(invite, "INVITATION_DELIVERY_NO_OP", AdminAuditEvent.Result.NO_OP, "idempotent-delivery-result", correlationId);
       return invite;
     }
-    if (!delivered && invite.deliveryStatus() == EmailDeliveryStatus.FAILED && java.util.Objects.equals(invite.lastDeliveryErrorSummary(), safeErrorSummary)) {
-      appendSystemAudit(invite, "INVITATION_DELIVERY_NO_OP", AdminAuditEvent.Result.NO_OP, "idempotent-delivery-failure", correlationId);
-      return invite;
-    }
     var ids = delivered && safeProviderMessageId != null ? append(invite.providerMessageIds(), safeProviderMessageId) : invite.providerMessageIds();
     var deliveredStatus = safeProviderMessageId != null && safeProviderMessageId.startsWith("captured-") ? EmailDeliveryStatus.CAPTURED : EmailDeliveryStatus.SENT;
     var updated = new Invitation(

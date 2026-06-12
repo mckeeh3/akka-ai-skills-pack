@@ -50,7 +50,7 @@ public final class AttentionProducerService {
     var itemId = invitationDeliveryItemId(invitation.invitationId());
     var title = "User Admin invitation delivery needs review";
     var attempts = Math.max(invitation.deliveryAttempts(), 1);
-    var severity = attempts > 1 ? AttentionSeverity.URGENT : AttentionSeverity.WARNING;
+    var severity = AttentionSeverity.URGENT;
     var summary = attempts + " delivery attempt(s) for " + invitation.normalizedEmail() + " need authorized review: " + safe(invitation.lastDeliveryErrorSummary(), "delivery failed") + ".";
     return upsert(item(
         itemId,
