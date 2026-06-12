@@ -77,7 +77,7 @@
 
 ### TASK-UAPRH-02-001: Harden provider-backed invitation delivery
 
-- status: pending
+- status: done
 - source: specs/user-admin-production-runtime-hardening/backlog/01-user-admin-production-runtime-hardening-build-backlog.md
 - task brief: specs/user-admin-production-runtime-hardening/tasks/01-invitation-delivery/02-harden-provider-backed-invitation-delivery.md
 - depends on:

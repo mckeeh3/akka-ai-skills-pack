@@ -173,21 +173,32 @@ public final class InvitationService {
   public Invitation recordDeliveryResult(String invitationId, String deliveryAttemptId, boolean delivered, String providerMessageId, String safeError, String correlationId) {
     var invite = requireInvitation(invitationId);
     if (invite.terminal()) {
+      appendSystemAudit(invite, "INVITATION_DELIVERY_NO_OP", AdminAuditEvent.Result.NO_OP, "terminal-or-obsolete", correlationId);
       return invite;
     }
-    var ids = delivered && providerMessageId != null ? append(invite.providerMessageIds(), providerMessageId) : invite.providerMessageIds();
-    var deliveredStatus = providerMessageId != null && providerMessageId.startsWith("captured-") ? EmailDeliveryStatus.CAPTURED : EmailDeliveryStatus.SENT;
+    var safeProviderMessageId = providerMessageId == null || providerMessageId.isBlank() ? null : providerMessageId;
+    var safeErrorSummary = safeError == null || safeError.isBlank() ? null : safeError;
+    if (delivered && safeProviderMessageId != null && invite.providerMessageIds().contains(safeProviderMessageId)) {
+      appendSystemAudit(invite, "INVITATION_DELIVERY_NO_OP", AdminAuditEvent.Result.NO_OP, "idempotent-delivery-result", correlationId);
+      return invite;
+    }
+    if (!delivered && invite.deliveryStatus() == EmailDeliveryStatus.FAILED && java.util.Objects.equals(invite.lastDeliveryErrorSummary(), safeErrorSummary)) {
+      appendSystemAudit(invite, "INVITATION_DELIVERY_NO_OP", AdminAuditEvent.Result.NO_OP, "idempotent-delivery-failure", correlationId);
+      return invite;
+    }
+    var ids = delivered && safeProviderMessageId != null ? append(invite.providerMessageIds(), safeProviderMessageId) : invite.providerMessageIds();
+    var deliveredStatus = safeProviderMessageId != null && safeProviderMessageId.startsWith("captured-") ? EmailDeliveryStatus.CAPTURED : EmailDeliveryStatus.SENT;
     var updated = new Invitation(
         invite.invitationId(), invite.normalizedEmail(), invite.scopeType(), invite.tenantId(), invite.customerId(), invite.requestedRoles(),
         invite.accountId(), invite.membershipId(), delivered ? InvitationStatus.SENT : InvitationStatus.DELIVERY_FAILED,
         delivered ? deliveredStatus : EmailDeliveryStatus.FAILED, invite.deliveryAttempts() + 1, ids,
-        delivered ? null : safeError, invite.acceptanceContextId(), invite.tokenHash(), invite.expiresAt(), invite.acceptedAt(),
+        delivered ? null : safeErrorSummary, invite.acceptanceContextId(), invite.tokenHash(), invite.expiresAt(), invite.acceptedAt(),
         invite.acceptedByWorkosSubject(), invite.revokedAt(), invite.revokedByAccountId(), invite.revokeReason(), invite.resendCount(),
         invite.createdByAccountId(), invite.createdAt(), invite.idempotencyKey(), correlationId);
     invitationRepository.saveInvitation(updated);
-    appendSystemAudit(updated, "INVITATION_DELIVERY_" + (delivered ? deliveredStatus.name() : "FAILED"), delivered ? AdminAuditEvent.Result.ALLOWED : AdminAuditEvent.Result.FAILED, delivered ? deliveredStatus.name().toLowerCase(java.util.Locale.ROOT) : safeError, correlationId);
+    appendSystemAudit(updated, "INVITATION_DELIVERY_" + (delivered ? deliveredStatus.name() : "FAILED"), delivered ? AdminAuditEvent.Result.ALLOWED : AdminAuditEvent.Result.FAILED, delivered ? deliveredStatus.name().toLowerCase(java.util.Locale.ROOT) : safeErrorSummary, correlationId);
     if (workstreamEventPublisher != null) {
-      workstreamEventPublisher.publishInvitationDelivery(updated, delivered, deliveryAttemptId, delivered ? deliveredStatus.name() : "FAILED", safeError, correlationId);
+      workstreamEventPublisher.publishInvitationDelivery(updated, delivered, deliveryAttemptId, delivered ? deliveredStatus.name() : "FAILED", safeErrorSummary, correlationId);
     } else if (attentionProducerService != null) {
       if (delivered) attentionProducerService.resolveInvitationDelivery(updated, deliveredStatus.name().toLowerCase(java.util.Locale.ROOT), correlationId);
       else attentionProducerService.upsertInvitationDelivery(updated, correlationId);

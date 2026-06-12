@@ -98,6 +98,45 @@ class InvitationAndUserAdminServiceTest {
   }
 
   @Test
+  void inviteCreationUsesConfiguredResendProviderAndFailsClosedWhenProductionConfigMissing() {
+    var configuredInvitations = new InvitationService(
+        identityRepository,
+        invitationRepository,
+        clock,
+        null,
+        null,
+        new ResendEmailService(
+            Map.of("RESEND_API_KEY", "re_test_secret", "INVITE_EMAIL_FROM", "Starter <onboarding@example.com>"),
+            (message, config) -> ResendEmailService.DeliveryResult.sent("resend-message-123")),
+        ResendEmailService.DeliveryMode.PRODUCTION);
+
+    var sent = configuredInvitations.createInvitation(tenantAdmin, inviteRequest("configured-provider", "configured.provider@example.com"));
+
+    assertEquals(InvitationStatus.SENT, sent.status());
+    assertEquals(EmailDeliveryStatus.SENT, sent.deliveryStatus());
+    assertEquals(List.of("resend-message-123"), sent.providerMessageIds());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_DELIVERY_SENT")));
+
+    var failClosedInvitations = new InvitationService(
+        identityRepository,
+        invitationRepository,
+        clock,
+        null,
+        null,
+        new ResendEmailService(Map.of(), (message, config) -> ResendEmailService.DeliveryResult.sent("should-not-send")),
+        ResendEmailService.DeliveryMode.PRODUCTION);
+
+    var blocked = failClosedInvitations.createInvitation(tenantAdmin, inviteRequest("missing-provider", "missing.provider@example.com"));
+
+    assertEquals(InvitationStatus.DELIVERY_FAILED, blocked.status());
+    assertEquals(EmailDeliveryStatus.FAILED, blocked.deliveryStatus());
+    assertEquals("resend-config-missing", blocked.lastDeliveryErrorSummary());
+    assertTrue(blocked.providerMessageIds().isEmpty());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_DELIVERY_FAILED") && event.reasonCode().equals("resend-config-missing")));
+    assertFalse(blocked.toString().contains("should-not-send"));
+  }
+
+  @Test
   void inviteEmailLinkUsesConfiguredPublicBaseUrl() {
     var configuredInvitations = new InvitationService(
         identityRepository,
@@ -193,6 +232,25 @@ class InvitationAndUserAdminServiceTest {
     assertEquals("delivery-failed", browserResult.status());
     assertThrows(AuthorizationException.class, () -> invitations.accept(new WorkosIdentity("workos-failed", "failed.accept@example.com", "Failed Accept"), failed.acceptanceContextId(), "corr-failed-direct"));
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.reasonCode().equals("delivery-failed-without-override")));
+  }
+
+  @Test
+  void duplicateAndObsoleteDeliveryResultsAreSafeNoOps() {
+    var invite = invitations.createInvitation(tenantAdmin, inviteRequest("delivery-no-op", "delivery.noop@example.com"));
+    var sent = invitations.recordDeliveryResult(invite.invitationId(), "delivery-1", true, "resend-idempotent-1", null, "corr-delivery-sent");
+    var duplicate = invitations.recordDeliveryResult(invite.invitationId(), "delivery-1", true, "resend-idempotent-1", null, "corr-delivery-sent-replay");
+
+    assertEquals(1, sent.deliveryAttempts());
+    assertEquals(1, duplicate.deliveryAttempts());
+    assertEquals(List.of("resend-idempotent-1"), duplicate.providerMessageIds());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_DELIVERY_NO_OP") && event.reasonCode().equals("idempotent-delivery-result")));
+
+    var revoked = invitations.revoke(tenantAdmin, invite.invitationId(), "wrong recipient", "corr-revoke-before-obsolete-delivery");
+    var obsolete = invitations.recordDeliveryResult(revoked.invitationId(), "delivery-late", true, "resend-late", null, "corr-late-delivery");
+
+    assertEquals(InvitationStatus.REVOKED, obsolete.status());
+    assertEquals(List.of("resend-idempotent-1"), obsolete.providerMessageIds());
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_DELIVERY_NO_OP") && event.reasonCode().equals("terminal-or-obsolete")));
   }
 
   @Test
