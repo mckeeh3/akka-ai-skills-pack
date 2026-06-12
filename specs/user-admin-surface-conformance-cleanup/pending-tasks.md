@@ -187,7 +187,7 @@
 
 ### TASK-UASCC-04-001: Add full-stack User Admin surface conformance tests
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-conformance-cleanup/backlog/01-user-admin-surface-conformance-build-backlog.md
 - task brief: specs/user-admin-surface-conformance-cleanup/tasks/04-tests/01-fullstack-user-admin-conformance-tests.md
 - depends on:
@@ -217,6 +217,10 @@
   - tests prove canonical rendering, backend-authored routing, inspection-only detail, dedicated task/result/system-message surfaces, backend-shaped options, legacy page retirement, authorization/tenant isolation, audit/trace redaction, and frontend secret boundary
 - notes:
   - vertical contract: User Admin / `agent-user-admin`; validation of dashboard -> list -> detail/task -> result/system-message; browser-tool/workstream action mappings; capabilities `user_admin.*`, `saas_owner.organization.*`, `admin.audit.read`; App/Tenant/Customer/Auditor allow/deny; backend workstream service and frontend renderer substrates; local Maven/npm validation
+  - added backend conformance coverage for dashboard/list backend-authored routing, inspection-only detail, backend-shaped options, hidden invitation typed system-message denial, access-review provider-blocked workflow status, and browser-safe redaction
+  - added frontend contract coverage for canonical renderer routing, no inline User Admin mutations, backend-authored row/action metadata, system-message recovery/redaction, backend option helpers, legacy Admin Users quarantine, and frontend secret boundary
+  - completed checks: `git diff --check`; `mvn -q -Dtest=WorkstreamServiceTest test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`
+  - commit: `user-admin-surface-conformance: add fullstack conformance tests`
 
 ### TASK-UASCC-99-001: Verify User Admin surface conformance cleanup
 

@@ -238,6 +238,59 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void userAdminConformancePathCoversBackendAuthoredRoutingTypedResultsAndSafePayloads() {
+    var dashboard = service.surface(identity(), "membership-admin", "surface-user-admin-dashboard", "corr-conformance-dashboard");
+    assertEquals("dashboard", dashboard.surfaceType());
+    assertEquals("surface-user-admin-dashboard", ((Map<?, ?>) dashboard.data().get("canonicalSurface")).get("canonicalSurfaceId"));
+    assertTrue(((List<?>) dashboard.data().get("attentionCounts")).stream().allMatch(count -> count.toString().contains("targetSurfaceId=") && count.toString().contains("openActionId=")));
+    assertTrue(((List<?>) dashboard.data().get("administeredPopulations")).stream().allMatch(population -> population.toString().contains("targetSurfaceId=surface-user-admin-users") && population.toString().contains("openActionId=")));
+    assertBrowserPayloadSafe(dashboard);
+
+    var users = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-users", "user-admin.show-users", "search-user-directory", "USERADMIN_LIST_MEMBERS", null, null, "membership-admin", dashboard.surfaceId(), "corr-conformance-users"));
+    assertEquals("surface-user-admin-users", users.resultSurface().surfaceId());
+    assertEquals("list-search", users.resultSurface().surfaceType());
+    assertTrue(users.resultSurface().toString().contains("targetSurfaceId=surface-user-admin-user-detail"));
+    assertTrue(users.resultSurface().toString().contains("openActionId=action-display-user-detail"));
+    assertTrue(users.resultSurface().toString().contains("canMutateInline=false"));
+    assertBrowserPayloadSafe(users.resultSurface());
+
+    var detail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-display-user-detail", "action-display-user-detail", "USERADMIN_LIST_MEMBERS", "USERADMIN_LIST_MEMBERS", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", users.resultSurface().surfaceId(), "corr-conformance-detail"));
+    assertEquals("surface-user-admin-user-detail", detail.resultSurface().surfaceId());
+    assertEquals("show-inspection", detail.resultSurface().surfaceType());
+    assertEquals(false, ((Map<?, ?>) detail.resultSurface().data().get("permissionState")).get("canMutateInline"));
+    assertTrue(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-membership-status-confirmation")));
+    assertFalse(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-disable-member")));
+    assertFalse(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-change-member-roles")));
+    assertBrowserPayloadSafe(detail.resultSurface());
+
+    var inviteForm = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-useradmin-invitation-create", "action-open-useradmin-invitation-create", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", null, null, "membership-admin", users.resultSurface().surfaceId(), "corr-conformance-invite-form"));
+    assertEquals("create-form", inviteForm.resultSurface().surfaceType());
+    assertTrue(inviteForm.resultSurface().data().containsKey("roleOptions"));
+    assertTrue(inviteForm.resultSurface().toString().contains("expiryOptions"));
+    assertBrowserPayloadSafe(inviteForm.resultSurface());
+
+    var hiddenInvitation = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-display-invitation-detail", "action-display-invitation-detail", "USERADMIN_LIST_INVITATIONS", "USERADMIN_LIST_INVITATIONS", Map.of("invitationId", "invitation-hidden-cross-scope"), null, "membership-admin", users.resultSurface().surfaceId(), "corr-conformance-hidden-invite"));
+    assertEquals("denied", hiddenInvitation.status());
+    assertEquals("surface-user-admin-system-message", hiddenInvitation.resultSurface().surfaceId());
+    assertEquals("user_admin.system_message.v1", hiddenInvitation.resultSurface().data().get("surfaceContract"));
+    assertEquals(true, hiddenInvitation.resultSurface().data().get("noFakeSuccess"));
+    assertFalse(hiddenInvitation.resultSurface().toString().contains("invitation-hidden-cross-scope"));
+    assertBrowserPayloadSafe(hiddenInvitation.resultSurface());
+
+    var accessReview = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-start-access-review", "action-useradmin-start-access-review", "user_admin.access_review.start", "user_admin.access_review.start", Map.of("scope", "tenant"), "idem-conformance-access-review", "membership-admin", dashboard.surfaceId(), "corr-conformance-access-review"));
+    assertEquals("blocked-runtime", accessReview.status());
+    assertEquals("workflow-status", accessReview.resultSurface().surfaceType());
+    assertEquals("blocked_provider_or_runtime", accessReview.resultSurface().data().get("status"));
+    assertEquals(true, accessReview.resultSurface().data().get("noDirectMutation"));
+    assertBrowserPayloadSafe(accessReview.resultSurface());
+  }
+
+  @Test
   void saasOwnerUserAdminDashboardExposesOrganizationAdminSurface() {
     var dashboard = service.surface(ownerIdentity(), "membership-owner", "surface-user-admin-dashboard", "corr-owner-dashboard");
 

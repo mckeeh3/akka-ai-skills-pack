@@ -15,6 +15,7 @@ const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
 const userAdminTaskSurface = read('./workstream/surfaces/UserAdminTaskSurface.tsx');
+const systemMessageSurface = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const adminUsersPage = read('./screens/admin/AdminUsersPage.tsx');
 const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const surfaceTypes = read('./workstream/types/surfaces.ts');
@@ -234,6 +235,44 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.match(componentsCss, /\.user-admin-task-surface/);
   assert.match(componentsCss, /\.user-admin-task-form label/);
   assert.doesNotMatch(userAdminTaskSurface, /JSON\.stringify|dangerouslySetInnerHTML|Authorization:\s*Bearer|RESEND_API_KEY|sk-secret|api_key=/);
+});
+
+test('User Admin full-stack conformance tests cover canonical runtime boundaries', () => {
+  assert.match(workstreamService, /surface-user-admin-system-message/);
+  assert.match(workstreamService, /user_admin\.system_message\.v1/);
+  assert.match(workstreamService, /noFakeSuccess/);
+  assert.match(workstreamService, /hiddenUserId/);
+  assert.match(workstreamService, /hiddenMembershipId/);
+  assert.match(workstreamService, /invitation-not-found-or-forbidden/);
+  assert.match(workstreamService, /blocked_provider_or_runtime/);
+  assert.match(workstreamService, /noDirectMutation/);
+  assert.match(workstreamService, /diagnosticMetadataVisible", false/);
+  assert.match(workstreamService, /attentionCounts/);
+  assert.match(workstreamService, /administeredPopulations/);
+  assert.match(workstreamService, /roleOptionsForSelectedContext/);
+  assert.match(workstreamService, /invitationExpiryOptions/);
+  assert.match(workstreamService, /supportExpiryOptions/);
+  assert.match(workstreamService, /purposeOptions/);
+
+  assert.match(renderer, /case 'show-inspection'/);
+  assert.match(renderer, /case 'system-message'/);
+  assert.match(renderer, /isUserAdminTaskSurface\(selectedEnvelope\)/);
+  assert.match(detailEditSurface, /UserAdminCleanDetail/);
+  assert.match(detailEditSurface, /Detail surfaces do not mutate access inline/);
+  assert.match(detailEditSurface, /taskEntryActions = envelope\.actions\.filter\(\(action\) => !isUserAdminShowUsersAction\(action\)\)/);
+  assert.doesNotMatch(detailEditSurface, /action-useradmin-disable-member[\s\S]*submit|action-useradmin-change-member-roles[\s\S]*submitRoleChange/);
+  assert.match(listSearchSurface, /row\.openActionId/);
+  assert.match(listSearchSurface, /row\.targetSurfaceId/);
+  assert.match(listSearchSurface, /backend-authored/);
+  assert.match(userAdminTaskSurface, /userAdminRoleOptions\(envelope\)/);
+  assert.match(userAdminTaskSurface, /userAdminExpiryOptions\(envelope\)/);
+  assert.match(systemMessageSurface, /Recovery steps/);
+  assert.match(systemMessageSurface, /Provider secrets, raw JWTs, hidden prompts, invitation tokens, and unauthorized tenant\/customer evidence are not shown/);
+
+  assert.match(adminUsersPage, /quarantined-legacy-screen/);
+  assert.match(adminUsersPage, /not imported by\s+the canonical entry point/);
+  assert.doesNotMatch(main, /AdminUsersPage|admin-users|screens\/admin/);
+  assert.doesNotMatch(`${main}\n${httpApiClient}\n${dashboardSurface}\n${listSearchSurface}\n${detailEditSurface}\n${userAdminTaskSurface}`, /RESEND_API_KEY|WORKOS_API_KEY|Authorization:\s*Bearer|invite-token|tokenHash|sk-secret|api_key=/);
 });
 
 test('workstream and API clients support dashboard-to-list-to-detail navigation feedback', () => {
