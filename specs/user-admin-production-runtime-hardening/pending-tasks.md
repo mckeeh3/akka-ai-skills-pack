@@ -206,7 +206,7 @@
 
 ### TASK-UAPRH-04-001: Implement model-backed access-review agent runtime path
 
-- status: pending
+- status: done
 - source: specs/user-admin-production-runtime-hardening/backlog/01-user-admin-production-runtime-hardening-build-backlog.md
 - task brief: specs/user-admin-production-runtime-hardening/tasks/03-access-review-agent/01-model-backed-access-review-agent-runtime.md
 - depends on:
@@ -238,6 +238,8 @@
   - configured access review invokes concrete governed Akka Agent path; missing model/provider/boundary config fails closed; tool/data/policy/model usage emits traces; result does not mutate access without human review
 - notes:
   - vertical contract: User Admin / Access Review agent under `agent-user-admin`; access review running/result/blocker attention; access-review task/status/result/system-message surfaces; user/audit evidence tools, model policy/tool boundary; selected-scope evidence authorization; Akka Agent/service/task/workstream substrate
+  - completed: verified existing governed access-review runtime path wires durable `UserAdminAccessReviewService` task state to `ComponentClientAccessReviewAutonomousAgentRuntime`, `UserAdminAccessReviewAutonomousAgent`, model policy preparation, tool-boundary checks for evidence/readSkill/readReferenceDoc, fail-closed runtime/provider handling, traces, and no-direct-mutation result handling.
+  - checks: `git diff --check`; `env -u ADMIN_USERS mvn -q -Dtest=UserAdminAccessReviewServiceTest,UserAdminAccessReviewAutonomousAgentTest,WorkstreamServiceTest test`
 
 ### TASK-UAPRH-04-002: Add access-review agent surfaces, traces, and tests
 
