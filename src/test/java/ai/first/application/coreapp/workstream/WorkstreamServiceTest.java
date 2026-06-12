@@ -971,6 +971,18 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void myAccountOpenUserAdminAcceptsSaasOwnerUserAdminCapability() {
+    var result = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-open-user-admin", "action-open-user-admin", "my_account.open_authorized_workstream", "my_account.open_authorized_workstream", null, null, "membership-owner", "surface-my-account-dashboard", "corr-owner-open-user-admin"));
+
+    assertEquals("accepted", result.status());
+    assertEquals("surface-user-admin-saas-owner-dashboard", result.resultSurface().surfaceId());
+    assertEquals("agent-user-admin", result.resultSurface().ownerFunctionalAgentId());
+    assertTrue(result.traceIds().contains("trace-my-account-open-agent-user-admin"));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM") && event.correlationId().equals("corr-owner-open-user-admin") && event.result().name().equals("ALLOWED")));
+  }
+
+  @Test
   void shellRequestsResolveRichSurfacesThroughBackendAndPreserveBootstrapGuard() {
     var bootstrap = service.bootstrap(identity(), "membership-admin", "corr-shell-bootstrap");
     assertEquals("surface-my-account-dashboard", bootstrap.surfaces().get(0).surfaceId());

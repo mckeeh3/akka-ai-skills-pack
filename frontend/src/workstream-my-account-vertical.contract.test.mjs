@@ -86,6 +86,7 @@ test('My Account backend tests cover rich reads, update, idempotent duplicate, n
     'myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation',
     'myAccountProfileSettingsNoOpIsTracedAndReturnsCurrentSurface',
     'myAccountOpenWorkstreamActionReturnsBackendResolvedSurface',
+    'myAccountOpenUserAdminAcceptsSaasOwnerUserAdminCapability',
     'myAccountOpenWorkstreamDeniesHiddenTargetsWithSystemMessage'
   ]) assert.match(backendWorkstreamTest, new RegExp(testName));
   assert.match(backendWorkstreamTest, /surface-my-context/);

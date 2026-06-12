@@ -68,24 +68,24 @@ public final class MyAccountService {
       String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), OPEN_AUTHORIZED_WORKSTREAM_CAPABILITY);
     var target = switch (actionId) {
-      case "action-open-user-admin" -> target("agent-user-admin", "User Admin", "secure-tenant-user-foundation", "surface-user-admin-dashboard");
-      case "action-open-agent-admin" -> target("agent-agent-admin", "Agent Admin", "agent_admin.list_definitions", "surface-agent-admin-catalog");
-      case "action-open-audit-trace" -> target("agent-audit-trace", "Audit/Trace", "audit.trace.read", "surface-audit-trace-dashboard");
-      case "action-open-governance-policy" -> target("agent-governance-policy", "Governance/Policy", "governance.policy.read", "surface-governance-policy-dashboard");
+      case "action-open-user-admin" -> target("agent-user-admin", "User Admin", List.of("secure-tenant-user-foundation", "saas_owner.user.manage", "tenant.user.read", "tenant.user.manage", "customer.user.read", "customer.user.manage"), "surface-user-admin-dashboard");
+      case "action-open-agent-admin" -> target("agent-agent-admin", "Agent Admin", List.of("agent_admin.list_definitions"), "surface-agent-admin-catalog");
+      case "action-open-audit-trace" -> target("agent-audit-trace", "Audit/Trace", List.of("audit.trace.read", "saas_owner.audit.read", "tenant.audit.read", "customer.audit.read"), "surface-audit-trace-dashboard");
+      case "action-open-governance-policy" -> target("agent-governance-policy", "Governance/Policy", List.of("governance.policy.read"), "surface-governance-policy-dashboard");
       default -> null;
     };
     if (target == null) {
       authContextResolver.appendDeniedTrace(actor, "MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM", "target-not-found-or-redacted", correlationId);
       return OpenWorkstreamDecision.denied("not_found_or_redacted", "The requested workstream is unavailable or redacted for this context.", correlationId);
     }
-    var allowed = actor.selectedContext().capabilities().contains(target.requiredCapabilityId())
-        || ("secure-tenant-user-foundation".equals(target.requiredCapabilityId()) && actor.selectedContext().capabilities().contains("secure-tenant-user-foundation"));
+    var allowed = target.requiredCapabilityIds().stream().anyMatch(actor.selectedContext().capabilities()::contains);
     if (!allowed) {
       authContextResolver.appendDeniedTrace(actor, "MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM", "not_found_or_redacted", correlationId);
       return OpenWorkstreamDecision.denied("not_found_or_redacted", "That workstream cannot be opened from this selected context. It may be unavailable or redacted.", correlationId);
     }
     authContextResolver.appendProtectedReadTrace(actor, "MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM", target.functionalAgentId(), correlationId);
-    return new OpenWorkstreamDecision("accepted", "Opened authorized workstream through backend authority checks.", target.surfaceId(), target.functionalAgentId(), target.label(), target.requiredCapabilityId(), correlationId, List.of("trace-my-account-open-" + target.functionalAgentId()), null);
+    var grantedCapability = target.requiredCapabilityIds().stream().filter(actor.selectedContext().capabilities()::contains).findFirst().orElse(target.requiredCapabilityIds().get(0));
+    return new OpenWorkstreamDecision("accepted", "Opened authorized workstream through backend authority checks.", target.surfaceId(), target.functionalAgentId(), target.label(), grantedCapability, correlationId, List.of("trace-my-account-open-" + target.functionalAgentId()), null);
   }
 
   public DashboardData dashboardData(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -238,8 +238,8 @@ public final class MyAccountService {
     return List.copyOf(ids);
   }
 
-  private Target target(String functionalAgentId, String label, String requiredCapabilityId, String surfaceId) {
-    return new Target(functionalAgentId, label, requiredCapabilityId, surfaceId);
+  private Target target(String functionalAgentId, String label, List<String> requiredCapabilityIds, String surfaceId) {
+    return new Target(functionalAgentId, label, requiredCapabilityIds, surfaceId);
   }
 
   private static Map<String, Object> mapOf(Object... values) {
@@ -248,7 +248,7 @@ public final class MyAccountService {
     return map;
   }
 
-  private record Target(String functionalAgentId, String label, String requiredCapabilityId, String surfaceId) {}
+  private record Target(String functionalAgentId, String label, List<String> requiredCapabilityIds, String surfaceId) {}
 
   public record Summary(AuthorityBasisSummary authorityBasis, List<CapabilityGroupSummary> capabilityGroups, List<TraceRef> traceRefs) {}
   public record AuthorityBasisSummary(String selectedContextId, String tenantId, String customerId, List<String> roleIds, String primaryRoleBasis, List<String> myAccountCapabilityIds) {}
