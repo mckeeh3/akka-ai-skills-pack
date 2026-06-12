@@ -15,6 +15,7 @@ const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
 const userAdminTaskSurface = read('./workstream/surfaces/UserAdminTaskSurface.tsx');
+const workflowStatusSurface = read('./workstream/surfaces/WorkflowStatusSurface.tsx');
 const systemMessageSurface = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const adminUsersPage = read('./screens/admin/AdminUsersPage.tsx');
 const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
@@ -147,6 +148,10 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /providerFailures/);
   assert.match(surfaces, /noDirectMutation/);
   assert.match(surfaces, /completed_review_required/);
+  assert.match(workstreamService, /modelToolDataPolicyUsage/);
+  assert.match(workflowStatusSurface, /Model, tool, data, and policy usage/);
+  assert.match(workflowStatusSurface, /Access review model tool data policy trace links/);
+  assert.match(workflowStatusSurface, /surface-audit-trace-detail/);
   assert.match(surfaces, /result_accepted/);
   assert.match(surfaces, /must not fake progress|not fake progress/);
   assert.match(surfaces, /displayUserListActionResult/);
@@ -272,6 +277,9 @@ test('User Admin full-stack conformance tests cover canonical runtime boundaries
   assert.match(workstreamService, /user_admin\.system_message\.v1/);
   assert.match(workstreamService, /Provider message ids, raw Resend payloads, email bodies, tokens, and secrets are redacted/);
   assert.match(workstreamService, /noDirectMutation/);
+  assert.match(workstreamService, /modelToolDataPolicyUsage/);
+  assert.match(workstreamService, /surface-audit-trace-detail/);
+  assert.match(workstreamService, /raw prompts, raw tool payloads, provider credentials, JWTs, hidden tenant\/customer evidence, and access secrets are omitted/);
   assert.match(workstreamService, /diagnosticMetadataVisible", false/);
   assert.match(workstreamService, /attentionCounts/);
   assert.match(workstreamService, /administeredPopulations/);

@@ -70,6 +70,24 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-invitation-create")));
     assertBrowserSafe(dashboard);
 
+    var accessReviewBlocked = runAction(new CapabilityActionRequest(
+        "action-useradmin-start-access-review",
+        "action-useradmin-start-access-review",
+        "user_admin.access_review.start",
+        "user_admin.access_review.start",
+        Map.of("scope", "tenant"),
+        "idem-browser-smoke-access-review",
+        SELECTED_CONTEXT_ID,
+        dashboard.surfaceId(),
+        "corr-browser-smoke-access-review"));
+    assertEquals("blocked-runtime", accessReviewBlocked.status());
+    assertEquals("surface-user-admin-access-review-task", accessReviewBlocked.resultSurface().surfaceId());
+    assertEquals("blocked_provider_or_runtime", accessReviewBlocked.resultSurface().data().get("status"));
+    assertTrue(accessReviewBlocked.resultSurface().toString().contains("modelToolDataPolicyUsage"));
+    assertTrue(accessReviewBlocked.resultSurface().toString().contains("surface-audit-trace-detail"));
+    assertTrue(accessReviewBlocked.resultSurface().toString().contains("noDirectMutation=true"));
+    assertBrowserSafe(accessReviewBlocked.resultSurface());
+
     var users = runAction(new CapabilityActionRequest(
         "action-user-admin-show-users",
         "user-admin.show-users",

@@ -46,6 +46,7 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
   const recommendations = accessReview?.recommendations ?? envelope.data.recommendations ?? [];
   const providerFailures = accessReview?.providerFailures ?? envelope.data.providerFailures ?? [];
   const taskTraceIds = accessReview?.traceIds ?? envelope.data.traceIds ?? [];
+  const traceLinks = accessReview?.traceLinks ?? envelope.data.modelToolDataPolicyUsage?.traceLinks ?? envelope.data.traceLinks ?? [];
   const isMyAccountDigest = envelope.surfaceId === 'surface-my-account-personal-attention-digest-progress';
   return (
     <SurfaceStateFrame envelope={envelope}>
@@ -67,6 +68,18 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
           <p>Progress: {accessReview.progressPercent ?? 0}%</p>
           <p className="form-status">{accessReview.safety}</p>
           {accessReview.noDirectMutation && <p className="surface-state-inline forbidden">No direct mutation: worker output cannot directly change invitations, memberships, roles, capabilities, authorization state, or provider configuration.</p>}
+        </section>
+      )}
+      {envelope.data.modelToolDataPolicyUsage && (
+        <section className="access-review-trace-summary" aria-label="Model tool data policy usage summary">
+          <h4>Model, tool, data, and policy usage</h4>
+          <dl>
+            {envelope.data.modelToolDataPolicyUsage.model && <><dt>Model</dt><dd>{envelope.data.modelToolDataPolicyUsage.model}</dd></>}
+            {envelope.data.modelToolDataPolicyUsage.tools && <><dt>Tools</dt><dd>{envelope.data.modelToolDataPolicyUsage.tools.join(' · ')}</dd></>}
+            {envelope.data.modelToolDataPolicyUsage.data && <><dt>Data</dt><dd>{envelope.data.modelToolDataPolicyUsage.data}</dd></>}
+            {envelope.data.modelToolDataPolicyUsage.policy && <><dt>Policy</dt><dd>{envelope.data.modelToolDataPolicyUsage.policy}</dd></>}
+            {envelope.data.modelToolDataPolicyUsage.redaction && <><dt>Redaction</dt><dd>{envelope.data.modelToolDataPolicyUsage.redaction}</dd></>}
+          </dl>
         </section>
       )}
       {providerFailures.length > 0 && (
@@ -93,9 +106,15 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
           <ul>{recommendations.map((recommendation) => <li key={recommendationKey(recommendation)}><strong>{recommendationLabel(recommendation)}</strong>{typeof recommendation !== 'string' && recommendation.risk && <span> · risk {recommendation.risk}</span>}{typeof recommendation !== 'string' && recommendation.confidence && <span> · confidence {recommendation.confidence}</span>}{typeof recommendation !== 'string' && recommendation.summary && <p>{recommendation.summary}</p>}</li>)}</ul>
         </section>
       )}
+      {traceLinks.length > 0 && (
+        <section className="trace-link-list" aria-label="Access review model tool data policy trace links">
+          <h4>Safe trace links</h4>
+          {traceLinks.map((trace) => <a key={trace.traceId} href={`/ui?surfaceId=${encodeURIComponent(trace.targetSurfaceId ?? 'surface-audit-trace-detail')}&traceId=${encodeURIComponent(trace.traceId)}`}>{trace.label ?? trace.traceId}<span>{trace.summary ? ` — ${trace.summary}` : ''}</span></a>)}
+        </section>
+      )}
       {taskTraceIds.length > 0 && (
         <section className="trace-link-list" aria-label="Workflow trace references">
-          {taskTraceIds.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-timeline#${traceId}`}>{traceId}</a>)}
+          {taskTraceIds.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-timeline#${traceId}`}>{traceId}</a>)}
         </section>
       )}
       {progressSnapshots.length > 0 && (

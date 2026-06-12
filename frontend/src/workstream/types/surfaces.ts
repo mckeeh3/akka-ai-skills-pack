@@ -384,6 +384,15 @@ export type WorkflowStatusSurfaceData = {
   status: 'not_started' | 'queued' | 'running' | 'working' | 'waiting-for-human' | 'waiting-for-provider-runtime' | 'blocked' | 'blocked_provider_or_runtime' | 'completed' | 'completed-review-required' | 'failed' | 'cancelled' | 'accepted' | 'rejected' | string;
   summary?: string;
   traceIds?: string[];
+  traceLinks?: Array<{ traceId: string; category?: string; label?: string; summary?: string; targetSurfaceId?: string; correlationId?: string; redaction?: string }>;
+  modelToolDataPolicyUsage?: {
+    model?: string;
+    tools?: string[];
+    data?: string;
+    policy?: string;
+    traceLinks?: Array<{ traceId: string; category?: string; label?: string; summary?: string; targetSurfaceId?: string; correlationId?: string; redaction?: string }>;
+    redaction?: string;
+  };
   requiredCapabilityId?: string;
   initiatingCapabilityId?: string;
   taskKind?: 'workflow' | 'autonomous-agent-analysis' | string;
@@ -415,6 +424,7 @@ export type WorkflowStatusSurfaceData = {
     noDirectMutation: boolean;
     safety: string;
     traceIds: string[];
+    traceLinks?: Array<{ traceId: string; category?: string; label?: string; summary?: string; targetSurfaceId?: string; correlationId?: string; redaction?: string }>;
   };
 };
 

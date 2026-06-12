@@ -243,7 +243,7 @@
 
 ### TASK-UAPRH-04-002: Add access-review agent surfaces, traces, and tests
 
-- status: pending
+- status: done
 - source: specs/user-admin-production-runtime-hardening/backlog/01-user-admin-production-runtime-hardening-build-backlog.md
 - task brief: specs/user-admin-production-runtime-hardening/tasks/03-access-review-agent/02-access-review-agent-surfaces-traces-tests.md
 - depends on:
@@ -273,6 +273,8 @@
   - access-review task surface shows model-backed progress/result or typed blocked state; human accept/reject remains explicit; trace links summarize model/tool/data/policy usage safely; tests cover result and blocked states
 - notes:
   - vertical contract: User Admin / `agent-user-admin` plus access-review agent; result/blocker attention; access-review workflow/status/outcome/system-message/trace surfaces; access-review and audit/work-trace capabilities; scoped evidence only; workstream/frontend/agent trace validation
+  - completed: access-review workflow surfaces now carry nested typed access-review state, fail-closed blocked state, model/tool/data/policy usage summaries, safe trace-detail links, explicit human accept/reject actions, and browser-safe no-direct-mutation copy; frontend renders the usage and trace sections.
+  - checks: `env -u ADMIN_USERS mvn -q compile`; `env -u ADMIN_USERS mvn -q -Dtest=WorkstreamServiceTest,UserAdminAccessReviewAutonomousAgentTest,UserAdminBrowserWorkstreamSmokeTest test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `git diff --check`
 
 ### TASK-UAPRH-05-001: Run integrated User Admin production runtime tests and update smoke coverage
 

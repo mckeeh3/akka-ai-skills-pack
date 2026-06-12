@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ai.first.application.coreapp.myaccount.MyAccountService;
+import ai.first.application.coreapp.useradmin.AccessReviewAutonomousAgentRuntime;
 import ai.first.application.coreapp.useradmin.FailClosedAccessReviewAutonomousAgentRuntime;
 import ai.first.application.coreapp.useradmin.LocalDemoAccessReviewTaskRepository;
 import ai.first.application.coreapp.useradmin.UserAdminService;
@@ -1005,6 +1006,37 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void userAdminAccessReviewCompletedResultSurfaceShowsSafeModelToolTraceLinksAndHumanReviewActions() {
+    var completedRuntimeService = serviceWithAccessReviewRuntime(new CompletedAccessReviewRuntime());
+    var started = completedRuntimeService.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-start-access-review", "action-useradmin-start-access-review", "user_admin.access_review.start", "user_admin.access_review.start", Map.of("scope", "tenant"), "idem-access-review-completed", "membership-admin", "surface-user-admin-dashboard", "corr-access-review-completed-start"));
+    assertEquals("queued", started.status());
+    var taskId = started.resultSurface().data().get("taskId").toString();
+
+    var read = completedRuntimeService.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-read-access-review", "action-useradmin-read-access-review", "user_admin.access_review.read", "user_admin.access_review.read", Map.of("taskId", taskId), null, "membership-admin", "surface-user-admin-access-review-task", "corr-access-review-completed-read"));
+
+    assertEquals("accepted", read.status());
+    assertEquals("completed", read.resultSurface().data().get("status"));
+    assertEquals("completed_review_required", read.resultSurface().data().get("resultReviewState"));
+    assertTrue(read.resultSurface().toString().contains("modelToolDataPolicyUsage"));
+    assertTrue(read.resultSurface().toString().contains("Safe model, tool, data, and policy usage summary"));
+    assertTrue(read.resultSurface().toString().contains("surface-audit-trace-detail"));
+    assertTrue(read.resultSurface().toString().contains("trace-useradmin-access-review-model"));
+    assertTrue(read.resultSurface().toString().contains("No stale admin membership found"));
+    assertTrue(read.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-accept-access-review-result")));
+    assertTrue(read.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-reject-access-review-result")));
+    assertBrowserPayloadSafe(read.resultSurface());
+
+    var accepted = completedRuntimeService.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-useradmin-accept-access-review-result", "action-useradmin-accept-access-review-result", "user_admin.access_review.accept_result", "user_admin.access_review.accept_result", Map.of("taskId", taskId, "reason", "reviewed advisory result"), "idem-access-review-accept", "membership-admin", "surface-user-admin-access-review-task", "corr-access-review-accepted"));
+    assertEquals("accepted", accepted.status());
+    assertEquals("result_accepted", accepted.resultSurface().data().get("resultReviewState"));
+    assertTrue(accepted.resultSurface().toString().contains("access state unchanged"));
+    assertBrowserPayloadSafe(accepted.resultSurface());
+  }
+
+  @Test
   void submitMessageReturnsAuthorizedMarkdownResponseEnvelopeAndPersistsIt() {
     var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "agent-user-admin", "What can I do next?", "corr-message", "idem-message-1"), "corr-header");
@@ -1585,6 +1617,30 @@ class WorkstreamServiceTest {
     assertTrue(response.surface().data().get("message").toString().contains("blocked before a response was produced"));
     assertTrue(response.surface().toString().contains("model-provider-config-missing"));
     assertFalse(response.surface().toString().contains("should not be used"));
+  }
+
+  private WorkstreamService serviceWithAccessReviewRuntime(AccessReviewAutonomousAgentRuntime runtime) {
+    var resolver = new AuthContextResolver(identityRepository);
+    var attentionService = new AttentionService(new LocalDemoAttentionRepository(), resolver, Clock.systemUTC());
+    var attentionProducerService = new AttentionProducerService(new LocalDemoAttentionRepository(), identityRepository, Clock.systemUTC());
+    var meService = new MeService(resolver, new MyAccountService(resolver, attentionService));
+    var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
+    var localInvitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC(), attentionProducerService, null);
+    var workstreamLogRepository = new LocalDemoWorkstreamLogRepository();
+    var notificationService = new NotificationService(new LocalDemoNotificationRepository(), resolver, Clock.systemUTC());
+    return new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(localInvitationService), userAdminService, localInvitationService, agentRepository, trackingRuntimeInvoker.delegate, trackingRuntimeInvoker, workstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(trackingRuntimeInvoker.delegate, workstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService, attentionProducerService, null, null, runtime, notificationService);
+  }
+
+  private static final class CompletedAccessReviewRuntime implements AccessReviewAutonomousAgentRuntime {
+    @Override
+    public StartOutcome start(AuthContextResolver.ResolvedMe actor, ai.first.domain.coreapp.useradmin.AccessReviewTask starterTask, String correlationId) {
+      return StartOutcome.queued("aa-" + starterTask.taskId(), "Model-backed access-review AutonomousAgent accepted; awaiting projection.", List.of("trace-useradmin-access-review-model-start"));
+    }
+
+    @Override
+    public Projection project(ai.first.domain.coreapp.useradmin.AccessReviewTask starterTask, String correlationId) {
+      return new Projection(ai.first.domain.coreapp.useradmin.AccessReviewTask.Status.COMPLETED, 100, "Model-backed access-review advisory result completed; access state unchanged until human review.", null, null, List.of("evidence:userAdminEvidence.read:No stale admin membership found"), List.of("recommendation:review-dormant-admin:LOW:Review dormant admin evidence before any follow-up task"), List.of("trace-useradmin-access-review-model", "trace-useradmin-access-review-tool-userAdminEvidence", "trace-useradmin-access-review-policy"));
+    }
   }
 
   private static void assertBrowserPayloadSafe(WorkstreamService.SurfaceEnvelope surface) {
