@@ -30,6 +30,14 @@ type UserAdminTaskSurfaceData = Record<string, unknown> & {
   actionContext?: Record<string, string>;
   draft?: Record<string, unknown>;
   targetScope?: Record<string, unknown>;
+  roleOptions?: Array<{ value?: string; roleId?: string; id?: string; label?: string; name?: string }>;
+  allowedRoleOptions?: Array<{ value?: string; roleId?: string; id?: string; label?: string; name?: string }>;
+  expiryOptions?: Array<{ value?: string | number; hours?: string | number; label?: string }>;
+  allowedExpiryHours?: Array<string | number>;
+  policyOptions?: {
+    roles?: Array<{ value?: string; roleId?: string; id?: string; label?: string; name?: string }>;
+    expiryHours?: Array<{ value?: string | number; hours?: string | number; label?: string } | string | number>;
+  };
 };
 
 type Props = {
@@ -111,7 +119,8 @@ function InvitationCreateTask({ envelope, onAction }: Props) {
   const action = findAction(envelope.actions, 'action-invite-user');
   const [email, setEmail] = useState(String(envelope.data.draft?.email ?? ''));
   const [displayName, setDisplayName] = useState(String(envelope.data.draft?.displayName ?? ''));
-  const [role, setRole] = useState(firstRole(envelope.data.draft?.roles));
+  const roleOptions = userAdminRoleOptions(envelope);
+  const [role, setRole] = useState(firstRole(envelope.data.draft?.roles, roleOptions));
   const [error, setError] = useState<string>();
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -125,7 +134,7 @@ function InvitationCreateTask({ envelope, onAction }: Props) {
       {error && <p className="surface-state-inline validation-error" role="alert">{error}</p>}
       <label>Email<input className="designed-control" type="email" value={email} onChange={(event) => setEmail(event.currentTarget.value)} required /></label>
       <label>Display name<input className="designed-control" value={displayName} onChange={(event) => setDisplayName(event.currentTarget.value)} /></label>
-      <label>Requested role<select className="designed-control" value={role} onChange={(event) => setRole(event.currentTarget.value)}><option value="TENANT_EMPLOYEE">Employee</option><option value="TENANT_ADMIN">Tenant admin</option><option value="AUDITOR">Auditor</option></select></label>
+      <label>Requested role<select className="designed-control" value={role} onChange={(event) => setRole(event.currentTarget.value)}>{roleOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
       <button className="surface-action-link primary" type="submit" disabled={!action || Boolean(action.disabled)}>Create invitation</button>
       {action?.disabled && <p className="form-error">{action.disabled.message}</p>}
     </form>
@@ -184,7 +193,8 @@ function MembershipStatusTask({ envelope, onAction }: Props) {
 function SupportAccessGrantTask({ envelope, onAction }: Props) {
   const grantAction = findAction(envelope.actions, 'action-useradmin-grant-support-access') ?? findAction(envelope.actions, 'action-useradmin-extend-support-access') ?? findAction(envelope.actions, 'action-grant-support-access') ?? findAction(envelope.actions, 'action-extend-support-access');
   const [purpose, setPurpose] = useState('');
-  const [expiryHours, setExpiryHours] = useState('24');
+  const expiryOptions = userAdminExpiryOptions(envelope);
+  const [expiryHours, setExpiryHours] = useState(expiryOptions[0]?.value ?? '24');
   const [error, setError] = useState<string>();
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -198,7 +208,7 @@ function SupportAccessGrantTask({ envelope, onAction }: Props) {
       {error && <p className="surface-state-inline validation-error" role="alert">{error}</p>}
       <p>{String(envelope.data.summary ?? 'Grant/extend time-boxed support access through backend policy and audit.')}</p>
       <label>Purpose<textarea className="designed-control" value={purpose} onChange={(event) => setPurpose(event.currentTarget.value)} required /></label>
-      <label>Expiry<select className="designed-control" value={expiryHours} onChange={(event) => setExpiryHours(event.currentTarget.value)}><option value="4">4 hours</option><option value="24">24 hours</option><option value="72">72 hours</option></select></label>
+      <label>Expiry<select className="designed-control" value={expiryHours} onChange={(event) => setExpiryHours(event.currentTarget.value)}>{expiryOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
       <button className="surface-action-link primary" type="submit" disabled={!grantAction || Boolean(grantAction.disabled)}>Request support access grant</button>
       {grantAction?.disabled && <p className="form-error">{grantAction.disabled.message}</p>}
     </form>
@@ -279,10 +289,37 @@ function stringRecord(value: unknown): Record<string, string> {
   return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([key, entry]) => [key, String(entry ?? '')]));
 }
 
-function firstRole(value: unknown) {
+function firstRole(value: unknown, roleOptions: Array<{ value: string; label: string }>) {
   if (Array.isArray(value) && value.length > 0) return String(value[0]);
   if (typeof value === 'string' && value) return value;
-  return 'TENANT_EMPLOYEE';
+  return roleOptions[0]?.value ?? '';
+}
+
+function userAdminRoleOptions(envelope: SurfaceEnvelope<UserAdminTaskSurfaceData>): Array<{ value: string; label: string }> {
+  const rawOptions = envelope.data.roleOptions ?? envelope.data.allowedRoleOptions ?? envelope.data.policyOptions?.roles;
+  const options = rawOptions?.map((option) => ({
+    value: String(option.value ?? option.roleId ?? option.id ?? ''),
+    label: String(option.label ?? option.name ?? option.value ?? option.roleId ?? option.id ?? '')
+  })).filter((option) => option.value && option.label) ?? [];
+  if (options.length > 0) return options;
+  const draftRoles = Array.isArray(envelope.data.draft?.roles) ? envelope.data.draft.roles.map((role) => String(role)) : [];
+  return draftRoles.length > 0
+    ? draftRoles.map((role) => ({ value: role, label: humanizeRole(role) }))
+    : [{ value: 'TENANT_EMPLOYEE', label: 'Employee' }];
+}
+
+function userAdminExpiryOptions(envelope: SurfaceEnvelope<UserAdminTaskSurfaceData>): Array<{ value: string; label: string }> {
+  const rawOptions = envelope.data.expiryOptions ?? envelope.data.policyOptions?.expiryHours ?? envelope.data.allowedExpiryHours;
+  const options = rawOptions?.map((option) => {
+    if (typeof option === 'string' || typeof option === 'number') return { value: String(option), label: `${option} hours` };
+    const value = String(option.value ?? option.hours ?? '');
+    return { value, label: String(option.label ?? (value ? `${value} hours` : '')) };
+  }).filter((option) => option.value && option.label) ?? [];
+  return options.length > 0 ? options : [{ value: '24', label: '24 hours' }];
+}
+
+function humanizeRole(value: string) {
+  return value.replace(/_/g, ' ').toLowerCase().replace(/(^|\s)\w/g, (letter) => letter.toUpperCase());
 }
 
 function idempotencyKey(prefix: string, seed: string) {

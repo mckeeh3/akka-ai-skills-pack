@@ -44,18 +44,28 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
       return <MarkdownResponseSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'system_message':
       return <SystemMessageSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+    case 'system-message':
+      return <SystemMessageSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'dashboard':
       return <DashboardSurface envelope={selectedEnvelope as never} onAction={onAction} onSignOut={onSignOut} />;
     case 'list-search':
       return <ListSearchSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+    case 'show-inspection':
+    case 'edit-form':
     case 'detail-edit':
       return <DetailEditSurface envelope={selectedEnvelope as never} onAction={onAction} onFieldValueChange={onFieldValueChange} />;
+    case 'create-form':
+    case 'lifecycle-confirmation':
+    case 'destructive-lifecycle-confirmation':
+      return <UserAdminTaskSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+    case 'decision-card':
     case 'decision':
       return <DecisionSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'audit-timeline':
       return <AuditTimelineSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'workflow-status':
       return <WorkflowStatusSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+    case 'diff':
     case 'governance-diff':
       return <GovernanceDiffSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'outcome':

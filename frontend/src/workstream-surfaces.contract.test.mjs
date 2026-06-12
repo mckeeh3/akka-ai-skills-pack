@@ -61,7 +61,7 @@ test('workstream stream components cover canonical item kinds and action feedbac
 
 test('structured surface renderer routes every canonical surface type', () => {
   assert.match(renderer, /StructuredSurfaceRenderer/);
-  for (const surfaceType of ['markdown_response', 'system_message', 'dashboard', 'list-search', 'detail-edit', 'decision', 'audit-timeline', 'workflow-status', 'governance-diff', 'outcome', 'notification-center']) {
+  for (const surfaceType of ['markdown_response', 'system_message', 'system-message', 'dashboard', 'list-search', 'show-inspection', 'create-form', 'edit-form', 'lifecycle-confirmation', 'destructive-lifecycle-confirmation', 'detail-edit', 'decision-card', 'decision', 'audit-timeline', 'workflow-status', 'diff', 'governance-diff', 'outcome', 'notification-center']) {
     assert.match(renderer, new RegExp(`case '${surfaceType}'`));
   }
   assert.match(renderer, /MarkdownResponseSurface/);

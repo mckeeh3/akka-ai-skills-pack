@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { DetailEditSurfaceData, SurfaceAction, SurfaceEnvelope } from '../types';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
@@ -194,102 +194,43 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
   );
 }
 
-function UserAdminCleanDetail({ envelope, fieldValues, onAction }: { envelope: SurfaceEnvelope<DetailEditSurfaceData>; fieldValues: Record<string, string>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
+function UserAdminCleanDetail({ envelope, onAction }: { envelope: SurfaceEnvelope<DetailEditSurfaceData>; fieldValues: Record<string, string>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
   const isInvitation = envelope.data.recordKind === 'invitation';
   const backAction = userAdminShowUsersAction(envelope.actions);
-  const invitationActions = envelope.actions.filter((action) => !isUserAdminShowUsersAction(action));
-  const changeRoleAction = envelope.actions.find((action) => action.actionId === 'action-useradmin-change-member-roles');
-  const suspendStatusAction = envelope.actions.find((action) => action.actionId === 'action-useradmin-disable-member');
-  const reactivateStatusAction = envelope.actions.find((action) => action.actionId === 'action-useradmin-reactivate-member');
-  const permanentlyRemoveUserAction = envelope.actions.find((action) => action.actionId === 'action-useradmin-permanently-remove-user');
+  const taskEntryActions = envelope.actions.filter((action) => !isUserAdminShowUsersAction(action));
   const fields = envelope.data.fields ?? [];
   const email = fields.find((field) => field.fieldId === 'email')?.value;
-  const status = fields.find((field) => field.fieldId === 'status' || field.fieldId === 'membershipStatus')?.value;
-  const role = fields.find((field) => field.fieldId === 'role')?.value;
-  const currentStatus = statusValue(status);
-  const isDeactivated = currentStatus === 'REMOVED';
-  const defaultStatusDraft = isDeactivated ? 'ACTIVE' : 'REMOVED';
-  const [statusDraft, setStatusDraft] = useState(defaultStatusDraft);
-  const [roleDraft, setRoleDraft] = useState(roleValue(role));
   const actionContext = { ...(envelope.data.actionContext ?? {}), ...Object.fromEntries(fields.map((field) => [field.fieldId, field.value])) };
 
-  useEffect(() => {
-    setStatusDraft(defaultStatusDraft);
-    setRoleDraft(roleValue(role));
-  }, [defaultStatusDraft, role]);
-
-  function submitStatusChange(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const statusAction = statusDraft === 'ACTIVE' ? reactivateStatusAction : suspendStatusAction;
-    if (!statusAction) return;
-    onAction?.(statusAction, envelope.surfaceId, { ...actionContext, status: statusDraft.toLowerCase(), reason: 'Updated from User Admin detail' });
-  }
-
-  function submitPermanentRemove(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!permanentlyRemoveUserAction) return;
-    onAction?.(permanentlyRemoveUserAction, envelope.surfaceId, { ...actionContext, reason: 'Permanently removed from User Admin detail' });
-  }
-
-  function submitRoleChange(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!changeRoleAction) return;
-    onAction?.(changeRoleAction, envelope.surfaceId, { ...actionContext, roles: roleDraft, reason: 'Updated from User Admin detail' });
-  }
   return (
     <SurfaceStateFrame envelope={envelope}>
       <section className="user-admin-detail-clean" aria-label={isInvitation ? 'Invitation detail' : 'User detail'}>
         <div className="user-admin-detail-clean-header">
           <div>
-            <p className="eyebrow">{isInvitation ? 'Invitation' : 'User'}</p>
+            <p className="eyebrow">{isInvitation ? 'Invitation inspection' : 'User inspection'}</p>
             <h3>{envelope.data.recordLabel ?? email ?? envelope.title}</h3>
             {email && <p>{email}</p>}
           </div>
           {backAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(backAction, envelope.surfaceId, userAdminBranchReturnInput(envelope))}>{userAdminBranchReturnLabel(envelope, backAction)}</button>}
         </div>
 
-        {isInvitation && (
-          <dl className="user-admin-detail-summary">
-            {fields.filter((field) => ['delivery', 'expiresAt'].includes(field.fieldId)).map((field) => <div key={field.fieldId}><dt>{field.label}</dt><dd>{humanize(field.value)}</dd></div>)}
-          </dl>
-        )}
+        <section className="detail-edit-form-section" aria-labelledby={`${envelope.surfaceId}-inspection-heading`}>
+          <div className="surface-section-heading compact">
+            <div><p className="eyebrow">Read-only inspection</p><h4 id={`${envelope.surfaceId}-inspection-heading`}>{isInvitation ? 'Invitation information' : 'User information'}</h4></div>
+            <p>Detail surfaces do not mutate access inline. Use task entry points to open dedicated forms, confirmations, decisions, workflows, or system messages returned by the backend.</p>
+          </div>
+          <div className="user-admin-readable-fields">
+            {fields.map((field) => <p key={field.fieldId}><span>{field.label}</span><strong>{field.value}</strong></p>)}
+          </div>
+        </section>
 
-        {!isInvitation && (
-          <section className="detail-edit-form-section" aria-labelledby={`${envelope.surfaceId}-form-heading`}>
+        {taskEntryActions.length > 0 && (
+          <section className="user-admin-context-actions" aria-label={isInvitation ? 'Invitation task entry points' : 'User task entry points'}>
             <div className="surface-section-heading compact">
-              <div><p className="eyebrow">Profile</p><h4 id={`${envelope.surfaceId}-form-heading`}>User information</h4></div>
+              <div><p className="eyebrow">Dedicated task surfaces</p><h4>{isInvitation ? 'Manage invitation through tasks' : 'Manage access through tasks'}</h4></div>
+              <p>Each action is backend-authored and reauthorized before returning a task, decision, result, or safe system message surface.</p>
             </div>
-            <div className="user-admin-readable-fields">
-              {fields.filter((field) => !['membershipId'].includes(field.fieldId)).map((field) => <p key={field.fieldId}><span>{field.label}</span><strong>{field.value}</strong></p>)}
-            </div>
-            {((isDeactivated && reactivateStatusAction) || (!isDeactivated && suspendStatusAction)) && (
-              <form className="user-admin-edit-form" aria-label="Edit user status" onSubmit={submitStatusChange}>
-                <label>Change status<select className="designed-control" value={statusDraft} onChange={(event) => { const value = event.currentTarget.value; setStatusDraft(value); }}><option value="ACTIVE">Active</option><option value="REMOVED">Deactivated</option></select></label>
-                <button className="surface-action-link primary" type="submit">Save</button>
-              </form>
-            )}
-            {isDeactivated && permanentlyRemoveUserAction && (
-              <form className="user-admin-edit-form" aria-label="Permanently remove user" onSubmit={submitPermanentRemove}>
-                <p>Permanently remove user discards this user's record after backend purge blockers are checked.</p>
-                <button className="surface-action-link danger" type="submit">Permanently remove user</button>
-              </form>
-            )}
-            {changeRoleAction && (
-              <form className="user-admin-edit-form" aria-label="Edit user role" onSubmit={submitRoleChange}>
-                <label>Change role<select className="designed-control" value={roleDraft} onChange={(event) => { const value = event.currentTarget.value; setRoleDraft(value); }}><option value="TENANT_EMPLOYEE">Employee</option><option value="TENANT_ADMIN">Tenant admin</option><option value="AUDITOR">Auditor</option></select></label>
-                <button className="surface-action-link primary" type="submit">Save</button>
-              </form>
-            )}
-          </section>
-        )}
-
-        {isInvitation && (
-          <section className="user-admin-context-actions" aria-label="Invitation actions">
-            <div className="surface-section-heading compact">
-              <div><p className="eyebrow">Actions</p><h4>Manage invitation</h4></div>
-              <p>Resend or revoke this invitation when appropriate.</p>
-            </div>
-            <SurfaceActionBar actions={invitationActions} surfaceId={envelope.surfaceId} actionInput={actionContext} onAction={onAction} />
+            <SurfaceActionBar actions={taskEntryActions} surfaceId={envelope.surfaceId} actionInput={actionContext} onAction={onAction} />
           </section>
         )}
 

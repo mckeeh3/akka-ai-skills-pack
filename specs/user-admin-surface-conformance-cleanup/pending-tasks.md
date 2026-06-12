@@ -146,7 +146,7 @@
 
 ### TASK-UASCC-03-001: Repair frontend structured rendering and retire legacy admin page
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-conformance-cleanup/backlog/01-user-admin-surface-conformance-build-backlog.md
 - task brief: specs/user-admin-surface-conformance-cleanup/tasks/03-frontend/01-frontend-conformance-and-legacy-retirement.md
 - depends on:
@@ -181,6 +181,9 @@
   - canonical User Admin surface types render without generic fallback; no inline mutation controls remain in detail; dashboard/list use backend-authored metadata; task forms use backend options; raw diagnostics hidden by default; legacy Admin Users page is not a normal runtime path
 - notes:
   - vertical contract: User Admin / `agent-user-admin`; frontend workstream shell surfaces and browser-tool submissions; backend metadata is authority, frontend visibility advisory only; no hidden counts/targets inferred; frontend React/Vite substrate; trace/audit drilldowns are browser-safe and role-gated; validation by frontend tests/typecheck/diff check
+  - implemented canonical surface routing for `show-inspection`, form/confirmation aliases, `system-message`, decision-card/diff aliases; backend-authored User Admin dashboard attention/population rendering; inspection-only detail task entry points; backend-shaped role/expiry option handling; and quarantined legacy Admin Users page
+  - completed checks: `git diff --check`; focused `rg "show-inspection|create-form|lifecycle-confirmation|destructive-lifecycle-confirmation|system-message|attentionCounts|administeredPopulations|backendAuthoredUserAdminQueues|Read-only inspection|Dedicated task surfaces|quarantined-legacy-screen|userAdminRoleOptions|userAdminExpiryOptions" frontend/src/workstream frontend/src/screens/admin frontend/src/workstream-user-admin-vertical.contract.test.mjs`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`
+  - commit: `user-admin-surface-conformance: repair frontend structured rendering`
 
 ### TASK-UASCC-04-001: Add full-stack User Admin surface conformance tests
 

@@ -15,7 +15,9 @@ const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
 const userAdminTaskSurface = read('./workstream/surfaces/UserAdminTaskSurface.tsx');
+const adminUsersPage = read('./screens/admin/AdminUsersPage.tsx');
 const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
+const surfaceTypes = read('./workstream/types/surfaces.ts');
 const componentsCss = read('./styles/components.css');
 const workstreamService = read('../../src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
 
@@ -77,6 +79,10 @@ test('User Admin dashboard follows current actionable command-center rules', () 
   assert.match(surfaces, /userAdminDashboardSurface[\s\S]*userAdminSurfaceActions\.displayUserList[\s\S]*\]\n\);/);
   assert.match(dashboardSurface, /Open scoped administration surfaces/);
   assert.match(dashboardSurface, /function userAdminQueueAction/);
+  assert.match(dashboardSurface, /backendAuthoredUserAdminQueues/);
+  assert.match(dashboardSurface, /backendAuthoredUserAdminPopulationCards/);
+  assert.match(surfaceTypes, /attentionCounts\?:/);
+  assert.match(surfaceTypes, /administeredPopulations\?:/);
   assert.match(dashboardSurface, /action-useradmin-read-access-review/);
   assert.match(dashboardSurface, /action-read-support-access/);
   assert.match(dashboardSurface, /action-open-admin-audit/);
@@ -200,6 +206,10 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   }
   assert.match(renderer, /isUserAdminTaskSurface\(selectedEnvelope\)/);
   assert.match(userAdminTaskSurface, /function InvitationCreateTask/);
+  assert.match(userAdminTaskSurface, /userAdminRoleOptions/);
+  assert.match(userAdminTaskSurface, /userAdminExpiryOptions/);
+  assert.match(userAdminTaskSurface, /policyOptions\?\.roles/);
+  assert.match(userAdminTaskSurface, /policyOptions\?\.expiryHours/);
   assert.match(userAdminTaskSurface, /function InvitationConfirmationTask/);
   assert.match(userAdminTaskSurface, /function MembershipStatusTask/);
   assert.match(userAdminTaskSurface, /function SupportAccessGrantTask/);
@@ -213,6 +223,11 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.match(userAdminTaskSurface, /safeFilterPreservation: branch\?\.safeFilterPreservation \?\? envelope\.data\.safeFilterPreservation \?\? 'backend-authored-only'/);
   assert.match(userAdminTaskSurface, /aria-label="User Admin branch navigation"/);
   assert.doesNotMatch(userAdminTaskSurface, /raw JWTs, invitation tokens, provider payloads, and secrets are omitted|Browser redaction|Target scope/);
+  assert.doesNotMatch(detailEditSurface, /aria-label="Edit user status"|aria-label="Edit user role"|Permanently remove user|submitRoleChange|submitStatusChange/);
+  assert.match(detailEditSurface, /Read-only inspection/);
+  assert.match(detailEditSurface, /Dedicated task surfaces/);
+  assert.match(adminUsersPage, /quarantined-legacy-screen/);
+  assert.match(adminUsersPage, /not be used as a normal runtime path/);
   assert.match(userAdminTaskSurface, /No direct mutation: recovery must route to deterministic backend approval\/status flows or safe user detail/);
   assert.match(workstreamService, /withUserBranchReturn\(List\.of\(grantSupportAccessAction\(\), extendSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);
   assert.match(workstreamService, /withUserBranchReturn\(List\.of\(revokeSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);

@@ -99,10 +99,10 @@ export function DashboardSurface({ envelope, onAction, onSignOut }: DashboardSur
 function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
   const data = envelope.data;
   const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
-  const queues = data.attentionQueues?.length ? data.attentionQueues : userAdminQueuesFromData(data);
-  const nextActions = (data.authorizedActions?.length ? data.authorizedActions : envelope.actions.map((action) => ({ actionId: action.actionId, label: action.label, capabilityId: action.capabilityId, governedToolId: action.governedToolId, resultSurfaceId: action.resultSurface?.updateSurfaceId ?? action.resultSurface?.appendSurfaceType, approvalRequired: action.requiresApproval })));
+  const queues = backendAuthoredUserAdminQueues(data);
+  const nextActions = data.authorizedActions?.length ? data.authorizedActions : [];
   const nextActionButtons = actionsForIds(nextActions.map((action) => action.actionId), actionById);
-  const populationCards = userAdminPopulationCards(data, actionById);
+  const populationCards = backendAuthoredUserAdminPopulationCards(data, actionById);
   const attentionCounters = userAdminAttentionCountersFromQueues(queues, actionById);
   const hasOpenAttention = queues.some((queue) => Number(queue.count ?? 0) > 0 || ['warning', 'urgent', 'critical', 'blocked', 'blocked_provider_or_runtime'].includes(String(queue.severity)));
 
@@ -143,7 +143,7 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
               <button key={action.actionId} type="button" className="user-admin-work-card" onClick={() => onAction?.(action, envelope.surfaceId)}>
                 <span className="eyebrow">{action.requiresApproval ? 'Approval gated' : 'Authorized capability'}</span>
                 <h4>{cleanUserAdminActionLabel(action.label)}</h4>
-                <p>{action.capabilityId ?? action.governedToolId ?? 'Backend capability rechecked on open'}</p>
+                <p>{nextActions.find((candidate) => candidate.actionId === action.actionId)?.denialHint ?? 'Backend rechecks authority and returns the next safe surface.'}</p>
               </button>
             ))}
           </div>
@@ -364,18 +364,19 @@ function userAdminQueueAction(queue: NonNullable<DashboardSurfaceData['attention
   return actionById.get('action-display-user-list') ?? Array.from(actionById.values()).find((action) => action.intent === 'read');
 }
 
-function userAdminPopulationCards(data: DashboardSurfaceData, actionById: Map<string, SurfaceAction>): Array<{ cardId: string; label: string; value: string | number; scope: string; summary: string; action?: SurfaceAction }> {
-  const activeUsers = data.cards.find((card) => /active users/i.test(card.label));
-  const pendingInvitations = data.cards.find((card) => /pending invitations/i.test(card.label));
-  const supportAccess = data.cards.find((card) => /support/i.test(card.label));
-  const directoryAction = userDirectoryAction(actionById);
-  const invitationAction = userDirectoryAction(actionById) ?? actionById.get('action-invite-user');
-  const supportAction = userDirectoryAction(actionById);
-  const cards: Array<{ cardId: string; label: string; value: string | number; scope: string; summary: string; action?: SurfaceAction }> = [];
-  if (activeUsers) cards.push({ cardId: 'population-active-users', label: 'Users and memberships', value: activeUsers.value, scope: 'Visible scope', summary: 'Open users for scoped users, memberships, roles, and review flags.', action: directoryAction });
-  if (pendingInvitations) cards.push({ cardId: 'population-invitations', label: 'Invitations', value: pendingInvitations.value, scope: 'Invitation work', summary: 'Create, resend, revoke, or inspect invitation delivery without exposing tokens.', action: invitationAction });
-  if (supportAccess) cards.push({ cardId: 'population-support-access', label: 'Support access', value: supportAccess.value, scope: 'Controlled support', summary: 'Review expiring support access and route grants through approval-aware actions.', action: supportAction });
-  return cards;
+function backendAuthoredUserAdminPopulationCards(data: DashboardSurfaceData, actionById: Map<string, SurfaceAction>): Array<{ cardId: string; label: string; value: string | number; scope: string; summary: string; action?: SurfaceAction }> {
+  return (data.administeredPopulations ?? []).map((population) => ({
+    cardId: `population-${population.populationType}`,
+    label: population.label,
+    value: population.visibleCount,
+    scope: population.populationType.replace(/_/g, ' '),
+    summary: [
+      population.attentionCount !== undefined ? `${population.attentionCount} need attention` : undefined,
+      population.roleCoverageSummary,
+      population.pendingInvitationCount !== undefined ? `${population.pendingInvitationCount} pending invitations` : undefined
+    ].filter(Boolean).join(' · ') || 'Open backend-authorized population.',
+    action: actionById.get(population.openActionId) ?? actionForTarget(population.targetSurfaceId, actionById)
+  }));
 }
 
 function formatQueueEyebrow(severity: string | undefined, count: number): string {
@@ -384,27 +385,21 @@ function formatQueueEyebrow(severity: string | undefined, count: number): string
   return count > 0 ? 'Open queue' : 'No attention needed';
 }
 
-function userAdminQueuesFromData(data: DashboardSurfaceData): NonNullable<DashboardSurfaceData['attentionQueues']> {
-  const cardQueues = data.cards
-    .filter((card) => /invitation|review|support|audit|denied|failed|risk/i.test(`${card.cardId} ${card.label}`))
-    .map((card) => ({
-      queueId: `queue-${card.cardId}`,
-      label: card.label,
-      count: card.value,
-      severity: card.severity ?? 'info',
-      statusText: card.status ?? card.description ?? 'Backend-owned User Admin attention.',
-      targetSurfaceId: card.surfaceId,
-      actionId: card.actionId
-    }));
-  const sectionQueues = data.sections?.map((section) => ({
-    queueId: section.sectionId,
-    label: section.label,
-    severity: /review|risk|failed|expired/i.test(section.label) ? 'warning' : 'info',
-    statusText: section.summary,
-    targetSurfaceId: section.sectionId.includes('review') ? 'surface-user-admin-access-review-task' : section.sectionId.includes('audit') ? 'surface-audit-trace-dashboard' : 'surface-user-admin-users',
-    filter: section.sectionId
-  })) ?? [];
-  return [...cardQueues, ...sectionQueues];
+function backendAuthoredUserAdminQueues(data: DashboardSurfaceData): NonNullable<DashboardSurfaceData['attentionQueues']> {
+  if (data.attentionQueues?.length) return data.attentionQueues;
+  return (data.attentionCounts ?? []).map((count) => ({
+    queueId: count.attentionType,
+    label: count.label,
+    count: count.count,
+    severity: count.severity ?? 'info',
+    statusText: count.statusText,
+    sourceCapabilityId: count.sourceCapabilityId,
+    targetSurfaceId: count.targetSurfaceId,
+    filter: typeof count.filter === 'string' ? count.filter : count.filter ? JSON.stringify(count.filter) : undefined,
+    actionId: count.openActionId ?? count.actionId,
+    traceRefs: count.traceRefs,
+    redaction: count.redactionState
+  }));
 }
 
 function actionForTarget(targetSurfaceId: string, actionById: Map<string, SurfaceAction>): SurfaceAction | undefined {
