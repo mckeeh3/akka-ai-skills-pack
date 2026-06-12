@@ -24,6 +24,10 @@ type UserAdminTaskSurfaceData = Record<string, unknown> & {
   noDirectMutation?: boolean;
   idempotencyKeyHint?: string;
   validationMessages?: string[];
+  deliveryState?: Record<string, unknown>;
+  delivery?: Record<string, unknown>;
+  recoverySteps?: string[];
+  systemStates?: string[];
   traceRefs?: string[];
   correlationId?: string;
   redaction?: unknown;
@@ -137,6 +141,7 @@ function InvitationCreateTask({ envelope, onAction }: Props) {
       <label>Requested role<select className="designed-control" value={role} onChange={(event) => setRole(event.currentTarget.value)}>{roleOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
       <button className="surface-action-link primary" type="submit" disabled={!action || Boolean(action.disabled)}>Create invitation</button>
       {action?.disabled && <p className="form-error">{action.disabled.message}</p>}
+      <p className="capability-basis">Provider-backed delivery status returns on the invitation detail surface; raw invitation tokens, provider payloads, and secrets are never shown.</p>
     </form>
   );
 }
@@ -156,10 +161,30 @@ function InvitationConfirmationTask({ envelope, onAction, actionId, verb, requir
       <h4>{verb}</h4>
       {error && <p className="surface-state-inline validation-error" role="alert">{error}</p>}
       <p>{String(envelope.data.confirmationCopy ?? envelope.data.consequenceCopy ?? 'Backend authorization decides whether this invitation lifecycle action can proceed.')}</p>
+      <InvitationTaskDeliveryPanel envelope={envelope} />
       <label>Reason<textarea className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} required={requireReason || Boolean(envelope.data.reasonRequired)} /></label>
       <button className={actionId.includes('revoke') ? 'surface-action-link danger' : 'surface-action-link secondary'} type="submit" disabled={!action || Boolean(action.disabled)}>{verb}</button>
       {action?.disabled && <p className="form-error">{action.disabled.message}</p>}
     </form>
+  );
+}
+
+function InvitationTaskDeliveryPanel({ envelope }: { envelope: SurfaceEnvelope<UserAdminTaskSurfaceData> }) {
+  const delivery = envelope.data.deliveryState ?? envelope.data.delivery;
+  if (!delivery) return null;
+  const recoverySteps = envelope.data.recoverySteps ?? [];
+  return (
+    <section className="access-management-card invitation-delivery-state" aria-label="Invitation delivery recovery">
+      <h4>Current delivery state</h4>
+      <dl>
+        <div><dt>Status</dt><dd>{renderTaskValue(delivery.currentStatus) ?? 'not reported'}</dd></div>
+        <div><dt>Attempts</dt><dd>{renderTaskValue(delivery.attempts) ?? '0'}</dd></div>
+        <div><dt>Provider readiness</dt><dd>{renderTaskValue(delivery.providerReadiness) ?? 'backend-derived'}</dd></div>
+        {Boolean(delivery.lastSafeError) && <div><dt>Safe error</dt><dd>{renderTaskValue(delivery.lastSafeError)}</dd></div>}
+      </dl>
+      {recoverySteps.length > 0 && <ol>{recoverySteps.map((step) => <li key={step}>{step}</li>)}</ol>}
+      <p className="capability-basis">Raw invitation tokens, full email bodies, Resend payloads, provider message ids, and secrets are redacted.</p>
+    </section>
   );
 }
 
@@ -320,6 +345,14 @@ function userAdminExpiryOptions(envelope: SurfaceEnvelope<UserAdminTaskSurfaceDa
 
 function humanizeRole(value: string) {
   return value.replace(/_/g, ' ').toLowerCase().replace(/(^|\s)\w/g, (letter) => letter.toUpperCase());
+}
+
+function renderTaskValue(value: unknown): string | undefined {
+  if (value === null || value === undefined || value === '') return undefined;
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value).replace(/_/g, ' ');
+  if (Array.isArray(value)) return value.map(renderTaskValue).filter(Boolean).join(' · ');
+  if (typeof value === 'object') return Object.entries(value as Record<string, unknown>).map(([key, entry]) => `${key}: ${renderTaskValue(entry) ?? 'n/a'}`).join(' · ');
+  return String(value);
 }
 
 function idempotencyKey(prefix: string, seed: string) {

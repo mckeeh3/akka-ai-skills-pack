@@ -34,6 +34,7 @@ import ai.first.domain.foundation.attention.AttentionItemStatus;
 import ai.first.domain.foundation.attention.AttentionSeverity;
 import ai.first.domain.foundation.attention.AttentionSourceRef;
 import ai.first.domain.foundation.attention.AttentionSurfaceRef;
+import ai.first.domain.foundation.email.EmailDeliveryStatus;
 import ai.first.domain.foundation.email.EmailNotificationPreference;
 import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.identity.MembershipStatus;
@@ -1127,7 +1128,7 @@ public final class WorkstreamService {
         .findFirst()
         .orElseThrow(() -> new AuthorizationException(404, "invitation-not-found-or-forbidden"));
     return envelope("surface-user-admin-invitation-detail", "show-inspection", "Invitation detail", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.invitation_detail.v1", "branchNavigation", userBranchNavigation(correlationId), "recordId", invite.invitationId(), "recordLabel", invite.targetEmail(), "recordKind", "invitation", "summary", "Inspect this invitation lifecycle; resend and revoke open dedicated confirmation surfaces before backend commands run.", "actionContext", mapOf("invitationId", invite.invitationId()), "taskEntryPoints", List.of(mapOf("label", "Open resend confirmation", "actionId", "action-open-useradmin-invitation-resend-confirmation", "targetSurfaceId", "surface-user-admin-invitation-resend-confirmation"), mapOf("label", "Open revoke confirmation", "actionId", "action-open-useradmin-invitation-revoke-confirmation", "targetSurfaceId", "surface-user-admin-invitation-revoke-confirmation")), "permissionState", mapOf("canMutateInline", false, "canOpenTaskSurfaces", true, "reason", "Invitation detail is inspection-only and never resends or revokes inline."), "fields", List.of(mapOf("fieldId", "email", "label", "Email", "value", invite.targetEmail(), "editable", false, "inputType", "email"), mapOf("fieldId", "status", "label", "Status", "value", invite.status().name().toLowerCase(Locale.ROOT), "editable", false, "inputType", "text"), mapOf("fieldId", "role", "label", "Role", "value", roleLabels(invite.requestedRoles()), "editable", false, "inputType", "text"), mapOf("fieldId", "delivery", "label", "Delivery", "value", invite.deliveryStatus().name().toLowerCase(Locale.ROOT), "editable", false, "inputType", "text"), mapOf("fieldId", "expiresAt", "label", "Expires", "value", invite.expiresAt().toString(), "editable", false, "inputType", "text")), "audit", mapOf("lastEventType", "InvitationDetailDisplayed", "lastActor", actor.profile().displayName(), "traceIds", List.of("trace-useradmin-invitation-" + stableSuffix(invite.invitationId())))),
+        mapOf("surfaceContract", "user_admin.invitation_detail.v1", "branchNavigation", userBranchNavigation(correlationId), "recordId", invite.invitationId(), "recordLabel", invite.targetEmail(), "recordKind", "invitation", "status", invitationSurfaceStatus(invite), "summary", "Inspect this invitation lifecycle and provider-backed delivery state; resend and revoke open dedicated confirmation surfaces before backend commands run.", "actionContext", mapOf("invitationId", invite.invitationId()), "taskEntryPoints", List.of(mapOf("label", "Open resend confirmation", "actionId", "action-open-useradmin-invitation-resend-confirmation", "targetSurfaceId", "surface-user-admin-invitation-resend-confirmation"), mapOf("label", "Open revoke confirmation", "actionId", "action-open-useradmin-invitation-revoke-confirmation", "targetSurfaceId", "surface-user-admin-invitation-revoke-confirmation")), "permissionState", mapOf("canMutateInline", false, "canOpenTaskSurfaces", true, "reason", "Invitation detail is inspection-only and never resends or revokes inline."), "fields", List.of(mapOf("fieldId", "email", "label", "Email", "value", invite.targetEmail(), "editable", false, "inputType", "email"), mapOf("fieldId", "status", "label", "Status", "value", invite.status().name().toLowerCase(Locale.ROOT), "editable", false, "inputType", "text"), mapOf("fieldId", "role", "label", "Role", "value", roleLabels(invite.requestedRoles()), "editable", false, "inputType", "text"), mapOf("fieldId", "delivery", "label", "Delivery", "value", invite.deliveryStatus().name().toLowerCase(Locale.ROOT), "editable", false, "inputType", "text"), mapOf("fieldId", "deliveryAttempts", "label", "Delivery attempts", "value", String.valueOf(invite.deliveryAttempts()), "editable", false, "inputType", "text"), mapOf("fieldId", "expiresAt", "label", "Expires", "value", invite.expiresAt().toString(), "editable", false, "inputType", "text")), "deliveryState", invitationDeliveryState(invite, correlationId), "recoverySteps", invitationRecoverySteps(invite), "systemStates", invitationSystemStates(invite), "noFakeSuccess", invite.deliveryStatus() == EmailDeliveryStatus.FAILED, "providerBlockedSystemMessage", invite.deliveryStatus() == EmailDeliveryStatus.FAILED ? mapOf("surfaceContract", "user_admin.system_message.v1", "status", "blocked_provider_or_runtime", "safeReasonCode", firstNonBlank(invite.lastDeliveryErrorSummary(), "provider-or-outbox-delivery-failed"), "message", "Invitation delivery failed closed; use the resend confirmation task only after backend provider/outbox readiness is restored.") : null, "audit", mapOf("lastEventType", "InvitationDetailDisplayed", "lastActor", actor.profile().displayName(), "traceIds", List.of("trace-useradmin-invitation-" + stableSuffix(invite.invitationId())))),
         withUserBranchReturn(List.of(openInvitationResendConfirmationAction(), openInvitationRevokeConfirmationAction(), openAuditAction())));
   }
 
@@ -1149,7 +1150,7 @@ public final class WorkstreamService {
     var invite = invitationForTaskSurface(actor, input);
     authContextResolver.appendProtectedReadTrace(actor, USERADMIN_RESEND_INVITATION, "user_admin.invitation_resend_confirmation.v1", correlationId);
     return envelope("surface-user-admin-invitation-resend-confirmation", "lifecycle-confirmation", "Resend invitation", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.invitation_resend_confirmation.v1", "branchNavigation", userBranchNavigation(correlationId), "recordId", invite.invitationId(), "recordLabel", invite.targetEmail(), "recordKind", "invitation", "status", invite.canResend() ? "ready" : "no-op", "confirmationCopy", invite.canResend() ? "Resend a scoped invitation email through the governed backend outbox." : "This invitation is not eligible for resend in the selected context.", "actionContext", mapOf("invitationId", invite.invitationId()), "reasonRequired", false, "idempotencyKeyHint", "client-generated", "delivery", mapOf("currentStatus", invite.deliveryStatus().name().toLowerCase(Locale.ROOT), "invitationStatus", invite.status().name().toLowerCase(Locale.ROOT), "expiresAt", invite.expiresAt().toString()), "traceRefs", List.of("trace-useradmin-invitation-resend-confirmation-" + stableSuffix(invite.invitationId() + correlationId)), "correlationId", correlationId, "redaction", List.of("invitation-token-redacted", "email-body-redacted", "provider-secret-redacted")),
+        mapOf("surfaceContract", "user_admin.invitation_resend_confirmation.v1", "branchNavigation", userBranchNavigation(correlationId), "recordId", invite.invitationId(), "recordLabel", invite.targetEmail(), "recordKind", "invitation", "status", invite.canResend() ? "ready" : "no-op", "confirmationCopy", invite.canResend() ? "Resend a scoped invitation email through the governed backend outbox." : "This invitation is not eligible for resend in the selected context.", "actionContext", mapOf("invitationId", invite.invitationId()), "reasonRequired", false, "idempotencyKeyHint", "client-generated", "delivery", invitationDeliveryState(invite, correlationId), "deliveryState", invitationDeliveryState(invite, correlationId), "recoverySteps", invitationRecoverySteps(invite), "systemStates", invitationSystemStates(invite), "traceRefs", List.of("trace-useradmin-invitation-resend-confirmation-" + stableSuffix(invite.invitationId() + correlationId)), "correlationId", correlationId, "redaction", List.of("invitation-token-redacted", "email-body-redacted", "provider-secret-redacted")),
         withUserBranchReturn(List.of(resendInvitationAction(), displayInvitationDetailAction(), openAuditAction())));
   }
 
@@ -1157,7 +1158,7 @@ public final class WorkstreamService {
     var invite = invitationForTaskSurface(actor, input);
     authContextResolver.appendProtectedReadTrace(actor, USERADMIN_REVOKE_INVITATION, "user_admin.invitation_revoke_confirmation.v1", correlationId);
     return envelope("surface-user-admin-invitation-revoke-confirmation", "destructive-lifecycle-confirmation", "Revoke invitation", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.invitation_revoke_confirmation.v1", "branchNavigation", userBranchNavigation(correlationId), "recordId", invite.invitationId(), "recordLabel", invite.targetEmail(), "recordKind", "invitation", "status", invite.canRevoke() ? "ready" : "no-op", "consequenceCopy", invite.canRevoke() ? "Revoking prevents this invitation from being accepted. Existing accounts or memberships are not changed by this action." : "This invitation cannot be revoked from its current lifecycle state.", "actionContext", mapOf("invitationId", invite.invitationId()), "reasonRequired", true, "idempotencyKeyHint", "client-generated", "traceRefs", List.of("trace-useradmin-invitation-revoke-confirmation-" + stableSuffix(invite.invitationId() + correlationId)), "correlationId", correlationId, "redaction", List.of("invitation-token-redacted", "provider-payload-redacted", "raw-jwt-redacted")),
+        mapOf("surfaceContract", "user_admin.invitation_revoke_confirmation.v1", "branchNavigation", userBranchNavigation(correlationId), "recordId", invite.invitationId(), "recordLabel", invite.targetEmail(), "recordKind", "invitation", "status", invite.canRevoke() ? "ready" : "no-op", "consequenceCopy", invite.canRevoke() ? "Revoking prevents this invitation from being accepted. Existing accounts or memberships are not changed by this action." : "This invitation cannot be revoked from its current lifecycle state.", "actionContext", mapOf("invitationId", invite.invitationId()), "reasonRequired", true, "idempotencyKeyHint", "client-generated", "deliveryState", invitationDeliveryState(invite, correlationId), "recoverySteps", invitationRecoverySteps(invite), "systemStates", invitationSystemStates(invite), "traceRefs", List.of("trace-useradmin-invitation-revoke-confirmation-" + stableSuffix(invite.invitationId() + correlationId)), "correlationId", correlationId, "redaction", List.of("invitation-token-redacted", "provider-payload-redacted", "raw-jwt-redacted")),
         withUserBranchReturn(List.of(revokeInvitationAction(), displayInvitationDetailAction(), openAuditAction())));
   }
 
@@ -1750,7 +1751,10 @@ public final class WorkstreamService {
 
   private CapabilityActionResult invitationActionResult(String status, String message, String correlationId, String invitationId, AuthContextResolver.ResolvedMe actor) {
     var traceId = "trace-useradmin-invitation-" + stableSuffix(invitationId + ":" + correlationId);
-    return new CapabilityActionResult(status, message, correlationId, List.of(traceId), invitationDetailSurface(actor, mapOf("invitationId", invitationId), correlationId));
+    var detail = invitationDetailSurface(actor, mapOf("invitationId", invitationId), correlationId);
+    var resultStatus = Objects.equals(detail.data().get("status"), "blocked_provider_or_runtime") ? "blocked-runtime" : status;
+    var resultMessage = resultStatus.equals(status) ? message : message + " Delivery is blocked by provider/outbox readiness; review the typed invitation detail surface for safe recovery.";
+    return new CapabilityActionResult(resultStatus, resultMessage, correlationId, List.of(traceId), detail);
   }
 
   private CapabilityActionResult accessReviewActionResult(AccessReviewTask task, String status, String message, String correlationId, AuthContextResolver.ResolvedMe actor) {
@@ -1812,6 +1816,46 @@ public final class WorkstreamService {
         .findFirst()
         .map(invite -> invite.status().name())
         .orElseThrow(() -> new AuthorizationException(404, "invitation-not-found-or-forbidden"));
+  }
+
+  private String invitationSurfaceStatus(InvitationView.InvitationRow invite) {
+    return invite.deliveryStatus() == EmailDeliveryStatus.FAILED ? "blocked_provider_or_runtime" : invite.status().name().toLowerCase(Locale.ROOT);
+  }
+
+  private Map<String, Object> invitationDeliveryState(InvitationView.InvitationRow invite, String correlationId) {
+    var failed = invite.deliveryStatus() == EmailDeliveryStatus.FAILED;
+    return mapOf(
+        "currentStatus", invite.deliveryStatus().name().toLowerCase(Locale.ROOT),
+        "invitationStatus", invite.status().name().toLowerCase(Locale.ROOT),
+        "attempts", invite.deliveryAttempts(),
+        "resendCount", invite.resendCount(),
+        "lastSafeError", failed ? firstNonBlank(invite.lastDeliveryErrorSummary(), "provider-or-outbox-delivery-failed") : null,
+        "retryEligible", invite.canResend(),
+        "recoverySurfaceId", invite.canResend() ? "surface-user-admin-invitation-resend-confirmation" : "surface-user-admin-system-message",
+        "recoveryActionId", invite.canResend() ? "action-open-useradmin-invitation-resend-confirmation" : null,
+        "providerReadiness", failed ? "blocked_provider_or_runtime" : "ready_or_captured",
+        "providerBoundary", "Provider message ids, raw Resend payloads, email bodies, tokens, and secrets are redacted from browser surfaces.",
+        "traceRefs", List.of("trace-useradmin-invitation-delivery-" + stableSuffix(invite.invitationId() + correlationId)));
+  }
+
+  private List<String> invitationRecoverySteps(InvitationView.InvitationRow invite) {
+    if (invite.deliveryStatus() == EmailDeliveryStatus.FAILED) {
+      return invite.canResend()
+          ? List.of("Verify backend Resend/outbox configuration with an authorized operator.", "Use the resend confirmation task to queue a retry after configuration is restored.", "Open audit evidence with the correlation id; raw tokens and provider payloads remain redacted.")
+          : List.of("Review the invitation lifecycle state before retrying.", "Create a new scoped invitation if policy allows and this invitation is no longer actionable.", "Open audit evidence with the correlation id; raw tokens and provider payloads remain redacted.");
+    }
+    return List.of("Use resend or revoke task surfaces when lifecycle policy allows.", "Open audit evidence for delivery attempts and safe provider/outbox summaries.");
+  }
+
+  private List<String> invitationSystemStates(InvitationView.InvitationRow invite) {
+    var states = new ArrayList<String>();
+    states.add(invite.status().name().toLowerCase(Locale.ROOT));
+    states.add("delivery_" + invite.deliveryStatus().name().toLowerCase(Locale.ROOT));
+    if (invite.deliveryStatus() == EmailDeliveryStatus.FAILED) states.add("provider_blocked");
+    if (!invite.canResend()) states.add("resend_unavailable");
+    if (!invite.canRevoke()) states.add("revoke_unavailable");
+    states.add("system_message_ready");
+    return states;
   }
 
   private ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail readOrganizationDetail(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {

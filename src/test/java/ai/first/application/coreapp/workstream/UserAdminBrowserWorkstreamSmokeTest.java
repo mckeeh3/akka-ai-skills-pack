@@ -125,6 +125,24 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(task.resultSurface().toString().contains("expiry"));
     assertBrowserSafe(task.resultSurface());
 
+    var invited = runAction(new CapabilityActionRequest(
+        "action-invite-user",
+        "action-invite-user",
+        "USERADMIN_SEND_INVITATION",
+        "USERADMIN_SEND_INVITATION",
+        Map.of("email", "smoke.invitee@example.test", "displayName", "Smoke Invitee"),
+        "idem-browser-smoke-invite",
+        SELECTED_CONTEXT_ID,
+        task.resultSurface().surfaceId(),
+        "corr-browser-smoke-invite-create"));
+    assertEquals("accepted", invited.status());
+    assertEquals("surface-user-admin-invitation-detail", invited.resultSurface().surfaceId());
+    assertTrue(invited.resultSurface().toString().contains("deliveryState"));
+    assertTrue(invited.resultSurface().toString().contains("providerReadiness=ready_or_captured"));
+    assertTrue(invited.resultSurface().toString().contains("recoverySurfaceId=surface-user-admin-invitation-resend-confirmation"));
+    assertFalse(invited.resultSurface().toString().contains("providerMessageId"));
+    assertBrowserSafe(invited.resultSurface());
+
     var denied = runAction(new CapabilityActionRequest(
         "action-display-invitation-detail",
         "action-display-invitation-detail",

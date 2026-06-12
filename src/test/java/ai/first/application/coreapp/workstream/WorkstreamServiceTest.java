@@ -604,6 +604,9 @@ class WorkstreamServiceTest {
     assertTrue(created.traceIds().get(0).contains("trace-useradmin-invitation"));
     assertTrue(created.resultSurface().toString().contains("invitee@example.test"));
     assertTrue(created.resultSurface().toString().contains("canMutateInline=false"));
+    assertTrue(created.resultSurface().toString().contains("deliveryState"));
+    assertTrue(created.resultSurface().toString().contains("providerReadiness=ready_or_captured"));
+    assertFalse(created.resultSurface().toString().contains("providerMessageId"));
     assertTrue(created.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-invitation-resend-confirmation")));
     assertFalse(created.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-resend-invitation")));
     assertFalse(created.resultSurface().toString().contains("invite-token"));
@@ -617,6 +620,7 @@ class WorkstreamServiceTest {
         "action-useradmin-resend-invitation", "action-useradmin-resend-invitation", "USERADMIN_RESEND_INVITATION", "USERADMIN_RESEND_INVITATION", Map.of("invitationId", invitationId, "reason", "delivery repair"), "idem-workstream-resend", "membership-admin", "surface-user-admin-invitation-detail", "corr-workstream-resend"));
     assertEquals("accepted", resent.status());
     assertTrue(resent.resultSurface().toString().contains("delivery"));
+    assertTrue(resent.resultSurface().toString().contains("recoverySurfaceId=surface-user-admin-invitation-resend-confirmation"));
 
     var revoked = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-useradmin-revoke-invitation", "action-useradmin-revoke-invitation", "USERADMIN_REVOKE_INVITATION", "USERADMIN_REVOKE_INVITATION", Map.of("invitationId", invitationId, "reason", "wrong recipient"), "idem-workstream-revoke", "membership-admin", "surface-user-admin-invitation-detail", "corr-workstream-revoke"));
@@ -624,6 +628,34 @@ class WorkstreamServiceTest {
     assertTrue(revoked.resultSurface().toString().contains("value=revoked"));
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_RESEND") && event.correlationId().equals("corr-workstream-resend")));
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("INVITATION_REVOKE") && event.correlationId().equals("corr-workstream-revoke")));
+  }
+
+  @Test
+  void userAdminInvitationDetailRendersProviderBlockedDeliveryAsTypedRecoveryState() {
+    var created = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-invite-user", "action-invite-user", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", Map.of("email", "blocked.delivery@example.test", "displayName", "Blocked Delivery"), "idem-blocked-delivery", "membership-admin", "surface-user-admin-dashboard", "corr-blocked-delivery-create"));
+    assertEquals("accepted", created.status());
+    var invitationId = invitationRepository.invitations().stream()
+        .filter(invitation -> invitation.normalizedEmail().equals("blocked.delivery@example.test"))
+        .findFirst()
+        .orElseThrow()
+        .invitationId();
+
+    invitationService.recordDeliveryResult(invitationId, "attempt-blocked", false, null, "resend-config-missing", "corr-blocked-provider-result");
+
+    var detail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-display-invitation-detail", "action-display-invitation-detail", "USERADMIN_LIST_INVITATIONS", "USERADMIN_LIST_INVITATIONS", Map.of("invitationId", invitationId), null, "membership-admin", "surface-user-admin-users", "corr-blocked-delivery-detail"));
+
+    assertEquals("accepted", detail.status());
+    assertEquals("surface-user-admin-invitation-detail", detail.resultSurface().surfaceId());
+    assertEquals("blocked_provider_or_runtime", detail.resultSurface().data().get("status"));
+    assertEquals(true, detail.resultSurface().data().get("noFakeSuccess"));
+    assertTrue(detail.resultSurface().toString().contains("user_admin.system_message.v1"));
+    assertTrue(detail.resultSurface().toString().contains("resend-config-missing"));
+    assertTrue(detail.resultSurface().toString().contains("recoverySurfaceId=surface-user-admin-invitation-resend-confirmation"));
+    assertFalse(detail.resultSurface().toString().contains("invite-token"));
+    assertFalse(detail.resultSurface().toString().contains("providerMessageId"));
+    assertFalse(detail.resultSurface().toString().contains("RESEND_API_KEY"));
   }
 
   @Test

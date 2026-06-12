@@ -224,6 +224,8 @@ function UserAdminCleanDetail({ envelope, onAction }: { envelope: SurfaceEnvelop
           </div>
         </section>
 
+        {isInvitation && <InvitationDeliveryStatusPanel envelope={envelope} />}
+
         {taskEntryActions.length > 0 && (
           <section className="user-admin-context-actions" aria-label={isInvitation ? 'Invitation task entry points' : 'User task entry points'}>
             <div className="surface-section-heading compact">
@@ -245,6 +247,30 @@ function UserAdminCleanDetail({ envelope, onAction }: { envelope: SurfaceEnvelop
         )}
       </section>
     </SurfaceStateFrame>
+  );
+}
+
+function InvitationDeliveryStatusPanel({ envelope }: { envelope: SurfaceEnvelope<DetailEditSurfaceData> }) {
+  const delivery = envelope.data.deliveryState;
+  if (!delivery) return null;
+  const recoverySteps = envelope.data.recoverySteps ?? [];
+  return (
+    <section className="access-management-card invitation-delivery-state" aria-label="Invitation delivery status">
+      <div className="surface-section-heading compact">
+        <div><p className="eyebrow">Provider-backed delivery</p><h4>Delivery status and recovery</h4></div>
+        <p>Delivery state is backend-authored and redacted; raw tokens, Resend payloads, email bodies, provider message ids, and secrets are not shown.</p>
+      </div>
+      <dl>
+        <div><dt>Status</dt><dd>{renderSurfaceValue(delivery.currentStatus) ?? 'not reported'}</dd></div>
+        <div><dt>Attempts</dt><dd>{renderSurfaceValue(delivery.attempts) ?? '0'}</dd></div>
+        <div><dt>Retry eligible</dt><dd>{delivery.retryEligible ? 'yes' : 'no'}</dd></div>
+        <div><dt>Provider readiness</dt><dd>{renderSurfaceValue(delivery.providerReadiness) ?? 'backend-derived'}</dd></div>
+        {Boolean(delivery.lastSafeError) && <div><dt>Safe error</dt><dd>{renderSurfaceValue(delivery.lastSafeError)}</dd></div>}
+      </dl>
+      {envelope.data.noFakeSuccess && <p className="surface-state-inline forbidden">Provider/outbox delivery failed closed. This surface is a typed system-message-ready recovery state, not a fake success.</p>}
+      {recoverySteps.length > 0 && <ol>{recoverySteps.map((step) => <li key={step}>{step}</li>)}</ol>}
+      <p className="capability-basis">{renderSurfaceValue(delivery.providerBoundary) ?? 'Provider boundary remains redacted.'}</p>
+    </section>
   );
 }
 

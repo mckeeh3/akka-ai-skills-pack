@@ -109,7 +109,7 @@
 
 ### TASK-UAPRH-02-002: Add invitation delivery surfaces, tests, and smoke docs
 
-- status: pending
+- status: done
 - source: specs/user-admin-production-runtime-hardening/backlog/01-user-admin-production-runtime-hardening-build-backlog.md
 - task brief: specs/user-admin-production-runtime-hardening/tasks/01-invitation-delivery/03-invitation-delivery-surfaces-tests-smoke.md
 - depends on:

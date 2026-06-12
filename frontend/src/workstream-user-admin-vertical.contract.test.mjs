@@ -212,6 +212,13 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.match(userAdminTaskSurface, /policyOptions\?\.roles/);
   assert.match(userAdminTaskSurface, /policyOptions\?\.expiryHours/);
   assert.match(userAdminTaskSurface, /function InvitationConfirmationTask/);
+  assert.match(userAdminTaskSurface, /function InvitationTaskDeliveryPanel/);
+  assert.match(userAdminTaskSurface, /Provider-backed delivery status returns on the invitation detail surface/);
+  assert.match(userAdminTaskSurface, /Raw invitation tokens, full email bodies, Resend payloads, provider message ids, and secrets are redacted/);
+  assert.match(userAdminTaskSurface, /deliveryState \?\? envelope\.data\.delivery/);
+  assert.match(userAdminTaskSurface, /providerReadiness/);
+  assert.match(userAdminTaskSurface, /lastSafeError/);
+  assert.match(userAdminTaskSurface, /recoverySteps/);
   assert.match(userAdminTaskSurface, /function MembershipStatusTask/);
   assert.match(userAdminTaskSurface, /function SupportAccessGrantTask/);
   assert.match(userAdminTaskSurface, /function SupportAccessRevokeTask/);
@@ -227,6 +234,10 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.doesNotMatch(detailEditSurface, /aria-label="Edit user status"|aria-label="Edit user role"|Permanently remove user|submitRoleChange|submitStatusChange/);
   assert.match(detailEditSurface, /Read-only inspection/);
   assert.match(detailEditSurface, /Dedicated task surfaces/);
+  assert.match(detailEditSurface, /function InvitationDeliveryStatusPanel/);
+  assert.match(detailEditSurface, /Provider-backed delivery/);
+  assert.match(detailEditSurface, /Provider\/outbox delivery failed closed/);
+  assert.match(detailEditSurface, /No raw tokens, Resend payloads, email bodies, provider message ids, and secrets are not shown|raw tokens, Resend payloads, email bodies, provider message ids, and secrets are not shown/);
   assert.match(adminUsersPage, /quarantined-legacy-screen/);
   assert.match(adminUsersPage, /not be used as a normal runtime path/);
   assert.match(userAdminTaskSurface, /No direct mutation: recovery must route to deterministic backend approval\/status flows or safe user detail/);
@@ -245,6 +256,11 @@ test('User Admin full-stack conformance tests cover canonical runtime boundaries
   assert.match(workstreamService, /hiddenMembershipId/);
   assert.match(workstreamService, /invitation-not-found-or-forbidden/);
   assert.match(workstreamService, /blocked_provider_or_runtime/);
+  assert.match(workstreamService, /invitationDeliveryState/);
+  assert.match(workstreamService, /providerReadiness/);
+  assert.match(workstreamService, /recoverySurfaceId/);
+  assert.match(workstreamService, /user_admin\.system_message\.v1/);
+  assert.match(workstreamService, /Provider message ids, raw Resend payloads, email bodies, tokens, and secrets are redacted/);
   assert.match(workstreamService, /noDirectMutation/);
   assert.match(workstreamService, /diagnosticMetadataVisible", false/);
   assert.match(workstreamService, /attentionCounts/);

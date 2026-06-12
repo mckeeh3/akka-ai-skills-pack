@@ -265,6 +265,10 @@ export type DetailEditSurfaceData = {
     reason?: string;
     authoritativeCapabilityId: string;
   };
+  deliveryState?: Record<string, unknown>;
+  recoverySteps?: string[];
+  noFakeSuccess?: boolean;
+  providerBlockedSystemMessage?: Record<string, unknown> | null;
   audit?: {
     lastEventType: string;
     lastActor: string;
