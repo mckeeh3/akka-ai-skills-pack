@@ -277,7 +277,7 @@
 
 ### TASK-UASNT-99-001: Verify User Admin navigation tree mini-project
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-navigation-tree/backlog/01-user-admin-navigation-tree-build-backlog.md
 - task brief: specs/user-admin-surface-navigation-tree/tasks/99-verification/01-verify-navigation-tree.md
 - depends on:
@@ -308,3 +308,143 @@
   - verification output and queue update are committed
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; verification/review of dashboard trunk, user branch, organization branch, capability mappings, role/scope behavior, trace/correlation/audit expectations, and backend/API/frontend evidence
+  - verification output: `specs/user-admin-surface-navigation-tree/navigation-tree-verification.md`
+  - result: current checks pass, but mini-project is not complete; required User branch task/confirmation descendant runtime surfaces are still missing, so follow-up tasks and a new terminal verification task were appended
+  - checks: `mvn -q -Dtest=WorkstreamServiceTest test` passed; `npm --prefix frontend test -- --run` passed; `npm --prefix frontend run typecheck` passed; `git diff --check` passed
+  - commit message: `user-admin-nav-tree: verify navigation tree gaps`
+
+### TASK-UASNT-03-005: Implement backend User branch task/confirmation navigation surfaces
+
+- status: pending
+- source: specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
+- task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/05-backend-user-branch-task-surfaces.md
+- depends on:
+  - TASK-UASNT-99-001
+- required reads:
+  - AGENTS.md
+  - specs/user-admin-surface-navigation-tree/README.md
+  - specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
+  - specs/user-admin-surface-navigation-tree/existing-surface-inventory.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - src/main/java/ai/first/application/coreapp/useradmin/**
+  - src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java
+- skills:
+  - akka-basic-user-admin
+  - akka-http-endpoint-component-client
+  - akka-http-endpoint-testing
+- expected outputs:
+  - backend/workstream runtime surfaces and branch-return actions for missing User branch task/confirmation descendants
+  - focused backend tests
+- required checks:
+  - `git diff --check`
+  - `mvn -q -Dtest=WorkstreamServiceTest test`
+- done criteria:
+  - real backend/workstream API path can open every app-description-required User branch descendant at starter scope
+  - every new descendant exposes `action-user-admin-show-users` branch-return metadata and safe trace/correlation payloads
+  - forbidden/stale/blocked paths fail closed without leaking hidden data or secrets
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; backend realization for User branch dedicated invitation, membership, support-access, and identity exception descendants
+
+### TASK-UASNT-03-006: Implement frontend User branch task/confirmation surfaces
+
+- status: pending
+- source: specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
+- task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/06-frontend-user-branch-task-surfaces.md
+- depends on:
+  - TASK-UASNT-03-005
+- required reads:
+  - AGENTS.md
+  - specs/user-admin-surface-navigation-tree/README.md
+  - specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
+  - specs/user-admin-surface-navigation-tree/tasks/03-implementation/06-frontend-user-branch-task-surfaces.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - frontend/src/workstream/surfaces/**
+  - frontend/src/workstream/types/surfaces.ts
+  - frontend/src/workstream-user-admin-vertical.contract.test.mjs
+  - frontend/src/workstream-surfaces.contract.test.mjs
+- skills:
+  - akka-web-ui-apps
+  - akka-web-ui-state-rendering
+  - akka-web-ui-forms-validation
+  - akka-web-ui-accessibility-responsive
+  - akka-web-ui-testing
+- expected outputs:
+  - frontend rendering for backend-provided User branch task/confirmation descendants
+  - frontend/contract tests for branch-return controls and browser-safe payload rendering
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - each required User branch task/confirmation surface renders a purpose-specific state instead of broad JSON or inline mutation behavior
+  - branch returns use backend-provided `action-user-admin-show-users` metadata and do not infer authority frontend-side
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; frontend realization for User branch dedicated task/confirmation descendants
+
+### TASK-UASNT-03-007: Add fullstack tests for User branch dedicated descendants
+
+- status: pending
+- source: specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
+- task brief: specs/user-admin-surface-navigation-tree/tasks/03-implementation/07-fullstack-user-branch-descendant-tests.md
+- depends on:
+  - TASK-UASNT-03-006
+- required reads:
+  - AGENTS.md
+  - specs/user-admin-surface-navigation-tree/README.md
+  - specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java
+  - frontend/src/workstream-user-admin-vertical.contract.test.mjs
+  - frontend/src/workstream-surfaces.contract.test.mjs
+  - relevant backend/frontend files changed by `TASK-UASNT-03-005` and `TASK-UASNT-03-006`
+- skills:
+  - akka-http-endpoint-testing
+  - akka-web-ui-testing
+  - akka-basic-user-admin
+- expected outputs:
+  - focused backend and frontend tests proving every required User branch descendant runtime path and branch return
+- required checks:
+  - `git diff --check`
+  - `mvn -q -Dtest=WorkstreamServiceTest test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - tests prove every required User branch descendant listed in app-description has a runtime/backend/frontend path at starter scope
+  - tests prove safe denials/system-message states, trace/correlation metadata, audit expectations, and frontend secret boundaries
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; fullstack validation for User branch dedicated descendants
+
+### TASK-UASNT-99-002: Re-verify User Admin navigation tree mini-project
+
+- status: pending
+- source: specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
+- task brief: specs/user-admin-surface-navigation-tree/tasks/99-verification/02-reverify-navigation-tree.md
+- depends on:
+  - TASK-UASNT-03-007
+- required reads:
+  - AGENTS.md
+  - specs/user-admin-surface-navigation-tree/README.md
+  - specs/user-admin-surface-navigation-tree/conversation-capture.md
+  - specs/user-admin-surface-navigation-tree/pending-tasks.md
+  - specs/user-admin-surface-navigation-tree/existing-surface-inventory.md
+  - specs/user-admin-surface-navigation-tree/navigation-tree-verification.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - tests and validation notes produced by prior tasks
+- skills:
+  - app-description-readiness-assessment
+  - app-description-change-impact
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - updated verification output or addendum
+  - updated pending queue with done status if complete or follow-up tasks plus another terminal verification task if gaps remain
+- required checks:
+  - `git diff --check`
+  - run or review required checks from implementation tasks; rerun focused Maven/npm checks when needed
+- done criteria:
+  - verification compares completed work against README done state, backlog, app-description, tests, and conversation decisions
+  - no material mini-project gaps remain, or follow-up tasks and a new terminal verification task are appended
+  - verification output and queue update are committed
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; terminal re-verification after User branch descendant realization
