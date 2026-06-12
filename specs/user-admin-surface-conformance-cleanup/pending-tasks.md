@@ -44,7 +44,7 @@
 
 ### TASK-UASCC-01-001: Align User Admin surface conformance specs
 
-- status: pending
+- status: done
 - source: specs/user-admin-surface-conformance-cleanup/backlog/01-user-admin-surface-conformance-build-backlog.md
 - task brief: specs/user-admin-surface-conformance-cleanup/tasks/01-spec-alignment/01-align-user-admin-surface-conformance.md
 - depends on:
@@ -73,6 +73,8 @@
   - app-description/spec decisions are explicit enough for backend/frontend implementation without guessing
 - notes:
   - vertical contract: User Admin / `user-admin-agent` concept and `agent-user-admin` runtime alias; spec-only cleanup of dashboard/list/detail/task/decision/workflow/system-message surfaces; capabilities `user_admin.*`, `saas_owner.organization.*`, and `admin.audit.read`; selected AuthContext/role-scope semantics; audit/trace/redaction expectations; validation by focused search and diff check
+  - completed checks: `git diff --check`; `rg "show-inspection|surface-user-admin-system-message|backend-authored|canonical" app-description/domains/core-starter/workstreams/user-admin specs/user-admin-surface-conformance-cleanup`
+  - commit: `user-admin-surface-conformance: align surface conformance specs`
 
 ### TASK-UASCC-02-001: Repair backend canonical surface envelopes and authored payloads
 

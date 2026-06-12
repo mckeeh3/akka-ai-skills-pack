@@ -32,7 +32,7 @@ User Admin is not a generic CRUD console. It is a role-authorized functional-age
 
 ## Functional agent
 
-Owns `user-admin-agent` as its exactly-one user-facing functional-agent binding. Runtime instances are selected-context workstream logs and surface graphs, not page sessions. Internal access-review worker/agent tasks may support this workstream, but they do not become left-rail functional agents.
+Owns `user-admin-agent` as its exactly-one user-facing functional-agent binding. Current runtime payloads may still expose `agent-user-admin`; treat that id as a compatibility alias for `user-admin-agent`, not as a second functional agent. New app-description, traceability, and implementation work should normalize toward `user-admin-agent` while accepting `agent-user-admin` only at runtime/API boundaries until the alias is retired. Runtime instances are selected-context workstream logs and surface graphs, not page sessions. Internal access-review worker/agent tasks may support this workstream, but they do not become left-rail functional agents.
 
 ## Capability binding
 
