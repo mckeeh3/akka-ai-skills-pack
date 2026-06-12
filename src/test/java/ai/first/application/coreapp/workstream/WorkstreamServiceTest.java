@@ -120,6 +120,37 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void deterministicUserAdminBrowserSmokeFixtureProducesAuthorizedContextWithoutProviderCredentials() {
+    var smoke = UserAdminSmokeTestFixture.create();
+
+    var bootstrap = smoke.service().bootstrap(smoke.tenantAdminIdentity(), UserAdminSmokeTestFixture.TENANT_ADMIN_CONTEXT_ID, "corr-smoke-bootstrap");
+
+    assertEquals(UserAdminSmokeTestFixture.TENANT_ADMIN_CONTEXT_ID, bootstrap.me().selectedAuthContext().selectedContextId());
+    assertTrue(bootstrap.functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-user-admin") && agent.availability().equals("visible")));
+    assertTrue(bootstrap.me().visibleCapabilityIds().contains("secure-tenant-user-foundation"));
+    var dashboard = smoke.service().surface(smoke.tenantAdminIdentity(), UserAdminSmokeTestFixture.TENANT_ADMIN_CONTEXT_ID, "surface-user-admin-dashboard", "corr-smoke-dashboard");
+    assertEquals("surface-user-admin-tenant-dashboard", dashboard.surfaceId());
+    var users = smoke.service().surface(smoke.tenantAdminIdentity(), UserAdminSmokeTestFixture.TENANT_ADMIN_CONTEXT_ID, "surface-user-admin-users", "corr-smoke-users");
+    assertEquals("user_admin.users.v1", users.data().get("surfaceContract"));
+    assertTrue(users.toString().contains("member@example.test"));
+    assertBrowserPayloadSafe(dashboard);
+    assertBrowserPayloadSafe(users);
+    assertTrue(smoke.identityRepository().auditEvents().stream().anyMatch(event -> event.correlationId().equals("corr-smoke-bootstrap") && event.result().name().equals("ALLOWED")));
+  }
+
+  @Test
+  void productionAdminUsersBootstrapStillRejectsTenantAndCustomerAdmins() {
+    var repository = new LocalDemoIdentityRepository();
+
+    assertThrows(IllegalArgumentException.class, () -> ai.first.application.foundation.identity.BootstrapAdminSeeder.seedConfiguredAdmins(repository, "tenant-admin@example.test:TENANT_ADMIN:tenant-1"));
+    assertThrows(IllegalArgumentException.class, () -> ai.first.application.foundation.identity.BootstrapAdminSeeder.seedConfiguredAdmins(repository, "customer-admin@example.test:CUSTOMER_ADMIN:tenant-1/customer-1"));
+    ai.first.application.foundation.identity.BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.test:SAAS_OWNER_ADMIN:OWNER");
+
+    assertTrue(repository.findAccountByEmail("owner@example.test").isPresent());
+    assertTrue(repository.tenant(ai.first.application.foundation.identity.BootstrapAdminSeeder.DEFAULT_TENANT_ID).isEmpty(), "Production ADMIN_USERS bootstrap must not create tenant/customer scope fixtures.");
+  }
+
+  @Test
   void starterSourceContainsConcreteAkkaWorkstreamRuntimeAgentAndInvokerSeam() throws Exception {
     var agentSource = findSource("WorkstreamRuntimeAgent.java");
     var agentText = Files.readString(agentSource);

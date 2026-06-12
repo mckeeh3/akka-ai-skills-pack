@@ -81,7 +81,7 @@
 
 ### TASK-UABWS-02-001: Implement deterministic local smoke setup
 
-- status: pending
+- status: done
 - source: specs/user-admin-browser-workstream-smoke/backlog/01-user-admin-browser-smoke-build-backlog.md
 - task brief: specs/user-admin-browser-workstream-smoke/tasks/02-backend-fixtures/01-deterministic-local-smoke-setup.md
 - depends on:
@@ -111,6 +111,7 @@
   - next browser smoke task can run against deterministic data
 - notes:
   - vertical contract: User Admin / `agent-user-admin`; test-only setup for browser smoke, no production attention item; deterministic selected AuthContext and tenant/customer authorization preserved; backend workstream/API substrate; audit/trace and redaction remain active
+  - completed: added `UserAdminSmokeTestFixture` in test source with deterministic Tenant Admin, member, and SaaS Owner contexts plus local repositories/fake model response for smoke-only use; added `WorkstreamServiceTest` coverage proving authorized User Admin bootstrap/dashboard/users surfaces, audit trace emission, browser-safe payloads, and production `ADMIN_USERS` rejection of Tenant/Customer admin bootstrap; checks passed: `git diff --check`; `env -u ADMIN_USERS mvn -q -Dtest=WorkstreamServiceTest test`; commit message: `user-admin-browser-smoke: implement deterministic local smoke setup`
 
 ### TASK-UABWS-03-001: Implement User Admin browser/workstream smoke tests
 
