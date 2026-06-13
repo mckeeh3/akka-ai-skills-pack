@@ -80,7 +80,7 @@
 
 ### TASK-ODR-02-001: Document environment/secret configuration and add validation
 
-- status: pending
+- status: done
 - source: specs/operational-deployment-readiness/backlog/01-operational-deployment-readiness-build-backlog.md
 - task brief: specs/operational-deployment-readiness/tasks/01-env-config/02-document-env-secret-config-validation.md
 - depends on:
@@ -105,6 +105,8 @@
   - required/optional env vars are documented with local/test/prod behavior; frontend-public vs backend-secret boundary is explicit; ADMIN_USERS SaaS Owner bootstrap caveat and fail-closed behavior are documented
 - notes:
   - vertical contract: cross-cutting operational docs/validation; documents auth/tenant bootstrap boundaries; docs/scripts/tests substrate
+  - completed: added `docs/deployment-env-secrets.md`, linked it from `README.md`, reconciled backend WorkOS readiness env names in `.env.example` and `application.conf`, and added frontend contract coverage for env/secret documentation and public-vs-backend boundaries
+  - checks: `npm --prefix frontend test -- --run`; `git diff --check`
 
 ### TASK-ODR-03-001: Document or implement health/readiness diagnostics
 

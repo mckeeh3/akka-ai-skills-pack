@@ -64,7 +64,7 @@ This smoke uses deterministic test-only User Admin identity data, unsets `ADMIN_
 
 The frontend build writes Akka static assets to `src/main/resources/static-resources/`. Do not hand-edit generated static output; rebuild from `frontend/` source.
 
-For production-like local runtime smoke testing, configure the backend-only secrets and browser-public `VITE_` values described in `.env.example` and `frontend/.env.example`, then validate the authenticated shell, `/api/me`, five workstreams, authorization denials, audit/work traces, notifications/email behavior, and provider fail-closed paths through normal runtime APIs and UI.
+For production-like local runtime smoke testing, configure the backend-only secrets and browser-public `VITE_` values described in `.env.example`, `frontend/.env.example`, and [`docs/deployment-env-secrets.md`](docs/deployment-env-secrets.md), then validate the authenticated shell, `/api/me`, five workstreams, authorization denials, audit/work traces, notifications/email behavior, and provider fail-closed paths through normal runtime APIs and UI.
 
 ## Fork-and-extend workflow
 
