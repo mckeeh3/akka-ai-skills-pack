@@ -173,7 +173,7 @@
 
 ### TASK-ODR-99-001: Verify operational deployment readiness
 
-- status: pending
+- status: done
 - source: specs/operational-deployment-readiness/backlog/01-operational-deployment-readiness-build-backlog.md
 - task brief: specs/operational-deployment-readiness/tasks/99-verification/01-verify-operational-deployment-readiness.md
 - depends on:
@@ -203,3 +203,5 @@
   - verification compares completed work against README done state, backlog, and task criteria; required checks pass or blockers are recorded; no secrets are introduced; follow-up tasks are appended if material gaps remain
 - notes:
   - vertical contract: cross-cutting operational readiness verification; docs/scripts/tests/build validation
+  - completed: created `specs/operational-deployment-readiness/deployment-readiness-verification.md`; no material follow-up gaps found, so no additional terminal verification task was appended
+  - checks: `git diff --check`; `env -u ADMIN_USERS mvn test`; `npm --prefix frontend run smoke:user-admin-workstream`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `npm --prefix frontend run build`
