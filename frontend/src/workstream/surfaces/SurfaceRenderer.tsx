@@ -12,6 +12,7 @@ import { OrganizationAdminSurface } from './OrganizationAdminSurface';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
 import { SystemMessageSurface } from './SystemMessageSurface';
+import { UserAdminRoleChangePreviewSurface, isUserAdminRoleChangePreviewSurface } from './UserAdminRoleChangePreviewSurface';
 import { UserAdminTaskSurface, isUserAdminTaskSurface } from './UserAdminTaskSurface';
 import { WorkflowStatusSurface } from './WorkflowStatusSurface';
 
@@ -33,6 +34,14 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
 
   if (selectedEnvelope.surfaceId.startsWith('surface-user-admin-organization-') || ((selectedEnvelope.data as { surfaceContract?: string } | undefined)?.surfaceContract ?? '').startsWith('user_admin.organization_')) {
     return <OrganizationAdminSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+  }
+
+  if (isUserAdminRoleChangePreviewSurface(selectedEnvelope)) {
+    return <UserAdminRoleChangePreviewSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+  }
+
+  if (isUserAdminRoleChangePreviewSurface(selectedEnvelope)) {
+    return <UserAdminRoleChangePreviewSurface envelope={selectedEnvelope as never} onAction={onAction} />;
   }
 
   if (isUserAdminTaskSurface(selectedEnvelope)) {

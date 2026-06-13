@@ -38,7 +38,9 @@ type UserAdminTaskSurfaceData = Record<string, unknown> & {
   roleOptions?: Array<{ value?: string; roleId?: string; id?: string; label?: string; name?: string }>;
   allowedRoleOptions?: Array<{ value?: string; roleId?: string; id?: string; label?: string; name?: string }>;
   expiryOptions?: Array<{ value?: string | number; hours?: string | number; label?: string }>;
+  supportExpiryOptions?: Array<{ value?: string | number; hours?: string | number; label?: string } | string | number>;
   allowedExpiryHours?: Array<string | number>;
+  statusOptions?: Array<{ value?: string; status?: string; label?: string; actionId?: string }>;
   policyOptions?: {
     roles?: Array<{ value?: string; roleId?: string; id?: string; label?: string; name?: string }>;
     expiryHours?: Array<{ value?: string | number; hours?: string | number; label?: string } | string | number>;
@@ -139,8 +141,9 @@ function InvitationCreateTask({ envelope, onAction }: Props) {
       {error && <p className="surface-state-inline validation-error" role="alert">{error}</p>}
       <label>Email<input className="designed-control" type="email" value={email} onChange={(event) => setEmail(event.currentTarget.value)} required /></label>
       <label>Display name<input className="designed-control" value={displayName} onChange={(event) => setDisplayName(event.currentTarget.value)} /></label>
-      <label>Requested role<select className="designed-control" value={role} onChange={(event) => setRole(event.currentTarget.value)}>{roleOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-      <button className="surface-action-link primary" type="submit" disabled={!action || Boolean(action.disabled)}>Create invitation</button>
+      <label>Requested role<select className="designed-control" value={role} onChange={(event) => setRole(event.currentTarget.value)} disabled={roleOptions.length === 0}>{roleOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+      {roleOptions.length === 0 && <p className="form-error">Backend did not provide authorized role options for this selected scope.</p>}
+      <button className="surface-action-link primary" type="submit" disabled={!action || Boolean(action.disabled) || roleOptions.length === 0}>Create invitation</button>
       {action?.disabled && <p className="form-error">{action.disabled.message}</p>}
       <p className="capability-basis">Provider-backed delivery status returns on the invitation detail surface; raw invitation tokens, provider payloads, and secrets are never shown.</p>
     </form>
@@ -192,7 +195,8 @@ function InvitationTaskDeliveryPanel({ envelope }: { envelope: SurfaceEnvelope<U
 function MembershipStatusTask({ envelope, onAction }: Props) {
   const suspendAction = findAction(envelope.actions, 'action-useradmin-disable-member') ?? findAction(envelope.actions, 'action-disable-account');
   const reactivateAction = findAction(envelope.actions, 'action-useradmin-reactivate-member') ?? findAction(envelope.actions, 'action-reactivate-account');
-  const [status, setStatus] = useState(String(envelope.data.proposedStatus ?? 'removed'));
+  const statusOptions = userAdminStatusOptions(envelope);
+  const [status, setStatus] = useState(String(envelope.data.proposedStatus ?? statusOptions[0]?.value ?? ''));
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string>();
   const action = status.toLowerCase().includes('active') ? reactivateAction : suspendAction;
@@ -207,9 +211,10 @@ function MembershipStatusTask({ envelope, onAction }: Props) {
       <h4>Confirm membership/account lifecycle change</h4>
       {error && <p className="surface-state-inline validation-error" role="alert">{error}</p>}
       <p>{String(envelope.data.consequenceCopy ?? 'Lifecycle changes enforce self-action, last-admin, scope, idempotency, and audit guardrails on the backend.')}</p>
-      <label>Proposed status<select className="designed-control" value={status} onChange={(event) => setStatus(event.currentTarget.value)}><option value="removed">Disable/remove</option><option value="active">Reactivate</option></select></label>
+      <label>Proposed status<select className="designed-control" value={status} onChange={(event) => setStatus(event.currentTarget.value)} disabled={statusOptions.length === 0}>{statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+      {statusOptions.length === 0 && <p className="form-error">Backend did not provide authorized lifecycle options for this selected target.</p>}
       <label>Reason<textarea className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} required /></label>
-      <button className={status === 'active' ? 'surface-action-link secondary' : 'surface-action-link danger'} type="submit" disabled={!action || Boolean(action.disabled)}>Confirm status change</button>
+      <button className={status === 'active' ? 'surface-action-link secondary' : 'surface-action-link danger'} type="submit" disabled={!action || Boolean(action.disabled) || statusOptions.length === 0}>Confirm status change</button>
       {action?.disabled && <p className="form-error">{action.disabled.message}</p>}
       <p className="capability-basis">Current status: {String(envelope.data.currentStatus ?? 'not reported')} · confirmation required: {envelope.data.confirmationRequired ? 'yes' : 'backend policy'}</p>
     </form>
@@ -220,7 +225,7 @@ function SupportAccessGrantTask({ envelope, onAction }: Props) {
   const grantAction = findAction(envelope.actions, 'action-useradmin-grant-support-access') ?? findAction(envelope.actions, 'action-useradmin-extend-support-access') ?? findAction(envelope.actions, 'action-grant-support-access') ?? findAction(envelope.actions, 'action-extend-support-access');
   const [purpose, setPurpose] = useState('');
   const expiryOptions = userAdminExpiryOptions(envelope);
-  const [expiryHours, setExpiryHours] = useState(expiryOptions[0]?.value ?? '24');
+  const [expiryHours, setExpiryHours] = useState(expiryOptions[0]?.value ?? '');
   const [error, setError] = useState<string>();
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -234,8 +239,9 @@ function SupportAccessGrantTask({ envelope, onAction }: Props) {
       {error && <p className="surface-state-inline validation-error" role="alert">{error}</p>}
       <p>{String(envelope.data.summary ?? 'Grant/extend time-boxed support access through backend policy and audit.')}</p>
       <label>Purpose<textarea className="designed-control" value={purpose} onChange={(event) => setPurpose(event.currentTarget.value)} required /></label>
-      <label>Expiry<select className="designed-control" value={expiryHours} onChange={(event) => setExpiryHours(event.currentTarget.value)}>{expiryOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-      <button className="surface-action-link primary" type="submit" disabled={!grantAction || Boolean(grantAction.disabled)}>Request support access grant</button>
+      <label>Expiry<select className="designed-control" value={expiryHours} onChange={(event) => setExpiryHours(event.currentTarget.value)} disabled={expiryOptions.length === 0}>{expiryOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+      {expiryOptions.length === 0 && <p className="form-error">Backend did not provide authorized support-access expiry options.</p>}
+      <button className="surface-action-link primary" type="submit" disabled={!grantAction || Boolean(grantAction.disabled) || expiryOptions.length === 0}>Request support access grant</button>
       {grantAction?.disabled && <p className="form-error">{grantAction.disabled.message}</p>}
     </form>
   );
@@ -359,17 +365,24 @@ function userAdminRoleOptions(envelope: SurfaceEnvelope<UserAdminTaskSurfaceData
   const draftRoles = Array.isArray(envelope.data.draft?.roles) ? envelope.data.draft.roles.map((role) => String(role)) : [];
   return draftRoles.length > 0
     ? draftRoles.map((role) => ({ value: role, label: humanizeRole(role) }))
-    : [{ value: 'TENANT_EMPLOYEE', label: 'Employee' }];
+    : [];
 }
 
 function userAdminExpiryOptions(envelope: SurfaceEnvelope<UserAdminTaskSurfaceData>): Array<{ value: string; label: string }> {
-  const rawOptions = envelope.data.expiryOptions ?? envelope.data.policyOptions?.expiryHours ?? envelope.data.allowedExpiryHours;
+  const rawOptions = envelope.data.expiryOptions ?? envelope.data.supportExpiryOptions ?? envelope.data.policyOptions?.expiryHours ?? envelope.data.allowedExpiryHours;
   const options = rawOptions?.map((option) => {
     if (typeof option === 'string' || typeof option === 'number') return { value: String(option), label: `${option} hours` };
     const value = String(option.value ?? option.hours ?? '');
     return { value, label: String(option.label ?? (value ? `${value} hours` : '')) };
   }).filter((option) => option.value && option.label) ?? [];
-  return options.length > 0 ? options : [{ value: '24', label: '24 hours' }];
+  return options;
+}
+
+function userAdminStatusOptions(envelope: SurfaceEnvelope<UserAdminTaskSurfaceData>): Array<{ value: string; label: string }> {
+  return envelope.data.statusOptions?.map((option) => {
+    const value = String(option.value ?? option.status ?? '');
+    return { value, label: String(option.label ?? (value ? humanizeRole(value) : '')) };
+  }).filter((option) => option.value && option.label) ?? [];
 }
 
 function humanizeRole(value: string) {
@@ -384,8 +397,9 @@ function renderTaskValue(value: unknown): string | undefined {
   return String(value);
 }
 
-function idempotencyKey(prefix: string, seed: string) {
-  return `ui-${prefix}-${seed.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') || Date.now()}`;
+function idempotencyKey(prefix: string, _seed: string) {
+  const random = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  return `ui-${prefix}-${random}`;
 }
 
 function userFacingTaskPurpose(envelope: SurfaceEnvelope<UserAdminTaskSurfaceData>) {

@@ -152,6 +152,10 @@ export type DashboardSurfaceData = {
   authorizedWorkstreamLinks?: Array<{ workstreamId: string; label: string; requiredCapabilityId?: string; surfaceId?: string; actionId?: string; status?: string }>;
   notificationCenter?: Record<string, unknown>;
   personalAttentionDigest?: Record<string, unknown>;
+  scopeLabel?: string;
+  selectedAuthContext?: Record<string, unknown>;
+  adminLevel?: string;
+  hero?: { title?: string; scopeLabel?: string; scopeType?: string; adminLevel?: string; administeredPopulationLabels?: string[]; supportAccessState?: string; redactionSummary?: string; traceRefs?: string[]; correlationId?: string };
   authorityBasis?: unknown;
   contextCapabilityGroups?: unknown;
   traceRefs?: Array<string | Record<string, unknown>>;
@@ -173,7 +177,7 @@ export type ListSearchSurfaceData = {
   surfaceContract?: 'audit.trace.search.v1' | string;
   surfaceContracts?: string[];
   query: string | Record<string, string | number | boolean | undefined | Record<string, unknown>>;
-  rows: Array<Record<string, string | number | boolean | undefined>>;
+  rows: Array<Record<string, string | number | boolean | undefined | Record<string, unknown> | Array<unknown>>>;
   pageInfo?: { nextPageToken?: string; nextCursor?: string; totalKnownCount?: number };
   filterState?: Record<string, string | number | boolean | undefined>;
   mobileFallback?: string;
@@ -346,6 +350,7 @@ export type DetailEditSurfaceData = {
   lastAdminImpact?: string;
   message?: string;
   status?: string;
+  statusOptions?: Array<{ value?: string; status?: string; label?: string; actionId?: string }>;
   systemStates?: string[];
 };
 

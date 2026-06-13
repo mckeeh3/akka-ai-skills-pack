@@ -80,11 +80,7 @@ function OrganizationDirectory({ envelope, onAction }: Props) {
   const organizations = data.organizations ?? [];
   const [query, setQuery] = useState(String(data.filters?.query ?? ''));
   const [status, setStatus] = useState(String(data.filters?.status ?? ''));
-  const filteredOrganizations = useMemo(() => organizations.filter((organization) => {
-    const queryMatch = !query.trim() || organization.organizationName.toLowerCase().includes(query.trim().toLowerCase()) || organization.organizationId.toLowerCase().includes(query.trim().toLowerCase());
-    const statusMatch = !status || organization.status === status;
-    return queryMatch && statusMatch;
-  }), [organizations, query, status]);
+  const visibleOrganizations = useMemo(() => organizations, [organizations]);
 
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -105,10 +101,10 @@ function OrganizationDirectory({ envelope, onAction }: Props) {
           </select>
           <button className="surface-action-link secondary" type="submit">Refresh list</button>
         </form>
-        <div className="surface-section-heading compact"><div><p className="eyebrow">{filteredOrganizations.length} visible</p><h4 id={`${envelope.surfaceId}-list-heading`}>Organization directory</h4></div></div>
-        {filteredOrganizations.length === 0 ? <p className="surface-empty-copy">{data.emptyMessage ?? 'No Organizations are visible for this safe filter.'}</p> : (
+        <div className="surface-section-heading compact"><div><p className="eyebrow">{visibleOrganizations.length} visible</p><h4 id={`${envelope.surfaceId}-list-heading`}>Organization directory</h4></div><p>Filtering, row visibility, and counts are backend-authored; local query text is submitted through the governed refresh action only.</p></div>
+        {visibleOrganizations.length === 0 ? <p className="surface-empty-copy">{data.emptyMessage ?? 'No Organizations are visible for this safe filter.'}</p> : (
           <div className="user-admin-clean-list" role="list">
-            {filteredOrganizations.map((organization) => (
+            {visibleOrganizations.map((organization) => (
               <button key={organization.organizationId} type="button" role="listitem" className="user-admin-clean-row organization-admin-row" onClick={() => run(envelope, onAction, 'action-organization-read', { organizationId: organization.organizationId })}>
                 <span className="user-admin-person"><strong>{organization.organizationName}</strong><small>{organization.organizationId}</small></span>
                 <span>{organization.safeLifecycleSummary ?? 'Tenant boundary only'}</span>
@@ -120,7 +116,7 @@ function OrganizationDirectory({ envelope, onAction }: Props) {
       </section>
       <section className="user-admin-list-panel" aria-labelledby={`${envelope.surfaceId}-tasks-heading`}>
         <div className="surface-section-heading compact"><div><p className="eyebrow">Things I can do</p><h4 id={`${envelope.surfaceId}-tasks-heading`}>Organization tasks</h4></div></div>
-        <button className="surface-action-link primary" type="button" onClick={() => run(envelope, onAction, 'action-open-organization-create', {})}>Create Organization</button>
+        {envelope.actions.some((action) => action.actionId === 'action-open-organization-create' && !action.disabled) ? <button className="surface-action-link primary" type="button" onClick={() => run(envelope, onAction, 'action-open-organization-create', {})}>Create Organization</button> : <p className="surface-empty-copy">No backend-authorized create action is available in this selected context.</p>}
         <p className="surface-empty-copy">Create, edit, suspend, and reactivate work is delegated to dedicated task surfaces. Directory rows open safe detail first.</p>
       </section>
     </div>

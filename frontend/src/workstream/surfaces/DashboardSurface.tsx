@@ -110,6 +110,8 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
     <SurfaceStateFrame envelope={envelope}>
       <p className="sr-only">Surface contract: {data.surfaceContract ?? 'user_admin.dashboard.v1'}. Browser-visible capability count: {data.capabilityIds?.length ?? envelope.authContext.visibleCapabilityIds.length}. Tenant: {data.accountContext?.tenantId ?? envelope.authContext.tenantId}. Scope: {data.accountContext?.customerId ?? envelope.authContext.customerId ?? 'Tenant scope'}.</p>
 
+      <UserAdminHero envelope={envelope} />
+
       <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-attention-heading`}>
         <div className="surface-section-heading">
           <div><p className="eyebrow">Needs admin attention</p><h4 id={`${envelope.surfaceId}-attention-heading`}>Things that need my attention</h4></div>
@@ -178,6 +180,30 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
         </section>
       )}
     </SurfaceStateFrame>
+  );
+}
+
+function UserAdminHero({ envelope }: { envelope: SurfaceEnvelope<DashboardSurfaceData> }) {
+  const data = envelope.data;
+  const hero = data.hero;
+  const accountContext = data.accountContext;
+  const administeredLabels = hero?.administeredPopulationLabels ?? data.administeredPopulations?.map((population) => population.label) ?? [];
+  return (
+    <section className="my-account-command-hero user-admin-command-hero" aria-label="User Admin scope summary">
+      <div>
+        <p className="eyebrow">User Admin · selected AuthContext</p>
+        <h3>{hero?.title ?? data.scopeLabel ?? envelope.title}</h3>
+        <p>{hero?.redactionSummary ?? renderSurfaceValue(data.redaction) ?? 'Backend-selected scope, redaction, and capability boundaries apply to every surface action.'}</p>
+      </div>
+      <dl className="authority-summary-grid" aria-label="Selected User Admin authority">
+        <div><dt>Scope</dt><dd>{hero?.scopeLabel ?? data.scopeLabel ?? accountContext?.authority ?? 'Selected scope'}</dd></div>
+        <div><dt>Scope type</dt><dd>{hero?.scopeType ?? String((data.selectedAuthContext as Record<string, unknown> | undefined)?.scopeType ?? 'backend selected')}</dd></div>
+        <div><dt>Admin level</dt><dd>{hero?.adminLevel ?? data.adminLevel ?? 'backend selected'}</dd></div>
+        <div><dt>Authority basis</dt><dd>{renderSurfaceValue(data.authorityBasis) ?? 'Backend-owned capabilities and selected AuthContext'}</dd></div>
+        {hero?.supportAccessState && <div><dt>Support access</dt><dd>{String(hero.supportAccessState)}</dd></div>}
+        <div><dt>Visible populations</dt><dd>{administeredLabels.length > 0 ? administeredLabels.join(', ') : 'None visible in this context'}</dd></div>
+      </dl>
+    </section>
   );
 }
 
@@ -352,16 +378,14 @@ function cleanUserAdminActionLabel(label: string): string {
   return label.replace(/ · /g, ' — ');
 }
 
+// Backend-authored User Admin queue payloads commonly carry action-useradmin-read-access-review,
+// action-read-support-access, action-open-admin-audit, and action-display-user-list.
+// This renderer intentionally does not infer those actions from queue labels.
 function userAdminQueueAction(queue: NonNullable<DashboardSurfaceData['attentionQueues']>[number], actionById: Map<string, SurfaceAction>): SurfaceAction | undefined {
-  const explicitAction = (queue.actionId && actionById.get(queue.actionId)) || (queue.targetSurfaceId ? actionForTarget(queue.targetSurfaceId, actionById) : undefined);
-  if (explicitAction) return explicitAction;
-
-  const queueText = `${queue.queueId} ${queue.label} ${queue.filter ?? ''}`.toLowerCase();
-  if (/access.*review|review/.test(queueText)) return actionById.get('action-useradmin-read-access-review') ?? actionById.get('action-useradmin-start-access-review');
-  if (/support/.test(queueText)) return actionById.get('action-read-support-access') ?? actionForTarget('surface-user-admin-users', actionById);
-  if (/audit|denied/.test(queueText)) return actionById.get('action-open-admin-audit') ?? actionById.get('action-open-audit-trace') ?? actionForTarget('surface-audit-trace-dashboard', actionById) ?? actionForTarget('surface-audit-timeline', actionById);
-  if (/invitation|delivery|failed/.test(queueText)) return actionById.get('action-display-user-list') ?? actionById.get('action-search-users') ?? actionById.get('action-invite-user');
-  return actionById.get('action-display-user-list') ?? Array.from(actionById.values()).find((action) => action.intent === 'read');
+  if (queue.actionId) return actionById.get(queue.actionId);
+  if (queue.openActionId) return actionById.get(queue.openActionId);
+  if (queue.targetSurfaceId) return actionForTarget(queue.targetSurfaceId, actionById);
+  return undefined;
 }
 
 function backendAuthoredUserAdminPopulationCards(data: DashboardSurfaceData, actionById: Map<string, SurfaceAction>): Array<{ cardId: string; label: string; value: string | number; scope: string; summary: string; action?: SurfaceAction }> {

@@ -54,11 +54,16 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
       {!isMyAccountDigest && <p role="status">Workflow {envelope.data.workflowId} is {statusText}.</p>}
       {isMyAccountDigest && <p role="status">Personal attention digest {envelope.data.digestTaskId ?? envelope.data.workflowId ?? 'request'} is {statusText}.</p>}
       {isUserAdminWorkflow(envelope) && <UserAdminWorkflowBranchReturn envelope={envelope} onAction={onAction} />}
-      {envelope.data.surfaceContract && <p className="form-status">Surface contract: {envelope.data.surfaceContract}</p>}
-      {(envelope.data.taskId || envelope.data.digestTaskId || envelope.data.autonomousAgentTaskId) && <p className="form-status">Task id: {envelope.data.taskId ?? envelope.data.digestTaskId ?? envelope.data.autonomousAgentTaskId}</p>}
       {envelope.data.summary && <p className="surface-state-inline forbidden">{envelope.data.summary}</p>}
-      {envelope.data.requiredCapabilityId && <p className="form-status">Required capability: {envelope.data.requiredCapabilityId}</p>}
-      {envelope.data.initiatingCapabilityId && <p className="form-status">Initiating capability: {envelope.data.initiatingCapabilityId}</p>}
+      {(envelope.data.surfaceContract || envelope.data.taskId || envelope.data.digestTaskId || envelope.data.autonomousAgentTaskId || envelope.data.requiredCapabilityId || envelope.data.initiatingCapabilityId) && (
+        <details className="dashboard-evidence-drawer">
+          <summary>Role-gated runtime diagnostics</summary>
+          {envelope.data.surfaceContract && <p className="form-status">Surface contract: {envelope.data.surfaceContract}</p>}
+          {(envelope.data.taskId || envelope.data.digestTaskId || envelope.data.autonomousAgentTaskId) && <p className="form-status">Task id: {envelope.data.taskId ?? envelope.data.digestTaskId ?? envelope.data.autonomousAgentTaskId}</p>}
+          {envelope.data.requiredCapabilityId && <p className="form-status">Required capability: {envelope.data.requiredCapabilityId}</p>}
+          {envelope.data.initiatingCapabilityId && <p className="form-status">Initiating capability: {envelope.data.initiatingCapabilityId}</p>}
+        </details>
+      )}
       {progressSummary && <p className="form-status">Progress: {progressSummary.percent ?? 0}% · {progressSummary.summary ?? 'No progress summary available'}</p>}
       {envelope.data.resultSummary && <p className="form-status">Result: {envelope.data.resultSummary}</p>}
       {accessReview && (
@@ -71,8 +76,8 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
         </section>
       )}
       {envelope.data.modelToolDataPolicyUsage && (
-        <section className="access-review-trace-summary" aria-label="Model tool data policy usage summary">
-          <h4>Model, tool, data, and policy usage</h4>
+        <details className="access-review-trace-summary dashboard-evidence-drawer" aria-label="Model tool data policy usage summary">
+          <summary>Model, tool, data, and policy usage diagnostics</summary>
           <dl>
             {envelope.data.modelToolDataPolicyUsage.model && <><dt>Model</dt><dd>{envelope.data.modelToolDataPolicyUsage.model}</dd></>}
             {envelope.data.modelToolDataPolicyUsage.tools && <><dt>Tools</dt><dd>{envelope.data.modelToolDataPolicyUsage.tools.join(' · ')}</dd></>}
@@ -80,7 +85,7 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
             {envelope.data.modelToolDataPolicyUsage.policy && <><dt>Policy</dt><dd>{envelope.data.modelToolDataPolicyUsage.policy}</dd></>}
             {envelope.data.modelToolDataPolicyUsage.redaction && <><dt>Redaction</dt><dd>{envelope.data.modelToolDataPolicyUsage.redaction}</dd></>}
           </dl>
-        </section>
+        </details>
       )}
       {providerFailures.length > 0 && (
         <section className="provider-failure-list" aria-label="Provider/runtime failures">

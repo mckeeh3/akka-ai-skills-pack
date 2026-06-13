@@ -463,7 +463,7 @@ class WorkstreamServiceTest {
 
     assertEquals("surface-user-admin-user-detail", detail.resultSurface().surfaceId());
     assertTrue(detail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-users"));
-    assertTrue(detail.resultSurface().toString().contains("Show Users"));
+    assertTrue(detail.resultSurface().toString().contains("Show users"));
 
     var users = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-user-admin-show-users", "user-admin.show-users", "search-user-directory", "USERADMIN_LIST_MEMBERS", null, null, "membership-admin", detail.resultSurface().surfaceId(), "corr-member-branch-return"));
