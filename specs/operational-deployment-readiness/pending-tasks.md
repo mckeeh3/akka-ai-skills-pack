@@ -110,7 +110,7 @@
 
 ### TASK-ODR-03-001: Document or implement health/readiness diagnostics
 
-- status: pending
+- status: done
 - source: specs/operational-deployment-readiness/backlog/01-operational-deployment-readiness-build-backlog.md
 - task brief: specs/operational-deployment-readiness/tasks/02-health-observability/01-health-readiness-diagnostics.md
 - depends on:
@@ -137,6 +137,8 @@
   - startup/frontend/workstream/auth/email/model/audit readiness checks are documented or implemented; missing external config is distinguishable from healthy configured readiness; diagnostics avoid leaking secrets or hidden tenant/customer data
 - notes:
   - vertical contract: cross-cutting operational diagnostics; must not bypass auth or reveal hidden data; docs and optional HTTP endpoint/tests
+  - completed: created `specs/operational-deployment-readiness/health-readiness-diagnostics.md` documenting startup, frontend/static asset, workstream, auth/JWT, email/Resend, model-provider, audit/work-trace readiness diagnostics, safe readiness states, and operator sequence without adding a public diagnostic endpoint
+  - checks: `git diff --check`; `env -u ADMIN_USERS mvn -q -Dtest=WorkstreamServiceTest test`
 
 ### TASK-ODR-04-001: Create deployment runbook and smoke checklist
 
