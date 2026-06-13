@@ -142,7 +142,7 @@
 
 ### TASK-ODR-04-001: Create deployment runbook and smoke checklist
 
-- status: pending
+- status: done
 - source: specs/operational-deployment-readiness/backlog/01-operational-deployment-readiness-build-backlog.md
 - task brief: specs/operational-deployment-readiness/tasks/03-runbooks/01-deployment-runbook-smoke-checklist.md
 - depends on:
@@ -168,6 +168,8 @@
   - runbook explains env setup, startup, smoke commands, expected pass/fail states, provider/model credential checks, static frontend build, rollback/troubleshooting; commands include ADMIN_USERS caveat
 - notes:
   - vertical contract: deployment docs/runbook; smoke references User Admin and readiness surfaces; validation by smoke command and diff check
+  - completed: created `docs/deployment-runbook.md` covering environment setup, startup checks, smoke commands, expected pass/fail states, credentialed provider/model checks, static frontend build validation, rollback, troubleshooting, and the `ADMIN_USERS` caveat
+  - checks: `git diff --check`; `npm --prefix frontend run smoke:user-admin-workstream`
 
 ### TASK-ODR-99-001: Verify operational deployment readiness
 
