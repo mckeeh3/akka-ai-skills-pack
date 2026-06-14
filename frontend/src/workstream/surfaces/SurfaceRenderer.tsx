@@ -40,10 +40,6 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
     return <UserAdminRoleChangePreviewSurface envelope={selectedEnvelope as never} onAction={onAction} />;
   }
 
-  if (isUserAdminRoleChangePreviewSurface(selectedEnvelope)) {
-    return <UserAdminRoleChangePreviewSurface envelope={selectedEnvelope as never} onAction={onAction} />;
-  }
-
   if (isUserAdminTaskSurface(selectedEnvelope)) {
     return <UserAdminTaskSurface envelope={selectedEnvelope as never} onAction={onAction} />;
   }
