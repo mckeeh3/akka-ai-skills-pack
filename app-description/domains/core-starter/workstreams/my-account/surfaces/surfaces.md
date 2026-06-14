@@ -80,7 +80,7 @@ Forbidden payload/content:
 
 ### State and style expectations
 
-The dashboard uses the current AI-first workstream style: authority/context panel, attention counter cards, queue row/cards, trace/evidence blocks, system-message cards, and compact governed action bars. It must define loading, empty, ready, submitting, forbidden, stale/reconnect, partial-data, provider-fail-closed, no-op, and failure states.
+The dashboard uses the current AI-first workstream style: authority/context panel, attention counter cards, trace/evidence blocks, system-message cards, and compact governed action bars. The dashboard's primary attention UI is the multi-workstream `attentionCounters[]` strip. Any `needsAttention[]` or queue row/card rendering must be secondary, collapsed, or trace/evidence-oriented and must not replace the counter-first flow or provide direct frontend-only item navigation. It must define loading, empty, ready, submitting, forbidden, stale/reconnect, partial-data, provider-fail-closed, no-op, and failure states.
 
 ## My profile self-service surface
 

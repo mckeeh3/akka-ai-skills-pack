@@ -2,7 +2,7 @@
 
 ## Acceptance
 
-- Given an authorized caller with selected `AuthContext`, when they open My Account, then `surface-my-account-dashboard` renders as a personal command center with context/authority, top attention counters, `Needs me` items, control panels, authorized workstream links, redaction, and trace refs.
+- Given an authorized caller with selected `AuthContext`, when they open My Account, then `surface-my-account-dashboard` renders as a personal command center with context/authority, top attention counters as the primary attention UI, secondary/collapsed `needsAttention[]` evidence only where useful, control panels, authorized workstream links, redaction, and trace refs.
 - Given the caller opens profile, settings, context authority, notification center, digest/export progress/result/blocked, or open-denied surfaces, then each surface returns its declared contract and frontend-safe payload only for the selected context.
 - Given an allowed action, when it is submitted with valid input, then capability `account-context-and-profile` or the linked notification/digest capability returns the expected structured result and emits required traces.
 - Given a named theme selection is changed in My Account settings, then local preview occurs immediately but durable persistence is only reported after the governed backend settings action succeeds.
