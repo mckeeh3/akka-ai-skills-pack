@@ -146,7 +146,7 @@ export type DashboardSurfaceData = {
   administeredPopulations?: Array<{ populationType: string; label: string; visibleCount: string | number; attentionCount?: string | number; activeCount?: string | number; pendingInvitationCount?: string | number; suspendedOrDisabledCount?: string | number; staleOrExpiredCount?: string | number; reviewCount?: string | number; roleCoverageSummary?: string; targetSurfaceId: string; openActionId: string; capabilityIds?: string[]; traceRefs?: string[] }>;
   authorizedActions?: Array<{ actionId: string; label: string; governedToolId?: string; capabilityId?: string; resultSurfaceId?: string; approvalRequired?: boolean; denialHint?: string }>;
   recentActivity?: Array<{ activityId: string; label: string; summary?: string; traceId?: string; redaction?: string; occurredAt?: string }>;
-  attentionCounters?: Array<{ counterId: string; label: string; value: string | number; severity?: string; status?: string; source?: string; actionId?: string; surfaceId?: string; workstreamId?: string; description?: string }>;
+  attentionCounters?: Array<{ counterId: string; label: string; value: string | number; severity?: string; status?: string; source?: string; actionId?: string; surfaceId?: string; targetSurfaceId?: string; workstreamId?: string; description?: string; requiredCapabilityId?: string; redaction?: string; traceRefs?: string[] }>;
   needsAttention?: Array<AttentionItem>;
   controlPanels?: Array<{ panelId: string; label: string; summary: string; state?: string; value?: string | number; surfaceId?: string; actionId?: string; severity?: string }>;
   authorizedWorkstreamLinks?: Array<{ workstreamId: string; label: string; requiredCapabilityId?: string; surfaceId?: string; actionId?: string; status?: string }>;
@@ -414,6 +414,8 @@ export type WorkflowStatusSurfaceData = {
   safety?: string;
   authorizedAttentionCount?: number;
   sectionRefs?: string[];
+  phase?: string;
+  progressEvents?: string[];
   redaction?: string;
   accessReview?: {
     surfaceContract: 'user_admin.access_review_task.v1';
@@ -502,6 +504,11 @@ export type OutcomeSurfaceData = {
   authorizedAttentionCount?: number;
   sectionRefs?: string[];
   evidenceRefs?: Array<string | { refId?: string; label?: string; summary?: string; traceId?: string }>;
+  materialEvents?: Array<string | { refId?: string; label?: string; summary?: string; traceId?: string }>;
+  recommendations?: Array<string | { recommendationId?: string; label?: string; summary?: string; risk?: string; confidence?: string }>;
+  omissions?: Record<string, unknown>;
+  authorizedSourceCounts?: Record<string, number>;
+  sourceSurfaceRefs?: Array<string | Record<string, unknown>>;
   traceRefs?: string[];
   redaction?: string;
   noDirectMutation?: boolean;

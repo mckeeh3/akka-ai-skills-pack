@@ -57,7 +57,7 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
         </div>
         {envelope.data.version !== undefined && <span className="version-chip sr-only">Version {envelope.data.version}</span>}
       </section>
-      {isMyAccountSurface && <MyAccountDetailOverview envelope={envelope} fieldValues={fieldValues} />}
+      {isMyAccountSurface && <MyAccountDetailOverview envelope={envelope} fieldValues={fieldValues} onAction={onAction} />}
       {permissionState && (
         <p className={permissionState.canEdit ? 'form-status' : 'form-status conflict'}>
           Edit authority: {permissionState.authoritativeCapabilityId}. {permissionState.reason}
@@ -362,7 +362,7 @@ function isUserAdminSurface(envelope: SurfaceEnvelope<DetailEditSurfaceData>) {
   return envelope.ownerFunctionalAgentId === 'agent-user-admin' || envelope.surfaceId.startsWith('surface-user-admin-') || envelope.data.surfaceContract?.startsWith('user_admin.');
 }
 
-function MyAccountDetailOverview({ envelope, fieldValues }: { envelope: SurfaceEnvelope<DetailEditSurfaceData>; fieldValues: Record<string, string> }) {
+function MyAccountDetailOverview({ envelope, fieldValues, onAction }: { envelope: SurfaceEnvelope<DetailEditSurfaceData>; fieldValues: Record<string, string>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
   if (envelope.surfaceId === 'surface-my-profile') {
     return (
       <section className="my-account-detail-overview" aria-label="Profile self-service boundary">
@@ -384,8 +384,12 @@ function MyAccountDetailOverview({ envelope, fieldValues }: { envelope: SurfaceE
         <article className="authority-context-panel named-theme-preview-panel">
           <h4>Named theme selection</h4>
           <p>Theme changes preview immediately in this browser by switching documented theme tokens. Save/Confirm persists through the governed backend settings action.</p>
-          <p className="form-status" role="status" aria-live="polite">Previewing: {selectedTheme ?? 'backend selected theme'} · no light/dark/system mode is exposed.</p>
-          {envelope.data.availableThemes && envelope.data.availableThemes.length > 0 && <ul className="named-theme-list">{envelope.data.availableThemes.map((theme) => <li key={theme.value ?? theme.themeId ?? theme.id}><strong>{theme.label ?? theme.name}</strong><span>{theme.value ?? theme.themeId ?? theme.id}</span></li>)}</ul>}
+          <p className="form-status" role="status" aria-live="polite">Preview unsaved: {selectedTheme ?? 'backend selected theme'} · no light/dark/system mode is exposed.</p>
+          <p className="field-helper">Save/Confirm is required before this browser preview becomes your persisted preference. If save fails, keep this preview local and retry or select the backend theme again.</p>
+          {envelope.data.availableThemes && envelope.data.availableThemes.length > 0 && <ul className="named-theme-list" aria-label="Available named themes">{envelope.data.availableThemes.map((theme) => {
+            const themeId = theme.value ?? theme.themeId ?? theme.id ?? '';
+            return <li key={themeId} className={themeId === selectedTheme ? 'selected' : undefined}><strong>{theme.label ?? theme.name}</strong><span>{themeId}</span>{themeId === selectedTheme && <em>previewing</em>}</li>;
+          })}</ul>}
         </article>
       </section>
     );
@@ -402,9 +406,22 @@ function MyAccountDetailOverview({ envelope, fieldValues }: { envelope: SurfaceE
             <div><dt>Visible capabilities</dt><dd>{String(envelope.data.visibleCapabilitySummary?.count ?? envelope.authContext.visibleCapabilityIds.length)}</dd></div>
           </dl>
         </article>
+        <p className="surface-state-inline stale">Switching context refreshes the shell authority basis, workstream counters, traces, notifications, and any open structured surfaces.</p>
         {envelope.data.availableContexts && envelope.data.availableContexts.length > 0 && (
           <section className="available-context-grid" aria-label="Authorized context switch targets">
-            {envelope.data.availableContexts.map((context, index) => <article key={String(context.selectedContextId ?? index)} className="surface-row-card"><p><span>{String(context.status ?? 'active')}</span><strong>{String(context.tenantId ?? 'Authorized tenant')}</strong></p><p>{String(context.customerId ?? 'Tenant scope')} · {Array.isArray(context.roleIds) ? context.roleIds.join(', ') : 'roles redacted'}</p></article>)}
+            {envelope.data.availableContexts.map((context, index) => {
+              const action = envelope.actions.find((candidate) => candidate.actionId === String(context.actionId ?? 'action-select-my-context'));
+              const selectedContextId = String(context.selectedContextId ?? '');
+              const selected = context.selected === true || selectedContextId === envelope.authContext.selectedContextId;
+              return (
+                <article key={String(context.selectedContextId ?? index)} className={`surface-row-card ${selected ? 'selected' : ''}`}>
+                  <p><span>{String(context.status ?? 'active')}{selected ? ' · selected' : ''}</span><strong>{String(context.tenantId ?? 'Authorized tenant')}</strong></p>
+                  <p>{String(context.customerId ?? 'Tenant scope')} · {Array.isArray(context.roleIds) ? context.roleIds.join(', ') : 'roles redacted'}</p>
+                  {Boolean(context.staleImpact) && <p className="field-helper">{String(context.staleImpact)}</p>}
+                  {action && !selected && context.selectable !== false ? <button type="button" className="surface-action-link" onClick={() => onAction?.(action, envelope.surfaceId, { selectedContextId, correlationId: envelope.correlationId })}>Switch to this context</button> : <p className="form-status">{selected ? 'Current context' : 'Context switch is not available'}</p>}
+                </article>
+              );
+            })}
           </section>
         )}
       </section>

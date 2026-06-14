@@ -238,34 +238,31 @@ function MyAccountCommandCenter({ envelope, onAction, onSignOut }: DashboardSurf
         <div className="surface-section-heading">
           <div>
             <p className="eyebrow">Attention</p>
-            <h4 id={`${envelope.surfaceId}-attention-heading`}>Items that need my attention</h4>
+            <h4 id={`${envelope.surfaceId}-attention-heading`}>Items that need my attention by workstream</h4>
           </div>
+          <p>Open a counter to recheck authorization and continue in the source workstream. Zero-count counters still open setup, history, or clear-state confirmation where available.</p>
         </div>
         <div className="attention-counter-strip" aria-label="Attention by available workstream">
           {counters.map((counter) => {
             const action = counter.actionId ? actionById.get(counter.actionId) : undefined;
             const status = counter.status ?? counter.description ?? 'Backend-owned attention';
-            const body = <><span>{counter.label}</span><strong>{counter.value}</strong><em>{formatStatus(status)}</em></>;
-            return action ? <button key={counter.counterId} type="button" className={`attention-counter-card ${counter.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId)} aria-label={`Open ${counter.label}: ${status}; ${counter.value} attention items`}>{body}</button> : <article key={counter.counterId} className={`attention-counter-card ${counter.severity ?? 'info'}`}>{body}</article>;
+            const body = <><span>{counter.label}</span><strong>{counter.value}</strong><em>{formatStatus(status)}</em>{counter.description && <small>{counter.description}</small>}<small>{counter.redaction ?? 'Visible in selected context'}</small></>;
+            const input = { targetFunctionalAgentId: counter.workstreamId ?? '', targetSurfaceId: counter.targetSurfaceId ?? counter.surfaceId ?? '', requiredCapabilityId: counter.requiredCapabilityId ?? '', correlationId: envelope.correlationId };
+            return action ? <button key={counter.counterId} type="button" className={`attention-counter-card ${counter.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId, input)} aria-label={`Open ${counter.label}: ${status}; ${counter.value} attention items`}>{body}</button> : <article key={counter.counterId} className={`attention-counter-card ${counter.severity ?? 'info'}`}>{body}</article>;
           })}
         </div>
       </section>
 
       {data.attentionItems && data.attentionItems.length > 0 ? (
-        <section className="my-account-section" aria-labelledby={`${envelope.surfaceId}-attention-items-heading`}>
-          <div className="surface-section-heading">
-            <div>
-              <p className="eyebrow">Actionable attention</p>
-              <h4 id={`${envelope.surfaceId}-attention-items-heading`}>Personal workstream items</h4>
-            </div>
-            <p>Open an item to review the source work or its trace.</p>
-          </div>
-          <AttentionList items={data.attentionItems} label="Backend-derived attention items; Audit/Trace attention items" />
-        </section>
+        <details className="dashboard-evidence-drawer my-account-attention-evidence">
+          <summary>Backend attention evidence retained for trace review</summary>
+          <p>Detailed items are evidence only on the command center. Open the source workstream through an attention counter to inspect and act on the item with backend authorization.</p>
+          <AttentionList items={data.attentionItems} label="Collapsed backend-derived attention evidence; source opening stays governed" actionById={actionById} surfaceId={envelope.surfaceId} onAction={onAction} />
+        </details>
       ) : (
         <section className="surface-empty-state my-account-empty-attention" aria-label="No current My Account attention">
           <h4>No personal attention items</h4>
-          <p>Nothing visible needs action in this context. You can still update settings or review notifications below.</p>
+          <p>Authorized workstream counters are clear in this context. You can still update settings or review notifications below.</p>
         </section>
       )}
 
@@ -312,22 +309,27 @@ function MyAccountCommandCenter({ envelope, onAction, onSignOut }: DashboardSurf
 // Contract marker: aria-label="Backend-derived attention items; Audit/Trace attention items"
 // Contract marker: data-attention-source={envelope.data.attentionSource ?? 'attention.list_workstream_items'}
 // Contract markers for backend metadata retained in payload but not rendered as dashboard clutter: Governed tool: Target surface:
-function AttentionList({ items, label }: { items: AttentionItem[]; label: string }) {
+function AttentionList({ items, label, actionById, surfaceId, onAction }: { items: AttentionItem[]; label: string; actionById?: Map<string, SurfaceAction>; surfaceId?: string; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
   return (
     <section className="my-account-attention-card-list" aria-label={label} data-attention-source="attention.list_my_account_items">
-      {items.map((item) => (
-        <article key={item.itemId} className={`my-account-attention-card ${attentionSeverityClass(item.severity ?? item.status)}`} data-attention-redaction={item.redaction ?? 'full'}>
-          <div>
-            <p className="eyebrow">{formatAttentionSource(item.sourceWorkstreamId)} · {formatStatus(item.severity ?? item.status)}</p>
-            <h4>{item.label ?? item.title ?? item.itemId}</h4>
-            {item.summary && <p>{item.summary}</p>}
-          </div>
-          <div className="attention-card-actions">
-            {item.surfaceRef?.targetSurfaceId && <a className="surface-action-link" href={`/ui?surfaceId=${encodeURIComponent(item.surfaceRef.targetSurfaceId)}`}>Open</a>}
-            {item.traceId && <a className="surface-action-link secondary" href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(item.traceId)}`}>View trace</a>}
-          </div>
-        </article>
-      ))}
+      {items.map((item) => {
+        const openAction = item.surfaceRef?.targetFunctionalAgentId ? actionForWorkstream(item.surfaceRef.targetFunctionalAgentId, actionById) : actionForWorkstream(item.sourceWorkstreamId, actionById);
+        const input = { targetFunctionalAgentId: item.surfaceRef?.targetFunctionalAgentId ?? item.sourceWorkstreamId ?? '', targetSurfaceId: item.surfaceRef?.targetSurfaceId ?? '', targetItemId: item.surfaceRef?.targetItemId ?? item.itemId, requiredCapabilityId: item.surfaceRef?.requiredCapabilityId ?? item.capabilityId ?? '', correlationId: item.traceId ?? '' };
+        return (
+          <article key={item.itemId} className={`my-account-attention-card ${attentionSeverityClass(item.severity ?? item.status)}`} data-attention-redaction={item.redaction ?? 'full'}>
+            <div>
+              <p className="eyebrow">{formatAttentionSource(item.sourceWorkstreamId)} · {formatStatus(item.severity ?? item.status)}</p>
+              <h4>{item.label ?? item.title ?? item.itemId}</h4>
+              {item.summary && <p>{item.summary}</p>}
+              <p className="capability-basis">Redaction: {item.redaction ?? 'full'} · Source opens through governed workstream action.</p>
+            </div>
+            <div className="attention-card-actions">
+              {openAction && surfaceId ? <button type="button" className="surface-action-link" onClick={() => onAction?.(openAction, surfaceId, input)}>Open source workstream</button> : <span className="form-status">Open from the matching counter above</span>}
+              {item.traceId && <a className="surface-action-link secondary" href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(item.traceId)}`}>View trace</a>}
+            </div>
+          </article>
+        );
+      })}
     </section>
   );
 }
@@ -344,7 +346,9 @@ function defaultAttentionCounters(data: DashboardSurfaceData): NonNullable<Dashb
       description: card.description,
       actionId: card.actionId,
       surfaceId: card.surfaceId,
-      workstreamId: card.workstreamId
+      targetSurfaceId: card.targetSurfaceId ?? card.surfaceId,
+      workstreamId: card.workstreamId,
+      redaction: 'Visible in selected context'
     }));
 }
 
@@ -428,6 +432,18 @@ function backendAuthoredUserAdminQueues(data: DashboardSurfaceData): NonNullable
 
 function actionForTarget(targetSurfaceId: string, actionById: Map<string, SurfaceAction>): SurfaceAction | undefined {
   return Array.from(actionById.values()).find((action) => action.resultSurface?.updateSurfaceId === targetSurfaceId || action.resultSurface?.appendSurfaceType === targetSurfaceId || action.shellRequest?.targetSurfaceId === targetSurfaceId);
+}
+
+function actionForWorkstream(workstreamId: string | undefined, actionById: Map<string, SurfaceAction> | undefined): SurfaceAction | undefined {
+  if (!workstreamId || !actionById) return undefined;
+  const knownActions: Record<string, string> = {
+    'agent-user-admin': 'action-open-user-admin',
+    'agent-agent-admin': 'action-open-agent-admin',
+    'agent-audit-trace': 'action-open-audit-trace',
+    'agent-governance-policy': 'action-open-governance-policy'
+  };
+  const actionId = knownActions[workstreamId];
+  return actionId ? actionById.get(actionId) : undefined;
 }
 
 function userDirectoryAction(actionById: Map<string, SurfaceAction>): SurfaceAction | undefined {

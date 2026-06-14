@@ -178,6 +178,8 @@ public final class MyAccountService {
               "description", agent.purpose(),
               "severity", severity,
               "surfaceId", surfaceIdForWorkstream(agent.functionalAgentId()),
+              "requiredCapabilityId", agent.requiredCapabilityIds().isEmpty() ? "" : agent.requiredCapabilityIds().get(0),
+              "redaction", "authorized selected-context summary",
               "actionId", actionIdForWorkstream(agent.functionalAgentId()));
         })
         .toList();

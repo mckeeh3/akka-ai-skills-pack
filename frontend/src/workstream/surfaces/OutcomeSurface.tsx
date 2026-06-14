@@ -34,6 +34,8 @@ function MetricsOutcome({ data }: { data: OutcomeSurfaceData }) {
 
 function MyAccountDigestResult({ data }: { data: OutcomeSurfaceData }) {
   const evidenceRefs = data.evidenceRefs ?? [];
+  const materialEvents = data.materialEvents ?? [];
+  const recommendations = data.recommendations ?? [];
   const sectionRefs = data.sectionRefs ?? [];
   return (
     <section className="my-account-digest-result" aria-label="Personal attention digest advisory result">
@@ -53,13 +55,27 @@ function MyAccountDigestResult({ data }: { data: OutcomeSurfaceData }) {
           {sectionRefs.map((section) => <article key={section} className="surface-section-card"><h4>{formatStatus(section)}</h4><p>Included in the advisory digest output.</p></article>)}
         </section>
       )}
+      {recommendations.length > 0 && (
+        <section className="recommendation-list" aria-label="Digest recommendations">
+          <h4>Recommendations</h4>
+          <ul>{recommendations.map((recommendation, index) => <li key={recommendationKey(recommendation, index)}><strong>{recommendationLabel(recommendation)}</strong>{typeof recommendation !== 'string' && recommendation.summary && <p>{recommendation.summary}</p>}</li>)}</ul>
+        </section>
+      )}
+      {materialEvents.length > 0 && (
+        <section className="evidence-ref-list" aria-label="Digest material events">
+          <h4>Material events</h4>
+          <ul>{materialEvents.map((event, index) => <li key={evidenceKey(event, index)}><strong>{evidenceLabel(event)}</strong>{typeof event !== 'string' && event.summary && <span> — {event.summary}</span>}</li>)}</ul>
+        </section>
+      )}
+      {data.omissions && <p className="form-status">Omissions/redaction: {renderSurfaceValue(data.omissions)}</p>}
+      {data.authorizedSourceCounts && <p className="form-status">Authorized source counts: {renderSurfaceValue(data.authorizedSourceCounts)}</p>}
       {evidenceRefs.length > 0 && (
         <section className="evidence-ref-list" aria-label="Digest evidence references">
           <h4>Evidence and source references</h4>
           <ul>
             {evidenceRefs.map((evidence, index) => {
-              const key = typeof evidence === 'string' ? evidence : (evidence.refId ?? evidence.label ?? `evidence-${index}`);
-              const label = typeof evidence === 'string' ? evidence : (evidence.label ?? evidence.refId ?? 'Evidence');
+              const key = evidenceKey(evidence, index);
+              const label = evidenceLabel(evidence);
               const summary = typeof evidence === 'string' ? undefined : evidence.summary;
               const traceId = typeof evidence === 'string' ? undefined : evidence.traceId;
               return <li key={key}><strong>{label}</strong>{summary && <span> — {summary}</span>}{traceId && <a href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(traceId)}`}>trace</a>}</li>;
@@ -70,6 +86,30 @@ function MyAccountDigestResult({ data }: { data: OutcomeSurfaceData }) {
       {data.traceRefs && data.traceRefs.length > 0 && <section className="trace-link-list" aria-label="Digest trace links">{data.traceRefs.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}
     </section>
   );
+}
+
+function evidenceKey(evidence: string | { refId?: string; label?: string }, index: number) {
+  return typeof evidence === 'string' ? evidence : (evidence.refId ?? evidence.label ?? `evidence-${index}`);
+}
+
+function evidenceLabel(evidence: string | { refId?: string; label?: string }) {
+  return typeof evidence === 'string' ? evidence : (evidence.label ?? evidence.refId ?? 'Evidence');
+}
+
+function recommendationKey(recommendation: string | { recommendationId?: string; label?: string }, index: number) {
+  return typeof recommendation === 'string' ? recommendation : (recommendation.recommendationId ?? recommendation.label ?? `recommendation-${index}`);
+}
+
+function recommendationLabel(recommendation: string | { label?: string }) {
+  return typeof recommendation === 'string' ? recommendation : (recommendation.label ?? 'Recommendation');
+}
+
+function renderSurfaceValue(value: unknown): string {
+  if (value == null) return 'not reported';
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (Array.isArray(value)) return value.map(renderSurfaceValue).join(' · ');
+  if (typeof value === 'object') return Object.entries(value as Record<string, unknown>).map(([key, entry]) => `${key}: ${renderSurfaceValue(entry)}`).join(' · ');
+  return String(value);
 }
 
 function formatStatus(value: string) {

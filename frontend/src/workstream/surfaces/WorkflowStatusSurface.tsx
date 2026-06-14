@@ -170,10 +170,12 @@ function MyAccountDigestProgress({ data }: { data: WorkflowStatusSurfaceData }) 
       </div>
       <dl className="authority-summary-grid">
         <div><dt>Status</dt><dd>{formatStatus(data.status)}</dd></div>
+        <div><dt>Phase</dt><dd>{formatStatus(data.phase ?? data.status)}</dd></div>
         <div><dt>Authorized items</dt><dd>{data.authorizedAttentionCount ?? 0}</dd></div>
         <div><dt>Direct mutation</dt><dd>{data.noDirectMutation ? 'Not allowed' : 'Not reported'}</dd></div>
         <div><dt>Redaction</dt><dd>{data.redaction ?? 'Hidden workstreams/items are not counted or named'}</dd></div>
       </dl>
+      {data.progressEvents && data.progressEvents.length > 0 && <ol className="workflow-steps" aria-label="Personal digest progress events">{data.progressEvents.map((event, index) => <li key={`${event}-${index}`} className={data.status}><span>{formatStatus(event)}</span><span>{formatStatus(data.status)}</span></li>)}</ol>}
       {data.safety && <p className="surface-state-inline forbidden">{data.safety}</p>}
     </section>
   );
