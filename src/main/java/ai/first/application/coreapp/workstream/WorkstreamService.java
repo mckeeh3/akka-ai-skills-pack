@@ -757,7 +757,7 @@ public final class WorkstreamService {
     }
 
     var runtime = workstreamAgentRuntimeInvoker.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest(
-        actor.selectedContext().tenantId(), request.functionalAgentId(), actor.selectedContext(), requestCorrelationId, request.prompt()));
+        actor.selectedContext().tenantId(), runtimeAgentDefinitionId(request.functionalAgentId()), actor.selectedContext(), requestCorrelationId, request.prompt()));
     var responseSeed = firstNonBlank(request.idempotencyKey(), requestCorrelationId, request.functionalAgentId());
     var userItemId = "item-message-user-" + stableSuffix(responseSeed + ":user");
     var agentItemId = "item-message-agent-" + stableSuffix(responseSeed + ":agent");
@@ -775,6 +775,10 @@ public final class WorkstreamService {
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
 
+
+  private String runtimeAgentDefinitionId(String functionalAgentId) {
+    return AGENT_ADMIN_AGENT_ID.equals(functionalAgentId) ? AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID : functionalAgentId;
+  }
 
   private void persistDeniedFunctionalAgent(AuthContextResolver.ResolvedMe actor, String functionalAgentId, String correlationId, String idempotencyKey, String reasonCode) {
     var now = Instant.now().toString();
