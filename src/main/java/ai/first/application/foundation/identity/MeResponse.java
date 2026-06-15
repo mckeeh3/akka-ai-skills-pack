@@ -163,12 +163,13 @@ public record MeResponse(
       String icon,
       WorkstreamIconDescriptor workstreamIcon,
       String defaultSurfaceType,
+      String defaultSurfaceId,
       List<String> requiredCapabilityIds,
       FunctionalAgentAttention attention,
       String availability,
       String deniedReason) {
     public FunctionalAgentSummary withAttention(FunctionalAgentAttention attention) {
-      return new FunctionalAgentSummary(functionalAgentId, label, purpose, icon, workstreamIcon, defaultSurfaceType, requiredCapabilityIds, attention, availability, deniedReason);
+      return new FunctionalAgentSummary(functionalAgentId, label, purpose, icon, workstreamIcon, defaultSurfaceType, defaultSurfaceId, requiredCapabilityIds, attention, availability, deniedReason);
     }
 
     public static List<FunctionalAgentSummary> fromCapabilities(List<String> capabilities) {
@@ -192,6 +193,7 @@ public record MeResponse(
               "my-account",
               icon("workstream-my-account", "My Account", "my-account", "user account avatar", "accent-account", "Open My Account workstream from the signed-in user tile"),
               "markdown_response",
+              null,
               List.of("my_account.view_summary", "my_account.ask_agent"),
               null,
               profileVisible ? "visible" : "denied",
@@ -203,18 +205,20 @@ public record MeResponse(
               "users",
               icon("workstream-user-admin", "User Admin", "users-admin", "users and roles", "accent-users", "Open User Admin workstream"),
               "markdown_response",
+              null,
               List.of(userAdminCapability == null ? "secure-tenant-user-foundation" : userAdminCapability),
               null,
               userAdminVisible ? "visible" : "denied",
               userAdminVisible ? null : "Missing User Admin read capability."),
           new FunctionalAgentSummary(
-              "agent-agent-admin",
+              "agent-admin-agent",
               "Agent Admin",
               "Govern agent definitions, prompts, skills, tool boundaries, model refs, test runs, approvals, denials, and runtime traces.",
               "bot",
               icon("workstream-agent-admin", "Agent Admin", "bot-spark", "agent bot sparkle", "accent-agents", "Open Agent Admin workstream"),
-              "markdown_response",
-              List.of("agent_admin.submit_turn", "agent_admin.list_definitions", "agent_admin.get_definition", "agent_admin.get_prompt_version", "agent_admin.get_skill_version", "agent_admin.get_reference_version", "agent_admin.get_manifest", "agent_admin.get_model_ref", "agent_admin.get_tool_boundary", "agent_admin.simulate_tool_boundary", "agent_admin.draft_behavior_change", "agent_admin.submit_behavior_change_for_review", "agent_admin.approve_behavior_change", "agent_admin.reject_behavior_change", "agent_admin.activate_behavior_change", "agent_admin.cancel_behavior_change", "agent_admin.rollback_behavior_change", "agent_admin.list_seed_material", "agent_admin.reseed_missing_defaults", "agent_admin.start_behavior_review_task", "agent_admin.get_behavior_review_task", "agent_admin.cancel_behavior_review_task"),
+              "dashboard",
+              "surface-agent-admin-dashboard",
+              List.of("agent_admin.submit_turn", "agent_admin.list_definitions", "agent_admin.get_definition", "agent_admin.get_prompt_version", "agent_admin.get_skill_version", "agent_admin.get_reference_version", "agent_admin.get_manifest", "agent_admin.get_model_ref", "agent_admin.get_tool_boundary", "agent_admin.simulate_tool_boundary", "agent_admin.draft_behavior_change", "agent_admin.submit_behavior_change_for_review", "agent_admin.approve_behavior_change", "agent_admin.reject_behavior_change", "agent_admin.activate_behavior_change", "agent_admin.cancel_behavior_change", "agent_admin.rollback_behavior_change", "agent_admin.list_seed_material", "agent_admin.reseed_missing_defaults", "agent_admin.prompt_risk_review.start", "agent_admin.prompt_risk_review.read", "agent_admin.prompt_risk_review.cancel", "agent_admin.prompt_risk_review.accept_result", "agent_admin.prompt_risk_review.reject_result"),
               null,
               agentAdminVisible ? "visible" : "denied",
               agentAdminVisible ? null : "Missing governed Agent Admin capabilities."),
@@ -225,6 +229,7 @@ public record MeResponse(
               "audit",
               icon("workstream-audit-trace", "Audit/Trace", "timeline-search", "audit timeline search", "accent-audit", "Open Audit/Trace workstream"),
               "markdown_response",
+              null,
               List.of(auditCapability == null ? "audit.trace.read" : auditCapability),
               null,
               auditVisible ? "visible" : "hidden",
@@ -236,6 +241,7 @@ public record MeResponse(
               "shield",
               icon("workstream-governance-policy", "Governance/Policy", "shield-checklist", "shield checklist", "accent-governance", "Open Governance/Policy workstream"),
               "markdown_response",
+              null,
               List.of("governance.policy.read", "improvements.review"),
               null,
               governanceVisible ? "visible" : "denied",

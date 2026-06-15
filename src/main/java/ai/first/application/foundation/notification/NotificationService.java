@@ -109,7 +109,7 @@ public final class NotificationService {
 
   public NotificationItem projectFromPromptRiskReviewTask(AuthContextResolver.ResolvedMe actor, PromptRiskReviewTask task, String correlationId) {
     return projectWorkerTask(actor, new WorkerTaskNotification(
-        task.taskId(), task.autonomousAgentTaskId(), task.tenantId(), task.customerId(), task.startedByMembershipId(), task.startedByAccountId(), "agent-agent-admin", "prompt_risk_review_task", "Agent Admin prompt-risk review task", task.status().name(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.findingRefs(), task.traceIds(), AgentAdminPromptRiskReviewService.READ_CAPABILITY, "surface-agent-admin-prompt-risk-review", "agent_admin.prompt_risk_review.open_result", workerSemanticKind(task.status().name()), workerCategory("agent_admin", task.status().name()), workerPriority(task.status().name())), correlationId);
+        task.taskId(), task.autonomousAgentTaskId(), task.tenantId(), task.customerId(), task.startedByMembershipId(), task.startedByAccountId(), "agent-admin-agent", "prompt_risk_review_task", "Agent Admin prompt-risk review task", task.status().name(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.findingRefs(), task.traceIds(), AgentAdminPromptRiskReviewService.READ_CAPABILITY, "surface-agent-admin-prompt-risk-review", "agent_admin.prompt_risk_review.open_result", workerSemanticKind(task.status().name()), workerCategory("agent_admin", task.status().name()), workerPriority(task.status().name())), correlationId);
   }
 
   public NotificationItem projectFromAuditTraceSummaryTask(AuthContextResolver.ResolvedMe actor, AuditTraceSummaryTask task, String correlationId) {

@@ -7,9 +7,8 @@ import './styles/layout.css';
 import './styles/components.css';
 import { HttpWorkstreamApiClient } from './api/HttpWorkstreamApiClient';
 import { HttpWorkstreamRealtimeClient } from './api/HttpWorkstreamRealtimeClient';
-import { HttpApiClient, type TokenProvider } from './api/HttpApiClient';
-import type { ApiClient } from './api/ApiClient';
-import type { ApiError, OrganizationActionResponse, OrganizationDetailPayload, OrganizationListPayload, OrganizationSummary } from './api/types';
+import type { TokenProvider } from './api/HttpApiClient';
+import type { ApiError } from './api/types';
 import type { WorkstreamClient } from './api/WorkstreamApiClient';
 import type { WorkstreamRealtimeClient } from './api/WorkstreamRealtimeClient';
 import { WorkstreamShell } from './workstream/shell';
@@ -54,7 +53,7 @@ const availableThemeIds: readonly ThemePreference[] = ['aurora-light', 'cobalt-l
 type WorkstreamAppProps = {
   tokenProvider?: TokenProvider;
   onSignOut?: () => void;
-  clients?: { workstream: WorkstreamClient; realtime: WorkstreamRealtimeClient; api?: ApiClient };
+  clients?: { workstream: WorkstreamClient; realtime: WorkstreamRealtimeClient };
 };
 
 type InvitationAcceptanceResult = {
@@ -73,7 +72,6 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
   const selectedContextIdRef = React.useRef<string | undefined>(undefined);
   const workstreamClient = React.useMemo<WorkstreamClient>(() => clients?.workstream ?? new HttpWorkstreamApiClient(tokenProvider), [clients, tokenProvider]);
   const realtimeClient = React.useMemo<WorkstreamRealtimeClient>(() => clients?.realtime ?? new HttpWorkstreamRealtimeClient(tokenProvider), [clients, tokenProvider]);
-  const apiClient = React.useMemo<ApiClient>(() => clients?.api ?? new HttpApiClient(tokenProvider, () => selectedContextIdRef.current), [clients, tokenProvider]);
   const [themeId, setThemeId] = React.useState<ThemePreference>(() => readStoredThemeId());
   const [selection, setSelection] = React.useState<Partial<WorkstreamSelection>>(() => readDeepLinkSelection());
   const [bootstrap, setBootstrap] = React.useState<BootstrapState>({ status: 'loading' });
@@ -307,6 +305,11 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     return action.label;
   }
 
+  function inputRecord(input: unknown): Record<string, string> {
+    if (!input || typeof input !== 'object') return {};
+    return Object.fromEntries(Object.entries(input as Record<string, unknown>).map(([key, value]) => [key, value == null ? '' : String(value)]));
+  }
+
   function titleCaseSurfaceName(title: string | undefined) {
     return (title ?? 'surface').replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1));
   }
@@ -351,10 +354,6 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
 
   async function handleSurfaceAction(action: SurfaceAction, surfaceId: string, input: unknown = {}) {
     if (!ready || !me) return;
-    if (isOrganizationAdminRuntimeAction(action)) {
-      await runOrganizationAdminRuntimeAction(action, surfaceId, input);
-      return;
-    }
     const actionCorrelationId = `corr-${action.actionId}-${Date.now().toString(36)}`;
     const request = buildCapabilityActionRequest(action, {
       selectedContextId: me.selectedAuthContext.selectedContextId,
@@ -426,229 +425,6 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
         await refreshBackendSurface(targetSurface?.surfaceId ?? surfaceId);
       }
     }
-  }
-
-  async function runOrganizationAdminRuntimeAction(action: SurfaceAction, surfaceId: string, input: unknown) {
-    const currentSurface = ready?.surfaces.find((candidate) => candidate.surfaceId === surfaceId);
-    const formInput = inputRecord(input);
-    const result = await callOrganizationAdminApi(action.actionId, formInput);
-    const updatedSurface = currentSurface
-      ? mapOrganizationAdminSurface(currentSurface, action.actionId, formInput, result)
-      : undefined;
-    const now = Date.now();
-    const actionRequestItem: WorkstreamItem = {
-      itemId: `surface-action-request-${now}`,
-      functionalAgentId: updatedSurface?.ownerFunctionalAgentId ?? selectedFunctionalAgentId ?? 'agent-user-admin',
-      kind: 'surface-request',
-      createdAt: new Date().toISOString(),
-      correlationId: result.ok ? runtimeCorrelationId(result.value) : result.error.correlationId,
-      traceIds: result.ok ? runtimeTraceIds(result.value) : [],
-      title: action.label,
-      status: result.ok ? 'ready' : 'blocked'
-    };
-    const surfaceResponseItem: WorkstreamItem | undefined = updatedSurface ? {
-      itemId: `surface-action-response-${updatedSurface.surfaceId}-${now}`,
-      functionalAgentId: updatedSurface.ownerFunctionalAgentId,
-      kind: 'surface',
-      createdAt: new Date().toISOString(),
-      correlationId: actionRequestItem.correlationId,
-      traceIds: updatedSurface.traceIds,
-      surfaceId: updatedSurface.surfaceId,
-      title: updatedSurface.title,
-      status: 'ready'
-    } : undefined;
-    setRequestScrollTargetForCurrentSession(actionRequestItem.itemId, actionRequestItem.functionalAgentId);
-    rememberVisualSession(sessionForAgent(actionRequestItem.functionalAgentId), { anchorSurfaceId: actionRequestItem.itemId, selectedSurfaceId: updatedSurface?.surfaceId ?? surfaceId, userHasManualScroll: false });
-    setBootstrap((current) => {
-      if (current.status !== 'ready') return current;
-      const nextSurfaces = updatedSurface
-        ? current.surfaces.some((surface) => surface.surfaceId === updatedSurface.surfaceId)
-          ? current.surfaces.map((surface) => surface.surfaceId === updatedSurface.surfaceId ? updatedSurface : surface)
-          : [...current.surfaces, updatedSurface]
-        : current.surfaces;
-      const syncedSurfaces = updatedSurface
-        ? syncOrganizationDirectorySurfaces(nextSurfaces, updatedSurface, action.actionId)
-        : nextSurfaces;
-      return { ...current, surfaces: syncedSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
-    });
-    if (updatedSurface) {
-      clearRailAttention(updatedSurface.ownerFunctionalAgentId);
-      updateSelection({ selectedFunctionalAgentId: updatedSurface.ownerFunctionalAgentId, selectedSurfaceId: updatedSurface.surfaceId, surfacePlacement: 'inline' });
-    }
-  }
-
-  async function callOrganizationAdminApi(actionId: string, input: Record<string, string>) {
-    // Production Organization Admin actions intentionally use the typed AdminClient and protected /api/admin/organizations path.
-    if (isOrganizationDirectoryAction(actionId)) return apiClient.admin.listOrganizations({ query: input.query, status: input.status });
-    if (actionId === 'action-organization-read') return apiClient.admin.getOrganization(requiredInput(input, 'organizationId'));
-    if (actionId === 'action-organization-create') return apiClient.admin.createOrganization({ organizationName: requiredInput(input, 'organizationName'), reason: input.reason, idempotencyKey: requiredInput(input, 'idempotencyKey') });
-    if (actionId === 'action-organization-rename') return apiClient.admin.renameOrganization(requiredInput(input, 'organizationId'), { organizationName: requiredInput(input, 'organizationName'), reason: input.reason, idempotencyKey: requiredInput(input, 'idempotencyKey') });
-    if (actionId === 'action-organization-suspend') return apiClient.admin.suspendOrganization(requiredInput(input, 'organizationId'), { reason: requiredInput(input, 'reason'), idempotencyKey: requiredInput(input, 'idempotencyKey') });
-    if (actionId === 'action-organization-reactivate') return apiClient.admin.reactivateOrganization(requiredInput(input, 'organizationId'), { reason: requiredInput(input, 'reason'), idempotencyKey: requiredInput(input, 'idempotencyKey') });
-    return apiClient.admin.listOrganizations();
-  }
-
-  function mapOrganizationAdminSurface(surface: SurfaceEnvelope<unknown>, actionId: string, input: Record<string, string>, result: Awaited<ReturnType<typeof callOrganizationAdminApi>>): SurfaceEnvelope<unknown> {
-    const data = { ...(surface.data as Record<string, unknown>) };
-    if (!result.ok) {
-      return {
-        ...surface,
-        correlationId: result.error.correlationId,
-        traceIds: surface.traceIds,
-        generatedAt: new Date().toISOString(),
-        data: {
-          ...data,
-          systemStates: [organizationErrorState(result.error.code)],
-          forbiddenMessage: result.error.code === 'forbidden' ? 'Organization Admin is unavailable for this selected context. Backend authorization denied the protected Admin API call.' : data.forbiddenMessage,
-          lastResult: { status: organizationErrorState(result.error.code), message: result.error.message, correlationId: result.error.correlationId }
-        }
-      };
-    }
-    if (isOrganizationDirectoryAction(actionId)) {
-      const payload = result.value as OrganizationListPayload;
-      return {
-        ...surface,
-        surfaceId: 'surface-user-admin-organization-directory',
-        surfaceType: 'list-search',
-        surfaceVersion: surface.surfaceVersion ?? '1.0.0',
-        title: 'Organization Directory',
-        correlationId: payload.correlationId,
-        traceIds: payload.traceRefs,
-        generatedAt: new Date().toISOString(),
-        data: {
-          ...data,
-          surfaceContract: 'user_admin.organization_directory.v1',
-          organizations: payload.organizations,
-          filters: { query: input.query, status: input.status },
-          boundaryNotice: payload.safeBoundaryNotice,
-          safeBoundaryNotice: payload.safeBoundaryNotice,
-          traceRefs: payload.traceRefs,
-          correlationId: payload.correlationId,
-          redaction: payload.redactions,
-          systemStates: payload.organizations.length ? ['ready'] : ['empty'],
-          lastResult: { status: 'success', message: 'Organization list refreshed from the protected Admin API.', correlationId: payload.correlationId, traceRefs: payload.traceRefs }
-        }
-      };
-    }
-    if (actionId === 'action-organization-read') {
-      return surfaceWithOrganizationDetail(surface, result.value as OrganizationDetailPayload, 'success', 'Organization detail loaded from the protected Admin API.');
-    }
-    const payload = result.value as OrganizationActionResponse;
-    return surfaceWithOrganizationDetail(surface, payload.organization, payload.status, payload.message, payload.traceRefs, payload.correlationId);
-  }
-
-  function surfaceWithOrganizationDetail(surface: SurfaceEnvelope<unknown>, detailPayload: OrganizationDetailPayload, status: string, message: string, traceRefs = detailPayload.traceRefs, correlationId = detailPayload.correlationId): SurfaceEnvelope<unknown> {
-    const data = surface.data as Record<string, unknown> & { organizations?: OrganizationSummary[] };
-    const organization = detailPayload.organization;
-    const organizations = upsertOrganization(data.organizations ?? [], organization);
-    return {
-      ...surface,
-      surfaceId: 'surface-user-admin-organization-detail',
-      surfaceType: 'show-inspection',
-      surfaceVersion: surface.surfaceVersion ?? '1.0.0',
-      title: 'Organization Detail',
-      correlationId,
-      traceIds: traceRefs,
-      generatedAt: new Date().toISOString(),
-      data: {
-        ...data,
-        surfaceContract: 'user_admin.organization_detail.v1',
-        organizations,
-        organizationDetail: { ...organization, safeBoundaryNotice: detailPayload.safeBoundaryNotice, visibleActions: detailPayload.visibleActions, recentAuditEvents: detailPayload.recentAuditEvents, traceRefs: detailPayload.traceRefs, correlationId: detailPayload.correlationId },
-        boundaryNotice: detailPayload.safeBoundaryNotice,
-        safeBoundaryNotice: detailPayload.safeBoundaryNotice,
-        traceRefs,
-        correlationId,
-        redaction: detailPayload.redactions,
-        systemStates: [status === 'no-op' ? 'no-op' : 'success'],
-        lastResult: { status: status === 'no-op' ? 'no-op' : 'success', message, correlationId, traceRefs }
-      }
-    };
-  }
-
-  function isOrganizationDirectoryAction(actionId: string) {
-    return actionId === 'action-organization-list' || actionId === 'action-display-organization-admin' || actionId === 'action-user-admin-show-organizations';
-  }
-
-  function isOrganizationAdminRuntimeAction(action: SurfaceAction) {
-    return action.intent !== 'surface-request' && (action.actionId.startsWith('action-organization-') || action.capabilityId.startsWith('saas_owner.organization.'));
-  }
-
-  function inputRecord(input: unknown): Record<string, string> {
-    if (!input || typeof input !== 'object') return {};
-    return Object.fromEntries(Object.entries(input as Record<string, unknown>).map(([key, value]) => [key, value == null ? '' : String(value)]));
-  }
-
-  function requiredInput(input: Record<string, string>, key: string) {
-    return input[key] ?? '';
-  }
-
-  function runtimeCorrelationId(value: OrganizationListPayload | OrganizationDetailPayload | OrganizationActionResponse) {
-    return value.correlationId;
-  }
-
-  function runtimeTraceIds(value: OrganizationListPayload | OrganizationDetailPayload | OrganizationActionResponse) {
-    return 'traceRefs' in value ? value.traceRefs : [];
-  }
-
-  function upsertOrganization(organizations: OrganizationSummary[], organization: OrganizationSummary) {
-    return organizations.some((candidate) => candidate.organizationId === organization.organizationId)
-      ? organizations.map((candidate) => candidate.organizationId === organization.organizationId ? organization : candidate)
-      : [organization, ...organizations];
-  }
-
-  function syncOrganizationDirectorySurfaces(surfaces: SurfaceEnvelope<unknown>[], updatedSurface: SurfaceEnvelope<unknown>, actionId: string) {
-    if (isOrganizationDirectoryAction(actionId)) return surfaces;
-    const organization = organizationFromDetailSurface(updatedSurface);
-    if (!organization) return surfaces;
-    return surfaces.map((surface) => {
-      const data = surface.data as Record<string, unknown> & { organizations?: OrganizationSummary[]; filters?: { query?: string; status?: string } };
-      const isDirectory = surface.surfaceId === 'surface-user-admin-organization-directory' || data.surfaceContract === 'user_admin.organization_directory.v1';
-      if (!isDirectory || !organizationMatchesDirectoryFilters(organization, data.filters)) return surface;
-      const organizations = upsertOrganization(data.organizations ?? [], organization);
-      return {
-        ...surface,
-        generatedAt: new Date().toISOString(),
-        data: {
-          ...data,
-          organizations,
-          systemStates: organizations.length ? ['ready'] : ['empty'],
-          lastResult: {
-            status: 'success',
-            message: 'Organization directory updated with the latest protected Admin API result.',
-            correlationId: updatedSurface.correlationId,
-            traceRefs: updatedSurface.traceIds
-          }
-        }
-      };
-    });
-  }
-
-  function organizationFromDetailSurface(surface: SurfaceEnvelope<unknown>): OrganizationSummary | undefined {
-    const detail = (surface.data as Record<string, unknown> & { organizationDetail?: Partial<OrganizationSummary> }).organizationDetail;
-    if (!detail?.organizationId || !detail.organizationName || !detail.status) return undefined;
-    return {
-      organizationId: detail.organizationId,
-      organizationName: detail.organizationName,
-      status: detail.status,
-      traceRefs: detail.traceRefs ?? []
-    };
-  }
-
-  function organizationMatchesDirectoryFilters(organization: OrganizationSummary, filters?: { query?: string; status?: string }) {
-    const status = (filters?.status ?? '').trim().toLowerCase();
-    const query = (filters?.query ?? '').trim().toLowerCase();
-    if (status && organization.status.toLowerCase() !== status) return false;
-    if (!query) return true;
-    return organization.organizationId.toLowerCase().includes(query) || organization.organizationName.toLowerCase().includes(query);
-  }
-
-  function organizationErrorState(code: string) {
-    if (code.includes('403') || code === 'forbidden') return 'forbidden';
-    if (code.includes('404') || code === 'not_found') return 'not_found_or_redacted';
-    if (code.includes('409') || code === 'conflict') return 'conflict';
-    if (code.includes('400') || code.includes('validation')) return 'validation-error';
-    return 'error';
   }
 
   async function runShellSurfaceRequest(shellRequest: WorkstreamShellRequest, fallbackFunctionalAgentId: string, itemPrefix: string) {

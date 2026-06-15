@@ -293,7 +293,7 @@ public final class AttentionProducerService {
         workerTaskItemId(task.taskId()),
         task.tenantId(),
         task.customerId(),
-        "agent-agent-admin",
+        "agent-admin-agent",
         title,
         summary + " Evidence is limited to durable prompt-risk state, scoped proposal/artifact refs, governed readSkill/readReferenceDoc/agentAdminEvidence.read traces, and AutonomousAgent work traces; no direct activation or fake model-backed success is introduced.",
         category,

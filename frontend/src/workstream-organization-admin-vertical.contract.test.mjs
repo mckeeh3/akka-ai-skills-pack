@@ -15,6 +15,7 @@ const organizationSurface = read('./workstream/surfaces/OrganizationAdminSurface
 const main = read('./main.tsx');
 const css = read('./styles/components.css');
 const frontendApiContracts = read('../../app-description/55-ui/frontend-api-contracts.md');
+const workstreamService = read('../../src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
 
 test('Organization Admin has typed browser-safe API clients aligned with protected backend routes', () => {
   for (const dto of ['OrganizationSummary', 'OrganizationListPayload', 'OrganizationDetailPayload', 'OrganizationActionResponse', 'OrganizationCreateRequest', 'OrganizationRenameRequest', 'OrganizationLifecycleRequest']) {
@@ -54,15 +55,12 @@ test('Organization Admin workstream surface graph preserves SaaS Owner authority
   assert.match(surfaces, /browserToolId: 'user-admin\.show-organizations'/);
   assert.match(surfaces, /branchRootSurfaceId: 'surface-user-admin-organization-directory'/);
   assert.match(fixtureWorkstreamApi, /displayOrganizationAdminActionResult/);
-  assert.match(main, /isOrganizationAdminRuntimeAction/);
-  assert.match(main, /apiClient\.admin\.listOrganizations/);
-  assert.match(main, /apiClient\.admin\.createOrganization/);
-  assert.match(main, /apiClient\.admin\.renameOrganization/);
-  assert.match(main, /apiClient\.admin\.suspendOrganization/);
-  assert.match(main, /apiClient\.admin\.reactivateOrganization/);
-  assert.match(main, /protected \/api\/admin\/organizations path/);
-  assert.match(main, /syncOrganizationDirectorySurfaces/);
-  assert.match(main, /Organization directory updated with the latest protected Admin API result/);
+  assert.match(main, /workstreamClient\.runCapabilityAction/);
+  assert.doesNotMatch(main, /isOrganizationAdminRuntimeAction|apiClient\.admin\.listOrganizations|apiClient\.admin\.createOrganization|protected \/api\/admin\/organizations path|syncOrganizationDirectorySurfaces/);
+  assert.match(workstreamService, /action-organization-list/);
+  assert.match(workstreamService, /runOrganizationLifecycleAction/);
+  assert.match(workstreamService, /listOrganizations\(actor, query, status, correlationId\)/);
+  assert.match(workstreamService, /Organization Directory refreshed through the canonical workstream action path/);
 });
 
 test('Organization Admin frontend contract proves dashboard-to-organization-branch traversal and safe payload boundaries', () => {
@@ -97,8 +95,8 @@ test('Organization Admin renderer covers safe states, forms, and inaccessible ro
   assert.match(organizationSurface, /OrganizationBranchReturn/);
   assert.match(organizationSurface, /organizationBranchReturnInput/);
   assert.match(organizationSurface, /action-user-admin-show-organizations/);
-  assert.match(main, /isOrganizationDirectoryAction/);
-  assert.match(main, /action-user-admin-show-organizations/);
+  assert.doesNotMatch(main, /isOrganizationDirectoryAction/);
+  assert.match(workstreamService, /action-user-admin-show-organizations/);
   assert.match(css, /organization-admin-surface/);
   assert.match(css, /organization-admin-grid/);
 });

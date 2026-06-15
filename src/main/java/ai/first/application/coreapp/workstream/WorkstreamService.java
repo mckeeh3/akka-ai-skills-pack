@@ -96,7 +96,7 @@ public final class WorkstreamService {
   private static final String USER_ADMIN_AGENT_ID = "agent-user-admin";
   private static final String AUDIT_TRACE_AGENT_ID = "agent-audit-trace";
   private static final String GOVERNANCE_POLICY_AGENT_ID = "agent-governance-policy";
-  private static final String AGENT_ADMIN_AGENT_ID = "agent-agent-admin";
+  private static final String AGENT_ADMIN_AGENT_ID = "agent-admin-agent";
   private static final String USER_ADMIN_CAPABILITY = "secure-tenant-user-foundation";
   private static final String SAAS_OWNER_TENANT_READ_CAPABILITY = "saas_owner.tenant.read";
   private static final String SAAS_OWNER_TENANT_MANAGE_CAPABILITY = "saas_owner.tenant.manage";
@@ -454,10 +454,15 @@ public final class WorkstreamService {
     } else if (List.of("action-customer-create", "action-customer-rename", "action-customer-suspend", "action-customer-reactivate").contains(request.actionId())) {
       var customerResult = runCustomerLifecycleAction(actor, request.actionId(), request.input(), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult(customerResult.status(), customerResult.message(), request.correlationId(), customerResult.traceRefs(), customerDetailSurface(actor, customerResult.customer(), request.correlationId()));
+    } else if ("action-organization-list".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Organization Directory refreshed through the canonical workstream action path.", request.correlationId(), List.of("trace-organization-list-" + stableSuffix(request.correlationId())), organizationDirectorySurface(actor, request.input(), request.correlationId()));
     } else if (request.actionId().startsWith("action-open-organization-")) {
       result = openOrganizationTaskSurface(actor, request.actionId(), request.input(), request.correlationId());
     } else if ("action-organization-read".equals(request.actionId())) {
-      result = new CapabilityActionResult("accepted", "Organization detail loaded through backend-authoritative Organization surface graph.", request.correlationId(), List.of("trace-organization-read-" + stableSuffix(request.correlationId())), organizationSurface(actor, request.correlationId(), "surface-user-admin-organization-detail", "show-inspection", "Organization Detail", "user_admin.organization_detail.v1", withOrganizationBranchReturn(List.of(openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), openAuditAction())), readOrganizationDetail(actor, request.input(), request.correlationId())));
+      result = new CapabilityActionResult("accepted", "Organization detail loaded through backend-authoritative Organization surface graph.", request.correlationId(), List.of("trace-organization-read-" + stableSuffix(request.correlationId())), organizationSurface(actor, request.correlationId(), "surface-user-admin-organization-detail", "show-inspection", "Organization Detail", "user_admin.organization_detail.v1", withOrganizationBranchReturn(List.of(openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), openAuditAction(), openOrganizationAdminInvitationCreateAction())), readOrganizationDetail(actor, request.input(), request.correlationId())));
+    } else if (List.of("action-organization-create", "action-organization-rename", "action-organization-suspend", "action-organization-reactivate").contains(request.actionId())) {
+      var organizationResult = runOrganizationLifecycleAction(actor, request.actionId(), request.input(), request.idempotencyKey(), request.correlationId());
+      result = new CapabilityActionResult(organizationResult.status(), organizationResult.message(), request.correlationId(), List.of(organizationResult.traceId()), organizationSurface(actor, request.correlationId(), "surface-user-admin-organization-detail", "show-inspection", "Organization Detail", "user_admin.organization_detail.v1", withOrganizationBranchReturn(List.of(openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), openAuditAction(), openOrganizationAdminInvitationCreateAction())), organizationResult.organization()));
     } else if ("action-display-user-detail".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "User detail loaded.", request.correlationId(), List.of("trace-user-admin-detail-" + stableSuffix(stringInput(request.input(), "accountId", actor.account().accountId()))), detailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-display-invitation-detail".equals(request.actionId())) {
@@ -574,11 +579,11 @@ public final class WorkstreamService {
       var task = promptRiskReviewService.rejectResult(actor, stringInput(request.input(), "taskId", ""), stringInput(request.input(), "reason", "rejected by Agent Admin"), request.correlationId());
       result = promptRiskReviewActionResult(task, "accepted", "Prompt-risk result rejected as human review evidence; behavior artifacts unchanged.", request.correlationId(), actor);
     } else if ("action-deactivate-agent-definition".equals(request.actionId())) {
-      var changed = changeAgentDefinitionStatus(actor, stringInput(request.input(), "agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), AgentLifecycleStatus.DISABLED, request.correlationId());
-      result = new CapabilityActionResult(changed ? "accepted" : "no-op", changed ? "AgentDefinition deactivated through backend-governed Agent Admin lifecycle." : "AgentDefinition was already deactivated; lifecycle command was idempotent.", request.correlationId(), List.of("trace-agent-definition-deactivated-" + stableSuffix(request.correlationId())), agentLifecycleConfirmationSurface(actor, request.correlationId(), "deactivated", changed));
+      authContextResolver.appendProtectedReadTrace(actor, AGENT_DEFINITIONS_MANAGE_CAPABILITY, "agent_admin.deactivation_confirmation.v1 preview", request.correlationId());
+      result = new CapabilityActionResult("approval-required", "AgentDefinition deactivation requires a separate confirmation surface before any lifecycle mutation.", request.correlationId(), List.of("trace-agent-definition-deactivation-confirmation-" + stableSuffix(request.correlationId())), agentLifecycleConfirmationSurface(actor, request.correlationId(), "deactivate", false));
     } else if ("action-activate-agent-definition".equals(request.actionId())) {
-      var changed = changeAgentDefinitionStatus(actor, stringInput(request.input(), "agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), AgentLifecycleStatus.ACTIVE, request.correlationId());
-      result = new CapabilityActionResult(changed ? "accepted" : "no-op", changed ? "AgentDefinition activated through backend-governed Agent Admin lifecycle." : "AgentDefinition was already active; lifecycle command was idempotent.", request.correlationId(), List.of("trace-agent-definition-activated-" + stableSuffix(request.correlationId())), agentLifecycleConfirmationSurface(actor, request.correlationId(), "activated", changed));
+      authContextResolver.appendProtectedReadTrace(actor, AGENT_DEFINITIONS_MANAGE_CAPABILITY, "agent_admin.activation_confirmation.v1 preview", request.correlationId());
+      result = new CapabilityActionResult("approval-required", "AgentDefinition activation requires a separate confirmation surface before any lifecycle mutation.", request.correlationId(), List.of("trace-agent-definition-activation-confirmation-" + stableSuffix(request.correlationId())), agentLifecycleConfirmationSurface(actor, request.correlationId(), "activate", false));
     } else if ("action-import-agent-seed-defaults".equals(request.actionId())) {
       authContextResolver.requireCapability(actor.selectedContext(), AGENT_ADMIN_RESEED_DEFAULTS_CAPABILITY);
       var seed = new AgentBehaviorSeedLoader(agentBehaviorRepository, Clock.systemUTC()).importStarterDefaults(actor.selectedContext().tenantId(), actor.account().accountId(), request.correlationId());
@@ -1093,7 +1098,11 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope organizationDirectorySurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return organizationSurface(actor, correlationId, "surface-user-admin-organization-directory", "list-search", "Organization Directory", "user_admin.organization_directory.v1", List.of(organizationListAction(), organizationReadAction(), openOrganizationCreateAction(), openAuditAction()));
+    return organizationDirectorySurface(actor, null, correlationId);
+  }
+
+  private SurfaceEnvelope organizationDirectorySurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    return organizationSurface(actor, correlationId, "surface-user-admin-organization-directory", "list-search", "Organization Directory", "user_admin.organization_directory.v1", List.of(organizationListAction(), organizationReadAction(), openOrganizationCreateAction(), openAuditAction()), null, stringInput(input, "query", ""), stringInput(input, "status", ""));
   }
 
   private SurfaceEnvelope organizationDetailSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -1144,8 +1153,18 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope organizationSurface(AuthContextResolver.ResolvedMe actor, String correlationId, String surfaceId, String surfaceType, String title, String contract, List<SurfaceAction> actions, ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail detail) {
+    return organizationSurface(actor, correlationId, surfaceId, surfaceType, title, contract, actions, detail, "", "");
+  }
+
+  private SurfaceEnvelope organizationSurface(AuthContextResolver.ResolvedMe actor, String correlationId, String surfaceId, String surfaceType, String title, String contract, List<SurfaceAction> actions, ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail detail, String query, String status) {
     authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_READ_CAPABILITY);
-    var boundary = "Organization administration manages the Tenant lifecycle boundary only; it does not grant tenant/customer application-data access, support access, provider secret access, or billing-derived authority.";
+    var service = StarterSecurityComponents.saasOwnerOrganizationAdminService();
+    var listResult = detail == null ? service.listOrganizations(actor, query, status, correlationId) : null;
+    var boundary = detail == null ? listResult.safeBoundaryNotice() : detail.safeBoundaryNotice();
+    var organizations = detail == null
+        ? listResult.organizations().stream().map(this::organizationSummaryMap).toList()
+        : List.of(organizationSummaryMap(detail.organization()));
+    var traceRefs = detail == null ? List.of(listResult.traceId()) : detail.traceRefs();
     var data = mapOf(
         "surfaceContract", contract,
         "scopeLabel", "SaaS Owner scope",
@@ -1154,13 +1173,14 @@ public final class WorkstreamService {
         "branchNavigation", organizationBranchNavigation(correlationId),
         "boundaryNotice", boundary,
         "safeBoundaryNotice", boundary,
-        "traceRefs", detail == null ? List.of("trace-organization-admin-" + stableSuffix(correlationId)) : detail.traceRefs(),
+        "traceRefs", traceRefs,
         "correlationId", correlationId,
         "redaction", List.of("tenant-app-data-redacted", "provider-secrets-redacted", "billing-authority-redacted", "support-access-internals-redacted", "hidden-counts-redacted"),
-        "organizations", detail == null ? List.of() : List.of(organizationSummaryMap(detail.organization())),
-        "filters", mapOf("query", "", "status", ""),
-        "systemStates", List.of(detail == null ? "empty" : "ready"),
-        "emptyMessage", "Use Refresh list to load Organizations from the protected Admin API.");
+        "organizations", organizations,
+        "filters", mapOf("query", query == null ? "" : query, "status", status == null ? "" : status),
+        "pageInfo", mapOf("visibleCount", organizations.size()),
+        "systemStates", List.of(organizations.isEmpty() ? "empty" : "ready"),
+        "emptyMessage", "No Organizations are visible for this backend-authorized filter.");
     if (detail != null) data.put("organizationDetail", organizationDetailMap(detail));
     return envelope(surfaceId, surfaceType, title, actor, correlationId, data, actions);
   }
@@ -1838,22 +1858,71 @@ public final class WorkstreamService {
     return envelope("surface-agent-admin-detail", "detail-edit", "Agent Admin readiness detail", actor, correlationId, agentAdminService.definitionDetail(actor, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, correlationId), List.of(activateAgentDefinitionAction(), deactivateAgentDefinitionAction(), proposePromptDiffAction(), testPromptAction(), manageModelRefAction(), openAgentTraceAction()));
   }
 
+  private Map<String, Object> governanceDiffData(String surfaceContract, String proposalId, String lifecycleState, String risk, String beforeSummary, String afterSummary, List<Map<String, Object>> changes, List<String> traceLinks) {
+    return mapOf(
+        "surfaceContract", surfaceContract,
+        "proposalId", proposalId,
+        "lifecycleState", lifecycleState,
+        "riskClassification", risk,
+        "requiredApproval", "Human Agent Admin review and backend policy approval are required before activation.",
+        "simulationSummary", "Backend simulation preserves tenant scope, redaction, provider fail-closed behavior, and ToolPermissionBoundary checks.",
+        "activationStatus", "not active until separately approved and activated",
+        "beforeSummary", beforeSummary,
+        "afterSummary", afterSummary,
+        "changes", changes,
+        "traceLinks", traceLinks,
+        "redaction", mapOf("browserSafe", true, "omittedFieldKeys", List.of("rawPromptBody", "rawSkillBody", "rawReferenceBody", "providerCredentialValue", "rawJwt")),
+        "noDirectMutation", true);
+  }
+
   private SurfaceEnvelope agentPromptGovernanceSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    var data = new LinkedHashMap<>(agentAdminService.promptDetail(actor, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, correlationId));
-    data.put("behaviorDiffSurfaceContract", "surface.agent_admin.behavior_diff.v1");
-    return envelope("surface-agent-prompt-governance", "governance-diff", "Prompt governance review", actor, correlationId, data, List.of(proposePromptDiffAction(), openAgentTraceAction()));
+    var prompt = agentAdminService.promptDetail(actor, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, correlationId);
+    return envelope("surface-agent-prompt-governance", "governance-diff", "Prompt governance review", actor, correlationId,
+        governanceDiffData("agent_admin.prompt_version.v1", "proposal-agent-admin-prompt-001", "draft", "medium",
+            "Active prompt remains backend-authorized; raw prompt body is hidden and only a redacted preview is available.",
+            "Draft prompt wording can be proposed for review, but activation remains a separate human/backend-governed action.",
+            List.of(
+                mapOf("path", "redactedPreview", "before", prompt.get("redactedPreview"), "after", "Proposed wording keeps authority, redaction, and trace requirements explicit.", "impact", "Browser-safe preview only; raw prompt text remains omitted."),
+                mapOf("path", "lifecycle", "before", prompt.get("status"), "after", "approval-required", "impact", "No prompt, model output, or frontend state can activate behavior directly.")),
+            List.of("trace-agent-admin-prompt-" + stableSuffix(correlationId))),
+        List.of(proposePromptDiffAction(), submitBehaviorChangeAction(), testPromptAction(), openAgentTraceAction()));
   }
 
   private SurfaceEnvelope agentSkillVersionSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return envelope("surface-agent-skill-version", "governance-diff", "Skill version review", actor, correlationId, agentAdminService.skillDetail(actor, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, null, correlationId), List.of(approveSkillManifestAction(), openAgentTraceAction()));
+    var skill = agentAdminService.skillDetail(actor, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, null, correlationId);
+    return envelope("surface-agent-skill-version", "governance-diff", "Skill version review", actor, correlationId,
+        governanceDiffData("agent_admin.skill_version.v1", "proposal-agent-admin-skill-001", "in_review", "medium",
+            "Current assigned skill is loaded only through governed readSkill after manifest and ToolPermissionBoundary checks.",
+            "Reviewed skill changes preserve compact manifest loading and browser-safe redacted previews.",
+            List.of(mapOf("path", "readSkill", "before", skill.get("stableSkillId"), "after", "assigned-only", "impact", "Unassigned skill loads remain denied and traced.")),
+            List.of("trace-agent-admin-skill-" + stableSuffix(correlationId))),
+        List.of(approveSkillManifestAction(), submitBehaviorChangeAction(), openAgentTraceAction()));
   }
 
   private SurfaceEnvelope agentSkillManifestSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return envelope("surface-agent-skill-manifest-diff", "governance-diff", "Skill and reference manifest detail", actor, correlationId, agentAdminService.manifestDetail(actor, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, correlationId), List.of(approveSkillManifestAction(), openAgentTraceAction()));
+    var manifest = agentAdminService.manifestDetail(actor, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, correlationId);
+    return envelope("surface-agent-skill-manifest-diff", "governance-diff", "Skill and reference manifest review", actor, correlationId,
+        governanceDiffData("agent_admin.manifest.v1", "proposal-agent-admin-manifest-001", "in_review", "high",
+            "Current compact skill/reference manifests allow assigned readSkill/readReferenceDoc loads only.",
+            "Proposed manifest changes require human review and preserve compact manifest and loader-denial traces.",
+            List.of(
+                mapOf("path", "skillManifest", "before", manifest.get("skillManifest"), "after", "reviewed compact manifest", "impact", "Full skill bodies remain governed and browser-hidden."),
+                mapOf("path", "referenceManifest", "before", manifest.get("referenceManifest"), "after", "reviewed compact reference manifest", "impact", "Reference evidence access broadening requires review.")),
+            List.of("trace-agent-admin-manifest-" + stableSuffix(correlationId))),
+        List.of(approveSkillManifestAction(), submitBehaviorChangeAction(), openAgentTraceAction()));
   }
 
   private SurfaceEnvelope agentToolBoundarySurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return envelope("surface-agent-tool-boundary-diff", "governance-diff", "Tool boundary detail", actor, correlationId, agentAdminService.toolBoundaryDetail(actor, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, correlationId), List.of(simulateToolBoundaryAction(), openAgentTraceAction()));
+    var boundary = agentAdminService.toolBoundaryDetail(actor, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, correlationId);
+    return envelope("surface-agent-tool-boundary-diff", "governance-diff", "Tool boundary simulation review", actor, correlationId,
+        governanceDiffData("agent_admin.tool_boundary.v1", "proposal-agent-admin-tool-boundary-001", "blocked", "critical",
+            "Current ToolPermissionBoundary allows only scoped read-only Agent Admin evidence and governed loaders.",
+            "Requested side-effecting grants are denied or approval-required by backend simulation before any activation.",
+            List.of(
+                mapOf("path", "grants", "before", boundary.get("grants"), "after", "side-effecting grant requested", "impact", "External side effects stay blocked without separate approval, idempotency, and trace policy."),
+                mapOf("path", "simulation.result", "before", "not run", "after", "TOOL_BOUNDARY_DENIED", "impact", "Frontend cannot bypass backend ToolPermissionBoundary enforcement.")),
+            List.of("trace-agent-admin-tool-boundary-" + stableSuffix(correlationId))),
+        List.of(simulateToolBoundaryAction(), submitBehaviorChangeAction(), openAgentTraceAction()));
   }
 
   private SurfaceEnvelope agentModelRefsSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -1879,9 +1948,48 @@ public final class WorkstreamService {
 
 
   private SurfaceEnvelope agentLifecycleConfirmationSurface(AuthContextResolver.ResolvedMe actor, String correlationId, String lifecycleAction, boolean changed) {
-    var activation = "activated".equals(lifecycleAction);
-    return envelope(activation ? "surface-agent-definition-activation-confirmation" : "surface-agent-definition-deactivation-confirmation", "lifecycle-confirmation", activation ? "Agent activation confirmation" : "Agent deactivation confirmation", actor, correlationId,
-        mapOf("surfaceContract", activation ? "agent_admin.definition_activation_confirmation.v1" : "agent_admin.definition_deactivation_confirmation.v1", "status", changed ? "success" : "no-op", "recordId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "recordLabel", "Agent Admin Agent", "summary", changed ? "AgentDefinition lifecycle state changed through backend-governed Agent Admin capability." : "Lifecycle command was idempotent; no duplicate mutation was applied.", "safeReason", "Confirmation surface only. Behavior artifacts, prompt text, tool grants, and provider secrets were not changed by this lifecycle action.", "traceRefs", List.of("trace-agent-definition-" + lifecycleAction + "-" + stableSuffix(correlationId)), "noDirectMutation", false, "redaction", "Provider secrets, raw prompts, raw skills, raw references, and hidden authority remain omitted."),
+    var activation = "activate".equals(lifecycleAction) || "activated".equals(lifecycleAction);
+    var normalizedAction = activation ? "activate" : "deactivate";
+    return envelope(activation ? "surface-agent-activation-confirmation" : "surface-agent-deactivation-confirmation", "lifecycle-confirmation", activation ? "Confirm agent activation" : "Confirm agent deactivation", actor, correlationId,
+        mapOf(
+            "surfaceContract", activation ? "agent_admin.activation_confirmation.v1" : "agent_admin.deactivation_confirmation.v1",
+            "recordId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
+            "recordLabel", "Agent Admin Agent",
+            "lifecycleAction", normalizedAction,
+            "currentStatus", activation ? "inactive_or_pending" : "active_or_pending",
+            "proposedStatus", activation ? "active" : "deactivated",
+            "impactSummary", activation ? "Activation would enable runtime invocation only after backend approval, provider readiness, rollback metadata, idempotency, and trace checks pass." : "Deactivation would disable runtime invocation and governed loader access only after backend authorization, idempotency, and trace checks pass.",
+            "approvalState", "approval required before mutation",
+            "policyBasis", "managed-agent-governance lifecycle policy; no model output or frontend state may commit this directly",
+            "idempotencyKeyHint", "client-generated lifecycle key bound to AgentDefinition and proposal context",
+            "disabledReason", changed ? null : "Confirmation preview only: this surface is returned before mutation so the user can review impact and policy evidence.",
+            "evidenceRefs", List.of("AgentDefinition", "managed-agent-governance", "AgentWorkTrace"),
+            "traceRefs", List.of("trace-agent-definition-" + normalizedAction + "-confirmation-" + stableSuffix(correlationId)),
+            "actionContext", mapOf("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+            "noDirectMutation", true,
+            "redaction", "Provider secrets, raw prompts, raw skills, raw references, and hidden authority remain omitted."),
+        List.of(openAgentDetailAction(), openAgentTraceAction()));
+  }
+
+  private SurfaceEnvelope agentRollbackConfirmationSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    return envelope("surface-agent-rollback-confirmation", "lifecycle-confirmation", "Confirm agent behavior rollback", actor, correlationId,
+        mapOf(
+            "surfaceContract", "agent_admin.rollback_confirmation.v1",
+            "recordId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
+            "recordLabel", "Agent Admin Agent",
+            "lifecycleAction", "rollback",
+            "currentStatus", "activated_proposal",
+            "proposedStatus", "previous_active_version",
+            "impactSummary", "Rollback restores a prior active behavior snapshot only after backend metadata, authorization, idempotency, and trace checks pass.",
+            "approvalState", "rollback metadata required",
+            "policyBasis", "managed-agent-governance rollback policy",
+            "idempotencyKeyHint", "server-issued rollback-safe key preferred",
+            "disabledReason", "Rollback requires activated proposal metadata and backend command authority.",
+            "evidenceRefs", List.of("rollback snapshot", "activation audit event"),
+            "traceRefs", List.of("trace-agent-definition-rollback-confirmation-" + stableSuffix(correlationId)),
+            "actionContext", mapOf("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+            "noDirectMutation", true,
+            "redaction", "Provider secrets, raw prompts, raw skills, raw references, and hidden authority remain omitted."),
         List.of(openAgentDetailAction(), openAgentTraceAction()));
   }
 
@@ -2049,8 +2157,9 @@ public final class WorkstreamService {
       case "surface-agent-behavior-proposal" -> agentBehaviorProposalSurface(actor, correlationId);
       case "surface-agent-admin-trace" -> agentAdminTraceSurface(actor, correlationId);
       case "surface-agent-admin-prompt-risk-review" -> agentPromptRiskReviewEmptySurface(actor, correlationId);
-      case "surface-agent-definition-activation-confirmation" -> agentLifecycleConfirmationSurface(actor, correlationId, "activated", false);
-      case "surface-agent-definition-deactivation-confirmation" -> agentLifecycleConfirmationSurface(actor, correlationId, "deactivated", false);
+      case "surface-agent-activation-confirmation", "surface-agent-definition-activation-confirmation" -> agentLifecycleConfirmationSurface(actor, correlationId, "activate", false);
+      case "surface-agent-deactivation-confirmation", "surface-agent-definition-deactivation-confirmation" -> agentLifecycleConfirmationSurface(actor, correlationId, "deactivate", false);
+      case "surface-agent-rollback-confirmation" -> agentRollbackConfirmationSurface(actor, correlationId);
       case "surface-agent-seed-import-confirmation" -> agentSeedImportConfirmationSurface(actor, correlationId, 0, 0);
       case "surface-audit-trace-dashboard" -> auditTraceDashboardSurface(actor, correlationId);
       case "surface-audit-trace-search" -> auditTraceSearchSurface(actor, null, correlationId);
@@ -2339,6 +2448,17 @@ public final class WorkstreamService {
     return StarterSecurityComponents.saasOwnerOrganizationAdminService().readOrganization(actor, stringInput(input, "organizationId", ""), correlationId);
   }
 
+  private ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationActionResult runOrganizationLifecycleAction(AuthContextResolver.ResolvedMe actor, String actionId, Object input, String idempotencyKey, String correlationId) {
+    var service = StarterSecurityComponents.saasOwnerOrganizationAdminService();
+    return switch (actionId) {
+      case "action-organization-create" -> service.createOrganization(actor, stringInput(input, "organizationName", ""), idempotencyKey, stringInput(input, "reason", "organization-created"), correlationId);
+      case "action-organization-rename" -> service.renameOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), stringInput(input, "organizationName", ""), idempotencyKey, stringInput(input, "reason", "organization-renamed"), correlationId);
+      case "action-organization-suspend" -> service.suspendOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), stringInput(input, "reason", "organization-suspended"), idempotencyKey, correlationId);
+      case "action-organization-reactivate" -> service.reactivateOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), stringInput(input, "reason", "organization-reactivated"), idempotencyKey, correlationId);
+      default -> throw new AuthorizationException(404, "target-not-found-or-forbidden");
+    };
+  }
+
   private void requireOrganizationLifecycleAction(ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail detail, String action, String correlationId) {
     if (!detail.visibleActions().contains(action)) {
       throw new AuthorizationException(409, "organization-lifecycle-action-unavailable:" + action + ":" + correlationId);
@@ -2404,8 +2524,8 @@ public final class WorkstreamService {
       case "action-governance-policy-start-impact-analysis" -> governancePolicyImpactAnalysisBlockedSurface(actor, correlationId);
       case "action-display-agent-catalog" -> agentAdminCatalogSurface(actor, correlationId);
       case "action-open-agent-detail" -> agentAdminDetailSurface(actor, correlationId);
-      case "action-activate-agent-definition" -> agentLifecycleConfirmationSurface(actor, correlationId, "activated", false);
-      case "action-deactivate-agent-definition" -> agentLifecycleConfirmationSurface(actor, correlationId, "deactivated", false);
+      case "action-activate-agent-definition" -> agentLifecycleConfirmationSurface(actor, correlationId, "activate", false);
+      case "action-deactivate-agent-definition" -> agentLifecycleConfirmationSurface(actor, correlationId, "deactivate", false);
       case "action-import-agent-seed-defaults" -> agentSeedImportConfirmationSurface(actor, correlationId, 0, 0);
       case "action-propose-prompt-diff" -> agentPromptGovernanceSurface(actor, correlationId);
       case "action-test-agent-prompt" -> agentTestConsoleSurface(actor, correlationId);
@@ -2624,8 +2744,8 @@ public final class WorkstreamService {
   private SurfaceAction displayAgentAdminDashboardAction() { return new SurfaceAction("action-display-agent-admin-dashboard", "Open Agent Admin dashboard", "read", browserToolId("action-display-agent-admin-dashboard"), governedToolId(AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY), AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-dashboard", "inline"), new Audit("AgentAdminDashboardDisplayed", true)); }
   private SurfaceAction displayAgentCatalogAction() { return new SurfaceAction("action-display-agent-catalog", "Display agent catalog", "read", browserToolId("action-display-agent-catalog"), governedToolId(AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY), AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-catalog", "inline"), new Audit("AgentCatalogDisplayed", true)); }
   private SurfaceAction openAgentDetailAction() { return new SurfaceAction("action-open-agent-detail", "Open agent readiness detail", "read", browserToolId("action-open-agent-detail"), governedToolId(AGENT_ADMIN_GET_DEFINITION_CAPABILITY), AGENT_ADMIN_GET_DEFINITION_CAPABILITY, "schema.agent-definition.detail.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-detail", "inline"), new Audit("AgentDefinitionDetailDisplayed", true)); }
-  private SurfaceAction activateAgentDefinitionAction() { return new SurfaceAction("action-activate-agent-definition", "Activate AgentDefinition", "command", browserToolId("action-activate-agent-definition"), governedToolId(AGENT_DEFINITIONS_MANAGE_CAPABILITY), AGENT_DEFINITIONS_MANAGE_CAPABILITY, "schema.agent-definition.lifecycle.activate.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-agent-admin-detail", "inline"), new Audit("AgentDefinitionActivated", true)); }
-  private SurfaceAction deactivateAgentDefinitionAction() { return new SurfaceAction("action-deactivate-agent-definition", "Deactivate AgentDefinition", "command", browserToolId("action-deactivate-agent-definition"), governedToolId(AGENT_DEFINITIONS_MANAGE_CAPABILITY), AGENT_DEFINITIONS_MANAGE_CAPABILITY, "schema.agent-definition.lifecycle.deactivate.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-agent-admin-detail", "inline"), new Audit("AgentDefinitionDeactivated", true)); }
+  private SurfaceAction activateAgentDefinitionAction() { return new SurfaceAction("action-activate-agent-definition", "Review AgentDefinition activation", "surface-request", browserToolId("action-activate-agent-definition"), governedToolId(AGENT_DEFINITIONS_MANAGE_CAPABILITY), AGENT_DEFINITIONS_MANAGE_CAPABILITY, "schema.agent-definition.lifecycle.activate.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-agent-activation-confirmation", "inline"), new Audit("AgentDefinitionActivationConfirmationDisplayed", true)); }
+  private SurfaceAction deactivateAgentDefinitionAction() { return new SurfaceAction("action-deactivate-agent-definition", "Review AgentDefinition deactivation", "surface-request", browserToolId("action-deactivate-agent-definition"), governedToolId(AGENT_DEFINITIONS_MANAGE_CAPABILITY), AGENT_DEFINITIONS_MANAGE_CAPABILITY, "schema.agent-definition.lifecycle.deactivate.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-agent-deactivation-confirmation", "inline"), new Audit("AgentDefinitionDeactivationConfirmationDisplayed", true)); }
   private SurfaceAction importAgentSeedDefaultsAction() { return new SurfaceAction("action-import-agent-seed-defaults", "Import missing seed defaults", "workflow", browserToolId("action-import-agent-seed-defaults"), governedToolId(AGENT_ADMIN_RESEED_DEFAULTS_CAPABILITY), AGENT_ADMIN_RESEED_DEFAULTS_CAPABILITY, "schema.agent-seed.import-defaults.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-agent-seed-material", "inline"), new Audit("AgentSeedDefaultsImported", true)); }
   private SurfaceAction proposePromptDiffAction() { return new SurfaceAction("action-propose-prompt-diff", "Propose prompt diff", "proposal", browserToolId("action-propose-prompt-diff"), governedToolId(AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY), AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, "schema.prompt-version.proposal.v1", false, false, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-agent-prompt-governance", "side-panel"), new Audit("PromptVersionDraftProposed", true)); }
   private SurfaceAction testPromptAction() { return new SurfaceAction("action-test-agent-prompt", "Run no-side-effect prompt test", "workflow", browserToolId("action-test-agent-prompt"), governedToolId(AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY), AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, "schema.agent-runtime.test.v1", false, false, null, new Idempotency(true, "client-generated"), new ResultSurface("workflow-status", null, "inline"), new Audit("AgentRuntimeTestRequested", true)); }

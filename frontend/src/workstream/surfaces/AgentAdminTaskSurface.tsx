@@ -27,13 +27,17 @@ type Props = {
 const lifecycleSurfaceIds = new Set([
   'surface-agent-activation-confirmation',
   'surface-agent-deactivation-confirmation',
-  'surface-agent-rollback-confirmation'
+  'surface-agent-rollback-confirmation',
+  'surface-agent-definition-activation-confirmation',
+  'surface-agent-definition-deactivation-confirmation'
 ]);
 
 const lifecycleContracts = new Set([
   'agent_admin.activation_confirmation.v1',
   'agent_admin.deactivation_confirmation.v1',
-  'agent_admin.rollback_confirmation.v1'
+  'agent_admin.rollback_confirmation.v1',
+  'agent_admin.definition_activation_confirmation.v1',
+  'agent_admin.definition_deactivation_confirmation.v1'
 ]);
 
 export function AgentAdminTaskSurface({ envelope, onAction }: Props) {

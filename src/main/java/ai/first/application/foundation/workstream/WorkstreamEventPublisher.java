@@ -350,7 +350,7 @@ public final class WorkstreamEventPublisher {
         idempotencyKey,
         task.idempotencyKey(),
         List.of(traceId),
-        "agent-agent-admin",
+        "agent-admin-agent",
         "surface-agent-admin-prompt-risk-review",
         PAYLOAD_PROMPT_RISK_REVIEW_LIFECYCLE,
         Map.ofEntries(
