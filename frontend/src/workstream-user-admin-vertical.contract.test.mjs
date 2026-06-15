@@ -15,6 +15,7 @@ const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
 const userAdminTaskSurface = read('./workstream/surfaces/UserAdminTaskSurface.tsx');
+const userAdminScopedAdminSurface = read('./workstream/surfaces/UserAdminScopedAdminSurface.tsx');
 const workflowStatusSurface = read('./workstream/surfaces/WorkflowStatusSurface.tsx');
 const systemMessageSurface = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const adminUsersPage = read('./screens/admin/AdminUsersPage.tsx');
@@ -261,6 +262,33 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.match(componentsCss, /\.user-admin-task-surface/);
   assert.match(componentsCss, /\.user-admin-task-form label/);
   assert.doesNotMatch(userAdminTaskSurface, /JSON\.stringify|dangerouslySetInnerHTML|Authorization:\s*Bearer|RESEND_API_KEY|sk-secret|api_key=/);
+});
+
+test('User Admin scoped admin surfaces cover SaaS Owner, Organization Admin, Customer, and Customer Admin branches', () => {
+  assert.match(renderer, /isUserAdminScopedAdminSurface\(selectedEnvelope\)/);
+  assert.match(renderer, /isOrganizationLifecycleSurface\(selectedEnvelope\)/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.saas_owner_admins\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.saas_owner_admin_invitation_create\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.organization_admins\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.organization_admin_invitation_create\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.organization_admin_detail\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.customer_directory\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.customer_detail\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.customer_create\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.customer_rename\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.customer_suspend_confirmation\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.customer_reactivate_confirmation\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.customer_admins\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.customer_admin_invitation_create\.v1/);
+  assert.match(userAdminScopedAdminSurface, /user_admin\.customer_admin_detail\.v1/);
+  assert.match(userAdminScopedAdminSurface, /function RoleScopedInvitationForm/);
+  assert.match(userAdminScopedAdminSurface, /function CustomerTaskForm/);
+  assert.match(userAdminScopedAdminSurface, /function ScopedInspection/);
+  assert.match(userAdminScopedAdminSurface, /function ScopedDirectory/);
+  assert.match(userAdminScopedAdminSurface, /BranchReturn/);
+  assert.match(userAdminScopedAdminSurface, /Provider\/outbox failures return a typed system message/);
+  assert.match(userAdminScopedAdminSurface, /The browser does not infer hidden targets, role eligibility, or authority from labels/);
+  assert.doesNotMatch(userAdminScopedAdminSurface, /Authorization:\s*Bearer|RESEND_API_KEY|WORKOS_API_KEY|sk-secret|api_key=|dangerouslySetInnerHTML/);
 });
 
 test('User Admin full-stack conformance tests cover canonical runtime boundaries', () => {

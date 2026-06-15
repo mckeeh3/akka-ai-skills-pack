@@ -14,6 +14,7 @@ import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
 import { SystemMessageSurface } from './SystemMessageSurface';
 import { UserAdminRoleChangePreviewSurface, isUserAdminRoleChangePreviewSurface } from './UserAdminRoleChangePreviewSurface';
+import { UserAdminScopedAdminSurface, isUserAdminScopedAdminSurface } from './UserAdminScopedAdminSurface';
 import { UserAdminTaskSurface, isUserAdminTaskSurface } from './UserAdminTaskSurface';
 import { WorkflowStatusSurface } from './WorkflowStatusSurface';
 
@@ -33,7 +34,11 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
     return <SurfaceStateFrame />;
   }
 
-  if (selectedEnvelope.surfaceId.startsWith('surface-user-admin-organization-') || ((selectedEnvelope.data as { surfaceContract?: string } | undefined)?.surfaceContract ?? '').startsWith('user_admin.organization_')) {
+  if (isUserAdminScopedAdminSurface(selectedEnvelope)) {
+    return <UserAdminScopedAdminSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+  }
+
+  if (isOrganizationLifecycleSurface(selectedEnvelope)) {
     return <OrganizationAdminSurface envelope={selectedEnvelope as never} onAction={onAction} />;
   }
 
@@ -91,6 +96,22 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
         </SurfaceStateFrame>
       );
   }
+}
+
+function isOrganizationLifecycleSurface(envelope: SurfaceEnvelope<unknown>) {
+  const contract = (envelope.data as { surfaceContract?: string } | undefined)?.surfaceContract ?? '';
+  return envelope.surfaceId === 'surface-user-admin-organization-directory'
+    || envelope.surfaceId === 'surface-user-admin-organization-detail'
+    || envelope.surfaceId === 'surface-user-admin-organization-create'
+    || envelope.surfaceId === 'surface-user-admin-organization-rename'
+    || envelope.surfaceId === 'surface-user-admin-organization-suspend-confirmation'
+    || envelope.surfaceId === 'surface-user-admin-organization-reactivate-confirmation'
+    || contract === 'user_admin.organization_directory.v1'
+    || contract === 'user_admin.organization_detail.v1'
+    || contract === 'user_admin.organization_create.v1'
+    || contract === 'user_admin.organization_rename.v1'
+    || contract === 'user_admin.organization_suspend_confirmation.v1'
+    || contract === 'user_admin.organization_reactivate_confirmation.v1';
 }
 
 export { StructuredSurfaceRenderer as SurfaceRenderer };
