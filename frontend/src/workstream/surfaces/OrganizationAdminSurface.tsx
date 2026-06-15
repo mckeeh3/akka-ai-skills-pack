@@ -125,17 +125,22 @@ function OrganizationDirectory({ envelope, onAction }: Props) {
 
 function OrganizationDetail({ envelope, organization, onAction }: Props & { organization?: OrganizationLike }) {
   const detail = envelope.data.organizationDetail;
+  const renameAction = envelope.actions.find((action) => action.actionId === 'action-open-organization-rename');
+  const suspendAction = envelope.actions.find((action) => action.actionId === 'action-open-organization-suspend');
+  const reactivateAction = envelope.actions.find((action) => action.actionId === 'action-open-organization-reactivate');
+  const visibleActions = detail?.visibleActions ?? organization?.actionAvailability ?? [];
   return (
     <section className="user-admin-list-panel" aria-labelledby={`${envelope.surfaceId}-detail-heading`}>
       <div className="surface-section-heading compact"><div><p className="eyebrow">Safe detail</p><h4 id={`${envelope.surfaceId}-detail-heading`}>{organization?.organizationName ?? 'Select an Organization'}</h4></div></div>
       <p className="surface-empty-copy">{detail?.safeBoundaryNotice ?? envelope.data.boundaryNotice ?? boundaryFallback}</p>
       {organization && <dl className="organization-admin-detail"><div><dt>Status</dt><dd>{organization.status}</dd></div><div><dt>Trace refs</dt><dd>{(organization.traceRefs ?? detail?.traceRefs ?? []).join(' · ') || 'Trace available after backend action'}</dd></div></dl>}
       <div className="organization-admin-lifecycle-actions" aria-label="Organization task entry points">
-        {organization && <button className="surface-action-link secondary" type="button" onClick={() => run(envelope, onAction, 'action-open-organization-rename', { organizationId: organization.organizationId })}>Rename selected Organization</button>}
-        {organization && (detail?.visibleActions ?? organization.actionAvailability ?? []).includes('suspend') && <button className="surface-action-link danger" type="button" onClick={() => run(envelope, onAction, 'action-open-organization-suspend', { organizationId: organization.organizationId })}>Open suspend confirmation</button>}
-        {organization && (detail?.visibleActions ?? organization.actionAvailability ?? []).includes('reactivate') && <button className="surface-action-link secondary" type="button" onClick={() => run(envelope, onAction, 'action-open-organization-reactivate', { organizationId: organization.organizationId })}>Open reactivate confirmation</button>}
+        {organization && <button className="surface-action-link secondary" type="button" disabled={!renameAction || Boolean(renameAction.disabled)} aria-disabled={!renameAction || Boolean(renameAction.disabled)} title={organizationActionUnavailableMessage(renameAction)} onClick={() => runAction(envelope, onAction, renameAction, { organizationId: organization.organizationId, recordId: organization.organizationId })}>Rename selected Organization</button>}
+        {organization && visibleActions.includes('suspend') && <button className="surface-action-link danger" type="button" disabled={!suspendAction || Boolean(suspendAction.disabled)} aria-disabled={!suspendAction || Boolean(suspendAction.disabled)} title={organizationActionUnavailableMessage(suspendAction)} onClick={() => runAction(envelope, onAction, suspendAction, { organizationId: organization.organizationId, recordId: organization.organizationId })}>Open suspend confirmation</button>}
+        {organization && visibleActions.includes('reactivate') && <button className="surface-action-link secondary" type="button" disabled={!reactivateAction || Boolean(reactivateAction.disabled)} aria-disabled={!reactivateAction || Boolean(reactivateAction.disabled)} title={organizationActionUnavailableMessage(reactivateAction)} onClick={() => runAction(envelope, onAction, reactivateAction, { organizationId: organization.organizationId, recordId: organization.organizationId })}>Open reactivate confirmation</button>}
         <OrganizationBranchReturn envelope={envelope} onAction={onAction} />
       </div>
+      {organization && !renameAction && <p className="surface-empty-copy" role="status">Rename is unavailable because the backend did not include an authorized Organization rename task action for this detail surface.</p>}
     </section>
   );
 }
@@ -263,8 +268,17 @@ function organizationSafeFilterPreservation(envelope: SurfaceEnvelope<Organizati
 
 function run(envelope: SurfaceEnvelope<OrganizationAdminSurfaceData>, onAction: Props['onAction'], actionId: string, input: Record<string, string>) {
   const action = envelope.actions.find((candidate) => candidate.actionId === actionId);
+  runAction(envelope, onAction, action, input);
+}
+
+function runAction(envelope: SurfaceEnvelope<OrganizationAdminSurfaceData>, onAction: Props['onAction'], action: SurfaceAction | undefined, input: Record<string, string>) {
   if (!action || action.disabled) return;
   onAction?.(action, envelope.surfaceId, input);
+}
+
+function organizationActionUnavailableMessage(action: SurfaceAction | undefined): string | undefined {
+  if (!action) return 'The backend did not authorize this Organization task action for the current detail surface.';
+  return action.disabled?.message;
 }
 
 function idempotencyKey(prefix: string, seed: string) {

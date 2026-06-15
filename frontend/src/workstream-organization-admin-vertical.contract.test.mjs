@@ -94,6 +94,9 @@ test('Organization Admin renderer covers safe states, forms, and inaccessible ro
   assert.match(organizationSurface, /Reason is required/);
   assert.match(organizationSurface, /OrganizationBranchReturn/);
   assert.match(organizationSurface, /organizationBranchReturnInput/);
+  assert.match(organizationSurface, /const renameAction = envelope\.actions\.find/);
+  assert.match(organizationSurface, /runAction\(envelope, onAction, renameAction/);
+  assert.match(organizationSurface, /Rename is unavailable because the backend did not include an authorized Organization rename task action/);
   assert.match(organizationSurface, /action-user-admin-show-organizations/);
   assert.doesNotMatch(main, /isOrganizationDirectoryAction/);
   assert.match(workstreamService, /action-user-admin-show-organizations/);

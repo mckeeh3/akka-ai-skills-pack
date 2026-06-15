@@ -2251,6 +2251,11 @@ button.attention-counter-card:focus-visible {
 
 .surface-action-link.secondary { color: var(--color-text-soft); }
 .surface-action-link.danger { border-color: var(--color-danger); color: var(--color-danger); }
+.surface-action-link:disabled,
+.surface-action-link[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
 
 .available-workstream-grid {
   display: grid;
