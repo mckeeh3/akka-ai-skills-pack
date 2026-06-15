@@ -892,18 +892,24 @@ async function acceptInvitationToken(token: string, tokenProvider: TokenProvider
 }
 
 async function mapInvitationAcceptanceError(response: Response): Promise<ApiError> {
-  let parsed: Partial<ApiError> = {};
-  try {
-    parsed = await response.json() as Partial<ApiError>;
-  } catch {
-    parsed = { message: await response.text() };
-  }
+  const parsed = await parseInvitationErrorBody(response);
   return {
     code: parsed.code ?? `http_${response.status}`,
     message: parsed.message ?? `HTTP ${response.status}`,
     correlationId: parsed.correlationId ?? response.headers.get('x-correlation-id') ?? 'missing-correlation-id',
     fieldErrors: parsed.fieldErrors
   };
+}
+
+async function parseInvitationErrorBody(response: Response): Promise<Partial<ApiError>> {
+  const body = await response.text();
+  if (!body) return {};
+  try {
+    const parsed = JSON.parse(body) as unknown;
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed as Partial<ApiError> : { message: body };
+  } catch {
+    return { message: body };
+  }
 }
 
 function Root() {

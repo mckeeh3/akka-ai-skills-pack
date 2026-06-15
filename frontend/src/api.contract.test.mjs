@@ -14,6 +14,7 @@ const workstreamRealtime = readFileSync(new URL('./api/WorkstreamRealtimeClient.
 const fixtureWorkstreamRealtime = readFileSync(new URL('./__tests__/fixtures/api/FixtureWorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
 const httpWorkstreamApi = readFileSync(new URL('./api/HttpWorkstreamApiClient.ts', import.meta.url), 'utf8');
 const httpWorkstreamRealtime = readFileSync(new URL('./api/HttpWorkstreamRealtimeClient.ts', import.meta.url), 'utf8');
+const main = readFileSync(new URL('./main.tsx', import.meta.url), 'utf8');
 
 test('DTOs include starter frontend API contract families', () => {
   assert.match(types, /export type MeResponse/);
@@ -59,6 +60,15 @@ test('HTTP API client targets same-origin documented API route families', () => 
   assert.match(httpApi, /Authorization', `Bearer \$\{token\}`/);
   assert.match(httpApi, /X-Selected-Context-Id/);
   assert.match(httpApi, /X-Correlation-Id/);
+});
+
+test('HTTP API error mappers read response bodies only once', () => {
+  assert.match(httpApi, /parseJsonOrText\(response\)/);
+  assert.match(httpWorkstreamApi, /parseJsonOrText\(response\)/);
+  assert.match(main, /parseInvitationErrorBody\(response\)/);
+  assert.doesNotMatch(httpApi, /await response\.json\(\)[\s\S]{0,120}catch[\s\S]{0,120}await response\.text\(\)/);
+  assert.doesNotMatch(httpWorkstreamApi, /await response\.json\(\)[\s\S]{0,120}catch[\s\S]{0,120}await response\.text\(\)/);
+  assert.doesNotMatch(main, /await response\.json\(\)[\s\S]{0,120}catch[\s\S]{0,120}await response\.text\(\)/);
 });
 
 test('realtime client includes connection state, event handler, and idempotent merge helper', () => {
