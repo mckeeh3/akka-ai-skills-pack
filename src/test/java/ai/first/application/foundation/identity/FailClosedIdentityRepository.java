@@ -35,6 +35,7 @@ public final class FailClosedIdentityRepository implements IdentityRepository {
   @Override public List<Tenant> tenantRows() { throw unavailable(); }
   @Override public Tenant saveTenant(Tenant tenant) { throw unavailable(); }
   @Override public Optional<Customer> customer(String tenantId, String customerId) { throw unavailable(); }
+  @Override public List<Customer> customerRows() { throw unavailable(); }
   @Override public Customer saveCustomer(Customer customer) { throw unavailable(); }
   @Override public void appendAudit(AdminAuditEvent event) { throw unavailable(); }
   @Override public List<AdminAuditEvent> auditEvents() { throw unavailable(); }

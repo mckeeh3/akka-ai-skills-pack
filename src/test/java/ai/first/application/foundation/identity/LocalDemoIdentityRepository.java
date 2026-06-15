@@ -99,6 +99,11 @@ public final class LocalDemoIdentityRepository implements IdentityRepository {
   }
 
   @Override
+  public List<Customer> customerRows() {
+    return customers.values().stream().toList();
+  }
+
+  @Override
   public synchronized void appendAudit(AdminAuditEvent event) {
     auditEvents.add(event);
   }

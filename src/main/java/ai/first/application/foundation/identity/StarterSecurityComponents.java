@@ -88,6 +88,7 @@ import ai.first.application.coreapp.myaccount.MyAccountService;
 import ai.first.application.coreapp.useradmin.UserAdminAccessReviewService;
 import ai.first.application.coreapp.useradmin.UserAdminService;
 import ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService;
+import ai.first.application.coreapp.useradmin.TenantCustomerAdminService;
 import ai.first.application.coreapp.useradmin.UserDirectoryView;
 import ai.first.application.coreapp.workstream.WorkstreamService;
 
@@ -102,6 +103,7 @@ public final class StarterSecurityComponents {
   private static volatile MeService meService;
   private static volatile UserAdminService userAdminService = new UserAdminService(identityRepository, CLOCK);
   private static volatile SaasOwnerOrganizationAdminService saasOwnerOrganizationAdminService = new SaasOwnerOrganizationAdminService(identityRepository, CLOCK);
+  private static volatile TenantCustomerAdminService tenantCustomerAdminService = new TenantCustomerAdminService(identityRepository, CLOCK);
   private static volatile EnterpriseIdentityAdminService enterpriseIdentityAdminService = new EnterpriseIdentityAdminService(identityRepository, CLOCK);
   private static volatile InvitationRepository invitationRepository = new UnboundInvitationRepository();
   private static volatile AgentBehaviorRepository agentBehaviorRepository = new UnboundAgentBehaviorRepository();
@@ -153,6 +155,7 @@ public final class StarterSecurityComponents {
     meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     userAdminService = new UserAdminService(durableIdentity, CLOCK);
     saasOwnerOrganizationAdminService = new SaasOwnerOrganizationAdminService(durableIdentity, CLOCK);
+    tenantCustomerAdminService = new TenantCustomerAdminService(durableIdentity, CLOCK);
     enterpriseIdentityAdminService = new EnterpriseIdentityAdminService(durableIdentity, CLOCK);
     BootstrapAdminSeeder.seedConfiguredAdmins(durableIdentity, System.getenv("ADMIN_USERS"));
     var durableWorkstreamLog = new AkkaWorkstreamLogRepository(componentClient);
@@ -223,6 +226,10 @@ public final class StarterSecurityComponents {
     return saasOwnerOrganizationAdminService;
   }
 
+  public static TenantCustomerAdminService tenantCustomerAdminService() {
+    return tenantCustomerAdminService;
+  }
+
   public static UserAdminAccessReviewService userAdminAccessReviewService() {
     return new UserAdminAccessReviewService(accessReviewTaskRepository(), userAdminService, CLOCK, attentionProducerService, workstreamEventPublisher, new FailClosedAccessReviewAutonomousAgentRuntime());
   }
@@ -243,6 +250,7 @@ public final class StarterSecurityComponents {
     meService = new MeService(authContextResolver, new MyAccountService(authContextResolver, attentionService));
     userAdminService = new UserAdminService(testRepository, CLOCK);
     saasOwnerOrganizationAdminService = new SaasOwnerOrganizationAdminService(testRepository, CLOCK);
+    tenantCustomerAdminService = new TenantCustomerAdminService(testRepository, CLOCK);
     enterpriseIdentityAdminService = new EnterpriseIdentityAdminService(testRepository, CLOCK);
     invitationRepository = new UnboundInvitationRepository();
     attentionProducerService = new AttentionProducerService(attentionRepository, testRepository, CLOCK);
@@ -632,6 +640,7 @@ public final class StarterSecurityComponents {
     public List<Tenant> tenantRows() { throw unavailable(); }
     public Tenant saveTenant(Tenant tenant) { throw unavailable(); }
     public Optional<Customer> customer(String tenantId, String customerId) { throw unavailable(); }
+    public List<Customer> customerRows() { throw unavailable(); }
     public Customer saveCustomer(Customer customer) { throw unavailable(); }
     public void appendAudit(AdminAuditEvent event) { throw unavailable(); }
     public List<AdminAuditEvent> auditEvents() { throw unavailable(); }

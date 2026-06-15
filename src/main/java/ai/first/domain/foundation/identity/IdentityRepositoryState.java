@@ -125,6 +125,10 @@ public record IdentityRepositoryState(
     return Optional.ofNullable(customers.get(tenantId + ":" + customerId));
   }
 
+  public List<Customer> customerRows() {
+    return customers.values().stream().toList();
+  }
+
   public IdentityRepositoryState saveCustomer(Customer customer) {
     var updated = new java.util.LinkedHashMap<>(customers);
     updated.put(customer.tenantId() + ":" + customer.customerId(), customer);

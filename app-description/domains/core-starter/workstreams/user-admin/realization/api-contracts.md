@@ -31,6 +31,10 @@ API responses should render or update these typed User Admin surfaces: `surface-
 - `frontend/src/workstream-actions.contract.test.mjs`
 - `frontend/src/workstream-user-admin-vertical.contract.test.mjs`
 
+## Capability compatibility
+
+Canonical User Admin capability ids and temporary runtime aliases are documented in `capability-compatibility.md`. New work should prefer canonical product ids (`user_admin.*`, `saas_owner.*`, `tenant.customer.*`, `tenant.customer_admin.*`) and treat uppercase `USERADMIN_*` or broad foundation ids as compatibility aliases only.
+
 ## Gaps / caveats
 
 - External Resend smoke proves provider integration only when configured; normal runtime must fail closed without secrets.

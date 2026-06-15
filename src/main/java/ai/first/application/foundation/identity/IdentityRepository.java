@@ -55,6 +55,10 @@ public interface IdentityRepository {
 
   Optional<Customer> customer(String tenantId, String customerId);
 
+  default List<Customer> customerRows() {
+    return List.of();
+  }
+
   Customer saveCustomer(Customer customer);
 
   void appendAudit(AdminAuditEvent event);

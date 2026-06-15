@@ -182,8 +182,8 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public HttpResponse customers() {
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      if (actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER) throw forbidden();
-      return HttpResponses.ok(new CustomerListPayload(List.of(), CUSTOMER_BOUNDARY_NOTICE, List.of("trace-customer-list"), correlationId, CUSTOMER_REDACTIONS));
+      var result = StarterSecurityComponents.tenantCustomerAdminService().listCustomers(actor, null, null, correlationId);
+      return HttpResponses.ok(new CustomerListPayload(result.customers().stream().map(AdminEndpoint::fromCustomerSummary).toList(), result.safeBoundaryNotice(), result.traceRefs(), result.correlationId(), CUSTOMER_REDACTIONS));
     });
   }
 
@@ -191,45 +191,52 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public HttpResponse customer(String customerId) {
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      if (actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER) throw forbidden();
-      return HttpResponses.ok(customerDetailPayload(customerId, "active", correlationId));
+      return HttpResponses.ok(fromCustomerDetail(StarterSecurityComponents.tenantCustomerAdminService().readCustomer(actor, customerId, correlationId)));
     });
   }
 
   @Post("/customers")
   public HttpResponse createCustomer(CustomerCreateApiRequest request) {
-    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
-    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
-    return customerAction("accepted", "Customer create routed through backend-authoritative policy; durable Customer lifecycle binding may return a richer detail state.", request == null ? "customer-new" : textOr(request.customerName(), "customer-new"), "active");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.tenantCustomerAdminService().createCustomer(actor, request == null ? null : request.customerName(), request == null ? null : request.idempotencyKey(), request == null ? null : request.reason(), correlationId);
+      return HttpResponses.ok(new CustomerActionApiResponse(result.status(), result.message(), fromCustomerDetail(result.customer()), result.traceRefs(), result.correlationId()));
+    });
   }
 
   @Post("/customers/{customerId}/rename")
   public HttpResponse renameCustomer(String customerId, CustomerRenameApiRequest request) {
-    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
-    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
-    return customerAction("accepted", "Customer rename routed through backend-authoritative policy.", customerId, "active");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.tenantCustomerAdminService().renameCustomer(actor, customerId, request == null ? null : request.customerName(), request == null ? null : request.idempotencyKey(), request == null ? null : request.reason(), correlationId);
+      return HttpResponses.ok(new CustomerActionApiResponse(result.status(), result.message(), fromCustomerDetail(result.customer()), result.traceRefs(), result.correlationId()));
+    });
   }
 
   @Post("/customers/{customerId}/suspend")
   public HttpResponse suspendCustomer(String customerId, CustomerLifecycleApiRequest request) {
-    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
-    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
-    return customerAction("accepted", "Customer suspended at the lifecycle boundary without exposing tenant application data.", customerId, "suspended");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.tenantCustomerAdminService().suspendCustomer(actor, customerId, request == null ? null : request.reason(), request == null ? null : request.idempotencyKey(), correlationId);
+      return HttpResponses.ok(new CustomerActionApiResponse(result.status(), result.message(), fromCustomerDetail(result.customer()), result.traceRefs(), result.correlationId()));
+    });
   }
 
   @Post("/customers/{customerId}/reactivate")
   public HttpResponse reactivateCustomer(String customerId, CustomerLifecycleApiRequest request) {
-    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
-    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
-    return customerAction("accepted", "Customer reactivated at the lifecycle boundary.", customerId, "active");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.tenantCustomerAdminService().reactivateCustomer(actor, customerId, request == null ? null : request.reason(), request == null ? null : request.idempotencyKey(), correlationId);
+      return HttpResponses.ok(new CustomerActionApiResponse(result.status(), result.message(), fromCustomerDetail(result.customer()), result.traceRefs(), result.correlationId()));
+    });
   }
 
   @Get("/customers/{customerId}/admins")
   public HttpResponse customerAdmins(String customerId) {
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      if (actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER) throw forbidden();
-      return HttpResponses.ok(new CustomerAdminListPayload(new CustomerSummaryApiResponse(customerId, "Customer " + customerId, "active", List.of("trace-customer-" + customerId)), List.of(), List.of(), List.of("trace-customer-admins"), correlationId, CUSTOMER_REDACTIONS));
+      var customer = fromCustomerSummary(StarterSecurityComponents.tenantCustomerAdminService().readCustomer(actor, customerId, correlationId).customer());
+      return HttpResponses.ok(new CustomerAdminListPayload(customer, List.of(), List.of(), List.of("trace-customer-admins"), correlationId, CUSTOMER_REDACTIONS));
     });
   }
 
@@ -684,18 +691,12 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     return value == null || value.isBlank() ? fallback : value;
   }
 
-  private HttpResponse customerAction(String status, String message, String customerIdOrName, String nextStatus) {
-    return authorized((identity, selectedContextId, correlationId) -> {
-      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      if (actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER) throw forbidden();
-      return HttpResponses.ok(new CustomerActionApiResponse(status, message, customerDetailPayload(customerIdOrName, nextStatus, correlationId), List.of("trace-customer-action"), correlationId));
-    });
+  private static CustomerSummaryApiResponse fromCustomerSummary(ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerSummary summary) {
+    return new CustomerSummaryApiResponse(summary.customerId(), summary.customerName(), summary.status(), summary.traceRefs());
   }
 
-  private static CustomerDetailPayload customerDetailPayload(String customerIdOrName, String status, String correlationId) {
-    var safeId = customerIdOrName == null || customerIdOrName.isBlank() ? "customer" : customerIdOrName.trim().toLowerCase().replaceAll("[^a-z0-9]+", "-");
-    var summary = new CustomerSummaryApiResponse(safeId, customerIdOrName == null || customerIdOrName.isBlank() ? "Customer" : customerIdOrName, status, List.of("trace-customer-" + safeId));
-    return new CustomerDetailPayload(summary, CUSTOMER_BOUNDARY_NOTICE, status.equals("suspended") ? List.of("read", "rename", "reactivate") : List.of("read", "rename", "suspend"), List.of(), summary.traceRefs(), correlationId, CUSTOMER_REDACTIONS);
+  private static CustomerDetailPayload fromCustomerDetail(ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerDetail detail) {
+    return new CustomerDetailPayload(fromCustomerSummary(detail.customer()), detail.safeBoundaryNotice(), detail.visibleActions(), List.of(), detail.traceRefs(), detail.correlationId(), CUSTOMER_REDACTIONS);
   }
 
   private String idempotencyKey(String bodyValue) {

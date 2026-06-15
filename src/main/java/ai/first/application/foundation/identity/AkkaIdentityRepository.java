@@ -124,6 +124,11 @@ public final class AkkaIdentityRepository implements IdentityRepository {
   }
 
   @Override
+  public List<Customer> customerRows() {
+    return componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::customerRows).invoke();
+  }
+
+  @Override
   public Customer saveCustomer(Customer customer) {
     return componentClient.forKeyValueEntity(entityId).method(DurableIdentityRepositoryEntity::saveCustomer).invoke(customer);
   }

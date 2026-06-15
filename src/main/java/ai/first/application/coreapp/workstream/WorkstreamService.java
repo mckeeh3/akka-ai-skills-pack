@@ -438,21 +438,22 @@ public final class WorkstreamService {
     } else if ("action-user-admin-show-customers".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Customer Directory loaded for selected Organization/Tenant administration.", request.correlationId(), List.of("trace-customer-directory-" + stableSuffix(request.correlationId())), customerDirectorySurface(actor, request.correlationId()));
     } else if ("action-customer-read".equals(request.actionId())) {
-      result = new CapabilityActionResult("accepted", "Customer detail loaded through backend-authoritative Customer surface graph.", request.correlationId(), List.of("trace-customer-read-" + stableSuffix(request.correlationId())), customerDetailSurface(actor, request.correlationId()));
+      result = new CapabilityActionResult("accepted", "Customer detail loaded through backend-authoritative Customer surface graph.", request.correlationId(), List.of("trace-customer-read-" + stableSuffix(request.correlationId())), customerDetailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-open-customer-create".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Customer create surface loaded.", request.correlationId(), List.of("trace-customer-create-" + stableSuffix(request.correlationId())), customerCreateSurface(actor, request.correlationId()));
     } else if ("action-open-customer-rename".equals(request.actionId())) {
-      result = new CapabilityActionResult("accepted", "Customer rename surface loaded.", request.correlationId(), List.of("trace-customer-rename-" + stableSuffix(request.correlationId())), customerRenameSurface(actor, request.correlationId()));
+      result = new CapabilityActionResult("accepted", "Customer rename surface loaded.", request.correlationId(), List.of("trace-customer-rename-" + stableSuffix(request.correlationId())), customerRenameSurface(actor, request.input(), request.correlationId()));
     } else if ("action-open-customer-suspend".equals(request.actionId())) {
-      result = new CapabilityActionResult("accepted", "Customer suspend confirmation surface loaded.", request.correlationId(), List.of("trace-customer-suspend-" + stableSuffix(request.correlationId())), customerSuspendSurface(actor, request.correlationId()));
+      result = new CapabilityActionResult("accepted", "Customer suspend confirmation surface loaded.", request.correlationId(), List.of("trace-customer-suspend-" + stableSuffix(request.correlationId())), customerSuspendSurface(actor, request.input(), request.correlationId()));
     } else if ("action-open-customer-reactivate".equals(request.actionId())) {
-      result = new CapabilityActionResult("accepted", "Customer reactivate confirmation surface loaded.", request.correlationId(), List.of("trace-customer-reactivate-" + stableSuffix(request.correlationId())), customerReactivateSurface(actor, request.correlationId()));
+      result = new CapabilityActionResult("accepted", "Customer reactivate confirmation surface loaded.", request.correlationId(), List.of("trace-customer-reactivate-" + stableSuffix(request.correlationId())), customerReactivateSurface(actor, request.input(), request.correlationId()));
     } else if ("action-user-admin-show-customer-admins".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Customer Admin directory loaded.", request.correlationId(), List.of("trace-customer-admins-" + stableSuffix(request.correlationId())), customerAdminsSurface(actor, request.correlationId()));
     } else if ("action-open-customer-admin-invitation-create".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Customer Admin invitation/bootstrap surface loaded.", request.correlationId(), List.of("trace-customer-admin-invite-" + stableSuffix(request.correlationId())), customerAdminInvitationCreateSurface(actor, request.correlationId()));
     } else if (List.of("action-customer-create", "action-customer-rename", "action-customer-suspend", "action-customer-reactivate").contains(request.actionId())) {
-      result = new CapabilityActionResult("accepted", "Customer lifecycle command was routed to backend policy; this starter surface returns a safe inspection state until durable Customer lifecycle commands are bound.", request.correlationId(), List.of("trace-customer-lifecycle-safe-" + stableSuffix(request.correlationId())), customerDetailSurface(actor, request.correlationId()));
+      var customerResult = runCustomerLifecycleAction(actor, request.actionId(), request.input(), request.idempotencyKey(), request.correlationId());
+      result = new CapabilityActionResult(customerResult.status(), customerResult.message(), request.correlationId(), customerResult.traceRefs(), customerDetailSurface(actor, customerResult.customer(), request.correlationId()));
     } else if (request.actionId().startsWith("action-open-organization-")) {
       result = openOrganizationTaskSurface(actor, request.actionId(), request.input(), request.correlationId());
     } else if ("action-organization-read".equals(request.actionId())) {
@@ -1197,17 +1198,26 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope customerDirectorySurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    authContextResolver.requireCapability(actor.selectedContext(), USER_ADMIN_CAPABILITY);
-    var tenantId = actor.selectedContext().tenantId();
-    var rows = List.<Map<String, Object>>of();
+    var result = StarterSecurityComponents.tenantCustomerAdminService().listCustomers(actor, "", "", correlationId);
+    var rows = result.customers().stream().map(this::customerRowMap).toList();
     return envelope("surface-user-admin-customer-directory", "list-search", "Customer Directory", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.customer_directory.v1", "branchNavigation", customerBranchNavigation(correlationId), "query", "", "rows", rows, "filters", mapOf("tenantId", tenantId, "backendAuthored", true), "pageInfo", mapOf("visibleCount", rows.size()), "boundaryNotice", "Customer administration is tenant scoped; sibling-customer facts and tenant application data are omitted.", "redaction", List.of("sibling-customers-redacted", "tenant-app-data-redacted", "provider-secrets-redacted"), "emptyMessage", "No Customers are visible in this selected Organization/Tenant scope."),
+        mapOf("surfaceContract", "user_admin.customer_directory.v1", "branchNavigation", customerBranchNavigation(correlationId), "query", "", "rows", rows, "customers", rows, "filters", mapOf("tenantId", actor.selectedContext().tenantId(), "backendAuthored", true), "pageInfo", mapOf("visibleCount", rows.size()), "boundaryNotice", result.safeBoundaryNotice(), "safeBoundaryNotice", result.safeBoundaryNotice(), "traceRefs", result.traceRefs(), "correlationId", result.correlationId(), "redaction", List.of("sibling-customers-redacted", "tenant-app-data-redacted", "provider-secrets-redacted"), "emptyMessage", "No Customers are visible in this selected Organization/Tenant scope."),
         List.of(showCustomersAction(), customerReadAction(), openCustomerCreateAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope customerDetailSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    authContextResolver.requireCapability(actor.selectedContext(), USER_ADMIN_CAPABILITY);
     return scopedAdminDetailSurface(actor, correlationId, "surface-user-admin-customer-detail", "Customer Detail", "user_admin.customer_detail.v1", customerBranchNavigation(correlationId), "Customer lifecycle inspection. Create, rename, suspend/archive, reactivate, and Customer Admin management route through dedicated backend-authorized task surfaces.", withCustomerBranchReturn(List.of(openCustomerRenameAction(), openCustomerSuspendAction(), openCustomerReactivateAction(), showCustomerAdminsAction(), openCustomerAdminInvitationCreateAction(), openAuditAction())));
+  }
+
+  private SurfaceEnvelope customerDetailSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var detail = StarterSecurityComponents.tenantCustomerAdminService().readCustomer(actor, stringInput(input, "customerId", ""), correlationId);
+    return customerDetailSurface(actor, detail, correlationId);
+  }
+
+  private SurfaceEnvelope customerDetailSurface(AuthContextResolver.ResolvedMe actor, ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerDetail detail, String correlationId) {
+    return envelope("surface-user-admin-customer-detail", "show-inspection", "Customer Detail", actor, correlationId,
+        mapOf("surfaceContract", "user_admin.customer_detail.v1", "branchNavigation", customerBranchNavigation(correlationId), "recordId", detail.customer().customerId(), "recordLabel", detail.customer().customerName(), "recordKind", "customer", "summary", "Customer lifecycle inspection. Consequential Customer work and Customer Admin management open dedicated backend-authorized surfaces.", "customerDetail", customerDetailMap(detail), "fields", List.of(mapOf("fieldId", "customerId", "label", "Customer", "value", detail.customer().customerId(), "editable", false, "inputType", "text"), mapOf("fieldId", "customerName", "label", "Name", "value", detail.customer().customerName(), "editable", false, "inputType", "text"), mapOf("fieldId", "status", "label", "Status", "value", detail.customer().status(), "editable", false, "inputType", "text")), "permissionState", mapOf("canMutateInline", false, "canOpenTaskSurfaces", true, "reason", "Inspection only; consequential work opens dedicated backend-authorized task surfaces."), "traceRefs", detail.traceRefs(), "correlationId", detail.correlationId(), "redaction", List.of("sibling-customers-redacted", "tenant-app-data-redacted", "provider-secrets-redacted")),
+        withCustomerBranchReturn(List.of(openCustomerRenameAction(), openCustomerSuspendAction(), openCustomerReactivateAction(), showCustomerAdminsAction(), openCustomerAdminInvitationCreateAction(), openAuditAction())));
   }
 
   private SurfaceEnvelope customerCreateSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -1220,14 +1230,29 @@ public final class WorkstreamService {
     return customerTaskSurface(actor, correlationId, "surface-user-admin-customer-rename", "Rename Customer", "user_admin.customer_rename.v1", "Update Customer display profile only. Backend handles stale, conflict, no-op, forbidden, and audit results.", withCustomerBranchReturn(List.of(customerRenameAction(), openAuditAction())));
   }
 
+  private SurfaceEnvelope customerRenameSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var detail = StarterSecurityComponents.tenantCustomerAdminService().readCustomer(actor, stringInput(input, "customerId", stringInput(input, "recordId", "")), correlationId);
+    return customerTaskSurface(actor, correlationId, "surface-user-admin-customer-rename", "Rename Customer", "user_admin.customer_rename.v1", "Update Customer display profile only. Backend handles stale, conflict, no-op, forbidden, and audit results.", withCustomerBranchReturn(List.of(customerRenameAction(), openAuditAction())), detail);
+  }
+
   private SurfaceEnvelope customerSuspendSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), USER_ADMIN_CAPABILITY);
     return customerTaskSurface(actor, correlationId, "surface-user-admin-customer-suspend-confirmation", "Suspend Customer", "user_admin.customer_suspend_confirmation.v1", "Suspend/archive a Customer boundary after reason and confirmation. Tenant application data and sibling-customer facts remain hidden.", withCustomerBranchReturn(List.of(customerSuspendAction(), openAuditAction())));
   }
 
+  private SurfaceEnvelope customerSuspendSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var detail = StarterSecurityComponents.tenantCustomerAdminService().readCustomer(actor, stringInput(input, "customerId", stringInput(input, "recordId", "")), correlationId);
+    return customerTaskSurface(actor, correlationId, "surface-user-admin-customer-suspend-confirmation", "Suspend Customer", "user_admin.customer_suspend_confirmation.v1", "Suspend/archive a Customer boundary after reason and confirmation. Tenant application data and sibling-customer facts remain hidden.", withCustomerBranchReturn(List.of(customerSuspendAction(), openAuditAction())), detail);
+  }
+
   private SurfaceEnvelope customerReactivateSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), USER_ADMIN_CAPABILITY);
     return customerTaskSurface(actor, correlationId, "surface-user-admin-customer-reactivate-confirmation", "Reactivate Customer", "user_admin.customer_reactivate_confirmation.v1", "Reactivate a Customer boundary with idempotency, audit, and safe no-op handling.", withCustomerBranchReturn(List.of(customerReactivateAction(), openAuditAction())));
+  }
+
+  private SurfaceEnvelope customerReactivateSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var detail = StarterSecurityComponents.tenantCustomerAdminService().readCustomer(actor, stringInput(input, "customerId", stringInput(input, "recordId", "")), correlationId);
+    return customerTaskSurface(actor, correlationId, "surface-user-admin-customer-reactivate-confirmation", "Reactivate Customer", "user_admin.customer_reactivate_confirmation.v1", "Reactivate a Customer boundary with idempotency, audit, and safe no-op handling.", withCustomerBranchReturn(List.of(customerReactivateAction(), openAuditAction())), detail);
   }
 
   private SurfaceEnvelope customerAdminsSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -1261,8 +1286,33 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope customerTaskSurface(AuthContextResolver.ResolvedMe actor, String correlationId, String surfaceId, String title, String contract, String summary, List<SurfaceAction> actions) {
-    return envelope(surfaceId, surfaceId.contains("suspend") ? "destructive-lifecycle-confirmation" : surfaceId.contains("reactivate") ? "lifecycle-confirmation" : surfaceId.contains("rename") ? "edit-form" : "create-form", title, actor, correlationId,
-        mapOf("surfaceContract", contract, "branchNavigation", customerBranchNavigation(correlationId), "summary", summary, "recordKind", "customer", "draft", mapOf("customerName", "", "reason", ""), "reasonRequired", surfaceId.contains("suspend"), "confirmationRequired", surfaceId.contains("suspend") || surfaceId.contains("reactivate"), "idempotencyKeyHint", "client-generated", "traceRefs", List.of("trace-" + surfaceId + "-" + stableSuffix(correlationId)), "redaction", List.of("sibling-customers-redacted", "tenant-app-data-redacted", "provider-secrets-redacted")), actions);
+    return customerTaskSurface(actor, correlationId, surfaceId, title, contract, summary, actions, null);
+  }
+
+  private SurfaceEnvelope customerTaskSurface(AuthContextResolver.ResolvedMe actor, String correlationId, String surfaceId, String title, String contract, String summary, List<SurfaceAction> actions, ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerDetail detail) {
+    var draftName = detail == null ? "" : detail.customer().customerName();
+    var data = mapOf("surfaceContract", contract, "branchNavigation", customerBranchNavigation(correlationId), "summary", summary, "recordKind", "customer", "recordId", detail == null ? "" : detail.customer().customerId(), "recordLabel", detail == null ? title : detail.customer().customerName(), "draft", mapOf("customerName", draftName, "reason", ""), "reasonRequired", surfaceId.contains("suspend"), "confirmationRequired", surfaceId.contains("suspend") || surfaceId.contains("reactivate"), "idempotencyKeyHint", "client-generated", "traceRefs", detail == null ? List.of("trace-" + surfaceId + "-" + stableSuffix(correlationId)) : detail.traceRefs(), "redaction", List.of("sibling-customers-redacted", "tenant-app-data-redacted", "provider-secrets-redacted"));
+    if (detail != null) data.put("customerDetail", customerDetailMap(detail));
+    return envelope(surfaceId, surfaceId.contains("suspend") ? "destructive-lifecycle-confirmation" : surfaceId.contains("reactivate") ? "lifecycle-confirmation" : surfaceId.contains("rename") ? "edit-form" : "create-form", title, actor, correlationId, data, actions);
+  }
+
+  private ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerActionResult runCustomerLifecycleAction(AuthContextResolver.ResolvedMe actor, String actionId, Object input, String idempotencyKey, String correlationId) {
+    var service = StarterSecurityComponents.tenantCustomerAdminService();
+    return switch (actionId) {
+      case "action-customer-create" -> service.createCustomer(actor, stringInput(input, "customerName", ""), idempotencyKey, stringInput(input, "reason", "customer-created"), correlationId);
+      case "action-customer-rename" -> service.renameCustomer(actor, stringInput(input, "customerId", stringInput(input, "recordId", "")), stringInput(input, "customerName", ""), idempotencyKey, stringInput(input, "reason", "customer-renamed"), correlationId);
+      case "action-customer-suspend" -> service.suspendCustomer(actor, stringInput(input, "customerId", stringInput(input, "recordId", "")), stringInput(input, "reason", "customer-suspended"), idempotencyKey, correlationId);
+      case "action-customer-reactivate" -> service.reactivateCustomer(actor, stringInput(input, "customerId", stringInput(input, "recordId", "")), stringInput(input, "reason", "customer-reactivated"), idempotencyKey, correlationId);
+      default -> throw new AuthorizationException(404, "target-not-found-or-forbidden");
+    };
+  }
+
+  private Map<String, Object> customerRowMap(ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerSummary customer) {
+    return mapOf("id", customer.customerId(), "customerId", customer.customerId(), "customerName", customer.customerName(), "status", customer.status(), "rowType", "customer", "targetObjectType", "customer", "targetSurfaceId", "surface-user-admin-customer-detail", "targetSurfaceType", "show-inspection", "openActionId", "action-customer-read", "safeLifecycleSummary", customer.status().equals("active") ? "Active Customer boundary" : "Suspended Customer boundary", "traceRefs", customer.traceRefs(), "redactionState", "visible");
+  }
+
+  private Map<String, Object> customerDetailMap(ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerDetail detail) {
+    return mapOf("customerId", detail.customer().customerId(), "customerName", detail.customer().customerName(), "status", detail.customer().status(), "safeBoundaryNotice", detail.safeBoundaryNotice(), "visibleActions", detail.visibleActions(), "recentAuditEvents", detail.recentAuditEvents(), "traceRefs", detail.traceRefs(), "correlationId", detail.correlationId());
   }
 
   private List<SurfaceAction> withOrganizationBranchReturn(List<SurfaceAction> actions) {

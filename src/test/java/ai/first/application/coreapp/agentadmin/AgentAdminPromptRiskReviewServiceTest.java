@@ -115,11 +115,11 @@ class AgentAdminPromptRiskReviewServiceTest {
     var deniedActor = resolver.resolveMe(new WorkosIdentity("workos-member", "member@example.test", "Member"), "membership-member", "corr-member");
 
     var deniedStart = assertThrows(AuthorizationException.class, () -> service.start(deniedActor, command("idem-denied"), "corr-denied"));
-    assertTrue(deniedStart.reasonCode().contains("missing-capability:agent_admin.prompt_risk_review.start"));
+    assertEquals("agent-admin-requires-tenant-admin", deniedStart.reasonCode());
 
     var task = service.start(tenantAdmin, command("idem-admin"), "corr-admin-start");
     var deniedRead = assertThrows(AuthorizationException.class, () -> service.read(deniedActor, task.taskId(), "corr-denied-read"));
-    assertTrue(deniedRead.reasonCode().contains("missing-capability:agent_admin.prompt_risk_review.read"));
+    assertEquals("agent-admin-requires-tenant-admin", deniedRead.reasonCode());
   }
 
   private AgentAdminPromptRiskReviewService.StartPromptRiskReviewCommand command(String idempotencyKey) {

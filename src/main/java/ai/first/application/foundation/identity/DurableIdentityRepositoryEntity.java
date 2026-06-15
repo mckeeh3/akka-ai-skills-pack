@@ -100,6 +100,10 @@ public class DurableIdentityRepositoryEntity extends KeyValueEntity<IdentityRepo
     return effects().reply(currentState().customer(key.tenantId(), key.customerId()));
   }
 
+  public ReadOnlyEffect<List<Customer>> customerRows() {
+    return effects().reply(currentState().customerRows());
+  }
+
   public Effect<Customer> saveCustomer(Customer customer) {
     return effects().updateState(currentState().saveCustomer(customer)).thenReply(() -> customer);
   }
