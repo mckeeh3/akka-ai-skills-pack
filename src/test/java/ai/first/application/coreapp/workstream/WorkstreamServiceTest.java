@@ -830,7 +830,7 @@ class WorkstreamServiceTest {
         "action-deactivate-agent-definition", "action-deactivate-agent-definition", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-deactivate", "membership-admin", "surface-agent-admin-detail", "corr-agent-deactivate"));
 
     assertEquals("accepted", deactivate.status());
-    assertEquals("surface-agent-admin-detail", deactivate.resultSurface().surfaceId());
+    assertEquals("surface-agent-definition-deactivation-confirmation", deactivate.resultSurface().surfaceId());
     assertEquals(AgentLifecycleStatus.DISABLED, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
 
     var duplicateDeactivate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
@@ -846,7 +846,7 @@ class WorkstreamServiceTest {
         "action-import-agent-seed-defaults", "action-import-agent-seed-defaults", "agent_admin.reseed_missing_defaults", "agent_admin.reseed_missing_defaults", null, "idem-seed-import", "membership-admin", "surface-agent-seed-material", "corr-agent-seed-import"));
     assertEquals("no-op", seedImport.status());
     assertTrue(seedImport.message().contains("skipped governed records"));
-    assertEquals("surface-agent-seed-material", seedImport.resultSurface().surfaceId());
+    assertEquals("surface-agent-seed-import-confirmation", seedImport.resultSurface().surfaceId());
   }
 
   @Test
@@ -1195,10 +1195,10 @@ class WorkstreamServiceTest {
   @Test
   void myAccountOpenWorkstreamActionReturnsBackendResolvedSurface() {
     var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-open-agent-admin", "action-open-agent-admin", "my_account.open_authorized_workstream", "my_account.open_authorized_workstream", null, null, "membership-admin", "surface-my-account-dashboard", "corr-open-agent-admin"));
+        "action-open-agent-admin", "action-open-agent-admin", "my_account.open_authorized_workstream", "my_account.open_authorized_workstream", Map.of(), null, "membership-admin", "surface-my-account-dashboard", "corr-open-agent-admin"));
 
     assertEquals("accepted", result.status());
-    assertEquals("surface-agent-admin-catalog", result.resultSurface().surfaceId());
+    assertEquals("surface-agent-admin-dashboard", result.resultSurface().surfaceId());
     assertEquals("agent-agent-admin", result.resultSurface().ownerFunctionalAgentId());
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM") && event.correlationId().equals("corr-open-agent-admin")));
   }

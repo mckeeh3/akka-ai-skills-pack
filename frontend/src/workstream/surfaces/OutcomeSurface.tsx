@@ -12,7 +12,7 @@ export function OutcomeSurface({ envelope, onAction }: OutcomeSurfaceProps) {
   return (
     <SurfaceStateFrame envelope={envelope}>
       {isMyAccountDigest ? <MyAccountDigestResult data={envelope.data} /> : <MetricsOutcome data={envelope.data} />}
-      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
+      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={envelope.data.digestTaskId ? { digestTaskId: envelope.data.digestTaskId } : undefined} onAction={onAction} />
     </SurfaceStateFrame>
   );
 }

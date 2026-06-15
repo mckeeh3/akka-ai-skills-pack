@@ -54,9 +54,10 @@ function AgentAdminCatalogView({ envelope, onAction }: ListSearchSurfaceProps) {
           {traceAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(traceAction, envelope.surfaceId)}>Open traces</button>}
         </div>
       </div>
-      <form className="surface-search-form user-admin-clean-search" role="search" onSubmit={(event) => event.preventDefault()}>
+      <form className="surface-search-form user-admin-clean-search" role="search" onSubmit={(event) => { event.preventDefault(); const query = new FormData(event.currentTarget).get('query'); if (refreshAction) onAction?.(refreshAction, envelope.surfaceId, stringRecord({ ...safeDirectoryInput(envelope), query: typeof query === 'string' ? query : '' })); }}>
         <label htmlFor={`${envelope.surfaceId}-query`}>Search managed agents</label>
         <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" defaultValue={typeof envelope.data.query === 'string' ? envelope.data.query : ''} />
+        <button type="submit" className="surface-action-link secondary" disabled={!refreshAction}>Search</button>
       </form>
       {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial results: unauthorized or redacted agent evidence is omitted.</p>}
       {envelope.data.redaction && <details className="dashboard-evidence-drawer"><summary>Catalog redaction and diagnostics</summary><p>{renderSurfaceValue(envelope.data.redaction)}</p></details>}

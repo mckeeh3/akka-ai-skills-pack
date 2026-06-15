@@ -104,6 +104,10 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.match(surfaceRenderer, /case 'detail-edit':\n      return <DetailEditSurface/);
   assert.match(surfaceRenderer, /case 'system_message':\n      return <SystemMessageSurface/);
   assert.match(dashboardSurface, /attentionItems/);
+  assert.match(dashboardSurface, /attentionCounters/);
+  assert.match(dashboardSurface, /Backend attention evidence retained for trace review/);
+  assert.match(dashboardSurface, /actionForAttentionItem/);
+  assert.doesNotMatch(dashboardSurface, /const knownActions: Record<string, string>/);
   assert.doesNotMatch(dashboardSurface, /Next safe steps|Capabilities checked:|Authorized traversal/);
   assert.match(dashboardSurface, /Items that need my attention/);
   assert.doesNotMatch(dashboardSurface, /Use these counts to decide where to focus first/);
@@ -128,8 +132,15 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.match(detailEditSurface, /actionInput=\{editableActionInput\}/);
   assert.match(detailEditSurface, /onChange=\{\(event\) => updateFieldValue/);
   assert.match(detailEditSurface, /permissionState/);
+  assert.match(detailEditSurface, /Available choice/);
+  assert.match(detailEditSurface, /Current organization/);
   assert.match(systemMessageSurface, /Recovery steps/);
+  assert.match(systemMessageSurface, /Role-gated trace details/);
   assert.match(actionState, /idempotencyKey/);
+  assert.match(backendWorkstreamService, /personalAttentionDigestService\.start/);
+  assert.match(backendWorkstreamService, /digestProgressEvents/);
+  assert.match(backendWorkstreamService, /digestEvidenceRefs/);
+  assert.doesNotMatch(backendWorkstreamService, /action-notification-email-update-preferences"\.equals\(request\.actionId\(\)\)/);
   assert.match(backendWorkstreamService, /validation-error/);
   assert.match(backendWorkstreamService, /no-op/);
   assert.match(actionState, /denied/);

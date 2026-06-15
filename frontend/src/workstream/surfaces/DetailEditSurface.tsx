@@ -232,7 +232,7 @@ function AgentAdminInspectionDetail({ envelope, onAction }: { envelope: SurfaceE
           <section className="user-admin-list-panel" aria-label="Behavior artifacts and governance objects">
             <div className="surface-section-heading compact"><div><p className="eyebrow">Behavior artifacts</p><h4>Prompt, manifest, model, and tool-boundary readiness</h4></div><p>Artifact ids and capability details are diagnostic; use task entry points for changes.</p></div>
             <div className="user-admin-clean-list" role="list">
-              {relatedArtifacts.map((artifact) => <article key={String(artifact.artifactId)} role="listitem" className="user-admin-clean-row agent-admin-artifact-card"><span className="user-admin-person"><strong>{humanize(String(artifact.artifactKind ?? 'artifact'))}</strong><small>{String(artifact.status ?? 'backend state')}</small></span><span className="status-pill info">{humanize(String(artifact.artifactKind ?? 'artifact'))}</span></article>)}
+              {relatedArtifacts.map((artifact) => <article key={String(artifact.artifactId)} role="listitem" className="user-admin-clean-row agent-admin-artifact-card"><span className="user-admin-person"><strong>{agentAdminArtifactTitle(artifact)}</strong><small>{agentAdminArtifactSummary(artifact)}</small></span><span className={`status-pill ${statusTone(String(artifact.status ?? 'ready'))}`}>{humanize(String(artifact.status ?? 'ready'))}</span></article>)}
             </div>
           </section>
         )}
@@ -391,6 +391,33 @@ function humanize(value: string) {
   return value.replace(/[\[\]_"]|-/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/(^|\s)\w/g, (letter) => letter.toUpperCase());
 }
 
+function agentAdminArtifactTitle(artifact: Record<string, unknown>) {
+  const kind = String(artifact.artifactKind ?? 'artifact');
+  if (kind.includes('prompt')) return 'Prompt behavior';
+  if (kind.includes('skill') || kind.includes('reference') || kind.includes('manifest')) return 'Skill and reference access';
+  if (kind.includes('tool')) return 'Tool boundary';
+  if (kind.includes('model')) return 'Model readiness';
+  return humanize(kind);
+}
+
+function agentAdminArtifactSummary(artifact: Record<string, unknown>) {
+  const status = humanize(String(artifact.status ?? 'backend state'));
+  const kind = String(artifact.artifactKind ?? 'artifact');
+  if (kind.includes('prompt')) return `${status}. Review proposed wording, risk, and redacted previews through prompt governance.`;
+  if (kind.includes('skill') || kind.includes('reference') || kind.includes('manifest')) return `${status}. Full document loads remain governed and trace-linked.`;
+  if (kind.includes('tool')) return `${status}. Side-effecting tool expansion requires simulation and approval.`;
+  if (kind.includes('model')) return `${status}. Provider aliases are visible; credentials remain backend-only.`;
+  return `${status}. Open a dedicated task surface for changes.`;
+}
+
+function statusTone(value: string) {
+  const status = value.toLowerCase();
+  if (status.includes('active') || status.includes('ready')) return 'success';
+  if (status.includes('review') || status.includes('pending') || status.includes('draft')) return 'warning';
+  if (status.includes('blocked') || status.includes('denied') || status.includes('disabled')) return 'danger';
+  return 'info';
+}
+
 function UserAdminDetailOverview({ envelope }: { envelope: SurfaceEnvelope<DetailEditSurfaceData> }) {
   const data = envelope.data;
   const isRolePreview = data.surfaceContract === 'user_admin.role_change_preview.v1' || envelope.surfaceId === 'surface-user-admin-role-change-preview';
@@ -461,7 +488,7 @@ function MyAccountDetailOverview({ envelope, fieldValues, onAction }: { envelope
           <p className="field-helper">Save/Confirm is required before this browser preview becomes your persisted preference. If save fails, keep this preview local and retry or select the backend theme again.</p>
           {envelope.data.availableThemes && envelope.data.availableThemes.length > 0 && <ul className="named-theme-list" aria-label="Available named themes">{envelope.data.availableThemes.map((theme) => {
             const themeId = theme.value ?? theme.themeId ?? theme.id ?? '';
-            return <li key={themeId} className={themeId === selectedTheme ? 'selected' : undefined}><strong>{theme.label ?? theme.name}</strong><span>{themeId}</span>{themeId === selectedTheme && <em>previewing</em>}</li>;
+            return <li key={themeId} className={themeId === selectedTheme ? 'selected' : undefined}><strong>{theme.label ?? theme.name}</strong><span>{themeId === selectedTheme ? 'Selected preview' : 'Available choice'}</span>{themeId === selectedTheme && <em>previewing</em>}</li>;
           })}</ul>}
         </article>
       </section>
@@ -474,9 +501,9 @@ function MyAccountDetailOverview({ envelope, fieldValues, onAction }: { envelope
           <h4>Backend-selected authority</h4>
           <p>Changing context reboots the shell authority basis through /api/me or protected workstream APIs; the browser cannot grant roles or capabilities by editing this surface.</p>
           <dl>
-            <div><dt>Tenant</dt><dd>{String(envelope.data.selectedContext?.tenantId ?? envelope.authContext.tenantId)}</dd></div>
-            <div><dt>Customer</dt><dd>{String(envelope.data.selectedContext?.customerId ?? envelope.authContext.customerId ?? 'Tenant scope')}</dd></div>
-            <div><dt>Visible capabilities</dt><dd>{String(envelope.data.visibleCapabilitySummary?.count ?? envelope.authContext.visibleCapabilityIds.length)}</dd></div>
+            <div><dt>Organization</dt><dd>Current organization</dd></div>
+            <div><dt>Scope</dt><dd>{envelope.authContext.customerId ? 'Selected customer' : 'Tenant scope'}</dd></div>
+            <div><dt>Visible permissions</dt><dd>{String(envelope.data.visibleCapabilitySummary?.count ?? envelope.authContext.visibleCapabilityIds.length)}</dd></div>
           </dl>
         </article>
         <p className="surface-state-inline stale">Switching context refreshes the shell authority basis, workstream counters, traces, notifications, and any open structured surfaces.</p>
@@ -488,8 +515,8 @@ function MyAccountDetailOverview({ envelope, fieldValues, onAction }: { envelope
               const selected = context.selected === true || selectedContextId === envelope.authContext.selectedContextId;
               return (
                 <article key={String(context.selectedContextId ?? index)} className={`surface-row-card ${selected ? 'selected' : ''}`}>
-                  <p><span>{String(context.status ?? 'active')}{selected ? ' · selected' : ''}</span><strong>{String(context.tenantId ?? 'Authorized tenant')}</strong></p>
-                  <p>{String(context.customerId ?? 'Tenant scope')} · {Array.isArray(context.roleIds) ? context.roleIds.join(', ') : 'roles redacted'}</p>
+                  <p><span>{String(context.status ?? 'active')}{selected ? ' · selected' : ''}</span><strong>{selected ? 'Current organization' : 'Authorized organization'}</strong></p>
+                  <p>{context.customerId ? 'Selected customer' : 'Tenant scope'} · {Array.isArray(context.roleIds) ? context.roleIds.join(', ') : 'roles redacted'}</p>
                   {Boolean(context.staleImpact) && <p className="field-helper">{String(context.staleImpact)}</p>}
                   {action && !selected && context.selectable !== false ? <button type="button" className="surface-action-link" onClick={() => onAction?.(action, envelope.surfaceId, { selectedContextId, correlationId: envelope.correlationId })}>Switch to this context</button> : <p className="form-status">{selected ? 'Current context' : 'Context switch is not available'}</p>}
                 </article>
@@ -519,5 +546,5 @@ function renderSurfaceValue(value: unknown): string | undefined {
 }
 
 function isNamedThemeId(value: string) {
-  return ['aurora-light', 'cobalt-light', 'obsidian-dark', 'midnight-dark', 'dark-night'].includes(value);
+  return /^[a-z][a-z0-9-]*-(light|dark|theme)$/.test(value);
 }

@@ -134,9 +134,13 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
       ) : (
         <p>No workflow steps are available for this state.</p>
       )}
-      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
+      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={digestActionInput(envelope.data)} onAction={onAction} />
     </SurfaceStateFrame>
   );
+}
+
+function digestActionInput(data: WorkflowStatusSurfaceData): Record<string, string> | undefined {
+  return data.digestTaskId ? { digestTaskId: data.digestTaskId } : undefined;
 }
 
 function UserAdminWorkflowBranchReturn({ envelope, onAction }: { envelope: SurfaceEnvelope<WorkflowStatusSurfaceData>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
@@ -175,7 +179,12 @@ function MyAccountDigestProgress({ data }: { data: WorkflowStatusSurfaceData }) 
         <div><dt>Direct mutation</dt><dd>{data.noDirectMutation ? 'Not allowed' : 'Not reported'}</dd></div>
         <div><dt>Redaction</dt><dd>{data.redaction ?? 'Hidden workstreams/items are not counted or named'}</dd></div>
       </dl>
-      {data.progressEvents && data.progressEvents.length > 0 && <ol className="workflow-steps" aria-label="Personal digest progress events">{data.progressEvents.map((event, index) => <li key={`${event}-${index}`} className={data.status}><span>{formatStatus(event)}</span><span>{formatStatus(data.status)}</span></li>)}</ol>}
+      {data.progressEvents && data.progressEvents.length > 0 && <ol className="workflow-steps" aria-label="Personal digest progress events">{data.progressEvents.map((event, index) => {
+        const key = typeof event === 'string' ? event : (event.eventId ?? event.label ?? `event-${index}`);
+        const label = typeof event === 'string' ? event : (event.label ?? event.eventId ?? 'Digest progress event');
+        const status = typeof event === 'string' ? data.status : (event.status ?? data.status);
+        return <li key={`${key}-${index}`} className={status}><span>{formatStatus(label)}</span><span>{formatStatus(status)}</span>{typeof event !== 'string' && event.summary && <small>{event.summary}</small>}</li>;
+      })}</ol>}
       {data.safety && <p className="surface-state-inline forbidden">{data.safety}</p>}
     </section>
   );

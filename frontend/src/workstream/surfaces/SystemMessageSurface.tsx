@@ -11,7 +11,9 @@ const severityTone: Record<string, string> = {
   info: 'info',
   warning: 'warning',
   error: 'danger',
-  critical: 'danger'
+  critical: 'danger',
+  blocked: 'danger',
+  blocked_provider_or_runtime: 'danger'
 };
 
 function traceHref(traceId: string) {
@@ -42,12 +44,12 @@ export function SystemMessageSurface({ envelope, onAction }: SystemMessageSurfac
           </ol>
         </section>
         {traceIds.length > 0 && (
-          <section aria-label="Trace links" className="system-message-traces">
-            <h4>Trace links</h4>
-            <ul>
-              {traceIds.map((traceId) => <li key={traceId}><a href={traceHref(traceId)}>{traceId}</a></li>)}
+          <details className="system-message-traces">
+            <summary>Role-gated trace details</summary>
+            <ul aria-label="Trace links">
+              {traceIds.map((traceId, index) => <li key={traceId}><a href={traceHref(traceId)}>Trace reference {index + 1}</a></li>)}
             </ul>
-          </section>
+          </details>
         )}
         {sourceRefs.length > 0 && (
           <section aria-label="Source references" className="system-message-source-refs">

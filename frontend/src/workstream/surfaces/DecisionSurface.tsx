@@ -35,8 +35,9 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
         )}
         {envelope.data.disabledActions && (
           <section aria-label="Disabled or deferred investigation actions">
-            <h4>Disabled actions</h4>
-            <ul>{envelope.data.disabledActions.map((action) => <li key={action.actionId}>{action.actionId}: {action.reason}</li>)}</ul>
+            <h4>Unavailable actions</h4>
+            <ul>{envelope.data.disabledActions.map((action) => <li key={action.actionId}>{action.label ?? 'Action unavailable'}: {action.reason}</li>)}</ul>
+            <details className="dashboard-evidence-drawer"><summary>Role-gated disabled action diagnostics</summary><ul>{envelope.data.disabledActions.map((action) => <li key={`${action.actionId}-diagnostics`}>{action.actionId}</li>)}</ul></details>
           </section>
         )}
         {envelope.data.traceLinks && <section className="trace-link-list" aria-label="Investigation guidance trace links">{envelope.data.traceLinks.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-timeline#${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}

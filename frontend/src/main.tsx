@@ -912,7 +912,7 @@ function buildShowDashboardShellRequest(functionalAgentId: string, selectedConte
 function dashboardSurfaceIdForAgent(functionalAgentId: string): string {
   switch (functionalAgentId) {
     case 'agent-my-account': return 'surface-my-account-dashboard';
-    case 'agent-agent-admin': return 'surface-agent-admin-catalog';
+    case 'agent-agent-admin': return 'surface-agent-admin-dashboard';
     case 'agent-audit-trace': return 'surface-audit-trace-dashboard';
     case 'agent-governance-policy': return 'surface-governance-policy-dashboard';
     default: return 'surface-user-admin-dashboard';

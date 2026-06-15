@@ -69,7 +69,7 @@ public final class MyAccountService {
     authContextResolver.requireCapability(actor.selectedContext(), OPEN_AUTHORIZED_WORKSTREAM_CAPABILITY);
     var target = switch (actionId) {
       case "action-open-user-admin" -> target("agent-user-admin", "User Admin", List.of("secure-tenant-user-foundation", "saas_owner.user.manage", "tenant.user.read", "tenant.user.manage", "customer.user.read", "customer.user.manage"), "surface-user-admin-dashboard");
-      case "action-open-agent-admin" -> target("agent-agent-admin", "Agent Admin", List.of("agent_admin.list_definitions"), "surface-agent-admin-catalog");
+      case "action-open-agent-admin" -> target("agent-agent-admin", "Agent Admin", List.of("agent_admin.list_definitions"), "surface-agent-admin-dashboard");
       case "action-open-audit-trace" -> target("agent-audit-trace", "Audit/Trace", List.of("audit.trace.read", "saas_owner.audit.read", "tenant.audit.read", "customer.audit.read"), "surface-audit-trace-dashboard");
       case "action-open-governance-policy" -> target("agent-governance-policy", "Governance/Policy", List.of("governance.policy.read"), "surface-governance-policy-dashboard");
       default -> null;
@@ -122,7 +122,7 @@ public final class MyAccountService {
 
   private AttentionItem attentionItem(AuthContextResolver.ResolvedMe actor, String itemId, String workstreamId, String title, String summary, AttentionCategory category, AttentionSeverity severity, String capabilityId, String surfaceId, String sourceId, String correlationId) {
     var now = Instant.now();
-    return new AttentionItem(itemId, actor.selectedContext().tenantId(), actor.selectedContext().customerId(), workstreamId, title, summary, category, severity, AttentionItemStatus.OPEN, AttentionItem.AssigneeKind.CAPABILITY, capabilityId, capabilityId, new AttentionSurfaceRef(workstreamId, surfaceId, "dashboard", itemId, AttentionService.OPEN_ATTENTION_ITEM_TOOL, capabilityId), List.of(new AttentionSourceRef("capability", sourceId, title, capabilityId, "trace-" + sourceId, correlationId)), null, now, now, now, null, null, null, null, correlationId);
+    return new AttentionItem(itemId, actor.selectedContext().tenantId(), actor.selectedContext().customerId(), workstreamId, title, summary, category, severity, AttentionItemStatus.OPEN, AttentionItem.AssigneeKind.CAPABILITY, capabilityId, capabilityId, new AttentionSurfaceRef(workstreamId, surfaceId, "dashboard", itemId, actionIdForWorkstream(workstreamId), capabilityId), List.of(new AttentionSourceRef("capability", sourceId, title, capabilityId, "trace-" + sourceId, correlationId)), null, now, now, now, null, null, null, null, correlationId);
   }
 
   private Map<String, Object> attentionItemMap(AttentionItem item) {

@@ -121,6 +121,22 @@ function AgentAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) 
         </dl>
       </section>
 
+      {data.cards && data.cards.length > 0 && (
+        <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-summary-heading`}>
+          <div className="surface-section-heading">
+            <div><p className="eyebrow">Governance summary</p><h4 id={`${envelope.surfaceId}-summary-heading`}>Clickable work areas</h4></div>
+            <p>Cards summarize backend-authored Agent Admin work areas and open structured surfaces instead of acting as passive metrics.</p>
+          </div>
+          <div className="surface-dashboard-grid my-account-workstream-grid" aria-label="Agent Admin summary cards">
+            {data.cards.map((card) => {
+              const action = card.actionId ? actionById.get(card.actionId) : undefined;
+              const body = <><p>{card.label}</p><strong>{card.value}</strong>{card.status && <span>{card.status}</span>}</>;
+              return action ? <button key={card.cardId} type="button" className={`ds-card dashboard-card clickable ${card.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId, agentAdminCardInput(card, envelope))} aria-label={`Open ${card.label}: ${card.status ?? card.value}`}>{body}</button> : <article key={card.cardId} className={`ds-card dashboard-card ${card.severity ?? 'info'}`}>{body}</article>;
+            })}
+          </div>
+        </section>
+      )}
+
       <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-attention-heading`}>
         <div className="surface-section-heading">
           <div><p className="eyebrow">Things that need my attention</p><h4 id={`${envelope.surfaceId}-attention-heading`}>Governance attention queues</h4></div>
@@ -295,8 +311,8 @@ function MyAccountCommandCenter({ envelope, onAction, onSignOut }: DashboardSurf
         {data.accountContext && (
           <dl className="authority-summary-grid" aria-label="Selected context authority">
             <div><dt>Signed in</dt><dd>{data.accountContext.displayName ?? 'Current user'}{data.accountContext.email ? ` · ${data.accountContext.email}` : ''}</dd></div>
-            <div><dt>Tenant</dt><dd>{data.accountContext.tenantId ?? envelope.authContext.tenantId}</dd></div>
-            <div><dt>Customer</dt><dd>{data.accountContext.customerId ?? envelope.authContext.customerId ?? 'Tenant scope'}</dd></div>
+            <div><dt>Organization</dt><dd>{data.accountContext.tenantLabel ?? 'Current organization'}</dd></div>
+            <div><dt>Scope</dt><dd>{data.accountContext.customerLabel ?? (envelope.authContext.customerId ? 'Selected customer' : 'Tenant scope')}</dd></div>
             <div><dt>Authority</dt><dd>{data.accountContext.authority ?? data.accountContext.roles?.join(', ') ?? 'Backend selected AuthContext'}</dd></div>
           </dl>
         )}
@@ -381,7 +397,7 @@ function AttentionList({ items, label, actionById, surfaceId, onAction }: { item
   return (
     <section className="my-account-attention-card-list" aria-label={label} data-attention-source="attention.list_my_account_items">
       {items.map((item) => {
-        const openAction = item.surfaceRef?.targetFunctionalAgentId ? actionForWorkstream(item.surfaceRef.targetFunctionalAgentId, actionById) : actionForWorkstream(item.sourceWorkstreamId, actionById);
+        const openAction = actionForAttentionItem(item, actionById);
         const input = { targetFunctionalAgentId: item.surfaceRef?.targetFunctionalAgentId ?? item.sourceWorkstreamId ?? '', targetSurfaceId: item.surfaceRef?.targetSurfaceId ?? '', targetItemId: item.surfaceRef?.targetItemId ?? item.itemId, requiredCapabilityId: item.surfaceRef?.requiredCapabilityId ?? item.capabilityId ?? '', correlationId: item.traceId ?? '' };
         return (
           <article key={item.itemId} className={`my-account-attention-card ${attentionSeverityClass(item.severity ?? item.status)}`} data-attention-redaction={item.redaction ?? 'full'}>
@@ -389,7 +405,7 @@ function AttentionList({ items, label, actionById, surfaceId, onAction }: { item
               <p className="eyebrow">{formatAttentionSource(item.sourceWorkstreamId)} · {formatStatus(item.severity ?? item.status)}</p>
               <h4>{item.label ?? item.title ?? item.itemId}</h4>
               {item.summary && <p>{item.summary}</p>}
-              <p className="capability-basis">Redaction: {item.redaction ?? 'full'} · Source opens through governed workstream action.</p>
+              <p className="capability-basis">{item.redaction === 'summary_only' ? 'Summary-only evidence' : 'Browser-safe evidence'} · Source opens through a governed workstream action.</p>
             </div>
             <div className="attention-card-actions">
               {openAction && surfaceId ? <button type="button" className="surface-action-link" onClick={() => onAction?.(openAction, surfaceId, input)}>Open source workstream</button> : <span className="form-status">Open from the matching counter above</span>}
@@ -432,6 +448,10 @@ function defaultControlPanels(data: DashboardSurfaceData): NonNullable<Dashboard
 
 function agentAdminQueueInput(queue: NonNullable<DashboardSurfaceData['attentionQueues']>[number], envelope: { correlationId: string }): Record<string, string> {
   return stringRecord({ targetSurfaceId: queue.targetSurfaceId, requiredCapabilityId: queue.sourceCapabilityId, filter: queue.filter, correlationId: queue.traceRefs?.[0] ?? envelope.correlationId });
+}
+
+function agentAdminCardInput(card: NonNullable<DashboardSurfaceData['cards']>[number], envelope: { correlationId: string }): Record<string, string> {
+  return stringRecord({ cardId: card.cardId, targetSurfaceId: card.targetSurfaceId, correlationId: envelope.correlationId });
 }
 
 function userAdminAttentionCountersFromQueues(queues: NonNullable<DashboardSurfaceData['attentionQueues']>, actionById: Map<string, SurfaceAction>): NonNullable<DashboardSurfaceData['attentionCounters']> {
@@ -506,16 +526,13 @@ function actionForTarget(targetSurfaceId: string, actionById: Map<string, Surfac
   return Array.from(actionById.values()).find((action) => action.resultSurface?.updateSurfaceId === targetSurfaceId || action.resultSurface?.appendSurfaceType === targetSurfaceId || action.shellRequest?.targetSurfaceId === targetSurfaceId);
 }
 
-function actionForWorkstream(workstreamId: string | undefined, actionById: Map<string, SurfaceAction> | undefined): SurfaceAction | undefined {
-  if (!workstreamId || !actionById) return undefined;
-  const knownActions: Record<string, string> = {
-    'agent-user-admin': 'action-open-user-admin',
-    'agent-agent-admin': 'action-open-agent-admin',
-    'agent-audit-trace': 'action-open-audit-trace',
-    'agent-governance-policy': 'action-open-governance-policy'
-  };
-  const actionId = knownActions[workstreamId];
-  return actionId ? actionById.get(actionId) : undefined;
+function actionForAttentionItem(item: AttentionItem, actionById: Map<string, SurfaceAction> | undefined): SurfaceAction | undefined {
+  if (!actionById) return undefined;
+  const backendActionId = item.surfaceRef?.defaultActionId;
+  if (backendActionId && actionById.has(backendActionId)) return actionById.get(backendActionId);
+  const targetSurfaceId = item.surfaceRef?.targetSurfaceId;
+  if (targetSurfaceId) return actionForTarget(targetSurfaceId, actionById);
+  return undefined;
 }
 
 function userDirectoryAction(actionById: Map<string, SurfaceAction>): SurfaceAction | undefined {

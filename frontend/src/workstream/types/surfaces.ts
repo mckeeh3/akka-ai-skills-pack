@@ -162,7 +162,7 @@ export type DashboardSurfaceData = {
   systemStates?: string[];
   attentionItems?: Array<AttentionItem>;
   attentionSource?: 'attention.list_workstream_items' | string;
-  accountContext?: { displayName?: string; email?: string; tenantId?: string; customerId?: string; selectedContextId?: string; roles?: string[]; authority?: string };
+  accountContext?: { displayName?: string; email?: string; tenantId?: string; customerId?: string; selectedContextId?: string; tenantLabel?: string; customerLabel?: string; selectedContextLabel?: string; roles?: string[]; authority?: string };
   quickSurfaceActionIds?: string[];
   utilityActionIds?: string[];
   sections?: Array<{ sectionId: string; label: string; summary: string }>;
@@ -364,7 +364,7 @@ export type DecisionSurfaceData = {
   confidenceScore?: number | string;
   evidence?: Array<{ evidenceId: string; label: string; summary: string }>;
   allowedActions?: Array<{ actionId: string; label: string; browserToolId: string; governedToolId: string; capabilityId: string }>;
-  disabledActions?: Array<{ actionId: string; reason: string }>;
+  disabledActions?: Array<{ actionId: string; label?: string; reason: string }>;
   risk?: string;
   traceLinks?: string[];
 };
@@ -418,7 +418,7 @@ export type WorkflowStatusSurfaceData = {
   authorizedAttentionCount?: number;
   sectionRefs?: string[];
   phase?: string;
-  progressEvents?: string[];
+  progressEvents?: Array<string | { eventId?: string; label?: string; status?: string; summary?: string; traceId?: string }>;
   redaction?: string;
   accessReview?: {
     surfaceContract: 'user_admin.access_review_task.v1';

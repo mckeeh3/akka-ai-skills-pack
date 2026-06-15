@@ -9,6 +9,8 @@ import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.invitation.Invitation;
 import ai.first.domain.foundation.invitation.InvitationStatus;
 import ai.first.application.coreapp.agentadmin.AgentAdminService;
+import ai.first.application.coreapp.agentadmin.AgentAdminPromptRiskReviewService;
+import ai.first.application.coreapp.agentadmin.PromptRiskReviewTaskRepository;
 import ai.first.application.coreapp.governance.GovernancePolicyImpactService;
 import ai.first.application.coreapp.myaccount.MyAccountPersonalAttentionDigestService;
 import ai.first.application.coreapp.myaccount.MyAccountService;
@@ -28,6 +30,7 @@ import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.foundation.agent.BehaviorChangeProposal;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import ai.first.domain.coreapp.useradmin.AccessReviewTask;
+import ai.first.domain.coreapp.agentadmin.PromptRiskReviewTask;
 import ai.first.domain.foundation.attention.AttentionCategory;
 import ai.first.domain.foundation.attention.AttentionItem;
 import ai.first.domain.foundation.attention.AttentionItemStatus;
@@ -63,6 +66,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -203,6 +207,7 @@ public final class WorkstreamService {
   private final AgentBehaviorRepository agentBehaviorRepository;
   private final AgentAdminService agentAdminService;
   private final AgentRuntimeService agentRuntimeService;
+  private final AgentAdminPromptRiskReviewService promptRiskReviewService;
   private final AuditTraceService auditTraceService;
   private final GovernancePolicyService governancePolicyService;
   private final AttentionService attentionService;
@@ -286,6 +291,7 @@ public final class WorkstreamService {
     this.invitationService = invitationService;
     this.agentBehaviorRepository = agentBehaviorRepository;
     this.agentAdminService = new AgentAdminService(agentBehaviorRepository, authContextResolver);
+    this.promptRiskReviewService = new AgentAdminPromptRiskReviewService(new InMemoryPromptRiskReviewTaskRepository(), authContextResolver, Clock.systemUTC(), attentionProducerService, workstreamEventPublisher);
     this.agentRuntimeService = agentRuntimeService;
     this.workstreamAgentRuntimeInvoker = Objects.requireNonNull(workstreamAgentRuntimeInvoker);
     this.workstreamLogRepository = Objects.requireNonNull(workstreamLogRepository);
@@ -503,17 +509,39 @@ public final class WorkstreamService {
       result = new CapabilityActionResult(proposal.status() == BehaviorChangeProposal.Status.DENIED ? "denied" : "approval-required", "Tool-boundary authority expansion simulation recorded as " + proposal.status().name().toLowerCase(Locale.ROOT) + "; side-effecting tools require retained human approval and backend ToolPermissionBoundary enforcement.", request.correlationId(), List.of(proposal.proposalId()), agentToolBoundarySurface(actor, request.correlationId()));
     } else if ("action-approve-skill-manifest".equals(request.actionId())) {
       result = new CapabilityActionResult("approval-required", "Skill manifest approval is recorded as a governed review gate; activation must use an approved backend governance command.", request.correlationId(), List.of("trace-skill-manifest-approval-required"), agentSkillManifestSurface(actor, request.correlationId()));
+    } else if ("action-agentadmin-start-prompt-risk-review".equals(request.actionId())) {
+      var task = promptRiskReviewService.start(actor, new AgentAdminPromptRiskReviewService.StartPromptRiskReviewCommand(
+          stringInput(request.input(), "agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+          stringInput(request.input(), "proposalId", "proposal-agent-admin-prompt-001"),
+          List.of(new PromptRiskReviewTask.BehaviorArtifactDelta(PromptRiskReviewTask.ArtifactKind.PROMPT_DOCUMENT, "prompt-agent-admin-system", 1, 2, "Review redacted prompt behavior changes for authority expansion, secret exposure, and tool-boundary bypass language.", "redacted-diff-agent-admin-prompt", "sha256:before-redacted", "sha256:after-redacted")),
+          List.of("PromptAssemblyTrace", "SkillLoadTrace", "ReferenceLoadTrace", "AgentWorkTrace"),
+          request.idempotencyKey()), request.correlationId());
+      result = promptRiskReviewActionResult(task, task.status() == PromptRiskReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime" : "accepted", "Prompt-risk review task is backend-governed; result is advisory and cannot activate behavior artifacts.", request.correlationId(), actor);
+    } else if ("action-agentadmin-read-prompt-risk-review".equals(request.actionId())) {
+      var taskId = stringInput(request.input(), "taskId", "");
+      result = taskId.isBlank()
+          ? new CapabilityActionResult("accepted", "Prompt-risk review status surface loaded; no task id was selected from the dashboard queue.", request.correlationId(), List.of("trace-agent-admin-prompt-risk-status-" + stableSuffix(request.correlationId())), agentPromptRiskReviewEmptySurface(actor, request.correlationId()))
+          : promptRiskReviewActionResult(promptRiskReviewService.read(actor, taskId, request.correlationId()), "accepted", "Prompt-risk review state loaded from backend projection.", request.correlationId(), actor);
+    } else if ("action-agentadmin-cancel-prompt-risk-review".equals(request.actionId())) {
+      var task = promptRiskReviewService.cancel(actor, stringInput(request.input(), "taskId", ""), stringInput(request.input(), "reason", "workstream cancel"), request.correlationId());
+      result = promptRiskReviewActionResult(task, "accepted", "Prompt-risk review cancellation recorded; behavior artifacts unchanged.", request.correlationId(), actor);
+    } else if ("action-agentadmin-accept-prompt-risk-review-result".equals(request.actionId())) {
+      var task = promptRiskReviewService.acceptResult(actor, stringInput(request.input(), "taskId", ""), stringInput(request.input(), "reason", "accepted by Agent Admin"), request.correlationId());
+      result = promptRiskReviewActionResult(task, "accepted", "Prompt-risk result accepted as human review evidence; no behavior artifact was activated.", request.correlationId(), actor);
+    } else if ("action-agentadmin-reject-prompt-risk-review-result".equals(request.actionId())) {
+      var task = promptRiskReviewService.rejectResult(actor, stringInput(request.input(), "taskId", ""), stringInput(request.input(), "reason", "rejected by Agent Admin"), request.correlationId());
+      result = promptRiskReviewActionResult(task, "accepted", "Prompt-risk result rejected as human review evidence; behavior artifacts unchanged.", request.correlationId(), actor);
     } else if ("action-deactivate-agent-definition".equals(request.actionId())) {
       var changed = changeAgentDefinitionStatus(actor, stringInput(request.input(), "agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), AgentLifecycleStatus.DISABLED, request.correlationId());
-      result = new CapabilityActionResult(changed ? "accepted" : "no-op", changed ? "AgentDefinition deactivated through backend-governed Agent Admin lifecycle." : "AgentDefinition was already deactivated; lifecycle command was idempotent.", request.correlationId(), List.of("trace-agent-definition-deactivated-" + stableSuffix(request.correlationId())), agentAdminDetailSurface(actor, request.correlationId()));
+      result = new CapabilityActionResult(changed ? "accepted" : "no-op", changed ? "AgentDefinition deactivated through backend-governed Agent Admin lifecycle." : "AgentDefinition was already deactivated; lifecycle command was idempotent.", request.correlationId(), List.of("trace-agent-definition-deactivated-" + stableSuffix(request.correlationId())), agentLifecycleConfirmationSurface(actor, request.correlationId(), "deactivated", changed));
     } else if ("action-activate-agent-definition".equals(request.actionId())) {
       var changed = changeAgentDefinitionStatus(actor, stringInput(request.input(), "agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), AgentLifecycleStatus.ACTIVE, request.correlationId());
-      result = new CapabilityActionResult(changed ? "accepted" : "no-op", changed ? "AgentDefinition activated through backend-governed Agent Admin lifecycle." : "AgentDefinition was already active; lifecycle command was idempotent.", request.correlationId(), List.of("trace-agent-definition-activated-" + stableSuffix(request.correlationId())), agentAdminDetailSurface(actor, request.correlationId()));
+      result = new CapabilityActionResult(changed ? "accepted" : "no-op", changed ? "AgentDefinition activated through backend-governed Agent Admin lifecycle." : "AgentDefinition was already active; lifecycle command was idempotent.", request.correlationId(), List.of("trace-agent-definition-activated-" + stableSuffix(request.correlationId())), agentLifecycleConfirmationSurface(actor, request.correlationId(), "activated", changed));
     } else if ("action-import-agent-seed-defaults".equals(request.actionId())) {
       authContextResolver.requireCapability(actor.selectedContext(), AGENT_ADMIN_RESEED_DEFAULTS_CAPABILITY);
       var seed = new AgentBehaviorSeedLoader(agentBehaviorRepository, Clock.systemUTC()).importStarterDefaults(actor.selectedContext().tenantId(), actor.account().accountId(), request.correlationId());
       authContextResolver.appendProtectedReadTrace(actor, AGENT_ADMIN_RESEED_DEFAULTS_CAPABILITY, "agent_admin.seed_import.v1 created=" + seed.createdCount() + " skipped=" + seed.skippedCount(), request.correlationId());
-      result = new CapabilityActionResult(seed.createdCount() == 0 ? "no-op" : "accepted", "Seed import completed with " + seed.createdCount() + " created and " + seed.skippedCount() + " skipped governed records.", request.correlationId(), List.of("trace-agent-seed-import-" + stableSuffix(request.correlationId())), agentSeedMaterialSurface(actor, request.correlationId()));
+      result = new CapabilityActionResult(seed.createdCount() == 0 ? "no-op" : "accepted", "Seed import completed with " + seed.createdCount() + " created and " + seed.skippedCount() + " skipped governed records.", request.correlationId(), List.of("trace-agent-seed-import-" + stableSuffix(request.correlationId())), agentSeedImportConfirmationSurface(actor, request.correlationId(), Math.toIntExact(seed.createdCount()), Math.toIntExact(seed.skippedCount())));
     } else if ("action-update-my-profile".equals(request.actionId()) || "action-update-my-settings".equals(request.actionId())) {
       var update = updateOwnProfileSettings(actor, request);
       result = new CapabilityActionResult(update.changed() ? "accepted" : "no-op", update.changed() ? "My Account profile/settings changes were persisted by the backend." : "My Account profile/settings update was a no-op.", request.correlationId(), List.of("trace-my-account-profile-settings-" + stableSuffix(request.idempotencyKey())), surfaceForAction(authContextResolver.resolveMe(identity, selectedContextId, request.correlationId()), request.actionId(), request.correlationId()));
@@ -549,12 +577,6 @@ public final class WorkstreamService {
     } else if ("action-notification-update-preferences".equals(request.actionId())) {
       var pref = notificationService.updatePreference(actor, NotificationCategory.ALL, booleanInput(request.input(), "enabled", true), NotificationPriority.INFO, null, booleanInput(request.input(), "includeReadInCenter", false), request.correlationId());
       result = new CapabilityActionResult("accepted", "In-app notification preferences updated by backend authority; email delivery remains a separate governed channel.", request.correlationId(), List.of(pref.correlationId()), myAccountNotificationCenterSurface(actor, request.correlationId()));
-    } else if ("action-notification-email-update-preferences".equals(request.actionId())) {
-      var pref = notificationService.updateEmailPreference(actor, notificationCategoryInput(request.input(), NotificationCategory.DIGEST_READY), booleanInput(request.input(), "enabled", true), notificationPriorityInput(request.input(), NotificationPriority.INFO), null, request.correlationId());
-      result = new CapabilityActionResult("accepted", "Email notification preferences updated by backend authority through notification.email.update_preferences; in-app notifications and future SMS/push/webhook channels are unchanged.", request.correlationId(), List.of(pref.correlationId()), myAccountNotificationCenterSurface(actor, request.correlationId()));
-    } else if ("action-notification-external-fail-closed-check".equals(request.actionId())) {
-      var attempt = notificationService.evaluateExternalDelivery(actor, notificationIdInput(actor, request.input(), request.correlationId()), notificationChannelInput(request.input(), NotificationChannel.WEBHOOK), stringInput(request.input(), "destinationSummary", "redacted local/test destination"), request.correlationId());
-      result = new CapabilityActionResult("blocked", "External notification provider is not configured; the governed platform captured a local/test outbox intent and did not report delivery success.", request.correlationId(), List.of(attempt.correlationId()), myAccountNotificationCenterSurface(actor, request.correlationId()));
     } else if ("action-open-user-admin".equals(request.actionId()) || "action-open-agent-admin".equals(request.actionId()) || "action-open-audit-trace".equals(request.actionId()) || "action-open-governance-policy".equals(request.actionId())) {
       var open = myAccountService.openAuthorizedWorkstream(actor, request.actionId(), request.correlationId());
       result = "accepted".equals(open.status())
@@ -766,7 +788,7 @@ public final class WorkstreamService {
     cards.add(mapOf("cardId", "card-my-account-notifications", "cardKind", "notification-center", "label", "In-app notifications", "value", notificationCenter.unreadCount(), "unit", "unread notifications", "status", notificationCenter.visibleCount() == 0 ? "No notifications in the authorized center" : notificationCenter.visibleCount() + " notifications visible", "description", "Backend-owned notification projection for selected-context attention and workstream events.", "severity", notificationCenter.unreadCount() > 0 ? "warning" : "info", "surfaceId", "surface-my-account-notification-center", "actionId", "action-show-my-account-notification-center"));
     var personalAttention = myAccountService.personalAttention(actor, correlationId);
     return envelope("surface-my-account-dashboard", "dashboard", "My Account Dashboard", actor, correlationId,
-        mapOf("surfaceContract", "my_account.personal_command_center.v1", "canonicalAccessProfileContextSurfaceId", ACCESS_PROFILE_CONTEXT_SURFACE_ID, "coreCapabilityAliases", List.of(CORE_ACCESS_ME_CAPABILITY, CORE_PROFILE_UPDATE_CAPABILITY, CORE_ACCESS_CONTEXT_SELECT_CAPABILITY), "cards", cards, "sections", dashboard.sections(), "attentionItems", personalAttention, "needsAttention", personalAttention, "attentionCounters", myAccountAttentionCounters(dashboard.cards()), "attentionSource", AttentionService.LIST_MY_ACCOUNT_ITEMS_TOOL, "accountContext", mapOf("displayName", actor.profile().displayName(), "email", actor.account().displayEmail(), "tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "roles", actor.selectedContext().roles().stream().map(role -> role.name().toLowerCase(Locale.ROOT).replace('_', '-')).sorted().toList(), "authority", dashboard.authorityBasis().primaryRoleBasis()), "quickSurfaceActionIds", dashboard.nextSteps().stream().map(step -> step.get("actionId")).filter(Objects::nonNull).toList(), "utilityActionIds", List.of("action-show-my-profile", "action-show-my-settings", "action-show-my-context", "action-show-my-account-notification-center", "action-sign-out"), "controlPanels", myAccountControlPanels(notificationCenter), "authorizedWorkstreamLinks", dashboard.nextSteps(), "notificationCenter", mapOf("surfaceId", "surface-my-account-notification-center", "surfaceContract", notificationCenter.surfaceContract(), "channel", "in_app", "unreadCount", notificationCenter.unreadCount(), "visibleCount", notificationCenter.visibleCount(), "countSource", NotificationService.LIST_MY_ACCOUNT_CENTER_TOOL), "personalAttentionDigest", mapOf("surfaceIds", List.of("surface-my-account-personal-attention-digest-progress", "surface-my-account-personal-attention-digest-result", "surface-my-account-personal-attention-digest-blocked"), "statusSource", "backend-projected MyAccountPersonalAttentionDigestTask", "noDirectMutation", true, "capabilityIds", List.of(MY_ACCOUNT_DIGEST_START_CAPABILITY, MY_ACCOUNT_DIGEST_READ_CAPABILITY, MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY, MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY, MY_ACCOUNT_DIGEST_REJECT_CAPABILITY)), "nextSteps", dashboard.nextSteps(), "traceRefs", dashboard.traceRefs(), "authorityBasis", dashboard.authorityBasis(), "contextCapabilityGroups", dashboard.capabilityGroups(), "redaction", "Personal attention and notifications only include authorized sibling workstreams; hidden workstreams return not_found_or_redacted without names or counts.", "systemStates", List.of("system_message", "selected context", "authority", "tenant", "trace", "personal attention", "personal attention digest", "notification center", "trace refs", "not_found_or_redacted", "blocked_provider_or_runtime")),
+        mapOf("surfaceContract", "my_account.personal_command_center.v1", "canonicalAccessProfileContextSurfaceId", ACCESS_PROFILE_CONTEXT_SURFACE_ID, "coreCapabilityAliases", List.of(CORE_ACCESS_ME_CAPABILITY, CORE_PROFILE_UPDATE_CAPABILITY, CORE_ACCESS_CONTEXT_SELECT_CAPABILITY), "cards", cards, "sections", dashboard.sections(), "attentionItems", personalAttention, "needsAttention", personalAttention, "attentionCounters", myAccountAttentionCounters(dashboard.cards()), "attentionSource", AttentionService.LIST_MY_ACCOUNT_ITEMS_TOOL, "accountContext", mapOf("displayName", actor.profile().displayName(), "email", actor.account().displayEmail(), "tenantLabel", "Current organization", "customerLabel", actor.selectedContext().customerId() == null ? "Tenant scope" : "Selected customer", "selectedContextLabel", "Current signed-in context", "tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "roles", actor.selectedContext().roles().stream().map(role -> role.name().toLowerCase(Locale.ROOT).replace('_', '-')).sorted().toList(), "authority", dashboard.authorityBasis().primaryRoleBasis()), "quickSurfaceActionIds", dashboard.nextSteps().stream().map(step -> step.get("actionId")).filter(Objects::nonNull).toList(), "utilityActionIds", List.of("action-show-my-profile", "action-show-my-settings", "action-show-my-context", "action-show-my-account-notification-center", "action-sign-out"), "controlPanels", myAccountControlPanels(notificationCenter), "authorizedWorkstreamLinks", dashboard.nextSteps(), "notificationCenter", mapOf("surfaceId", "surface-my-account-notification-center", "surfaceContract", notificationCenter.surfaceContract(), "channel", "in_app", "unreadCount", notificationCenter.unreadCount(), "visibleCount", notificationCenter.visibleCount(), "countSource", NotificationService.LIST_MY_ACCOUNT_CENTER_TOOL), "personalAttentionDigest", mapOf("surfaceIds", List.of("surface-my-account-personal-attention-digest-progress", "surface-my-account-personal-attention-digest-result", "surface-my-account-personal-attention-digest-blocked"), "statusSource", "backend-projected MyAccountPersonalAttentionDigestTask", "noDirectMutation", true, "capabilityIds", List.of(MY_ACCOUNT_DIGEST_START_CAPABILITY, MY_ACCOUNT_DIGEST_READ_CAPABILITY, MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY, MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY, MY_ACCOUNT_DIGEST_REJECT_CAPABILITY)), "nextSteps", dashboard.nextSteps(), "traceRefs", dashboard.traceRefs(), "authorityBasis", dashboard.authorityBasis(), "contextCapabilityGroups", dashboard.capabilityGroups(), "redaction", "Personal attention and notifications only include authorized sibling workstreams; hidden workstreams return not_found_or_redacted without names or counts.", "systemStates", List.of("system_message", "selected context", "authority", "tenant", "trace", "personal attention", "personal attention digest", "notification center", "trace refs", "not_found_or_redacted", "blocked_provider_or_runtime")),
         List.of(showDashboardAction(), showNotificationCenterAction(), showProfileAction(), showSettingsAction(), showContextAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), signOutAction(), openUserAdminAction(), openAgentAdminAction(), openAuditAction(), openGovernancePolicyAction()));
   }
 
@@ -784,7 +806,7 @@ public final class WorkstreamService {
             "targetSurfaceId", card.get("surfaceId"),
             "workstreamId", card.get("workstreamId"),
             "requiredCapabilityId", card.get("requiredCapabilityId"),
-            "redaction", card.getOrDefault("redaction", "authorized selected-context summary"),
+            "redaction", card.getOrDefault("redaction", "Authorized in this context"),
             "description", card.get("description")))
         .toList();
   }
@@ -887,8 +909,58 @@ public final class WorkstreamService {
     if (task.status() == MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME) return personalAttentionDigestBlockedSurface(actor, task, correlationId);
     var completed = task.status() == MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED || task.status() == MyAccountPersonalAttentionDigestTask.Status.COMPLETED_EMPTY || task.status() == MyAccountPersonalAttentionDigestTask.Status.ACCEPTED || task.status() == MyAccountPersonalAttentionDigestTask.Status.REJECTED;
     return envelope(completed ? "surface-my-account-personal-attention-digest-result" : "surface-my-account-personal-attention-digest-progress", completed ? "outcome-panel" : "workflow-status", completed ? "Personal attention digest result" : "Personal attention digest progress", actor, correlationId,
-        mapOf("surfaceContract", completed ? "my_account.personal_attention_digest.result.v1" : "my_account.personal_attention_digest.progress.v1", "digestTaskId", task.digestTaskId(), "autonomousAgentTaskId", task.autonomousAgentTaskId(), "status", task.status().name().toLowerCase(Locale.ROOT), "phase", task.status().name().toLowerCase(Locale.ROOT).replace('_', '-'), "progressPercent", task.progressPercent(), "summary", task.summary(), "authorizedAttentionCount", task.authorizedAttentionCount(), "sectionRefs", task.sectionRefs(), "evidenceRefs", task.evidenceRefs(), "materialEvents", task.evidenceRefs(), "recommendations", task.sectionRefs(), "omissions", mapOf("redactionSummary", "Hidden workstreams/items are omitted and not counted."), "authorizedSourceCounts", mapOf("attention", task.authorizedAttentionCount()), "sourceSurfaceRefs", task.evidenceRefs(), "decisionState", task.status().name().toLowerCase(Locale.ROOT), "progressEvents", task.traceIds(), "traceRefs", task.traceIds(), "redaction", "Authorized personal attention evidence only; hidden workstreams/items are not counted or named.", "noDirectMutation", true, "safety", "This digest is advisory. Source attention remains authoritative and source item lifecycle changes require separate governed capabilities."),
+        mapOf("surfaceContract", completed ? "my_account.personal_attention_digest.result.v1" : "my_account.personal_attention_digest.progress.v1", "digestTaskId", task.digestTaskId(), "autonomousAgentTaskId", task.autonomousAgentTaskId(), "status", task.status().name().toLowerCase(Locale.ROOT), "phase", task.status().name().toLowerCase(Locale.ROOT).replace('_', '-'), "progressPercent", task.progressPercent(), "summary", task.summary(), "authorizedAttentionCount", task.authorizedAttentionCount(), "sectionRefs", task.sectionRefs(), "evidenceRefs", digestEvidenceRefs(task), "materialEvents", digestEvidenceRefs(task), "recommendations", digestRecommendations(task), "omissions", mapOf("redactionSummary", "Hidden workstreams/items are omitted and not counted."), "authorizedSourceCounts", mapOf("attention", task.authorizedAttentionCount()), "sourceSurfaceRefs", digestSourceSurfaceRefs(task), "decisionState", task.status().name().toLowerCase(Locale.ROOT), "progressEvents", digestProgressEvents(task), "traceRefs", task.traceIds(), "redaction", "Authorized personal attention evidence only; hidden workstreams/items are not counted or named.", "noDirectMutation", true, "safety", "This digest is advisory. Source attention remains authoritative and source item lifecycle changes require separate governed capabilities."),
         completed ? List.of(readPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openAuditAction()) : List.of(readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), openAuditAction()));
+  }
+
+  private List<Map<String, Object>> digestEvidenceRefs(MyAccountPersonalAttentionDigestTask task) {
+    return task.evidenceRefs().stream()
+        .map(ref -> mapOf(
+            "refId", ref,
+            "label", digestRefLabel(ref),
+            "summary", digestRefSummary(ref),
+            "traceId", task.traceIds().isEmpty() ? null : task.traceIds().get(0)))
+        .toList();
+  }
+
+  private List<Map<String, Object>> digestRecommendations(MyAccountPersonalAttentionDigestTask task) {
+    if (task.sectionRefs().isEmpty()) return List.of(mapOf("recommendationId", "review-authorized-source-work", "label", "Review authorized source work", "summary", "Open source workstreams through their governed counters before resolving any source attention.", "risk", "low", "confidence", "backend-projected"));
+    return task.sectionRefs().stream()
+        .map(section -> mapOf("recommendationId", "recommendation-" + stableSuffix(section), "label", digestRefLabel(section), "summary", "Advisory digest section; source lifecycle changes require separate governed source-workstream actions.", "risk", "low", "confidence", "backend-projected"))
+        .toList();
+  }
+
+  private List<Map<String, Object>> digestSourceSurfaceRefs(MyAccountPersonalAttentionDigestTask task) {
+    return task.evidenceRefs().stream()
+        .filter(ref -> ref.startsWith("attention_item:"))
+        .map(ref -> mapOf("refId", ref, "label", "Authorized attention item", "targetSurfaceType", "source-workstream", "requiresReauthorization", true))
+        .toList();
+  }
+
+  private List<Map<String, Object>> digestProgressEvents(MyAccountPersonalAttentionDigestTask task) {
+    var events = new ArrayList<Map<String, Object>>();
+    events.add(mapOf("eventId", "digest-task-created", "label", "Digest task accepted", "status", "queued", "summary", "Backend created the governed personal digest task record."));
+    if (task.autonomousAgentTaskId() != null && !task.autonomousAgentTaskId().isBlank()) events.add(mapOf("eventId", "autonomous-agent-task", "label", "Autonomous task linked", "status", task.status().name().toLowerCase(Locale.ROOT), "summary", "Provider/runtime projection controls progress; no source attention is mutated."));
+    if (task.blockerCode() != null && !task.blockerCode().isBlank()) events.add(mapOf("eventId", "digest-blocked", "label", "Fail-closed blocker", "status", "blocked_provider_or_runtime", "summary", task.blockerCode()));
+    if (task.terminal() || task.resultDecisionAllowed()) events.add(mapOf("eventId", "digest-review", "label", "Review state reached", "status", task.status().name().toLowerCase(Locale.ROOT), "summary", "Human review can accept or reject the advisory digest without changing source work."));
+    return List.copyOf(events);
+  }
+
+  private String digestRefLabel(String ref) {
+    if (ref == null) return "Digest evidence";
+    if (ref.startsWith("attention_item:")) return "Authorized attention item";
+    if (ref.startsWith("capability:")) return "Authorized capability read";
+    if (ref.startsWith("readSkill:")) return "Approved skill guidance";
+    if (ref.startsWith("readReferenceDoc:")) return "Approved reference document";
+    return ref.replace('_', ' ').replace(':', ' ');
+  }
+
+  private String digestRefSummary(String ref) {
+    if (ref == null) return "Browser-safe digest evidence.";
+    if (ref.startsWith("attention_item:")) return "Included only because the source attention item was authorized in the selected context.";
+    if (ref.startsWith("capability:")) return "Backend capability used to read authorized personal evidence.";
+    if (ref.startsWith("readSkill:") || ref.startsWith("readReferenceDoc:")) return "Behavior guidance loaded through governed runtime boundaries.";
+    return "Browser-safe digest evidence.";
   }
 
   private SurfaceEnvelope personalAttentionDigestBlockedSurface(AuthContextResolver.ResolvedMe actor, MyAccountPersonalAttentionDigestTask task, String correlationId) {
@@ -1089,7 +1161,7 @@ public final class WorkstreamService {
   }
 
   private String attentionTypeForAction(SurfaceAction action) {
-    if (action.resultSurface() == null) return null;
+    if (action.resultSurface() == null || action.resultSurface().updateSurfaceId() == null) return null;
     return switch (action.resultSurface().updateSurfaceId()) {
       case "surface-user-admin-invitation-create", "surface-user-admin-invitation-detail" -> "invitation_lifecycle";
       case "surface-user-admin-access-review-task" -> "access_review";
@@ -1477,9 +1549,53 @@ public final class WorkstreamService {
     }
   }
 
+
+  private List<Map<String, Object>> attentionItemsFor(AuthContextResolver.ResolvedMe actor, String workstreamId, String correlationId) {
+    return attentionMaps(attentionService.listWorkstreamItems(actor, workstreamId, correlationId));
+  }
+
+  private Map<String, Object> actionEntry(SurfaceAction action) {
+    return mapOf(
+        "actionId", action.actionId(),
+        "label", action.label(),
+        "governedToolId", action.governedToolId(),
+        "capabilityId", action.capabilityId(),
+        "resultSurfaceId", action.resultSurface() == null ? null : action.resultSurface().updateSurfaceId(),
+        "approvalRequired", action.requiresApproval(),
+        "denialHint", action.disabled() == null ? null : action.disabled().message());
+  }
+
+  private SurfaceEnvelope agentAdminDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    seedStarterCoreAttention(actor, correlationId);
+    var attention = attentionMaps(attentionService.listWorkstreamItems(actor, AGENT_ADMIN_AGENT_ID, correlationId));
+    return envelope("surface-agent-admin-dashboard", "dashboard", "Agent Admin command center", actor, correlationId,
+        mapOf("surfaceContract", "agent_admin.dashboard.v1",
+            "cards", List.of(
+                mapOf("cardId", "agent-admin-card-provider", "label", "Provider readiness", "value", "Ready", "status", "Model refs configured; secrets redacted", "severity", "info", "actionId", "action-display-agent-catalog", "targetSurfaceId", "surface-agent-admin-catalog"),
+                mapOf("cardId", "agent-admin-card-approvals", "label", "Behavior approvals", "value", 1, "status", "Human review required before activation", "severity", "blocked", "actionId", "action-submit-behavior-change", "targetSurfaceId", "surface-agent-behavior-proposal"),
+                mapOf("cardId", "agent-admin-card-tool-boundary", "label", "Tool-boundary risks", "value", 1, "status", "Side-effecting grant denied until separate review", "severity", "urgent", "actionId", "action-simulate-tool-boundary", "targetSurfaceId", "surface-agent-tool-boundary-diff"),
+                mapOf("cardId", "agent-admin-card-seed", "label", "Seed material", "value", 3, "status", "Starter defaults visible; tenant overrides preserved", "severity", "info", "actionId", "action-list-agent-seed-material", "targetSurfaceId", "surface-agent-seed-material")),
+            "attentionQueues", List.of(
+                mapOf("queueId", "provider-readiness", "label", "Provider/model readiness", "count", 0, "severity", "info", "statusText", "Open readiness detail", "sourceCapabilityId", AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, "targetSurfaceId", "surface-agent-admin-catalog", "actionId", "action-display-agent-catalog", "traceRefs", List.of("trace-agent-admin-catalog"), "redaction", "provider secrets redacted"),
+                mapOf("queueId", "behavior-approval", "label", "Behavior proposals awaiting human decision", "count", 1, "severity", "blocked", "statusText", "Approval required", "sourceCapabilityId", AGENT_ADMIN_SUBMIT_REVIEW_CAPABILITY, "targetSurfaceId", "surface-agent-behavior-proposal", "actionId", "action-submit-behavior-change", "traceRefs", List.of("trace-agent-admin-behavior-review"), "redaction", "raw prompt/skill bodies omitted"),
+                mapOf("queueId", "tool-boundary-risk", "label", "Risky tool-boundary expansion attempts", "count", 1, "severity", "urgent", "statusText", "Simulation denied side effect", "sourceCapabilityId", AGENT_ADMIN_SIMULATE_TOOL_BOUNDARY_CAPABILITY, "targetSurfaceId", "surface-agent-tool-boundary-diff", "actionId", "action-simulate-tool-boundary", "traceRefs", List.of("trace-agent-admin-tool-denied-email-send"), "redaction", "tool output omitted"),
+                mapOf("queueId", "prompt-risk-review", "label", "Prompt-risk autonomous review results", "count", 0, "severity", "warning", "statusText", "Open prompt-risk review status", "sourceCapabilityId", AgentAdminPromptRiskReviewService.READ_CAPABILITY, "targetSurfaceId", "surface-agent-admin-prompt-risk-review", "actionId", "action-agentadmin-read-prompt-risk-review", "traceRefs", List.of("trace-prompt-risk-model-call-001"), "redaction", "browser-safe finding summaries only")),
+            "authorizedActions", List.of(
+                authorizedActionMap(displayAgentCatalogAction()), authorizedActionMap(proposePromptDiffAction()), authorizedActionMap(testPromptAction()), authorizedActionMap(startPromptRiskReviewAction()), authorizedActionMap(listAgentSeedMaterialAction()), authorizedActionMap(openAgentTraceAction())),
+            "attentionItems", attention,
+            "recentActivity", List.of(mapOf("activityId", "activity-agent-admin-protected-read", "label", "Catalog read protected by selected AuthContext", "summary", "Scoped AgentDefinition projection returns browser-safe readiness summaries.", "traceId", "trace-agent-admin-catalog")),
+            "hero", mapOf("title", "Govern managed agents safely", "scopeLabel", "Tenant Admin · selected customer scope", "scopeType", actor.selectedContext().scopeType().name(), "adminLevel", "Agent steward", "redactionSummary", "Provider secrets, raw prompts, raw skills, raw references, hidden authority, and cross-tenant evidence are omitted."),
+            "readiness", "ready_with_attention",
+            "capabilityIds", List.of(AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, AGENT_ADMIN_SIMULATE_TOOL_BOUNDARY_CAPABILITY, AgentAdminPromptRiskReviewService.READ_CAPABILITY, AUDIT_TRACE_READ_CAPABILITY),
+            "redaction", mapOf("browserSafe", true, "omittedFieldKeys", List.of("rawPromptBody", "rawSkillBody", "rawReferenceBody", "providerCredentialValue", "rawJwt"), "previewLimitChars", 220),
+            "traceRefs", List.of("trace-agent-admin-dashboard", "trace-agent-admin-catalog"),
+            "systemStates", List.of("loading", "empty", "forbidden", "stale", "partial-data", "blocked_provider_or_runtime")),
+        List.of(displayAgentAdminDashboardAction(), displayAgentCatalogAction(), proposePromptDiffAction(), submitBehaviorChangeAction(), simulateToolBoundaryAction(), listAgentSeedMaterialAction(), testPromptAction(), startPromptRiskReviewAction(), readPromptRiskReviewAction(), openAgentTraceAction()));
+  }
+
   private SurfaceEnvelope agentAdminCatalogSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     seedStarterCoreAttention(actor, correlationId);
-    return envelope("surface-agent-admin-catalog", "list-search", "Agent Admin catalog", actor, correlationId, withAttentionItems(agentAdminService.catalog(actor, correlationId), actor, AGENT_ADMIN_AGENT_ID, correlationId), List.of(displayAgentCatalogAction(), openAgentDetailAction(), activateAgentDefinitionAction(), deactivateAgentDefinitionAction(), listAgentSeedMaterialAction(), importAgentSeedDefaultsAction(), openAgentTraceAction()));
+    return envelope("surface-agent-admin-catalog", "list-search", "Agent Admin catalog", actor, correlationId, withAttentionItems(agentAdminService.catalog(actor, correlationId), actor, AGENT_ADMIN_AGENT_ID, correlationId), List.of(displayAgentAdminDashboardAction(), displayAgentCatalogAction(), openAgentDetailAction(), activateAgentDefinitionAction(), deactivateAgentDefinitionAction(), listAgentSeedMaterialAction(), importAgentSeedDefaultsAction(), openAgentTraceAction()));
   }
 
   private SurfaceEnvelope agentAdminDetailSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -1523,6 +1639,46 @@ public final class WorkstreamService {
   private SurfaceEnvelope agentBehaviorProposalSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     var proposals = agentRuntimeService.proposals().stream().map(proposal -> mapOf("id", proposal.proposalId(), "target", proposal.targetArtifact().name(), "status", proposal.status().name(), "risk", proposal.riskClassification(), "reviewedBy", proposal.reviewedByAccountId(), "denial", proposal.reviewReason())).toList();
     return envelope("surface-agent-behavior-proposal", "decision", "Behavior proposal decision", actor, correlationId, mapOf("decisionId", "decision-behavior-proposal", "recommendation", "Approve only validated, non-authority-expanding behavior changes.", "riskScore", 42, "confidenceScore", 88, "evidence", List.of(mapOf("evidenceId", "proposal-count", "label", "Proposal queue", "summary", proposals.size() + " proposals tracked"), mapOf("evidenceId", "approval-boundary", "label", "Approval boundary", "summary", "approval-required for activation")), "proposals", proposals), List.of(proposePromptDiffAction(), submitBehaviorChangeAction(), approveSkillManifestAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), openAgentTraceAction()));
+  }
+
+
+  private SurfaceEnvelope agentLifecycleConfirmationSurface(AuthContextResolver.ResolvedMe actor, String correlationId, String lifecycleAction, boolean changed) {
+    var activation = "activated".equals(lifecycleAction);
+    return envelope(activation ? "surface-agent-definition-activation-confirmation" : "surface-agent-definition-deactivation-confirmation", "lifecycle-confirmation", activation ? "Agent activation confirmation" : "Agent deactivation confirmation", actor, correlationId,
+        mapOf("surfaceContract", activation ? "agent_admin.definition_activation_confirmation.v1" : "agent_admin.definition_deactivation_confirmation.v1", "status", changed ? "success" : "no-op", "recordId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "recordLabel", "Agent Admin Agent", "summary", changed ? "AgentDefinition lifecycle state changed through backend-governed Agent Admin capability." : "Lifecycle command was idempotent; no duplicate mutation was applied.", "safeReason", "Confirmation surface only. Behavior artifacts, prompt text, tool grants, and provider secrets were not changed by this lifecycle action.", "traceRefs", List.of("trace-agent-definition-" + lifecycleAction + "-" + stableSuffix(correlationId)), "noDirectMutation", false, "redaction", "Provider secrets, raw prompts, raw skills, raw references, and hidden authority remain omitted."),
+        List.of(openAgentDetailAction(), openAgentTraceAction()));
+  }
+
+  private SurfaceEnvelope agentSeedImportConfirmationSurface(AuthContextResolver.ResolvedMe actor, String correlationId, int createdCount, int skippedCount) {
+    return envelope("surface-agent-seed-import-confirmation", "lifecycle-confirmation", "Agent seed import confirmation", actor, correlationId,
+        mapOf("surfaceContract", "agent_admin.seed_import_confirmation.v1", "status", createdCount == 0 ? "no-op" : "success", "summary", "Seed import preserved tenant customizations and only created missing starter defaults.", "createdCount", createdCount, "skippedCount", skippedCount, "safeReason", "Raw prompt, skill, reference, provider credential, and hidden override content are never browser-visible.", "traceRefs", List.of("trace-agent-seed-import-" + stableSuffix(correlationId)), "targetSurfaceId", "surface-agent-seed-material"),
+        List.of(listAgentSeedMaterialAction(), openAgentTraceAction()));
+  }
+
+  private SurfaceEnvelope agentPromptRiskReviewEmptySurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    return envelope("surface-agent-admin-prompt-risk-review", "workflow-status", "Prompt-risk review status", actor, correlationId,
+        mapOf("surfaceContract", "agent_admin.prompt_risk_review_task.v1", "workflowId", "agent-admin-prompt-risk-review", "status", "empty", "summary", "No prompt-risk review task is selected. Start a governed review from Agent Admin before accepting or rejecting advisory findings.", "resultReviewStates", List.of("pending_worker_result", "completed_review_required", "result_accepted", "result_rejected", "cancelled"), "resultReviewState", "pending_worker_result", "noDirectMutation", true, "activationBlockedUntilHumanDecision", true, "providerFailures", List.of("blocked_provider_or_runtime if provider/runtime is unavailable"), "evidenceRefs", List.of("PromptAssemblyTrace", "SkillLoadTrace", "ReferenceLoadTrace", "AgentWorkTrace"), "traceIds", List.of("trace-agent-admin-prompt-risk-status-" + stableSuffix(correlationId))),
+        List.of(startPromptRiskReviewAction(), readPromptRiskReviewAction(), cancelPromptRiskReviewAction(), acceptPromptRiskReviewAction(), rejectPromptRiskReviewAction(), openAgentTraceAction()));
+  }
+
+  private CapabilityActionResult promptRiskReviewActionResult(PromptRiskReviewTask task, String status, String message, String correlationId, AuthContextResolver.ResolvedMe actor) {
+    return new CapabilityActionResult(status, message, correlationId, task.traceIds(), promptRiskReviewSurface(actor, task, correlationId));
+  }
+
+  private SurfaceEnvelope promptRiskReviewSurface(AuthContextResolver.ResolvedMe actor, PromptRiskReviewTask task, String correlationId) {
+    return envelope("surface-agent-admin-prompt-risk-review", "workflow-status", "Prompt-risk review status", actor, correlationId,
+        mapOf("surfaceContract", "agent_admin.prompt_risk_review_task.v1", "workflowId", "agent-admin-prompt-risk-review", "taskId", task.taskId(), "autonomousAgentTaskId", task.autonomousAgentTaskId(), "status", task.status().name().toLowerCase(Locale.ROOT), "summary", task.summary(), "progress", mapOf("percent", task.progressPercent(), "summary", task.summary()), "resultReviewStates", List.of("pending_worker_result", "completed_review_required", "result_accepted", "result_rejected", "cancelled"), "resultReviewState", promptRiskResultReviewState(task), "noDirectMutation", true, "activationBlockedUntilHumanDecision", true, "requiredCapabilityId", AgentAdminPromptRiskReviewService.READ_CAPABILITY, "providerFailures", task.status() == PromptRiskReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? List.of(firstNonBlank(task.blockerCode(), "blocked_provider_or_runtime")) : List.of(), "blockers", task.blockerCode() == null ? List.of() : List.of(mapOf("code", task.blockerCode(), "message", task.summary())), "evidenceRefs", task.evidenceRefs(), "findingRefs", task.findingRefs(), "recommendations", List.of(mapOf("recommendationId", "prompt-risk-human-review", "label", "Human review required before activation", "risk", "medium", "confidence", "backend-derived", "summary", "Accepting advisory findings creates review evidence only; activation remains a separate governed behavior-change decision.")), "traceIds", task.traceIds(), "traceLinks", task.traceIds().stream().map(traceId -> mapOf("traceId", traceId, "targetSurfaceId", "surface-agent-admin-trace", "label", "Prompt-risk trace", "summary", "Role-gated runtime evidence")).toList()),
+        List.of(startPromptRiskReviewAction(), readPromptRiskReviewAction(), cancelPromptRiskReviewAction(), acceptPromptRiskReviewAction(), rejectPromptRiskReviewAction(), openAgentTraceAction()));
+  }
+
+  private String promptRiskResultReviewState(PromptRiskReviewTask task) {
+    return switch (task.status()) {
+      case COMPLETED_REVIEW_REQUIRED -> "completed_review_required";
+      case ACCEPTED -> "result_accepted";
+      case REJECTED -> "result_rejected";
+      case CANCELLED -> "cancelled";
+      default -> "pending_worker_result";
+    };
   }
 
   private SurfaceEnvelope agentAdminTraceSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -1630,6 +1786,7 @@ public final class WorkstreamService {
       case "surface-user-admin-support-access-revoke-confirmation" -> supportAccessRevokeConfirmationSurface(actor, null, correlationId);
       case "surface-user-admin-access-review-task" -> accessReviewBlockedSurface(actor, correlationId);
       case "surface-user-admin-identity-exception-review" -> identityExceptionReviewSurface(actor, null, correlationId);
+      case "surface-agent-admin-dashboard" -> agentAdminDashboardSurface(actor, correlationId);
       case "surface-agent-admin-catalog" -> agentAdminCatalogSurface(actor, correlationId);
       case "surface-agent-admin-detail" -> agentAdminDetailSurface(actor, correlationId);
       case "surface-agent-prompt-governance" -> agentPromptGovernanceSurface(actor, correlationId);
@@ -1641,6 +1798,10 @@ public final class WorkstreamService {
       case "surface-agent-test-console" -> agentTestConsoleSurface(actor, correlationId);
       case "surface-agent-behavior-proposal" -> agentBehaviorProposalSurface(actor, correlationId);
       case "surface-agent-admin-trace" -> agentAdminTraceSurface(actor, correlationId);
+      case "surface-agent-admin-prompt-risk-review" -> agentPromptRiskReviewEmptySurface(actor, correlationId);
+      case "surface-agent-definition-activation-confirmation" -> agentLifecycleConfirmationSurface(actor, correlationId, "activated", false);
+      case "surface-agent-definition-deactivation-confirmation" -> agentLifecycleConfirmationSurface(actor, correlationId, "deactivated", false);
+      case "surface-agent-seed-import-confirmation" -> agentSeedImportConfirmationSurface(actor, correlationId, 0, 0);
       case "surface-audit-trace-dashboard" -> auditTraceDashboardSurface(actor, correlationId);
       case "surface-audit-trace-search" -> auditTraceSearchSurface(actor, null, correlationId);
       case "surface-audit-trace-detail" -> auditTraceDetailSurface(actor, null, correlationId);
@@ -1752,7 +1913,7 @@ public final class WorkstreamService {
   private String defaultDashboardSurfaceId(String targetAgentId) {
     return switch (targetAgentId) {
       case MY_ACCOUNT_AGENT_ID -> "surface-my-account-dashboard";
-      case AGENT_ADMIN_AGENT_ID -> "surface-agent-admin-catalog";
+      case AGENT_ADMIN_AGENT_ID -> "surface-agent-admin-dashboard";
       case AUDIT_TRACE_AGENT_ID -> "surface-audit-trace-dashboard";
       case GOVERNANCE_POLICY_AGENT_ID -> "surface-governance-policy-dashboard";
       default -> "surface-user-admin-dashboard";
@@ -1971,7 +2132,7 @@ public final class WorkstreamService {
       case "action-show-my-settings", "action-update-my-settings" -> mySettingsSurface(actor, correlationId);
       case "action-show-my-context" -> myContextSurface(actor, correlationId);
       case "action-select-my-context" -> accessProfileContextSurface(actor, correlationId);
-      case "action-show-my-account-notification-center", "action-notification-mark-read", "action-notification-dismiss", "action-notification-archive", "action-notification-snooze", "action-notification-update-preferences", "action-notification-email-update-preferences", "action-notification-external-fail-closed-check" -> myAccountNotificationCenterSurface(actor, correlationId);
+      case "action-show-my-account-notification-center", "action-notification-mark-read", "action-notification-dismiss", "action-notification-archive", "action-notification-snooze", "action-notification-update-preferences" -> myAccountNotificationCenterSurface(actor, correlationId);
       case "action-sign-out" -> myAccountDashboardSurface(actor, correlationId);
       case "action-start-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
       case "action-read-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
@@ -1979,7 +2140,7 @@ public final class WorkstreamService {
       case "action-accept-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
       case "action-reject-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
       case "action-open-user-admin" -> dashboardSurface(actor, correlationId);
-      case "action-open-agent-admin" -> agentAdminCatalogSurface(actor, correlationId);
+      case "action-open-agent-admin", "action-display-agent-admin-dashboard" -> agentAdminDashboardSurface(actor, correlationId);
       case "action-open-governance-policy", "action-governance-policy-dashboard" -> governancePolicySurface(actor, correlationId);
       case "action-governance-policy-list" -> governancePolicyInventorySurface(actor, correlationId);
       case "action-governance-policy-read" -> governancePolicyDetailSurface(actor, null, correlationId);
@@ -1990,14 +2151,17 @@ public final class WorkstreamService {
       case "action-governance-policy-rollback" -> governancePolicyRollbackBlockedSurface(actor, correlationId);
       case "action-governance-policy-start-impact-analysis" -> governancePolicyImpactAnalysisBlockedSurface(actor, correlationId);
       case "action-display-agent-catalog" -> agentAdminCatalogSurface(actor, correlationId);
-      case "action-open-agent-detail", "action-activate-agent-definition", "action-deactivate-agent-definition" -> agentAdminDetailSurface(actor, correlationId);
-      case "action-import-agent-seed-defaults" -> agentSeedMaterialSurface(actor, correlationId);
+      case "action-open-agent-detail" -> agentAdminDetailSurface(actor, correlationId);
+      case "action-activate-agent-definition" -> agentLifecycleConfirmationSurface(actor, correlationId, "activated", false);
+      case "action-deactivate-agent-definition" -> agentLifecycleConfirmationSurface(actor, correlationId, "deactivated", false);
+      case "action-import-agent-seed-defaults" -> agentSeedImportConfirmationSurface(actor, correlationId, 0, 0);
       case "action-propose-prompt-diff" -> agentPromptGovernanceSurface(actor, correlationId);
       case "action-test-agent-prompt" -> agentTestConsoleSurface(actor, correlationId);
       case "action-approve-skill-manifest" -> agentSkillManifestSurface(actor, correlationId);
       case "action-simulate-tool-boundary" -> agentToolBoundarySurface(actor, correlationId);
       case "action-manage-model-ref" -> agentModelRefsSurface(actor, correlationId);
       case "action-list-agent-seed-material" -> agentSeedMaterialSurface(actor, correlationId);
+      case "action-agentadmin-start-prompt-risk-review", "action-agentadmin-read-prompt-risk-review", "action-agentadmin-cancel-prompt-risk-review", "action-agentadmin-accept-prompt-risk-review-result", "action-agentadmin-reject-prompt-risk-review-result" -> agentPromptRiskReviewEmptySurface(actor, correlationId);
       case "action-display-organization-admin", "action-user-admin-show-organizations" -> organizationAdminSurface(actor, correlationId);
       case "action-open-organization-create" -> organizationCreateSurface(actor, correlationId);
       case "action-open-organization-rename" -> organizationRenameSurface(actor, correlationId);
@@ -2020,7 +2184,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceAction actionById(String actionId) {
-    return List.of(showDashboardAction(), showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), updateEmailNotificationPreferencesAction(), externalNotificationFailClosedAction(), showProfileAction(), showSettingsAction(), showContextAction(), selectContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), displayOrganizationAdminAction(), showOrganizationsAction(), openOrganizationCreateAction(), openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), organizationListAction(), organizationReadAction(), organizationCreateAction(), organizationRenameAction(), organizationSuspendAction(), organizationReactivateAction(), displayListAction(), showUsersAction(), displayDetailAction(), displayInvitationDetailAction(), openInvitationCreateAction(), openInvitationResendConfirmationAction(), openInvitationRevokeConfirmationAction(), openMembershipStatusConfirmationAction(), openSupportAccessGrantAction(), openSupportAccessRevokeConfirmationAction(), openIdentityExceptionReviewAction(), requestIdentityRelinkAction(), readIdentityRelinkAction(), approveIdentityRelinkAction(), denyIdentityRelinkAction(), completeIdentityRelinkAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), permanentlyRemoveUserAction(), disableAccountAction(), reactivateAccountAction(), readSupportAccessAction(), grantSupportAccessAction(), revokeSupportAccessAction(), extendSupportAccessAction(), previewRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSummaryTaskBlockedAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceOutcomeNoteAction(), governanceStartImpactAnalysisAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentCatalogAction(), openAgentDetailAction(), activateAgentDefinitionAction(), deactivateAgentDefinitionAction(), importAgentSeedDefaultsAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
+    return List.of(showDashboardAction(), showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), showProfileAction(), showSettingsAction(), showContextAction(), selectContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), displayOrganizationAdminAction(), showOrganizationsAction(), openOrganizationCreateAction(), openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), organizationListAction(), organizationReadAction(), organizationCreateAction(), organizationRenameAction(), organizationSuspendAction(), organizationReactivateAction(), displayListAction(), showUsersAction(), displayDetailAction(), displayInvitationDetailAction(), openInvitationCreateAction(), openInvitationResendConfirmationAction(), openInvitationRevokeConfirmationAction(), openMembershipStatusConfirmationAction(), openSupportAccessGrantAction(), openSupportAccessRevokeConfirmationAction(), openIdentityExceptionReviewAction(), requestIdentityRelinkAction(), readIdentityRelinkAction(), approveIdentityRelinkAction(), denyIdentityRelinkAction(), completeIdentityRelinkAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), permanentlyRemoveUserAction(), disableAccountAction(), reactivateAccountAction(), readSupportAccessAction(), grantSupportAccessAction(), revokeSupportAccessAction(), extendSupportAccessAction(), previewRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSummaryTaskBlockedAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceOutcomeNoteAction(), governanceStartImpactAnalysisAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentAdminDashboardAction(), displayAgentCatalogAction(), openAgentDetailAction(), activateAgentDefinitionAction(), deactivateAgentDefinitionAction(), importAgentSeedDefaultsAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), startPromptRiskReviewAction(), readPromptRiskReviewAction(), cancelPromptRiskReviewAction(), acceptPromptRiskReviewAction(), rejectPromptRiskReviewAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
   }
 
   private SurfaceEnvelope envelope(String id, String type, String title, AuthContextResolver.ResolvedMe actor, String correlationId, Map<String, Object> data, List<SurfaceAction> actions) {
@@ -2072,7 +2236,7 @@ public final class WorkstreamService {
   private SurfaceAction acceptPersonalAttentionDigestAction() { return new SurfaceAction("action-accept-my-account-personal-attention-digest", "Accept advisory digest", "command", browserToolId("action-accept-my-account-personal-attention-digest"), governedToolId(MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY), MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY, "schema.my-account.personal-attention-digest.accept.v1", true, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-personal-attention-digest-result", "inline"), new Audit("MyAccountPersonalAttentionDigestAccepted", true)); }
   private SurfaceAction rejectPersonalAttentionDigestAction() { return new SurfaceAction("action-reject-my-account-personal-attention-digest", "Reject advisory digest", "command", browserToolId("action-reject-my-account-personal-attention-digest"), governedToolId(MY_ACCOUNT_DIGEST_REJECT_CAPABILITY), MY_ACCOUNT_DIGEST_REJECT_CAPABILITY, "schema.my-account.personal-attention-digest.reject.v1", true, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-personal-attention-digest-result", "inline"), new Audit("MyAccountPersonalAttentionDigestRejected", true)); }
   private SurfaceAction openUserAdminAction() { return new SurfaceAction("action-open-user-admin", "Open User Admin", "surface-request", browserToolId("action-open-user-admin"), governedToolId(MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY), MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "schema.my-account.open-workstream.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-users", "deep-link"), new Audit("MyAccountOpenUserAdminRequested", true)); }
-  private SurfaceAction openAgentAdminAction() { return new SurfaceAction("action-open-agent-admin", "Open Agent Admin", "surface-request", browserToolId("action-open-agent-admin"), governedToolId(MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY), MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "schema.my-account.open-workstream.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-catalog", "deep-link"), new Audit("MyAccountOpenAgentAdminRequested", true)); }
+  private SurfaceAction openAgentAdminAction() { return new SurfaceAction("action-open-agent-admin", "Open Agent Admin", "surface-request", browserToolId("action-open-agent-admin"), governedToolId(MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY), MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "schema.my-account.open-workstream.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-dashboard", "deep-link"), new Audit("MyAccountOpenAgentAdminRequested", true)); }
   private SurfaceAction openGovernancePolicyAction() { return new SurfaceAction("action-open-governance-policy", "Open Governance/Policy", "surface-request", browserToolId("action-open-governance-policy"), governedToolId(MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY), MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "schema.my-account.open-workstream.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-governance-policy-dashboard", "deep-link"), new Audit("MyAccountOpenGovernancePolicyRequested", true)); }
 
   private AuthContextResolver.ProfileSettingsUpdateResult updateOwnProfileSettings(AuthContextResolver.ResolvedMe actor, CapabilityActionRequest request) {
@@ -2178,6 +2342,7 @@ public final class WorkstreamService {
     return true;
   }
 
+  private SurfaceAction displayAgentAdminDashboardAction() { return new SurfaceAction("action-display-agent-admin-dashboard", "Open Agent Admin dashboard", "read", browserToolId("action-display-agent-admin-dashboard"), governedToolId(AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY), AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-dashboard", "inline"), new Audit("AgentAdminDashboardDisplayed", true)); }
   private SurfaceAction displayAgentCatalogAction() { return new SurfaceAction("action-display-agent-catalog", "Display agent catalog", "read", browserToolId("action-display-agent-catalog"), governedToolId(AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY), AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-catalog", "inline"), new Audit("AgentCatalogDisplayed", true)); }
   private SurfaceAction openAgentDetailAction() { return new SurfaceAction("action-open-agent-detail", "Open agent readiness detail", "read", browserToolId("action-open-agent-detail"), governedToolId(AGENT_ADMIN_GET_DEFINITION_CAPABILITY), AGENT_ADMIN_GET_DEFINITION_CAPABILITY, "schema.agent-definition.detail.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-detail", "inline"), new Audit("AgentDefinitionDetailDisplayed", true)); }
   private SurfaceAction activateAgentDefinitionAction() { return new SurfaceAction("action-activate-agent-definition", "Activate AgentDefinition", "command", browserToolId("action-activate-agent-definition"), governedToolId(AGENT_DEFINITIONS_MANAGE_CAPABILITY), AGENT_DEFINITIONS_MANAGE_CAPABILITY, "schema.agent-definition.lifecycle.activate.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-agent-admin-detail", "inline"), new Audit("AgentDefinitionActivated", true)); }
@@ -2194,7 +2359,20 @@ public final class WorkstreamService {
   private SurfaceAction simulateToolBoundaryAction() { return new SurfaceAction("action-simulate-tool-boundary", "Simulate tool boundary change", "governance", browserToolId("action-simulate-tool-boundary"), governedToolId(AGENT_ADMIN_SIMULATE_TOOL_BOUNDARY_CAPABILITY), AGENT_ADMIN_SIMULATE_TOOL_BOUNDARY_CAPABILITY, "schema.tool-boundary.simulation.v1", false, false, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-agent-tool-boundary-diff", "inline"), new Audit("ToolBoundarySimulationRequested", true)); }
   private SurfaceAction manageModelRefAction() { return new SurfaceAction("action-manage-model-ref", "Request model ref change", "proposal", browserToolId("action-manage-model-ref"), governedToolId(AGENT_ADMIN_ACTIVATE_CAPABILITY), AGENT_ADMIN_ACTIVATE_CAPABILITY, null, false, false, new DisabledReason("MODEL_POLICY_DENIED", "This starter denies switching to a disabled provider alias; provider secrets remain redacted."), new Idempotency(true, "client-generated"), new ResultSurface("decision", null, "inline"), new Audit("AgentModelRefChangeDenied", true)); }
   private SurfaceAction listAgentSeedMaterialAction() { return new SurfaceAction("action-list-agent-seed-material", "List seed material", "read", browserToolId("action-list-agent-seed-material"), governedToolId(AGENT_ADMIN_LIST_SEED_MATERIAL_CAPABILITY), AGENT_ADMIN_LIST_SEED_MATERIAL_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-seed-material", "inline"), new Audit("AgentSeedMaterialListed", true)); }
+  private SurfaceAction startPromptRiskReviewAction() { return new SurfaceAction("action-agentadmin-start-prompt-risk-review", "Start prompt-risk review", "workflow", browserToolId("action-agentadmin-start-prompt-risk-review"), governedToolId(AgentAdminPromptRiskReviewService.START_CAPABILITY), AgentAdminPromptRiskReviewService.START_CAPABILITY, "schema.agent-admin.prompt-risk-review.start.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-agent-admin-prompt-risk-review", "inline"), new Audit("AgentAdminPromptRiskReviewStarted", true)); }
+  private SurfaceAction readPromptRiskReviewAction() { return new SurfaceAction("action-agentadmin-read-prompt-risk-review", "Read prompt-risk review", "read", browserToolId("action-agentadmin-read-prompt-risk-review"), governedToolId(AgentAdminPromptRiskReviewService.READ_CAPABILITY), AgentAdminPromptRiskReviewService.READ_CAPABILITY, "schema.agent-admin.prompt-risk-review.read.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-prompt-risk-review", "inline"), new Audit("AgentAdminPromptRiskReviewRead", true)); }
+  private SurfaceAction cancelPromptRiskReviewAction() { return new SurfaceAction("action-agentadmin-cancel-prompt-risk-review", "Cancel prompt-risk review", "command", browserToolId("action-agentadmin-cancel-prompt-risk-review"), governedToolId(AgentAdminPromptRiskReviewService.CANCEL_CAPABILITY), AgentAdminPromptRiskReviewService.CANCEL_CAPABILITY, "schema.agent-admin.prompt-risk-review.cancel.v1", true, true, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-prompt-risk-review", "inline"), new Audit("AgentAdminPromptRiskReviewCancelled", true)); }
+  private SurfaceAction acceptPromptRiskReviewAction() { return new SurfaceAction("action-agentadmin-accept-prompt-risk-review-result", "Accept prompt-risk review result", "approval", browserToolId("action-agentadmin-accept-prompt-risk-review-result"), governedToolId(AgentAdminPromptRiskReviewService.ACCEPT_RESULT_CAPABILITY), AgentAdminPromptRiskReviewService.ACCEPT_RESULT_CAPABILITY, "schema.agent-admin.prompt-risk-review.accept.v1", true, true, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-prompt-risk-review", "inline"), new Audit("AgentAdminPromptRiskReviewAccepted", true)); }
+  private SurfaceAction rejectPromptRiskReviewAction() { return new SurfaceAction("action-agentadmin-reject-prompt-risk-review-result", "Reject prompt-risk review result", "approval", browserToolId("action-agentadmin-reject-prompt-risk-review-result"), governedToolId(AgentAdminPromptRiskReviewService.REJECT_RESULT_CAPABILITY), AgentAdminPromptRiskReviewService.REJECT_RESULT_CAPABILITY, "schema.agent-admin.prompt-risk-review.reject.v1", true, true, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-prompt-risk-review", "inline"), new Audit("AgentAdminPromptRiskReviewRejected", true)); }
   private SurfaceAction openAgentTraceAction() { return new SurfaceAction("action-open-agent-trace", "Open agent work trace", "trace", browserToolId("action-open-agent-trace"), governedToolId("audit.trace.read"), "audit.trace.read", null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-trace", "deep-link"), new Audit("AgentWorkTraceOpened", true)); }
+
+  private static final class InMemoryPromptRiskReviewTaskRepository implements PromptRiskReviewTaskRepository {
+    private final Map<String, PromptRiskReviewTask> tasks = new ConcurrentHashMap<>();
+    private final Map<String, String> idempotencyIndex = new ConcurrentHashMap<>();
+    public Optional<PromptRiskReviewTask> find(String taskId) { return Optional.ofNullable(tasks.get(taskId)); }
+    public Optional<PromptRiskReviewTask> findByIdempotencyKey(String tenantId, String accountId, String idempotencyKey) { return Optional.ofNullable(idempotencyIndex.get(tenantId + ":" + accountId + ":" + idempotencyKey)).map(tasks::get); }
+    public PromptRiskReviewTask save(PromptRiskReviewTask task) { tasks.put(task.taskId(), task); idempotencyIndex.put(task.tenantId() + ":" + task.startedByAccountId() + ":" + task.idempotencyKey(), task.taskId()); return task; }
+  }
 
   private boolean isActionCapabilityVisible(AuthContextResolver.ResolvedMe actor, String capabilityId) {
     if (actor.selectedContext().capabilities().contains(capabilityId) || USER_ADMIN_CAPABILITY.equals(capabilityId)) return true;
