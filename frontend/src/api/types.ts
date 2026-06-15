@@ -155,6 +155,37 @@ export type SaasOwnerAdminListPayload = {
   redaction: string[];
 };
 
+export type ScopedAdminInvitationRequest = {
+  email: string;
+  displayName?: string;
+  roles?: string[];
+  idempotencyKey: string;
+  reason?: string;
+};
+
+export type InvitationActionRequest = {
+  reason?: string;
+  idempotencyKey?: string;
+};
+
+export type ScopedAdminMembershipActionRequest = {
+  roles?: string[];
+  status?: string;
+  reason?: string;
+  idempotencyKey: string;
+};
+
+export type ScopedAdminMembershipActionResponse = {
+  status: string;
+  message: string;
+  membershipId: string;
+  accountId: string;
+  roles: string[];
+  membershipStatus: string;
+  traceId: string;
+  correlationId: string;
+};
+
 export type CustomerSummary = {
   customerId: string;
   customerName: string;

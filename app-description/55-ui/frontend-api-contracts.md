@@ -4,7 +4,9 @@ Canonical workstream UI calls protected backend APIs for data/actions; routes ar
 
 ## User Admin compatibility contracts
 
-- `GET /api/admin/users/dashboard` returns `UserAdminDashboardPayload` with scoped dashboard counters, trace refs, and authorized actions.
+Canonical User Admin browser runtime uses the workstream shell contracts (`/api/workstream/bootstrap`, `/api/workstream/actions`, `/api/workstream/shell-requests`, and `/api/workstream/messages`) for typed structured surfaces. The `/api/admin/**` routes are protected compatibility/service APIs for direct JSON access, local smoke checks, and downstream integrations; they must preserve the same backend authorization, selected-context, idempotency, redaction, and audit semantics but do not replace the structured surface envelopes.
+
+- `GET /api/admin/users/dashboard` returns a compatibility `UserAdminDashboardPayload` with scoped dashboard counters, trace refs, and authorized actions. Rich dashboard surface rendering is sourced from `surface-user-admin-dashboard` through the workstream shell.
 - `GET /api/admin/users` returns scoped user/invitation rows.
 - `GET /api/admin/users/{accountId}` returns `UserAdminUserAccountPayload` for an authorized account detail.
 - `POST /api/admin/invitations` creates an invitation request without exposing raw invitation tokens/token hashes.

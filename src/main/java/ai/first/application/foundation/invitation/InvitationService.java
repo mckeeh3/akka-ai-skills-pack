@@ -360,7 +360,9 @@ public final class InvitationService {
 
   void requireScopedRead(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
     requireScope(actor.selectedContext(), scopeType, tenantId, customerId);
-    var capability = scopeType == ScopeType.CUSTOMER ? "customer.user.read" : "tenant.user.read";
+    var capability = scopeType == ScopeType.CUSTOMER
+        ? (actor.selectedContext().scopeType() == ScopeType.TENANT ? "tenant.customer_admin.list" : "customer.user.read")
+        : actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER && scopeType == ScopeType.TENANT ? "saas_owner.organization_admin.list" : "tenant.user.read";
     if (scopeType == ScopeType.SAAS_OWNER) {
       capability = "saas_owner.user.manage";
     }
@@ -418,7 +420,11 @@ public final class InvitationService {
   }
 
   private void requireInvitationCapability(ai.first.domain.foundation.identity.AuthContext auth, ScopeType targetScope) {
-    var required = targetScope == ScopeType.CUSTOMER ? "customer.invitation.manage" : targetScope == ScopeType.SAAS_OWNER ? "saas_owner.user.manage" : "tenant.invitation.manage";
+    var required = targetScope == ScopeType.CUSTOMER
+        ? (auth.scopeType() == ScopeType.TENANT ? "tenant.customer_admin.invite" : "customer.invitation.manage")
+        : targetScope == ScopeType.SAAS_OWNER
+            ? "saas_owner.user.manage"
+            : auth.scopeType() == ScopeType.SAAS_OWNER ? "saas_owner.organization_admin.invite" : "tenant.invitation.manage";
     if (!auth.hasCapability(required)) {
       throw new AuthorizationException(403, "missing-capability:" + required);
     }
@@ -428,8 +434,12 @@ public final class InvitationService {
     if (scopeType == ScopeType.SAAS_OWNER && auth.scopeType() != ScopeType.SAAS_OWNER) {
       throw new AuthorizationException(403, "scope-forbidden");
     }
-    if (scopeType == ScopeType.TENANT && (auth.scopeType() == ScopeType.SAAS_OWNER || !tenantId.equals(auth.tenantId()))) {
-      throw new AuthorizationException(403, "tenant-mismatch");
+    if (scopeType == ScopeType.TENANT) {
+      if (auth.scopeType() == ScopeType.SAAS_OWNER) {
+        if (tenantId == null || tenantId.isBlank()) throw new AuthorizationException(400, "tenant-id-required");
+        return;
+      }
+      if (!tenantId.equals(auth.tenantId())) throw new AuthorizationException(403, "tenant-mismatch");
     }
     if (scopeType == ScopeType.CUSTOMER) {
       if (!tenantId.equals(auth.tenantId()) || (auth.scopeType() == ScopeType.CUSTOMER && !customerId.equals(auth.customerId()))) {

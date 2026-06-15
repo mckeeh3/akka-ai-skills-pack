@@ -37,6 +37,10 @@ import type {
   PolicySimulationResponse,
   TraceDetailResponse,
   SaasOwnerAdminListPayload,
+  ScopedAdminInvitationRequest,
+  ScopedAdminMembershipActionRequest,
+  ScopedAdminMembershipActionResponse,
+  InvitationActionRequest,
   TraceSearchResponse,
   UpdatePreferencesRequest,
   UpdatePreferencesResponse,
@@ -60,7 +64,15 @@ export interface AdminClient {
   suspendOrganization(organizationId: string, request: OrganizationLifecycleRequest): Promise<ApiResult<OrganizationActionResponse>>;
   reactivateOrganization(organizationId: string, request: OrganizationLifecycleRequest): Promise<ApiResult<OrganizationActionResponse>>;
   listSaasOwnerAdmins(query?: Record<string, string | undefined>): Promise<ApiResult<SaasOwnerAdminListPayload>>;
+  inviteSaasOwnerAdmin(request: ScopedAdminInvitationRequest): Promise<ApiResult<InviteUserResponse>>;
+  resendSaasOwnerAdminInvitation(invitationId: string, request: InvitationActionRequest): Promise<ApiResult<InviteUserResponse>>;
+  revokeSaasOwnerAdminInvitation(invitationId: string, request: InvitationActionRequest): Promise<ApiResult<InviteUserResponse>>;
   listOrganizationAdmins(organizationId: string, query?: Record<string, string | undefined>): Promise<ApiResult<OrganizationAdminListPayload>>;
+  inviteOrganizationAdmin(organizationId: string, request: ScopedAdminInvitationRequest): Promise<ApiResult<InviteUserResponse>>;
+  resendOrganizationAdminInvitation(organizationId: string, invitationId: string, request: InvitationActionRequest): Promise<ApiResult<InviteUserResponse>>;
+  revokeOrganizationAdminInvitation(organizationId: string, invitationId: string, request: InvitationActionRequest): Promise<ApiResult<InviteUserResponse>>;
+  changeOrganizationAdminRoles(organizationId: string, accountId: string, request: ScopedAdminMembershipActionRequest): Promise<ApiResult<ScopedAdminMembershipActionResponse>>;
+  changeOrganizationAdminStatus(organizationId: string, accountId: string, status: 'suspend' | 'reactivate' | 'remove', request: ScopedAdminMembershipActionRequest): Promise<ApiResult<ScopedAdminMembershipActionResponse>>;
   listCustomers(query?: Record<string, string | undefined>): Promise<ApiResult<CustomerListPayload>>;
   getCustomer(customerId: string): Promise<ApiResult<CustomerDetailPayload>>;
   createCustomer(request: CustomerCreateRequest): Promise<ApiResult<CustomerActionResponse>>;
@@ -68,6 +80,11 @@ export interface AdminClient {
   suspendCustomer(customerId: string, request: CustomerLifecycleRequest): Promise<ApiResult<CustomerActionResponse>>;
   reactivateCustomer(customerId: string, request: CustomerLifecycleRequest): Promise<ApiResult<CustomerActionResponse>>;
   listCustomerAdmins(customerId: string, query?: Record<string, string | undefined>): Promise<ApiResult<CustomerAdminListPayload>>;
+  inviteCustomerAdmin(customerId: string, request: ScopedAdminInvitationRequest): Promise<ApiResult<InviteUserResponse>>;
+  resendCustomerAdminInvitation(customerId: string, invitationId: string, request: InvitationActionRequest): Promise<ApiResult<InviteUserResponse>>;
+  revokeCustomerAdminInvitation(customerId: string, invitationId: string, request: InvitationActionRequest): Promise<ApiResult<InviteUserResponse>>;
+  changeCustomerAdminRoles(customerId: string, accountId: string, request: ScopedAdminMembershipActionRequest): Promise<ApiResult<ScopedAdminMembershipActionResponse>>;
+  changeCustomerAdminStatus(customerId: string, accountId: string, status: 'suspend' | 'reactivate' | 'remove', request: ScopedAdminMembershipActionRequest): Promise<ApiResult<ScopedAdminMembershipActionResponse>>;
 }
 
 export interface GoalsClient {
