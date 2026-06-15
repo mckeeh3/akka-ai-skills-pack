@@ -984,7 +984,7 @@ export const agentAdminSurfaceActions = {
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-agent-activation-confirmation', openPlacement: 'inline' },
     audit: { eventType: 'AgentDefinitionActivationReviewRequested', traceRequired: true }
   },
   deactivateAgentDefinition: {
@@ -998,7 +998,7 @@ export const agentAdminSurfaceActions = {
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-agent-deactivation-confirmation', openPlacement: 'inline' },
     audit: { eventType: 'AgentDefinitionDeactivationReviewRequested', traceRequired: true }
   },
   proposePromptDiff: {
@@ -1076,7 +1076,7 @@ export const agentAdminSurfaceActions = {
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-agent-activation-confirmation', openPlacement: 'inline' },
     audit: { eventType: 'AgentBehaviorChangeActivated', traceRequired: true }
   },
   cancelBehaviorChange: {
@@ -1103,7 +1103,7 @@ export const agentAdminSurfaceActions = {
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-agent-rollback-confirmation', openPlacement: 'inline' },
     audit: { eventType: 'AgentBehaviorChangeRolledBack', traceRequired: true }
   },
   simulateToolBoundary: {
@@ -2408,7 +2408,7 @@ export const agentAdminCatalogSurface = envelope(
 
 export const agentAdminDetailSurface = envelope(
   'surface-agent-admin-detail',
-  'detail-edit',
+  'show-inspection',
   'Agent Admin readiness detail',
   'agent-agent-admin',
   {
@@ -2500,7 +2500,7 @@ export const agentSkillManifestSurface = envelope(
       { path: 'ToolPermissionBoundary', before: 'readSkill, readReferenceDoc, agentAdminEvidence.read', after: 'unchanged', impact: 'Tool access remains backend-enforced; manifest text cannot grant authority.' }
     ]
   },
-  [agentAdminSurfaceActions.approveSkillManifest, agentAdminSurfaceActions.activateBehaviorChange, agentAdminSurfaceActions.rollbackBehaviorChange, agentAdminSurfaceActions.openAgentTrace]
+  [agentAdminSurfaceActions.approveSkillManifest, agentAdminSurfaceActions.submitBehaviorChange, agentAdminSurfaceActions.openAgentTrace]
 );
 
 export const agentToolBoundarySurface = envelope(
@@ -2526,12 +2526,12 @@ export const agentToolBoundarySurface = envelope(
       { path: 'simulation.result', before: 'not run', after: 'TOOL_BOUNDARY_DENIED', impact: 'Frontend renders blocked state and cannot bypass backend denial.' }
     ]
   },
-  [agentAdminSurfaceActions.simulateToolBoundary, agentAdminSurfaceActions.rejectBehaviorChange, agentAdminSurfaceActions.openAgentTrace]
+  [agentAdminSurfaceActions.simulateToolBoundary, agentAdminSurfaceActions.submitBehaviorChange, agentAdminSurfaceActions.openAgentTrace]
 );
 
 export const agentModelRefsSurface = envelope(
   'surface-agent-model-refs',
-  'detail-edit',
+  'show-inspection',
   'Agent model refs',
   'agent-agent-admin',
   {
@@ -2640,6 +2640,78 @@ export const agentBehaviorProposalSurface = envelope(
     traceLinks: ['trace-agent-admin-behavior-draft', 'trace-agent-admin-behavior-review', 'trace-agent-admin-behavior-activation-blocked']
   },
   [agentAdminSurfaceActions.submitBehaviorChange, agentAdminSurfaceActions.approveSkillManifest, agentAdminSurfaceActions.rejectBehaviorChange, agentAdminSurfaceActions.activateBehaviorChange, agentAdminSurfaceActions.cancelBehaviorChange, agentAdminSurfaceActions.rollbackBehaviorChange, agentAdminSurfaceActions.openAgentTrace]
+);
+
+
+export const agentActivationConfirmationSurface = envelope(
+  'surface-agent-activation-confirmation',
+  'lifecycle-confirmation',
+  'Confirm agent behavior activation',
+  'agent-agent-admin',
+  {
+    surfaceContract: 'agent_admin.activation_confirmation.v1',
+    recordId: 'agent-agent-admin',
+    recordLabel: 'Agent Admin Agent',
+    lifecycleAction: 'activate',
+    currentStatus: 'approved_not_active',
+    proposedStatus: 'active',
+    impactSummary: 'Activation changes the runtime AgentDefinition only after backend approval, active version, rollback metadata, provider readiness, and idempotency checks pass.',
+    approvalState: 'approved proposal required; disabled until backend confirms approval',
+    policyBasis: 'managed-agent-governance activation policy; no model or frontend state may activate directly',
+    idempotencyKeyHint: 'client-generated activation key bound to proposal id',
+    disabledReason: 'Activation remains blocked until backend confirms approved proposal, active version, rollback metadata, and idempotency key.',
+    evidenceRefs: ['proposal-agent-admin-prompt-001', 'PromptAssemblyTrace', 'ToolPermissionBoundary simulation'],
+    traceRefs: ['trace-agent-admin-behavior-activation-blocked', 'trace-agent-admin-behavior-review'],
+    actionContext: { proposalId: 'proposal-agent-admin-prompt-001', agentDefinitionId: 'agent-agent-admin' }
+  },
+  [agentAdminSurfaceActions.activateBehaviorChange, agentAdminSurfaceActions.openAgentTrace]
+);
+
+export const agentDeactivationConfirmationSurface = envelope(
+  'surface-agent-deactivation-confirmation',
+  'lifecycle-confirmation',
+  'Confirm agent deactivation',
+  'agent-agent-admin',
+  {
+    surfaceContract: 'agent_admin.deactivation_confirmation.v1',
+    recordId: 'agent-agent-admin',
+    recordLabel: 'Agent Admin Agent',
+    lifecycleAction: 'deactivate',
+    currentStatus: 'active',
+    proposedStatus: 'deactivated',
+    impactSummary: 'Deactivation prevents runtime invocation and governed loader access for this managed agent after backend approval and audit checks.',
+    approvalState: 'human approval required',
+    policyBasis: 'managed-agent-governance lifecycle policy',
+    idempotencyKeyHint: 'client-generated deactivation key',
+    evidenceRefs: ['active AgentDefinition', 'recent AgentWorkTrace'],
+    traceRefs: ['trace-agent-admin-definition-agent-agent-admin'],
+    actionContext: { agentDefinitionId: 'agent-agent-admin' }
+  },
+  [agentAdminSurfaceActions.deactivateAgentDefinition, agentAdminSurfaceActions.openAgentTrace]
+);
+
+export const agentRollbackConfirmationSurface = envelope(
+  'surface-agent-rollback-confirmation',
+  'lifecycle-confirmation',
+  'Confirm agent behavior rollback',
+  'agent-agent-admin',
+  {
+    surfaceContract: 'agent_admin.rollback_confirmation.v1',
+    recordId: 'agent-agent-admin',
+    recordLabel: 'Agent Admin Agent',
+    lifecycleAction: 'rollback',
+    currentStatus: 'activated_proposal',
+    proposedStatus: 'previous_active_version',
+    impactSummary: 'Rollback restores the prior active behavior snapshot while preserving audit history, proposal evidence, and rollback traces.',
+    approvalState: 'rollback metadata required',
+    policyBasis: 'managed-agent-governance rollback policy',
+    idempotencyKeyHint: 'server-issued rollback-safe key preferred',
+    disabledReason: 'Rollback requires activated proposal metadata and backend command authority.',
+    evidenceRefs: ['rollback snapshot', 'activation audit event'],
+    traceRefs: ['trace-agent-admin-behavior-activation-blocked'],
+    actionContext: { proposalId: 'proposal-agent-admin-prompt-001', agentDefinitionId: 'agent-agent-admin' }
+  },
+  [agentAdminSurfaceActions.rollbackBehaviorChange, agentAdminSurfaceActions.openAgentTrace]
 );
 
 export const agentAdminPromptRiskReviewSurface = envelope(
@@ -3247,6 +3319,9 @@ export const fullCoreDemoSurfaceEnvelopes = [
   agentSeedMaterialSurface,
   agentTestConsoleSurface,
   agentBehaviorProposalSurface,
+  agentActivationConfirmationSurface,
+  agentDeactivationConfirmationSurface,
+  agentRollbackConfirmationSurface,
   agentAdminPromptRiskReviewSurface,
   agentAdminAgentBlockedSystemMessageSurface,
   agentAdminTraceSurface,
@@ -3377,10 +3452,34 @@ export const displayAgentTestConsoleActionResult: CapabilityActionResult = {
 
 export const displayAgentBehaviorProposalActionResult: CapabilityActionResult = {
   status: 'approval-required',
-  message: 'Displayed behavior-change proposal lifecycle state; submit/review/approval/activation/rollback remain deterministic backend commands.',
+  message: 'Displayed behavior-change proposal lifecycle state; submit/review/approval remain deterministic backend commands and activation/rollback open separate confirmation surfaces.',
   correlationId: 'corr-display-agent-behavior-proposal',
   traceIds: ['trace-agent-admin-behavior-review', 'trace-agent-admin-behavior-activation-blocked'],
   resultSurface: agentBehaviorProposalSurface
+};
+
+export const displayAgentActivationConfirmationActionResult: CapabilityActionResult = {
+  status: 'approval-required',
+  message: 'Displayed separate Agent Admin activation confirmation with approval, idempotency, impact, policy, and trace evidence.',
+  correlationId: 'corr-display-agent-activation-confirmation',
+  traceIds: ['trace-agent-admin-behavior-activation-blocked'],
+  resultSurface: agentActivationConfirmationSurface
+};
+
+export const displayAgentDeactivationConfirmationActionResult: CapabilityActionResult = {
+  status: 'approval-required',
+  message: 'Displayed separate Agent Admin deactivation confirmation with lifecycle impact and trace evidence.',
+  correlationId: 'corr-display-agent-deactivation-confirmation',
+  traceIds: ['trace-agent-admin-definition-agent-agent-admin'],
+  resultSurface: agentDeactivationConfirmationSurface
+};
+
+export const displayAgentRollbackConfirmationActionResult: CapabilityActionResult = {
+  status: 'approval-required',
+  message: 'Displayed separate Agent Admin rollback confirmation with rollback metadata and trace evidence.',
+  correlationId: 'corr-display-agent-rollback-confirmation',
+  traceIds: ['trace-agent-admin-behavior-activation-blocked'],
+  resultSurface: agentRollbackConfirmationSurface
 };
 
 export const displayAgentPromptRiskReviewActionResult: CapabilityActionResult = {

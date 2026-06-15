@@ -16,7 +16,14 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
         <dl>
           <dt>Risk</dt><dd>{envelope.data.riskScore ?? envelope.data.risk ?? 'Not scored'}</dd>
           <dt>Confidence</dt><dd>{envelope.data.confidenceScore ?? 'Not scored'}</dd>
+          {envelope.data.impact && <><dt>Impact</dt><dd>{envelope.data.impact}</dd></>}
+          {envelope.data.affectedTarget && <><dt>Affected target</dt><dd>{envelope.data.affectedTarget}</dd></>}
+          {envelope.data.policyBasis && <><dt>Policy basis</dt><dd>{envelope.data.policyBasis}</dd></>}
+          {envelope.data.idempotencyKeySource && <><dt>Idempotency</dt><dd>{envelope.data.idempotencyKeySource}</dd></>}
         </dl>
+        {envelope.data.activationBlocker && <p className="surface-state-inline forbidden" role="status">Activation blocker: {envelope.data.activationBlocker}</p>}
+        {envelope.data.noDirectMutation && <p className="surface-state-inline forbidden">Advisory output cannot directly mutate prompts, skills, references, model refs, tool boundaries, activation, rollback, or provider configuration.</p>}
+        {envelope.data.alternatives && envelope.data.alternatives.length > 0 && <section aria-label="Decision alternatives"><h4>Alternatives</h4><ul>{envelope.data.alternatives.map((item) => <li key={item}>{item}</li>)}</ul></section>}
         {evidence.length > 0 && (
           <>
             <h4>Evidence</h4>

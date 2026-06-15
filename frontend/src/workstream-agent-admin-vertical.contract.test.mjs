@@ -58,6 +58,9 @@ test('Agent Admin fixtures include catalog, detail, governed diffs, model refs, 
     'agentSeedMaterialSurface',
     'agentTestConsoleSurface',
     'agentBehaviorProposalSurface',
+    'agentActivationConfirmationSurface',
+    'agentDeactivationConfirmationSurface',
+    'agentRollbackConfirmationSurface',
     'agentAdminAgentBlockedSystemMessageSurface',
     'agentAdminPromptRiskReviewSurface',
     'agentAdminTraceSurface'
@@ -75,6 +78,9 @@ test('Agent Admin fixtures include catalog, detail, governed diffs, model refs, 
     'surface-agent-seed-material',
     'surface-agent-test-console',
     'surface-agent-behavior-proposal',
+    'surface-agent-activation-confirmation',
+    'surface-agent-deactivation-confirmation',
+    'surface-agent-rollback-confirmation',
     'surface-agent-admin-agent-provider-blocked',
     'surface-agent-admin-prompt-risk-review',
     'surface-agent-admin-trace'
@@ -116,7 +122,10 @@ test('Agent Admin surfaces preserve required UI states, approval gates, validati
     'completed_review_required',
     'activationBlockedUntilHumanDecision',
     'prompt-risk AutonomousAgent',
-    'No direct activation'
+    'No direct activation',
+    'agent_admin.activation_confirmation.v1',
+    'agent_admin.deactivation_confirmation.v1',
+    'agent_admin.rollback_confirmation.v1'
   ]) {
     assert.match(surfaces, new RegExp(marker.replace(/[()]/g, '\\$&')));
   }

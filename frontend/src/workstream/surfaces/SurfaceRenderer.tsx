@@ -1,4 +1,5 @@
 import type { SurfaceAction, SurfaceEnvelope } from '../types';
+import { AgentAdminTaskSurface, isAgentAdminTaskSurface } from './AgentAdminTaskSurface';
 import { AuditTimelineSurface } from './AuditTimelineSurface';
 import { DashboardSurface } from './DashboardSurface';
 import { DecisionSurface } from './DecisionSurface';
@@ -38,6 +39,10 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
 
   if (isUserAdminRoleChangePreviewSurface(selectedEnvelope)) {
     return <UserAdminRoleChangePreviewSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+  }
+
+  if (isAgentAdminTaskSurface(selectedEnvelope)) {
+    return <AgentAdminTaskSurface envelope={selectedEnvelope as never} onAction={onAction} />;
   }
 
   if (isUserAdminTaskSurface(selectedEnvelope)) {

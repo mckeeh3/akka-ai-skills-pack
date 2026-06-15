@@ -99,6 +99,14 @@ export function DashboardSurface({ envelope, onAction, onSignOut }: DashboardSur
   );
 }
 
+
+function agentAdminActionableCards(cards: DashboardSurfaceData['cards'] | undefined, actionById: Map<string, SurfaceAction>): Array<{ card: DashboardSurfaceData['cards'][number]; action: SurfaceAction }> {
+  return (cards ?? []).map((card) => {
+    const action = card.actionId ? actionById.get(card.actionId) : undefined;
+    return action ? { card, action } : undefined;
+  }).filter((entry): entry is { card: DashboardSurfaceData['cards'][number]; action: SurfaceAction } => Boolean(entry));
+}
+
 function AgentAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
   const data = envelope.data;
   const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
@@ -121,22 +129,6 @@ function AgentAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) 
         </dl>
       </section>
 
-      {data.cards && data.cards.length > 0 && (
-        <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-summary-heading`}>
-          <div className="surface-section-heading">
-            <div><p className="eyebrow">Governance summary</p><h4 id={`${envelope.surfaceId}-summary-heading`}>Clickable work areas</h4></div>
-            <p>Cards summarize backend-authored Agent Admin work areas and open structured surfaces instead of acting as passive metrics.</p>
-          </div>
-          <div className="surface-dashboard-grid my-account-workstream-grid" aria-label="Agent Admin summary cards">
-            {data.cards.map((card) => {
-              const action = card.actionId ? actionById.get(card.actionId) : undefined;
-              const body = <><p>{card.label}</p><strong>{card.value}</strong>{card.status && <span>{card.status}</span>}</>;
-              return action ? <button key={card.cardId} type="button" className={`ds-card dashboard-card clickable ${card.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId, agentAdminCardInput(card, envelope))} aria-label={`Open ${card.label}: ${card.status ?? card.value}`}>{body}</button> : <article key={card.cardId} className={`ds-card dashboard-card ${card.severity ?? 'info'}`}>{body}</article>;
-            })}
-          </div>
-        </section>
-      )}
-
       <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-attention-heading`}>
         <div className="surface-section-heading">
           <div><p className="eyebrow">Things that need my attention</p><h4 id={`${envelope.surfaceId}-attention-heading`}>Governance attention queues</h4></div>
@@ -150,6 +142,21 @@ function AgentAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) 
           })}
         </div>
       </section>
+
+      {agentAdminActionableCards(data.cards, actionById).length > 0 && (
+        <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-summary-heading`}>
+          <div className="surface-section-heading">
+            <div><p className="eyebrow">Governance summary</p><h4 id={`${envelope.surfaceId}-summary-heading`}>Clickable work areas</h4></div>
+            <p>Cards summarize backend-authored Agent Admin work areas and open structured surfaces. Non-actionable metrics are omitted from the command center.</p>
+          </div>
+          <div className="surface-dashboard-grid my-account-workstream-grid" aria-label="Agent Admin actionable summary cards">
+            {agentAdminActionableCards(data.cards, actionById).map(({ card, action }) => {
+              const body = <><p>{card.label}</p><strong>{card.value}</strong>{card.status && <span>{card.status}</span>}</>;
+              return <button key={card.cardId} type="button" className={`ds-card dashboard-card clickable ${card.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId, agentAdminCardInput(card, envelope))} aria-label={`Open ${card.label}: ${card.status ?? card.value}`}>{body}</button>;
+            })}
+          </div>
+        </section>
+      )}
 
       <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-actions-heading`}>
         <div className="surface-section-heading">

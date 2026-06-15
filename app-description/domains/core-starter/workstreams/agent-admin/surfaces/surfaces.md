@@ -16,7 +16,7 @@ Durable collection objects in this workstream use the canonical progression: lis
 
 | Collection object | List/search | Show/inspection | Create/proposal/edit task surfaces | Destructive/lifecycle surfaces |
 |---|---|---|---|---|
-| Managed `AgentDefinition` | `surface-agent-admin-catalog` | `surface-agent-admin-detail` | prompt proposal, manifest review, model-ref proposal, no-side-effect test, prompt-risk review | activation confirmation, deactivation confirmation, rollback confirmation |
+| Managed `AgentDefinition` | `surface-agent-admin-catalog` | `surface-agent-admin-detail` | `surface-agent-prompt-governance`, `surface-agent-skill-manifest-diff`, `surface-agent-tool-boundary-diff`, `surface-agent-model-refs`, `surface-agent-test-console`, `surface-agent-admin-prompt-risk-review` | `surface-agent-activation-confirmation`, `surface-agent-deactivation-confirmation`, `surface-agent-rollback-confirmation` |
 | Prompt/skill/reference/version artifacts | catalog/detail artifact cards on `surface-agent-admin-detail` | prompt/manifest/tool/model inspection cards | `surface-agent-prompt-governance`, `surface-agent-skill-manifest-diff`, `surface-agent-tool-boundary-diff`, `surface-agent-model-refs` | activation/rollback decision surfaces returned from behavior proposal actions |
 | Seed material | `surface-agent-seed-material` | seed provenance row/card inspection | seed import workflow/status surface | customization-preserving import confirmation; no raw tenant override deletion |
 | Runtime traces | trace links from every surface | `surface-agent-admin-trace` | trace investigation requests | none; trace export/escalation is owned by Audit/Trace |
@@ -65,6 +65,26 @@ Durable collection objects in this workstream use the canonical progression: lis
 - Actions: propose, simulate, submit for review, approve, reject, or open trace as authorized. Approval/activation are separate decisions.
 - Tests: authority expansion and tool grants produce approval-required or denied result surfaces; accepting advisory output never activates behavior directly.
 - Sufficiency review: sufficient; no broad edit page may combine diff review with activation.
+
+### `surface-agent-test-console` — No-side-effect runtime test surface
+
+- Type: `workflow-status`; role: no-side-effect managed-agent runtime test and evidence surface.
+- User goal: verify prompt assembly, compact manifests, governed loader tools, scoped evidence access, provider/model readiness, and ToolPermissionBoundary behavior without committing behavior changes.
+- Default-visible payload: task status, safe result summary, no-direct-mutation notice, provider fail-closed status, allowed/denied loader/evidence checks, and next human review route.
+- Diagnostics drawer: PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, model/tool/data/policy usage, correlation ids, and redaction metadata.
+- Actions: run/read test and open trace as authorized. Test output can draft or update a proposal decision only through a separate behavior proposal; it never activates artifacts.
+- Tests: provider/runtime missing fails closed; side-effecting tools remain disabled; raw prompt/skill/reference bodies and provider secrets remain absent.
+- Sufficiency review: sufficient; this is an advisory workflow surface, not a chat console or mutation page.
+
+### `surface-agent-activation-confirmation`, `surface-agent-deactivation-confirmation`, `surface-agent-rollback-confirmation` — Lifecycle confirmation surfaces
+
+- Type: `lifecycle-confirmation`; role: separate consequential lifecycle confirmation after review/diff/decision surfaces.
+- User goal: understand impact, approval state, rollback/deactivation consequences, idempotency, policy basis, and trace evidence before confirming lifecycle changes.
+- Default-visible payload: target managed agent, current/proposed lifecycle state, impact summary, approval blockers, idempotency requirement, safe evidence summary, and disabled action reasons.
+- Diagnostics drawer: proposal id, AgentDefinition id, activation/rollback metadata, policy/capability ids, trace/correlation ids, and redaction metadata.
+- Actions: activate, deactivate, rollback, cancel/back, or open trace as authorized. Backend approval/version/provider/tool-boundary state remains authoritative.
+- Tests: activation remains disabled until backend approved state exists; rollback requires activated proposal metadata; deactivation cannot bypass runtime authorization or audit.
+- Sufficiency review: sufficient; lifecycle changes must not be combined into catalog, detail, broad diff, or advisory result surfaces.
 
 ### `surface-agent-behavior-proposal` — Behavior proposal decision card
 

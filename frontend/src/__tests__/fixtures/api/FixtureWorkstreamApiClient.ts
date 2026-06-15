@@ -6,14 +6,17 @@ import {
   allSurfaceActions,
   canonicalSurfaceEnvelopes,
   displayAgentAdminTraceActionResult,
+  displayAgentActivationConfirmationActionResult,
   displayAgentBehaviorProposalActionResult,
   displayAgentDashboardActionResult,
+  displayAgentDeactivationConfirmationActionResult,
   displayAgentCatalogActionResult,
   displayAgentDetailActionResult,
   displayAgentManifestActionResult,
   displayAgentModelRefsActionResult,
   displayAgentPromptGovernanceActionResult,
   displayAgentPromptRiskReviewActionResult,
+  displayAgentRollbackConfirmationActionResult,
   displayAgentSeedMaterialActionResult,
   displayAgentTestConsoleActionResult,
   displayAgentToolBoundaryActionResult,
@@ -189,11 +192,17 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
               ? displayAgentManifestActionResult
               : request.actionId === 'action-simulate-tool-boundary' || request.capabilityId === 'agent_admin.simulate_tool_boundary'
                 ? displayAgentToolBoundaryActionResult
-                : request.actionId === 'action-manage-model-ref' || request.capabilityId === 'agent_admin.get_model_ref' || request.capabilityId === 'agent_admin.activate_behavior_change'
+                : request.actionId === 'action-manage-model-ref' || request.capabilityId === 'agent_admin.get_model_ref'
                   ? displayAgentModelRefsActionResult
                   : request.actionId === 'action-test-agent-prompt'
                     ? displayAgentTestConsoleActionResult
-                    : ['action-submit-behavior-change', 'action-reject-behavior-change', 'action-activate-behavior-change', 'action-cancel-behavior-change', 'action-rollback-behavior-change'].includes(request.actionId)
+                    : request.actionId === 'action-activate-agent-definition' || request.actionId === 'action-activate-behavior-change'
+                      ? displayAgentActivationConfirmationActionResult
+                      : request.actionId === 'action-deactivate-agent-definition'
+                        ? displayAgentDeactivationConfirmationActionResult
+                        : request.actionId === 'action-rollback-behavior-change'
+                          ? displayAgentRollbackConfirmationActionResult
+                          : ['action-submit-behavior-change', 'action-reject-behavior-change', 'action-cancel-behavior-change'].includes(request.actionId)
                       ? displayAgentBehaviorProposalActionResult
                       : ['action-agentadmin-start-prompt-risk-review', 'action-agentadmin-read-prompt-risk-review', 'action-agentadmin-cancel-prompt-risk-review', 'action-agentadmin-accept-prompt-risk-review-result', 'action-agentadmin-reject-prompt-risk-review-result'].includes(request.actionId) || request.capabilityId?.startsWith('agent_admin.prompt_risk_review.')
                         ? displayAgentPromptRiskReviewActionResult

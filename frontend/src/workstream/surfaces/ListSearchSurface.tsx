@@ -14,7 +14,7 @@ export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps
   const queryValue = typeof envelope.data.query === 'string' ? envelope.data.query : JSON.stringify(envelope.data.query);
   return (
     <SurfaceStateFrame envelope={envelope}>
-      {isAgentAdminCatalog ? <AgentAdminCatalogView envelope={envelope} onAction={onAction} /> : isUserAdmin ? <UserAdminUsersView envelope={envelope} onAction={onAction} /> : (
+      {isAgentAdminCatalog ? <AgentAdminCatalogView envelope={envelope} onAction={onAction} /> : isAgentAdminSeedMaterial(envelope) ? <AgentAdminSeedMaterialView envelope={envelope} onAction={onAction} /> : isUserAdmin ? <UserAdminUsersView envelope={envelope} onAction={onAction} /> : (
         <>
           <form className="surface-search-form" role="search">
             <label htmlFor={`${envelope.surfaceId}-query`}>Search</label>
@@ -34,6 +34,60 @@ export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps
       )}
     </SurfaceStateFrame>
   );
+}
+
+
+function AgentAdminSeedMaterialView({ envelope, onAction }: ListSearchSurfaceProps) {
+  const rows = envelope.data.rows;
+  const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
+  const refreshAction = actionById.get('action-list-agent-seed-material');
+  const importAction = actionById.get('action-import-agent-seed-defaults');
+  const traceAction = actionById.get('action-open-agent-trace');
+  return (
+    <section className="user-admin-users-surface agent-admin-seed-surface" aria-label="Agent Admin seed provenance">
+      <div className="user-admin-users-header">
+        <div>
+          <p className="eyebrow">Agent Admin · seed provenance</p>
+          <h3>Seed defaults and tenant customizations</h3>
+          <p>Review starter defaults, import readiness, and tenant override preservation without exposing raw prompt, skill, reference, or provider-secret material.</p>
+        </div>
+        <div className="user-admin-users-header-actions">
+          {refreshAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(refreshAction, envelope.surfaceId, safeDirectoryInput(envelope))}>Refresh seed material</button>}
+          {importAction && <button type="button" className="surface-action-link primary" onClick={() => onAction?.(importAction, envelope.surfaceId, safeDirectoryInput(envelope))}>Import missing defaults</button>}
+          {traceAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(traceAction, envelope.surfaceId)}>Open seed traces</button>}
+        </div>
+      </div>
+      {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial seed state: unauthorized or redacted seed evidence is omitted.</p>}
+      {rows.length === 0 ? <p className="surface-empty-copy">{envelope.data.emptyMessage ?? 'No seed material is visible in this selected scope.'}</p> : (
+        <div className="user-admin-clean-list agent-admin-seed-list" role="list" aria-label="Seed material cards">
+          {rows.map((row, index) => <article key={String(row.id ?? index)} role="listitem" className="user-admin-clean-row agent-admin-seed-row">
+            <span className="user-admin-person"><strong>{seedMaterialTitle(row)}</strong><small>{seedMaterialSummary(row)}</small></span>
+            <span className={`status-pill ${statusTone(String(row.status ?? 'ready'))}`}>{formatStatus(String(row.status ?? 'ready'))}</span>
+            <span className="status-pill info">{row.tenantCustomized ? 'tenant customized' : 'starter default'}</span>
+          </article>)}
+        </div>
+      )}
+      <details className="dashboard-evidence-drawer">
+        <summary>Role-gated seed diagnostics</summary>
+        <p>Surface contract: {envelope.data.surfaceContract ?? 'agent_admin.seed_material.v1'}</p>
+        <p>Redaction: {renderSurfaceValue(envelope.data.redaction) ?? 'raw behavior material and provider secrets omitted'}</p>
+        <ul>{rows.map((row, index) => <li key={String(row.id ?? index)}>{renderSurfaceValue({ artifactId: row.artifactId, seedBundleId: row.seedBundleId, checksum: row.checksum, traceId: row.traceId })}</li>)}</ul>
+      </details>
+    </section>
+  );
+}
+
+function isAgentAdminSeedMaterial(envelope: SurfaceEnvelope<ListSearchSurfaceData>) {
+  return envelope.surfaceId === 'surface-agent-seed-material' || envelope.data.surfaceContract === 'agent_admin.seed_material.v1';
+}
+
+function seedMaterialTitle(row: ListSearchSurfaceData['rows'][number]) {
+  return String(row.artifactKind ?? 'Seed artifact').replace(/_/g, ' ');
+}
+
+function seedMaterialSummary(row: ListSearchSurfaceData['rows'][number]) {
+  const customized = row.tenantCustomized ? 'Tenant customization is preserved' : 'Starter default is active';
+  return `${customized}. ${String(row.seedBundleId ?? 'Seed bundle')} provenance is trace-linked; raw content is available only through governed loaders.`;
 }
 
 function AgentAdminCatalogView({ envelope, onAction }: ListSearchSurfaceProps) {

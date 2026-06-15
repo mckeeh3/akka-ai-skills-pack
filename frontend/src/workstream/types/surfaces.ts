@@ -2,7 +2,7 @@ import type { SurfaceAction } from './actions';
 
 export type SurfaceRedactionProfile = 'self' | 'tenant-admin' | 'support' | 'auditor' | 'agent';
 export type SurfaceUiStatus = 'loading' | 'empty' | 'ready' | 'submitting' | 'success' | 'pending' | 'approval-needed' | 'error' | 'forbidden' | 'conflict' | 'stale' | 'reconnecting' | 'partial-data' | 'no-op' | 'blocked_provider_or_runtime' | 'not_found_or_redacted' | 'validation-error';
-export type CanonicalSurfaceType = 'markdown_response' | 'system_message' | 'dashboard' | 'list-search' | 'show-inspection' | 'create-form' | 'edit-form' | 'destructive-lifecycle-confirmation' | 'lifecycle-confirmation' | 'detail-edit' | 'decision' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome' | 'outcome-panel' | 'notification-center';
+export type CanonicalSurfaceType = 'markdown_response' | 'system_message' | 'system-message' | 'dashboard' | 'list-search' | 'show-inspection' | 'create-form' | 'edit-form' | 'destructive-lifecycle-confirmation' | 'lifecycle-confirmation' | 'detail-edit' | 'decision' | 'decision-card' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome' | 'outcome-panel' | 'notification-center';
 
 export type SurfaceLink = {
   label: string;
@@ -366,6 +366,13 @@ export type DecisionSurfaceData = {
   allowedActions?: Array<{ actionId: string; label: string; browserToolId: string; governedToolId: string; capabilityId: string }>;
   disabledActions?: Array<{ actionId: string; label?: string; reason: string }>;
   risk?: string;
+  impact?: string;
+  alternatives?: string[];
+  affectedTarget?: string;
+  policyBasis?: string;
+  idempotencyKeySource?: string;
+  activationBlocker?: string;
+  noDirectMutation?: boolean;
   traceLinks?: string[];
 };
 

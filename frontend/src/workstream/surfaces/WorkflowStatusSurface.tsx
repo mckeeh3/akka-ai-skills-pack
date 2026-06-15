@@ -48,10 +48,12 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
   const taskTraceIds = accessReview?.traceIds ?? envelope.data.traceIds ?? [];
   const traceLinks = accessReview?.traceLinks ?? envelope.data.modelToolDataPolicyUsage?.traceLinks ?? envelope.data.traceLinks ?? [];
   const isMyAccountDigest = envelope.surfaceId === 'surface-my-account-personal-attention-digest-progress';
+  const isAgentAdminPromptRisk = envelope.surfaceId === 'surface-agent-admin-prompt-risk-review' || envelope.data.surfaceContract === 'agent_admin.prompt_risk_review_task.v1';
   return (
     <SurfaceStateFrame envelope={envelope}>
+      {isAgentAdminPromptRisk && <AgentAdminPromptRiskReview data={envelope.data} />}
       {isMyAccountDigest && <MyAccountDigestProgress data={envelope.data} />}
-      {!isMyAccountDigest && <p role="status">Workflow {envelope.data.workflowId} is {statusText}.</p>}
+      {!isMyAccountDigest && !isAgentAdminPromptRisk && <p role="status">Workflow {envelope.data.workflowId} is {statusText}.</p>}
       {isMyAccountDigest && <p role="status">Personal attention digest {envelope.data.digestTaskId ?? envelope.data.workflowId ?? 'request'} is {statusText}.</p>}
       {isUserAdminWorkflow(envelope) && <UserAdminWorkflowBranchReturn envelope={envelope} onAction={onAction} />}
       {envelope.data.summary && <p className="surface-state-inline forbidden">{envelope.data.summary}</p>}
@@ -136,6 +138,33 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
       )}
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={digestActionInput(envelope.data)} onAction={onAction} />
     </SurfaceStateFrame>
+  );
+}
+
+
+function AgentAdminPromptRiskReview({ data }: { data: WorkflowStatusSurfaceData }) {
+  const anyData = data as WorkflowStatusSurfaceData & Record<string, unknown>;
+  const findings = Array.isArray(anyData.findings) ? anyData.findings as Array<Record<string, unknown>> : [];
+  const requiredReasons = Array.isArray(anyData.requiredHumanReviewReasons) ? anyData.requiredHumanReviewReasons as string[] : [];
+  const artifactDeltas = Array.isArray(anyData.artifactDeltas) ? anyData.artifactDeltas as Array<Record<string, unknown>> : [];
+  return (
+    <section className="agent-admin-prompt-risk-review" aria-label="Agent Admin prompt-risk advisory review">
+      <div className="surface-section-heading">
+        <div><p className="eyebrow">Autonomous advisory review</p><h3>Prompt-risk review requires human decision</h3></div>
+        <p>{data.summary ?? 'Model-backed advisory analysis completed; it cannot activate or mutate behavior artifacts.'}</p>
+      </div>
+      <dl className="authority-summary-grid">
+        <div><dt>Status</dt><dd>{formatStatus(data.status)}</dd></div>
+        <div><dt>Overall risk</dt><dd>{formatStatus(String(anyData.overallRisk ?? 'not scored'))}</dd></div>
+        <div><dt>Review state</dt><dd>{formatStatus(data.resultReviewState ?? 'completed_review_required')}</dd></div>
+        <div><dt>Direct mutation</dt><dd>{data.noDirectMutation ? 'Not allowed' : 'Not reported'}</dd></div>
+      </dl>
+      {Boolean(anyData.riskSummary) && <p className="surface-state-inline forbidden">{String(anyData.riskSummary)}</p>}
+      {requiredReasons.length > 0 && <section className="provider-failure-list" aria-label="Required human review reasons"><h4>Why human review is required</h4><ul>{requiredReasons.map((reason) => <li key={reason}>{formatStatus(reason)}</li>)}</ul></section>}
+      {artifactDeltas.length > 0 && <section className="evidence-ref-list" aria-label="Redacted artifact deltas"><h4>Redacted artifact deltas</h4><ul>{artifactDeltas.map((delta, index) => <li key={String(delta.artifactId ?? index)}><strong>{formatStatus(String(delta.artifactKind ?? 'artifact'))}</strong> — {String(delta.changeSummary ?? 'Change summary redacted')}</li>)}</ul></section>}
+      {findings.length > 0 && <section className="recommendation-list" aria-label="Prompt-risk findings"><h4>Findings</h4><ul>{findings.map((finding, index) => <li key={String(finding.findingId ?? index)}><strong>{formatStatus(String(finding.riskLevel ?? 'risk'))}: {String(finding.category ?? 'Finding')}</strong><p>{String(finding.browserSafeDescription ?? 'Browser-safe finding summary unavailable.')}</p>{finding.requiresHumanReview === true && <span className="status-pill warning">human review required</span>}</li>)}</ul></section>}
+      {data.safety && <p className="surface-state-inline forbidden">{data.safety}</p>}
+    </section>
   );
 }
 
