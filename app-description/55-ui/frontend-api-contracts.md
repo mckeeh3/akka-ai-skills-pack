@@ -45,6 +45,28 @@ DTOs:
 - `SaasOwnerAdminListPayload`: `{ admins[], invitations[], filters, pageInfo, traceRefs[], correlationId, redaction }`.
 - `OrganizationAdminListPayload`: `{ organization, admins[], invitations[], filters, pageInfo, safeBoundaryNotice, traceRefs[], correlationId, redaction }`.
 
+## Organization Admin Customer and Customer Admin contracts
+
+Organization Admins must be able to create/manage Customers within their selected Organization/Tenant and invite/manage Customer Admin users for each Customer. These contracts are protected by backend `tenant.customer.*` and `tenant.customer_admin.*` capabilities and never expose sibling-customer facts, tenant-wide application data, raw provider ids, raw invitation tokens, or provider secrets.
+
+- `GET /api/admin/customers?query=&status=&pageSize=&pageToken=` returns `CustomerListPayload` with browser-safe Customer summaries for the selected Organization/Tenant, filters, trace refs, correlation id, and redaction.
+- `GET /api/admin/customers/{customerId}` returns `CustomerDetailPayload` with safe lifecycle/admin metadata, boundary notice, visible actions, recent redacted audit excerpts, trace refs, and no sibling-customer or tenant application data.
+- `POST /api/admin/customers` creates a Customer from `{ customerName, idempotencyKey, reason?, correlationId? }` in the selected Organization/Tenant and returns refreshed detail or typed validation/duplicate/forbidden/no-op system message.
+- `POST /api/admin/customers/{customerId}/rename` renames/updates a Customer from `{ customerName, idempotencyKey, reason?, correlationId? }` and returns refreshed detail/list state or typed validation/no-op/stale/forbidden system message.
+- `POST /api/admin/customers/{customerId}/suspend` suspends/archives a Customer from `{ reason, idempotencyKey, correlationId? }` and returns refreshed detail/list state or typed no-op/forbidden system message.
+- `POST /api/admin/customers/{customerId}/reactivate` reactivates a Customer from `{ reason?, idempotencyKey, correlationId? }` and returns refreshed detail/list state or typed no-op/forbidden system message.
+- `GET /api/admin/customers/{customerId}/admins?query=&status=&pageSize=&pageToken=` lists Customer Admin users and invitations for the selected Customer with browser-safe membership/invitation summaries, last-admin risk flags, trace refs, correlation id, and no sibling-customer data.
+- `POST /api/admin/customers/{customerId}/admins/invitations` bootstraps/invites a Customer Admin from `{ email, displayName?, roles: ['CUSTOMER_ADMIN'], idempotencyKey, reason?, correlationId? }` after the Customer exists and returns admin invitation/detail status or validation/duplicate/outbox-blocked/forbidden system message.
+- `POST /api/admin/customers/{customerId}/admins/invitations/{invitationId}/resend` and `/revoke` manage Customer Admin invitations when authorized.
+- `PUT /api/admin/customers/{customerId}/admins/{accountId}/roles` and `POST /api/admin/customers/{customerId}/admins/{accountId}/suspend|reactivate|remove` manage Customer Admin memberships with target-customer validation, `TENANT_ADMIN`/`SAAS_OWNER_ADMIN` escalation denial, and last-customer-admin protection.
+
+DTOs:
+
+- `CustomerSummary`: `{ customerId, customerName, status, updatedAt?, safeLifecycleSummary?, visibleCustomerAdminCount?, traceRefs[] }`.
+- `CustomerDetailPayload`: `{ customer, safeBoundaryNotice, visibleActions[], recentAuditEvents[], traceRefs[], correlationId, redaction }`.
+- `CustomerListPayload`: `{ customers[], filters, pageInfo, traceRefs[], correlationId, redaction }`.
+- `CustomerAdminListPayload`: `{ customer, admins[], invitations[], filters, pageInfo, safeBoundaryNotice, traceRefs[], correlationId, redaction }`.
+
 ## Workstream shell contracts
 
 - `POST /api/workstream/bootstrap` loads `/api/me`-safe shell state and structured surfaces.

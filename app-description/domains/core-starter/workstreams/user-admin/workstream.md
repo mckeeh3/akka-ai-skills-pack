@@ -5,7 +5,7 @@
 Give authorized administrators an AI-first access operations command center for SaaS Owner Admin users, customer-facing Organizations, Organization Admin users, scoped users, memberships, invitations, roles/capabilities, support access, access-review work, identity exceptions, and admin audit evidence across three explicit admin levels:
 
 1. **SaaS Owner / App Admin** — the app-owner administration level. SaaS Owner Admins manage other SaaS Owner/App Admin users, create and maintain customer-facing Organizations, and invite/manage Organization Admin users for those Organizations. App-owner authority is platform scoped and does not automatically grant tenant employee, customer admin, customer user, tenant application-data, support-access, or billing-derived authority unless a backend policy explicitly grants that selected context.
-2. **Tenant Admin** — the SMB customer administration level. Tenant Admins manage the tenant's employee access to the app and manage Customer Admin users for customers that the tenant provides access to. Tenant Admin authority is tenant scoped and cannot cross into other tenants.
+2. **Tenant / Organization Admin** — the SMB Organization administration level. Organization Admins create and maintain Customers inside their selected Organization/Tenant, invite/manage Customer Admin users for those Customers, and manage the tenant's employee access. Organization Admin authority is tenant scoped and cannot cross into other tenants, sibling Organizations, or SaaS Owner administration.
 3. **Customer Admin** — the SMB customer's customer administration level. Customer Admins manage Customer Users within their assigned customer scope. Customer Admin authority cannot manage tenant employees, tenant-level roles/settings, other customers, or App Admin/Tenant Admin accounts.
 
 The intended hierarchy is `SaaS Owner/App Admin -> Organization/Tenant Admin -> tenant employees and Customer Admins -> Customer Users`, with every step constrained by selected `AuthContext`, backend capability grants, resource ownership, redaction, and audit policy.
@@ -15,6 +15,8 @@ The workstream explicitly covers these access-administration areas:
 - **Managing SaaS Owner Admins** — invite, inspect, activate/reactivate, disable/remove, and preserve last-owner-admin protection for app-owner administrators.
 - **Managing Organizations** — create, inspect, rename, suspend, and reactivate customer-facing Organizations backed by Tenant boundaries without granting tenant app-data/support/billing authority.
 - **Managing Organization Admins** — bootstrap the first Organization Admin after Organization creation, invite additional `TENANT_ADMIN` users, and manage Organization Admin memberships/invitations under selected Organization/Tenant scope.
+- **Managing Customers** — create, inspect, rename/update, suspend/archive, and reactivate Customer records inside the selected Organization/Tenant without leaking sibling-customer facts.
+- **Managing Customer Admins** — bootstrap the first Customer Admin after Customer creation, invite additional `CUSTOMER_ADMIN` users, and manage Customer Admin memberships/invitations under selected Customer scope.
 - **Managing users** — find, inspect, activate/reactivate, disable, and understand scoped user details at the App Admin, Tenant Admin, or Customer Admin level allowed by policy.
 - **Managing memberships** — add, suspend, reactivate, or remove a user's membership in an app-owner, tenant, or customer context while preserving tenant/customer boundaries and last-admin protections.
 - **Managing invitations** — create, resend, revoke, track, expire, and troubleshoot invitations for SaaS Owner Admins, Organization/Tenant Admins, tenant employees, Customer Admins, or Customer Users according to the caller's admin level.
@@ -41,7 +43,7 @@ Owns `user-admin-agent` as its exactly-one user-facing functional-agent binding.
 
 Primary capability: `../../capabilities/user-and-access-administration.md`.
 
-Capability families represented by this workstream include SaaS Owner Admin management, Organization lifecycle, Organization Admin bootstrap/maintenance, scoped directory reads, invitation lifecycle, membership status changes, role/capability preview and mutation, support-access lifecycle, access-review task lifecycle, identity relink review, admin audit/evidence reads, and User Admin agent guidance. Each family must preserve the three admin levels: SaaS Owner/App Admin manages app-owner admins plus Organization/Tenant Admin accounts through explicit target scopes; Tenant Admin manages tenant employees and Customer Admins for that tenant's customers; Customer Admin manages only Customer Users in their assigned customer scope.
+Capability families represented by this workstream include SaaS Owner Admin management, Organization lifecycle, Organization Admin bootstrap/maintenance, Customer lifecycle, Customer Admin bootstrap/maintenance, scoped directory reads, invitation lifecycle, membership status changes, role/capability preview and mutation, support-access lifecycle, access-review task lifecycle, identity relink review, admin audit/evidence reads, and User Admin agent guidance. Each family must preserve the three admin levels: SaaS Owner/App Admin manages app-owner admins plus Organization/Tenant Admin accounts through explicit target scopes; Tenant Admin manages tenant employees and Customer Admins for that tenant's customers; Customer Admin manages only Customer Users in their assigned customer scope.
 
 ## Attention model
 
@@ -57,6 +59,7 @@ Primary graph branches:
 
 - `surface-user-admin-saas-owner-admins` for SaaS Owner/Admin user discovery and invite/manage task entry points when the selected context is app-owner authorized.
 - `surface-user-admin-organization-directory` for Organization discovery/lifecycle and Organization Admin bootstrap/maintenance task entry points when the selected context is app-owner authorized.
+- `surface-user-admin-customer-directory` for Customer discovery/lifecycle and Customer Admin bootstrap/maintenance task entry points when the selected context is Organization/Tenant Admin authorized.
 - `surface-user-admin-users` for scoped user/member discovery only; it exposes a create/invite action where allowed, and every row/card uses backend-authored state to open the correct lifecycle-aware user detail, invitation detail, role preview, access-review task, identity-exception review, or system-message surface.
 - `surface-user-admin-user-detail` for scoped user/membership/invitation/support/access-review/identity/audit inspection and task entry points; it does not directly mutate access.
 - `surface-user-admin-invitation-create`, `surface-user-admin-invitation-detail`, `surface-user-admin-invitation-resend-confirmation`, and `surface-user-admin-invitation-revoke-confirmation` for invitation create, inspect, resend, and destructive lifecycle flows.

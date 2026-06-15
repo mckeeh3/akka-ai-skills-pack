@@ -70,7 +70,7 @@ Side-effecting tools default to proposal or human confirmation. Last-admin loss,
 
 ## Required denials and recovery
 
-The agent must safely recover from disabled actor, inactive membership, missing selected context, missing capability, Customer Admin tenant-level action, SaaS Owner without support grant, cross-tenant/customer target, role escalation, last-admin loss, unsupported bulk side effect, raw token/secret request, unredacted audit export, missing model/provider config, missing tool-boundary grant, unassigned/inactive/oversized/redaction-failed skill/reference load, and authority-expanding prompt/skill/reference content.
+The agent must safely recover from disabled actor, inactive membership, missing selected context, missing capability, Customer Admin tenant-level action, Customer Admin sibling-customer action, Organization Admin sibling-Organization or SaaS Owner action, SaaS Owner without support grant, cross-tenant/customer target, role escalation, last-admin loss, unsupported bulk side effect, raw token/secret request, unredacted audit export, missing model/provider config, missing tool-boundary grant, unassigned/inactive/oversized/redaction-failed skill/reference load, and authority-expanding prompt/skill/reference content.
 
 Safe recovery names the visible denial category, selected scope if safe, missing authority class, suggested non-sensitive next step, and trace/correlation id when available.
 
