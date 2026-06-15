@@ -7,7 +7,8 @@
 
 ## Security and negative
 
-- Disabled users, inactive memberships, role/capability denials, and cross-tenant/customer requests are denied without protected-data leakage.
+- Disabled users, inactive memberships, Customer Admin selected contexts, role/capability denials, and cross-tenant/customer requests are denied without protected-data leakage.
+- Customer Admins cannot see Agent Admin catalog/dashboard surfaces, submit AgentAdminAgent turns, read prompt/skill/reference/manifest/model/tool-boundary/seed material, start prompt-risk review tasks, or draft/approve/activate/roll back behavior changes.
 - Agent/tool calls cannot exceed the governed tool boundary or approval policy.
 - Browser payloads never expose provider secrets or hidden authority state.
 

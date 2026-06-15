@@ -5,6 +5,8 @@ import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 import ai.first.domain.coreapp.agentadmin.PromptRiskReviewTask;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
@@ -175,9 +177,16 @@ public final class AgentAdminPromptRiskReviewService {
   }
 
   private void require(AuthContextResolver.ResolvedMe actor, String capabilityId, String correlationId) {
+    requireTenantOrganizationAdmin(actor);
     authContextResolver.requireTenant(actor.selectedContext(), actor.selectedContext().tenantId());
     authContextResolver.requireCapability(actor.selectedContext(), capabilityId);
     authContextResolver.appendProtectedReadTrace(actor, capabilityId, "agent_admin.prompt_risk_review_task.v1", correlationId);
+  }
+
+  private void requireTenantOrganizationAdmin(AuthContextResolver.ResolvedMe actor) {
+    if (actor.selectedContext().scopeType() != ScopeType.TENANT || !actor.selectedContext().roles().contains(FoundationRole.TENANT_ADMIN)) {
+      throw new AuthorizationException(403, "agent-admin-requires-tenant-admin");
+    }
   }
 
   private static List<String> evidenceRefs(StartPromptRiskReviewCommand command) {

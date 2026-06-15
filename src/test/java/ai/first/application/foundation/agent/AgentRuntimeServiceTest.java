@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ai.first.application.foundation.agent.AgentRuntimeService.BehaviorChangeRequest;
@@ -466,6 +467,31 @@ class AgentRuntimeServiceTest {
     assertEquals(AgentRuntimeTrace.Decision.DENIED, skill.decision());
     assertEquals(AgentRuntimeTrace.Decision.DENIED, reference.decision());
     assertTrue(service.traces().stream().anyMatch(trace -> trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.safeSummary().contains("agent-not-active")));
+  }
+
+  @Test
+  void customerScopedActorCannotUseAgentAdminBehaviorEditEvenWithInjectedCapabilities() {
+    var customerScopedActor = new AuthContext(
+        "customer-admin-1",
+        "workos-customer-admin-1",
+        "membership-customer-admin-1",
+        ScopeType.CUSTOMER,
+        "tenant-1",
+        "customer-1",
+        List.of(FoundationRole.CUSTOMER_ADMIN),
+        List.of("agent.behavior.manage", "agent_admin.draft_behavior_change"));
+
+    var denied = assertThrows(ai.first.application.foundation.identity.AuthorizationException.class, () -> service.proposeBehaviorChange(new BehaviorChangeRequest(
+        "tenant-1",
+        AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+        customerScopedActor,
+        BehaviorChangeProposal.TargetArtifact.PROMPT,
+        "Attempted customer-scoped prompt change.",
+        List.of(),
+        "Customer admins must not administer tenant managed-agent behavior.",
+        "corr-customer-admin-agent-denied")));
+
+    assertEquals("agent-admin-requires-tenant-admin", denied.reasonCode());
   }
 
   @Test

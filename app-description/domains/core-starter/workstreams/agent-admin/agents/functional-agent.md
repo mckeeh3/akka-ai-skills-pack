@@ -6,7 +6,7 @@ Global definition: `../../../../../global/agents/foundation-functional-agents.md
 
 ## Authority
 
-The agent operates only through capability `managed-agent-governance` and governed tools `list-agent-catalog, read-agent-behavior-detail, draft-agent-behavior-proposal, approve-activate-or-rollback-agent-behavior, readSkill, readReferenceDoc` with selected `AuthContext`, backend authorization, tool-boundary checks, approval gates, and durable traces.
+The agent operates only for tenant/organization administrator selected contexts through capability `managed-agent-governance` and governed tools `list-agent-catalog, read-agent-behavior-detail, draft-agent-behavior-proposal, approve-activate-or-rollback-agent-behavior, readSkill, readReferenceDoc` with selected `TENANT_ADMIN` / `tenant-admin` AuthContext, backend authorization, tool-boundary checks, approval gates, and durable traces. Customer-scoped admins are denied before prompt, skill, reference, or tool-boundary evidence is loaded.
 
 ## Prompt intent
 

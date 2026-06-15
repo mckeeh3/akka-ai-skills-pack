@@ -12,6 +12,8 @@ import ai.first.domain.foundation.agent.ReferenceDocument;
 import ai.first.domain.foundation.agent.SeedProvenance;
 import ai.first.domain.foundation.agent.SkillDocument;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -236,9 +238,16 @@ public final class AgentAdminService {
   }
 
   private void require(AuthContextResolver.ResolvedMe actor, String capabilityId, String correlationId, String surfaceContract) {
+    requireTenantOrganizationAdmin(actor);
     authContextResolver.requireTenant(actor.selectedContext(), actor.selectedContext().tenantId());
     authContextResolver.requireCapability(actor.selectedContext(), capabilityId);
     authContextResolver.appendProtectedReadTrace(actor, capabilityId, surfaceContract, correlationId);
+  }
+
+  private void requireTenantOrganizationAdmin(AuthContextResolver.ResolvedMe actor) {
+    if (actor.selectedContext().scopeType() != ScopeType.TENANT || !actor.selectedContext().roles().contains(FoundationRole.TENANT_ADMIN)) {
+      throw new AuthorizationException(403, "agent-admin-requires-tenant-admin");
+    }
   }
 
   private AgentDefinition agent(AuthContextResolver.ResolvedMe actor, String agentDefinitionId) {

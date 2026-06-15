@@ -6,9 +6,10 @@ Let authorized agent stewards administer tenant-scoped managed agent behavior re
 
 ## Actors and scope
 
-- Agent admin / policy owner: creates drafts, reviews diffs, approves or rolls back behavior changes.
-- Auditor: reads scoped configuration and trace evidence.
-- Agent Admin functional agent: explains, drafts proposals, identifies risk, and guides safe activation; it cannot grant itself tools, data scope, model access, or approval authority.
+- Tenant/Organization Admin: the only human role that may open Agent Admin and create, review, approve, activate, or roll back managed-agent behavior changes through a selected `TENANT_ADMIN` / `tenant-admin` AuthContext with explicit `agent_admin.*` capabilities.
+- Customer Admins and customer-scoped users: not authorized for Agent Admin reads or behavior changes, because managed-agent behavior records are tenant/organization-scoped rather than customer-scoped.
+- Auditor: may read audit/trace evidence through Audit/Trace capabilities, but audit access alone does not allow Agent Admin catalog, prompt, skill, reference, manifest, model, tool-boundary, seed, or prompt-risk task reads.
+- Agent Admin functional agent: explains, drafts proposals, identifies risk, and guides safe activation only for authorized tenant/organization admins; it cannot grant itself tools, data scope, model access, or approval authority.
 
 ## Governed tools and exposure
 

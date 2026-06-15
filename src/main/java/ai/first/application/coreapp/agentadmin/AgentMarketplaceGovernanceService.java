@@ -9,6 +9,8 @@ import ai.first.domain.foundation.agent.BehaviorChangeProposal;
 import ai.first.domain.foundation.agent.ToolCatalogEntry;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -134,8 +136,15 @@ public final class AgentMarketplaceGovernanceService {
   }
 
   private void require(AuthContext actor, String tenantId, String capabilityId) {
+    requireTenantOrganizationAdmin(actor);
     authContextResolver.requireTenant(actor, tenantId);
     authContextResolver.requireCapability(actor, capabilityId);
+  }
+
+  private void requireTenantOrganizationAdmin(AuthContext actor) {
+    if (actor.scopeType() != ScopeType.TENANT || !actor.roles().contains(FoundationRole.TENANT_ADMIN)) {
+      throw new AuthorizationException(403, "agent-admin-requires-tenant-admin");
+    }
   }
 
   private AgentDefinition agent(String tenantId, String agentDefinitionId) {

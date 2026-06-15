@@ -16,6 +16,8 @@ import ai.first.domain.foundation.agent.SeedProvenance;
 import ai.first.domain.foundation.agent.SkillDocument;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.ScopeType;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -234,6 +236,7 @@ public final class AgentRuntimeService {
 
   public BehaviorChangeProposal proposeBehaviorChange(BehaviorChangeRequest request) {
     authContextResolver.requireTenant(request.authContext(), request.tenantId());
+    requireTenantOrganizationAdmin(request.authContext());
     requireCapabilityOrLegacy(request.authContext(), AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY);
     var agent = activeAgent(request.tenantId(), request.agentDefinitionId(), "test");
     var deniedReason = authorityExpansionReason(request, agent);
@@ -267,6 +270,7 @@ public final class AgentRuntimeService {
 
   public BehaviorChangeProposal submitProposalForReview(AuthContext actor, String tenantId, String proposalId, String correlationId) {
     authContextResolver.requireTenant(actor, tenantId);
+    requireTenantOrganizationAdmin(actor);
     requireCapabilityOrLegacy(actor, AGENT_ADMIN_SUBMIT_BEHAVIOR_CHANGE_CAPABILITY);
     var proposal = proposal(tenantId, proposalId);
     if (proposal.status() == BehaviorChangeProposal.Status.IN_REVIEW) return proposal;
@@ -278,6 +282,7 @@ public final class AgentRuntimeService {
 
   public BehaviorChangeProposal approveProposal(AuthContext reviewer, String tenantId, String proposalId, String correlationId) {
     authContextResolver.requireTenant(reviewer, tenantId);
+    requireTenantOrganizationAdmin(reviewer);
     requireCapabilityOrLegacy(reviewer, AGENT_ADMIN_APPROVE_BEHAVIOR_CHANGE_CAPABILITY);
     var proposal = proposal(tenantId, proposalId);
     if (proposal.status() == BehaviorChangeProposal.Status.APPROVED) return proposal;
@@ -289,6 +294,7 @@ public final class AgentRuntimeService {
 
   public BehaviorChangeProposal rejectProposal(AuthContext reviewer, String tenantId, String proposalId, String reason, String correlationId) {
     authContextResolver.requireTenant(reviewer, tenantId);
+    requireTenantOrganizationAdmin(reviewer);
     requireCapabilityOrLegacy(reviewer, AGENT_ADMIN_REJECT_BEHAVIOR_CHANGE_CAPABILITY);
     var proposal = proposal(tenantId, proposalId);
     if (proposal.status() == BehaviorChangeProposal.Status.REJECTED) return proposal;
@@ -300,6 +306,7 @@ public final class AgentRuntimeService {
 
   public BehaviorChangeProposal cancelProposal(AuthContext actor, String tenantId, String proposalId, String reason, String correlationId) {
     authContextResolver.requireTenant(actor, tenantId);
+    requireTenantOrganizationAdmin(actor);
     requireCapabilityOrLegacy(actor, AGENT_ADMIN_CANCEL_BEHAVIOR_CHANGE_CAPABILITY);
     var proposal = proposal(tenantId, proposalId);
     if (proposal.status() == BehaviorChangeProposal.Status.CANCELLED) return proposal;
@@ -311,6 +318,7 @@ public final class AgentRuntimeService {
 
   public BehaviorChangeProposal activateProposal(AuthContext actor, String tenantId, String proposalId, String correlationId) {
     authContextResolver.requireTenant(actor, tenantId);
+    requireTenantOrganizationAdmin(actor);
     requireCapabilityOrLegacy(actor, AGENT_ADMIN_ACTIVATE_BEHAVIOR_CHANGE_CAPABILITY);
     var proposal = proposal(tenantId, proposalId);
     if (proposal.status() == BehaviorChangeProposal.Status.ACTIVATED) return proposal;
@@ -329,6 +337,7 @@ public final class AgentRuntimeService {
 
   public BehaviorChangeProposal rollbackProposal(AuthContext actor, String tenantId, String proposalId, String correlationId) {
     authContextResolver.requireTenant(actor, tenantId);
+    requireTenantOrganizationAdmin(actor);
     requireCapabilityOrLegacy(actor, AGENT_ADMIN_ROLLBACK_BEHAVIOR_CHANGE_CAPABILITY);
     var proposal = proposal(tenantId, proposalId);
     if (proposal.status() == BehaviorChangeProposal.Status.ROLLED_BACK) return proposal;
@@ -360,6 +369,12 @@ public final class AgentRuntimeService {
   private void requireCapabilityOrLegacy(AuthContext authContext, String capabilityId) {
     if (authContext.capabilities().contains(capabilityId)) return;
     authContextResolver.requireCapability(authContext, BEHAVIOR_MANAGE_CAPABILITY);
+  }
+
+  private void requireTenantOrganizationAdmin(AuthContext authContext) {
+    if (authContext.scopeType() != ScopeType.TENANT || !authContext.roles().contains(FoundationRole.TENANT_ADMIN)) {
+      throw new AuthorizationException(403, "agent-admin-requires-tenant-admin");
+    }
   }
 
   private BehaviorChangeProposal proposal(String tenantId, String proposalId) {

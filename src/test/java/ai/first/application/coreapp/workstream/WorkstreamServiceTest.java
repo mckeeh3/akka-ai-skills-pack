@@ -27,6 +27,7 @@ import ai.first.application.foundation.agent.WorkstreamAgentRuntimeInvoker;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.identity.Customer;
 import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.identity.Membership;
 import ai.first.domain.foundation.identity.MembershipStatus;
@@ -482,6 +483,35 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void tenantCustomerBranchUsesDurableCustomerLifecycleState() {
+    var create = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-customer-create", "user-admin.create-customer", "manage-customers", "tenant.customer.create", Map.of("customerName", "Acme Customer", "reason", "test-create"), "idem-customer-create", "membership-admin", "surface-user-admin-customer-create", "corr-customer-create"));
+    assertEquals("accepted", create.status());
+    assertEquals("surface-user-admin-customer-detail", create.resultSurface().surfaceId());
+    assertTrue(create.resultSurface().toString().contains("Acme Customer"));
+    var customerId = ((Map<?, ?>) create.resultSurface().data().get("customerDetail")).get("customerId").toString();
+
+    var directory = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-customers", "user-admin.show-customers", "manage-customers", "tenant.customer.list", null, null, "membership-admin", "surface-user-admin-tenant-dashboard", "corr-customer-list"));
+    assertEquals("surface-user-admin-customer-directory", directory.resultSurface().surfaceId());
+    assertTrue(directory.resultSurface().toString().contains(customerId));
+    assertTrue(directory.resultSurface().toString().contains("sibling-customers-redacted"));
+
+    var detail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-customer-read", "user-admin.read-customer", "manage-customers", "tenant.customer.read", Map.of("customerId", customerId), null, "membership-admin", directory.resultSurface().surfaceId(), "corr-customer-read"));
+    assertEquals("surface-user-admin-customer-detail", detail.resultSurface().surfaceId());
+    assertTrue(detail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-customers"));
+
+    var suspend = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-customer-suspend", "user-admin.suspend-customer", "manage-customers", "tenant.customer.suspend", Map.of("customerId", customerId, "reason", "test-suspend"), "idem-customer-suspend", "membership-admin", detail.resultSurface().surfaceId(), "corr-customer-suspend"));
+    assertEquals("accepted", suspend.status());
+    assertTrue(suspend.resultSurface().toString().contains("suspended"));
+
+    assertThrows(AuthorizationException.class, () -> service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-customers", "user-admin.show-customers", "manage-customers", "tenant.customer.list", null, null, "membership-owner", "surface-user-admin-saas-owner-dashboard", "corr-owner-customer-denied")));
+  }
+
+  @Test
   void userAdminUserBranchDescendantsExposeBackendReturnAction() {
     var detail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-display-user-detail", "action-display-user-detail", "USERADMIN_LIST_MEMBERS", "USERADMIN_LIST_MEMBERS", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", "surface-user-admin-users", "corr-member-branch-detail"));
@@ -878,7 +908,29 @@ class WorkstreamServiceTest {
   void agentAdminReadSurfacesDenyMissingCapabilityBeforeArtifactLeakage() {
     var denied = assertThrows(AuthorizationException.class, () -> service.surface(memberIdentity(), "membership-member", "surface-agent-prompt-governance", "corr-member-agent-prompt"));
 
-    assertTrue(denied.reasonCode().contains("missing-capability:agent_admin.get_prompt_version"));
+    assertEquals("agent-admin-requires-tenant-admin", denied.reasonCode());
+  }
+
+  @Test
+  void customerAdminCannotAccessAgentAdminWorkstreamOrLegacyBehaviorManagement() {
+    identityRepository.saveAccount(new Account("customer-admin@example.test", null, "customer-admin@example.test", "customer-admin@example.test", AccountStatus.ACTIVE, "LINKED"));
+    identityRepository.putProfile(new UserProfile("customer-admin@example.test", "customer-admin@example.test", "Customer Admin", "Customer", "Admin", null));
+    identityRepository.putSettings(new UserSettings("customer-admin@example.test", UserSettings.ThemeId.AURORA_LIGHT));
+    identityRepository.saveCustomer(new Customer("tenant-1", "customer-1", "Customer One", true));
+    identityRepository.putMembership(new Membership("membership-customer-admin", "customer-admin@example.test", ScopeType.CUSTOMER, "tenant-1", "customer-1", List.of(FoundationRole.CUSTOMER_ADMIN), MembershipStatus.ACTIVE, false, null));
+    var customerIdentity = new WorkosIdentity("workos-customer-admin", "customer-admin@example.test", "Customer Admin");
+
+    var bootstrap = service.bootstrap(customerIdentity, "membership-customer-admin", "corr-customer-agent-admin-bootstrap");
+    assertTrue(bootstrap.me().visibleCapabilityIds().stream().noneMatch(capability -> capability.startsWith("agent_admin.")));
+    assertTrue(bootstrap.me().visibleCapabilityIds().stream().noneMatch(capability -> capability.equals("agent.behavior.manage")));
+    assertTrue(bootstrap.functionalAgents().stream().noneMatch(agent -> agent.functionalAgentId().equals("agent-agent-admin") && agent.availability().equals("visible")));
+
+    var deniedSurface = assertThrows(AuthorizationException.class, () -> service.surface(customerIdentity, "membership-customer-admin", "surface-agent-admin-catalog", "corr-customer-agent-admin-catalog"));
+    assertEquals("agent-admin-requires-tenant-admin", deniedSurface.reasonCode());
+
+    var deniedAction = assertThrows(AuthorizationException.class, () -> service.runAction(customerIdentity, "membership-customer-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-propose-prompt-diff", "action-propose-prompt-diff", "agent_admin.draft_behavior_change", "agent_admin.draft_behavior_change", null, "idem-customer-agent-admin", "membership-customer-admin", "surface-agent-prompt-governance", "corr-customer-agent-admin-action")));
+    assertEquals("CAPABILITY_FORBIDDEN", deniedAction.reasonCode());
   }
 
   @Test
