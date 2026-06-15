@@ -87,7 +87,7 @@ test('Organization Admin renderer covers safe states, forms, and inaccessible ro
   for (const state of ['loading', 'empty', 'success', 'validation-error', 'forbidden', 'not_found_or_redacted', 'no-op', 'conflict', 'stale', 'error']) {
     assert.match(surfaces, new RegExp(state));
   }
-  for (const label of ['Search Organizations', 'Create Organization', 'Rename selected Organization', 'Suspend', 'Reactivate', 'Back to organizations']) {
+  for (const label of ['Search Organizations', 'Create Organization', 'Rename selected Organization', 'Invite Organization Admin', 'Suspend', 'Reactivate', 'Back to organizations']) {
     assert.match(organizationSurface, new RegExp(label));
   }
   assert.match(organizationSurface, /idempotencyKey/);
@@ -95,7 +95,9 @@ test('Organization Admin renderer covers safe states, forms, and inaccessible ro
   assert.match(organizationSurface, /OrganizationBranchReturn/);
   assert.match(organizationSurface, /organizationBranchReturnInput/);
   assert.match(organizationSurface, /const renameAction = envelope\.actions\.find/);
+  assert.match(organizationSurface, /const inviteAdminAction = envelope\.actions\.find/);
   assert.match(organizationSurface, /runAction\(envelope, onAction, renameAction/);
+  assert.match(organizationSurface, /runAction\(envelope, onAction, inviteAdminAction/);
   assert.match(organizationSurface, /Rename is unavailable because the backend did not include an authorized Organization rename task action/);
   assert.match(organizationSurface, /action-user-admin-show-organizations/);
   assert.doesNotMatch(main, /isOrganizationDirectoryAction/);

@@ -1110,7 +1110,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope organizationDetailSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return organizationSurface(actor, correlationId, "surface-user-admin-organization-detail", "show-inspection", "Organization Detail", "user_admin.organization_detail.v1", withOrganizationBranchReturn(List.of(openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), openAuditAction())));
+    return organizationSurface(actor, correlationId, "surface-user-admin-organization-detail", "show-inspection", "Organization Detail", "user_admin.organization_detail.v1", withOrganizationBranchReturn(List.of(openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), openOrganizationAdminInvitationCreateAction(), openAuditAction())));
   }
 
   private SurfaceEnvelope organizationCreateSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {

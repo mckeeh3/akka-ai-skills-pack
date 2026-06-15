@@ -33,7 +33,8 @@ const userAdminCapabilities = {
   createOrganization: 'saas_owner.organization.create',
   renameOrganization: 'saas_owner.organization.rename',
   suspendOrganization: 'saas_owner.organization.suspend',
-  reactivateOrganization: 'saas_owner.organization.reactivate'
+  reactivateOrganization: 'saas_owner.organization.reactivate',
+  inviteOrganizationAdmin: 'saas_owner.organization_admin.invite'
 } as const;
 
 export const surfaceActionsByIntent: Record<SurfaceAction['intent'], SurfaceAction> = {
@@ -229,6 +230,18 @@ export const userAdminSurfaceActions = {
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-user-admin-organization-reactivate-confirmation', openPlacement: 'inline' },
     audit: { eventType: 'OrganizationReactivateConfirmationDisplayed', traceRequired: true }
+  },
+  openOrganizationAdminInvitationCreate: {
+    actionId: 'action-open-organization-admin-invitation-create',
+    label: 'Invite Organization Admin',
+    intent: 'surface-request',
+    capabilityId: userAdminCapabilities.inviteOrganizationAdmin,
+    governedToolId: 'manage-organization-admins',
+    browserToolId: 'user-admin.open-organization-admin-invite',
+    shellRequest: { requestType: 'show_surface', targetFunctionalAgentId: 'agent-user-admin', targetSurfaceId: 'surface-user-admin-organization-admin-invitation-create', displayText: 'Invite Organization Admin' },
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-user-admin-organization-admin-invitation-create', openPlacement: 'inline' },
+    audit: { eventType: 'OrganizationAdminInvitationCreateDisplayed', traceRequired: true }
   },
   listOrganizations: {
     actionId: 'action-organization-list',
@@ -1984,6 +1997,7 @@ export const userAdminOrganizationDetailSurface = envelope(
     userAdminSurfaceActions.openOrganizationRename,
     userAdminSurfaceActions.openOrganizationSuspend,
     userAdminSurfaceActions.openOrganizationReactivate,
+    userAdminSurfaceActions.openOrganizationAdminInvitationCreate,
     userAdminSurfaceActions.openAdminAudit
   ]
 );

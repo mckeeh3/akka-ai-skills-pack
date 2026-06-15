@@ -425,6 +425,10 @@ class WorkstreamServiceTest {
     assertTrue(organizationDetail.resultSurface().toString().contains("Back to organizations"));
     assertBrowserPayloadSafe(organizationDetail.resultSurface());
 
+    var directOrganizationDetail = service.surface(ownerIdentity(), "membership-owner", "surface-user-admin-organization-detail", "corr-tree-org-detail-direct");
+    assertTrue(directOrganizationDetail.toString().contains("action-open-organization-admin-invitation-create"));
+    assertBrowserPayloadSafe(directOrganizationDetail);
+
     var returnedOrganizations = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
         "action-user-admin-show-organizations", "user-admin.show-organizations", "manage-organizations", "saas_owner.organization.list", null, null, "membership-owner", organizationDetail.resultSurface().surfaceId(), "corr-tree-orgs-return"));
     assertEquals("surface-user-admin-organization-directory", returnedOrganizations.resultSurface().surfaceId());
