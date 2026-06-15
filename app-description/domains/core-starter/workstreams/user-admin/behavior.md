@@ -2,14 +2,17 @@
 
 ## Current-state behavior
 
-User Admin administers users, memberships, invitations, roles/capabilities, support access, access reviews, identity review/relink exceptions, and admin audit summaries within authorized tenant/customer scope. The workstream starts from `surface-user-admin-dashboard`, accepts contextual composer requests, returns structured surfaces, and maps every consequential action to capability `user-and-access-administration` and governed backend tools.
+User Admin administers SaaS Owner Admin users, customer-facing Organizations, Organization Admin users for selected Organizations, tenant/customer users, memberships, invitations, roles/capabilities, support access, access reviews, identity review/relink exceptions, and admin audit summaries within authorized app-owner/tenant/customer scope. The workstream starts from `surface-user-admin-dashboard`, accepts contextual composer requests, returns structured surfaces, and maps every consequential action to capability `user-and-access-administration` and governed backend tools.
 
 ## Deterministic responsibilities
 
 Keep these responsibilities out of model-only behavior:
 
-- Authorization: selected `AuthContext`, account status, disabled-user denial, membership, role/capability grants, tenant/customer scope, support-access visibility, and last-admin policy.
-- Invitation lifecycle: email normalization, duplicate/open-invite handling, role validation, expiry, resend/revoke eligibility, idempotency, outbox/Resend enqueue, delivery status shaping, and audit.
+- Authorization: selected `AuthContext`, account status, disabled-user denial, membership, role/capability grants, tenant/customer scope, SaaS Owner scope, support-access visibility, and last-admin policy.
+- SaaS Owner Admin lifecycle: invite/list/read other SaaS Owner Admin users, validate `SAAS_OWNER_ADMIN` role assignment, enforce last-owner-admin and self-action protections, idempotency, delivery/outbox status, and audit.
+- Organization lifecycle: list/read/create/rename/suspend/reactivate customer-facing Organizations backed by Tenant boundaries without granting app-data/support/billing authority, with idempotency, safe no-op/conflict handling, and audit.
+- Organization Admin lifecycle: bootstrap/invite/list/read/manage `TENANT_ADMIN` users for a selected Organization after that Organization exists, validate target Organization/Tenant, preserve actor SaaS Owner scope, enforce last-organization-admin protections, prevent SaaS Owner role assignment through Organization flows, and audit.
+- Invitation lifecycle: email normalization, duplicate/open-invite handling, role validation, target scope validation, expiry, resend/revoke eligibility, idempotency, outbox/Resend enqueue, delivery status shaping, and audit.
 - Membership lifecycle: directory projection, disable/reactivate validation, self-disable denial, last-admin protection, no-op/idempotent results, and audit.
 - Role lifecycle: SMB role/capability matrix, preview delta, policy/approval requirement calculation, mutation idempotency, and last-admin preservation.
 - Support access: grant/revoke/extend eligibility, expiry, tenant/customer visibility, purpose capture, approval, and audit.
@@ -33,4 +36,4 @@ Internal/autonomous access-review work may collect scoped evidence, summarize ri
 
 ## Edge cases
 
-Repeated commands are idempotent where side-effecting. Stale data returns stale/reconnect or conflict state. Provider, model, outbox, or security misconfiguration returns actionable fail-closed feedback and traces without fixture/model-less success. Unsupported business-domain requests are routed to extension guidance rather than silently added. Direct API/deep-link attempts are authorized server-side and return safe `not_found_or_redacted`/forbidden system messages where appropriate.
+Repeated commands are idempotent where side-effecting. Stale data returns stale/reconnect or conflict state. Creating an Organization does not implicitly create admins; Organization Admin bootstrap is a separate invite/management action that requires the created Organization/Tenant target. SaaS Owner Admin invite/manage and Organization Admin invite/manage flows must reject missing target scope, role escalation, last-admin loss, and hidden/cross-scope targets without leaking existence. Provider, model, outbox, or security misconfiguration returns actionable fail-closed feedback and traces without fixture/model-less success. Unsupported business-domain requests are routed to extension guidance rather than silently added. Direct API/deep-link attempts are authorized server-side and return safe `not_found_or_redacted`/forbidden system messages where appropriate.

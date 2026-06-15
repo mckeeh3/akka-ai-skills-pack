@@ -10,6 +10,9 @@ Reusable governed-tool ids used by core starter capability and workstream bindin
 
 ## User Admin
 
+- `manage-organizations`
+- `manage-saas-owner-admins`
+- `manage-organization-admins`
 - `search-user-directory`
 - `create-or-resend-invitation`
 - `change-membership-role-or-status`

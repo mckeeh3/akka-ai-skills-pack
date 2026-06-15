@@ -28,7 +28,9 @@ Surface-description sufficiency review: this conformance policy is sufficient fo
 
 | Surface id | Type | Contract | Primary purpose | Status |
 |---|---|---|---|---|
-| `surface-user-admin-dashboard` | `dashboard` | `user_admin.dashboard.v1` | Attention-first User Admin command center for directory, invitation, role, support, review, provider, and audit health. | Rebuilt from archive |
+| `surface-user-admin-dashboard` | `dashboard` | `user_admin.dashboard.v1` | Attention-first User Admin command center for SaaS Owner Admin, Organization, Organization Admin, directory, invitation, role, support, review, provider, and audit health. | Rebuilt from archive |
+| `surface-user-admin-saas-owner-admins` | `list-search` | `user_admin.saas_owner_admins.v1` | SaaS Owner scoped directory for app-owner/admin users and invitations; discovery only, with rows opening SaaS Owner Admin detail or invitation detail. | New required surface |
+| `surface-user-admin-saas-owner-admin-invitation-create` | `create-form` | `user_admin.saas_owner_admin_invitation_create.v1` | Single-purpose invitation form for another SaaS Owner Admin with role validation, idempotency, outbox boundary, and last-owner-admin-safe audit. | New required surface |
 | `surface-user-admin-users` | `list-search` | `user_admin.users.v1` | Scoped searchable directory for users/memberships; discovery only, with every row/card opening a lifecycle-aware user detail surface. | Revised user graph |
 | `surface-user-admin-user-detail` | `show-inspection` | `user_admin.user_detail.v1` | Scoped account, membership, invitation, support-access, access-review, identity, and audit inspection; exposes task entry points but does not mutate access inline. | Revised user graph |
 | `surface-user-admin-invitation-create` | `create-form` | `user_admin.invitation_create.v1` | Single-purpose invitation creation form with target scope/role validation, idempotency, outbox boundary, and invitation detail result. | New required surface |
@@ -42,7 +44,10 @@ Surface-description sufficiency review: this conformance policy is sufficient fo
 | `surface-user-admin-access-review-task` | `workflow-status` / `outcome-panel` | `user_admin.access_review_task.v1` | Durable access-review task progress, result, blockers, and human accept/reject review. | Revised user graph |
 | `surface-user-admin-identity-exception-review` | `decision-card` / `workflow-status` | `user_admin.identity_exception_review.v1` | Identity-link/relink exception review and approved recovery routing without exposing provider internals. | New required surface |
 | `surface-user-admin-organization-directory` | `list-search` | `user_admin.organization_directory.v1` | SaaS Owner Organization directory for backend-authorized Organization discovery and row/card selection. | Revised surface graph |
-| `surface-user-admin-organization-detail` | `show-inspection` | `user_admin.organization_detail.v1` | Lifecycle-aware Organization inspection surface that exposes safe task entry points. | Revised surface graph |
+| `surface-user-admin-organization-detail` | `show-inspection` | `user_admin.organization_detail.v1` | Lifecycle-aware Organization inspection surface that exposes safe Organization lifecycle and Organization Admin management task entry points. | Revised surface graph |
+| `surface-user-admin-organization-admins` | `list-search` | `user_admin.organization_admins.v1` | SaaS Owner scoped directory of Organization Admin users/invitations for one selected Organization/Tenant. | New required surface |
+| `surface-user-admin-organization-admin-invitation-create` | `create-form` | `user_admin.organization_admin_invitation_create.v1` | Single-purpose bootstrap/invite form for a `TENANT_ADMIN` in the selected Organization with idempotency, target-scope validation, outbox boundary, and audit. | New required surface |
+| `surface-user-admin-organization-admin-detail` | `show-inspection` | `user_admin.organization_admin_detail.v1` | Shows one Organization Admin membership/invitation and routes role/status/resend/revoke tasks without tenant app-data exposure. | New required surface |
 | `surface-user-admin-organization-create` | `create-form` | `user_admin.organization_create.v1` | Single-purpose Organization creation form with validation, idempotency, audit, and detail result. | Revised surface graph |
 | `surface-user-admin-organization-rename` | `edit-form` | `user_admin.organization_rename.v1` | Single-purpose Organization display-name edit surface. | Revised surface graph |
 | `surface-user-admin-organization-suspend-confirmation` | `destructive-lifecycle-confirmation` | `user_admin.organization_suspend_confirmation.v1` | Consequential Organization suspension confirmation surface. | Revised surface graph |
@@ -55,6 +60,8 @@ The User Admin human surface graph is a tree for navigation and auditability:
 
 ```text
 surface-user-admin-dashboard (trunk)
+├── surface-user-admin-saas-owner-admins (SaaS Owner Admin branch root; SaaS Owner/App Admin only)
+│   └── surface-user-admin-saas-owner-admin-invitation-create
 ├── surface-user-admin-users (User Directory branch root)
 │   ├── surface-user-admin-user-detail
 │   ├── surface-user-admin-invitation-create
@@ -69,6 +76,9 @@ surface-user-admin-dashboard (trunk)
 │   └── surface-user-admin-identity-exception-review
 └── surface-user-admin-organization-directory (Organization Directory branch root; SaaS Owner/App Admin only)
     ├── surface-user-admin-organization-detail
+    ├── surface-user-admin-organization-admins
+    ├── surface-user-admin-organization-admin-invitation-create
+    ├── surface-user-admin-organization-admin-detail
     ├── surface-user-admin-organization-create
     ├── surface-user-admin-organization-rename
     ├── surface-user-admin-organization-suspend-confirmation
@@ -78,7 +88,7 @@ surface-user-admin-dashboard (trunk)
 Graph rules:
 
 - `surface-user-admin-dashboard` is the trunk and must declare backend-authored branch actions for **Show users** / open User Directory and, when authorized, **Show organizations** / open Organization Directory.
-- `surface-user-admin-users` and `surface-user-admin-organization-directory` are the only first-level branch roots. They own discovery, filtering, pagination, row/card activation, and create entry points for their branches.
+- `surface-user-admin-saas-owner-admins`, `surface-user-admin-users`, and `surface-user-admin-organization-directory` are the only first-level branch roots. They own discovery, filtering, pagination, row/card activation, and create entry points for their branches. `surface-user-admin-saas-owner-admins` is omitted unless the selected context has SaaS Owner Admin user-management authority.
 - Every descendant surface includes branch navigation metadata in its browser-safe payload: `branchRootSurfaceId`, `branchReturnActionId`, `branchReturnLabel`, safe filter/context preservation hints, trace refs, and correlation id.
 - User branch descendants expose `action-user-admin-show-users` with label **Show users** or **Back to users**, `browserToolId: user-admin.show-users`, governed tool `search-user-directory`, capability `user_admin.list_members`, result surface `surface-user-admin-users`, and backend-authored safe filters only.
 - Organization branch descendants expose `action-user-admin-show-organizations` with label **Show organizations** or **Back to organizations**, `browserToolId: user-admin.show-organizations`, governed tool `manage-organizations`, capability `saas_owner.organization.list`, result surface `surface-user-admin-organization-directory`, and backend-authored safe filters only.
@@ -142,9 +152,30 @@ Dashboard payload/content must not include hidden workstream/source names, hidde
 | Revoke support access | `user_admin.support_access.grant_revoke_extend` / `grant-or-revoke-support-access` | Open `surface-user-admin-support-access-revoke-confirmation`; submission returns refreshed user detail, no-op, or denial. |
 | Start/open access review | `user_admin.access_review.start`, `user_admin.access_review.read` / `run-access-review` | Render access-review task progress/result; accept/reject actions record human review and route further access changes through deterministic User Admin task surfaces. |
 | Review identity exception | `user_admin.identity_relink.review` | Render `surface-user-admin-identity-exception-review`; approved recovery routes to workflow/status or user detail without exposing provider internals. |
+| Show SaaS Owner Admins / Open app-owner admins | `saas_owner.admin.list` / `manage-saas-owner-admins` | Render `surface-user-admin-saas-owner-admins` for SaaS Owner/App Admin selected contexts with backend-authorized app-owner admin list/search; omitted for Tenant Admin/Customer Admin or unsupported scopes. |
+| Invite SaaS Owner Admin | `saas_owner.admin.invite` / `manage-saas-owner-admins` | Open `surface-user-admin-saas-owner-admin-invitation-create`; submission returns admin invitation/detail, validation, provider/outbox blocked state, no-op, or safe system message. |
 | Show organizations / Open Organization Directory | `saas_owner.organization.list` / `manage-organizations` | Render `surface-user-admin-organization-directory` for SaaS Owner/App Admin selected contexts with backend-authorized Organization list/search and boundary notice; omitted for Tenant Admin/Customer Admin or unsupported scopes. |
 | Open admin audit evidence | `admin.audit.read` / Audit Trace capability | Render authorized Audit/Trace surface or safe redacted system message. |
 | Ask User Admin agent | `user_admin.ask_agent` | Invoke governed agent runtime or provider/model blocked system message. |
+
+## SaaS Owner Admin user-management surface graph
+
+### Intent
+
+SaaS Owner Admin user management is an app-owner surface graph inside User Admin for inviting and maintaining the people who can administer the SaaS app itself. It is separate from Organization Admin management: app-owner admins operate in SaaS Owner scope, while Organization Admins operate in a selected Organization/Tenant scope.
+
+### Graph and progression
+
+| Surface role | Surface id | Contract | Purpose and graph behavior |
+|---|---|---|---|
+| App-owner admin list/search | `surface-user-admin-saas-owner-admins` | `user_admin.saas_owner_admins.v1` | Lists/searches visible SaaS Owner Admin users and app-owner invitations. Every row/card opens a user/invitation detail through backend-authored target routing. |
+| App-owner admin invite | `surface-user-admin-saas-owner-admin-invitation-create` | `user_admin.saas_owner_admin_invitation_create.v1` | Owns invitation of another `SAAS_OWNER_ADMIN`, including role validation, idempotency, outbox/Resend boundary, last-owner-admin policy context, and success routing to detail. |
+
+Payloads must include selected SaaS Owner `AuthContext`, app-owner scope label, browser-safe account/invitation rows, role options limited to `SAAS_OWNER_ADMIN` and any explicitly safe app-owner auditor/support variants, last-owner-admin risk flags, safe actions, trace refs, correlation id, and redaction metadata. Payloads must not expose raw WorkOS/JWT/provider ids, invitation tokens, hidden app-owner counts, provider secrets, or tenant/customer application data.
+
+Actions include list/search (`saas_owner.admin.list` / `manage-saas-owner-admins`), open invite (`saas_owner.admin.invite`), submit invite (`saas_owner.admin.invite`), open app-owner admin detail (`saas_owner.admin.list`), and manage app-owner admin roles/status (`saas_owner.admin.manage` through role preview or lifecycle confirmation). Denials include missing SaaS Owner context, missing capability, self-removal, last-owner-admin loss, role escalation outside app-owner-safe roles, duplicate/open invite, outbox/provider fail-closed, and hidden/not-found targets.
+
+Surface-description sufficiency review: sufficient for intent-level implementation planning, but downstream realization must add or map concrete detail/role/lifecycle surfaces for app-owner admin rows before claiming runtime completion.
 
 ## Organization Admin surface graph
 
@@ -162,6 +193,9 @@ Organization Admin is a SaaS Owner surface graph inside the User Admin workstrea
 | Edit | `surface-user-admin-organization-rename` | `user_admin.organization_rename.v1` | Owns display-name editing for one Organization, including validation, stale/conflict/no-op handling, idempotency, audit/work trace, and success routing back to detail. |
 | Destructive lifecycle confirmation | `surface-user-admin-organization-suspend-confirmation` | `user_admin.organization_suspend_confirmation.v1` | Requires consequence copy, confirmation, reason, idempotency, backend authorization, audit/work trace, and result routing to detail or `system_message`. |
 | Lifecycle confirmation | `surface-user-admin-organization-reactivate-confirmation` | `user_admin.organization_reactivate_confirmation.v1` | Requires confirmation/reason where policy requires it, idempotency, backend authorization, audit/work trace, and result routing to detail or `system_message`. |
+| Organization Admin list/search | `surface-user-admin-organization-admins` | `user_admin.organization_admins.v1` | Lists Organization Admin users and invitations for one selected Organization/Tenant. Every row/card is clickable and opens Organization Admin detail or invitation detail through backend-authored target routing. |
+| Organization Admin invite/bootstrap | `surface-user-admin-organization-admin-invitation-create` | `user_admin.organization_admin_invitation_create.v1` | Owns first/admin invitation for a selected Organization with `TENANT_ADMIN` role validation, idempotency, outbox/Resend boundary, and success routing to detail. |
+| Organization Admin show/inspection | `surface-user-admin-organization-admin-detail` | `user_admin.organization_admin_detail.v1` | Shows one Organization Admin membership or invitation and exposes task entry points for resend/revoke, role replacement, suspend/reactivate/remove, and audit evidence. It never exposes tenant application data. |
 
 All graph nodes are owned by `user-admin-agent`. Reusable placements are limited to authorized User Admin/SaaS Owner shell contexts unless another workstream explicitly declares a reusable-by edge.
 
@@ -174,10 +208,13 @@ All graph nodes are owned by `user-admin-agent`. Reusable placements are limited
 ### Frontend-safe payloads
 
 - Directory: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType`, `authorityBasis`, `boundaryNotice`, `traceRefs`, `correlationId`, `redaction`, `organizations[]`, `filters`, `systemStates`, `emptyMessage`, `forbiddenMessage`, `lastResult`. Each `organizations[]` row contains `{ organizationId, organizationName, status, updatedAt?, safeLifecycleSummary?, visibleTenantAdminCount?, actionAvailability[], traceRefs[] }`; counts are omitted unless backend marks them safe and non-enumerating.
-- Detail: directory shared fields plus `organizationDetail`: `{ organizationId, organizationName, status, safeBoundaryNotice, visibleActions[], recentAuditEvents[], traceRefs[], correlationId }`. Detail task entries route to create/rename/suspend/reactivate surfaces and never perform mutations inline.
+- Detail: directory shared fields plus `organizationDetail`: `{ organizationId, organizationName, status, safeBoundaryNotice, visibleActions[], adminSummary?, recentAuditEvents[], traceRefs[], correlationId }`. Detail task entries route to create/rename/suspend/reactivate surfaces and Organization Admin list/invite surfaces and never perform mutations inline.
 - Create: `{ organizationNameDraft?, reasonDraft?, validationMessages?, idempotencyKeyHint, confirmationCopy, boundaryNotice, traceRefs, correlationId, redaction }`. Success opens detail for the created Organization.
 - Rename: `{ organizationId, organizationName, proposedOrganizationName?, reasonDraft?, validationMessages?, staleVersion?, idempotencyKeyHint, boundaryNotice, traceRefs, correlationId, redaction }`. Success refreshes detail.
 - Suspend/reactivate confirmation: `{ organizationId, organizationName, currentStatus, consequenceCopy, confirmationRequired, reasonRequired, reasonDraft?, validationMessages?, idempotencyKeyHint, boundaryNotice, traceRefs, correlationId, redaction }`. Success refreshes detail; no-op/denied/conflict uses typed `system_message` or refreshed detail with `lastResult`.
+- Organization Admin list: `{ organizationId, organizationName, admins[], invitations[], filters, adminSummary, safeBoundaryNotice, branchRootSurfaceId, branchReturnActionId, traceRefs, correlationId, redaction }`. Each admin/invitation row exposes only browser-safe account/membership/invitation status, roles limited to Organization Admin-safe roles, action availability, and backend-authored target surface ids.
+- Organization Admin invite/bootstrap: `{ organizationId, organizationName, targetRoleOptions: ['TENANT_ADMIN'], emailDraft?, displayNameDraft?, reasonDraft?, validationMessages?, idempotencyKeyHint, outboxReadiness, boundaryNotice, traceRefs, correlationId, redaction }`. Success opens Organization Admin detail/invitation detail; provider/outbox failures return system-message without fake success.
+- Organization Admin detail: `{ organizationId, organizationName, adminAccountId?, membershipId?, invitationId?, displayName?, email?, status, roles[], invitationStatus?, deliveryStatus?, visibleActions[], lastAdminRisk?, recentAuditEvents[], traceRefs, correlationId, redaction }`. Consequential changes route to existing invitation, membership lifecycle, and role-preview surfaces specialized to the selected Organization Admin target.
 
 ### Branch-return actions
 
@@ -201,11 +238,15 @@ Every Organization branch descendant (`surface-user-admin-organization-detail`, 
 | Suspend Organization | `saas_owner.organization.suspend` / `manage-organizations` | Require confirmation and reason, suspend lifecycle boundary without exposing app data, audit, then refresh detail or no-op/forbidden/result warning. |
 | Open reactivate confirmation | `saas_owner.organization.reactivate` / `manage-organizations` | Open `surface-user-admin-organization-reactivate-confirmation` when lifecycle state allows reactivation. |
 | Reactivate Organization | `saas_owner.organization.reactivate` / `manage-organizations` | Require confirmation, handle no-op/replay safely, audit, then refresh detail or stale/conflict/forbidden result. |
+| Open Organization Admins | `saas_owner.organization_admin.list` / `manage-organization-admins` | Open `surface-user-admin-organization-admins` for the selected Organization, or safe hidden/not-found/forbidden system-message. |
+| Invite/bootstrap Organization Admin | `saas_owner.organization_admin.invite` / `manage-organization-admins` | Open `surface-user-admin-organization-admin-invitation-create`; submission validates the Organization exists, target role is `TENANT_ADMIN`, invitation delivery is ready, and returns admin detail/invitation detail or system-message. |
+| Open Organization Admin detail | `saas_owner.organization_admin.list` / `manage-organization-admins` | Open `surface-user-admin-organization-admin-detail` for a visible admin membership or invitation. |
+| Manage Organization Admin role/status/invite lifecycle | `saas_owner.organization_admin.manage` / `manage-organization-admins` | Route to role preview, membership lifecycle confirmation, invitation resend/revoke confirmation, or refreshed Organization Admin detail. Enforce last Organization Admin protection and prevent `SAAS_OWNER_ADMIN` assignment through Organization flows. |
 | Open Organization audit evidence | `admin.audit.read` | Render authorized Audit/Trace evidence or safe redacted denial. |
 
 ### States and tests
 
-Each graph node defines loading, empty, ready, submitting, success, validation-error, forbidden, hidden-not-found, no-op, conflict/stale, partial-data, and failure states as applicable. Acceptance tests must cover dashboard-to-directory traversal, directory-to-detail traversal, create/rename/suspend/reactivate dedicated form or confirmation surfaces, Organization-vs-Tenant language, idempotent replay/no-op transitions, safe Tenant Admin and Customer Admin denials, missing capability denial, audit/work trace emission, frontend secret boundary, support-access/billing-boundary non-authority, keyboard operation, focus movement, and typed `system_message` results.
+Each graph node defines loading, empty, ready, submitting, success, validation-error, forbidden, hidden-not-found, no-op, conflict/stale, partial-data, and failure states as applicable. Acceptance tests must cover dashboard-to-directory traversal, directory-to-detail traversal, create/rename/suspend/reactivate dedicated form or confirmation surfaces, Organization Admin list/invite/detail/manage traversal after Organization creation, first Organization Admin bootstrap, last Organization Admin protection, Organization-vs-Tenant language, idempotent replay/no-op transitions, safe Tenant Admin and Customer Admin denials, missing capability denial, audit/work trace emission, frontend secret boundary, support-access/billing-boundary non-authority, keyboard operation, focus movement, and typed `system_message` results.
 
 Surface-description sufficiency review: sufficient for durable collection-object readiness. The split graph is sufficiently unambiguous for developers/generators to implement and review without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics.
 

@@ -6,7 +6,7 @@ Global traces: `../../../../../global/traces/foundation-trace-patterns.md`.
 
 ## Required evidence
 
-User Admin emits durable trace/audit evidence for protected reads, direct API/deep-link denials, validation failures, no-op outcomes, invitation lifecycle events, membership/role/status changes, support-access lifecycle, identity relink review, access-review worker lifecycle/result decisions, provider/outbox/model blocked states, prompt assembly, skill/reference loads, tool calls, data access, decision cards, and trace-open actions.
+User Admin emits durable trace/audit evidence for protected reads, direct API/deep-link denials, validation failures, no-op outcomes, SaaS Owner Admin invite/manage events, Organization lifecycle events, Organization Admin bootstrap/manage events, invitation lifecycle events, membership/role/status changes, support-access lifecycle, identity relink review, access-review worker lifecycle/result decisions, provider/outbox/model blocked states, prompt assembly, skill/reference loads, tool calls, data access, decision cards, and trace-open actions.
 
 Required trace types include `admin-audit-event`, `workstream-log-trace`, `agent-work-trace`, `prompt-assembly-trace`, `skill-load-trace`, `reference-load-trace`, `data-access-trace`, `policy-decision-trace`, and access-review worker task traces.
 
@@ -33,4 +33,4 @@ Trace records include:
 
 ## Redaction and investigation
 
-Trace links in User Admin surfaces are browser-safe references, not proof of read authority. Opening trace detail reauthorizes through Audit/Trace capability. Hidden users, hidden tenants/customers, raw invitation tokens, WorkOS/provider internals, Resend/provider secrets, model secrets, full email bodies, and unredacted audit evidence must not appear in User Admin browser payloads.
+Trace links in User Admin surfaces are browser-safe references, not proof of read authority. Opening trace detail reauthorizes through Audit/Trace capability. Hidden SaaS Owner Admin users, hidden Organization Admin users, hidden users, hidden tenants/customers, raw invitation tokens, WorkOS/provider internals, Resend/provider secrets, model secrets, full email bodies, tenant application data, and unredacted audit evidence must not appear in User Admin browser payloads.
