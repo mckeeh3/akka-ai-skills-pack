@@ -451,7 +451,7 @@ function UserAdminDetailOverview({ envelope }: { envelope: SurfaceEnvelope<Detai
 }
 
 function isAgentAdminSurface(envelope: SurfaceEnvelope<DetailEditSurfaceData>) {
-  return envelope.ownerFunctionalAgentId === 'agent-agent-admin' || envelope.surfaceId.startsWith('surface-agent-admin-') || envelope.data.surfaceContract?.startsWith('agent_admin.');
+  return envelope.ownerFunctionalAgentId === 'agent-admin-agent' || envelope.surfaceId.startsWith('surface-agent-admin-') || envelope.data.surfaceContract?.startsWith('agent_admin.');
 }
 
 function fieldValue(fields: NonNullable<DetailEditSurfaceData['fields']>, fieldId: string): string | undefined {

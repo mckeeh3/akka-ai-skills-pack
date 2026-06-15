@@ -123,7 +123,7 @@ test('rail attention state records background responses and clears on selection'
 
   const first = recordUnseenRailResponse({}, {
     functionalAgentId: 'agent-user-admin',
-    selectedFunctionalAgentId: 'agent-agent-admin',
+    selectedFunctionalAgentId: 'agent-admin-agent',
     lastItemId: 'response-1',
     severity: 'info',
     kind: 'background-response',
@@ -135,7 +135,7 @@ test('rail attention state records background responses and clears on selection'
 
   const second = recordUnseenRailResponse(first, {
     functionalAgentId: 'agent-user-admin',
-    selectedFunctionalAgentId: 'agent-agent-admin',
+    selectedFunctionalAgentId: 'agent-admin-agent',
     lastItemId: 'response-2',
     severity: 'warning',
     kind: 'background-activity',

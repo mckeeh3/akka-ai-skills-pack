@@ -39,6 +39,7 @@ const lifecycleContracts = new Set([
 export function AgentAdminTaskSurface({ envelope, onAction }: Props) {
   const data = envelope.data;
   const action = primaryLifecycleAction(envelope);
+  const guardedAction = action && data.disabledReason ? withDisabledReason(action, String(data.disabledReason)) : action;
   const actionInput = {
     ...(data.actionContext ?? {}),
     agentDefinitionId: String(data.recordId ?? ''),
@@ -66,8 +67,8 @@ export function AgentAdminTaskSurface({ envelope, onAction }: Props) {
         {data.disabledReason && <p className="surface-state-inline forbidden" role="status">{String(data.disabledReason)}</p>}
         {data.evidenceRefs && data.evidenceRefs.length > 0 && <section className="evidence-ref-list" aria-label="Lifecycle evidence"><h4>Evidence</h4><ul>{data.evidenceRefs.map((ref) => <li key={ref}>{ref}</li>)}</ul></section>}
         {data.traceRefs && data.traceRefs.length > 0 && <section className="trace-link-list" aria-label="Lifecycle trace links">{data.traceRefs.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-agent-admin-trace&traceId=${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}
-        <SurfaceActionBar actions={action ? [action] : []} surfaceId={envelope.surfaceId} actionInput={actionInput} onAction={onAction} />
-        {!action && <p className="form-error">No backend-authorized lifecycle action is available in this selected context.</p>}
+        <SurfaceActionBar actions={guardedAction ? [guardedAction] : []} surfaceId={envelope.surfaceId} actionInput={actionInput} onAction={onAction} />
+        {!guardedAction && <p className="form-error">No backend-authorized lifecycle action is available in this selected context.</p>}
       </section>
     </SurfaceStateFrame>
   );
@@ -76,6 +77,10 @@ export function AgentAdminTaskSurface({ envelope, onAction }: Props) {
 export function isAgentAdminTaskSurface(envelope: SurfaceEnvelope<unknown>) {
   const data = envelope.data as { surfaceContract?: string } | undefined;
   return lifecycleSurfaceIds.has(envelope.surfaceId) || lifecycleContracts.has(data?.surfaceContract ?? '');
+}
+
+function withDisabledReason(action: SurfaceAction, message: string): SurfaceAction {
+  return { ...action, disabled: action.disabled ?? { reasonCode: 'BACKEND_PREREQUISITE_REQUIRED', message } };
 }
 
 function primaryLifecycleAction(envelope: SurfaceEnvelope<AgentAdminLifecycleData>): SurfaceAction | undefined {

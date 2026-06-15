@@ -9,6 +9,9 @@ const me = read('./__tests__/fixtures/workstream/me.ts');
 const surfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
 const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
+const agentAdminTaskSurface = read('./workstream/surfaces/AgentAdminTaskSurface.tsx');
+const decisionSurface = read('./workstream/surfaces/DecisionSurface.tsx');
+const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 
 test('Agent Admin functional agent is visible and capability backed for governed runtime', () => {
   assert.match(agents, /label: 'Agent Admin'[\s\S]*defaultSurfaceType: 'dashboard'[\s\S]*defaultSurfaceId: 'surface-agent-admin-dashboard'/);
@@ -119,10 +122,10 @@ test('Agent Admin surfaces preserve required UI states, approval gates, validati
     'no direct mutation',
     'No-side-effect agent test console',
     'agent_admin.prompt_risk_review_task.v1',
-    'completed_review_required',
+    'blocked_provider_or_runtime',
     'activationBlockedUntilHumanDecision',
-    'prompt-risk AutonomousAgent',
-    'No direct activation',
+    'Prompt-risk AutonomousAgent worker remains deferred',
+    'no model-backed advisory success is claimed',
     'agent_admin.activation_confirmation.v1',
     'agent_admin.deactivation_confirmation.v1',
     'agent_admin.rollback_confirmation.v1'
@@ -134,6 +137,13 @@ test('Agent Admin surfaces preserve required UI states, approval gates, validati
   assert.match(surfaces, /trace-prompt-assembly-42/);
   assert.match(surfaces, /trace-skill-load-17/);
   assert.match(surfaces, /trace-agent-work-88/);
+  assert.match(surfaces, /Manifest drift and loader denials/);
+  assert.match(surfaces, /Tenant Admin · organization scope/);
+  assert.match(agentAdminTaskSurface, /withDisabledReason/);
+  assert.match(agentAdminTaskSurface, /BACKEND_PREREQUISITE_REQUIRED/);
+  assert.match(decisionSurface, /disabledById/);
+  assert.match(decisionSurface, /BACKEND_PREREQUISITE_REQUIRED/);
+  assert.doesNotMatch(dashboardSurface, /Opens \$\{entry\.resultSurfaceId/);
 });
 
 test('Agent Admin actions and fixture client return structured surfaces instead of page routes', () => {

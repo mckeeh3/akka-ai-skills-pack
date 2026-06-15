@@ -27,9 +27,9 @@ Durable collection objects in this workstream use the canonical progression: lis
 
 - Type: `dashboard`; role: workstream starting surface.
 - User goal: see what needs governance attention and open the next safe surface.
-- Default-visible payload: readiness summary, provider/model status, approval queue counts, manifest drift, seed import state, prompt-risk review state, safe redaction summary.
+- Default-visible payload: readiness summary, provider/model status, approval queue counts, manifest drift, loader-denial state, risky authority-expansion attempts, seed import readiness, prompt-risk review readiness/deferred state, and safe redaction summary.
 - Diagnostics drawer: capability ids, governed tool ids, trace/correlation ids, raw contract names, and idempotency mechanics.
-- Actions: display catalog, open behavior proposals, start/read prompt-risk review, list seed material, open trace. Every counter/card has an action or is omitted.
+- Actions: display catalog, open behavior proposals, start/read prompt-risk review readiness, list seed material, open manifest/tool-boundary review, open trace. Every counter/card has an action or is omitted. The default visible dashboard uses tenant/organization scope language; customer-scoped Agent Admin contexts return a safe forbidden/context state rather than implying customer-admin authority.
 - States: loading, empty, ready, forbidden, stale/reconnect, partial-data, provider-fail-closed, failure.
 - Tests: default surface is dashboard; attention section precedes authorized actions; all counters are clickable or explicitly omitted; forbidden targets do not leak hidden counts.
 - Sufficiency review: sufficient for implementation; default view must avoid raw implementation ids except in diagnostics.
@@ -41,7 +41,7 @@ Durable collection objects in this workstream use the canonical progression: lis
 - Default-visible payload: display name, lifecycle/readiness state, authority tier, provider readiness, seed/customization state, attention summary.
 - Diagnostics drawer: AgentDefinition id, model ref id, trace policy, trace ids, capability ids.
 - Row behavior: every visible row/card is keyboard-operable and opens `surface-agent-admin-detail` through `action-open-agent-detail`; the browser does not infer row authority.
-- Mutations: none inline. Lifecycle and behavior changes open separate task/decision/confirmation surfaces.
+- Mutations: none inline. Lifecycle, seed import, and behavior changes open separate detail, task, decision, workflow, or confirmation surfaces; catalog-level action envelopes should only refresh/search/open inspection/open trace.
 - Tests: row selection opens inspection; no direct activate/deactivate from ordinary row rendering.
 - Sufficiency review: sufficient if backend payload includes `openActionId`, `targetSurfaceId`, and safe row context for each visible row.
 
@@ -100,10 +100,10 @@ Durable collection objects in this workstream use the canonical progression: lis
 
 - Type: `workflow-status`; role: autonomous-agent analysis progress/result, reused by Governance/Policy.
 - User goal: inspect advisory risk findings and route them to human decision without direct mutation.
-- Default-visible payload: task status, risk summary, findings, recommendations, required human review reasons, provider failures.
+- Default-visible payload: task status, risk summary or blocked/deferred readiness summary, findings only when a real model-backed result exists, recommendations, required human review reasons, provider failures.
 - Diagnostics drawer: model/tool/data/policy usage and trace ids.
-- Actions: read, accept advisory result, reject result, cancel, open trace. Accepting the advisory result creates/updates a proposal decision; it does not activate artifacts.
-- Tests: model-backed review is fail-closed if provider/runtime is missing; completed review still requires human Agent Admin decision.
+- Actions: read, accept advisory result, reject result, cancel, open trace. Accepting a real advisory result creates/updates a proposal decision; accepting a blocked/deferred state cannot activate artifacts or claim review success.
+- Tests: model-backed review is fail-closed if provider/runtime is missing; deferred worker readiness renders `blocked_provider_or_runtime` and does not claim fixture-only success; completed review still requires human Agent Admin decision.
 - Sufficiency review: sufficient; may be rendered with a specialized workflow/result panel.
 
 ### `surface-agent-admin-trace` — Agent Admin trace timeline

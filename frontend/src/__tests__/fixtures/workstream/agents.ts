@@ -39,7 +39,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
     availability: 'visible'
   },
   {
-    functionalAgentId: 'agent-agent-admin',
+    functionalAgentId: 'agent-admin-agent',
     label: 'Agent Admin',
     purpose: 'Govern agent definitions, prompts, skill manifests, tool boundaries, model refs, seed imports, behavior proposals, and runtime traces.',
     icon: 'bot',
@@ -135,7 +135,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
 ];
 
 export const deniedFunctionalAgentExample: FunctionalAgentSummary = {
-  functionalAgentId: 'agent-agent-admin-denied-example',
+  functionalAgentId: 'agent-admin-agent-denied-example',
   label: 'Agent Admin denied example',
   purpose: 'Demonstrate safe denied rail state for agent governance when capability scope is absent; not part of the default core workstream rail.',
   icon: 'bot-off',

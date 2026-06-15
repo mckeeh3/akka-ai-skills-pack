@@ -9,6 +9,10 @@ type DecisionSurfaceProps = {
 
 export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
   const evidence = envelope.data.evidence ?? [];
+  const disabledById = new Map((envelope.data.disabledActions ?? []).map((action) => [action.actionId, action.reason]));
+  const guardedActions = envelope.actions.map((action) => disabledById.has(action.actionId)
+    ? { ...action, disabled: action.disabled ?? { reasonCode: 'BACKEND_PREREQUISITE_REQUIRED', message: disabledById.get(action.actionId)! } }
+    : action);
   return (
     <SurfaceStateFrame envelope={envelope}>
       <article className="decision-card">
@@ -49,7 +53,7 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
         )}
         {envelope.data.traceLinks && <section className="trace-link-list" aria-label="Investigation guidance trace links">{envelope.data.traceLinks.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-timeline#${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}
       </article>
-      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />
+      <SurfaceActionBar actions={guardedActions} surfaceId={envelope.surfaceId} onAction={onAction} />
     </SurfaceStateFrame>
   );
 }

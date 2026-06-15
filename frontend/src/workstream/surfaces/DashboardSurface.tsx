@@ -169,7 +169,7 @@ function AgentAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) 
             return <button key={entry.actionId} type="button" className="user-admin-work-card" disabled={!action || Boolean(action.disabled)} onClick={() => action && onAction?.(action, envelope.surfaceId)}>
               <span className="eyebrow">{entry.approvalRequired || action?.requiresApproval ? 'Approval gated' : 'Authorized surface'}</span>
               <h4>{entry.label}</h4>
-              <p>{entry.denialHint ?? (entry.resultSurfaceId ? `Opens ${entry.resultSurfaceId.replace('surface-agent-', '').replace('surface-', '').replace(/-/g, ' ')}` : 'Backend returns the next safe surface.')}</p>
+              <p>{entry.denialHint ?? 'Backend returns the next safe Agent Admin surface after rechecking authority.'}</p>
             </button>;
           })}
         </div>
