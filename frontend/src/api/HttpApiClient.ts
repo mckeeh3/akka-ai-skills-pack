@@ -26,7 +26,16 @@ export class HttpApiClient implements ApiClient {
       createOrganization: (request) => this.post('/api/admin/organizations', request),
       renameOrganization: (organizationId, request) => this.post(`/api/admin/organizations/${encodeURIComponent(organizationId)}/rename`, request),
       suspendOrganization: (organizationId, request) => this.post(`/api/admin/organizations/${encodeURIComponent(organizationId)}/suspend`, request),
-      reactivateOrganization: (organizationId, request) => this.post(`/api/admin/organizations/${encodeURIComponent(organizationId)}/reactivate`, request)
+      reactivateOrganization: (organizationId, request) => this.post(`/api/admin/organizations/${encodeURIComponent(organizationId)}/reactivate`, request),
+      listSaasOwnerAdmins: (query) => this.get(`/api/admin/saas-owner-admins${queryString(query)}`),
+      listOrganizationAdmins: (organizationId, query) => this.get(`/api/admin/organizations/${encodeURIComponent(organizationId)}/admins${queryString(query)}`),
+      listCustomers: (query) => this.get(`/api/admin/customers${queryString(query)}`),
+      getCustomer: (customerId) => this.get(`/api/admin/customers/${encodeURIComponent(customerId)}`),
+      createCustomer: (request) => this.post('/api/admin/customers', request),
+      renameCustomer: (customerId, request) => this.post(`/api/admin/customers/${encodeURIComponent(customerId)}/rename`, request),
+      suspendCustomer: (customerId, request) => this.post(`/api/admin/customers/${encodeURIComponent(customerId)}/suspend`, request),
+      reactivateCustomer: (customerId, request) => this.post(`/api/admin/customers/${encodeURIComponent(customerId)}/reactivate`, request),
+      listCustomerAdmins: (customerId, query) => this.get(`/api/admin/customers/${encodeURIComponent(customerId)}/admins${queryString(query)}`)
     };
     this.goals = {
       listGoals: () => this.get('/api/goals'),

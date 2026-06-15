@@ -112,7 +112,19 @@ export class FixtureApiClient implements ApiClient {
       return delayedOk({ status: 'accepted', message: 'Organization display name updated without changing Tenant isolation or support access.', organization: organizationDetail(organization), traceRefs: ['trace-organization-rename'], correlationId: correlationId() });
     },
     suspendOrganization: (organizationId: string, request: { reason: string; idempotencyKey: string }) => organizationLifecycle(this.organizations, organizationId, request, 'suspended'),
-    reactivateOrganization: (organizationId: string, request: { reason: string; idempotencyKey: string }) => organizationLifecycle(this.organizations, organizationId, request, 'active')
+    reactivateOrganization: (organizationId: string, request: { reason: string; idempotencyKey: string }) => organizationLifecycle(this.organizations, organizationId, request, 'active'),
+    listSaasOwnerAdmins: () => delayedOk({ admins: [], invitations: [], traceRefs: ['trace-saas-owner-admins'], correlationId: correlationId(), redaction: ['tenant-customer-data-redacted'] }),
+    listOrganizationAdmins: (organizationId: string) => {
+      const organization = this.organizations.find((candidate) => candidate.organizationId === organizationId) ?? this.organizations[0];
+      return delayedOk({ organization, admins: [], invitations: [], traceRefs: ['trace-organization-admins'], correlationId: correlationId(), redaction: ['tenant-app-data-redacted'] });
+    },
+    listCustomers: () => delayedOk({ customers: [], safeBoundaryNotice: customerBoundaryNotice, traceRefs: ['trace-customer-list'], correlationId: correlationId(), redaction: customerRedactions }),
+    getCustomer: (customerId: string) => delayedOk(customerDetail({ customerId, customerName: `Customer ${customerId}`, status: 'active', traceRefs: ['trace-customer-detail'] })),
+    createCustomer: (request: { customerName: string; idempotencyKey: string; reason?: string }) => delayedOk({ status: 'accepted', message: 'Customer create routed through backend authority.', customer: customerDetail({ customerId: `customer-${Date.now()}`, customerName: request.customerName, status: 'active', traceRefs: ['trace-customer-create'] }), traceRefs: ['trace-customer-create'], correlationId: correlationId() }),
+    renameCustomer: (customerId: string, request: { customerName: string; idempotencyKey: string; reason?: string }) => delayedOk({ status: 'accepted', message: 'Customer renamed through backend authority.', customer: customerDetail({ customerId, customerName: request.customerName, status: 'active', traceRefs: ['trace-customer-rename'] }), traceRefs: ['trace-customer-rename'], correlationId: correlationId() }),
+    suspendCustomer: (customerId: string, _request: { reason: string; idempotencyKey: string }) => delayedOk({ status: 'accepted', message: 'Customer suspended through backend authority.', customer: customerDetail({ customerId, customerName: `Customer ${customerId}`, status: 'suspended', traceRefs: ['trace-customer-suspend'] }), traceRefs: ['trace-customer-suspend'], correlationId: correlationId() }),
+    reactivateCustomer: (customerId: string, _request: { reason: string; idempotencyKey: string }) => delayedOk({ status: 'accepted', message: 'Customer reactivated through backend authority.', customer: customerDetail({ customerId, customerName: `Customer ${customerId}`, status: 'active', traceRefs: ['trace-customer-reactivate'] }), traceRefs: ['trace-customer-reactivate'], correlationId: correlationId() }),
+    listCustomerAdmins: (customerId: string) => delayedOk({ customer: { customerId, customerName: `Customer ${customerId}`, status: 'active', traceRefs: ['trace-customer-admins'] }, admins: [], invitations: [], traceRefs: ['trace-customer-admins'], correlationId: correlationId(), redaction: ['sibling-customers-redacted'] })
   };
 
   goals = {
@@ -176,6 +188,8 @@ export class FixtureApiClient implements ApiClient {
 
 const organizationBoundaryNotice = 'Organization administration manages the Tenant lifecycle boundary only; it does not grant tenant/customer application-data access, support access, provider secret access, or billing-derived authority.';
 const organizationRedactions = ['tenant-app-data-redacted', 'provider-secrets-redacted', 'billing-authority-redacted', 'support-access-internals-redacted', 'hidden-counts-redacted'];
+const customerBoundaryNotice = 'Customer administration is scoped to the selected Organization/Tenant; sibling-customer facts and tenant application data are omitted.';
+const customerRedactions = ['sibling-customers-redacted', 'tenant-app-data-redacted', 'provider-secrets-redacted'];
 
 function organizationDetail(organization: OrganizationSummary): OrganizationDetailPayload {
   return {
@@ -187,6 +201,10 @@ function organizationDetail(organization: OrganizationSummary): OrganizationDeta
     correlationId: correlationId(),
     redactions: organizationRedactions
   };
+}
+
+function customerDetail(customer: { customerId: string; customerName: string; status: string; traceRefs: string[] }) {
+  return { customer, safeBoundaryNotice: customerBoundaryNotice, visibleActions: customer.status === 'suspended' ? ['rename', 'reactivate'] : ['rename', 'suspend'], recentAuditEvents: [], traceRefs: customer.traceRefs, correlationId: correlationId(), redaction: customerRedactions };
 }
 
 function organizationLifecycle(organizations: OrganizationSummary[], organizationId: string, request: { reason: string; idempotencyKey: string }, nextStatus: 'active' | 'suspended') {

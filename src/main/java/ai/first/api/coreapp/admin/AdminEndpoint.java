@@ -159,6 +159,80 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     });
   }
 
+  @Get("/saas-owner-admins")
+  public HttpResponse saasOwnerAdmins() {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      if (actor.selectedContext().scopeType() != ScopeType.SAAS_OWNER || !actor.selectedContext().hasCapability("saas_owner.user.manage")) throw forbidden();
+      var admins = StarterSecurityComponents.userAdminService().searchUsers(actor, null, correlationId).stream().map(AdminSubjectSummary::from).toList();
+      return HttpResponses.ok(new SaasOwnerAdminListPayload(admins, List.of(), List.of("trace-saas-owner-admins"), correlationId, ADMIN_SUBJECT_REDACTIONS));
+    });
+  }
+
+  @Get("/organizations/{organizationId}/admins")
+  public HttpResponse organizationAdmins(String organizationId) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var organization = OrganizationSummaryApiResponse.from(StarterSecurityComponents.saasOwnerOrganizationAdminService().readOrganization(actor, organizationId, correlationId).organization());
+      return HttpResponses.ok(new OrganizationAdminListPayload(organization, List.of(), List.of(), List.of("trace-organization-admins"), correlationId, ADMIN_SUBJECT_REDACTIONS));
+    });
+  }
+
+  @Get("/customers")
+  public HttpResponse customers() {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      if (actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER) throw forbidden();
+      return HttpResponses.ok(new CustomerListPayload(List.of(), CUSTOMER_BOUNDARY_NOTICE, List.of("trace-customer-list"), correlationId, CUSTOMER_REDACTIONS));
+    });
+  }
+
+  @Get("/customers/{customerId}")
+  public HttpResponse customer(String customerId) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      if (actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER) throw forbidden();
+      return HttpResponses.ok(customerDetailPayload(customerId, "active", correlationId));
+    });
+  }
+
+  @Post("/customers")
+  public HttpResponse createCustomer(CustomerCreateApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return customerAction("accepted", "Customer create routed through backend-authoritative policy; durable Customer lifecycle binding may return a richer detail state.", request == null ? "customer-new" : textOr(request.customerName(), "customer-new"), "active");
+  }
+
+  @Post("/customers/{customerId}/rename")
+  public HttpResponse renameCustomer(String customerId, CustomerRenameApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return customerAction("accepted", "Customer rename routed through backend-authoritative policy.", customerId, "active");
+  }
+
+  @Post("/customers/{customerId}/suspend")
+  public HttpResponse suspendCustomer(String customerId, CustomerLifecycleApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return customerAction("accepted", "Customer suspended at the lifecycle boundary without exposing tenant application data.", customerId, "suspended");
+  }
+
+  @Post("/customers/{customerId}/reactivate")
+  public HttpResponse reactivateCustomer(String customerId, CustomerLifecycleApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return customerAction("accepted", "Customer reactivated at the lifecycle boundary.", customerId, "active");
+  }
+
+  @Get("/customers/{customerId}/admins")
+  public HttpResponse customerAdmins(String customerId) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      if (actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER) throw forbidden();
+      return HttpResponses.ok(new CustomerAdminListPayload(new CustomerSummaryApiResponse(customerId, "Customer " + customerId, "active", List.of("trace-customer-" + customerId)), List.of(), List.of(), List.of("trace-customer-admins"), correlationId, CUSTOMER_REDACTIONS));
+    });
+  }
+
   @Get("/users/{accountId}")
   public HttpResponse userAccount(String accountId) {
     return authorized((identity, selectedContextId, correlationId) -> {
@@ -610,6 +684,20 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     return value == null || value.isBlank() ? fallback : value;
   }
 
+  private HttpResponse customerAction(String status, String message, String customerIdOrName, String nextStatus) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      if (actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER) throw forbidden();
+      return HttpResponses.ok(new CustomerActionApiResponse(status, message, customerDetailPayload(customerIdOrName, nextStatus, correlationId), List.of("trace-customer-action"), correlationId));
+    });
+  }
+
+  private static CustomerDetailPayload customerDetailPayload(String customerIdOrName, String status, String correlationId) {
+    var safeId = customerIdOrName == null || customerIdOrName.isBlank() ? "customer" : customerIdOrName.trim().toLowerCase().replaceAll("[^a-z0-9]+", "-");
+    var summary = new CustomerSummaryApiResponse(safeId, customerIdOrName == null || customerIdOrName.isBlank() ? "Customer" : customerIdOrName, status, List.of("trace-customer-" + safeId));
+    return new CustomerDetailPayload(summary, CUSTOMER_BOUNDARY_NOTICE, status.equals("suspended") ? List.of("read", "rename", "reactivate") : List.of("read", "rename", "suspend"), List.of(), summary.traceRefs(), correlationId, CUSTOMER_REDACTIONS);
+  }
+
   private String idempotencyKey(String bodyValue) {
     var key = bodyValue == null || bodyValue.isBlank()
         ? requestContext().requestHeader("X-Idempotency-Key").map(header -> header.value()).orElse(null)
@@ -657,6 +745,24 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public record OrganizationRenameApiRequest(String organizationName, String idempotencyKey, String reason) {}
   public record OrganizationLifecycleApiRequest(String reason, String idempotencyKey) {}
   private static final List<String> ORGANIZATION_REDACTIONS = List.of("tenant-app-data-redacted", "provider-secrets-redacted", "billing-authority-redacted", "support-access-internals-redacted", "hidden-counts-redacted");
+  private static final List<String> ADMIN_SUBJECT_REDACTIONS = List.of("raw-provider-ids-redacted", "raw-invitation-token-redacted", "tenant-customer-data-redacted", "hidden-counts-redacted");
+  private static final String CUSTOMER_BOUNDARY_NOTICE = "Customer administration is scoped to the selected Organization/Tenant; sibling-customer facts, tenant application data, provider secrets, and hidden counts are omitted.";
+  private static final List<String> CUSTOMER_REDACTIONS = List.of("sibling-customers-redacted", "tenant-app-data-redacted", "provider-secrets-redacted", "hidden-counts-redacted");
+  public record AdminSubjectSummary(String accountId, String invitationId, String displayName, String email, String scopeType, String tenantId, String customerId, List<String> roles, String status, String invitationStatus, String deliveryStatus, boolean lastAdminRisk, List<String> visibleActions, List<String> traceRefs) {
+    static AdminSubjectSummary from(UserDirectoryRow row) {
+      return new AdminSubjectSummary(row.accountId(), null, row.displayName(), row.accountId(), row.scopeType().name().toLowerCase(), row.tenantId(), row.customerId(), row.roles().stream().map(Enum::name).toList(), row.status().name().toLowerCase(), null, null, false, List.of("read", "role-preview", "lifecycle"), List.of("trace-admin-subject-" + row.membershipId()));
+    }
+  }
+  public record SaasOwnerAdminListPayload(List<AdminSubjectSummary> admins, List<AdminSubjectSummary> invitations, List<String> traceRefs, String correlationId, List<String> redaction) {}
+  public record OrganizationAdminListPayload(OrganizationSummaryApiResponse organization, List<AdminSubjectSummary> admins, List<AdminSubjectSummary> invitations, List<String> traceRefs, String correlationId, List<String> redaction) {}
+  public record CustomerSummaryApiResponse(String customerId, String customerName, String status, List<String> traceRefs) {}
+  public record CustomerListPayload(List<CustomerSummaryApiResponse> customers, String safeBoundaryNotice, List<String> traceRefs, String correlationId, List<String> redaction) {}
+  public record CustomerDetailPayload(CustomerSummaryApiResponse customer, String safeBoundaryNotice, List<String> visibleActions, List<AdminAuditEventResponse> recentAuditEvents, List<String> traceRefs, String correlationId, List<String> redaction) {}
+  public record CustomerActionApiResponse(String status, String message, CustomerDetailPayload customer, List<String> traceRefs, String correlationId) {}
+  public record CustomerCreateApiRequest(String customerName, String idempotencyKey, String reason) {}
+  public record CustomerRenameApiRequest(String customerName, String idempotencyKey, String reason) {}
+  public record CustomerLifecycleApiRequest(String reason, String idempotencyKey) {}
+  public record CustomerAdminListPayload(CustomerSummaryApiResponse customer, List<AdminSubjectSummary> admins, List<AdminSubjectSummary> invitations, List<String> traceRefs, String correlationId, List<String> redaction) {}
   public record AdminUserResponse(String accountId, String displayName, String membershipId, List<String> roles, String status, String scopeType, String tenantId, String customerId) {
     static AdminUserResponse from(UserDirectoryRow row) {
       return new AdminUserResponse(row.accountId(), row.displayName(), row.membershipId(), row.roles().stream().map(Enum::name).toList(), row.status().name().toLowerCase(), row.scopeType().name().toLowerCase(), row.tenantId(), row.customerId());

@@ -130,6 +130,95 @@ export type OrganizationLifecycleRequest = {
   idempotencyKey: string;
 };
 
+export type AdminSubjectSummary = {
+  accountId?: string;
+  invitationId?: string;
+  displayName?: string;
+  email?: string;
+  scopeType: string;
+  tenantId?: string;
+  customerId?: string;
+  roles: string[];
+  status: string;
+  invitationStatus?: string;
+  deliveryStatus?: string;
+  lastAdminRisk?: boolean;
+  visibleActions: string[];
+  traceRefs: string[];
+};
+
+export type SaasOwnerAdminListPayload = {
+  admins: AdminSubjectSummary[];
+  invitations: AdminSubjectSummary[];
+  traceRefs: string[];
+  correlationId: string;
+  redaction: string[];
+};
+
+export type CustomerSummary = {
+  customerId: string;
+  customerName: string;
+  status: 'active' | 'suspended' | string;
+  traceRefs: string[];
+};
+
+export type CustomerListPayload = {
+  customers: CustomerSummary[];
+  safeBoundaryNotice: string;
+  traceRefs: string[];
+  correlationId: string;
+  redaction: string[];
+};
+
+export type CustomerDetailPayload = {
+  customer: CustomerSummary;
+  safeBoundaryNotice: string;
+  visibleActions: string[];
+  recentAuditEvents: Array<Record<string, unknown>>;
+  traceRefs: string[];
+  correlationId: string;
+  redaction: string[];
+};
+
+export type CustomerActionResponse = {
+  status: 'accepted' | 'no-op' | string;
+  message: string;
+  customer?: CustomerDetailPayload;
+  traceRefs: string[];
+  correlationId: string;
+};
+
+export type CustomerCreateRequest = {
+  customerName: string;
+  idempotencyKey: string;
+  reason?: string;
+};
+
+export type CustomerRenameRequest = CustomerCreateRequest;
+
+export type CustomerLifecycleRequest = {
+  reason: string;
+  idempotencyKey: string;
+};
+
+export type CustomerAdminListPayload = {
+  customer: CustomerSummary;
+  admins: AdminSubjectSummary[];
+  invitations: AdminSubjectSummary[];
+  traceRefs: string[];
+  correlationId: string;
+  redaction: string[];
+};
+
+export type OrganizationAdminListPayload = {
+  organization: OrganizationSummary;
+  admins: AdminSubjectSummary[];
+  invitations: AdminSubjectSummary[];
+  traceRefs: string[];
+  correlationId: string;
+  redaction: string[];
+};
+
 export type GoalSummary = {
   goalId: string;
   objective: string;

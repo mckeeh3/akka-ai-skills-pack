@@ -5,6 +5,13 @@ import type {
   CreateGoalResponse,
   CreatePolicyProposalRequest,
   CreatePolicyProposalResponse,
+  CustomerActionResponse,
+  CustomerAdminListPayload,
+  CustomerCreateRequest,
+  CustomerDetailPayload,
+  CustomerLifecycleRequest,
+  CustomerListPayload,
+  CustomerRenameRequest,
   DecisionAction,
   DecisionActionRequest,
   DecisionActionResponse,
@@ -22,12 +29,14 @@ import type {
   OrganizationActionResponse,
   OrganizationCreateRequest,
   OrganizationDetailPayload,
+  OrganizationAdminListPayload,
   OrganizationLifecycleRequest,
   OrganizationListPayload,
   OrganizationRenameRequest,
   PoliciesResponse,
   PolicySimulationResponse,
   TraceDetailResponse,
+  SaasOwnerAdminListPayload,
   TraceSearchResponse,
   UpdatePreferencesRequest,
   UpdatePreferencesResponse,
@@ -50,6 +59,15 @@ export interface AdminClient {
   renameOrganization(organizationId: string, request: OrganizationRenameRequest): Promise<ApiResult<OrganizationActionResponse>>;
   suspendOrganization(organizationId: string, request: OrganizationLifecycleRequest): Promise<ApiResult<OrganizationActionResponse>>;
   reactivateOrganization(organizationId: string, request: OrganizationLifecycleRequest): Promise<ApiResult<OrganizationActionResponse>>;
+  listSaasOwnerAdmins(query?: Record<string, string | undefined>): Promise<ApiResult<SaasOwnerAdminListPayload>>;
+  listOrganizationAdmins(organizationId: string, query?: Record<string, string | undefined>): Promise<ApiResult<OrganizationAdminListPayload>>;
+  listCustomers(query?: Record<string, string | undefined>): Promise<ApiResult<CustomerListPayload>>;
+  getCustomer(customerId: string): Promise<ApiResult<CustomerDetailPayload>>;
+  createCustomer(request: CustomerCreateRequest): Promise<ApiResult<CustomerActionResponse>>;
+  renameCustomer(customerId: string, request: CustomerRenameRequest): Promise<ApiResult<CustomerActionResponse>>;
+  suspendCustomer(customerId: string, request: CustomerLifecycleRequest): Promise<ApiResult<CustomerActionResponse>>;
+  reactivateCustomer(customerId: string, request: CustomerLifecycleRequest): Promise<ApiResult<CustomerActionResponse>>;
+  listCustomerAdmins(customerId: string, query?: Record<string, string | undefined>): Promise<ApiResult<CustomerAdminListPayload>>;
 }
 
 export interface GoalsClient {
