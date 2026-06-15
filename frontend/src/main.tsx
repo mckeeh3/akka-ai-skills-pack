@@ -466,7 +466,10 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
           ? current.surfaces.map((surface) => surface.surfaceId === updatedSurface.surfaceId ? updatedSurface : surface)
           : [...current.surfaces, updatedSurface]
         : current.surfaces;
-      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
+      const syncedSurfaces = updatedSurface
+        ? syncOrganizationDirectorySurfaces(nextSurfaces, updatedSurface, action.actionId)
+        : nextSurfaces;
+      return { ...current, surfaces: syncedSurfaces, items: pruneWorkstreamItems([...current.items, actionRequestItem, ...(surfaceResponseItem ? [surfaceResponseItem] : [])]) };
     });
     if (updatedSurface) {
       clearRailAttention(updatedSurface.ownerFunctionalAgentId);
@@ -592,6 +595,52 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     return organizations.some((candidate) => candidate.organizationId === organization.organizationId)
       ? organizations.map((candidate) => candidate.organizationId === organization.organizationId ? organization : candidate)
       : [organization, ...organizations];
+  }
+
+  function syncOrganizationDirectorySurfaces(surfaces: SurfaceEnvelope<unknown>[], updatedSurface: SurfaceEnvelope<unknown>, actionId: string) {
+    if (isOrganizationDirectoryAction(actionId)) return surfaces;
+    const organization = organizationFromDetailSurface(updatedSurface);
+    if (!organization) return surfaces;
+    return surfaces.map((surface) => {
+      const data = surface.data as Record<string, unknown> & { organizations?: OrganizationSummary[]; filters?: { query?: string; status?: string } };
+      const isDirectory = surface.surfaceId === 'surface-user-admin-organization-directory' || data.surfaceContract === 'user_admin.organization_directory.v1';
+      if (!isDirectory || !organizationMatchesDirectoryFilters(organization, data.filters)) return surface;
+      const organizations = upsertOrganization(data.organizations ?? [], organization);
+      return {
+        ...surface,
+        generatedAt: new Date().toISOString(),
+        data: {
+          ...data,
+          organizations,
+          systemStates: organizations.length ? ['ready'] : ['empty'],
+          lastResult: {
+            status: 'success',
+            message: 'Organization directory updated with the latest protected Admin API result.',
+            correlationId: updatedSurface.correlationId,
+            traceRefs: updatedSurface.traceIds
+          }
+        }
+      };
+    });
+  }
+
+  function organizationFromDetailSurface(surface: SurfaceEnvelope<unknown>): OrganizationSummary | undefined {
+    const detail = (surface.data as Record<string, unknown> & { organizationDetail?: Partial<OrganizationSummary> }).organizationDetail;
+    if (!detail?.organizationId || !detail.organizationName || !detail.status) return undefined;
+    return {
+      organizationId: detail.organizationId,
+      organizationName: detail.organizationName,
+      status: detail.status,
+      traceRefs: detail.traceRefs ?? []
+    };
+  }
+
+  function organizationMatchesDirectoryFilters(organization: OrganizationSummary, filters?: { query?: string; status?: string }) {
+    const status = (filters?.status ?? '').trim().toLowerCase();
+    const query = (filters?.query ?? '').trim().toLowerCase();
+    if (status && organization.status.toLowerCase() !== status) return false;
+    if (!query) return true;
+    return organization.organizationId.toLowerCase().includes(query) || organization.organizationName.toLowerCase().includes(query);
   }
 
   function organizationErrorState(code: string) {

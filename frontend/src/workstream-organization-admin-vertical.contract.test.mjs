@@ -61,6 +61,8 @@ test('Organization Admin workstream surface graph preserves SaaS Owner authority
   assert.match(main, /apiClient\.admin\.suspendOrganization/);
   assert.match(main, /apiClient\.admin\.reactivateOrganization/);
   assert.match(main, /protected \/api\/admin\/organizations path/);
+  assert.match(main, /syncOrganizationDirectorySurfaces/);
+  assert.match(main, /Organization directory updated with the latest protected Admin API result/);
 });
 
 test('Organization Admin frontend contract proves dashboard-to-organization-branch traversal and safe payload boundaries', () => {
