@@ -43,6 +43,9 @@ import java.util.stream.Collectors;
 import ai.first.application.foundation.email.EmailNotificationService;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.ScopeType;
 import ai.first.application.coreapp.audit.AuditTraceSummaryService;
 import ai.first.application.coreapp.governance.GovernancePolicyImpactService;
 import ai.first.application.coreapp.useradmin.UserAdminAccessReviewService;
@@ -162,7 +165,7 @@ public final class NotificationService {
   public MyAccountNotificationCenter listMyAccountCenter(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), LIST_MY_ACCOUNT_CENTER_TOOL);
     var now = Instant.now(clock);
-    var prefs = repository.listPreferences(actor.selectedContext().tenantId(), actor.account().accountId());
+    var prefs = repository.listPreferences(contextTenantId(actor.selectedContext()), actor.account().accountId());
     var includeRead = prefs.stream().filter(pref -> pref.category() == NotificationCategory.ALL).findFirst().map(NotificationPreference::includeReadInCenter).orElse(false);
     var items = visibleItems(actor).stream()
         .filter(item -> preferenceAllows(prefs, item, now))
@@ -211,7 +214,8 @@ public final class NotificationService {
     var safeCategory = category == null ? NotificationCategory.ALL : category;
     var now = Instant.now(clock);
     var safeChannel = channel == null ? NotificationChannel.IN_APP : channel;
-    var pref = new NotificationPreference("notification-pref-" + actor.selectedContext().tenantId() + "-" + actor.account().accountId() + "-" + safeChannel.name().toLowerCase(Locale.ROOT) + "-" + safeCategory.name().toLowerCase(Locale.ROOT), actor.selectedContext().tenantId(), actor.selectedContext().customerId(), actor.account().accountId(), safeChannel, safeCategory, enabled, minimumPriority == null ? NotificationPriority.INFO : minimumPriority, muteUntil, includeReadInCenter, now, actor.account().accountId(), correlationId);
+    var tenantId = contextTenantId(actor.selectedContext());
+    var pref = new NotificationPreference("notification-pref-" + tenantId + "-" + actor.account().accountId() + "-" + safeChannel.name().toLowerCase(Locale.ROOT) + "-" + safeCategory.name().toLowerCase(Locale.ROOT), tenantId, actor.selectedContext().customerId(), actor.account().accountId(), safeChannel, safeCategory, enabled, minimumPriority == null ? NotificationPriority.INFO : minimumPriority, muteUntil, includeReadInCenter, now, actor.account().accountId(), correlationId);
     var saved = repository.savePreference(pref);
     appendAudit(actor, "NOTIFICATION_UPDATE_PREFERENCES", AdminAuditEvent.Result.ALLOWED, safeChannel.name().toLowerCase(Locale.ROOT) + ":" + safeCategory.name().toLowerCase(Locale.ROOT), correlationId);
     return saved;
@@ -256,26 +260,27 @@ public final class NotificationService {
   public List<NotificationDeliveryAttempt> listDeliveryAttempts(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), LIST_DELIVERY_PLATFORM_TOOL);
     appendAudit(actor, "NOTIFICATION_DELIVERY_LIST_ATTEMPTS", AdminAuditEvent.Result.ALLOWED, "redacted attempts", correlationId);
-    return repository.listDeliveryAttempts(actor.selectedContext().tenantId(), actor.account().accountId());
+    return repository.listDeliveryAttempts(contextTenantId(actor.selectedContext()), actor.account().accountId());
   }
 
   public List<NotificationExternalOutboxMessage> listExternalOutbox(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), LIST_DELIVERY_PLATFORM_TOOL);
     appendAudit(actor, "NOTIFICATION_DELIVERY_LIST_EXTERNAL_OUTBOX", AdminAuditEvent.Result.ALLOWED, "captured local/test outbox", correlationId);
-    return repository.listExternalOutbox(actor.selectedContext().tenantId(), actor.account().accountId());
+    return repository.listExternalOutbox(contextTenantId(actor.selectedContext()), actor.account().accountId());
   }
 
   public List<EmailNotificationPreference> listEmailPreferences(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), EmailNotificationService.LIST_PREFERENCES_TOOL);
     appendAudit(actor, "EMAIL_NOTIFICATION_LIST_PREFERENCES", AdminAuditEvent.Result.ALLOWED, "email preference summary", correlationId);
-    return repository.listEmailPreferences(actor.selectedContext().tenantId(), actor.account().accountId());
+    return repository.listEmailPreferences(contextTenantId(actor.selectedContext()), actor.account().accountId());
   }
 
   public EmailNotificationPreference updateEmailPreference(AuthContextResolver.ResolvedMe actor, NotificationCategory category, boolean enabled, NotificationPriority minimumPriority, Instant muteUntil, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), EmailNotificationService.UPDATE_PREFERENCES_TOOL);
     var safeCategory = category == null ? NotificationCategory.ALL : category;
     var now = Instant.now(clock);
-    var pref = new EmailNotificationPreference("email-notification-pref-" + actor.selectedContext().tenantId() + "-" + actor.account().accountId() + "-" + safeCategory.name().toLowerCase(Locale.ROOT), actor.selectedContext().tenantId(), actor.selectedContext().customerId(), actor.account().accountId(), safeCategory, enabled, minimumPriority == null ? NotificationPriority.INFO : minimumPriority, muteUntil, now, actor.account().accountId(), correlationId);
+    var tenantId = contextTenantId(actor.selectedContext());
+    var pref = new EmailNotificationPreference("email-notification-pref-" + tenantId + "-" + actor.account().accountId() + "-" + safeCategory.name().toLowerCase(Locale.ROOT), tenantId, actor.selectedContext().customerId(), actor.account().accountId(), safeCategory, enabled, minimumPriority == null ? NotificationPriority.INFO : minimumPriority, muteUntil, now, actor.account().accountId(), correlationId);
     var saved = repository.saveEmailPreference(pref);
     appendAudit(actor, "EMAIL_NOTIFICATION_UPDATE_PREFERENCES", AdminAuditEvent.Result.ALLOWED, safeCategory.name().toLowerCase(Locale.ROOT), correlationId);
     return saved;
@@ -292,7 +297,7 @@ public final class NotificationService {
   }
 
   private NotificationItem authorizedItem(AuthContextResolver.ResolvedMe actor, String notificationId, String action, String correlationId) {
-    var item = repository.find(actor.selectedContext().tenantId(), notificationId).orElse(null);
+    var item = repository.find(contextTenantId(actor.selectedContext()), notificationId).orElse(null);
     if (item == null || !isVisible(actor, item)) {
       appendAudit(actor, action, AdminAuditEvent.Result.DENIED, "not_found_or_redacted", correlationId);
       return null;
@@ -301,18 +306,18 @@ public final class NotificationService {
   }
 
   private List<NotificationItem> visibleItems(AuthContextResolver.ResolvedMe actor) {
-    return repository.listTenant(actor.selectedContext().tenantId()).stream().filter(item -> isVisible(actor, item)).map(this::redactIfNeeded).toList();
+    return repository.listTenant(contextTenantId(actor.selectedContext())).stream().filter(item -> isVisible(actor, item)).map(this::redactIfNeeded).toList();
   }
 
   private boolean isVisible(AuthContextResolver.ResolvedMe actor, NotificationItem item) {
-    return actor.selectedContext().tenantId().equals(item.tenantId())
+    return Objects.equals(contextTenantId(actor.selectedContext()), item.tenantId())
         && (actor.selectedContext().customerId() == null || item.customerId() == null || actor.selectedContext().customerId().equals(item.customerId()))
         && actor.account().accountId().equals(item.accountId())
         && actor.selectedContext().capabilities().contains(item.requiredCapabilityId());
   }
 
   private void requireVisibleSource(AuthContextResolver.ResolvedMe actor, String tenantId, String customerId, String capabilityId) {
-    if (!actor.selectedContext().tenantId().equals(tenantId)) throw new AuthorizationException(403, "tenant-mismatch");
+    if (!Objects.equals(contextTenantId(actor.selectedContext()), tenantId)) throw new AuthorizationException(403, "tenant-mismatch");
     if (actor.selectedContext().customerId() != null && customerId != null && !actor.selectedContext().customerId().equals(customerId)) throw new AuthorizationException(403, "customer-mismatch");
     authContextResolver.requireCapability(actor.selectedContext(), capabilityId);
   }
@@ -331,7 +336,7 @@ public final class NotificationService {
   }
 
   private Map<String, String> authMap(AuthContextResolver.ResolvedMe actor) {
-    return Map.of("selectedContextId", actor.selectedContext().membershipId(), "tenantId", actor.selectedContext().tenantId(), "accountId", actor.account().accountId());
+    return Map.of("selectedContextId", actor.selectedContext().membershipId(), "tenantId", contextTenantId(actor.selectedContext()), "accountId", actor.account().accountId());
   }
 
   private NotificationCategory mapAttentionCategory(AttentionCategory category) {
@@ -417,6 +422,12 @@ public final class NotificationService {
     var safeReason = result.name().toLowerCase(Locale.ROOT) + ":" + reason;
     if (result == AdminAuditEvent.Result.DENIED) authContextResolver.appendDeniedTrace(actor, action, safeReason, safeCorrelationId);
     else authContextResolver.appendProtectedReadTrace(actor, action, safeReason, safeCorrelationId);
+  }
+
+  private static String contextTenantId(AuthContext authContext) {
+    return authContext.scopeType() == ScopeType.SAAS_OWNER && (authContext.tenantId() == null || authContext.tenantId().isBlank())
+        ? WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID
+        : authContext.tenantId();
   }
 
   private String firstNonBlank(String... values) {

@@ -15,6 +15,7 @@ import static akka.javasdk.http.HttpException.notFound;
 import static akka.javasdk.http.HttpException.unauthorized;
 import ai.first.application.foundation.workstream.AkkaWorkstreamLogRepository;
 import ai.first.application.foundation.workstream.WorkstreamEventBackboneView;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.foundation.invitation.InvitationService.AcceptInvitationRequest;
 import ai.first.application.foundation.identity.StarterSecurityComponents;
@@ -139,7 +140,7 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
   }
 
   private static String viewQueryTenantId(String tenantId) {
-    return tenantId == null || tenantId.isBlank() ? "__saas_owner_no_tenant__" : tenantId;
+    return tenantId == null || tenantId.isBlank() ? WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID : tenantId;
   }
 
   private interface AuthorizedCall {

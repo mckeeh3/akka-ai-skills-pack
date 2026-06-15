@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /** Durable state for the starter governed workstream event backbone. */
@@ -22,15 +23,17 @@ public record WorkstreamEventRepositoryState(Map<String, WorkstreamEventEnvelope
   }
 
   public Optional<WorkstreamEventEnvelope> findByIdempotencyKey(String tenantId, String idempotencyKey) {
+    if (tenantId == null || tenantId.isBlank()) return Optional.empty();
     return eventsByKey.values().stream()
-        .filter(event -> tenantId.equals(event.tenantId()))
-        .filter(event -> idempotencyKey.equals(event.idempotencyKey()))
+        .filter(event -> Objects.equals(tenantId, event.tenantId()))
+        .filter(event -> Objects.equals(idempotencyKey, event.idempotencyKey()))
         .findFirst();
   }
 
   public List<WorkstreamEventEnvelope> listTenant(String tenantId) {
+    if (tenantId == null || tenantId.isBlank()) return List.of();
     return eventsByKey.values().stream()
-        .filter(event -> tenantId.equals(event.tenantId()))
+        .filter(event -> Objects.equals(tenantId, event.tenantId()))
         .sorted(Comparator.comparing(WorkstreamEventEnvelope::occurredAt).reversed())
         .toList();
   }

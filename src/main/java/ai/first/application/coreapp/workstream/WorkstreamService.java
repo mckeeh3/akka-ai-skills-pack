@@ -831,7 +831,7 @@ public final class WorkstreamService {
     seedStarterCoreAttention(actor, correlationId);
     for (var item : attentionService.listMyAccountItems(actor, correlationId).personalQueue()) notificationService.projectFromAttention(actor, item, correlationId);
     if (workstreamEventRepository != null) {
-      workstreamEventRepository.listTenant(actor.selectedContext().tenantId()).stream()
+      workstreamEventRepository.listTenant(workstreamEventTenantId(actor.selectedContext())).stream()
           .filter(event -> event.customerId() == null || Objects.equals(event.customerId(), actor.selectedContext().customerId()))
           .filter(event -> event.capabilityRefs() != null && !event.capabilityRefs().isEmpty())
           .filter(event -> actor.selectedContext().capabilities().contains(event.capabilityRefs().get(0)))
@@ -1708,7 +1708,7 @@ public final class WorkstreamService {
   }
 
   private List<WorkstreamEvent> eventBackedRefreshEvents(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    var envelopes = new ArrayList<>(workstreamEventRepository.listTenant(actor.selectedContext().tenantId()));
+    var envelopes = new ArrayList<>(workstreamEventRepository.listTenant(workstreamEventTenantId(actor.selectedContext())));
     envelopes.sort(java.util.Comparator.comparing(WorkstreamEventEnvelope::occurredAt));
     var sequence = new AtomicInteger(100);
     return envelopes.stream()
@@ -2415,6 +2415,12 @@ public final class WorkstreamService {
   private static NotificationCategory notificationCategoryInput(Object input, NotificationCategory fallback) { var value = stringInput(input, "category", null); if (value == null) return fallback; try { return NotificationCategory.valueOf(value.trim().toUpperCase(Locale.ROOT)); } catch (IllegalArgumentException ignored) { return fallback; } }
   private static NotificationPriority notificationPriorityInput(Object input, NotificationPriority fallback) { var value = stringInput(input, "minimumPriority", null); if (value == null) return fallback; try { return NotificationPriority.valueOf(value.trim().toUpperCase(Locale.ROOT)); } catch (IllegalArgumentException ignored) { return fallback; } }
   private static NotificationChannel notificationChannelInput(Object input, NotificationChannel fallback) { var value = stringInput(input, "channel", null); if (value == null) return fallback; try { return NotificationChannel.valueOf(value.trim().toUpperCase(Locale.ROOT)); } catch (IllegalArgumentException ignored) { return fallback; } }
+  private static String workstreamEventTenantId(AuthContext authContext) {
+    return authContext.scopeType() == ScopeType.SAAS_OWNER && (authContext.tenantId() == null || authContext.tenantId().isBlank())
+        ? WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID
+        : authContext.tenantId();
+  }
+
   private static String firstNonBlank(String... values) { for (var value : values) if (value != null && !value.isBlank()) return value; return null; }
   private static String stableSuffix(String value) { return Integer.toUnsignedString(Objects.requireNonNullElse(value, "workstream-message").hashCode(), 36); }
   private static Map<String, Object> mapOf(Object... values) { var map = new LinkedHashMap<String, Object>(); for (int i = 0; i + 1 < values.length; i += 2) map.put(String.valueOf(values[i]), values[i + 1]); return map; }

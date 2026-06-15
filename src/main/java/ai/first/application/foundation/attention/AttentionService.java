@@ -19,6 +19,9 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
+import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.ScopeType;
 
 /** Shared backend-owned attention backbone with scoped projections and lifecycle operations. */
 public final class AttentionService {
@@ -118,7 +121,7 @@ public final class AttentionService {
   }
 
   private AttentionItem authorizedItem(AuthContextResolver.ResolvedMe actor, String itemId, String action, String correlationId) {
-    var item = repository.find(actor.selectedContext().tenantId(), itemId).orElse(null);
+    var item = repository.find(contextTenantId(actor.selectedContext()), itemId).orElse(null);
     if (item == null || !isVisible(actor, item)) {
       appendAudit(actor, action, AdminAuditEvent.Result.DENIED, "not_found_or_redacted", correlationId);
       return null;
@@ -127,7 +130,7 @@ public final class AttentionService {
   }
 
   private List<AttentionItem> visibleItems(AuthContextResolver.ResolvedMe actor) {
-    return repository.listTenant(actor.selectedContext().tenantId()).stream()
+    return repository.listTenant(contextTenantId(actor.selectedContext())).stream()
         .filter(item -> inSelectedScope(actor, item))
         .filter(item -> isVisible(actor, item))
         .map(item -> item.redactionLevel() == AttentionRedactionLevel.FULL ? item : redactSummary(item))
@@ -146,12 +149,12 @@ public final class AttentionService {
   }
 
   private boolean inSelectedScope(AuthContextResolver.ResolvedMe actor, AttentionItem item) {
-    return actor.selectedContext().tenantId().equals(item.tenantId())
+    return Objects.equals(contextTenantId(actor.selectedContext()), item.tenantId())
         && (actor.selectedContext().customerId() == null || item.customerId() == null || actor.selectedContext().customerId().equals(item.customerId()));
   }
 
   private void requireSameScope(AuthContextResolver.ResolvedMe actor, AttentionItem item) {
-    if (!actor.selectedContext().tenantId().equals(item.tenantId())) throw new AuthorizationException(403, "tenant-mismatch");
+    if (!Objects.equals(contextTenantId(actor.selectedContext()), item.tenantId())) throw new AuthorizationException(403, "tenant-mismatch");
     if (actor.selectedContext().customerId() != null && item.customerId() != null && !actor.selectedContext().customerId().equals(item.customerId())) throw new AuthorizationException(403, "customer-mismatch");
   }
 
@@ -192,6 +195,12 @@ public final class AttentionService {
     } else {
       authContextResolver.appendProtectedReadTrace(actor, action, safeReason, safeCorrelationId);
     }
+  }
+
+  private static String contextTenantId(AuthContext authContext) {
+    return authContext.scopeType() == ScopeType.SAAS_OWNER && (authContext.tenantId() == null || authContext.tenantId().isBlank())
+        ? WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID
+        : authContext.tenantId();
   }
 
   private String firstNonBlank(String... values) {

@@ -140,6 +140,31 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void saasOwnerPlatformInvitationEventsDoNotBreakMyAccountNotificationCenter() {
+    var ownerIdentity = new WorkosIdentity("workos-owner@example.test", "owner@example.test", "SaaS Owner");
+    var owner = new AuthContextResolver(identityRepository).resolveMe(ownerIdentity, "membership-owner", "corr-owner-resolve");
+    var invite = invitationService.createInvitation(owner, new InvitationService.CreateInvitationRequest(
+        "invite-platform-owner-center",
+        ScopeType.SAAS_OWNER,
+        null,
+        null,
+        "new-platform-owner@example.test",
+        "New Platform Owner",
+        List.of(FoundationRole.SAAS_OWNER_ADMIN),
+        Instant.now().plusSeconds(3600),
+        "platform-owner-onboarding",
+        "corr-platform-owner-invite"));
+    invitationService.recordDeliveryResult(invite.invitationId(), "delivery-platform-owner", true, null, null, "corr-platform-owner-delivery");
+
+    var surface = service.surface(ownerIdentity, "membership-owner", "surface-my-account-notification-center", "corr-owner-center");
+
+    assertEquals("surface-my-account-notification-center", surface.surfaceId());
+    assertEquals("notification-center", surface.surfaceType());
+    assertTrue(eventRepository.listTenant(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID).stream()
+        .anyMatch(event -> event.eventType().equals("invitation.delivery.sent")));
+  }
+
+  @Test
   void productionAdminUsersBootstrapStillRejectsTenantAndCustomerAdmins() {
     var repository = new LocalDemoIdentityRepository();
 
