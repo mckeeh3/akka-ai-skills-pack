@@ -162,9 +162,11 @@ function UserAdminUsersView({ envelope, onAction }: ListSearchSurfaceProps) {
         </div>
       </div>
 
-      <form className="surface-search-form user-admin-clean-search" role="search" onSubmit={(event) => event.preventDefault()}>
+      <form className="surface-search-form user-admin-clean-search" role="search" onSubmit={(event) => { event.preventDefault(); const query = new FormData(event.currentTarget).get('query'); if (refreshAction && !refreshAction.disabled) onAction?.(refreshAction, envelope.surfaceId, stringRecord({ ...safeDirectoryInput(envelope), query: typeof query === 'string' ? query : '' })); }}>
         <label htmlFor={`${envelope.surfaceId}-query`}>Search users, invitations, or access objects</label>
-        <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" placeholder="Backend search runs when you refresh or submit a governed search action" defaultValue={typeof envelope.data.query === 'string' ? envelope.data.query : ''} />
+        <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" placeholder="Search visible users and invitations in this selected scope" defaultValue={typeof envelope.data.query === 'string' ? envelope.data.query : ''} />
+        <button type="submit" className="surface-action-link secondary" disabled={!refreshAction || Boolean(refreshAction.disabled)}>Search</button>
+        {refreshAction?.disabled && <p className="form-error">{refreshAction.disabled.message}</p>}
       </form>
 
       {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial results: unauthorized or redacted evidence is omitted.</p>}
@@ -221,7 +223,8 @@ function backendRowInput(row: ListSearchSurfaceData['rows'][number]): Record<str
 }
 
 function safeDirectoryInput(envelope: SurfaceEnvelope<ListSearchSurfaceData>): Record<string, string> {
-  return stringRecord({ query: typeof envelope.data.query === 'string' ? envelope.data.query : '', ...(envelope.data.filterState ?? {}) });
+  const filters = typeof envelope.data.filters === 'object' && envelope.data.filters ? envelope.data.filters as Record<string, unknown> : {};
+  return stringRecord({ query: typeof envelope.data.query === 'string' ? envelope.data.query : '', ...filters, ...(envelope.data.filterState ?? {}) });
 }
 
 function displayName(row: ListSearchSurfaceData['rows'][number]) {

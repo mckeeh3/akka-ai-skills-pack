@@ -459,12 +459,14 @@ public final class WorkstreamService {
       var account = userAdminService.reactivateAccount(actor, stringInput(request.input(), "accountId", actor.account().accountId()), stringInput(request.input(), "reason", "workstream account reactivate"), request.correlationId());
       result = new CapabilityActionResult("accepted", "Account reactivated by backend-authoritative User Admin capability.", request.correlationId(), List.of("trace-useradmin-account-reactivate-" + stableSuffix(request.correlationId())), detailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-useradmin-read-support-access".equals(request.actionId())) {
-      result = new CapabilityActionResult("accepted", "Support-access state loaded.", request.correlationId(), List.of("trace-useradmin-support-access-read-" + stableSuffix(request.correlationId())), listSurface(actor, request.correlationId()));
+      result = new CapabilityActionResult("accepted", "Support-access state loaded.", request.correlationId(), List.of("trace-useradmin-support-access-read-" + stableSuffix(request.correlationId())), listSurface(actor, request.input(), request.correlationId()));
     } else if ("action-useradmin-grant-support-access".equals(request.actionId()) || "action-useradmin-revoke-support-access".equals(request.actionId()) || "action-useradmin-extend-support-access".equals(request.actionId())) {
       var enabled = !"action-useradmin-revoke-support-access".equals(request.actionId());
       var expiresAt = enabled ? Instant.now().plus(8, ChronoUnit.HOURS) : null;
       var changed = userAdminService.updateSupportAccess(actor, stringInput(request.input(), "membershipId", actor.selectedContext().membershipId()), enabled, expiresAt, stringInput(request.input(), "reason", "workstream support access change"), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult("accepted", "Support access updated.", request.correlationId(), List.of("trace-useradmin-support-access-" + stableSuffix(request.idempotencyKey())), detailSurface(actor, request.input(), request.correlationId()));
+    } else if ("action-display-user-list".equals(request.actionId()) || "action-user-admin-show-users".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "User Admin directory loaded with backend-authorized filters.", request.correlationId(), List.of("trace-user-admin-list-" + stableSuffix(request.correlationId())), listSurface(actor, request.input(), request.correlationId()));
     } else if ("action-useradmin-start-access-review".equals(request.actionId())) {
       var task = accessReviewService.start(actor, request.idempotencyKey(), request.correlationId());
       result = accessReviewActionResult(task, task.status() == AccessReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked-runtime" : accessReviewStatus(task), task.status() == AccessReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "Access-review task failed closed; governed AutonomousAgent provider/runtime configuration is unavailable." : "Access-review Akka AutonomousAgent task accepted; backend projection remains source of truth.", request.correlationId(), actor);
@@ -1188,13 +1190,27 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope listSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    return listSurface(actor, null, correlationId);
+  }
+
+  private SurfaceEnvelope listSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     authContextResolver.appendProtectedReadTrace(actor, USERADMIN_LIST_MEMBERS, "user_admin.users.v1", correlationId);
     var rows = new ArrayList<Map<String, Object>>();
     var users = userDirectoryView.list(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId());
     var invites = invitationView.list(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId());
     for (var user : users) rows.add(userDirectoryRow(user));
     for (var invite : invites) rows.add(invitationRow(invite));
-    return envelope("surface-user-admin-users", "list-search", "Users", actor, correlationId, mapOf("surfaceContract", "user_admin.users.v1", "branchNavigation", userBranchNavigation(correlationId), "query", "", "rows", rows, "filters", mapOf("backendAuthored", true, "selectedScopeOnly", true), "pageInfo", mapOf("activeUserCount", users.size(), "invitationCount", invites.size(), "totalKnownCount", rows.size()), "createAction", mapOf("actionId", "action-open-useradmin-invitation-create", "targetSurfaceId", "surface-user-admin-invitation-create", "capabilityId", USERADMIN_SEND_INVITATION), "redaction", List.of("hidden-users-redacted", "cross-scope-counts-redacted"), "diagnosticMetadata", mapOf("visibility", "role-gated", "traceRefs", List.of("trace-surface-user-admin-users")), "emptyMessage", "No active users or invitations are visible in this scope."), List.of(displayDetailAction(), displayInvitationDetailAction(), openInvitationCreateAction(), openAuditAction()));
+    var query = stringInput(input, "query", "").trim();
+    var visibleRows = query.isBlank() ? rows : rows.stream().filter(row -> rowMatchesQuery(row, query)).toList();
+    return envelope("surface-user-admin-users", "list-search", "Users", actor, correlationId, mapOf("surfaceContract", "user_admin.users.v1", "branchNavigation", userBranchNavigation(correlationId), "query", query, "rows", visibleRows, "filters", mapOf("query", query, "backendAuthored", true, "selectedScopeOnly", true), "pageInfo", mapOf("activeUserCount", users.size(), "invitationCount", invites.size(), "totalKnownCount", rows.size(), "visibleCount", visibleRows.size()), "createAction", mapOf("actionId", "action-open-useradmin-invitation-create", "targetSurfaceId", "surface-user-admin-invitation-create", "capabilityId", USERADMIN_SEND_INVITATION), "redaction", List.of("hidden-users-redacted", "cross-scope-counts-redacted"), "diagnosticMetadata", mapOf("visibility", "role-gated", "traceRefs", List.of("trace-surface-user-admin-users")), "emptyMessage", query.isBlank() ? "No active users or invitations are visible in this scope." : "No visible users or invitations matched this backend-authorized search."), List.of(showUsersAction(), displayDetailAction(), displayInvitationDetailAction(), openInvitationCreateAction(), openAuditAction()));
+  }
+
+  private boolean rowMatchesQuery(Map<String, Object> row, String query) {
+    var normalized = query.toLowerCase(Locale.ROOT);
+    return row.entrySet().stream()
+        .filter(entry -> List.of("accountId", "membershipId", "invitationId", "email", "displayName", "role", "status", "delivery", "targetObjectType", "rowType").contains(entry.getKey()))
+        .map(entry -> Objects.toString(entry.getValue(), "").toLowerCase(Locale.ROOT))
+        .anyMatch(value -> value.contains(normalized));
   }
 
 

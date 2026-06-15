@@ -179,6 +179,7 @@ export type ListSearchSurfaceData = {
   query: string | Record<string, string | number | boolean | undefined | Record<string, unknown>>;
   rows: Array<Record<string, string | number | boolean | undefined | Record<string, unknown> | Array<unknown>>>;
   pageInfo?: { nextPageToken?: string; nextCursor?: string; totalKnownCount?: number };
+  filters?: Record<string, string | number | boolean | undefined>;
   filterState?: Record<string, string | number | boolean | undefined>;
   mobileFallback?: string;
   dashboardOrigin?: Record<string, unknown>;

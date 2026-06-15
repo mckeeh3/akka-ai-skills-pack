@@ -213,7 +213,7 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
             const action = counter.actionId ? actionById.get(counter.actionId) : undefined;
             const status = counter.status ?? 'Open queue with backend authorization';
             const body = <><span>{counter.label}</span><strong>{counter.value}</strong><em>{formatStatus(status)}</em></>;
-            return action ? <button key={counter.counterId} type="button" className={`attention-counter-card ${counter.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId)} aria-label={`Open ${counter.label}: ${status}; ${counter.value} items`}>{body}</button> : <article key={counter.counterId} className={`attention-counter-card ${counter.severity ?? 'info'}`}>{body}</article>;
+            return action ? <button key={counter.counterId} type="button" className={`attention-counter-card ${counter.severity ?? 'info'}`} disabled={Boolean(action.disabled)} onClick={() => !action.disabled && onAction?.(action, envelope.surfaceId)} aria-label={`Open ${counter.label}: ${action.disabled?.message ?? status}; ${counter.value} items`} aria-disabled={Boolean(action.disabled)}>{body}</button> : <article key={counter.counterId} className={`attention-counter-card ${counter.severity ?? 'info'}`}>{body}</article>;
           })}
         </div>
       </section>
@@ -233,10 +233,10 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
           </div>
           <div className="user-admin-action-grid" aria-label="Authorized User Admin actions">
             {nextActionButtons.map((action) => (
-              <button key={action.actionId} type="button" className="user-admin-work-card" onClick={() => onAction?.(action, envelope.surfaceId)}>
-                <span className="eyebrow">{action.requiresApproval ? 'Approval gated' : 'Authorized capability'}</span>
+              <button key={action.actionId} type="button" className="user-admin-work-card" disabled={Boolean(action.disabled)} onClick={() => !action.disabled && onAction?.(action, envelope.surfaceId)} aria-disabled={Boolean(action.disabled)}>
+                <span className="eyebrow">{action.disabled ? 'Unavailable in this context' : action.requiresApproval ? 'Approval gated' : 'Authorized capability'}</span>
                 <h4>{cleanUserAdminActionLabel(action.label)}</h4>
-                <p>{nextActions.find((candidate) => candidate.actionId === action.actionId)?.denialHint ?? 'Backend rechecks authority and returns the next safe surface.'}</p>
+                <p>{action.disabled?.message ?? nextActions.find((candidate) => candidate.actionId === action.actionId)?.denialHint ?? 'Backend rechecks authority and returns the next safe surface.'}</p>
               </button>
             ))}
           </div>
@@ -251,8 +251,8 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
           </div>
           <div className="user-admin-population-grid" aria-label="Visible administered populations">
             {populationCards.map((card) => card.action ? (
-              <button key={card.cardId} type="button" className="user-admin-population-card" onClick={() => onAction?.(card.action!, envelope.surfaceId)}>
-                <span className="eyebrow">{card.scope}</span><h4>{card.label}</h4><strong>{card.value}</strong><p>{card.summary}</p>
+              <button key={card.cardId} type="button" className="user-admin-population-card" disabled={Boolean(card.action.disabled)} onClick={() => !card.action?.disabled && onAction?.(card.action!, envelope.surfaceId)} aria-disabled={Boolean(card.action.disabled)}>
+                <span className="eyebrow">{card.action.disabled ? 'Unavailable in this context' : card.scope}</span><h4>{card.label}</h4><strong>{card.value}</strong><p>{card.action.disabled?.message ?? card.summary}</p>
               </button>
             ) : (
               <article key={card.cardId} className="user-admin-population-card">
