@@ -7,6 +7,7 @@ import {
   canonicalSurfaceEnvelopes,
   displayAgentAdminTraceActionResult,
   displayAgentBehaviorProposalActionResult,
+  displayAgentDashboardActionResult,
   displayAgentCatalogActionResult,
   displayAgentDetailActionResult,
   displayAgentManifestActionResult,
@@ -141,7 +142,7 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
   }
 
   runShellRequest(request: WorkstreamShellRequest): Promise<ApiResult<WorkstreamShellResponse>> {
-    const targetSurfaceId = request.targetSurfaceId ?? (request.targetFunctionalAgentId === 'agent-agent-admin' ? 'surface-agent-admin-catalog' : request.targetFunctionalAgentId === 'agent-my-account' ? 'surface-my-account-dashboard' : 'surface-user-admin-dashboard');
+    const targetSurfaceId = request.targetSurfaceId ?? (request.targetFunctionalAgentId === 'agent-agent-admin' ? 'surface-agent-admin-dashboard' : request.targetFunctionalAgentId === 'agent-my-account' ? 'surface-my-account-dashboard' : 'surface-user-admin-dashboard');
     const surface = this.surfaces.find((candidate) => candidate.surfaceId === targetSurfaceId);
     if (!surface) return delayedError('not_found', 'The requested shell surface is not available in this context.');
     const now = new Date().toISOString();
@@ -168,6 +169,8 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
     if (action.disabled) return delayedOk({ ...actionResultsByStatus.denied, message: action.disabled.message, correlationId: request.correlationId });
     const result = request.actionId === 'action-show-my-account-dashboard'
       ? displayMyAccountDashboardActionResult
+      : request.actionId === 'action-display-agent-admin-dashboard' || request.actionId === 'action-open-agent-admin'
+        ? displayAgentDashboardActionResult
       : request.actionId === 'action-show-my-profile'
         ? displayMyAccountProfileActionResult
         : request.actionId === 'action-show-my-settings'

@@ -11,7 +11,7 @@ const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 
 test('Agent Admin functional agent is visible and capability backed for governed runtime', () => {
-  assert.match(agents, /label: 'Agent Admin'[\s\S]*defaultSurfaceType: 'markdown_response'/);
+  assert.match(agents, /label: 'Agent Admin'[\s\S]*defaultSurfaceType: 'dashboard'[\s\S]*defaultSurfaceId: 'surface-agent-admin-dashboard'/);
   for (const capability of [
     'agent_admin.submit_turn',
     'agent_admin.list_definitions',
@@ -48,6 +48,7 @@ test('Agent Admin functional agent is visible and capability backed for governed
 
 test('Agent Admin fixtures include catalog, detail, governed diffs, model refs, test console, decisions, and traces', () => {
   for (const fixture of [
+    'agentAdminDashboardSurface',
     'agentAdminCatalogSurface',
     'agentAdminDetailSurface',
     'agentPromptGovernanceSurface',
@@ -64,6 +65,7 @@ test('Agent Admin fixtures include catalog, detail, governed diffs, model refs, 
     assert.match(surfaces, new RegExp(fixture));
   }
   for (const surfaceId of [
+    'surface-agent-admin-dashboard',
     'surface-agent-admin-catalog',
     'surface-agent-admin-detail',
     'surface-agent-prompt-governance',
@@ -92,6 +94,7 @@ test('Agent Admin surfaces preserve required UI states, approval gates, validati
     'TOOL_BOUNDARY_DENIED',
     'Provider secret values are never browser-visible',
     'redactedPreview',
+    'agent_admin.dashboard.v1',
     'agent_admin.catalog.v1',
     'agent_admin.definition.v1',
     'agent_admin.prompt_version.v1',
@@ -126,6 +129,7 @@ test('Agent Admin surfaces preserve required UI states, approval gates, validati
 
 test('Agent Admin actions and fixture client return structured surfaces instead of page routes', () => {
   for (const actionId of [
+    'action-display-agent-admin-dashboard',
     'action-display-agent-catalog',
     'action-open-agent-detail',
     'action-activate-agent-definition',
@@ -151,10 +155,12 @@ test('Agent Admin actions and fixture client return structured surfaces instead 
   ]) {
     assert.match(surfaces, new RegExp(actionId));
   }
+  assert.match(surfaces, /displayAgentDashboardActionResult/);
   assert.match(surfaces, /displayAgentCatalogActionResult/);
   assert.match(surfaces, /displayAgentDetailActionResult/);
   assert.match(surfaces, /displayAgentSeedMaterialActionResult/);
   assert.match(surfaces, /displayAgentBehaviorProposalActionResult/);
+  assert.match(apiClient, /displayAgentDashboardActionResult/);
   assert.match(apiClient, /displayAgentCatalogActionResult/);
   assert.match(apiClient, /displayAgentDetailActionResult/);
   assert.match(apiClient, /displayAgentSeedMaterialActionResult/);
@@ -169,6 +175,7 @@ test('Agent Admin starts without bootstrap markdown and keeps structured governa
   assert.match(surfaces, /Model-backed AgentAdminAgent guidance was blocked before a response was produced/);
   assert.match(surfaces, /no direct mutation|ToolPermissionBoundary enforcement/);
   for (const surfaceId of [
+    'surface-agent-admin-dashboard',
     'surface-agent-admin-catalog',
     'surface-agent-admin-detail',
     'surface-agent-prompt-governance',

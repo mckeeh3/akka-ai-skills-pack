@@ -41,7 +41,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
   {
     functionalAgentId: 'agent-agent-admin',
     label: 'Agent Admin',
-    purpose: 'Govern agent definitions, prompts, skill manifests, and tool boundaries.',
+    purpose: 'Govern agent definitions, prompts, skill manifests, tool boundaries, model refs, seed imports, behavior proposals, and runtime traces.',
     icon: 'bot',
     workstreamIcon: {
       workstreamId: 'workstream-agent-admin',
@@ -52,7 +52,8 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
       tooltip: 'Open Agent Admin workstream',
       ariaLabel: 'Open Agent Admin workstream'
     },
-    defaultSurfaceType: 'markdown_response',
+    defaultSurfaceType: 'dashboard',
+    defaultSurfaceId: 'surface-agent-admin-dashboard',
     requiredCapabilityIds: ['agent_admin.submit_turn', 'agent_admin.list_definitions', 'agent_admin.get_definition', 'agent.definitions.manage', 'agent_admin.get_prompt_version', 'agent_admin.get_skill_version', 'agent_admin.get_reference_version', 'agent_admin.get_manifest', 'agent_admin.get_tool_boundary', 'agent_admin.draft_behavior_change', 'agent_admin.submit_behavior_change_for_review', 'agent_admin.approve_behavior_change', 'agent_admin.reject_behavior_change', 'agent_admin.activate_behavior_change', 'agent_admin.cancel_behavior_change', 'agent_admin.rollback_behavior_change', 'agent_admin.simulate_tool_boundary', 'agent_admin.get_model_ref', 'agent_admin.list_seed_material', 'agent_admin.reseed_missing_defaults', 'agent_admin.prompt_risk_review.start', 'agent_admin.prompt_risk_review.read', 'agent_admin.prompt_risk_review.cancel', 'agent_admin.prompt_risk_review.accept_result', 'agent_admin.prompt_risk_review.reject_result'],
     attention: { count: 4, severity: 'blocked', source: 'attention.list_rail_summaries' },
     availability: 'visible'

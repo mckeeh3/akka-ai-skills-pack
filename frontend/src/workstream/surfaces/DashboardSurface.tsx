@@ -15,6 +15,9 @@ export function DashboardSurface({ envelope, onAction, onSignOut }: DashboardSur
   if (envelope.surfaceId.startsWith('surface-user-admin-') || envelope.data.surfaceContract?.startsWith('user_admin.')) {
     return <UserAdminCommandCenter envelope={envelope} onAction={onAction} />;
   }
+  if (envelope.surfaceId === 'surface-agent-admin-dashboard' || envelope.data.surfaceContract?.startsWith('agent_admin.dashboard')) {
+    return <AgentAdminCommandCenter envelope={envelope} onAction={onAction} />;
+  }
 
   const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
   const myAccountSurfaceActions = actionsForIds(envelope.data.utilityActionIds, actionById)
@@ -92,6 +95,71 @@ export function DashboardSurface({ envelope, onAction, onSignOut }: DashboardSur
         </section>
       )}
       {remainingActions.length > 0 && <SurfaceActionBar actions={remainingActions} surfaceId={envelope.surfaceId} onAction={onAction} />}
+    </SurfaceStateFrame>
+  );
+}
+
+function AgentAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
+  const data = envelope.data;
+  const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
+  const queues = data.attentionQueues ?? [];
+  const authorizedActions = data.authorizedActions ?? [];
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <p className="sr-only">Surface contract: {data.surfaceContract ?? 'agent_admin.dashboard.v1'}. Provider secrets, raw prompts, raw skills, raw references, hidden authority, and cross-tenant evidence are omitted by backend redaction.</p>
+      <section className="my-account-command-hero agent-admin-command-hero" aria-label="Agent Admin authority and readiness summary">
+        <div>
+          <p className="eyebrow">Agent Admin · selected AuthContext</p>
+          <h3>{data.hero?.title ?? 'Govern managed agents safely'}</h3>
+          <p>{data.hero?.redactionSummary ?? renderSurfaceValue(data.redaction) ?? 'Backend selected scope, redaction, and capability boundaries apply to every Agent Admin action.'}</p>
+        </div>
+        <dl className="authority-summary-grid" aria-label="Agent Admin readiness summary">
+          <div><dt>Scope</dt><dd>{data.hero?.scopeLabel ?? data.scopeLabel ?? 'Selected tenant/customer scope'}</dd></div>
+          <div><dt>Admin role</dt><dd>{data.hero?.adminLevel ?? 'Agent steward'}</dd></div>
+          <div><dt>Readiness</dt><dd>{formatStatus(data.readiness ?? 'ready')}</dd></div>
+          <div><dt>Visible capabilities</dt><dd>{data.capabilityIds?.length ?? envelope.authContext.visibleCapabilityIds.length}</dd></div>
+        </dl>
+      </section>
+
+      <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-attention-heading`}>
+        <div className="surface-section-heading">
+          <div><p className="eyebrow">Things that need my attention</p><h4 id={`${envelope.surfaceId}-attention-heading`}>Governance attention queues</h4></div>
+          <p>Each counter opens a backend-authorized surface. Hidden or forbidden agent evidence is omitted rather than inferred by the browser.</p>
+        </div>
+        <div className="attention-counter-strip user-admin-attention-strip" aria-label="Agent Admin attention counters">
+          {queues.map((queue) => {
+            const action = queue.actionId ? actionById.get(queue.actionId) : undefined;
+            const body = <><span>{queue.label}</span><strong>{queue.count ?? 0}</strong><em>{formatStatus(queue.statusText ?? 'Open queue')}</em><small>{queue.redaction ?? queue.sourceCapabilityId ?? 'browser-safe summary'}</small></>;
+            return action ? <button key={queue.queueId} type="button" className={`attention-counter-card ${queue.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId, agentAdminQueueInput(queue, envelope))} aria-label={`Open ${queue.label}: ${queue.statusText ?? 'queue'}; ${queue.count ?? 0} items`}>{body}</button> : <article key={queue.queueId} className={`attention-counter-card ${queue.severity ?? 'info'}`}>{body}</article>;
+          })}
+        </div>
+      </section>
+
+      <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-actions-heading`}>
+        <div className="surface-section-heading">
+          <div><p className="eyebrow">Things I can do</p><h4 id={`${envelope.surfaceId}-actions-heading`}>Authorized Agent Admin surfaces</h4></div>
+          <p>Actions recheck scope, capability, approval policy, idempotency, provider readiness, and audit requirements before returning a typed result surface.</p>
+        </div>
+        <div className="user-admin-action-grid" aria-label="Authorized Agent Admin task entry points">
+          {authorizedActions.map((entry) => {
+            const action = actionById.get(entry.actionId);
+            return <button key={entry.actionId} type="button" className="user-admin-work-card" disabled={!action || Boolean(action.disabled)} onClick={() => action && onAction?.(action, envelope.surfaceId)}>
+              <span className="eyebrow">{entry.approvalRequired || action?.requiresApproval ? 'Approval gated' : 'Authorized surface'}</span>
+              <h4>{entry.label}</h4>
+              <p>{entry.denialHint ?? (entry.resultSurfaceId ? `Opens ${entry.resultSurfaceId.replace('surface-agent-', '').replace('surface-', '').replace(/-/g, ' ')}` : 'Backend returns the next safe surface.')}</p>
+            </button>;
+          })}
+        </div>
+      </section>
+
+      {data.recentActivity && data.recentActivity.length > 0 && (
+        <details className="dashboard-evidence-drawer">
+          <summary>Role-gated activity and trace diagnostics</summary>
+          <section className="surface-section-list" aria-label="Recent Agent Admin audit activity">
+            {data.recentActivity.map((activity) => <article key={activity.activityId} className="surface-section-card"><h4>{activity.label}</h4>{activity.summary && <p>{activity.summary}</p>}{activity.traceId && <a href={`/ui?surfaceId=surface-agent-admin-trace&traceId=${encodeURIComponent(activity.traceId)}`}>{activity.traceId}</a>}</article>)}
+          </section>
+        </details>
+      )}
     </SurfaceStateFrame>
   );
 }
@@ -362,6 +430,10 @@ function defaultControlPanels(data: DashboardSurfaceData): NonNullable<Dashboard
   ];
 }
 
+function agentAdminQueueInput(queue: NonNullable<DashboardSurfaceData['attentionQueues']>[number], envelope: { correlationId: string }): Record<string, string> {
+  return stringRecord({ targetSurfaceId: queue.targetSurfaceId, requiredCapabilityId: queue.sourceCapabilityId, filter: queue.filter, correlationId: queue.traceRefs?.[0] ?? envelope.correlationId });
+}
+
 function userAdminAttentionCountersFromQueues(queues: NonNullable<DashboardSurfaceData['attentionQueues']>, actionById: Map<string, SurfaceAction>): NonNullable<DashboardSurfaceData['attentionCounters']> {
   return queues.map((queue) => {
     const queueCount = Number(queue.count ?? 0);
@@ -476,6 +548,10 @@ function formatAttentionSource(source?: string): string {
 
 function formatStatus(value?: string): string {
   return (value ?? 'open').replace(/[-_]/g, ' ');
+}
+
+function stringRecord(value: Record<string, unknown>): Record<string, string> {
+  return Object.fromEntries(Object.entries(value).filter(([, entry]) => entry !== undefined && entry !== null).map(([key, entry]) => [key, String(entry)]));
 }
 
 function renderSurfaceValue(value: unknown): string | undefined {

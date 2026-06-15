@@ -9,11 +9,12 @@ type ListSearchSurfaceProps = {
 
 export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps) {
   const isUserAdmin = envelope.surfaceId === 'surface-user-admin-users' || envelope.data.surfaceContract === 'user_admin.users.v1' || envelope.data.surfaceContracts?.some((contract) => contract.startsWith('user_admin.'));
+  const isAgentAdminCatalog = envelope.surfaceId === 'surface-agent-admin-catalog' || envelope.data.surfaceContract === 'agent_admin.catalog.v1';
   const columns = Array.from(new Set(envelope.data.rows.flatMap((row) => Object.keys(row))));
   const queryValue = typeof envelope.data.query === 'string' ? envelope.data.query : JSON.stringify(envelope.data.query);
   return (
     <SurfaceStateFrame envelope={envelope}>
-      {isUserAdmin ? <UserAdminUsersView envelope={envelope} onAction={onAction} /> : (
+      {isAgentAdminCatalog ? <AgentAdminCatalogView envelope={envelope} onAction={onAction} /> : isUserAdmin ? <UserAdminUsersView envelope={envelope} onAction={onAction} /> : (
         <>
           <form className="surface-search-form" role="search">
             <label htmlFor={`${envelope.surfaceId}-query`}>Search</label>
@@ -32,6 +33,54 @@ export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps
         </>
       )}
     </SurfaceStateFrame>
+  );
+}
+
+function AgentAdminCatalogView({ envelope, onAction }: ListSearchSurfaceProps) {
+  const rows = envelope.data.rows;
+  const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
+  const refreshAction = actionById.get('action-display-agent-catalog');
+  const traceAction = actionById.get('action-open-agent-trace');
+  return (
+    <section className="user-admin-users-surface agent-admin-catalog-surface" aria-label="Agent Admin managed agent catalog">
+      <div className="user-admin-users-header">
+        <div>
+          <p className="eyebrow">Agent Admin · managed agent catalog</p>
+          <h3>Managed agents</h3>
+          <p>Each card opens backend-authored readiness inspection. The catalog never mutates agent lifecycle, prompts, tools, models, or seeds inline.</p>
+        </div>
+        <div className="user-admin-users-header-actions">
+          {refreshAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(refreshAction, envelope.surfaceId, safeDirectoryInput(envelope))}>Refresh catalog</button>}
+          {traceAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(traceAction, envelope.surfaceId)}>Open traces</button>}
+        </div>
+      </div>
+      <form className="surface-search-form user-admin-clean-search" role="search" onSubmit={(event) => event.preventDefault()}>
+        <label htmlFor={`${envelope.surfaceId}-query`}>Search managed agents</label>
+        <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" defaultValue={typeof envelope.data.query === 'string' ? envelope.data.query : ''} />
+      </form>
+      {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial results: unauthorized or redacted agent evidence is omitted.</p>}
+      {envelope.data.redaction && <details className="dashboard-evidence-drawer"><summary>Catalog redaction and diagnostics</summary><p>{renderSurfaceValue(envelope.data.redaction)}</p></details>}
+      {rows.length === 0 ? <p className="surface-empty-copy">{envelope.data.emptyMessage ?? 'No managed agents are visible in this scope.'}</p> : (
+        <div className="user-admin-clean-list agent-admin-catalog-list" role="list" aria-label="Managed AgentDefinition cards">
+          {rows.map((row, index) => <AgentAdminCatalogRow key={String(row.id ?? index)} row={row} actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />)}
+        </div>
+      )}
+      <details className="dashboard-evidence-drawer"><summary>Role-gated catalog diagnostics</summary><p>Surface contract: {envelope.data.surfaceContract ?? 'agent_admin.catalog.v1'}</p><p>Trace links: {renderSurfaceValue((envelope.data as { traceLinks?: unknown }).traceLinks) ?? 'none'}</p></details>
+    </section>
+  );
+}
+
+function AgentAdminCatalogRow({ row, actions, surfaceId, onAction }: { row: ListSearchSurfaceData['rows'][number]; actions: SurfaceAction[]; surfaceId: string; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
+  const action = userAdminRowAction(row, actions);
+  const label = String(row.displayName ?? row.id ?? 'Managed agent');
+  const status = String(row.providerStatus ?? row.status ?? 'ready');
+  return (
+    <button type="button" role="listitem" className="user-admin-clean-row agent-admin-agent-row" disabled={!action || Boolean(action.disabled)} onClick={() => action && onAction?.(action, surfaceId, backendRowInput(row))} aria-label={`Open readiness inspection for ${label}`}>
+      <span className="user-admin-person"><strong>{label}</strong><small>{String(row.readinessSummary ?? 'Backend-authored readiness summary')}</small></span>
+      <span className="user-admin-role">{formatRole(row.authorityLevel ?? row.rowType)}</span>
+      <span className={`status-pill ${statusTone(status)}`}>{formatStatus(status)}</span>
+      <span className="status-pill info">{String(row.attentionSummary ?? row.seedStatus ?? 'No attention summary')}</span>
+    </button>
   );
 }
 

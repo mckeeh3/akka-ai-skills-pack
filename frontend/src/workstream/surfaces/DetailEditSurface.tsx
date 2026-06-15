@@ -43,6 +43,10 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
 
   const isMyAccountSurface = envelope.surfaceId === 'surface-my-profile' || envelope.surfaceId === 'surface-my-settings' || envelope.surfaceId === 'surface-my-context';
 
+  if (isAgentAdminSurface(envelope)) {
+    return <AgentAdminInspectionDetail envelope={envelope} onAction={onAction} />;
+  }
+
   if (isUserAdminSurface(envelope) && (envelope.data.recordKind === 'account' || envelope.data.recordKind === 'invitation')) {
     return <UserAdminCleanDetail envelope={envelope} fieldValues={fieldValues} onAction={onAction} />;
   }
@@ -190,6 +194,67 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
       )}
       {isUserAdminSurface(envelope) && <UserAdminBranchReturn envelope={envelope} onAction={onAction} />}
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={editableActionInput} onAction={onAction} />
+    </SurfaceStateFrame>
+  );
+}
+
+function AgentAdminInspectionDetail({ envelope, onAction }: { envelope: SurfaceEnvelope<DetailEditSurfaceData>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
+  const fields = envelope.data.fields ?? [];
+  const taskEntryActions = envelope.actions;
+  const provider = envelope.data.providerReadiness as { status?: string; safeReason?: string; secretVisibility?: string } | undefined;
+  const relatedArtifacts = envelope.data.relatedArtifacts as Array<Record<string, unknown>> | undefined;
+  const actionContext = { ...(envelope.data.actionContext ?? {}), recordId: envelope.data.recordId ?? '', correlationId: envelope.correlationId };
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="user-admin-detail-clean agent-admin-detail-clean" aria-label="Agent Admin readiness and behavior inspection">
+        <div className="user-admin-detail-clean-header">
+          <div>
+            <p className="eyebrow">Managed agent inspection</p>
+            <h3>{envelope.data.recordLabel ?? envelope.title}</h3>
+            {envelope.data.summary && <p>{envelope.data.summary}</p>}
+          </div>
+        </div>
+
+        <section className="user-admin-detail-overview" aria-label="Agent Admin default readiness summary">
+          <article className="authority-context-panel">
+            <h4>Readiness and authority boundary</h4>
+            <p>{envelope.data.permissionState?.reason ?? 'This inspection is read-only. Behavior and lifecycle changes open dedicated proposal, decision, confirmation, workflow, or system-message surfaces.'}</p>
+            <dl>
+              <div><dt>Agent state</dt><dd>{fieldValue(fields, 'status') ?? 'backend selected'}</dd></div>
+              <div><dt>Authority tier</dt><dd>{fieldValue(fields, 'authorityLevel') ?? 'approval required'}</dd></div>
+              <div><dt>Provider readiness</dt><dd>{provider?.status ?? 'not reported'}{provider?.secretVisibility ? ` · secrets ${provider.secretVisibility}` : ''}</dd></div>
+              <div><dt>Mutation model</dt><dd>No direct mutation from this detail surface</dd></div>
+            </dl>
+          </article>
+        </section>
+
+        {relatedArtifacts && relatedArtifacts.length > 0 && (
+          <section className="user-admin-list-panel" aria-label="Behavior artifacts and governance objects">
+            <div className="surface-section-heading compact"><div><p className="eyebrow">Behavior artifacts</p><h4>Prompt, manifest, model, and tool-boundary readiness</h4></div><p>Artifact ids and capability details are diagnostic; use task entry points for changes.</p></div>
+            <div className="user-admin-clean-list" role="list">
+              {relatedArtifacts.map((artifact) => <article key={String(artifact.artifactId)} role="listitem" className="user-admin-clean-row agent-admin-artifact-card"><span className="user-admin-person"><strong>{humanize(String(artifact.artifactKind ?? 'artifact'))}</strong><small>{String(artifact.status ?? 'backend state')}</small></span><span className="status-pill info">{humanize(String(artifact.artifactKind ?? 'artifact'))}</span></article>)}
+            </div>
+          </section>
+        )}
+
+        <section className="user-admin-context-actions" aria-label="Agent Admin dedicated task surfaces">
+          <div className="surface-section-heading compact">
+            <div><p className="eyebrow">Dedicated task surfaces</p><h4>Govern behavior through proposals, decisions, tests, and traces</h4></div>
+            <p>Activation, deactivation, rollback, prompt/model/tool/manifest changes, and seed imports are not inline edits. Backend authorization returns the next safe surface.</p>
+          </div>
+          <SurfaceActionBar actions={taskEntryActions} surfaceId={envelope.surfaceId} actionInput={actionContext} onAction={onAction} />
+        </section>
+
+        <details className="dashboard-evidence-drawer">
+          <summary>Role-gated diagnostics</summary>
+          <div className="user-admin-readable-fields">
+            {fields.map((field) => <p key={field.fieldId}><span>{field.label}</span><strong>{field.value}</strong></p>)}
+          </div>
+          <p>Surface contract: {envelope.data.surfaceContract ?? 'agent_admin.definition.v1'}</p>
+          <p>Redaction: {renderSurfaceValue(envelope.data.redaction ?? envelope.data.redactionMetadata) ?? envelope.redaction.profile}</p>
+          {envelope.data.audit && <section className="trace-link-list" aria-label="Agent Admin diagnostic trace links">{envelope.data.audit.traceIds.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-agent-admin-trace&traceId=${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}
+        </details>
+      </section>
     </SurfaceStateFrame>
   );
 }
@@ -356,6 +421,14 @@ function UserAdminDetailOverview({ envelope }: { envelope: SurfaceEnvelope<Detai
       )}
     </section>
   );
+}
+
+function isAgentAdminSurface(envelope: SurfaceEnvelope<DetailEditSurfaceData>) {
+  return envelope.ownerFunctionalAgentId === 'agent-agent-admin' || envelope.surfaceId.startsWith('surface-agent-admin-') || envelope.data.surfaceContract?.startsWith('agent_admin.');
+}
+
+function fieldValue(fields: NonNullable<DetailEditSurfaceData['fields']>, fieldId: string): string | undefined {
+  return fields.find((field) => field.fieldId === fieldId)?.value;
 }
 
 function isUserAdminSurface(envelope: SurfaceEnvelope<DetailEditSurfaceData>) {

@@ -272,6 +272,9 @@ export type DetailEditSurfaceData = {
   deliveryState?: Record<string, unknown>;
   recoverySteps?: string[];
   noFakeSuccess?: boolean;
+  providerReadiness?: Record<string, unknown>;
+  relatedArtifacts?: Array<Record<string, unknown>>;
+  noDirectMutation?: boolean;
   providerBlockedSystemMessage?: Record<string, unknown> | null;
   audit?: {
     lastEventType: string;

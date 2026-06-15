@@ -39,6 +39,7 @@ export type FunctionalAgentSummary = {
   icon?: string;
   workstreamIcon: WorkstreamIconDescriptor;
   defaultSurfaceType: string;
+  defaultSurfaceId?: string;
   requiredCapabilityIds: string[];
   attention?: FunctionalAgentAttention;
   availability: AgentAvailability;

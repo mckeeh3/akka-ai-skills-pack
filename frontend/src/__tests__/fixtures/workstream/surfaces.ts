@@ -938,6 +938,18 @@ const agentPromptRiskAcceptCapability = 'agent_admin.prompt_risk_review.accept_r
 const agentPromptRiskRejectCapability = 'agent_admin.prompt_risk_review.reject_result';
 
 export const agentAdminSurfaceActions = {
+  displayDashboard: {
+    actionId: 'action-display-agent-admin-dashboard',
+    label: 'Open Agent Admin dashboard',
+    intent: 'surface-request',
+    capabilityId: agentDefinitionsCapability,
+    governedToolId: agentDefinitionsCapability,
+    browserToolId: 'action-display-agent-admin-dashboard',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-dashboard', openPlacement: 'inline' },
+    shellRequest: { requestType: 'open_workstream', targetFunctionalAgentId: 'agent-agent-admin', targetSurfaceId: 'surface-agent-admin-dashboard', displayText: 'Open Agent Admin dashboard' },
+    audit: { eventType: 'AgentAdminDashboardDisplayed', traceRequired: true }
+  },
   displayCatalog: {
     actionId: 'action-display-agent-catalog',
     label: 'Display agent catalog',
@@ -972,8 +984,8 @@ export const agentAdminSurfaceActions = {
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
-    audit: { eventType: 'AgentDefinitionActivated', traceRequired: true }
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentDefinitionActivationReviewRequested', traceRequired: true }
   },
   deactivateAgentDefinition: {
     actionId: 'action-deactivate-agent-definition',
@@ -986,8 +998,8 @@ export const agentAdminSurfaceActions = {
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
-    audit: { eventType: 'AgentDefinitionDeactivated', traceRequired: true }
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentDefinitionDeactivationReviewRequested', traceRequired: true }
   },
   proposePromptDiff: {
     actionId: 'action-propose-prompt-diff',
@@ -1229,7 +1241,7 @@ function envelope<TData>(surfaceId: string, surfaceType: string, title: string, 
     surfaceVersion: 'v1',
     title,
     ownerFunctionalAgentId,
-    reusableByFunctionalAgentIds: ['agent-audit-trace'],
+    reusableByFunctionalAgentIds: ownerFunctionalAgentId === 'agent-agent-admin' ? ['agent-audit-trace', 'agent-governance-policy'] : ['agent-audit-trace'],
     authContext,
     correlationId: `corr-${surfaceId}`,
     traceIds: [`trace-${surfaceId}`],
@@ -1333,8 +1345,8 @@ export const myAccountSurfaceActions = {
     browserToolId: 'action-open-agent-admin',
     inputSchemaRef: 'schema.my-account.open-workstream.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-agent-admin-catalog', openPlacement: 'deep-link' },
-    shellRequest: { requestType: 'open_workstream', targetFunctionalAgentId: 'agent-agent-admin', targetSurfaceId: 'surface-agent-admin-catalog', displayText: 'Open Agent Admin' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-dashboard', openPlacement: 'deep-link' },
+    shellRequest: { requestType: 'open_workstream', targetFunctionalAgentId: 'agent-agent-admin', targetSurfaceId: 'surface-agent-admin-dashboard', displayText: 'Open Agent Admin' },
     audit: { eventType: 'MyAccountOpenAgentAdminRequested', traceRequired: true }
   },
   openAuditTrace: {
@@ -2321,6 +2333,46 @@ export const userAdminAccessReviewSurface = envelope(
   [userAdminSurfaceActions.showUsers, userAdminSurfaceActions.startAccessReview, userAdminSurfaceActions.readAccessReview, userAdminSurfaceActions.cancelAccessReview, userAdminSurfaceActions.acceptAccessReviewResult, userAdminSurfaceActions.rejectAccessReviewResult, userAdminSurfaceActions.openAdminAudit]
 );
 
+export const agentAdminDashboardSurface = envelope(
+  'surface-agent-admin-dashboard',
+  'dashboard',
+  'Agent Admin command center',
+  'agent-agent-admin',
+  {
+    surfaceContract: 'agent_admin.dashboard.v1',
+    cards: [
+      { cardId: 'agent-admin-card-provider', label: 'Provider readiness', value: 'Ready', status: 'Model refs configured; secrets redacted', severity: 'info', actionId: 'action-display-agent-catalog', targetSurfaceId: 'surface-agent-admin-catalog' },
+      { cardId: 'agent-admin-card-approvals', label: 'Behavior approvals', value: 2, status: 'Human review required before activation', severity: 'blocked', actionId: 'action-submit-behavior-change', targetSurfaceId: 'surface-agent-behavior-proposal' },
+      { cardId: 'agent-admin-card-tool-boundary', label: 'Tool-boundary risks', value: 1, status: 'Side-effecting grant denied until separate review', severity: 'urgent', actionId: 'action-simulate-tool-boundary', targetSurfaceId: 'surface-agent-tool-boundary-diff' },
+      { cardId: 'agent-admin-card-seed', label: 'Seed material', value: 3, status: 'Starter defaults visible; tenant overrides preserved', severity: 'info', actionId: 'action-list-agent-seed-material', targetSurfaceId: 'surface-agent-seed-material' }
+    ],
+    attentionQueues: [
+      { queueId: 'provider-readiness', label: 'Provider/model readiness', count: 0, severity: 'info', statusText: 'Open readiness detail', sourceCapabilityId: 'agent_admin.list_definitions', targetSurfaceId: 'surface-agent-admin-catalog', actionId: 'action-display-agent-catalog', traceRefs: ['trace-agent-admin-catalog'], redaction: 'provider secrets redacted' },
+      { queueId: 'behavior-approval', label: 'Behavior proposals awaiting human decision', count: 2, severity: 'blocked', statusText: 'Approval required', sourceCapabilityId: 'agent_admin.submit_behavior_change_for_review', targetSurfaceId: 'surface-agent-behavior-proposal', actionId: 'action-submit-behavior-change', traceRefs: ['trace-agent-admin-behavior-review'], redaction: 'raw prompt/skill bodies omitted' },
+      { queueId: 'tool-boundary-risk', label: 'Risky tool-boundary expansion attempts', count: 1, severity: 'urgent', statusText: 'Simulation denied side effect', sourceCapabilityId: 'agent_admin.simulate_tool_boundary', targetSurfaceId: 'surface-agent-tool-boundary-diff', actionId: 'action-simulate-tool-boundary', traceRefs: ['trace-agent-admin-tool-denied-email-send'], redaction: 'tool output omitted' },
+      { queueId: 'prompt-risk-review', label: 'Prompt-risk autonomous review results', count: 1, severity: 'warning', statusText: 'Completed review requires human decision', sourceCapabilityId: 'agent_admin.prompt_risk_review.read', targetSurfaceId: 'surface-agent-admin-prompt-risk-review', actionId: 'action-agentadmin-read-prompt-risk-review', traceRefs: ['trace-prompt-risk-model-call-001'], redaction: 'browser-safe finding summaries only' }
+    ],
+    authorizedActions: [
+      { actionId: 'action-display-agent-catalog', label: 'Browse managed agents', capabilityId: 'agent_admin.list_definitions', resultSurfaceId: 'surface-agent-admin-catalog' },
+      { actionId: 'action-propose-prompt-diff', label: 'Draft prompt proposal', capabilityId: 'agent_admin.draft_behavior_change', resultSurfaceId: 'surface-agent-prompt-governance', approvalRequired: true },
+      { actionId: 'action-test-agent-prompt', label: 'Run no-side-effect test', capabilityId: 'agent_admin.draft_behavior_change', resultSurfaceId: 'surface-agent-test-console' },
+      { actionId: 'action-list-agent-seed-material', label: 'Review seed material', capabilityId: 'agent_admin.list_seed_material', resultSurfaceId: 'surface-agent-seed-material' },
+      { actionId: 'action-open-agent-trace', label: 'Open Agent Admin traces', capabilityId: 'audit.trace.read', resultSurfaceId: 'surface-agent-admin-trace' }
+    ],
+    recentActivity: [
+      { activityId: 'activity-agent-admin-protected-read', label: 'Catalog read protected by selected AuthContext', summary: 'Scoped AgentDefinition projection returned browser-safe readiness summaries.', traceId: 'trace-agent-admin-catalog' },
+      { activityId: 'activity-agent-admin-tool-denial', label: 'Tool-boundary denial preserved', summary: 'Side-effecting email grant request was denied and routed to review.', traceId: 'trace-agent-admin-tool-denied-email-send' }
+    ],
+    hero: { title: 'Govern managed agents safely', scopeLabel: 'Tenant Admin · selected customer scope', scopeType: 'CUSTOMER', adminLevel: 'Agent steward', redactionSummary: 'Provider secrets, raw prompts, raw skills, raw references, hidden authority, and cross-tenant evidence are omitted.' },
+    readiness: 'ready_with_attention',
+    capabilityIds: ['agent_admin.list_definitions', 'agent_admin.draft_behavior_change', 'agent_admin.simulate_tool_boundary', 'agent_admin.prompt_risk_review.read', 'audit.trace.read'],
+    redaction: { browserSafe: true, omittedFieldKeys: ['rawPromptBody', 'rawSkillBody', 'rawReferenceBody', 'providerCredentialValue', 'rawJwt'], previewLimitChars: 220 },
+    traceRefs: ['trace-agent-admin-dashboard', 'trace-agent-admin-catalog'],
+    systemStates: ['loading', 'empty', 'forbidden', 'stale', 'partial-data', 'blocked_provider_or_runtime']
+  },
+  [agentAdminSurfaceActions.displayDashboard, agentAdminSurfaceActions.displayCatalog, agentAdminSurfaceActions.proposePromptDiff, agentAdminSurfaceActions.submitBehaviorChange, agentAdminSurfaceActions.simulateToolBoundary, agentAdminSurfaceActions.listSeedMaterial, agentAdminSurfaceActions.testPrompt, agentAdminSurfaceActions.readPromptRiskReview, agentAdminSurfaceActions.openAgentTrace]
+);
+
 export const agentAdminCatalogSurface = envelope(
   'surface-agent-admin-catalog',
   'list-search',
@@ -2330,8 +2382,8 @@ export const agentAdminCatalogSurface = envelope(
     surfaceContract: 'agent_admin.catalog.v1',
     query: 'tenant:tenant-acme scoped:true',
     rows: [
-      { id: 'agent-agent-admin', rowType: 'AgentDefinition', displayName: 'Agent Admin Agent', status: 'active', authorityLevel: 'APPROVAL_REQUIRED', placement: 'WORKSTREAM', functionalAreaId: 'agent-admin', modelConfigRefId: 'model-safe-default', providerStatus: 'ready', seedStatus: 'starter-v1', tracePolicy: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace', traceId: 'trace-agent-admin-definition-agent-agent-admin' },
-      { id: 'agent-user-admin', rowType: 'AgentDefinition', displayName: 'User Admin Agent', status: 'active', authorityLevel: 'APPROVAL_REQUIRED', placement: 'WORKSTREAM', functionalAreaId: 'user-admin', modelConfigRefId: 'model-safe-default', providerStatus: 'ready', seedStatus: 'starter-v1', tracePolicy: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace', traceId: 'trace-agent-admin-definition-agent-user-admin' }
+      { id: 'agent-agent-admin', rowType: 'AgentDefinition', displayName: 'Agent Admin Agent', status: 'active', authorityLevel: 'APPROVAL_REQUIRED', readinessSummary: 'Ready with 2 approval-gated behavior tasks', attentionSummary: 'Prompt-risk review requires human decision', targetSurfaceId: 'surface-agent-admin-detail', openActionId: 'action-open-agent-detail', safeActionContext: { agentDefinitionId: 'agent-agent-admin' }, placement: 'WORKSTREAM', functionalAreaId: 'agent-admin', modelConfigRefId: 'model-safe-default', providerStatus: 'ready', seedStatus: 'starter-v1', tracePolicy: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace', traceId: 'trace-agent-admin-definition-agent-agent-admin' },
+      { id: 'agent-user-admin', rowType: 'AgentDefinition', displayName: 'User Admin Agent', status: 'active', authorityLevel: 'APPROVAL_REQUIRED', readinessSummary: 'Ready with no provider blockers', attentionSummary: 'No behavior approval waiting', targetSurfaceId: 'surface-agent-admin-detail', openActionId: 'action-open-agent-detail', safeActionContext: { agentDefinitionId: 'agent-user-admin' }, placement: 'WORKSTREAM', functionalAreaId: 'user-admin', modelConfigRefId: 'model-safe-default', providerStatus: 'ready', seedStatus: 'starter-v1', tracePolicy: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace', traceId: 'trace-agent-admin-definition-agent-user-admin' }
     ],
     pageInfo: { totalKnownCount: 2 },
     providerReadiness: { status: 'ready', readyAgents: 2, totalAgents: 2, secretVisibility: 'redacted' },
@@ -3185,6 +3237,7 @@ export const fullCoreDemoSurfaceEnvelopes = [
   userAdminMemberStatusActionSurface,
   userAdminRoleChangeActionSurface,
   userAdminAgentBlockedSystemMessageSurface,
+  agentAdminDashboardSurface,
   agentAdminCatalogSurface,
   agentAdminDetailSurface,
   agentPromptGovernanceSurface,
@@ -3248,6 +3301,14 @@ export const displayUserDetailActionResult: CapabilityActionResult = {
   correlationId: 'corr-display-user-detail',
   traceIds: ['trace-display-user-detail', 'trace-user-admin-detail'],
   resultSurface: userAdminDetailEditSurface
+};
+
+export const displayAgentDashboardActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Display the Agent Admin dashboard with attention-first cards, authorized task entry points, redaction, and trace-linked diagnostics.',
+  correlationId: 'corr-display-agent-admin-dashboard',
+  traceIds: ['trace-display-agent-admin-dashboard'],
+  resultSurface: agentAdminDashboardSurface
 };
 
 export const displayAgentCatalogActionResult: CapabilityActionResult = {
