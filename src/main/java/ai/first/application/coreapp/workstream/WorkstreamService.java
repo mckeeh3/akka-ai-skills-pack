@@ -643,7 +643,7 @@ public final class WorkstreamService {
       var task = personalAttentionDigestService.acceptResult(actor, stringInput(request.input(), "digestTaskId", ""), stringInput(request.input(), "reason", "accepted in My Account"), request.correlationId());
       result = personalAttentionDigestActionResult(task, "accepted", "Advisory personal attention digest accepted; source attention lifecycle unchanged.", request.correlationId(), actor);
     } else if ("action-reject-my-account-personal-attention-digest".equals(request.actionId())) {
-      var task = personalAttentionDigestService.rejectResult(actor, stringInput(request.input(), "digestTaskId", ""), stringInput(request.input(), "reason", "needs refresh"), request.correlationId());
+      var task = personalAttentionDigestService.rejectResult(actor, stringInput(request.input(), "digestTaskId", ""), stringInput(request.input(), "reason", ""), request.correlationId());
       result = personalAttentionDigestActionResult(task, "accepted", "Advisory personal attention digest rejected for follow-up; source attention lifecycle unchanged.", request.correlationId(), actor);
     } else if ("action-show-my-account-notification-center".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "My Account in-app notification center loaded from backend-owned notification projection.", request.correlationId(), List.of("trace-my-account-notification-center"), myAccountNotificationCenterSurface(actor, request.correlationId()));

@@ -12,6 +12,7 @@ import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActio
 import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActionResult;
 import ai.first.application.coreapp.workstream.WorkstreamService.SurfaceEnvelope;
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamBootstrapResponse;
+import ai.first.application.coreapp.myaccount.AkkaMyAccountPersonalAttentionDigestTaskRepository;
 import ai.first.application.foundation.identity.AkkaIdentityRepository;
 import ai.first.application.foundation.notification.AkkaNotificationRepository;
 import ai.first.domain.foundation.identity.Account;
@@ -32,6 +33,7 @@ import ai.first.domain.foundation.notification.NotificationPriority;
 import ai.first.domain.foundation.notification.NotificationRedactionLevel;
 import ai.first.domain.foundation.notification.NotificationSourceRef;
 import ai.first.domain.foundation.notification.NotificationSurfaceRef;
+import ai.first.domain.coreapp.myaccount.MyAccountPersonalAttentionDigestTask;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
@@ -505,6 +507,133 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesMyAccountPersonalAttentionDigestResultRuntimePath() throws Exception {
+    var emptyResult = getSurface("surface-my-account-personal-attention-digest-result", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-digest-result-browser-empty");
+    assertEquals("surface-my-account-personal-attention-digest-result", emptyResult.surfaceId());
+    assertEquals("outcome-panel", emptyResult.surfaceType());
+    assertEquals("my_account.personal_attention_digest.result.v1", emptyResult.data().get("surfaceContract"));
+    assertEquals("not_found_or_redacted", emptyResult.data().get("decisionState"));
+    assertTrue(emptyResult.toString().contains("no completed backend task selected"));
+    assertPersonalAttentionDigestResultBrowserSafe(emptyResult);
+
+    var reviewTaskId = seedCompletedDigestTask("digest-result-review", MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, null, null);
+    var result = runAction(new CapabilityActionRequest(
+        "action-read-my-account-personal-attention-digest",
+        "action-read-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.read",
+        "my_account.personal_attention_digest.read",
+        Map.of("digestTaskId", reviewTaskId),
+        null,
+        ADMIN_CONTEXT_ID,
+        emptyResult.surfaceId(),
+        "corr-my-digest-result-browser-read"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", result.status());
+    assertEquals("surface-my-account-personal-attention-digest-result", result.resultSurface().surfaceId());
+    assertEquals("outcome-panel", result.resultSurface().surfaceType());
+    assertEquals("my_account.personal_attention_digest.result.v1", result.resultSurface().data().get("surfaceContract"));
+    assertEquals("completed_review_required", result.resultSurface().data().get("decisionState"));
+    assertTrue(result.resultSurface().toString().contains("recommendations"));
+    assertTrue(result.resultSurface().toString().contains("materialEvents"));
+    assertTrue(result.resultSurface().toString().contains("pendingDecisions"));
+    assertTrue(result.resultSurface().toString().contains("omissions"));
+    assertTrue(result.resultSurface().toString().contains("advisoryOnly"));
+    assertTrue(result.resultSurface().toString().contains("noDirectMutation"));
+    assertTrue(result.resultSurface().toString().contains("action-accept-my-account-personal-attention-digest"));
+    assertTrue(result.resultSurface().toString().contains("action-reject-my-account-personal-attention-digest"));
+    assertTrue(result.resultSurface().toString().contains("corr-my-digest-result-browser-read"));
+    assertTrue(result.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-personal-attention-digest")));
+    assertPersonalAttentionDigestResultBrowserSafe(result.resultSurface());
+
+    var accepted = runAction(new CapabilityActionRequest(
+        "action-accept-my-account-personal-attention-digest",
+        "action-accept-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.accept_result",
+        "my_account.personal_attention_digest.accept_result",
+        Map.of("digestTaskId", reviewTaskId, "reason", "browser smoke accepted advisory review"),
+        null,
+        ADMIN_CONTEXT_ID,
+        result.resultSurface().surfaceId(),
+        "corr-my-digest-result-browser-accept"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", accepted.status());
+    assertEquals("surface-my-account-personal-attention-digest-result", accepted.resultSurface().surfaceId());
+    assertEquals("accepted", accepted.resultSurface().data().get("decisionState"));
+    assertTrue(accepted.message().contains("source attention lifecycle unchanged"));
+    assertTrue(accepted.resultSurface().toString().contains("browser smoke accepted advisory review"));
+    assertTrue(accepted.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-personal-attention-digest-accepted")));
+    assertPersonalAttentionDigestResultBrowserSafe(accepted.resultSurface());
+
+    var acceptAgain = runAction(new CapabilityActionRequest(
+        "action-accept-my-account-personal-attention-digest",
+        "action-accept-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.accept_result",
+        "my_account.personal_attention_digest.accept_result",
+        Map.of("digestTaskId", reviewTaskId, "reason", "browser smoke duplicate accept"),
+        null,
+        ADMIN_CONTEXT_ID,
+        accepted.resultSurface().surfaceId(),
+        "corr-my-digest-result-browser-accept-again"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", acceptAgain.status());
+    assertEquals("accepted", acceptAgain.resultSurface().data().get("decisionState"));
+    assertFalse(acceptAgain.resultSurface().toString().contains("browser smoke duplicate accept"), "Repeated accept must be idempotent and preserve the original advisory decision reason.");
+    assertPersonalAttentionDigestResultBrowserSafe(acceptAgain.resultSurface());
+
+    var conflictingReject = new CapabilityActionRequest(
+        "action-reject-my-account-personal-attention-digest",
+        "action-reject-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.reject_result",
+        "my_account.personal_attention_digest.reject_result",
+        Map.of("digestTaskId", reviewTaskId, "reason", "conflicting terminal decision"),
+        null,
+        ADMIN_CONTEXT_ID,
+        accepted.resultSurface().surfaceId(),
+        "corr-my-digest-result-browser-conflict");
+    assertThrows(RuntimeException.class, () -> runAction(conflictingReject, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin"));
+
+    var rejectTaskId = seedCompletedDigestTask("digest-result-reject", MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, null, null);
+    var missingReasonReject = new CapabilityActionRequest(
+        "action-reject-my-account-personal-attention-digest",
+        "action-reject-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.reject_result",
+        "my_account.personal_attention_digest.reject_result",
+        Map.of("digestTaskId", rejectTaskId, "reason", ""),
+        null,
+        ADMIN_CONTEXT_ID,
+        result.resultSurface().surfaceId(),
+        "corr-my-digest-result-browser-reject-missing-reason");
+    assertThrows(RuntimeException.class, () -> runAction(missingReasonReject, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin"));
+
+    var rejected = runAction(new CapabilityActionRequest(
+        "action-reject-my-account-personal-attention-digest",
+        "action-reject-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.reject_result",
+        "my_account.personal_attention_digest.reject_result",
+        Map.of("digestTaskId", rejectTaskId, "reason", "browser smoke requested better evidence"),
+        null,
+        ADMIN_CONTEXT_ID,
+        result.resultSurface().surfaceId(),
+        "corr-my-digest-result-browser-reject"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", rejected.status());
+    assertEquals("surface-my-account-personal-attention-digest-result", rejected.resultSurface().surfaceId());
+    assertEquals("rejected", rejected.resultSurface().data().get("decisionState"));
+    assertTrue(rejected.message().contains("source attention lifecycle unchanged"));
+    assertTrue(rejected.resultSurface().toString().contains("browser smoke requested better evidence"));
+    assertPersonalAttentionDigestResultBrowserSafe(rejected.resultSurface());
+
+    var memberDeniedRead = new CapabilityActionRequest(
+        "action-read-my-account-personal-attention-digest",
+        "action-read-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.read",
+        "my_account.personal_attention_digest.read",
+        Map.of("digestTaskId", reviewTaskId),
+        null,
+        MEMBER_CONTEXT_ID,
+        "surface-my-account-personal-attention-digest-result",
+        "corr-my-digest-result-browser-member-denied");
+    assertThrows(RuntimeException.class, () -> runAction(memberDeniedRead, MEMBER_CONTEXT_ID, "member@example.test", "Member User"));
+    assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-account-personal-attention-digest-result").responseBodyAs(String.class).invoke());
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesMySettingsRuntimePath() throws Exception {
     var settings = getSurface("surface-my-settings", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-settings-browser-read");
     assertEquals("surface-my-settings", settings.surfaceId());
@@ -680,6 +809,32 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     return response.body();
   }
 
+  private String seedCompletedDigestTask(String suffix, MyAccountPersonalAttentionDigestTask.Status status, String decision, String decisionReason) {
+    var now = Instant.parse("2026-05-25T10:15:30Z");
+    var task = new MyAccountPersonalAttentionDigestTask(
+        "my-account-" + suffix,
+        "akka-task-my-account-" + suffix,
+        TENANT_ID,
+        null,
+        ADMIN_CONTEXT_ID,
+        "admin@example.test",
+        ADMIN_CONTEXT_ID,
+        "idem-my-account-" + suffix,
+        2,
+        status,
+        100,
+        "Model-backed redacted personal attention digest ready for advisory review; source attention remains authoritative and unchanged.",
+        null,
+        decision,
+        decisionReason,
+        List.of("capability:attention.list_my_account_items", "readSkill:my-account-personal-attention-digest", "readReferenceDoc:my-account-personal-attention-digest", "attention_item:authorized-browser-evidence"),
+        List.of("personal_attention_digest_section:authorized-browser-evidence"),
+        List.of("trace-my-account-personal-attention-digest-result-" + suffix),
+        now,
+        now);
+    return new AkkaMyAccountPersonalAttentionDigestTaskRepository(componentClient).save(task).digestTaskId();
+  }
+
   private void seedNotification(String notificationId, String title, String summary, NotificationCategory category, NotificationPriority priority, String correlationId) {
     var now = Instant.parse("2026-05-24T10:15:30Z");
     new AkkaNotificationRepository(componentClient).save(new NotificationItem(
@@ -784,6 +939,24 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(text.contains("fake digest result"));
     assertFalse(text.contains("hidden workstream name"));
     assertFalse(text.contains("raw tool payload"));
+  }
+
+  private static void assertPersonalAttentionDigestResultBrowserSafe(SurfaceEnvelope payload) {
+    var text = String.valueOf(payload);
+    assertTrue(text.contains("my_account.personal_attention_digest.result.v1"));
+    assertTrue(text.contains("advisoryOnly"));
+    assertTrue(text.contains("noDirectMutation"));
+    assertFalse(text.contains("RESEND_API_KEY"));
+    assertFalse(text.contains("Bearer "));
+    assertFalse(text.contains("workos-admin"));
+    assertFalse(text.contains("providerSecret"));
+    assertFalse(text.contains("test-fake-provider"));
+    assertFalse(text.contains("test-fake-model"));
+    assertFalse(text.contains("fixture success payload"));
+    assertFalse(text.contains("fake digest result"));
+    assertFalse(text.contains("hidden workstream name"));
+    assertFalse(text.contains("raw tool payload"));
+    assertFalse(text.contains("source attention completed"));
   }
 
   private static void assertSettingsSurfaceBrowserSafe(SurfaceEnvelope payload) {
