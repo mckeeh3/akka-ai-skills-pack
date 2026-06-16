@@ -394,7 +394,7 @@
 
 ### TASK-FCBAD-02-006: Normalize Customer branch action ids or document compatibility aliases
 
-- status: pending
+- status: done
 - source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#fcb-rd-08-app-description-and-runtime-action-ids-are-not-fully-normalized
 - task brief: specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/10-customer-action-id-normalization.md
 - depends on:
@@ -422,6 +422,10 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; Customer branch action compatibility repair; `manage-customers`, `manage-customer-admins`; `tenant.customer.*`, `tenant.customer_admin.*`; preserve backend authorization and audit semantics
+  - changed app-description nodes: `functional-agent.md`, `surfaces.md`, `realization/akka-components.md`, and `realization/frontend-routes.md` now declare runtime canonical Customer action ids and explicitly mark `action-customer-list`, `action-customer-admin-list`, and `action-customer-admin-manage` as non-active shorthand/non-alias names
+  - changed frontend contract test: `frontend/src/workstream-user-admin-vertical.contract.test.mjs` now verifies canonical Customer action ids appear in both app-description and `WorkstreamService`, while non-active shorthand names have no runtime `SurfaceAction`
+  - checks: `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest test` passed; `npm --prefix frontend test -- --run frontend/src/workstream-user-admin-vertical.contract.test.mjs` passed; `git diff --check` passed
+  - commit message: `customer-boundary-desc: normalize customer action ids`
 
 ### TASK-FCBAD-02-007: Verify foundation Customer boundary runtime drift repair
 

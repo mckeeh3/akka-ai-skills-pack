@@ -310,17 +310,17 @@ Every Customer branch descendant includes `action-user-admin-show-customers` wit
 
 ### Actions and result surfaces
 
-| Action | Governed backend capability/tool | Result behavior |
+| Canonical action id | Governed backend capability/tool | Result behavior |
 |---|---|---|
-| List/search Customers | `tenant.customer.list` / `manage-customers` | Refresh `surface-user-admin-customer-directory` with safe empty/forbidden/redacted state. |
-| Open Customer detail | `tenant.customer.read` / `manage-customers` | Open `surface-user-admin-customer-detail`, or hidden/not-found `system_message`. |
-| Open/create Customer | `tenant.customer.create` / `manage-customers` | Open/submit `surface-user-admin-customer-create`; validate name, selected tenant, idempotency, audit, then open detail or system-message. |
-| Rename/update Customer | `tenant.customer.rename` / `manage-customers` | Open/submit `surface-user-admin-customer-rename`; handle validation/no-op/conflict/forbidden and refresh detail. |
-| Suspend/archive Customer | `tenant.customer.suspend` / `manage-customers` | Open/submit `surface-user-admin-customer-suspend-confirmation`; require reason and audit, then refresh detail or system-message. |
-| Reactivate Customer | `tenant.customer.reactivate` / `manage-customers` | Open/submit `surface-user-admin-customer-reactivate-confirmation`; handle no-op/replay safely and refresh detail. |
-| Open Customer Admins | `tenant.customer_admin.list` / `manage-customer-admins` | Open `surface-user-admin-customer-admins` for the selected Customer, or safe hidden/not-found/forbidden system-message. |
-| Invite/bootstrap Customer Admin | `tenant.customer_admin.invite` / `manage-customer-admins` | Open `surface-user-admin-customer-admin-invitation-create`; submission validates the Customer exists, target role is `CUSTOMER_ADMIN`, invitation delivery is ready, and returns admin detail/invitation detail or system-message. |
-| Manage Customer Admin role/status/invite lifecycle | `tenant.customer_admin.manage` / `manage-customer-admins` | Route to role preview, membership lifecycle confirmation, invitation resend/revoke confirmation, or refreshed Customer Admin detail. Enforce last Customer Admin protection and prevent `TENANT_ADMIN` or `SAAS_OWNER_ADMIN` assignment through Customer flows. |
+| `action-user-admin-show-customers` | `tenant.customer.list` / `manage-customers` | Refresh `surface-user-admin-customer-directory` with safe empty/forbidden/redacted state. This is the canonical list/search action; `action-customer-list` is not an active alias. |
+| `action-customer-read` | `tenant.customer.read` / `manage-customers` | Open `surface-user-admin-customer-detail`, or hidden/not-found `system_message`. |
+| `action-open-customer-create` / `action-customer-create` | `tenant.customer.create` / `manage-customers` | Open/submit `surface-user-admin-customer-create`; validate name, selected tenant, idempotency, audit, then open detail or system-message. |
+| `action-open-customer-rename` / `action-customer-rename` | `tenant.customer.rename` / `manage-customers` | Open/submit `surface-user-admin-customer-rename`; handle validation/no-op/conflict/forbidden and refresh detail. |
+| `action-open-customer-suspend` / `action-customer-suspend` | `tenant.customer.suspend` / `manage-customers` | Open/submit `surface-user-admin-customer-suspend-confirmation`; require reason and audit, then refresh detail or system-message. |
+| `action-open-customer-reactivate` / `action-customer-reactivate` | `tenant.customer.reactivate` / `manage-customers` | Open/submit `surface-user-admin-customer-reactivate-confirmation`; handle no-op/replay safely and refresh detail. |
+| `action-user-admin-show-customer-admins` | `tenant.customer_admin.list` / `manage-customer-admins` | Open `surface-user-admin-customer-admins` for the selected Customer, or safe hidden/not-found/forbidden system-message. This is the canonical Customer Admin list action; `action-customer-admin-list` is not an active alias. |
+| `action-open-customer-admin-invitation-create` / `action-customer-admin-invite` | `tenant.customer_admin.invite` / `manage-customer-admins` | Open `surface-user-admin-customer-admin-invitation-create`; submission validates the Customer exists, target role is `CUSTOMER_ADMIN`, invitation delivery is ready, and returns admin detail/invitation detail or system-message. |
+| Dedicated invitation/member lifecycle task actions for the selected Customer Admin target | `tenant.customer_admin.manage` / `manage-customer-admins` | Route to role preview, membership lifecycle confirmation, invitation resend/revoke confirmation, or refreshed Customer Admin detail. `action-customer-admin-manage` is not an active alias; runtime uses the specific User Admin invitation and membership task action ids after the selected Customer Admin target is resolved. Enforce last Customer Admin protection and prevent `TENANT_ADMIN` or `SAAS_OWNER_ADMIN` assignment through Customer flows. |
 
 ### States and tests
 

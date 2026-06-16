@@ -23,6 +23,10 @@ const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const surfaceTypes = read('./workstream/types/surfaces.ts');
 const componentsCss = read('./styles/components.css');
 const workstreamService = read('../../src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
+const userAdminFunctionalAgentDescription = read('../../app-description/domains/core-starter/workstreams/user-admin/agents/functional-agent.md');
+const userAdminSurfaceDescription = read('../../app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md');
+const userAdminAkkaRealization = read('../../app-description/domains/core-starter/workstreams/user-admin/realization/akka-components.md');
+const userAdminFrontendRealization = read('../../app-description/domains/core-starter/workstreams/user-admin/realization/frontend-routes.md');
 
 test('User Admin functional agent defaults to markdown_response and uses the governed foundation capability', () => {
   assert.match(agents, /label: 'User Admin'/);
@@ -301,6 +305,39 @@ test('User Admin scoped admin surfaces cover SaaS Owner, Organization Admin, Cus
   assert.match(userAdminScopedAdminSurface, /Provider\/outbox failures return a typed system message/);
   assert.match(userAdminScopedAdminSurface, /The browser does not infer hidden targets, role eligibility, or authority from labels/);
   assert.doesNotMatch(userAdminScopedAdminSurface, /Authorization:\s*Bearer|RESEND_API_KEY|WORKOS_API_KEY|sk-secret|api_key=|dangerouslySetInnerHTML/);
+});
+
+test('Customer branch action ids are normalized between app-description and runtime evidence', () => {
+  const description = [
+    userAdminFunctionalAgentDescription,
+    userAdminSurfaceDescription,
+    userAdminAkkaRealization,
+    userAdminFrontendRealization
+  ].join('\n');
+
+  for (const canonicalAction of [
+    'action-user-admin-show-customers',
+    'action-customer-read',
+    'action-open-customer-create',
+    'action-customer-create',
+    'action-open-customer-rename',
+    'action-customer-rename',
+    'action-open-customer-suspend',
+    'action-customer-suspend',
+    'action-open-customer-reactivate',
+    'action-customer-reactivate',
+    'action-user-admin-show-customer-admins',
+    'action-open-customer-admin-invitation-create',
+    'action-customer-admin-invite'
+  ]) {
+    assert.match(description, new RegExp(canonicalAction));
+    assert.match(workstreamService, new RegExp(canonicalAction));
+  }
+
+  for (const documentedNonAlias of ['action-customer-list', 'action-customer-admin-list', 'action-customer-admin-manage']) {
+    assert.match(description, new RegExp(`${documentedNonAlias}.*not an active alias|not active.*${documentedNonAlias}|documentation-only shorthand`, 's'));
+    assert.doesNotMatch(workstreamService, new RegExp(`new SurfaceAction\\("${documentedNonAlias}"`));
+  }
 });
 
 test('User Admin full-stack conformance tests cover canonical runtime boundaries', () => {
