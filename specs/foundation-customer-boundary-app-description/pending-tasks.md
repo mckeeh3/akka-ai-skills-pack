@@ -429,7 +429,7 @@
 
 ### TASK-FCBAD-02-007: Verify foundation Customer boundary runtime drift repair
 
-- status: pending
+- status: done
 - source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#proposed-task-queue
 - task brief: specs/foundation-customer-boundary-app-description/tasks/04-runtime-verification/11-verify-runtime-drift-repair.md
 - depends on:
@@ -464,3 +464,8 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: terminal runtime verification for User Admin Customer lifecycle and Customer Admin branch; `manage-customers`, `manage-customer-admins`; `tenant.customer.*`, `tenant.customer_admin.*`; verifies selected tenant/customer scoping, action ids, frontend non-authority, and audit/redaction evidence
+  - completed output: `specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-repair-verification.md`
+  - verification answer: yes; bounded Customer lifecycle and Customer Admin branch runtime now matches the active app-description for the drift-repair scope
+  - no follow-up runtime repair tasks appended; mini-project runtime repair state is complete for this bounded scope
+  - checks: `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest,ai.first.application.coreapp.useradmin.AdminEndpointIntegrationTest test` passed; `npm --prefix frontend test -- --run frontend/src/workstream-user-admin-vertical.contract.test.mjs` passed; `git diff --check` passed
+  - commit message: `customer-boundary-desc: verify runtime drift repair`
