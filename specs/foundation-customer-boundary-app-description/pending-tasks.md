@@ -282,7 +282,7 @@
 
 ### TASK-FCBAD-02-003: Enforce suspended Customer fail-closed behavior for Customer Admin operations
 
-- status: pending
+- status: done
 - source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#fcb-rd-06-suspended-customer-does-not-fail-closed-for-customer-admin-operations
 - task brief: specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/07-suspended-customer-fail-closed.md
 - depends on:
@@ -311,6 +311,10 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; lifecycle security repair; Customer Admin branch denied while suspended; `manage-customer-admins`; `tenant.customer_admin.*`; Organization/Tenant Admin selected context with active target Customer requirement
+  - changed runtime paths: `TenantCustomerAdminService` now has operation-specific active Customer guards for Customer Admin list/invite/manage with safe `customer-suspended` audit denials; `AdminEndpoint` applies the guards to Customer Admin list, invitation, invitation resend/revoke, role, and status APIs; `WorkstreamService` applies active-target validation to Customer Admin list/invite surfaces and submit action while preserving Customer detail/read/reactivate availability
+  - tests: `WorkstreamServiceTest.tenantCustomerBranchUsesDurableCustomerLifecycleState` proves suspended Customer detail remains readable, Customer Admin workstream list/invite paths return safe system-message denials, audit records `customer-suspended`, and reactivation restores branch availability; `AdminEndpointIntegrationTest.suspendedCustomerFailsClosedForCustomerAdminApiOperationsButCanReactivate` proves API list/invite/role/status denials and reactivation recovery
+  - checks: `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest,ai.first.application.coreapp.useradmin.AdminEndpointIntegrationTest test` passed; `git diff --check` passed
+  - commit message: `customer-boundary-desc: enforce suspended customer fail closed`
 
 ### TASK-FCBAD-02-004: Repair Customer list/search filter parity
 

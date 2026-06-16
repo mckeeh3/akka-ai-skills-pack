@@ -302,7 +302,7 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public HttpResponse customerAdmins(String customerId) {
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      var customer = fromCustomerSummary(StarterSecurityComponents.tenantCustomerAdminService().readCustomer(actor, customerId, correlationId).customer());
+      var customer = fromCustomerSummary(StarterSecurityComponents.tenantCustomerAdminService().requireActiveCustomerForCustomerAdminList(actor, customerId, correlationId).customer());
       var tenantId = actor.selectedContext().tenantId();
       var admins = StarterSecurityComponents.userAdminService().listUsers(actor, ScopeType.CUSTOMER, tenantId, customerId).stream().map(AdminSubjectSummary::from).toList();
       var invitations = scopedInvitationSummaries(actor, ScopeType.CUSTOMER, tenantId, customerId);
@@ -314,25 +314,34 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public HttpResponse createCustomerAdminInvitation(String customerId, CreateInvitationApiRequest request) {
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      StarterSecurityComponents.tenantCustomerAdminService().readCustomer(actor, customerId, correlationId);
+      StarterSecurityComponents.tenantCustomerAdminService().requireActiveCustomerForCustomerAdminInvite(actor, customerId, correlationId);
       return createScopedInvitationResponse(actor, request, ScopeType.CUSTOMER, actor.selectedContext().tenantId(), customerId, List.of(FoundationRole.CUSTOMER_ADMIN), "customer-admin-api", correlationId);
     });
   }
 
   @Post("/customers/{customerId}/admins/invitations/{invitationId}/resend")
   public HttpResponse resendCustomerAdminInvitation(String customerId, String invitationId, InvitationActionApiRequest request) {
-    return resendInvitation(invitationId, request);
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      StarterSecurityComponents.tenantCustomerAdminService().requireActiveCustomerForCustomerAdminManage(actor, customerId, correlationId);
+      return resendInvitationResponse(actor, invitationId, request, correlationId);
+    });
   }
 
   @Post("/customers/{customerId}/admins/invitations/{invitationId}/revoke")
   public HttpResponse revokeCustomerAdminInvitation(String customerId, String invitationId, InvitationActionApiRequest request) {
-    return revokeInvitation(invitationId, request);
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      StarterSecurityComponents.tenantCustomerAdminService().requireActiveCustomerForCustomerAdminManage(actor, customerId, correlationId);
+      return revokeInvitationResponse(actor, invitationId, request, correlationId);
+    });
   }
 
   @Put("/customers/{customerId}/admins/{accountId}/roles")
   public HttpResponse changeCustomerAdminRoles(String customerId, String accountId, ChangeRolesApiRequest request) {
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      StarterSecurityComponents.tenantCustomerAdminService().requireActiveCustomerForCustomerAdminManage(actor, customerId, correlationId);
       return changeScopedAdminRolesResponse(actor, ScopeType.CUSTOMER, actor.selectedContext().tenantId(), customerId, accountId, request, correlationId);
     });
   }
@@ -439,12 +448,9 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
 
   @Post("/invitations/{invitationId}/resend")
   public HttpResponse resendInvitation(String invitationId, InvitationActionApiRequest request) {
-    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
-    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      var invite = StarterSecurityComponents.invitationService().resend(actor, invitationId, stableIdempotencyKey, textOr(request == null ? null : request.reason(), "admin-api-resend"), correlationId);
-      return HttpResponses.ok(InvitationApiResponse.from(invite, correlationId));
+      return resendInvitationResponse(actor, invitationId, request, correlationId);
     });
   }
 
@@ -452,9 +458,20 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public HttpResponse revokeInvitation(String invitationId, InvitationActionApiRequest request) {
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      var invite = StarterSecurityComponents.invitationService().revoke(actor, invitationId, textOr(request == null ? null : request.reason(), "admin-api-revoke"), correlationId);
-      return HttpResponses.ok(InvitationApiResponse.from(invite, correlationId));
+      return revokeInvitationResponse(actor, invitationId, request, correlationId);
     });
+  }
+
+  private HttpResponse resendInvitationResponse(AuthContextResolver.ResolvedMe actor, String invitationId, InvitationActionApiRequest request, String correlationId) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    var invite = StarterSecurityComponents.invitationService().resend(actor, invitationId, stableIdempotencyKey, textOr(request == null ? null : request.reason(), "admin-api-resend"), correlationId);
+    return HttpResponses.ok(InvitationApiResponse.from(invite, correlationId));
+  }
+
+  private HttpResponse revokeInvitationResponse(AuthContextResolver.ResolvedMe actor, String invitationId, InvitationActionApiRequest request, String correlationId) {
+    var invite = StarterSecurityComponents.invitationService().revoke(actor, invitationId, textOr(request == null ? null : request.reason(), "admin-api-revoke"), correlationId);
+    return HttpResponses.ok(InvitationApiResponse.from(invite, correlationId));
   }
 
   @Post("/memberships/{membershipId}/roles/preview")
@@ -833,6 +850,7 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
       var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
       if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+      StarterSecurityComponents.tenantCustomerAdminService().requireActiveCustomerForCustomerAdminManage(actor, customerId, correlationId);
       var membershipId = targetMembershipId(actor, ScopeType.CUSTOMER, actor.selectedContext().tenantId(), customerId, accountId);
       var result = StarterSecurityComponents.userAdminService().updateMemberStatus(actor, membershipId, status, textOr(request == null ? null : request.reason(), "customer-admin-status-change"), stableIdempotencyKey, correlationId);
       return HttpResponses.ok(new MembershipActionApiResponse(result.status(), result.message(), result.membership().membershipId(), result.membership().accountId(), result.membership().roles().stream().map(Enum::name).toList(), result.membership().status().name().toLowerCase(), result.traceId(), correlationId));

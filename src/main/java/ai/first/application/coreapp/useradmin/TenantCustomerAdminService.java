@@ -22,6 +22,9 @@ public final class TenantCustomerAdminService {
   private static final String RENAME_CAPABILITY = "tenant.customer.rename";
   private static final String SUSPEND_CAPABILITY = "tenant.customer.suspend";
   private static final String REACTIVATE_CAPABILITY = "tenant.customer.reactivate";
+  private static final String CUSTOMER_ADMIN_LIST_CAPABILITY = "tenant.customer_admin.list";
+  private static final String CUSTOMER_ADMIN_INVITE_CAPABILITY = "tenant.customer_admin.invite";
+  private static final String CUSTOMER_ADMIN_MANAGE_CAPABILITY = "tenant.customer_admin.manage";
   private static final String BOUNDARY_NOTICE = "Customer administration is scoped to the selected Organization/Tenant; sibling-customer facts, tenant application data, provider secrets, and hidden counts are omitted.";
 
   private final IdentityRepository repository;
@@ -114,6 +117,29 @@ public final class TenantCustomerAdminService {
     var updated = repository.saveCustomer(new Customer(existing.tenantId(), existing.customerId(), existing.displayName(), true));
     audit(actor, "CUSTOMER_REACTIVATE", AdminAuditEvent.Result.ALLOWED, safeReason(reason, "customer-reactivated"), updated.customerId(), correlationId);
     return action("accepted", "Customer reactivated within the selected Organization/Tenant boundary.", updated, "reactivate", idempotencyKey, correlationId);
+  }
+
+  public CustomerDetail requireActiveCustomerForCustomerAdminList(AuthContextResolver.ResolvedMe actor, String customerId, String correlationId) {
+    return requireActiveCustomerForCustomerAdmin(actor, customerId, CUSTOMER_ADMIN_LIST_CAPABILITY, "CUSTOMER_ADMIN_LIST", correlationId);
+  }
+
+  public CustomerDetail requireActiveCustomerForCustomerAdminInvite(AuthContextResolver.ResolvedMe actor, String customerId, String correlationId) {
+    return requireActiveCustomerForCustomerAdmin(actor, customerId, CUSTOMER_ADMIN_INVITE_CAPABILITY, "CUSTOMER_ADMIN_INVITE", correlationId);
+  }
+
+  public CustomerDetail requireActiveCustomerForCustomerAdminManage(AuthContextResolver.ResolvedMe actor, String customerId, String correlationId) {
+    return requireActiveCustomerForCustomerAdmin(actor, customerId, CUSTOMER_ADMIN_MANAGE_CAPABILITY, "CUSTOMER_ADMIN_MANAGE", correlationId);
+  }
+
+  private CustomerDetail requireActiveCustomerForCustomerAdmin(AuthContextResolver.ResolvedMe actor, String customerId, String capability, String action, String correlationId) {
+    requireTenantAdmin(actor, capability, action, correlationId);
+    var customer = findCustomerOrDeny(actor, customerId, action, correlationId);
+    if (!customer.active()) {
+      audit(actor, action, AdminAuditEvent.Result.DENIED, "customer-suspended", customer.customerId(), correlationId);
+      throw new AuthorizationException(403, "customer-suspended");
+    }
+    audit(actor, action, AdminAuditEvent.Result.ALLOWED, "active-customer", customer.customerId(), correlationId);
+    return detail(customer, action.toLowerCase(Locale.ROOT).replace('_', '-'), correlationId);
   }
 
   private void requireTenantAdmin(AuthContextResolver.ResolvedMe actor, String capability, String action, String correlationId) {

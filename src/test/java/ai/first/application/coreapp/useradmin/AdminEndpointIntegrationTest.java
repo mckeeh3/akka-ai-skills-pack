@@ -16,7 +16,10 @@ import ai.first.api.coreapp.admin.AdminEndpoint.AdminUsersResponse;
 import ai.first.api.coreapp.admin.AdminEndpoint.ChangeMembershipStatusApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.ChangeRolesApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.CreateInvitationApiRequest;
+import ai.first.api.coreapp.admin.AdminEndpoint.CustomerActionApiResponse;
 import ai.first.api.coreapp.admin.AdminEndpoint.CustomerAdminListPayload;
+import ai.first.api.coreapp.admin.AdminEndpoint.CustomerDetailPayload;
+import ai.first.api.coreapp.admin.AdminEndpoint.CustomerLifecycleApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.InvitationActionApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.IdentityRelinkApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.OrganizationActionApiResponse;
@@ -292,6 +295,86 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
             && admin.roles().equals(List.of("CUSTOMER_ADMIN"))));
     assertTrue(adminsAfterDenials.body().invitations().stream()
         .noneMatch(invitation -> List.of("tenant-role-customer-admin@example.test", "owner-role-customer-admin@example.test").contains(invitation.email())));
+  }
+
+  @Test
+  void suspendedCustomerFailsClosedForCustomerAdminApiOperationsButCanReactivate() throws Exception {
+    var repository = new AkkaIdentityRepository(componentClient);
+    repository.saveCustomer(new Customer("tenant-starter", "customer-suspended-admins", "Suspended Admin Customer", true));
+    seedIdentity(repository, "existing-suspended-customer-admin@example.test", "Existing Suspended Customer Admin", ScopeType.CUSTOMER, "tenant-starter", "customer-suspended-admins", FoundationRole.CUSTOMER_ADMIN);
+
+    var suspended = httpClient
+        .POST("/api/admin/customers/customer-suspended-admins/suspend")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-suspend-before-admins")
+        .withRequestBody(new CustomerLifecycleApiRequest("pause customer admin maintenance", "idem-customer-suspend-before-admins"))
+        .responseBodyAs(CustomerActionApiResponse.class)
+        .invoke();
+    assertTrue(suspended.status().isSuccess());
+    assertEquals("suspended", suspended.body().customer().customer().status());
+
+    var detail = httpClient
+        .GET("/api/admin/customers/customer-suspended-admins")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-suspended-detail")
+        .responseBodyAs(CustomerDetailPayload.class)
+        .invoke();
+    assertTrue(detail.status().isSuccess());
+    assertTrue(detail.body().visibleActions().contains("reactivate"));
+
+    var listDenied = assertThrows(RuntimeException.class, () -> httpClient
+        .GET("/api/admin/customers/customer-suspended-admins/admins")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-list-suspended-denied")
+        .responseBodyAs(String.class)
+        .invoke());
+    assertTrue(listDenied.getMessage().contains("403"));
+
+    var inviteDenied = assertThrows(RuntimeException.class, () -> httpClient
+        .POST("/api/admin/customers/customer-suspended-admins/admins/invitations")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-invite-suspended-denied")
+        .withRequestBody(new CreateInvitationApiRequest("suspended-customer-admin@example.test", "Suspended Customer Admin", null, "idem-suspended-customer-admin-invite"))
+        .responseBodyAs(String.class)
+        .invoke());
+    assertTrue(inviteDenied.getMessage().contains("403"));
+
+    var roleDenied = assertThrows(RuntimeException.class, () -> httpClient
+        .PUT("/api/admin/customers/customer-suspended-admins/admins/existing-suspended-customer-admin@example.test/roles")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-role-suspended-denied")
+        .withRequestBody(new ChangeRolesApiRequest(List.of("CUSTOMER_ADMIN"), "suspended customer", "idem-customer-admin-role-suspended"))
+        .responseBodyAs(String.class)
+        .invoke());
+    assertTrue(roleDenied.getMessage().contains("403"));
+
+    var statusDenied = assertThrows(RuntimeException.class, () -> httpClient
+        .POST("/api/admin/customers/customer-suspended-admins/admins/existing-suspended-customer-admin@example.test/suspend")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-status-suspended-denied")
+        .withRequestBody(new AccountActionApiRequest("suspended customer", "idem-customer-admin-status-suspended"))
+        .responseBodyAs(String.class)
+        .invoke());
+    assertTrue(statusDenied.getMessage().contains("403"));
+
+    var reactivated = httpClient
+        .POST("/api/admin/customers/customer-suspended-admins/reactivate")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-reactivate-before-admins")
+        .withRequestBody(new CustomerLifecycleApiRequest("resume customer admin maintenance", "idem-customer-reactivate-before-admins"))
+        .responseBodyAs(CustomerActionApiResponse.class)
+        .invoke();
+    assertTrue(reactivated.status().isSuccess());
+    assertEquals("active", reactivated.body().customer().customer().status());
+
+    var listAfterReactivate = httpClient
+        .GET("/api/admin/customers/customer-suspended-admins/admins")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-list-reactivated")
+        .responseBodyAs(CustomerAdminListPayload.class)
+        .invoke();
+    assertTrue(listAfterReactivate.status().isSuccess());
+    assertTrue(listAfterReactivate.body().admins().stream().anyMatch(admin -> "existing-suspended-customer-admin@example.test".equals(admin.accountId())));
   }
 
   @Test

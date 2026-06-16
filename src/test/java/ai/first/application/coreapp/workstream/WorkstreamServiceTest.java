@@ -551,6 +551,39 @@ class WorkstreamServiceTest {
     assertEquals("accepted", suspend.status());
     assertTrue(suspend.resultSurface().toString().contains("suspended"));
 
+    var suspendedDetail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-customer-read", "user-admin.read-customer", "manage-customers", "tenant.customer.read", Map.of("customerId", customerId), null, "membership-admin", directory.resultSurface().surfaceId(), "corr-customer-suspended-read"));
+    assertEquals("surface-user-admin-customer-detail", suspendedDetail.resultSurface().surfaceId());
+    assertTrue(suspendedDetail.resultSurface().toString().contains("reactivate"));
+
+    var suspendedAdmins = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-customer-admins", "user-admin.show-customer-admins", "manage-customer-admins", "tenant.customer_admin.list", Map.of("customerId", customerId), null, "membership-admin", suspendedDetail.resultSurface().surfaceId(), "corr-customer-admins-suspended"));
+    assertEquals("denied", suspendedAdmins.status());
+    assertEquals("surface-user-admin-system-message", suspendedAdmins.resultSurface().surfaceId());
+    assertEquals("customer-suspended", suspendedAdmins.resultSurface().data().get("reasonCode"));
+    assertEquals(true, suspendedAdmins.resultSurface().data().get("noFakeSuccess"));
+
+    var suspendedInviteForm = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-customer-admin-invitation-create", "user-admin.open-customer-admin-invite", "manage-customer-admins", "tenant.customer_admin.invite", Map.of("customerId", customerId), null, "membership-admin", suspendedDetail.resultSurface().surfaceId(), "corr-customer-admin-invite-suspended"));
+    assertEquals("denied", suspendedInviteForm.status());
+    assertEquals("customer-suspended", suspendedInviteForm.resultSurface().data().get("reasonCode"));
+
+    var suspendedInvite = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-customer-admin-invite", "user-admin.invite-customer-admin", "manage-customer-admins", "tenant.customer_admin.invite", Map.of("customerId", customerId, "email", "blocked.customer.admin@example.test", "displayName", "Blocked Customer Admin", "roles", "CUSTOMER_ADMIN"), "idem-customer-admin-invite-suspended", "membership-admin", suspendedDetail.resultSurface().surfaceId(), "corr-customer-admin-invite-suspended-submit"));
+    assertEquals("denied", suspendedInvite.status());
+    assertEquals("customer-suspended", suspendedInvite.resultSurface().data().get("reasonCode"));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("CUSTOMER_ADMIN_INVITE") && event.reasonCode().equals("customer-suspended") && event.correlationId().equals("corr-customer-admin-invite-suspended-submit")));
+
+    var reactivate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-customer-reactivate", "user-admin.reactivate-customer", "manage-customers", "tenant.customer.reactivate", Map.of("customerId", customerId, "reason", "test-reactivate"), "idem-customer-reactivate", "membership-admin", suspendedDetail.resultSurface().surfaceId(), "corr-customer-reactivate"));
+    assertEquals("accepted", reactivate.status());
+    assertTrue(reactivate.resultSurface().toString().contains("active"));
+
+    var reactivatedAdmins = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-customer-admins", "user-admin.show-customer-admins", "manage-customer-admins", "tenant.customer_admin.list", Map.of("customerId", customerId), null, "membership-admin", reactivate.resultSurface().surfaceId(), "corr-customer-admins-reactivated"));
+    assertEquals("accepted", reactivatedAdmins.status());
+    assertEquals("surface-user-admin-customer-admins", reactivatedAdmins.resultSurface().surfaceId());
+
     assertThrows(AuthorizationException.class, () -> service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
         "action-user-admin-show-customers", "user-admin.show-customers", "manage-customers", "tenant.customer.list", null, null, "membership-owner", "surface-user-admin-saas-owner-dashboard", "corr-owner-customer-denied")));
   }

@@ -467,7 +467,7 @@ public final class WorkstreamService {
     } else if ("action-open-customer-admin-invitation-create".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Customer Admin invitation/bootstrap surface loaded for the selected Customer.", request.correlationId(), List.of("trace-customer-admin-invite-" + stableSuffix(request.correlationId())), customerAdminInvitationCreateSurface(actor, request.input(), request.correlationId()));
     } else if ("action-customer-admin-invite".equals(request.actionId())) {
-      var customer = customerTargetDetail(actor, request.input(), request.correlationId());
+      var customer = activeCustomerInviteTargetDetail(actor, request.input(), request.correlationId());
       var invite = invitationService.createInvitation(actor, new InvitationService.CreateInvitationRequest(
           request.idempotencyKey(), ScopeType.CUSTOMER, actor.selectedContext().tenantId(), customer.customer().customerId(),
           stringInput(request.input(), "email", "new-customer-admin@example.test"), stringInput(request.input(), "displayName", "New Customer Admin"),
@@ -734,6 +734,8 @@ public final class WorkstreamService {
         || actionId.startsWith("action-user-admin-show")
         || actionId.startsWith("action-organization")
         || actionId.startsWith("action-open-organization")
+        || actionId.startsWith("action-customer")
+        || actionId.startsWith("action-open-customer")
         || actionId.equals("action-display-organization-admin"));
   }
 
@@ -1328,7 +1330,7 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope customerAdminsSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), USER_ADMIN_CAPABILITY);
-    var detail = customerTargetDetail(actor, input, correlationId);
+    var detail = activeCustomerListTargetDetail(actor, input, correlationId);
     var target = customerTargetMap(actor, detail, correlationId);
     return envelope("surface-user-admin-customer-admins", "list-search", "Customer Admins", actor, correlationId,
         mapOf("surfaceContract", "user_admin.customer_admins.v1", "branchNavigation", customerBranchNavigation(correlationId), "customerId", detail.customer().customerId(), "customerName", detail.customer().customerName(), "targetScopeProof", target, "query", "", "rows", List.of(), "admins", List.of(), "invitations", List.of(), "filters", mapOf("role", "CUSTOMER_ADMIN", "customerId", detail.customer().customerId(), "customerName", detail.customer().customerName(), "backendAuthored", true), "pageInfo", mapOf("visibleCount", 0), "summary", "Customer Admin users and invitations for " + detail.customer().customerName() + ". Rows route through backend-authored detail/task surfaces and never expose sibling-customer or tenant-wide authority.", "safeBoundaryNotice", detail.safeBoundaryNotice(), "branchRootSurfaceId", "surface-user-admin-customer-directory", "branchReturnActionId", "action-user-admin-show-customers", "traceRefs", detail.traceRefs(), "correlationId", correlationId, "redaction", List.of("hidden-users-redacted", "sibling-customers-redacted", "provider-payload-redacted", "raw-invitation-token-redacted"), "emptyMessage", "No Customer Admins are visible for this selected Customer yet."),
@@ -1342,7 +1344,7 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope customerAdminInvitationCreateSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), USER_ADMIN_CAPABILITY);
-    var detail = customerTargetDetail(actor, input, correlationId);
+    var detail = activeCustomerInviteTargetDetail(actor, input, correlationId);
     var target = customerTargetMap(actor, detail, correlationId);
     return envelope("surface-user-admin-customer-admin-invitation-create", "create-form", "Invite Customer Admin", actor, correlationId,
         mapOf("surfaceContract", "user_admin.customer_admin_invitation_create.v1", "branchNavigation", customerBranchNavigation(correlationId), "customerId", detail.customer().customerId(), "customerName", detail.customer().customerName(), "targetScopeProof", target, "targetScope", mapOf("scopeType", ScopeType.CUSTOMER.name(), "tenantId", actor.selectedContext().tenantId(), "customerId", detail.customer().customerId()), "summary", "Bootstrap or invite a CUSTOMER_ADMIN for " + detail.customer().customerName() + ". The workstream submit path always targets ScopeType.CUSTOMER for this Customer.", "recordKind", "customer-admin-invitation", "recordId", detail.customer().customerId(), "recordLabel", detail.customer().customerName(), "draft", mapOf("email", "", "displayName", "", "roles", List.of("CUSTOMER_ADMIN"), "customerId", detail.customer().customerId()), "roleOptions", List.of(mapOf("roleId", "CUSTOMER_ADMIN", "label", "CUSTOMER ADMIN")), "policyOptions", mapOf("roles", List.of(mapOf("roleId", "CUSTOMER_ADMIN", "label", "CUSTOMER ADMIN")), "idempotency", "client-generated", "outboxReadiness", "backend-derived"), "idempotencyKeyHint", "client-generated", "outboxReadiness", "backend-derived", "boundaryNotice", detail.safeBoundaryNotice(), "traceRefs", detail.traceRefs(), "correlationId", correlationId, "redaction", List.of("raw-token-redacted", "provider-payload-redacted", "sibling-customers-redacted")),
@@ -1360,10 +1362,18 @@ public final class WorkstreamService {
     return scopedAdminDetailSurface(actor, correlationId, "surface-user-admin-customer-admin-detail", "Customer Admin Detail", "user_admin.customer_admin_detail.v1", customerBranchNavigation(correlationId), "Customer Admin membership/invitation inspection. Role, status, resend, revoke, and audit changes route to dedicated User Admin task surfaces.", withCustomerBranchReturn(List.of(openMembershipStatusConfirmationAction(), previewRoleChangeAction(), openAuditAction())));
   }
 
-  private ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerDetail customerTargetDetail(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+  private ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerDetail activeCustomerListTargetDetail(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    return StarterSecurityComponents.tenantCustomerAdminService().requireActiveCustomerForCustomerAdminList(actor, customerIdInput(input), correlationId);
+  }
+
+  private ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerDetail activeCustomerInviteTargetDetail(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    return StarterSecurityComponents.tenantCustomerAdminService().requireActiveCustomerForCustomerAdminInvite(actor, customerIdInput(input), correlationId);
+  }
+
+  private String customerIdInput(Object input) {
     var customerId = stringInput(input, "customerId", stringInput(input, "recordId", ""));
     if (customerId == null || customerId.isBlank()) throw new AuthorizationException(400, "customer-id-required");
-    return StarterSecurityComponents.tenantCustomerAdminService().readCustomer(actor, customerId, correlationId);
+    return customerId;
   }
 
   private Map<String, Object> customerTargetMap(AuthContextResolver.ResolvedMe actor, ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerDetail detail, String correlationId) {
