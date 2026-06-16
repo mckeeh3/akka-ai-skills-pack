@@ -212,7 +212,7 @@
 
 ### TASK-FSCT-006: Verify or complete runtime testing for `surface-my-profile`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-005]
 - surface id: `surface-my-profile`
@@ -239,13 +239,14 @@
   - focused frontend tests/typecheck when frontend is in scope
   - manual/API/browser smoke evidence or explicit blocker
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
   - surface type: `detail-edit`
   - surface contract: `my_account.profile.self_service.v1`
   - purpose: Browser-safe identity/profile self-service with clear immutable/provider-backed fields.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream My Account functional agent surface `surface-my-profile`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-profile`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-16: added protected Akka-hosted My Account profile runtime smoke coverage in `MyAccountBrowserWorkstreamSmokeTest`: JWT plus selected `AuthContext` loads `surface-my-profile`, verifies backend-owned `my_account.profile.self_service.v1` payload/permission/provider-boundary/redaction/trace/correlation, updates display name through `/api/workstream/actions`, confirms `/api/workstream/bootstrap` reflects backend persistence, exercises repeat/no-op behavior, denies unsupported role-field self-service mutation before state change, rejects missing bearer access, and checks browser-safe secret boundaries. runtime evidence: readiness level `runtime-ready` for the profile testing scope; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/provider/fail-closed/trace coverage included unsupported field denial, provider-boundary redaction/omitted secret fields, trace refs and correlation ids; commands passed: `mvn -q -Dtest=MyAccountBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`
 
 ### TASK-FSCT-007: Verify or complete app-description specification for `surface-my-settings`
 

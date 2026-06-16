@@ -136,6 +136,114 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-account-dashboard").responseBodyAs(String.class).invoke());
   }
 
+  @Test
+  void protectedWorkstreamApiExercisesMyProfileRuntimePathAndDenials() throws Exception {
+    var profile = getSurface("surface-my-profile", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-profile-browser-read");
+    assertEquals("surface-my-profile", profile.surfaceId());
+    assertEquals("detail-edit", profile.surfaceType());
+    assertEquals("my_account.profile.self_service.v1", profile.data().get("surfaceContract"));
+    assertTrue(profile.toString().contains("profileSummary"));
+    assertTrue(profile.toString().contains("providerBoundarySummary"));
+    assertTrue(profile.toString().contains("fields"));
+    assertTrue(profile.toString().contains("permissionState"));
+    assertTrue(profile.toString().contains("my_account.update_profile_settings"));
+    assertTrue(profile.toString().contains("core.profile.update"));
+    assertTrue(profile.toString().contains("traceRefs"));
+    assertTrue(profile.toString().contains("corr-my-profile-browser-read"));
+    assertFalse(profile.toString().contains("role editor"));
+    assertProfileSurfaceBrowserSafe(profile);
+
+    var update = runAction(new CapabilityActionRequest(
+        "action-update-my-profile",
+        "action-update-my-profile",
+        "my_account.update_profile_settings",
+        "my_account.update_profile_settings",
+        Map.of("displayName", "Updated Browser Admin"),
+        "idem-my-profile-browser-update",
+        ADMIN_CONTEXT_ID,
+        profile.surfaceId(),
+        "corr-my-profile-browser-update"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", update.status());
+    assertEquals("surface-my-profile", update.resultSurface().surfaceId());
+    assertEquals("my_account.profile.self_service.v1", update.resultSurface().data().get("surfaceContract"));
+    assertTrue(update.resultSurface().toString().contains("Updated Browser Admin"));
+    assertTrue(update.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-profile-settings")));
+    assertProfileSurfaceBrowserSafe(update.resultSurface());
+
+    var postUpdateBootstrap = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-my-profile-browser-bootstrap-after-update")
+        .responseBodyAs(WorkstreamBootstrapResponse.class)
+        .invoke();
+    assertTrue(postUpdateBootstrap.status().isSuccess());
+    assertEquals("Updated Browser Admin", postUpdateBootstrap.body().me().profile().displayName());
+    assertBrowserSafe(postUpdateBootstrap.body());
+
+    var repeatSamePayload = runAction(new CapabilityActionRequest(
+        "action-update-my-profile",
+        "action-update-my-profile",
+        "my_account.update_profile_settings",
+        "my_account.update_profile_settings",
+        Map.of("displayName", "Updated Browser Admin"),
+        "idem-my-profile-browser-update",
+        ADMIN_CONTEXT_ID,
+        profile.surfaceId(),
+        "corr-my-profile-browser-repeat"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertTrue(List.of("accepted", "no-op").contains(repeatSamePayload.status()));
+    assertTrue(repeatSamePayload.resultSurface().toString().contains("Updated Browser Admin"));
+    assertFalse(repeatSamePayload.resultSurface().toString().contains("Ignored Browser Duplicate"));
+    assertProfileSurfaceBrowserSafe(repeatSamePayload.resultSurface());
+
+    var noOp = runAction(new CapabilityActionRequest(
+        "action-update-my-profile",
+        "action-update-my-profile",
+        "my_account.update_profile_settings",
+        "my_account.update_profile_settings",
+        Map.of("displayName", "Updated Browser Admin"),
+        "idem-my-profile-browser-noop",
+        ADMIN_CONTEXT_ID,
+        profile.surfaceId(),
+        "corr-my-profile-browser-noop"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("no-op", noOp.status());
+    assertEquals("surface-my-profile", noOp.resultSurface().surfaceId());
+    assertTrue(noOp.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-profile-settings")));
+    assertProfileSurfaceBrowserSafe(noOp.resultSurface());
+
+    var unsupportedMutation = new CapabilityActionRequest(
+        "action-update-my-profile",
+        "action-update-my-profile",
+        "my_account.update_profile_settings",
+        "my_account.update_profile_settings",
+        Map.of("roleIds", List.of("tenant-admin")),
+        "idem-my-profile-browser-denied",
+        ADMIN_CONTEXT_ID,
+        profile.surfaceId(),
+        "corr-my-profile-browser-denied");
+    assertThrows(RuntimeException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-my-profile-browser-denied")
+        .withRequestBody(unsupportedMutation)
+        .responseBodyAs(String.class)
+        .invoke());
+
+    var afterDenied = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-my-profile-browser-after-denied")
+        .responseBodyAs(WorkstreamBootstrapResponse.class)
+        .invoke();
+    assertTrue(afterDenied.status().isSuccess());
+    assertEquals("Updated Browser Admin", afterDenied.body().me().profile().displayName(), "Unsupported self-service fields must be denied before profile mutation.");
+    assertBrowserSafe(afterDenied.body());
+
+    assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-profile").responseBodyAs(String.class).invoke());
+  }
+
   private SurfaceEnvelope getSurface(String surfaceId, String selectedContextId, String email, String name, String correlationId) throws Exception {
     var response = httpClient
         .GET("/api/workstream/surfaces/" + surfaceId)
@@ -176,6 +284,17 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     var header = Base64.getEncoder().encodeToString("{\"alg\":\"none\"}".getBytes());
     var payload = Base64.getEncoder().encodeToString(JsonSupport.getObjectMapper().writeValueAsBytes(Map.of("sub", subject, "email", email, "name", name)));
     return header + "." + payload;
+  }
+
+  private static void assertProfileSurfaceBrowserSafe(SurfaceEnvelope payload) {
+    var text = String.valueOf(payload);
+    assertTrue(text.contains("omittedFieldKeys"));
+    assertTrue(text.contains("providerSecret"));
+    assertFalse(text.contains("RESEND_API_KEY"));
+    assertFalse(text.contains("Bearer "));
+    assertFalse(text.contains("workos-admin"));
+    assertFalse(text.contains("test-fake-provider"));
+    assertFalse(text.contains("test-fake-model"));
   }
 
   private static void assertBrowserSafe(Object payload) {
