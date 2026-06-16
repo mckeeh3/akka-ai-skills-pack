@@ -122,7 +122,7 @@
 
 ### TASK-FCBAD-01-003: Capture customer boundary workstream, surfaces, agents, and realization bindings
 
-- status: pending
+- status: done
 - source: specs/foundation-customer-boundary-app-description/backlog/01-foundation-customer-boundary-app-description-backlog.md#fcbad-03-capture-workstream-surface-agent-tool-policy-trace-test-and-realization-bindings
 - task brief: specs/foundation-customer-boundary-app-description/tasks/01-description/03-capture-workstream-surfaces-agents-realization.md
 - depends on:
@@ -153,6 +153,11 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; docs-only surface/action/governed-tool/current-intent capture; customer directory/detail/lifecycle/Customer Admin branch; `tenant.customer.*` and `tenant.customer_admin.*`; selected tenant/customer AuthContext semantics; validation path `git diff --check` plus targeted `rg` proof
+  - changed app-description nodes: `app-description/domains/core-starter/workstreams/user-admin/agents/functional-agent.md`, `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`, `app-description/domains/core-starter/workstreams/user-admin/realization/akka-components.md`, `app-description/domains/core-starter/workstreams/user-admin/realization/frontend-routes.md`
+  - checks: `git diff --check` passed
+  - targeted proof: `rg -n "surface-user-admin-customer-directory|action-customer|tenant\\.customer|Customer Admin|TenantCustomerAdminService|audit/work trace|trace.*Customer|Customer.*trace" app-description/domains/core-starter/workstreams/user-admin app-description/global/agents app-description/global/tools app-description/global/surfaces app-description/domains/core-starter/realization 2>/dev/null` found active User Admin customer surfaces, `action-customer*` action edges, `tenant.customer.*` / `tenant.customer_admin.*`, Customer Admin limits, `TenantCustomerAdminService`, and trace/test obligations
+  - runtime impact: no runtime code changed
+  - commit message: `customer-boundary-desc: capture workstream surfaces agents realization`
 
 ### TASK-FCBAD-01-004: Verify foundation customer boundary app-description sufficiency
 

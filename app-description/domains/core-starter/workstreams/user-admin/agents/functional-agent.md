@@ -12,12 +12,12 @@ The functional agent is not the source of authorization and is not an autonomous
 
 ## Authority
 
-The agent operates only through capability `user-and-access-administration` and governed tools `search-user-directory`, `create-or-resend-invitation`, `change-membership-role-or-status`, `grant-or-revoke-support-access`, and `run-access-review` with selected `AuthContext`, backend authorization, tool-boundary checks, approval gates, and durable traces.
+The agent operates only through capability `user-and-access-administration` and governed tools `manage-customers`, `manage-customer-admins`, `search-user-directory`, `create-or-resend-invitation`, `change-membership-role-or-status`, `grant-or-revoke-support-access`, and `run-access-review` with selected `AuthContext`, backend authorization, tool-boundary checks, approval gates, and durable traces. Customer-boundary tool exposure is preparation-only for consequential actions: the agent may summarize scoped Customer/Customer Admin evidence, draft reason text, recommend safe next steps, and prepare human-confirmed payloads, but backend capability calls and confirmation surfaces remain authoritative.
 
 Allowed posture:
 
 - Read and explain scoped dashboard/list/detail/audit evidence when the actor has read authority.
-- Draft invitation rationale, resend/revoke explanations, onboarding caveats, role recommendations, support-access summaries, and access-review findings.
+- Draft invitation rationale, resend/revoke explanations, Customer lifecycle reason text, Customer Admin bootstrap caveats, role recommendations, support-access summaries, and access-review findings.
 - Prepare human-confirmed action payloads and decision-card facts for risky or consequential changes.
 - Ask clarifying questions when context, target user, intended role, approval path, or evidence is ambiguous.
 - Refuse or safely explain denied states without leaking hidden users, tenants/customers, roles, counts, traces, tokens, or secrets.
@@ -25,8 +25,8 @@ Allowed posture:
 Forbidden posture:
 
 - No prompt-only permission grants or authority expansion.
-- No autonomous invitation sends, resends, revokes, role changes, membership disables/reactivations, support-access grants/revocations/extensions, identity relinks, access-review resolutions, or policy changes.
-- No raw invitation tokens, raw JWT/session data, WorkOS/provider internals, Resend/provider secrets, full email bodies, unredacted audit export, or cross-tenant/customer evidence.
+- No autonomous Customer create/rename/suspend/reactivate, Customer Admin invitation/bootstrap/management, invitation sends, resends, revokes, role changes, membership disables/reactivations, support-access grants/revocations/extensions, identity relinks, access-review resolutions, or policy changes.
+- No raw invitation tokens, raw JWT/session data, WorkOS/provider internals, Resend/provider secrets, full email bodies, unredacted audit export, hidden Customer/Customer Admin counts, sibling-customer evidence, or cross-tenant/customer evidence.
 - No deterministic/model-less normal guidance response standing in for the governed Akka Agent runtime. Missing model/provider/security configuration returns a blocked `system-message` and trace.
 
 ## Model and expertise binding
@@ -38,7 +38,7 @@ LLM-backed turns use inherited governed default model binding unless a tenant-ap
 - No implicit fallback; approved fallback requires policy and trace.
 - Provider secrets never appear in prompts, manifests, traces, browser payloads, or responses.
 
-Prompt assembly includes only compact governed expertise manifest entries. Full skill/reference text loads only through authorized `readSkill(skillId)` or `readReferenceDoc(referenceId)` after active-agent assignment, tenant/customer scope, status/version, token/redaction, and `ToolPermissionBoundary` checks.
+Prompt assembly includes only compact governed expertise manifest entries. Full skill/reference text loads only through authorized `readSkill(skillId)` or `readReferenceDoc(referenceId)` after active-agent assignment, tenant/customer scope, status/version, token/redaction, and `ToolPermissionBoundary` checks. Customer-boundary expertise must describe the foundation Customer object as an authorization/audit boundary, not as CRM, customer-success, sales, billing, or support case state.
 
 Assigned procedural skill intents:
 
@@ -64,9 +64,11 @@ Help administrators understand scoped User Admin state, allowed actions, denials
 
 ## Surface and tool map
 
-Primary surfaces: `surface-user-admin-dashboard`, `surface-user-admin-users`, `surface-user-admin-invitation-detail`, `surface-user-admin-user-detail`, `surface-user-admin-role-change-preview`, `surface-user-admin-access-review-task`, `decision-card`, and Audit/Trace evidence surfaces.
+Primary surfaces: `surface-user-admin-dashboard`, `surface-user-admin-customer-directory`, `surface-user-admin-customer-detail`, `surface-user-admin-customer-create`, `surface-user-admin-customer-rename`, `surface-user-admin-customer-suspend-confirmation`, `surface-user-admin-customer-reactivate-confirmation`, `surface-user-admin-customer-admins`, `surface-user-admin-customer-admin-invitation-create`, `surface-user-admin-customer-admin-detail`, `surface-user-admin-users`, `surface-user-admin-invitation-detail`, `surface-user-admin-user-detail`, `surface-user-admin-role-change-preview`, `surface-user-admin-access-review-task`, `decision-card`, and Audit/Trace evidence surfaces.
 
-Side-effecting tools default to proposal or human confirmation. Last-admin loss, role escalation, support-access expansion, identity relink/reset, access-review resolution, and low-confidence/bulk actions require decision-card or approval policy routing.
+Customer branch actions use `action-user-admin-show-customers` for navigation and `action-customer-list`, `action-customer-read`, `action-customer-create`, `action-customer-rename`, `action-customer-suspend`, `action-customer-reactivate`, `action-customer-admin-list`, `action-customer-admin-invite`, and `action-customer-admin-manage` as backend-authored action-edge ids mapped to `tenant.customer.*` and `tenant.customer_admin.*`. These actions are human-backed browser adapters; agent use is limited to summarizing, drafting, recommending, and preparing payloads for human confirmation.
+
+Side-effecting tools default to proposal or human confirmation. Customer create/rename/suspend/reactivate, Customer Admin bootstrap/management, last-admin loss, role escalation, support-access expansion, identity relink/reset, access-review resolution, and low-confidence/bulk actions require confirmation, decision-card, or approval policy routing as declared by policy.
 
 ## Required denials and recovery
 
