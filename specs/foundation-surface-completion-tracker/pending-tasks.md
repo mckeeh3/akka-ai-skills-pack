@@ -318,7 +318,7 @@
 
 ### TASK-FSCT-009: Verify or complete runtime testing for `surface-my-settings`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-008]
 - surface id: `surface-my-settings`
@@ -345,13 +345,14 @@
   - focused frontend tests/typecheck when frontend is in scope
   - manual/API/browser smoke evidence or explicit blocker
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
   - surface type: `detail-edit`
   - surface contract: `my_account.preferences.self_service.v1`
   - purpose: Personal preferences, named theme selection, locale/timezone, and preference save state.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream My Account functional agent surface `surface-my-settings`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-settings`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-16: expanded `MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMySettingsRuntimePath` to cover the protected Akka-hosted settings surface/action path, notification-center action edge, no-op save, unsupported provider-secret denial, invalid timezone denial/no mutation, missing-bearer rejection, trace/correlation evidence, and browser-safe redaction/secret-boundary assertions. runtime evidence: readiness level `runtime-ready` for the settings testing scope; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/provider/fail-closed/trace coverage included unsupported provider-secret denial, invalid timezone denial, no-op trace ids, hidden-category/provider-secret/arbitrary-CSS/fake-provider/fake-model redaction, and correlation ids; commands passed: `mvn -q -Dtest=MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMySettingsRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-010: Verify or complete app-description specification for `surface-my-context`
 

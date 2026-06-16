@@ -279,6 +279,36 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(update.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-profile-settings")));
     assertSettingsSurfaceBrowserSafe(update.resultSurface());
 
+    var openNotifications = runAction(new CapabilityActionRequest(
+        "action-show-my-account-notification-center",
+        "action-show-my-account-notification-center",
+        "notification.list_my_account_center",
+        "notification.list_my_account_center",
+        Map.of(),
+        null,
+        ADMIN_CONTEXT_ID,
+        update.resultSurface().surfaceId(),
+        "corr-my-settings-browser-open-notifications"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", openNotifications.status());
+    assertEquals("surface-my-account-notification-center", openNotifications.resultSurface().surfaceId());
+    assertEquals("my_account.notification_center.v1", openNotifications.resultSurface().data().get("surfaceContract"));
+    assertBrowserSafe(openNotifications.resultSurface());
+
+    var noOp = runAction(new CapabilityActionRequest(
+        "action-update-my-settings",
+        "action-update-my-settings",
+        "my_account.update_profile_settings",
+        "my_account.update_profile_settings",
+        Map.of("preferredThemeId", "midnight-dark", "locale", "en-GB", "timeZone", "Europe/London"),
+        "idem-my-settings-browser-noop",
+        ADMIN_CONTEXT_ID,
+        settings.surfaceId(),
+        "corr-my-settings-browser-noop"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("no-op", noOp.status());
+    assertEquals("surface-my-settings", noOp.resultSurface().surfaceId());
+    assertTrue(noOp.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-profile-settings")));
+    assertSettingsSurfaceBrowserSafe(noOp.resultSurface());
+
     var postUpdateBootstrap = httpClient
         .GET("/api/workstream/bootstrap")
         .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
@@ -291,6 +321,25 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("en-GB", postUpdateBootstrap.body().me().settings().locale());
     assertEquals("Europe/London", postUpdateBootstrap.body().me().settings().timeZone());
     assertBrowserSafe(postUpdateBootstrap.body());
+
+    var unsupportedProviderMutation = new CapabilityActionRequest(
+        "action-update-my-settings",
+        "action-update-my-settings",
+        "my_account.update_profile_settings",
+        "my_account.update_profile_settings",
+        Map.of("providerSecret", "sk-settings-browser-secret"),
+        "idem-my-settings-browser-unsupported",
+        ADMIN_CONTEXT_ID,
+        settings.surfaceId(),
+        "corr-my-settings-browser-unsupported");
+    assertThrows(RuntimeException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-my-settings-browser-unsupported")
+        .withRequestBody(unsupportedProviderMutation)
+        .responseBodyAs(String.class)
+        .invoke());
 
     var invalidTimezone = new CapabilityActionRequest(
         "action-update-my-settings",
