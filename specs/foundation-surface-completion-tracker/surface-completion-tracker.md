@@ -121,7 +121,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract verified and completed in `app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md`: includes `surface-my-account-personal-attention-digest-progress` identity/owner/placement/purpose, `my_account.personal_attention_digest.progress.v1` workflow-status payload schema for task ids, selected account context, status/phase, evidence window, durable `progressEvents[]`, blocker/result preview, available actions, redaction, no-direct-mutation, trace/correlation, governed start/read/cancel/open-result/open-blocked/open-trace action mappings, selected AuthContext plus tenant/customer/task visibility rules, provider/runtime fail-closed and no-fake-success behavior, accessibility/responsive expectations, style/component anatomy, and acceptance/security/observability regression coverage. Sufficiency review says the progress surface is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-16 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

@@ -333,25 +333,66 @@ The surface explicitly represents empty, ready, submitting, no-op, forbidden, st
 
 ### Intent
 
-`surface-my-account-personal-attention-digest-progress` shows the status of a backend-governed personal attention digest/export request. It exists to make autonomous personal briefing work visible and recoverable; it is not a fake summary, deterministic demo, fixture, or source-attention mutator.
+`surface-my-account-personal-attention-digest-progress` shows the status of a backend-governed personal attention digest/export request. It exists to make autonomous personal briefing work visible and recoverable; it is not a fake summary, deterministic demo, fixture, or source-attention mutator. The surface helps the signed-in human understand whether personal digest work has been accepted, queued, working, waiting, blocked, cancelled, or ready for review, and what safe next action is available.
 
 ### Contract
 
 - Surface id: `surface-my-account-personal-attention-digest-progress`.
 - Surface type: `workflow-status`.
 - Surface contract: `my_account.personal_attention_digest.progress.v1`.
+- Owning workstream: My Account.
 - Owning functional agent: `my-account-agent`.
 - Required context: current authenticated account plus selected tenant/customer membership.
+- Reusable placements: My Account dashboard digest/export panel, notification-center source links for visible digest notifications, and role-gated Audit/Trace timelines may link to this progress surface.
 
-### Payload and actions
+### User experience model
 
-Frontend-safe payload includes `digestTaskId`, `autonomousAgentTaskId`, `status`, `phase`, `summary`, `authorizedAttentionCount`, `evidenceWindow`, `progressEvents[]`, `blockedReason`, `traceRefs`, `correlationId`, `redaction`, and `noDirectMutation`. Hidden workstreams/items are never counted or named.
+1. **Orient** — show selected context, requested digest task, current status/phase, freshness, and user-safe trace/correlation affordances.
+2. **Track work** — show a chronological `progressEvents[]` timeline with accepted, queued, agent/tool/provider, waiting, cancellation, blocked, completed, and review-required milestones using product-language event labels.
+3. **Explain evidence scope** — show the authorized attention count and evidence window used for the digest without naming hidden workstreams, hidden items, or cross-tenant/customer facts.
+4. **Recover honestly** — provider/runtime/tool readiness gaps render `surface-my-account-personal-attention-digest-blocked` or a progress state with explicit blocker summary; the normal path never returns deterministic/model-less/fixture success.
+5. **Route review** — completed digest work routes to `surface-my-account-personal-attention-digest-result` for human review; progress itself never accepts/rejects advisory content or mutates source attention.
 
-Actions include start, refresh/read, cancel, and open trace through `my_account.personal_attention_digest.start/read/cancel` and related trace-read capabilities. Results render progress, blocked, result, no-op, denied, or failure surfaces.
+### Frontend-safe payload
 
-### States
+- `surfaceContract`, `digestTaskId`, `autonomousAgentTaskId`, `accountContext`, `status`, `phase`, `summary`, `authorizedAttentionCount`, `evidenceWindow`, `progressEvents[]`, `blockedReason`, `resultPreview`, `availableActions[]`, `traceRefs`, `correlationId`, `redaction`, and `noDirectMutation`.
+- `accountContext`: browser-safe account display name/email, selected tenant/customer label where authorized, selected context id, and redaction level.
+- `status`: one of `not_started`, `accepted`, `queued`, `working`, `waiting_for_provider`, `waiting_for_runtime`, `waiting_for_human`, `completed_review_required`, `cancelled`, `blocked`, `stale`, `forbidden`, or `failed`.
+- `phase`: stable user-facing phase id plus label, explanatory copy, percentage or ordinal progress only when backend-owned, freshness timestamp, and stale/reconnect hint.
+- `evidenceWindow`: authorized time range, visible source workstream count, visible attention count, omitted/redacted count summary, and selected-context scope label.
+- `progressEvents[]`: event id, timestamp, phase/status, user-safe title, summary, severity, actor kind (`system`, `agent`, `provider`, `human`, or `workflow`), visible source summary, trace refs, and redaction note.
+- `blockedReason`: optional user-safe blocker code/title/message, provider/tool/runtime readiness category, recovery steps, retry eligibility, and `noFakeSuccess: true` when provider/model/runtime configuration is missing.
+- `resultPreview`: optional completion summary with result surface id/action id only when review is ready; advisory content remains on the result surface.
+- `availableActions[]`: action id, label, capability id, enabled/disabled state, disabled reason, idempotency/correlation behavior summary, and target/result surface.
 
-Required states: not-started, accepted, queued, working, waiting-for-provider/runtime, waiting-for-human, completed-review-required, cancelled, stale/reconnect, provider-fail-closed, forbidden, conflict, no-op, and failure.
+Forbidden payload/content:
+
+- Hidden workstream names, hidden attention items, raw source records, cross-tenant/customer facts, raw prompt/model/provider configuration, provider secrets, raw JWT/session data, raw tool payloads, fixture/demo/model-less success data, source attention mutation controls, or hidden trace/event ids.
+
+### Actions
+
+| Action | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| Start personal digest/export | `my_account.personal_attention_digest.start` / `request-personal-digest-export` | Accept or no-op an authorized digest request and render progress, blocked, denied, or failure surface with trace refs. |
+| Refresh/read digest progress | `my_account.personal_attention_digest.read` / `read-personal-digest-task` | Reload backend-owned progress state for the visible task or render safe not-found/redacted/forbidden recovery. |
+| Cancel digest/export | `my_account.personal_attention_digest.cancel` / `cancel-personal-digest-task` | Cancel only an authorized cancellable task; return cancelled progress, no-op if already terminal, forbidden, conflict, or failure. |
+| Open digest result | `my_account.personal_attention_digest.read` | Render `surface-my-account-personal-attention-digest-result` only when the task is completed and review is authorized. |
+| Open blocked recovery | `my_account.personal_attention_digest.read` | Render `surface-my-account-personal-attention-digest-blocked` for fail-closed provider/runtime/tool readiness problems. |
+| Open related trace | `my_account.view_own_trace_refs` | Render authorized Audit/Trace surface or safe redacted message. |
+
+### State and style expectations
+
+Render with the workflow-status component anatomy from the current AI-first workstream style: selected-context header, phase/status badge, compact timeline, evidence-window summary, governed action bar, blocker card when present, and trace/evidence block. Required states are not-started, accepted, queued, working, waiting-for-provider/runtime, waiting-for-human, completed-review-required, cancelled, stale/reconnect, provider-fail-closed, forbidden, conflict, no-op, and failure. Loading, empty/no-task, submitting, partial-data, and reconnect states must preserve selected context and trace/correlation affordances.
+
+### Specification completeness for implementation
+
+- **Payload schema detail:** implement `digestTaskId`, `autonomousAgentTaskId`, `accountContext`, `status`, `phase`, `summary`, `authorizedAttentionCount`, `evidenceWindow`, `progressEvents[]`, `blockedReason`, `resultPreview`, `availableActions[]`, `traceRefs[]`, `correlationId`, `redaction`, and `noDirectMutation` exactly as browser-safe summaries. `progressEvents[]` must be durable backend/workflow/agent events, not frontend timers or fixture events. Hidden workstreams/items are represented only by aggregate omitted/redacted summaries.
+- **Authorization and tenant rules:** every start/read/cancel/open-result/open-trace action is evaluated against the signed-in account plus selected backend `AuthContext`; tenant/customer scope comes from protected backend context resolution, not client-provided task ids. A task is visible only to its requesting account within the selected authorized context or to a role-gated auditor/support trace surface. Hidden, cross-account, cross-tenant/customer, stale, inactive, or already-redacted task ids return safe `not_found_or_redacted`/forbidden recovery without enumeration. Progress never grants capability access and never mutates source attention/tasks/events.
+- **Actions and result surfaces:** `start-personal-attention-digest` accepts or no-ops an authorized request and returns this progress surface or the blocked surface; `refresh-personal-attention-digest-progress` reads backend state; `cancel-personal-attention-digest` cancels only cancellable tasks with idempotent terminal no-op handling; `open-personal-attention-digest-result` renders the result surface only when completed-review-required; `open-personal-attention-digest-blocked` renders the blocked surface when provider/runtime/tool readiness fails closed; `open-related-trace` routes to authorized Audit/Trace or safe denial. Consequential actions carry correlation and idempotency metadata.
+- **Trace and audit contract:** each start/read/cancel/open-result/open-trace attempt links or emits an audit/work trace containing actor account, selected context, visible task id, capability decision, evidence-window scope, progress state transition or no-op, provider/tool readiness category when blocked, redaction level, result surface decision, and correlation id. Browser-visible traces never expose raw JWTs, provider/model records, prompts, tool payloads, hidden workstream/item names, raw event ids, or provider secrets.
+- **Accessibility and responsive expectations:** the surface has a stable heading, status/phase announced as status text, keyboard-operable timeline entries and action controls, accessible labels for progress severity and blocker recovery, focus recovery to the changed state or result message after actions, and non-color-only status indicators. On narrow viewports, selected context, status summary, evidence window, timeline, actions, blocker/result link, and trace blocks stack in that order without changing action order.
+- **Acceptance and regression tests:** generated/runtime work must cover start success, read/refresh success, queued/working/waiting states, completed-review-required routing to result, provider-fail-closed routing to blocked with `noFakeSuccess`, cancel success, repeated cancel no-op, forbidden cross-account/cross-tenant task denial without enumeration, stale/reconnect recovery, conflict for non-cancellable or completed tasks, tenant/customer isolation, audit/trace/correlation visibility, hidden-source redaction/omission, `noDirectMutation` of source attention, and frontend secret-boundary checks proving no raw JWT/session/provider/model/tool payload/hidden workstream or fixture success is rendered or submitted.
+- **Surface-description sufficiency review:** yes — this surface definition is sufficiently unambiguous for a developer or generator to implement and review `surface-my-account-personal-attention-digest-progress` without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. The default view avoids exposing internal implementation details that do not help the signed-in SaaS user understand digest progress, recover from provider/runtime blockers, safely cancel, route to review, or inspect authorized traces.
 
 ## Personal attention digest/export result surface
 
