@@ -160,7 +160,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract verified and completed in `app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md`: includes `surface-my-account-open-denied` identity/owner/purpose, `my_account.open_denied.v1` system-message payload schema, safe denial decisions/reason codes, selected AuthContext/account context, no-enumeration redaction rules, governed recovery actions for dashboard return/context refresh/retry/request-access/trace, backend authorization and tenant/customer isolation expectations, trace/audit/correlation contract, accessibility/responsive behavior, explicit states, acceptance/security/observability regression coverage, and sufficiency review. The surface is implementable without inventing fields/actions/states/auth/traces/tests and preserves hidden-target secrecy. | 2026-06-16 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

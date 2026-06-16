@@ -886,7 +886,7 @@
 
 ### TASK-FSCT-025: Verify or complete app-description specification for `surface-my-account-open-denied`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-my-account-open-denied`
@@ -915,6 +915,7 @@
   - purpose: Safe not-found/redacted/unavailable workstream recovery.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-account-open-denied` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-16: completed the My Account open-denied app-description contract with implementation-ready `my_account.open_denied.v1` system-message payload, safe denial decisions/reason codes, `noEnumeration` and redaction boundaries, selected AuthContext/account context rules, governed dashboard/context-refresh/retry/request-access/trace recovery actions, trace/audit/correlation requirements, accessibility/responsive states, acceptance/security/observability tests, and sufficiency review; tracker evidence updated. Checks passed: `git diff --check` and focused `rg` evidence for surface id, contract, payload/actions/auth/traces/tests in app-description.
 
 ### TASK-FSCT-026: Verify or complete runtime implementation for `surface-my-account-open-denied`
 

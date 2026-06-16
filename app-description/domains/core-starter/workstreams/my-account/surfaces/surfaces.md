@@ -545,11 +545,53 @@ Render with the system-message and provider-fail-closed card anatomy from the cu
 - Surface contract: `my_account.open_denied.v1`.
 - Owning functional agent: `my-account-agent`.
 
-### Payload and actions
+### User experience model
 
-Payload includes `decision`, `safeReasonCode`, user-safe message, recovery steps, source action id where visible, target label only when authorized, trace refs, correlation id, and redaction note. Forbidden content includes hidden workstream names, hidden context names, missing role details, protected target ids, and cross-tenant/customer facts.
+1. **Orient without enumerating** — tell the signed-in human that the requested destination cannot be opened in the selected context, using plain-language reason categories rather than hidden workstream, source, role, or tenant details.
+2. **Preserve context** — show only browser-safe selected-context and account summaries so the user can confirm which tenant/customer context governed the denial.
+3. **Recover safely** — offer return-to-dashboard, refresh-context, request-access guidance, and trace investigation actions only when those actions are authorized and configured.
+4. **Explain the boundary** — distinguish unavailable, hidden/redacted, forbidden, stale, disabled, and not-found states without leaking whether a protected target exists.
+5. **Remain actionable** — every visible recovery control is backed by a governed capability/action and returns a typed surface or safe denial result; the surface is never a dead-end error page.
 
-Actions include return to My Account dashboard, refresh selected context, open request-access guidance if available, and open trace if authorized.
+### Frontend-safe payload
+
+- `surfaceContract`, `decision`, `safeReasonCode`, `severity`, `title`, `message`, `accountContext`, `requestedTargetSummary`, `sourceAction`, `recoverySteps[]`, `availableActions[]`, `traceRefs[]`, `correlationId`, `redaction`, and `noEnumeration`.
+- `decision`: stable user-safe denial state such as `not_found_or_redacted`, `forbidden`, `unavailable`, `stale_context`, `disabled_account`, `inactive_membership`, `target_unavailable`, or `failure`.
+- `safeReasonCode`: product-language reason category such as `not_available_in_selected_context`, `permission_required`, `context_changed`, `workstream_unavailable`, `source_item_unavailable`, `membership_inactive`, or `try_again_later`; it must not reveal hidden role, target, tenant, customer, or workstream facts.
+- `accountContext`: browser-safe signed-in account display name/email, selected tenant/customer label where authorized, selected context id or safe alias, membership status when visible, and redaction level.
+- `requestedTargetSummary`: optional label/type only when already visible or authorized, never a hidden workstream/source/context name. It may include a safe target kind (`workstream`, `surface`, `source_item`, `context`, `trace`, or `unknown`) and a user-safe requested action label.
+- `sourceAction`: optional source surface id/action id and label only when the user could already see the source action; otherwise omit or summarize as `previous action`.
+- `recoverySteps[]`: stable ordered steps with user-facing label, explanation, enabled/disabled state, disabled reason, related action id where applicable, and whether the step may change selected context or only refresh current state.
+- `availableActions[]`: action id, label, capability id, result surface, enabled/disabled state, disabled reason, idempotency/correlation behavior summary, and role/request-access guidance where visible.
+- `traceRefs[]`, `correlationId`, `redaction`, and `noEnumeration` are browser-safe summaries only; `noEnumeration` must be true for hidden, cross-tenant/customer, or protected target denials.
+
+Forbidden payload/content:
+
+- Hidden workstream names, hidden source items, hidden context names, missing role/capability details, protected target ids, raw policy rules, cross-tenant/customer facts, raw JWT/session data, provider records/secrets, raw trace/event ids, internal exception stack traces, fixture/demo target data, or any message that confirms whether a hidden object exists.
+
+### Actions
+
+| Action | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| Return to My Account dashboard | `my_account.view_summary` | Render `surface-my-account-dashboard` in the current selected context with a trace-linked recovery message when appropriate. |
+| Refresh selected context | `core.access.me` / `read-current-account-context` | Re-resolve `/api/me` and protected workstream bootstrap; return dashboard/context surface or this denial surface if still unavailable. |
+| Retry open target | original source capability, such as `my_account.open_authorized_workstream` or `attention.open_attention_item` | Reauthorize the original target if it is safe and visible to retry; render the target surface, `surface-my-account-open-denied`, or safe `not_found_or_redacted`. |
+| Open request-access guidance | `core.access.request_guidance` or configured support/request-access capability | Render only configured and authorized request-access/support guidance; otherwise disabled with a safe explanation. |
+| Open related trace | `my_account.view_own_trace_refs` or role-gated Audit/Trace capability | Render an authorized Audit/Trace surface or safe redacted message without exposing hidden target internals. |
+
+### State and style expectations
+
+Render with the system-message card anatomy from the current AI-first workstream style: selected-context header, prominent denial/unavailable message, recovery-step list, governed action bar, and optional trace/evidence block. Required states are loading, ready-denied, retrying, context-refreshing, request-guidance-unavailable, forbidden, not_found_or_redacted, stale/reconnect, disabled-account, inactive-membership, partial-data, no-op, and failure. The surface must preserve selected context, redaction posture, `noEnumeration`, and correlation/trace affordances through every state.
+
+### Specification completeness for implementation
+
+- **Payload schema detail:** implement `surfaceContract`, `decision`, `safeReasonCode`, `severity`, `title`, `message`, `accountContext`, `requestedTargetSummary`, `sourceAction`, `recoverySteps[]`, `availableActions[]`, `traceRefs[]`, `correlationId`, `redaction`, and `noEnumeration` as browser-safe summaries. `requestedTargetSummary` and `sourceAction` are populated only when already visible/authorized; hidden or protected target identity is omitted. Recovery actions include return-dashboard, refresh-context, retry-open-target when safe, request-access-guidance when configured, and open-related-trace when authorized.
+- **Authorization and tenant rules:** every denied-surface read, retry, dashboard return, context refresh, request-guidance action, and trace open is evaluated against the signed-in account plus selected backend `AuthContext`; tenant/customer scope comes from protected backend context resolution, not client-provided target ids. Hidden, cross-tenant/customer, inactive, disabled, stale, redacted, deleted, or unavailable targets return safe `not_found_or_redacted`/forbidden/unavailable recovery without enumeration and without confirming object existence.
+- **Actions and result surfaces:** `return-to-my-account-dashboard` calls `my_account.view_summary` and renders the My Account dashboard; `refresh-selected-context` calls `core.access.me` / `read-current-account-context` and returns updated bootstrap/dashboard/context or this surface; `retry-open-target` reuses the original governed capability only when retry metadata is safe and visible; `open-request-access-guidance` renders configured authorized guidance or a disabled recovery state; `open-related-trace` routes to authorized Audit/Trace or safe denial. Consequential retry/refresh/request actions carry correlation and idempotency metadata and never grant authority client-side.
+- **Trace and audit contract:** each denial-surface render and consequential recovery action links or emits an audit/work trace containing actor account, selected context, visible source action when authorized, safe target kind, denial decision/category, capability decision, redaction level, no-enumeration assertion, result surface decision, and correlation id. Browser-visible traces never expose raw JWTs, provider records, hidden target names, missing role internals, raw policy ids, raw event ids, stack traces, or provider secrets.
+- **Accessibility and responsive expectations:** the surface has a stable heading, status message announced via `role="status"` or equivalent, recovery steps in logical order, keyboard-operable return/refresh/retry/request/trace controls, disabled-state explanations, non-color-only severity, and focus recovery to the updated message after retry or context refresh. On narrow viewports, selected context, denial message, recovery steps, actions, and trace blocks stack in that order without changing action ordering.
+- **Acceptance and regression tests:** generated/runtime work must cover hidden workstream denial without enumeration, visible-but-forbidden target denial, stale selected-context recovery, unavailable target recovery, authorized dashboard return, authorized context refresh, request-access guidance disabled/unavailable and enabled paths where configured, retry success and retry-safe denial, missing-bearer/auth failure routing, tenant/customer isolation, audit/trace/correlation visibility, no-enumeration assertions, and frontend secret-boundary checks proving no raw JWT/session/provider payload/hidden target/missing role/internal exception/fixture data is rendered or submitted.
+- **Surface-description sufficiency review:** yes — this surface definition is sufficiently unambiguous for a developer or generator to implement and review `surface-my-account-open-denied` without inventing payload fields, allowed/forbidden actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. The default view avoids exposing internal implementation details that do not help the signed-in SaaS user understand why a destination is unavailable, recover safely, refresh context, request help when configured, or inspect authorized traces.
 
 ## Common action rules
 
