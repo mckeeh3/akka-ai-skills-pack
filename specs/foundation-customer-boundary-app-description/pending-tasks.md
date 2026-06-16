@@ -85,7 +85,7 @@
 
 ### TASK-FCBAD-01-002: Capture customer boundary domain, capability, and state intent
 
-- status: pending
+- status: done
 - source: specs/foundation-customer-boundary-app-description/backlog/01-foundation-customer-boundary-app-description-backlog.md#fcbad-02-capture-domain-capability-and-state-intent
 - task brief: specs/foundation-customer-boundary-app-description/tasks/01-description/02-capture-domain-capability-state.md
 - depends on:
@@ -114,6 +114,11 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: docs-only current-intent capture; foundation customer boundary domain/capability/state; `tenant.customer.*` and Customer Admin branch scope; validation path `git diff --check` plus targeted `rg` proof
+  - changed app-description nodes: `app-description/app.md`, `app-description/domains/core-starter/domain.md`, `app-description/domains/core-starter/data-state/auth-context-and-membership-state.md`, `app-description/domains/core-starter/capabilities/user-and-access-administration.md`
+  - checks: `git diff --check` passed
+  - targeted proof: `rg -n 'foundation customer boundary|foundation Customer boundary|business-domain|CRM|tenant\\.customer\\.\\*|tenant/customer scoping|selected AuthContext|Customer Admin' app-description/app.md app-description/domains/core-starter/domain.md app-description/domains/core-starter/data-state/auth-context-and-membership-state.md app-description/domains/core-starter/capabilities/user-and-access-administration.md` found active app-description domain/capability/state coverage
+  - runtime impact: no runtime code changed
+  - commit message: `customer-boundary-desc: capture domain capability state`
 
 ### TASK-FCBAD-01-003: Capture customer boundary workstream, surfaces, agents, and realization bindings
 
