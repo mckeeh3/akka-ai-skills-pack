@@ -356,7 +356,7 @@
 
 ### TASK-FSCT-010: Verify or complete app-description specification for `surface-my-context`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-my-context`
@@ -385,6 +385,7 @@
   - purpose: Selected AuthContext, active membership, role/capability basis, and context-switch targets.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-context` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-16: added payload/action/auth/trace/accessibility/test/sufficiency detail to the My Account context authority app-description; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-011: Verify or complete runtime implementation for `surface-my-context`
 

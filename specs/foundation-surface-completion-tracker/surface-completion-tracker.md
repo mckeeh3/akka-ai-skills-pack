@@ -95,7 +95,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract verified and completed in `app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md`: includes `surface-my-context` identity/type/contract/purpose, authority-panel ownership by `my-account-agent`, selected `AuthContext` and available-context payload schema, browser-safe role/capability/support-access/redaction summaries, governed refresh/select/open-trace action semantics, backend authorization and tenant/customer rules, hidden/inactive/cross-tenant denial behavior, stale-surface impact, audit/work trace contract, accessibility/responsive expectations, and acceptance/security/observability regression coverage. Sufficiency review says the context authority surface is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-16 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
