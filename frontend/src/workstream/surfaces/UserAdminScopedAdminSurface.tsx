@@ -27,6 +27,9 @@ type ScopedAdminData = Record<string, unknown> & {
   recordId?: string;
   recordLabel?: string;
   recordKind?: string;
+  tenantId?: string;
+  organizationId?: string;
+  organizationName?: string;
   reasonRequired?: boolean;
   confirmationRequired?: boolean;
   traceRefs?: string[];
@@ -150,8 +153,11 @@ function RoleScopedInvitationForm({ envelope, onAction }: Props) {
   const [role, setRole] = useState(roleOptions[0]?.value ?? '');
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string>();
+  const requiresOrganizationTarget = envelope.data.surfaceContract === 'user_admin.organization_admin_invitation_create.v1';
+  const hasOrganizationTarget = Boolean(String(envelope.data.tenantId ?? envelope.data.organizationId ?? '').trim());
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (requiresOrganizationTarget && !hasOrganizationTarget) return setError('Select an Organization first so the backend can include tenant-scope proof for the Organization Admin invitation.');
     if (!email.trim() || !email.includes('@')) return setError('Enter a valid email address before creating an invitation.');
     if (!role) return setError('Backend did not provide an authorized role option for this target scope.');
     setError(undefined);
@@ -160,13 +166,15 @@ function RoleScopedInvitationForm({ envelope, onAction }: Props) {
   return (
     <form className="user-admin-task-form" aria-label="Role-scoped invitation create" onSubmit={submit}>
       <h4>Create scoped invitation</h4>
+      {(envelope.data.recordLabel || envelope.data.organizationName) && <p className="capability-basis">Target: {String(envelope.data.recordLabel ?? envelope.data.organizationName)} · backend-authored scope proof included</p>}
       {error && <p className="surface-state-inline validation-error" role="alert">{error}</p>}
       <label>Email<input className="designed-control" type="email" value={email} onChange={(event) => setEmail(event.currentTarget.value)} required /></label>
       <label>Display name<input className="designed-control" value={displayName} onChange={(event) => setDisplayName(event.currentTarget.value)} /></label>
       <label>Requested role<select className="designed-control" value={role} onChange={(event) => setRole(event.currentTarget.value)} disabled={roleOptions.length === 0}>{roleOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
       <label>Reason<input className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} placeholder="Reason for audit/work trace" /></label>
       {roleOptions.length === 0 && <p className="form-error">No backend-authorized role option is available for this selected scope.</p>}
-      <button className="surface-action-link primary" type="submit" disabled={!action || Boolean(action.disabled) || roleOptions.length === 0}>Create invitation</button>
+      {requiresOrganizationTarget && !hasOrganizationTarget && <p className="form-error">Open this form from an Organization detail row before creating the invitation.</p>}
+      <button className="surface-action-link primary" type="submit" disabled={!action || Boolean(action.disabled) || roleOptions.length === 0 || (requiresOrganizationTarget && !hasOrganizationTarget)}>Create invitation</button>
       {action?.disabled && <p className="form-error">{action.disabled.message}</p>}
       <p className="capability-basis">Provider/outbox failures return a typed system message. Raw tokens, email bodies, provider payloads, and secrets are never shown.</p>
     </form>
@@ -281,6 +289,9 @@ function branchReturnInput(envelope: SurfaceEnvelope<ScopedAdminData>): Record<s
     query: String(envelope.data.query ?? (typeof envelope.data.filters === 'object' && envelope.data.filters ? (envelope.data.filters as Record<string, unknown>).query : '') ?? ''),
     status: String(envelope.data.status ?? (typeof envelope.data.filters === 'object' && envelope.data.filters ? (envelope.data.filters as Record<string, unknown>).status : '') ?? ''),
     recordId: String(envelope.data.recordId ?? ''),
+    tenantId: String(envelope.data.tenantId ?? ''),
+    organizationId: String(envelope.data.organizationId ?? envelope.data.tenantId ?? ''),
+    organizationName: String(envelope.data.organizationName ?? envelope.data.recordLabel ?? ''),
     customerId: String(envelope.data.customerId ?? (typeof envelope.data.customerDetail === 'object' && envelope.data.customerDetail ? (envelope.data.customerDetail as Record<string, unknown>).customerId : '') ?? ''),
     customerName: String(envelope.data.customerName ?? (typeof envelope.data.customerDetail === 'object' && envelope.data.customerDetail ? (envelope.data.customerDetail as Record<string, unknown>).customerName : '') ?? '')
   };

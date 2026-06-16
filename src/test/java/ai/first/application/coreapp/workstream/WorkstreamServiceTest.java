@@ -429,6 +429,26 @@ class WorkstreamServiceTest {
     assertTrue(directOrganizationDetail.toString().contains("action-open-organization-admin-invitation-create"));
     assertBrowserPayloadSafe(directOrganizationDetail);
 
+    var orgAdminInviteForm = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-open-organization-admin-invitation-create", "user-admin.open-organization-admin-invite", "manage-organization-admins", "saas_owner.organization_admin.invite", Map.of("organizationId", "tenant-starter", "tenantId", "tenant-starter"), null, "membership-owner", organizationDetail.resultSurface().surfaceId(), "corr-tree-org-admin-invite-form"));
+    assertEquals("accepted", orgAdminInviteForm.status());
+    assertEquals("surface-user-admin-organization-admin-invitation-create", orgAdminInviteForm.resultSurface().surfaceId());
+    assertEquals("tenant-starter", orgAdminInviteForm.resultSurface().data().get("tenantId"));
+    assertTrue(orgAdminInviteForm.resultSurface().toString().contains("targetScope"));
+    assertBrowserPayloadSafe(orgAdminInviteForm.resultSurface());
+
+    var orgAdminInvite = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-invite-user", "action-invite-user", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", Map.of("tenantId", "tenant-starter", "organizationId", "tenant-starter", "email", "org.admin@example.test", "displayName", "Organization Admin", "roles", "TENANT_ADMIN", "reason", "bootstrap-org-admin"), "idem-org-admin-invite", "membership-owner", orgAdminInviteForm.resultSurface().surfaceId(), "corr-tree-org-admin-invite"));
+    assertEquals("accepted", orgAdminInvite.status(), orgAdminInvite.message() + " " + orgAdminInvite.resultSurface().data());
+    var tenantScopedInvitation = invitationRepository.invitations().stream()
+        .filter(invitation -> "org.admin@example.test".equals(invitation.normalizedEmail()))
+        .findFirst()
+        .orElseThrow();
+    assertEquals(ScopeType.TENANT, tenantScopedInvitation.scopeType());
+    assertEquals("tenant-starter", tenantScopedInvitation.tenantId());
+    assertNull(tenantScopedInvitation.customerId());
+    assertEquals(List.of(FoundationRole.TENANT_ADMIN), tenantScopedInvitation.requestedRoles());
+
     var returnedOrganizations = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
         "action-user-admin-show-organizations", "user-admin.show-organizations", "manage-organizations", "saas_owner.organization.list", null, null, "membership-owner", organizationDetail.resultSurface().surfaceId(), "corr-tree-orgs-return"));
     assertEquals("surface-user-admin-organization-directory", returnedOrganizations.resultSurface().surfaceId());

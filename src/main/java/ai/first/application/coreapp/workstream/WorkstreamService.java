@@ -450,7 +450,7 @@ public final class WorkstreamService {
     } else if ("action-display-organization-admin".equals(request.actionId()) || "action-user-admin-show-organizations".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Organization Directory loaded for SaaS Owner Organization lifecycle administration.", request.correlationId(), List.of("trace-organization-admin-" + stableSuffix(request.correlationId())), organizationAdminSurface(actor, request.correlationId()));
     } else if ("action-open-organization-admin-invitation-create".equals(request.actionId())) {
-      result = new CapabilityActionResult("accepted", "Organization Admin invitation/bootstrap surface loaded.", request.correlationId(), List.of("trace-organization-admin-invite-" + stableSuffix(request.correlationId())), organizationAdminInvitationCreateSurface(actor, request.correlationId()));
+      result = new CapabilityActionResult("accepted", "Organization Admin invitation/bootstrap surface loaded.", request.correlationId(), List.of("trace-organization-admin-invite-" + stableSuffix(request.correlationId())), organizationAdminInvitationCreateSurface(actor, request.input(), request.correlationId()));
     } else if ("action-user-admin-show-customers".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Customer Directory loaded for selected Organization/Tenant administration.", request.correlationId(), List.of("trace-customer-directory-" + stableSuffix(request.correlationId())), customerDirectorySurface(actor, request.input(), request.correlationId()));
     } else if ("action-customer-read".equals(request.actionId())) {
@@ -493,11 +493,16 @@ public final class WorkstreamService {
     } else if (request.actionId().startsWith("action-open-useradmin-")) {
       result = openUserAdminTaskSurface(actor, request.actionId(), request.input(), request.correlationId());
     } else if ("action-invite-user".equals(request.actionId())) {
+      var targetScope = "surface-user-admin-organization-admin-invitation-create".equals(request.surfaceId()) ? ScopeType.TENANT : actor.selectedContext().scopeType();
+      var targetTenantId = targetScope == ScopeType.TENANT
+          ? stringInput(request.input(), "tenantId", stringInput(request.input(), "organizationId", actor.selectedContext().tenantId()))
+          : actor.selectedContext().tenantId();
+      var targetCustomerId = targetScope == ScopeType.TENANT ? null : actor.selectedContext().customerId();
       var invite = invitationService.createInvitation(actor, new InvitationService.CreateInvitationRequest(
-          request.idempotencyKey(), actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId(),
+          request.idempotencyKey(), targetScope, targetTenantId, targetCustomerId,
           stringInput(request.input(), "email", "new-user@example.test"), stringInput(request.input(), "displayName", "New User"),
-          rolesInput(request.input()), Instant.now().plus(7, ChronoUnit.DAYS), "workstream-invite", request.correlationId()));
-      result = invitationActionResult("accepted", "Invitation queued by backend-authoritative User Admin capability.", request.correlationId(), invite.invitationId(), actor);
+          rolesInput(request.input()), Instant.now().plus(7, ChronoUnit.DAYS), stringInput(request.input(), "reason", "workstream-invite"), request.correlationId()));
+      result = invitationActionResult("accepted", "Invitation queued by backend-authoritative User Admin capability.", request.correlationId(), invite, actor);
     } else if ("action-useradmin-resend-invitation".equals(request.actionId())) {
       var invite = invitationService.resend(actor, stringInput(request.input(), "invitationId", latestInvitationId(actor)), request.idempotencyKey(), stringInput(request.input(), "reason", "workstream resend"), request.correlationId());
       result = invitationActionResult("accepted", "Invitation resend queued by backend-authoritative User Admin capability.", request.correlationId(), invite.invitationId(), actor);
@@ -1261,6 +1266,22 @@ public final class WorkstreamService {
     return roleScopedInvitationSurface(actor, correlationId, "surface-user-admin-organization-admin-invitation-create", "Invite Organization Admin", "user_admin.organization_admin_invitation_create.v1", organizationBranchNavigation(correlationId), "TENANT_ADMIN", "Bootstrap or invite a TENANT_ADMIN for the selected Organization after the Organization exists. Provider/outbox failures return system-message without fake success.", withOrganizationBranchReturn(List.of(inviteAction(), openAuditAction())));
   }
 
+  private SurfaceEnvelope organizationAdminInvitationCreateSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_MANAGE_CAPABILITY);
+    var detail = readOrganizationDetail(actor, input, correlationId);
+    var organization = detail.organization();
+    var surface = roleScopedInvitationSurface(actor, correlationId, "surface-user-admin-organization-admin-invitation-create", "Invite Organization Admin", "user_admin.organization_admin_invitation_create.v1", organizationBranchNavigation(correlationId), "TENANT_ADMIN", "Bootstrap or invite a TENANT_ADMIN for the selected Organization after the Organization exists. Provider/outbox failures return system-message without fake success.", withOrganizationBranchReturn(List.of(inviteAction(), openAuditAction())));
+    surface.data().put("recordId", organization.organizationId());
+    surface.data().put("recordLabel", organization.organizationName());
+    surface.data().put("recordKind", "organization");
+    surface.data().put("tenantId", organization.organizationId());
+    surface.data().put("organizationId", organization.organizationId());
+    surface.data().put("organizationName", organization.organizationName());
+    surface.data().put("targetScope", mapOf("scopeType", ScopeType.TENANT.name(), "tenantId", organization.organizationId(), "organizationId", organization.organizationId(), "organizationName", organization.organizationName(), "source", "backend-authored-organization-detail", "correlationId", correlationId, "traceRefs", detail.traceRefs()));
+    surface.data().put("traceRefs", detail.traceRefs());
+    return surface;
+  }
+
   private SurfaceEnvelope organizationAdminDetailSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_READ_CAPABILITY);
     return scopedAdminDetailSurface(actor, correlationId, "surface-user-admin-organization-admin-detail", "Organization Admin Detail", "user_admin.organization_admin_detail.v1", organizationBranchNavigation(correlationId), "Organization Admin membership/invitation inspection. Role, status, resend, revoke, and audit changes route to dedicated User Admin task surfaces.", withOrganizationBranchReturn(List.of(openMembershipStatusConfirmationAction(), previewRoleChangeAction(), openAuditAction())));
@@ -1582,12 +1603,25 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope invitationDetailSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    return invitationDetailSurface(actor, input, correlationId, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId());
+  }
+
+  private SurfaceEnvelope invitationDetailSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId, ScopeType scopeType, String tenantId, String customerId) {
     authContextResolver.appendProtectedReadTrace(actor, USERADMIN_LIST_INVITATIONS, "user_admin.invitation_detail.v1", correlationId);
     var invitationId = stringInput(input, "invitationId", latestInvitationId(actor));
-    var invite = invitationView.list(actor, actor.selectedContext().scopeType(), actor.selectedContext().tenantId(), actor.selectedContext().customerId()).stream()
+    var invite = invitationView.list(actor, scopeType, tenantId, customerId).stream()
         .filter(row -> invitationId.equals(row.invitationId()))
         .findFirst()
         .orElseThrow(() -> new AuthorizationException(404, "invitation-not-found-or-forbidden"));
+    return invitationDetailSurfaceFromRow(actor, invite, correlationId);
+  }
+
+  private SurfaceEnvelope invitationDetailSurface(AuthContextResolver.ResolvedMe actor, Invitation invite, String correlationId) {
+    var row = new InvitationView.InvitationRow(invite.invitationId(), invite.normalizedEmail(), invite.scopeType(), invite.tenantId(), invite.customerId(), invite.requestedRoles(), invite.status(), invite.deliveryStatus(), invite.deliveryAttempts(), invite.resendCount(), invite.lastDeliveryErrorSummary(), invite.expiresAt(), invite.createdAt(), invite.acceptedAt(), invite.revokedAt(), invite.createdByAccountId(), invite.resendable(), !invite.terminal());
+    return invitationDetailSurfaceFromRow(actor, row, correlationId);
+  }
+
+  private SurfaceEnvelope invitationDetailSurfaceFromRow(AuthContextResolver.ResolvedMe actor, InvitationView.InvitationRow invite, String correlationId) {
     return envelope("surface-user-admin-invitation-detail", "show-inspection", "Invitation detail", actor, correlationId,
         mapOf("surfaceContract", "user_admin.invitation_detail.v1", "branchNavigation", userBranchNavigation(correlationId), "recordId", invite.invitationId(), "recordLabel", invite.targetEmail(), "recordKind", "invitation", "status", invitationSurfaceStatus(invite), "summary", "Inspect this invitation lifecycle and provider-backed delivery state; resend and revoke open dedicated confirmation surfaces before backend commands run.", "actionContext", mapOf("invitationId", invite.invitationId()), "taskEntryPoints", List.of(mapOf("label", "Open resend confirmation", "actionId", "action-open-useradmin-invitation-resend-confirmation", "targetSurfaceId", "surface-user-admin-invitation-resend-confirmation"), mapOf("label", "Open revoke confirmation", "actionId", "action-open-useradmin-invitation-revoke-confirmation", "targetSurfaceId", "surface-user-admin-invitation-revoke-confirmation")), "permissionState", mapOf("canMutateInline", false, "canOpenTaskSurfaces", true, "reason", "Invitation detail is inspection-only and never resends or revokes inline."), "fields", List.of(mapOf("fieldId", "email", "label", "Email", "value", invite.targetEmail(), "editable", false, "inputType", "email"), mapOf("fieldId", "status", "label", "Status", "value", invite.status().name().toLowerCase(Locale.ROOT), "editable", false, "inputType", "text"), mapOf("fieldId", "role", "label", "Role", "value", roleLabels(invite.requestedRoles()), "editable", false, "inputType", "text"), mapOf("fieldId", "delivery", "label", "Delivery", "value", invite.deliveryStatus().name().toLowerCase(Locale.ROOT), "editable", false, "inputType", "text"), mapOf("fieldId", "deliveryAttempts", "label", "Delivery attempts", "value", String.valueOf(invite.deliveryAttempts()), "editable", false, "inputType", "text"), mapOf("fieldId", "expiresAt", "label", "Expires", "value", invite.expiresAt().toString(), "editable", false, "inputType", "text")), "deliveryState", invitationDeliveryState(invite, correlationId), "recoverySteps", invitationRecoverySteps(invite), "systemStates", invitationSystemStates(invite), "noFakeSuccess", invite.deliveryStatus() == EmailDeliveryStatus.FAILED, "providerBlockedSystemMessage", invite.deliveryStatus() == EmailDeliveryStatus.FAILED ? mapOf("surfaceContract", "user_admin.system_message.v1", "status", "blocked_provider_or_runtime", "safeReasonCode", firstNonBlank(invite.lastDeliveryErrorSummary(), "provider-or-outbox-delivery-failed"), "message", "Invitation delivery failed closed; use the resend confirmation task only after backend provider/outbox readiness is restored.") : null, "audit", mapOf("lastEventType", "InvitationDetailDisplayed", "lastActor", actor.profile().displayName(), "traceIds", List.of("trace-useradmin-invitation-" + stableSuffix(invite.invitationId())))),
         withUserBranchReturn(List.of(openInvitationResendConfirmationAction(), openInvitationRevokeConfirmationAction(), openAuditAction())));
@@ -2510,6 +2544,14 @@ public final class WorkstreamService {
   private CapabilityActionResult invitationActionResult(String status, String message, String correlationId, String invitationId, AuthContextResolver.ResolvedMe actor) {
     var traceId = "trace-useradmin-invitation-" + stableSuffix(invitationId + ":" + correlationId);
     var detail = invitationDetailSurface(actor, mapOf("invitationId", invitationId), correlationId);
+    var resultStatus = Objects.equals(detail.data().get("status"), "blocked_provider_or_runtime") ? "blocked-runtime" : status;
+    var resultMessage = resultStatus.equals(status) ? message : message + " Delivery is blocked by provider/outbox readiness; review the typed invitation detail surface for safe recovery.";
+    return new CapabilityActionResult(resultStatus, resultMessage, correlationId, List.of(traceId), detail);
+  }
+
+  private CapabilityActionResult invitationActionResult(String status, String message, String correlationId, Invitation invite, AuthContextResolver.ResolvedMe actor) {
+    var traceId = "trace-useradmin-invitation-" + stableSuffix(invite.invitationId() + ":" + correlationId);
+    var detail = invitationDetailSurface(actor, invite, correlationId);
     var resultStatus = Objects.equals(detail.data().get("status"), "blocked_provider_or_runtime") ? "blocked-runtime" : status;
     var resultMessage = resultStatus.equals(status) ? message : message + " Delivery is blocked by provider/outbox readiness; review the typed invitation detail surface for safe recovery.";
     return new CapabilityActionResult(resultStatus, resultMessage, correlationId, List.of(traceId), detail);

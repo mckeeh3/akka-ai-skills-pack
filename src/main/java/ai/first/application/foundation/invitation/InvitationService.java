@@ -368,7 +368,9 @@ public final class InvitationService {
     if (scopeType == ScopeType.SAAS_OWNER) {
       capability = "saas_owner.user.manage";
     }
-    if (!actor.selectedContext().hasCapability(capability) && !actor.selectedContext().hasCapability("tenant.audit.read")) {
+    if (!actor.selectedContext().hasCapability(capability)
+        && !(scopeType == ScopeType.TENANT && actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER && actor.selectedContext().hasCapability("saas_owner.tenant.read"))
+        && !actor.selectedContext().hasCapability("tenant.audit.read")) {
       throw deny(actor, null, "INVITATION_READ", "missing-capability", actor.correlationId());
     }
   }
@@ -428,6 +430,7 @@ public final class InvitationService {
             ? "saas_owner.user.manage"
             : auth.scopeType() == ScopeType.SAAS_OWNER ? "saas_owner.organization_admin.invite" : "tenant.invitation.manage";
     if (!auth.hasCapability(required)) {
+      if (targetScope == ScopeType.TENANT && auth.scopeType() == ScopeType.SAAS_OWNER && auth.hasCapability("saas_owner.tenant.manage")) return;
       throw new AuthorizationException(403, "missing-capability:" + required);
     }
   }
