@@ -71,7 +71,7 @@
 
 ### TASK-FSCT-002: Verify or complete runtime implementation for `surface-my-account-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-001]
 - surface id: `surface-my-account-dashboard`
@@ -102,6 +102,7 @@
   - purpose: Personal command center for attention, authority, settings, notifications, and digest/export work.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream My Account functional agent surface `surface-my-account-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-dashboard`; surface graph node/action edge for opening or acting on `surface-my-account-dashboard`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-16: verified existing real runtime path for `surface-my-account-dashboard` via protected WorkstreamEndpoint API, backend My Account surface/action service, frontend DashboardSurface rendering/action routing, trace/redaction/auth evidence, focused Maven/frontend checks, focused rg evidence, and `git diff --check`; tracker updated
 
 ### TASK-FSCT-003: Verify or complete runtime testing for `surface-my-account-dashboard`
 
