@@ -49,13 +49,23 @@ It should describe at least:
 
 ## Done state
 
-This mini-project is complete when:
+This mini-project's original description phase is complete when:
 
 - `app-description/` unambiguously describes the foundation customer boundary domain responsibility, non-goals, data/state responsibilities, capabilities, User Admin workstream bindings, surfaces, functional-agent authority limits, governed tools, policies, traces, tests, and Akka/frontend/API realization mappings.
 - The description is clear enough that a future realization task can implement or adjust runtime behavior without guessing whether a requested feature belongs to foundation customer boundary or a business-specific customer domain.
 - Customer boundary descriptions preserve tenant/customer scoping, backend authorization, Customer Admin limitations, audit/work trace obligations, redaction, idempotency, and frontend non-authority rules.
 - The app-description distinguishes organization-level customer-boundary administration from downstream CRM/customer-success/sales/billing/support business domains, including the special case that support/service may span organization and customer layers while still using explicit scoped capabilities.
 - A terminal verification task asks whether the description is sufficiently unambiguous; if not, it appends bounded follow-up tasks plus a new terminal verification task, repeating until the answer is yes.
+
+The accepted runtime repair extension is complete when:
+
+- the bounded runtime drift audit findings under `runtime-audit/foundation-customer-boundary-runtime-drift-audit.md` are either fixed, explicitly superseded by updated current intent, or converted into follow-up tasks;
+- Customer Admin invitation and membership paths enforce Customer Admin-safe roles and cannot grant Organization Admin or SaaS Owner authority;
+- Customer Admin workstream branch surfaces preserve selected Customer target context and create customer-scoped invitations;
+- suspended Customer boundaries fail closed for Customer Admin operations while Customer detail/reactivation remains available;
+- Customer directory list/search filters behave as declared by current intent and typed API clients;
+- backend/frontend tests cover the repaired Customer lifecycle and Customer Admin branch paths; and
+- a terminal runtime verification task confirms the implementation now matches current intent for this bounded scope, or appends more bounded tasks plus a replacement terminal verification task.
 
 ## Non-goals
 

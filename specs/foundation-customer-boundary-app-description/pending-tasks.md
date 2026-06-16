@@ -201,3 +201,241 @@
   - targeted proof recorded in review using `rg` across active app-description Customer boundary nodes
   - checks: `git diff --check` passed
   - commit message: `customer-boundary-desc: verify description sufficiency`
+
+### TASK-FCBAD-02-001: Repair Customer Admin role-safety backend enforcement
+
+- status: pending
+- source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#fcb-rd-05-customer-admin-role-safety-allows-organizationtenant-roles-through-customer-admin-apis
+- task brief: specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/05-customer-admin-role-safety-backend.md
+- depends on:
+  - TASK-FCBAD-01-004
+- required reads:
+  - AGENTS.md
+  - specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md
+  - app-description/domains/core-starter/capabilities/user-and-access-administration.md
+  - app-description/domains/core-starter/data-state/auth-context-and-membership-state.md
+  - src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java
+  - src/main/java/ai/first/application/foundation/invitation/InvitationService.java
+  - src/main/java/ai/first/application/coreapp/useradmin/UserAdminService.java
+  - src/test/java/ai/first/application/coreapp/useradmin/AdminEndpointIntegrationTest.java
+  - specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/05-customer-admin-role-safety-backend.md
+- skills:
+  - akka-http-endpoint-jwt
+  - akka-http-endpoint-testing
+  - capability-first-backend
+- expected outputs:
+  - backend validation and tests preventing non-Customer-safe roles in Customer Admin flows
+- required checks:
+  - `mvn -Dtest=ai.first.application.coreapp.useradmin.AdminEndpointIntegrationTest test`
+  - `git diff --check`
+- done criteria:
+  - Customer Admin invitation and role-management APIs cannot grant Organization Admin or SaaS Owner authority
+  - focused tests prove denial and safe default role behavior
+  - task changes and queue update are committed
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; security repair for Customer Admin branch; `manage-customer-admins`; `tenant.customer_admin.invite` and `tenant.customer_admin.manage`; Organization/Tenant Admin actor with selected tenant and target Customer; HTTP endpoint/service validation; no frontend authority assumptions
+
+### TASK-FCBAD-02-002: Repair Customer Admin target propagation and workstream invitation path
+
+- status: pending
+- source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#fcb-rd-03-customer-admin-branch-surfaces-do-not-preserve-selected-customer-target and #fcb-rd-04-customer-admin-invitation-from-workstream-can-create-the-wrong-scope
+- task brief: specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/06-customer-admin-target-propagation-workstream.md
+- depends on:
+  - TASK-FCBAD-02-001
+- required reads:
+  - AGENTS.md
+  - specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - app-description/domains/core-starter/workstreams/user-admin/agents/functional-agent.md
+  - app-description/domains/core-starter/workstreams/user-admin/realization/akka-components.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - src/main/java/ai/first/application/foundation/invitation/InvitationService.java
+  - src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java
+  - frontend/src/workstream/surfaces/UserAdminScopedAdminSurface.tsx
+  - specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/06-customer-admin-target-propagation-workstream.md
+- skills:
+  - akka-web-ui-api-client
+  - akka-web-ui-forms-validation
+  - akka-http-endpoint-testing
+  - capability-first-backend
+- expected outputs:
+  - workstream and frontend Customer Admin branch target propagation repair
+  - tests proving customer-scoped workstream Customer Admin invitations
+- required checks:
+  - `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest test`
+  - `npm --prefix frontend test -- --run frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+  - `git diff --check`
+- done criteria:
+  - Customer Admin branch preserves target Customer scope
+  - workstream invite path creates customer-scoped Customer Admin invitations
+  - task changes and queue update are committed
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; Customer detail to Customer Admin branch and invite submit; `manage-customer-admins`; `tenant.customer_admin.list` and `tenant.customer_admin.invite`; selected tenant plus explicit target Customer proof; WorkstreamService + InvitationService + frontend surface renderer
+
+### TASK-FCBAD-02-003: Enforce suspended Customer fail-closed behavior for Customer Admin operations
+
+- status: pending
+- source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#fcb-rd-06-suspended-customer-does-not-fail-closed-for-customer-admin-operations
+- task brief: specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/07-suspended-customer-fail-closed.md
+- depends on:
+  - TASK-FCBAD-02-002
+- required reads:
+  - AGENTS.md
+  - specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md
+  - app-description/domains/core-starter/data-state/auth-context-and-membership-state.md
+  - app-description/domains/core-starter/capabilities/user-and-access-administration.md
+  - src/main/java/ai/first/application/coreapp/useradmin/TenantCustomerAdminService.java
+  - src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/07-suspended-customer-fail-closed.md
+- skills:
+  - akka-http-endpoint-testing
+  - capability-first-backend
+- expected outputs:
+  - suspended Customer validation for Customer Admin operations
+  - tests for denial/reactivation behavior
+- required checks:
+  - `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest,ai.first.application.coreapp.useradmin.AdminEndpointIntegrationTest test`
+  - `git diff --check`
+- done criteria:
+  - suspended Customers cannot be used for Customer Admin bootstrap/maintenance
+  - Customer detail/reactivate remains available
+  - task changes and queue update are committed
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; lifecycle security repair; Customer Admin branch denied while suspended; `manage-customer-admins`; `tenant.customer_admin.*`; Organization/Tenant Admin selected context with active target Customer requirement
+
+### TASK-FCBAD-02-004: Repair Customer list/search filter parity
+
+- status: pending
+- source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#fcb-rd-02-apiadmincustomers-ignores-querystatus-filters-even-though-the-contract-is-listsearch
+- task brief: specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/08-customer-list-search-parity.md
+- depends on:
+  - TASK-FCBAD-02-003
+- required reads:
+  - AGENTS.md
+  - specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - src/main/java/ai/first/application/coreapp/useradmin/TenantCustomerAdminService.java
+  - src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - frontend/src/api/HttpApiClient.ts
+  - frontend/src/workstream/surfaces/UserAdminScopedAdminSurface.tsx
+  - specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/08-customer-list-search-parity.md
+- skills:
+  - akka-http-endpoint-request-context
+  - akka-web-ui-api-client
+  - akka-http-endpoint-testing
+- expected outputs:
+  - Customer list/search query/status parity in API/workstream paths
+  - focused tests
+- required checks:
+  - `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest,ai.first.application.coreapp.useradmin.AdminEndpointIntegrationTest test`
+  - `npm --prefix frontend test -- --run frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+  - `git diff --check`
+- done criteria:
+  - API/workstream Customer directory filtering matches app-description
+  - no hidden-count leakage introduced
+  - task changes and queue update are committed
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; `surface-user-admin-customer-directory`; `manage-customers`; `tenant.customer.list`; Organization/Tenant Admin selected context; list/search parity repair
+
+### TASK-FCBAD-02-005: Harden Customer Admin backend and frontend coverage
+
+- status: pending
+- source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#fcb-rd-07-customer-admin-listmanage-api-behavior-is-under-tested
+- task brief: specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/09-customer-admin-coverage-frontend-hardening.md
+- depends on:
+  - TASK-FCBAD-02-004
+- required reads:
+  - AGENTS.md
+  - specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md
+  - app-description/domains/core-starter/workstreams/user-admin/tests/coverage.md
+  - src/test/java/ai/first/application/coreapp/useradmin/AdminEndpointIntegrationTest.java
+  - src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java
+  - frontend/src/workstream-user-admin-vertical.contract.test.mjs
+  - frontend/src/workstream/surfaces/UserAdminScopedAdminSurface.tsx
+  - specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/09-customer-admin-coverage-frontend-hardening.md
+- skills:
+  - akka-http-endpoint-testing
+  - akka-web-ui-testing
+  - akka-web-ui-forms-validation
+- expected outputs:
+  - expanded backend and frontend tests for Customer lifecycle and Customer Admin branch
+- required checks:
+  - `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest,ai.first.application.coreapp.useradmin.AdminEndpointIntegrationTest test`
+  - `npm --prefix frontend test -- --run frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+  - `git diff --check`
+- done criteria:
+  - tests cover target, role, suspended-state, redaction, and authority boundaries for Customer Admin branch
+  - task changes and queue update are committed
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; test hardening for Customer lifecycle and Customer Admin branch; `manage-customers`, `manage-customer-admins`; `tenant.customer.*`, `tenant.customer_admin.*`; endpoint/workstream/frontend contract tests
+
+### TASK-FCBAD-02-006: Normalize Customer branch action ids or document compatibility aliases
+
+- status: pending
+- source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#fcb-rd-08-app-description-and-runtime-action-ids-are-not-fully-normalized
+- task brief: specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/10-customer-action-id-normalization.md
+- depends on:
+  - TASK-FCBAD-02-005
+- required reads:
+  - AGENTS.md
+  - specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md
+  - app-description/domains/core-starter/workstreams/user-admin/agents/functional-agent.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - frontend/src/workstream-user-admin-vertical.contract.test.mjs
+  - specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/10-customer-action-id-normalization.md
+- skills:
+  - app-description-change-impact
+  - akka-web-ui-api-client
+  - akka-http-endpoint-testing
+- expected outputs:
+  - normalized app-description/runtime Customer action ids or documented/tested aliases
+- required checks:
+  - `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest test`
+  - `npm --prefix frontend test -- --run frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+  - `git diff --check`
+- done criteria:
+  - no orphan Customer action ids remain without runtime mapping or stated compatibility meaning
+  - task changes and queue update are committed
+- notes:
+  - vertical contract: User Admin / `user-admin-agent`; Customer branch action compatibility repair; `manage-customers`, `manage-customer-admins`; `tenant.customer.*`, `tenant.customer_admin.*`; preserve backend authorization and audit semantics
+
+### TASK-FCBAD-02-007: Verify foundation Customer boundary runtime drift repair
+
+- status: pending
+- source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#proposed-task-queue
+- task brief: specs/foundation-customer-boundary-app-description/tasks/04-runtime-verification/11-verify-runtime-drift-repair.md
+- depends on:
+  - TASK-FCBAD-02-006
+- required reads:
+  - AGENTS.md
+  - specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md
+  - specs/foundation-customer-boundary-app-description/pending-tasks.md
+  - app-description/domains/core-starter/capabilities/user-and-access-administration.md
+  - app-description/domains/core-starter/data-state/auth-context-and-membership-state.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - app-description/domains/core-starter/workstreams/user-admin/agents/functional-agent.md
+  - app-description/domains/core-starter/workstreams/user-admin/realization/akka-components.md
+  - app-description/domains/core-starter/workstreams/user-admin/realization/frontend-routes.md
+  - app-description/domains/core-starter/workstreams/user-admin/tests/coverage.md
+  - specs/foundation-customer-boundary-app-description/tasks/04-runtime-verification/11-verify-runtime-drift-repair.md
+- skills:
+  - app-description-readiness-assessment
+  - app-description-change-impact
+  - akka-http-endpoint-testing
+  - akka-web-ui-testing
+- expected outputs:
+  - specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-repair-verification.md
+  - updated pending-tasks.md; append follow-up tasks plus new terminal verification task if gaps remain
+- required checks:
+  - `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest,ai.first.application.coreapp.useradmin.AdminEndpointIntegrationTest test`
+  - `npm --prefix frontend test -- --run frontend/src/workstream-user-admin-vertical.contract.test.mjs`
+  - `git diff --check`
+- done criteria:
+  - verification explicitly answers whether Customer boundary runtime now matches app-description for bounded drift scope
+  - if no, bounded follow-up tasks and a new terminal verification task are appended
+  - task changes and queue update are committed
+- notes:
+  - vertical contract: terminal runtime verification for User Admin Customer lifecycle and Customer Admin branch; `manage-customers`, `manage-customer-admins`; `tenant.customer.*`, `tenant.customer_admin.*`; verifies selected tenant/customer scoping, action ids, frontend non-authority, and audit/redaction evidence
