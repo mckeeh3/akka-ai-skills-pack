@@ -666,7 +666,7 @@ public final class WorkstreamService {
       var open = myAccountService.openAuthorizedWorkstream(actor, request.actionId(), request.correlationId());
       result = "accepted".equals(open.status())
           ? new CapabilityActionResult("accepted", open.message(), request.correlationId(), open.traceIds(), surfaceForAction(actor, request.actionId(), request.correlationId()))
-          : new CapabilityActionResult("denied", open.message(), request.correlationId(), open.traceIds(), myAccountOpenDeniedSurface(actor, open, request.correlationId()));
+          : new CapabilityActionResult("denied", open.message(), request.correlationId(), open.traceIds(), myAccountOpenDeniedSurface(actor, open, request.correlationId(), request.actionId()));
     } else if ("action-audit-trace-dashboard".equals(request.actionId())) {
       result = auditTraceReadResult(actor, "Audit trace dashboard loaded.", request.correlationId(), auditTraceDashboardSurface(actor, request.correlationId()));
     } else if ("action-audit-trace-search".equals(request.actionId())) {
@@ -1170,9 +1170,53 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope myAccountOpenDeniedSurface(AuthContextResolver.ResolvedMe actor, MyAccountService.OpenWorkstreamDecision decision, String correlationId) {
+    return myAccountOpenDeniedSurface(actor, decision, correlationId, null);
+  }
+
+  private SurfaceEnvelope myAccountOpenDeniedSurface(AuthContextResolver.ResolvedMe actor, MyAccountService.OpenWorkstreamDecision decision, String correlationId, String sourceActionId) {
+    var traceIds = decision.traceIds() == null || decision.traceIds().isEmpty() ? List.of("trace-my-account-open-denied-" + stableSuffix(correlationId)) : decision.traceIds();
+    var safeReasonCode = firstNonBlank(decision.safeReasonCode(), "not_available_in_selected_context");
+    var actions = new ArrayList<SurfaceAction>();
+    actions.add(showDashboardAction());
+    actions.add(showContextAction());
+    if (isActionCapabilityVisible(actor, openAuditAction().capabilityId())) actions.add(openAuditAction());
+    var availableActions = actions.stream()
+        .map(action -> mapOf(
+            "actionId", action.actionId(),
+            "label", action.label(),
+            "capabilityId", action.capabilityId(),
+            "resultSurface", action.resultSurface().updateSurfaceId(),
+            "enabled", isActionCapabilityVisible(actor, action.capabilityId()),
+            "disabledReason", isActionCapabilityVisible(actor, action.capabilityId()) ? "" : "Recovery action is not authorized in the selected context.",
+            "correlationBehavior", "uses request correlation id and backend authorization"))
+        .toList();
     return envelope("surface-my-account-open-denied", "system_message", "Workstream unavailable", actor, correlationId,
-        mapOf("surfaceContract", "my_account.open_denied.v1", "status", "not_found_or_redacted", "severity", "warning", "title", "Workstream unavailable", "message", decision.message(), "capabilityId", MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "safeReasonCode", decision.safeReasonCode(), "recoverySteps", List.of("Review the selected context and authority basis in My Account.", "Ask an administrator for access if this workstream should be available."), "traceRefs", decision.traceIds(), "redaction", "target workstream details are redacted when unauthorized"),
-        List.of(showProfileAction(), showSettingsAction(), openAuditAction()));
+        mapOf(
+            "surfaceContract", "my_account.open_denied.v1",
+            "status", "not_found_or_redacted",
+            "decision", "not_found_or_redacted",
+            "safeReasonCode", safeReasonCode,
+            "severity", "warning",
+            "title", "Workstream unavailable",
+            "message", decision.message(),
+            "accountContext", mapOf("accountId", actor.account().accountId(), "email", actor.account().displayEmail(), "displayName", actor.profile().displayName(), "tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "membershipStatus", "active", "redactionLevel", "browser-safe"),
+            "requestedTargetSummary", mapOf("targetKind", "workstream", "label", "Requested destination", "visibility", "redacted", "noEnumeration", true),
+            "sourceAction", sourceActionId == null || sourceActionId.isBlank() ? null : mapOf("actionId", "previous action", "label", "Previous action", "visible", false),
+            "capabilityId", MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY,
+            "recoverySteps", List.of("Return to the My Account dashboard for authorized workstreams.", "Refresh selected context and authority basis in My Account.", "Ask an administrator for access if this workstream should be available.", "Open related trace evidence only when authorized."),
+            "recoveryStepDetails", List.of(
+                mapOf("stepId", "return-dashboard", "label", "Return to My Account", "description", "Reload the backend-owned My Account dashboard in the current selected context.", "enabled", true, "actionId", "action-show-my-account-dashboard", "changesSelectedContext", false),
+                mapOf("stepId", "refresh-context", "label", "Refresh selected context", "description", "Re-resolve browser-safe context, membership, and capability summaries.", "enabled", true, "actionId", "action-show-my-context", "changesSelectedContext", false),
+                mapOf("stepId", "request-access-guidance", "label", "Request access guidance", "description", "No self-service request-access workflow is configured for this protected target.", "enabled", false, "disabledReason", "Request-access guidance is unavailable in this foundation runtime path.", "changesSelectedContext", false),
+                mapOf("stepId", "open-related-trace", "label", "Open related trace", "description", "Role-gated Audit/Trace evidence may be opened when authorized.", "enabled", isActionCapabilityVisible(actor, openAuditAction().capabilityId()), "actionId", "action-open-audit-trace", "changesSelectedContext", false)),
+            "availableActions", availableActions,
+            "traceRefs", traceIds,
+            "correlationId", correlationId,
+            "redaction", "Hidden workstream names, required roles, missing capabilities, protected target ids, provider records, raw JWT/session data, and cross-tenant/customer facts are not enumerated.",
+            "noEnumeration", true,
+            "safety", mapOf("sanitized", true, "redactionNote", "No raw JWTs, provider secrets, hidden target names, missing roles, stack traces, or fixture target data are rendered."),
+            "trace", mapOf("correlationId", correlationId, "traceIds", traceIds)),
+        actions);
   }
 
   private CapabilityActionResult personalAttentionDigestActionResult(MyAccountPersonalAttentionDigestTask task, String status, String message, String correlationId, AuthContextResolver.ResolvedMe actor) {
@@ -2568,6 +2612,7 @@ public final class WorkstreamService {
       case "surface-my-account-personal-attention-digest-progress" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
       case "surface-my-account-personal-attention-digest-result" -> personalAttentionDigestEmptyResultSurface(actor, correlationId);
       case "surface-my-account-personal-attention-digest-blocked" -> personalAttentionDigestBlockedSurface(actor, null, correlationId);
+      case "surface-my-account-open-denied" -> myAccountOpenDeniedSurface(actor, new MyAccountService.OpenWorkstreamDecision("denied", "The requested destination is unavailable or redacted for this selected context.", "surface-my-account-open-denied", MY_ACCOUNT_AGENT_ID, "Destination unavailable", null, correlationId, List.of("trace-my-account-open-denied-" + stableSuffix(correlationId)), "not_available_in_selected_context"), correlationId);
       case "surface-user-admin-dashboard", "surface-user-admin-saas-owner-dashboard", "surface-user-admin-tenant-dashboard", "surface-user-admin-customer-dashboard" -> dashboardSurface(actor, correlationId);
       case "surface-user-admin-saas-owner-admins" -> saasOwnerAdminsSurface(actor, correlationId);
       case "surface-user-admin-saas-owner-admin-invitation-create" -> saasOwnerAdminInvitationCreateSurface(actor, correlationId);

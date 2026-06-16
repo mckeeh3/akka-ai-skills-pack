@@ -1553,9 +1553,35 @@ class WorkstreamServiceTest {
 
     assertEquals("denied", result.status());
     assertEquals("system_message", result.resultSurface().surfaceType());
+    assertEquals("surface-my-account-open-denied", result.resultSurface().surfaceId());
+    assertEquals("my_account.open_denied.v1", result.resultSurface().data().get("surfaceContract"));
     assertEquals("not_found_or_redacted", result.resultSurface().data().get("status"));
+    assertEquals("not_found_or_redacted", result.resultSurface().data().get("decision"));
+    assertEquals(Boolean.TRUE, result.resultSurface().data().get("noEnumeration"));
+    assertTrue(result.resultSurface().data().toString().contains("availableActions"));
+    assertTrue(result.resultSurface().data().toString().contains("recoveryStepDetails"));
+    assertTrue(result.resultSurface().data().toString().contains("selectedContextId=membership-member"));
     assertFalse(result.resultSurface().toString().contains("agent_admin.list_definitions"));
+    assertFalse(result.resultSurface().toString().contains("Agent Admin"));
+    assertFalse(result.resultSurface().data().toString().contains("rawJwt"));
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM") && event.result().name().equals("DENIED") && event.correlationId().equals("corr-member-open-agent-admin")));
+  }
+
+  @Test
+  void myAccountOpenDeniedSurfaceIsDirectlyRetrievableThroughProtectedRuntimePath() {
+    var surface = service.surface(memberIdentity(), "membership-member", "surface-my-account-open-denied", "corr-open-denied-direct");
+
+    assertEquals("surface-my-account-open-denied", surface.surfaceId());
+    assertEquals("system_message", surface.surfaceType());
+    assertEquals("my_account.open_denied.v1", surface.data().get("surfaceContract"));
+    assertEquals("not_found_or_redacted", surface.data().get("decision"));
+    assertEquals("not_available_in_selected_context", surface.data().get("safeReasonCode"));
+    assertEquals(Boolean.TRUE, surface.data().get("noEnumeration"));
+    assertTrue(surface.data().toString().contains("action-show-my-account-dashboard"));
+    assertTrue(surface.data().toString().contains("action-show-my-context"));
+    assertTrue(surface.data().toString().contains("corr-open-denied-direct"));
+    assertFalse(surface.toString().contains("providerSecret"));
+    assertFalse(surface.toString().contains("stackTrace"));
   }
 
   @Test

@@ -145,10 +145,25 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         "corr-my-account-browser-denied-agent-admin"), MEMBER_CONTEXT_ID, "member@example.test", "Member User");
     assertEquals("denied", denied.status());
     assertEquals("system_message", denied.resultSurface().surfaceType());
+    assertEquals("surface-my-account-open-denied", denied.resultSurface().surfaceId());
+    assertEquals("my_account.open_denied.v1", denied.resultSurface().data().get("surfaceContract"));
     assertEquals("not_found_or_redacted", denied.resultSurface().data().get("status"));
+    assertEquals("not_found_or_redacted", denied.resultSurface().data().get("decision"));
+    assertEquals(true, denied.resultSurface().data().get("noEnumeration"));
+    assertTrue(denied.resultSurface().data().toString().contains("recoveryStepDetails"));
+    assertTrue(denied.resultSurface().data().toString().contains("availableActions"));
     assertFalse(denied.resultSurface().toString().contains("agent_admin.list_definitions"));
+    assertFalse(denied.resultSurface().toString().contains("Agent Admin"));
     assertTrue(denied.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-open")));
     assertBrowserSafe(denied.resultSurface());
+
+    var directDenied = getSurface("surface-my-account-open-denied", MEMBER_CONTEXT_ID, "member@example.test", "Member User", "corr-my-account-browser-open-denied-direct");
+    assertEquals("my_account.open_denied.v1", directDenied.data().get("surfaceContract"));
+    assertEquals("not_available_in_selected_context", directDenied.data().get("safeReasonCode"));
+    assertEquals(true, directDenied.data().get("noEnumeration"));
+    assertTrue(directDenied.data().toString().contains("action-show-my-account-dashboard"));
+    assertTrue(directDenied.data().toString().contains("corr-my-account-browser-open-denied-direct"));
+    assertBrowserSafe(directDenied);
 
     assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-account-dashboard").responseBodyAs(String.class).invoke());
   }
