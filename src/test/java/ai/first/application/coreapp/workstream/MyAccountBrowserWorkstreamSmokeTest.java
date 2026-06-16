@@ -507,6 +507,76 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesMyAccountPersonalAttentionDigestBlockedRuntimePath() throws Exception {
+    var directBlocked = getSurface("surface-my-account-personal-attention-digest-blocked", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-digest-blocked-browser-direct");
+    assertEquals("surface-my-account-personal-attention-digest-blocked", directBlocked.surfaceId());
+    assertEquals("system_message", directBlocked.surfaceType());
+    assertEquals("my_account.personal_attention_digest.blocked.v1", directBlocked.data().get("surfaceContract"));
+    assertEquals("blocked_provider_or_runtime", directBlocked.data().get("status"));
+    assertEquals("provider_runtime_readiness", directBlocked.data().get("blockerCategory"));
+    assertEquals(true, directBlocked.data().get("noFakeSuccess"));
+    assertEquals(true, directBlocked.data().get("noDirectMutation"));
+    assertTrue(directBlocked.toString().contains("retry_requires_admin_readiness"));
+    assertTrue(directBlocked.toString().contains("recoverySteps"));
+    assertTrue(directBlocked.toString().contains("providerReadiness"));
+    assertTrue(directBlocked.toString().contains("runtimeReadiness"));
+    assertTrue(directBlocked.toString().contains("No authorized digest task is selected."));
+    assertTrue(directBlocked.toString().contains("corr-my-digest-blocked-browser-direct"));
+    assertPersonalAttentionDigestBlockedBrowserSafe(directBlocked);
+
+    var started = runAction(new CapabilityActionRequest(
+        "action-start-my-account-personal-attention-digest",
+        "action-start-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.start",
+        "my_account.personal_attention_digest.start",
+        Map.of("evidenceScope", "attention"),
+        "idem-my-digest-blocked-browser-start",
+        ADMIN_CONTEXT_ID,
+        directBlocked.surfaceId(),
+        "corr-my-digest-blocked-browser-start"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("blocked_provider_or_runtime", started.status());
+    assertEquals("surface-my-account-personal-attention-digest-blocked", started.resultSurface().surfaceId());
+    assertEquals("my_account.personal_attention_digest.blocked.v1", started.resultSurface().data().get("surfaceContract"));
+    assertEquals(true, started.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, started.resultSurface().data().get("noDirectMutation"));
+    assertTrue(started.resultSurface().toString().contains("visibleAttentionCount"));
+    assertTrue(started.resultSurface().toString().contains("noSourceAttentionMutated"));
+    assertTrue(started.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-personal-attention-digest")));
+    assertPersonalAttentionDigestBlockedBrowserSafe(started.resultSurface());
+    var digestTaskId = String.valueOf(started.resultSurface().data().get("digestTaskId"));
+    assertFalse(digestTaskId.isBlank());
+
+    var readBlocked = runAction(new CapabilityActionRequest(
+        "action-read-my-account-personal-attention-digest",
+        "action-read-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.read",
+        "my_account.personal_attention_digest.read",
+        Map.of("digestTaskId", digestTaskId),
+        null,
+        ADMIN_CONTEXT_ID,
+        started.resultSurface().surfaceId(),
+        "corr-my-digest-blocked-browser-read"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", readBlocked.status());
+    assertEquals("surface-my-account-personal-attention-digest-blocked", readBlocked.resultSurface().surfaceId());
+    assertTrue(readBlocked.resultSurface().toString().contains("action-read-my-account-personal-attention-digest"));
+    assertTrue(readBlocked.resultSurface().toString().contains("action-show-my-account-dashboard"));
+    assertPersonalAttentionDigestBlockedBrowserSafe(readBlocked.resultSurface());
+
+    var memberDeniedRead = new CapabilityActionRequest(
+        "action-read-my-account-personal-attention-digest",
+        "action-read-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.read",
+        "my_account.personal_attention_digest.read",
+        Map.of("digestTaskId", digestTaskId),
+        null,
+        MEMBER_CONTEXT_ID,
+        "surface-my-account-personal-attention-digest-blocked",
+        "corr-my-digest-blocked-browser-member-denied");
+    assertThrows(RuntimeException.class, () -> runAction(memberDeniedRead, MEMBER_CONTEXT_ID, "member@example.test", "Member User"));
+    assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-account-personal-attention-digest-blocked").responseBodyAs(String.class).invoke());
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesMyAccountPersonalAttentionDigestResultRuntimePath() throws Exception {
     var emptyResult = getSurface("surface-my-account-personal-attention-digest-result", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-digest-result-browser-empty");
     assertEquals("surface-my-account-personal-attention-digest-result", emptyResult.surfaceId());
@@ -925,6 +995,27 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(text.contains("hiddenCategories=["));
     assertFalse(text.contains("slack"));
     assertFalse(text.contains("webhook destination"));
+  }
+
+  private static void assertPersonalAttentionDigestBlockedBrowserSafe(SurfaceEnvelope payload) {
+    var text = String.valueOf(payload);
+    assertTrue(text.contains("my_account.personal_attention_digest.blocked.v1"));
+    assertTrue(text.contains("blocked_provider_or_runtime"));
+    assertTrue(text.contains("noFakeSuccess"));
+    assertTrue(text.contains("noDirectMutation"));
+    assertTrue(text.contains("providerReadiness"));
+    assertTrue(text.contains("runtimeReadiness"));
+    assertTrue(text.contains("recoverySteps"));
+    assertFalse(text.contains("RESEND_API_KEY"));
+    assertFalse(text.contains("Bearer "));
+    assertFalse(text.contains("workos-admin"));
+    assertFalse(text.contains("providerSecret"));
+    assertFalse(text.contains("test-fake-provider"));
+    assertFalse(text.contains("test-fake-model"));
+    assertFalse(text.contains("fixture success payload"));
+    assertFalse(text.contains("fake digest result"));
+    assertFalse(text.contains("hidden workstream name"));
+    assertFalse(text.contains("raw tool payload"));
   }
 
   private static void assertPersonalAttentionDigestProgressBrowserSafe(SurfaceEnvelope payload) {
