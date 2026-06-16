@@ -813,7 +813,7 @@
 
 ### TASK-FSCT-023: Verify or complete runtime implementation for `surface-my-account-personal-attention-digest-blocked`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-022]
 - surface id: `surface-my-account-personal-attention-digest-blocked`
@@ -844,6 +844,7 @@
   - purpose: Provider/runtime fail-closed explanation and recovery.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream My Account functional agent surface `surface-my-account-personal-attention-digest-blocked`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-personal-attention-digest-blocked`; surface graph node/action edge for opening or acting on `surface-my-account-personal-attention-digest-blocked`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-16: completed and verified the real runtime implementation for `surface-my-account-personal-attention-digest-blocked`: protected WorkstreamEndpoint surface/action APIs, backend-owned `my_account.personal_attention_digest.blocked.v1` system-message payload with browser-safe account context, blocker category/code, retry eligibility, recovery steps, admin-readiness hints, required capability/tool ids, provider/runtime readiness summaries, evidence-window/no-source-mutation data, trace/correlation refs, mandatory `noFakeSuccess`/`noDirectMutation`, direct-surface generic recovery, and digest start/read fail-closed routing without fixture/model-less success. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/fail-closed coverage included missing-bearer rejection in protected smoke, cross-account task denial inherited from focused digest service coverage, provider/runtime fail-closed and retry-disabled states, no fake success, and no source-attention mutation; live provider remains blocked until configured and is outside named implementation scope because the surface must fail closed; trace evidence included digest blocked trace refs and correlation ids; commands passed: `mvn -q -Dtest=MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyAccountPersonalAttentionDigestProgressRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-024: Verify or complete runtime testing for `surface-my-account-personal-attention-digest-blocked`
 

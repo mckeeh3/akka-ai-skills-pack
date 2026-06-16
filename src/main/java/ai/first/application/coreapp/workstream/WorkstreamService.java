@@ -1269,9 +1269,46 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope personalAttentionDigestBlockedSurface(AuthContextResolver.ResolvedMe actor, MyAccountPersonalAttentionDigestTask task, String correlationId) {
+    var taskVisible = task != null;
+    var blockerCode = taskVisible && task.blockerCode() != null && !task.blockerCode().isBlank() ? task.blockerCode() : "provider_or_model_not_configured";
+    var traceRefs = taskVisible && !task.traceIds().isEmpty() ? task.traceIds() : List.of("trace-my-account-personal-attention-digest-blocked-" + stableSuffix(correlationId));
     return envelope("surface-my-account-personal-attention-digest-blocked", "system_message", "Personal attention digest blocked", actor, correlationId,
-        mapOf("surfaceContract", "my_account.personal_attention_digest.blocked.v1", "digestTaskId", task == null ? "" : task.digestTaskId(), "autonomousAgentTaskId", task == null ? "" : task.autonomousAgentTaskId(), "status", "blocked_provider_or_runtime", "severity", "blocked", "title", "Provider/runtime configuration is required", "message", task == null ? "My Account personal attention digest fails closed until backend provider/runtime configuration is available." : task.summary(), "blockerCode", task == null ? "blocked_provider_or_runtime" : task.blockerCode(), "recoverySteps", List.of("Configure the Akka AutonomousAgent provider/runtime and governed tool grants.", "Retry from My Account after readiness is restored."), "traceRefs", task == null ? List.of("trace-my-account-personal-attention-digest-blocked") : task.traceIds(), "noFakeSuccess", true, "noDirectMutation", true, "redaction", "No deterministic, fake, fixture, simulated, or model-less personal attention digest success is returned."),
-        List.of(showDashboardAction(), readPersonalAttentionDigestAction(), openAuditAction()));
+        mapOf(
+            "surfaceContract", "my_account.personal_attention_digest.blocked.v1",
+            "digestTaskId", taskVisible ? task.digestTaskId() : "",
+            "autonomousAgentTaskId", taskVisible ? task.autonomousAgentTaskId() : "",
+            "accountContext", mapOf("accountId", actor.account().accountId(), "email", actor.account().displayEmail(), "displayName", actor.profile().displayName(), "tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "redactionLevel", "browser-safe"),
+            "status", "blocked_provider_or_runtime",
+            "severity", "blocked",
+            "blockerCode", blockerCode,
+            "blockerCategory", blockerCode.contains("tool") ? "tool_boundary" : "provider_runtime_readiness",
+            "title", "Provider/runtime configuration is required",
+            "message", taskVisible ? task.summary() : "My Account personal attention digest fails closed until backend provider/runtime configuration is available.",
+            "blockedAt", taskVisible ? task.updatedAt().toString() : "not_applicable",
+            "lastAttemptedPhase", taskVisible ? task.status().name().toLowerCase(Locale.ROOT).replace('_', '-') : "readiness-check",
+            "retryEligibility", mapOf("state", "retry_requires_admin_readiness", "explanation", "Retry remains disabled until the backend provider/runtime and governed tool grants are ready."),
+            "recoverySteps", List.of(
+                mapOf("stepId", "return-dashboard", "label", "Return to My Account", "description", "Go back to the My Account dashboard while provider/runtime readiness is restored.", "actorType", "user", "actionId", "action-show-my-account-dashboard"),
+                mapOf("stepId", "retry-after-readiness", "label", "Retry after readiness is restored", "description", "Use refresh/read or start a replacement digest only after backend readiness is available.", "actorType", "user", "actionId", "action-read-my-account-personal-attention-digest", "disabledReason", "Provider/runtime readiness is currently fail-closed."),
+                mapOf("stepId", "admin-readiness", "label", "Request provider/runtime readiness", "description", "An administrator must configure the Akka AutonomousAgent runtime/provider and governed tool grants before digest generation can succeed.", "actorType", "admin")),
+            "adminReadinessHints", List.of(
+                mapOf("hintId", "autonomous-agent-runtime", "state", "unavailable", "summary", "Akka AutonomousAgent runtime/provider readiness is not available to this governed digest path."),
+                mapOf("hintId", "governed-tools", "state", "unavailable", "summary", "Required digest read/start tool grants must remain fail-closed until explicitly configured.")),
+            "requiredCapabilityIds", List.of(MY_ACCOUNT_DIGEST_READ_CAPABILITY, MY_ACCOUNT_DIGEST_START_CAPABILITY, MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY),
+            "requiredToolIds", List.of("read-personal-digest-task", "request-personal-digest-export"),
+            "providerReadiness", mapOf("state", "unconfigured", "safeExplanation", "No approved model/provider readiness is available for normal digest generation."),
+            "runtimeReadiness", mapOf("state", "unavailable", "safeExplanation", "The governed autonomous runtime path returned a fail-closed blocker instead of fixture or model-less success."),
+            "evidenceWindow", mapOf("scope", "selected AuthContext", "visibleAttentionCount", taskVisible ? task.authorizedAttentionCount() : 0, "visibleSourceCount", taskVisible && task.authorizedAttentionCount() > 0 ? 1 : 0, "omittedRedactedCount", "aggregate-only", "noSourceAttentionMutated", true),
+            "availableActions", List.of(
+                mapOf("actionId", "action-read-my-account-personal-attention-digest", "label", "Refresh digest state", "capabilityId", MY_ACCOUNT_DIGEST_READ_CAPABILITY, "enabled", taskVisible, "disabledReason", taskVisible ? "" : "No authorized digest task is selected.", "targetSurfaceId", "surface-my-account-personal-attention-digest-progress", "correlationBehavior", "uses request correlation id"),
+                mapOf("actionId", "action-start-my-account-personal-attention-digest", "label", "Start replacement digest after readiness", "capabilityId", MY_ACCOUNT_DIGEST_START_CAPABILITY, "enabled", false, "disabledReason", "Provider/runtime readiness is fail-closed.", "targetSurfaceId", "surface-my-account-personal-attention-digest-blocked", "correlationBehavior", "idempotent start returns blocked until readiness exists"),
+                mapOf("actionId", "action-show-my-account-dashboard", "label", "Return to My Account", "capabilityId", MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY, "enabled", true, "targetSurfaceId", "surface-my-account-dashboard", "correlationBehavior", "dashboard read is trace-linked")),
+            "traceRefs", traceRefs,
+            "correlationId", correlationId,
+            "redaction", "No deterministic, fake, fixture, simulated, or model-less personal attention digest success is returned; provider/model/tool details are browser-safe summaries only.",
+            "noFakeSuccess", true,
+            "noDirectMutation", true),
+        List.of(showDashboardAction(), readPersonalAttentionDigestAction(), startPersonalAttentionDigestAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope personalAttentionDigestEmptyResultSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
