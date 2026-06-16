@@ -56,7 +56,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract verified and completed in `app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md`: includes surface identity/owner/placement/purpose, primary `attentionCounters[]` and secondary `controlPanels[]` payload schema, forbidden payload/redaction boundaries, governed action-to-capability mappings, selected AuthContext/tenant authorization rules, trace/audit contract, UI states, accessibility/responsive expectations, style/catalog bindings, and acceptance/security/observability regression coverage. Sufficiency review says the dashboard is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-16 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
