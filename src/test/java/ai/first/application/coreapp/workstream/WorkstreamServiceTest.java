@@ -1336,7 +1336,8 @@ class WorkstreamServiceTest {
     var selectContext = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-select-my-context", "action-select-my-context", "core.access.context.select", "core.access.context.select", null, null, "membership-admin", "surface-my-context", "corr-select-context"));
     assertEquals("accepted", selectContext.status());
-    assertEquals("surface.access.profile.context.v1", selectContext.resultSurface().surfaceId());
+    assertEquals("surface-my-context", selectContext.resultSurface().surfaceId());
+    assertTrue(selectContext.resultSurface().toString().contains("context-authority"));
   }
 
   @Test

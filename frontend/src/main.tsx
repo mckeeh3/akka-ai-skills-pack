@@ -355,8 +355,11 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
   async function handleSurfaceAction(action: SurfaceAction, surfaceId: string, input: unknown = {}) {
     if (!ready || !me) return;
     const actionCorrelationId = `corr-${action.actionId}-${Date.now().toString(36)}`;
+    const targetSelectedContextId = action.actionId === 'action-select-my-context' && input && typeof input === 'object' && 'selectedContextId' in input && typeof (input as { selectedContextId?: unknown }).selectedContextId === 'string'
+      ? (input as { selectedContextId: string }).selectedContextId
+      : me.selectedAuthContext.selectedContextId;
     const request = buildCapabilityActionRequest(action, {
-      selectedContextId: me.selectedAuthContext.selectedContextId,
+      selectedContextId: targetSelectedContextId,
       surfaceId,
       input,
       surfaceCorrelationId: actionCorrelationId
@@ -417,6 +420,14 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       });
     } else if (targetSurface) {
       markUnseenResponse(targetSurface.ownerFunctionalAgentId, surfaceResponseItem?.itemId ?? actionRequestItem.itemId, 'info');
+    }
+    if (result.ok && action.actionId === 'action-select-my-context') {
+      const refreshed = await workstreamClient.bootstrap();
+      if (refreshed.ok) {
+        setBootstrap({ status: 'ready', me: refreshed.value.me, items: refreshed.value.items, surfaces: refreshed.value.surfaces });
+        updateSelection({ selectedFunctionalAgentId: 'agent-my-account', selectedSurfaceId: 'surface-my-context', surfacePlacement: 'inline' });
+      }
+      return;
     }
     if (isProducerAffectingAction(action)) {
       // Contract marker: reason: 'producer-affecting-action-completion'. Input-scoped detail surfaces keep the action result surface instead of fetching the actor-default detail surface.

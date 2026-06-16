@@ -389,7 +389,7 @@
 
 ### TASK-FSCT-011: Verify or complete runtime implementation for `surface-my-context`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-010]
 - surface id: `surface-my-context`
@@ -413,13 +413,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `detail-edit / authority panel`
   - surface contract: `my_account.context_authority.v1`
   - purpose: Selected AuthContext, active membership, role/capability basis, and context-switch targets.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream My Account functional agent surface `surface-my-context`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-context`; surface graph node/action edge for opening or acting on `surface-my-context`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-16: completed and verified the real runtime implementation for `surface-my-context`: backend-owned `my_account.context_authority.v1` payload with selected AuthContext, role/capability/support-access/redaction summaries, authorized available contexts, stale-impact state, protected surface/action/bootstrap paths, canonical `action-select-my-context` result surface, and frontend context switching that sends the requested selected context through the governed API then refreshes backend bootstrap. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered tenant admin in `tenant-starter` and authorized customer context `membership-admin-customer`; denial/fail-closed coverage included hidden/cross-tenant selected context denial, missing bearer rejection, omitted hidden contexts, and browser-safe raw JWT/provider/hidden-role redaction; trace evidence included context read/select trace refs and correlation ids; commands passed: `mvn -q -Dtest=WorkstreamServiceTest#myAccountSurfacesAreBackendRetrievedWithAuthorityTraceAndContextData test`, `mvn -q -Dtest=MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyContextRuntimePathAndSelection test`, `npm --prefix frontend test -- --run src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-012: Verify or complete runtime testing for `surface-my-context`
 

@@ -1052,9 +1052,111 @@ public final class WorkstreamService {
   private SurfaceEnvelope contextAuthoritySurface(String surfaceId, AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), MY_ACCOUNT_VIEW_CONTEXT_CAPABILITY);
     authContextResolver.appendProtectedReadTrace(actor, "MY_ACCOUNT_VIEW_CONTEXT", "selected context detail", correlationId);
+    var selected = selectedMembership(actor);
+    var selectedContextLabel = contextLabel(actor.selectedContext().tenantId(), actor.selectedContext().customerId());
+    var traceRefs = myAccountService.traceRefs(actor, correlationId);
     return envelope(surfaceId, "detail-edit", "Selected context and authority", actor, correlationId,
-        mapOf("surfaceContract", "my_account.context_authority.v1", "canonicalSurfaceId", "surface-my-context", "selectedContext", mapOf("selectedContextId", actor.selectedContext().membershipId(), "tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId()), "visibleCapabilitySummary", mapOf("count", actor.selectedContext().capabilities().size(), "capabilityIds", actor.selectedContext().capabilities()), "roleSummary", actor.selectedContext().roles().stream().map(role -> role.name().toLowerCase(Locale.ROOT).replace('_', '-')).sorted().toList(), "recordId", actor.selectedContext().membershipId(), "recordLabel", actor.selectedContext().tenantId() + " selected context", "recordKind", "auth-context", "summary", "Backend-resolved selected AuthContext, active membership, role/capability basis, and available context switch targets. Context selection is performed by /api/me and protected workstream APIs using X-Selected-Context-Id; the browser cannot grant authority by editing this surface.", "fields", List.of(mapOf("fieldId", "selectedContextId", "label", "Selected context", "value", actor.selectedContext().membershipId(), "editable", false, "inputType", "text", "disabledReason", "Context changes must be requested through /api/me or protected shell APIs."), mapOf("fieldId", "tenantId", "label", "Tenant", "value", actor.selectedContext().tenantId(), "editable", false, "inputType", "text"), mapOf("fieldId", "customerId", "label", "Customer", "value", actor.selectedContext().customerId(), "editable", false, "inputType", "text"), mapOf("fieldId", "roles", "label", "Roles", "value", actor.selectedContext().roles().toString(), "editable", false, "inputType", "text"), mapOf("fieldId", "capabilityCount", "label", "Visible capabilities", "value", actor.selectedContext().capabilities().size(), "editable", false, "inputType", "number")), "availableContexts", actor.memberships().stream().filter(membership -> membership.active()).map(membership -> mapOf("selectedContextId", membership.membershipId(), "tenantId", membership.tenantId(), "customerId", membership.customerId(), "status", membership.status().name().toLowerCase(), "roleIds", membership.roles().stream().map(role -> role.name().toLowerCase().replace('_', '-')).sorted().toList(), "selectable", true, "selected", actor.selectedContext().membershipId().equals(membership.membershipId()), "selectionApi", "/api/me?selectedContextId=" + membership.membershipId(), "actionId", "action-select-my-context", "capabilityId", CORE_ACCESS_CONTEXT_SELECT_CAPABILITY, "staleImpact", "Switching context refreshes the shell, workstream counters, traces, notifications, and any open structured surfaces.")).toList(), "permissionState", mapOf("canEdit", false, "authoritativeCapabilityId", MY_ACCOUNT_VIEW_CONTEXT_CAPABILITY, "coreCapabilityAlias", CORE_ACCESS_CONTEXT_SELECT_CAPABILITY), "capabilityAliases", List.of(CORE_ACCESS_ME_CAPABILITY, CORE_ACCESS_CONTEXT_SELECT_CAPABILITY), "traceRefs", myAccountService.traceRefs(actor, correlationId), "audit", mapOf("lastEventType", "AuthContextDisplayed", "lastActor", actor.profile().displayName(), "traceIds", List.of("trace-my-context"))),
-        List.of(showDashboardAction(), showProfileAction(), showSettingsAction(), selectContextAction(), openAuditAction()));
+        mapOf(
+            "surfaceContract", "my_account.context_authority.v1",
+            "canonicalSurfaceId", "surface-my-context",
+            "selectedContext", mapOf(
+                "contextId", actor.selectedContext().membershipId(),
+                "selectedContextId", actor.selectedContext().membershipId(),
+                "contextType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT),
+                "tenantId", actor.selectedContext().tenantId(),
+                "tenantLabel", actor.selectedContext().tenantId(),
+                "customerId", actor.selectedContext().customerId(),
+                "customerLabel", actor.selectedContext().customerId(),
+                "displayLabel", selectedContextLabel,
+                "accountDisplayName", actor.profile().displayName(),
+                "accountEmail", actor.account().displayEmail(),
+                "membershipId", actor.selectedContext().membershipId(),
+                "membershipStatus", selected == null ? "active" : selected.status().name().toLowerCase(Locale.ROOT),
+                "selectedAt", Instant.now().toString(),
+                "freshness", "backend-resolved",
+                "stale", false),
+            "authorityBasis", mapOf(
+                "primaryRoleBasis", "active membership in selected context",
+                "roleLabels", roleIds(actor.selectedContext().roles()),
+                "capabilityCount", actor.selectedContext().capabilities().size(),
+                "redactionProfile", "BROWSER_SAFE",
+                "supportAccess", supportAccessSummary(selected),
+                "explanation", "The selected AuthContext governs workstream visibility, browser actions, trace access, and agent behavior; browser state cannot grant authority."),
+            "roleSummary", roleIds(actor.selectedContext().roles()),
+            "visibleCapabilitySummary", mapOf(
+                "count", actor.selectedContext().capabilities().size(),
+                "categories", capabilityCategories(actor.selectedContext().capabilities()),
+                "capabilityIds", actor.selectedContext().capabilities(),
+                "diagnosticIdsVisible", true),
+            "supportAccess", supportAccessSummary(selected),
+            "recordId", actor.selectedContext().membershipId(),
+            "recordLabel", selectedContextLabel + " selected context",
+            "recordKind", "auth-context",
+            "summary", "Backend-resolved selected AuthContext, active membership, role/capability basis, and available context switch targets. Context selection is performed by /api/me and protected workstream APIs using X-Selected-Context-Id; the browser cannot grant authority by editing this surface.",
+            "fields", List.of(
+                mapOf("fieldId", "selectedContextId", "label", "Selected context", "value", actor.selectedContext().membershipId(), "editable", false, "inputType", "text", "disabledReason", "Context changes must be requested through /api/me or protected shell APIs."),
+                mapOf("fieldId", "tenantId", "label", "Tenant", "value", actor.selectedContext().tenantId(), "editable", false, "inputType", "text"),
+                mapOf("fieldId", "customerId", "label", "Customer", "value", actor.selectedContext().customerId(), "editable", false, "inputType", "text"),
+                mapOf("fieldId", "roles", "label", "Roles", "value", String.join(", ", roleIds(actor.selectedContext().roles())), "editable", false, "inputType", "text"),
+                mapOf("fieldId", "capabilityCount", "label", "Visible capabilities", "value", actor.selectedContext().capabilities().size(), "editable", false, "inputType", "number"),
+                mapOf("fieldId", "supportAccess", "label", "Support access", "value", selected != null && selected.supportAccess() ? "active" : "not visible", "editable", false, "inputType", "text", "disabledReason", "Support-access grants are managed by User Admin, not My Account.")),
+            "availableContexts", actor.memberships().stream().filter(Membership::active).map(membership -> mapOf(
+                "contextId", membership.membershipId(),
+                "selectedContextId", membership.membershipId(),
+                "contextType", membership.scopeType().name().toLowerCase(Locale.ROOT),
+                "tenantId", membership.tenantId(),
+                "tenantLabel", membership.tenantId(),
+                "customerId", membership.customerId(),
+                "customerLabel", membership.customerId(),
+                "displayLabel", contextLabel(membership.tenantId(), membership.customerId()),
+                "membershipStatus", membership.status().name().toLowerCase(Locale.ROOT),
+                "status", membership.status().name().toLowerCase(Locale.ROOT),
+                "roleLabels", roleIds(membership.roles()),
+                "roleIds", roleIds(membership.roles()),
+                "selectable", membership.active(),
+                "selected", actor.selectedContext().membershipId().equals(membership.membershipId()),
+                "stale", !actor.selectedContext().membershipId().equals(membership.membershipId()),
+                "denialHint", membership.active() ? null : "not_found_or_redacted",
+                "selectionApi", "/api/me?selectedContextId=" + membership.membershipId(),
+                "selectionActionId", "action-select-my-context",
+                "actionId", "action-select-my-context",
+                "capabilityId", CORE_ACCESS_CONTEXT_SELECT_CAPABILITY,
+                "lastUsed", actor.selectedContext().membershipId().equals(membership.membershipId()) ? "current" : null,
+                "recommended", actor.selectedContext().membershipId().equals(membership.membershipId()),
+                "staleImpact", "Switching context refreshes the shell, workstream counters, traces, notifications, and any open structured surfaces.")).toList(),
+            "permissionState", mapOf("canEdit", false, "reason", "Context selection is a backend AuthContext operation, not an editable role/capability form.", "authoritativeCapabilityId", MY_ACCOUNT_VIEW_CONTEXT_CAPABILITY, "coreCapabilityAlias", CORE_ACCESS_CONTEXT_SELECT_CAPABILITY, "selectActionId", "action-select-my-context"),
+            "capabilityAliases", List.of(CORE_ACCESS_ME_CAPABILITY, CORE_ACCESS_CONTEXT_SELECT_CAPABILITY),
+            "traceRefs", traceRefs,
+            "correlationId", correlationId,
+            "redaction", mapOf("profile", "context-authority", "omittedFieldKeys", List.of("rawJwt", "sessionToken", "providerPayload", "providerSecret", "hiddenContexts", "hiddenRoleInternals", "crossTenantCounts"), "hiddenContextBehavior", "not_found_or_redacted"),
+            "stateHints", List.of("ready", "submitting", "forbidden", "not_found_or_redacted", "stale/reconnect", "no-membership", "disabled-account", "no-op", "failure"),
+            "audit", mapOf("lastEventType", "AuthContextDisplayed", "lastActor", actor.profile().displayName(), "traceIds", traceRefs.stream().map(MyAccountService.TraceRef::traceId).toList()))
+        , List.of(showDashboardAction(), showProfileAction(), showSettingsAction(), selectContextAction(), openAuditAction()));
+  }
+
+  private String contextLabel(String tenantId, String customerId) {
+    return tenantId + (customerId == null || customerId.isBlank() ? " · Tenant scope" : " · Customer " + customerId);
+  }
+
+  private List<String> roleIds(List<FoundationRole> roles) {
+    return roles.stream().map(role -> role.name().toLowerCase(Locale.ROOT).replace('_', '-')).sorted().toList();
+  }
+
+  private Map<String, Object> supportAccessSummary(Membership membership) {
+    return mapOf(
+        "state", membership != null && membership.supportAccess() ? "active" : "not-visible",
+        "active", membership != null && membership.supportAccess(),
+        "expiresAt", membership == null || membership.expiresAt() == null ? null : membership.expiresAt().toString(),
+        "recoveryHint", "Support-access grants are administered through User Admin and are never editable from My Account.");
+  }
+
+  private List<Map<String, Object>> capabilityCategories(List<String> capabilities) {
+    return Stream.of(
+            mapOf("categoryId", "my-account", "label", "My Account", "count", capabilities.stream().filter(capability -> capability.startsWith("my_account.")).count()),
+            mapOf("categoryId", "core-access", "label", "Core access", "count", capabilities.stream().filter(capability -> capability.startsWith("core.") || capability.startsWith("profile.")).count()),
+            mapOf("categoryId", "workstreams", "label", "Authorized workstreams", "count", capabilities.stream().filter(capability -> capability.contains(".") && !capability.startsWith("my_account.") && !capability.startsWith("core.") && !capability.startsWith("profile.")).count()))
+        .filter(category -> ((Number) category.get("count")).longValue() > 0)
+        .toList();
   }
 
   private SurfaceEnvelope myAccountOpenDeniedSurface(AuthContextResolver.ResolvedMe actor, MyAccountService.OpenWorkstreamDecision decision, String correlationId) {
@@ -2782,8 +2884,7 @@ public final class WorkstreamService {
       case "action-show-my-account-dashboard" -> myAccountDashboardSurface(actor, correlationId);
       case "action-show-my-profile", "action-update-my-profile" -> myProfileSurface(actor, correlationId);
       case "action-show-my-settings", "action-update-my-settings" -> mySettingsSurface(actor, correlationId);
-      case "action-show-my-context" -> myContextSurface(actor, correlationId);
-      case "action-select-my-context" -> accessProfileContextSurface(actor, correlationId);
+      case "action-show-my-context", "action-select-my-context" -> myContextSurface(actor, correlationId);
       case "action-show-my-account-notification-center", "action-notification-mark-read", "action-notification-dismiss", "action-notification-archive", "action-notification-snooze", "action-notification-update-preferences" -> myAccountNotificationCenterSurface(actor, correlationId);
       case "action-sign-out" -> myAccountDashboardSurface(actor, correlationId);
       case "action-start-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
@@ -2892,7 +2993,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceAction showContextAction() { return new SurfaceAction("action-show-my-context", "Show selected context", "read", browserToolId("action-show-my-context"), governedToolId(MY_ACCOUNT_VIEW_CONTEXT_CAPABILITY), MY_ACCOUNT_VIEW_CONTEXT_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-context", "inline"), new Audit("AuthContextDisplayed", true)); }
-  private SurfaceAction selectContextAction() { return new SurfaceAction("action-select-my-context", "Select authorized context", "surface-request", browserToolId("action-select-my-context"), governedToolId(CORE_ACCESS_CONTEXT_SELECT_CAPABILITY), CORE_ACCESS_CONTEXT_SELECT_CAPABILITY, "schema.core.access.context.select.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, ACCESS_PROFILE_CONTEXT_SURFACE_ID, "inline"), new Audit("AuthContextSelectRequested", true)); }
+  private SurfaceAction selectContextAction() { return new SurfaceAction("action-select-my-context", "Select authorized context", "surface-request", browserToolId("action-select-my-context"), governedToolId(CORE_ACCESS_CONTEXT_SELECT_CAPABILITY), CORE_ACCESS_CONTEXT_SELECT_CAPABILITY, "schema.core.access.context.select.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-context", "inline"), new Audit("AuthContextSelectRequested", true)); }
   private SurfaceAction updateProfileAction() { return new SurfaceAction("action-update-my-profile", "Save profile changes", "command", browserToolId("action-update-my-profile"), governedToolId(MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY), MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY, "schema.my-account.profile.update.v1", true, false, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-my-profile", "inline"), new Audit("UserProfileUpdateRequested", true)); }
   private SurfaceAction updateSettingsAction() { return new SurfaceAction("action-update-my-settings", "Save settings changes", "command", browserToolId("action-update-my-settings"), governedToolId(MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY), MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY, "schema.my-account.settings.update.v1", true, false, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-my-settings", "inline"), new Audit("UserSettingsUpdateRequested", true)); }
   private SurfaceAction signOutAction() { return new SurfaceAction("action-sign-out", "Sign out", "command", browserToolId("action-sign-out"), governedToolId(MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY), MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY, null, true, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-dashboard", "inline"), new Audit("SessionSignOutRequested", true)); }

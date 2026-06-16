@@ -15,6 +15,7 @@ import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamBoots
 import ai.first.application.foundation.identity.AkkaIdentityRepository;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.identity.Customer;
 import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.identity.Membership;
 import ai.first.domain.foundation.identity.MembershipStatus;
@@ -31,14 +32,18 @@ import org.junit.jupiter.api.Test;
 /** Scriptable hosted-UI/workstream smoke for the My Account dashboard surface runtime path. */
 class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
   private static final String TENANT_ID = "tenant-starter";
+  private static final String CUSTOMER_ID = "customer-starter";
   private static final String ADMIN_CONTEXT_ID = "membership-admin";
+  private static final String ADMIN_CUSTOMER_CONTEXT_ID = "membership-admin-customer";
   private static final String MEMBER_CONTEXT_ID = "membership-member";
 
   @BeforeEach
   void seedMyAccountSmokeActors() {
     var repository = new AkkaIdentityRepository(componentClient);
     repository.saveTenant(new Tenant(TENANT_ID, "Starter Tenant", true));
+    repository.saveCustomer(new Customer(TENANT_ID, CUSTOMER_ID, "Starter Customer", true));
     seedIdentity(repository, "admin@example.test", "Tenant Admin", ADMIN_CONTEXT_ID, List.of(FoundationRole.TENANT_ADMIN, FoundationRole.AUDITOR));
+    repository.saveMembership(new Membership(ADMIN_CUSTOMER_CONTEXT_ID, "admin@example.test", ScopeType.CUSTOMER, TENANT_ID, CUSTOMER_ID, List.of(FoundationRole.CUSTOMER_ADMIN), MembershipStatus.ACTIVE, false, null));
     seedIdentity(repository, "member@example.test", "Member User", MEMBER_CONTEXT_ID, List.of(FoundationRole.TENANT_EMPLOYEE));
   }
 
@@ -245,6 +250,56 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesMyContextRuntimePathAndSelection() throws Exception {
+    var context = getSurface("surface-my-context", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-context-browser-read");
+    assertEquals("surface-my-context", context.surfaceId());
+    assertEquals("detail-edit", context.surfaceType());
+    assertEquals("my_account.context_authority.v1", context.data().get("surfaceContract"));
+    assertTrue(context.toString().contains("selectedContext"));
+    assertTrue(context.toString().contains("availableContexts"));
+    assertTrue(context.toString().contains(ADMIN_CUSTOMER_CONTEXT_ID));
+    assertTrue(context.toString().contains("visibleCapabilitySummary"));
+    assertTrue(context.toString().contains("supportAccess"));
+    assertTrue(context.toString().contains("not_found_or_redacted"));
+    assertTrue(context.toString().contains("core.access.context.select"));
+    assertTrue(context.toString().contains("traceRefs"));
+    assertTrue(context.toString().contains("corr-my-context-browser-read"));
+    assertContextSurfaceBrowserSafe(context);
+
+    var selected = runAction(new CapabilityActionRequest(
+        "action-select-my-context",
+        "action-select-my-context",
+        "core.access.context.select",
+        "core.access.context.select",
+        Map.of("selectedContextId", ADMIN_CUSTOMER_CONTEXT_ID),
+        null,
+        ADMIN_CUSTOMER_CONTEXT_ID,
+        context.surfaceId(),
+        "corr-my-context-browser-select"), ADMIN_CUSTOMER_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", selected.status());
+    assertEquals("surface-my-context", selected.resultSurface().surfaceId());
+    assertEquals(ADMIN_CUSTOMER_CONTEXT_ID, selected.resultSurface().authContext().get("selectedContextId"));
+    assertTrue(selected.resultSurface().toString().contains(CUSTOMER_ID));
+    assertTrue(selected.resultSurface().toString().contains("staleImpact"));
+    assertContextSurfaceBrowserSafe(selected.resultSurface());
+
+    var switchedBootstrap = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
+        .addHeader("X-Selected-Context-Id", ADMIN_CUSTOMER_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-my-context-browser-bootstrap-after-select")
+        .responseBodyAs(WorkstreamBootstrapResponse.class)
+        .invoke();
+    assertTrue(switchedBootstrap.status().isSuccess());
+    assertEquals(ADMIN_CUSTOMER_CONTEXT_ID, switchedBootstrap.body().me().selectedAuthContext().selectedContextId());
+    assertEquals(CUSTOMER_ID, switchedBootstrap.body().me().selectedAuthContext().customerId());
+    assertBrowserSafe(switchedBootstrap.body());
+
+    assertThrows(RuntimeException.class, () -> getSurface("surface-my-context", "membership-hidden-cross-tenant", "admin@example.test", "Tenant Admin", "corr-my-context-hidden-denied"));
+    assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-context").responseBodyAs(String.class).invoke());
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesMySettingsRuntimePath() throws Exception {
     var settings = getSurface("surface-my-settings", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-settings-browser-read");
     assertEquals("surface-my-settings", settings.surfaceId());
@@ -423,6 +478,19 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(text.contains("RESEND_API_KEY"));
     assertFalse(text.contains("Bearer "));
     assertFalse(text.contains("workos-admin"));
+    assertFalse(text.contains("test-fake-provider"));
+    assertFalse(text.contains("test-fake-model"));
+  }
+
+  private static void assertContextSurfaceBrowserSafe(SurfaceEnvelope payload) {
+    var text = String.valueOf(payload);
+    assertTrue(text.contains("omittedFieldKeys"));
+    assertTrue(text.contains("providerSecret"));
+    assertTrue(text.contains("hiddenContexts"));
+    assertFalse(text.contains("RESEND_API_KEY"));
+    assertFalse(text.contains("Bearer "));
+    assertFalse(text.contains("workos-admin"));
+    assertFalse(text.contains("hidden-cross-tenant-name"));
     assertFalse(text.contains("test-fake-provider"));
     assertFalse(text.contains("test-fake-model"));
   }

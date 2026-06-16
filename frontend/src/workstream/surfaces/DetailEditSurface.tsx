@@ -514,12 +514,12 @@ function MyAccountDetailOverview({ envelope, fieldValues, onAction }: { envelope
           <section className="available-context-grid" aria-label="Authorized context switch targets">
             {envelope.data.availableContexts.map((context, index) => {
               const action = envelope.actions.find((candidate) => candidate.actionId === String(context.actionId ?? 'action-select-my-context'));
-              const selectedContextId = String(context.selectedContextId ?? '');
+              const selectedContextId = String(context.selectedContextId ?? context.contextId ?? '');
               const selected = context.selected === true || selectedContextId === envelope.authContext.selectedContextId;
               return (
                 <article key={String(context.selectedContextId ?? index)} className={`surface-row-card ${selected ? 'selected' : ''}`}>
-                  <p><span>{String(context.status ?? 'active')}{selected ? ' · selected' : ''}</span><strong>{selected ? 'Current organization' : 'Authorized organization'}</strong></p>
-                  <p>{context.customerId ? 'Selected customer' : 'Tenant scope'} · {Array.isArray(context.roleIds) ? context.roleIds.join(', ') : 'roles redacted'}</p>
+                  <p><span>{String(context.status ?? context.membershipStatus ?? 'active')}{selected ? ' · selected' : ''}</span><strong>{String(context.displayLabel ?? (selected ? 'Current organization' : 'Authorized organization'))}</strong></p>
+                  <p>{context.customerId ? 'Selected customer' : 'Tenant scope'} · {Array.isArray(context.roleLabels) ? context.roleLabels.join(', ') : Array.isArray(context.roleIds) ? context.roleIds.join(', ') : 'roles redacted'}</p>
                   {Boolean(context.staleImpact) && <p className="field-helper">{String(context.staleImpact)}</p>}
                   {action && !selected && context.selectable !== false ? <button type="button" className="surface-action-link" onClick={() => onAction?.(action, envelope.surfaceId, { selectedContextId, correlationId: envelope.correlationId })}>Switch to this context</button> : <p className="form-status">{selected ? 'Current context' : 'Context switch is not available'}</p>}
                 </article>
