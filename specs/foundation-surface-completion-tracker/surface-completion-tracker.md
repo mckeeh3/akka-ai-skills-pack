@@ -108,7 +108,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract verified and completed in `app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md`: includes `surface-my-account-notification-center` identity/owner/placement/purpose, `my_account.notification_center.v1` in-app-only notification-center contract, triage-first payload schema for `triageSections[]`, `items[]`, preferences/source summaries, lifecycle actions, forbidden external-channel/provider/outbox boundaries, governed action-to-capability mappings, selected AuthContext and tenant/customer authorization rules, safe hidden/cross-tenant denial behavior, trace/audit/correlation contract, UI states, accessibility/responsive expectations, style/catalog bindings, and acceptance/security/observability regression coverage. Sufficiency review says the notification center is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-16 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
