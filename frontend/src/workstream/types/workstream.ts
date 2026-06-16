@@ -50,4 +50,6 @@ export type WorkstreamSelection = {
   selectedItemId?: string;
   selectedSurfaceId?: string;
   surfacePlacement?: 'inline' | 'modal' | 'side-panel' | 'deep-link';
+  traceId?: string;
+  correlationId?: string;
 };

@@ -1650,6 +1650,19 @@ export const auditTraceSurfaceActions = {
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-detail', openPlacement: 'inline' },
     audit: { eventType: 'AuditTraceSummaryEvidenceOpened', traceRequired: true }
+  },
+  requestRedactedExport: {
+    actionId: 'action-audit-trace-request-redacted-export',
+    label: 'Request redacted export',
+    intent: 'approval',
+    capabilityId: 'audit.trace.export.request',
+    governedToolId: 'audit.trace.export.request',
+    browserToolId: 'action-audit-trace-request-redacted-export',
+    inputSchemaRef: 'schema.audit-trace.export-request.v1',
+    idempotency: { required: true, keySource: 'client-generated' },
+    requiresApproval: true,
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-export-request', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceRedactedExportRequested', traceRequired: true }
   }
 } satisfies Record<string, SurfaceAction>;
 
@@ -1677,7 +1690,7 @@ export const auditTraceDashboardSurface = envelope(
       { workstreamId: 'agent-audit-trace-summary-task', label: 'Start audit summary task', allowed: true, capabilityIds: ['audit.trace.summary_task.start'], traceId: 'trace-audit-summary-task-start' }
     ]
   },
-  [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence, auditTraceSurfaceActions.showInvestigationGuide]
+  [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence, auditTraceSurfaceActions.showInvestigationGuide, auditTraceSurfaceActions.requestRedactedExport]
 );
 
 export const auditTraceSearchSurface = envelope(
@@ -1772,7 +1785,32 @@ export const auditTraceInvestigationGuideSurface = envelope(
     risk: 'low',
     traceLinks: ['corr-provider-blocked-002']
   },
-  [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence, auditTraceSurfaceActions.appendInvestigationNote]
+  [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence, auditTraceSurfaceActions.requestRedactedExport, auditTraceSurfaceActions.appendInvestigationNote]
+);
+
+export const auditTraceExportRequestSurface = envelope(
+  'surface-audit-trace-export-request',
+  'decision',
+  'Redacted audit export request',
+  'agent-audit-trace',
+  {
+    surfaceContract: 'audit.trace.exportRequest.v1',
+    exportId: 'audit-export-tenant-1-redacted-001',
+    status: 'approval_required',
+    requestedFormat: 'jsonl-redacted',
+    policyDecision: 'redacted_export_requires_policy_gate',
+    recommendation: 'Approve only scoped redacted export bundles; unredacted exports are not a default browser action.',
+    risk: 'medium',
+    bundleMetadata: { tenantId: authContext.tenantId, customerId: authContext.customerId, redactionProfile: 'browser-safe', omittedFieldKeys: ['rawJwt', 'rawProviderCredential', 'hiddenPromptText', 'rawToolPayload', 'invitationToken'] },
+    allowedActions: [
+      { actionId: 'action-audit-trace-search', label: 'Refine scoped evidence', browserToolId: 'action-audit-trace-search', governedToolId: 'audit.trace.search', capabilityId: 'audit.trace.search' },
+      { actionId: 'action-audit-trace-timeline', label: 'Review correlation timeline', browserToolId: 'action-audit-trace-timeline', governedToolId: 'audit.trace.timeline.read', capabilityId: 'audit.trace.timeline.read' }
+    ],
+    disabledActions: [{ actionId: 'action-audit-trace-unredacted-export', reason: 'Unredacted export requires a separate policy exception and is not produced by this browser surface.' }],
+    traceLinks: ['trace-audit-export-request'],
+    redaction: 'Export request stores scoped metadata only; raw evidence, tokens, provider secrets, hidden prompts, and cross-tenant facts are omitted.'
+  },
+  [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence]
 );
 
 export const auditTraceInvestigationNoteSurface = envelope(
@@ -1842,7 +1880,7 @@ export const auditTraceSummaryReviewSurface = envelope(
   [auditTraceSurfaceActions.acceptSummaryResult, auditTraceSurfaceActions.rejectSummaryResult, auditTraceSurfaceActions.openSummaryEvidence]
 );
 
-export const auditTraceStructuredSurfaces = [auditTraceDashboardSurface, auditTraceSearchSurface, auditTraceDetailSurface, auditTraceTimelineSurface, auditTraceFailureEvidenceSurface, auditTraceInvestigationGuideSurface, auditTraceInvestigationNoteSurface, auditTraceSummaryProgressSurface, auditTraceSummaryReviewSurface];
+export const auditTraceStructuredSurfaces = [auditTraceDashboardSurface, auditTraceSearchSurface, auditTraceDetailSurface, auditTraceTimelineSurface, auditTraceFailureEvidenceSurface, auditTraceInvestigationGuideSurface, auditTraceExportRequestSurface, auditTraceInvestigationNoteSurface, auditTraceSummaryProgressSurface, auditTraceSummaryReviewSurface];
 
 export const userAdminDashboardSurface = envelope(
   'surface-user-admin-dashboard',

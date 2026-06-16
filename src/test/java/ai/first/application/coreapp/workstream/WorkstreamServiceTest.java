@@ -1512,7 +1512,17 @@ class WorkstreamServiceTest {
     assertEquals("audit.trace.investigationGuide.v1", guide.resultSurface().data().get("surfaceContract"));
     assertTrue(guide.resultSurface().toString().contains("audit.trace.summary_task.start"));
     assertTrue(guide.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-summary-task-start")));
+    assertTrue(guide.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-request-redacted-export")));
     assertTrue(guide.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-append-investigation-note")));
+
+    var export = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-request-redacted-export", "action-audit-trace-request-redacted-export", "audit.trace.export.request", "audit.trace.export.request", Map.of("reason", "Export provider_blocked evidence without bearer hidden-token", "format", "jsonl-redacted"), "idem-audit-export", "membership-admin", "surface-audit-trace-investigation-guide", "corr-audit-export"));
+    assertEquals("accepted", export.status());
+    assertEquals("surface-audit-trace-export-request", export.resultSurface().surfaceId());
+    assertEquals("audit.trace.exportRequest.v1", export.resultSurface().data().get("surfaceContract"));
+    assertTrue(export.resultSurface().toString().contains("approval_required"));
+    assertTrue(export.resultSurface().toString().contains("Unredacted export"));
+    assertFalse(export.resultSurface().toString().contains("hidden-token"));
 
     var note = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-audit-trace-append-investigation-note", "action-audit-trace-append-investigation-note", "audit.trace.investigation_note.append", "audit.trace.investigation_note.append", Map.of("traceId", "trace-provider-blocked-002", "note", "Follow up without sk-test-secret or bearer hidden-token"), "idem-audit-note", "membership-admin", "surface-audit-trace-investigation-guide", "corr-audit-note"));

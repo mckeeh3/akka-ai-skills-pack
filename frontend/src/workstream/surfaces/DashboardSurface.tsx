@@ -21,6 +21,9 @@ export function DashboardSurface({ envelope, onAction, onSignOut }: DashboardSur
   if (envelope.surfaceId === 'surface-governance-policy-dashboard' || envelope.data.surfaceContract?.startsWith('governance.policy.dashboard')) {
     return <GovernancePolicyCommandCenter envelope={envelope} onAction={onAction} />;
   }
+  if (envelope.surfaceId === 'surface-audit-trace-dashboard' || envelope.data.surfaceContract?.startsWith('audit.trace.dashboard')) {
+    return <AuditTraceCommandCenter envelope={envelope} onAction={onAction} />;
+  }
 
   const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
   const myAccountSurfaceActions = actionsForIds(envelope.data.utilityActionIds, actionById)
@@ -102,6 +105,68 @@ export function DashboardSurface({ envelope, onAction, onSignOut }: DashboardSur
   );
 }
 
+
+function AuditTraceCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
+  const data = envelope.data;
+  const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
+  const searchAction = actionById.get('action-audit-trace-search');
+  const exportAction = actionById.get('action-audit-trace-request-redacted-export');
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <p className="sr-only">Surface contract: {data.surfaceContract ?? 'audit.trace.dashboard.v1'}. Backend capabilities: {data.capabilityIds?.join(', ') ?? 'audit.trace.read'}. Trace access is backend-scoped and redacted.</p>
+      <section className="my-account-command-hero audit-trace-command-hero" aria-label="Audit/Trace investigation command center">
+        <div>
+          <p className="eyebrow">Audit/Trace · selected AuthContext</p>
+          <h3>Investigate scoped evidence safely</h3>
+          <p>{data.readiness ?? 'Search traces, inspect evidence, review denials/failures, request redacted exports, and follow correlation timelines without exposing hidden data.'}</p>
+        </div>
+        <dl className="authority-summary-grid" aria-label="Audit/Trace scope and redaction summary">
+          <div><dt>Tenant</dt><dd>{data.accountContext?.tenantId ?? envelope.authContext.tenantId}</dd></div>
+          <div><dt>Customer</dt><dd>{data.accountContext?.customerId ?? envelope.authContext.customerId ?? 'Tenant scope'}</dd></div>
+          <div><dt>Visible capabilities</dt><dd>{data.capabilityIds?.length ?? envelope.authContext.visibleCapabilityIds.length}</dd></div>
+          <div><dt>Redaction</dt><dd>{renderSurfaceValue(data.redaction) ?? 'browser-safe evidence only'}</dd></div>
+        </dl>
+      </section>
+
+      <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-cards-heading`}>
+        <div className="surface-section-heading"><div><p className="eyebrow">Investigation overview</p><h4 id={`${envelope.surfaceId}-cards-heading`}>Scoped audit and failure counters</h4></div><p>Cards are summaries only. Open search, timeline, or failure evidence to reauthorize and inspect backend-provided evidence.</p></div>
+        <div className="surface-dashboard-grid my-account-workstream-grid" aria-label="Audit/Trace scoped counters">
+          {data.cards.map((card) => <article key={card.cardId} className={`ds-card dashboard-card ${card.severity ?? 'info'}`}><p>{card.label}</p><strong>{card.value}</strong>{card.status && <span>{card.status}</span>}</article>)}
+        </div>
+      </section>
+
+      {data.attentionItems && data.attentionItems.length > 0 && <AttentionList items={data.attentionItems} label="Audit/Trace attention items" actionById={actionById} surfaceId={envelope.surfaceId} onAction={onAction} />}
+
+      <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-actions-heading`}>
+        <div className="surface-section-heading"><div><p className="eyebrow">Investigation actions</p><h4 id={`${envelope.surfaceId}-actions-heading`}>Authorized investigation actions</h4></div><p>Actions recheck selected context, audit capability, redaction policy, idempotency, and trace emission on the backend.</p></div>
+        <div className="user-admin-action-grid" aria-label="Authorized Audit/Trace actions">
+          {envelope.actions.map((action) => <button key={action.actionId} type="button" className="user-admin-work-card" disabled={Boolean(action.disabled)} onClick={() => !action.disabled && onAction?.(action, envelope.surfaceId, defaultAuditTraceInput(action, envelope))} aria-disabled={Boolean(action.disabled)}><span className="eyebrow">{action.requiresApproval ? 'Policy gated' : action.intent}</span><h4>{action.label}</h4><p>{action.disabled?.message ?? auditTraceActionHint(action.actionId)}</p></button>)}
+        </div>
+      </section>
+
+      {data.sections && data.sections.length > 0 && <section className="surface-section-list" aria-label="Audit/Trace investigation sections">{data.sections.map((section) => <article key={section.sectionId} className="surface-section-card"><h4>{section.label}</h4><p>{section.summary}</p></article>)}</section>}
+      {searchAction && <form className="surface-search-form" role="search" onSubmit={(event) => { event.preventDefault(); const filter = new FormData(event.currentTarget).get('filter'); onAction?.(searchAction, envelope.surfaceId, stringRecord({ filter: typeof filter === 'string' ? filter : 'recent', pageSize: '10' })); }}><label htmlFor={`${envelope.surfaceId}-filter`}>Search scoped traces</label><input className="designed-control surface-search-control" id={`${envelope.surfaceId}-filter`} name="filter" placeholder="denied, provider, model, workstream, trace id, correlation id" /><button type="submit" className="surface-action-link secondary">Search</button></form>}
+      {exportAction && <p className="redaction-note">Request redacted export opens a policy-gated decision surface; unredacted browser exports are not produced.</p>}
+    </SurfaceStateFrame>
+  );
+}
+
+function auditTraceActionHint(actionId: string): string {
+  if (actionId.includes('search')) return 'Search only within backend-authorized tenant/customer scope.';
+  if (actionId.includes('timeline')) return 'Open a correlation timeline with unauthorized evidence omitted.';
+  if (actionId.includes('failure')) return 'Inspect denial/provider/tool/model evidence with secrets redacted.';
+  if (actionId.includes('export')) return 'Request a scoped redacted export through policy review.';
+  if (actionId.includes('guide')) return 'Get investigation guidance without granting new authority.';
+  return 'Backend returns the next safe Audit/Trace surface.';
+}
+
+function defaultAuditTraceInput(action: SurfaceAction, envelope: { correlationId: string }): Record<string, string> {
+  if (action.actionId.includes('search')) return { filter: 'recent', pageSize: '10' };
+  if (action.actionId.includes('timeline')) return { correlationId: envelope.correlationId };
+  if (action.actionId.includes('failure')) return { failureCategory: 'provider_blocked' };
+  if (action.actionId.includes('export')) return { reason: 'Scoped redacted investigation export requested from Audit/Trace dashboard.', format: 'jsonl-redacted' };
+  return { correlationId: envelope.correlationId };
+}
 
 function agentAdminActionableCards(cards: DashboardSurfaceData['cards'] | undefined, actionById: Map<string, SurfaceAction>): Array<{ card: DashboardSurfaceData['cards'][number]; action: SurfaceAction }> {
   return (cards ?? []).map((card) => {

@@ -10,11 +10,12 @@ type ListSearchSurfaceProps = {
 export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps) {
   const isUserAdmin = envelope.surfaceId === 'surface-user-admin-users' || envelope.data.surfaceContract === 'user_admin.users.v1' || envelope.data.surfaceContracts?.some((contract) => contract.startsWith('user_admin.'));
   const isAgentAdminCatalog = envelope.surfaceId === 'surface-agent-admin-catalog' || envelope.data.surfaceContract === 'agent_admin.catalog.v1';
+  const isAuditTraceSearch = envelope.surfaceId === 'surface-audit-trace-search' || envelope.data.surfaceContract === 'audit.trace.search.v1';
   const columns = Array.from(new Set(envelope.data.rows.flatMap((row) => Object.keys(row))));
   const queryValue = typeof envelope.data.query === 'string' ? envelope.data.query : JSON.stringify(envelope.data.query);
   return (
     <SurfaceStateFrame envelope={envelope}>
-      {isAgentAdminCatalog ? <AgentAdminCatalogView envelope={envelope} onAction={onAction} /> : isAgentAdminSeedMaterial(envelope) ? <AgentAdminSeedMaterialView envelope={envelope} onAction={onAction} /> : isUserAdmin ? <UserAdminUsersView envelope={envelope} onAction={onAction} /> : (
+      {isAuditTraceSearch ? <AuditTraceSearchView envelope={envelope} onAction={onAction} /> : isAgentAdminCatalog ? <AgentAdminCatalogView envelope={envelope} onAction={onAction} /> : isAgentAdminSeedMaterial(envelope) ? <AgentAdminSeedMaterialView envelope={envelope} onAction={onAction} /> : isUserAdmin ? <UserAdminUsersView envelope={envelope} onAction={onAction} /> : (
         <>
           <form className="surface-search-form" role="search">
             <label htmlFor={`${envelope.surfaceId}-query`}>Search</label>
@@ -36,6 +37,47 @@ export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps
   );
 }
 
+
+function AuditTraceSearchView({ envelope, onAction }: ListSearchSurfaceProps) {
+  const rows = envelope.data.rows;
+  const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
+  const searchAction = actionById.get('action-audit-trace-search');
+  const detailAction = actionById.get('action-audit-trace-detail');
+  const timelineAction = actionById.get('action-audit-trace-timeline');
+  const exportAction = actionById.get('action-audit-trace-request-redacted-export');
+  const queryValue = typeof envelope.data.query === 'string' ? envelope.data.query : String(envelope.data.query?.filter ?? 'recent');
+  return (
+    <section className="user-admin-users-surface audit-trace-search-surface" aria-label="Audit/Trace scoped search results">
+      <div className="user-admin-users-header">
+        <div><p className="eyebrow">Audit/Trace · backend-scoped search</p><h3>Trace search results</h3><p>Rows open detail or correlation timelines through backend actions. The browser does not infer hidden evidence or export authority.</p></div>
+        <div className="user-admin-users-header-actions">
+          {timelineAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(timelineAction, envelope.surfaceId, { correlationId: envelope.correlationId })}>Open current timeline</button>}
+          {exportAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(exportAction, envelope.surfaceId, { reason: 'Scoped redacted export requested from Audit/Trace search results.', format: 'jsonl-redacted' })}>Request redacted export</button>}
+        </div>
+      </div>
+      <form className="surface-search-form user-admin-clean-search" role="search" onSubmit={(event) => { event.preventDefault(); const filter = new FormData(event.currentTarget).get('query'); if (searchAction) onAction?.(searchAction, envelope.surfaceId, stringRecord({ filter: typeof filter === 'string' ? filter : queryValue, pageSize: '10' })); }}>
+        <label htmlFor={`${envelope.surfaceId}-query`}>Search scoped traces</label>
+        <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" defaultValue={queryValue} />
+        <button type="submit" className="surface-action-link secondary" disabled={!searchAction}>Search</button>
+      </form>
+      {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial results: unauthorized or redacted evidence is omitted.</p>}
+      {envelope.data.redaction && <p className="redaction-note">Redaction: {renderSurfaceValue(envelope.data.redaction)}</p>}
+      {rows.length === 0 ? <p className="surface-empty-copy">{envelope.data.emptyMessage ?? 'No authorized trace rows match this search.'}</p> : (
+        <div className="user-admin-clean-list audit-trace-result-list" role="list" aria-label="Authorized trace rows">
+          {rows.map((row, index) => <article key={String(row.traceId ?? index)} role="listitem" className="user-admin-clean-row audit-trace-result-row">
+            <span className="user-admin-person"><strong>{String(row.eventKind ?? row.traceId ?? 'Trace event')}</strong><small>{String(row.summary ?? row.redactionSummary ?? 'Browser-safe summary')}</small></span>
+            <span className="user-admin-role">{String(row.workstream ?? 'workstream')}</span>
+            <span className={`status-pill ${statusTone(String(row.status ?? row.severity ?? 'info'))}`}>{formatStatus(String(row.status ?? row.severity ?? 'info'))}</span>
+            <span className="audit-row-actions">
+              {detailAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(detailAction, envelope.surfaceId, stringRecord({ traceId: row.traceId }))}>Open detail</button>}
+              {timelineAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(timelineAction, envelope.surfaceId, stringRecord({ correlationId: row.correlationId }))}>Timeline</button>}
+            </span>
+          </article>)}
+        </div>
+      )}
+    </section>
+  );
+}
 
 function AgentAdminSeedMaterialView({ envelope, onAction }: ListSearchSurfaceProps) {
   const rows = envelope.data.rows;

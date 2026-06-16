@@ -22,6 +22,7 @@ public final class AuditTraceService {
   public static final String FAILURE_EVIDENCE_CAPABILITY = "audit.trace.failureEvidence.read";
   public static final String INVESTIGATION_GUIDE_CAPABILITY = "audit.trace.investigationGuide.read";
   public static final String INVESTIGATION_NOTE_CAPABILITY = "audit.trace.investigation_note.append";
+  public static final String EXPORT_REQUEST_CAPABILITY = "audit.trace.export.request";
   private static final List<String> DEFAULT_OMITTED_FIELDS = List.of("rawJwt", "rawProviderCredential", "hiddenPromptText", "rawToolPayload", "invitationToken", "providerCredentialValue");
 
   private final AuthContextResolver authContextResolver;
@@ -46,7 +47,7 @@ public final class AuditTraceService {
             mapOf("cardId", "card-redaction", "label", "Redaction", "value", "browser-safe", "severity", "info")),
         "attentionItems", List.of(mapOf("itemId", "warnings", "label", "Warnings and denials", "status", warningCount == 0 ? "clear" : "needs_review")),
         "readiness", "Trace search, details, timeline, failure evidence, and guidance are backend-scoped and redacted for the selected AuthContext.",
-        "capabilityIds", List.of(DASHBOARD_CAPABILITY, SEARCH_CAPABILITY, DETAIL_CAPABILITY, TIMELINE_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY, INVESTIGATION_NOTE_CAPABILITY, AuditTraceSummaryService.START_CAPABILITY, AuditTraceSummaryService.READ_CAPABILITY),
+        "capabilityIds", List.of(DASHBOARD_CAPABILITY, SEARCH_CAPABILITY, DETAIL_CAPABILITY, TIMELINE_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY, INVESTIGATION_NOTE_CAPABILITY, EXPORT_REQUEST_CAPABILITY, AuditTraceSummaryService.START_CAPABILITY, AuditTraceSummaryService.READ_CAPABILITY),
         "redaction", "redacted browser-safe evidence; provider credentials, raw tokens, hidden prompts, and raw tool payloads omitted"));
   }
 
@@ -142,6 +143,30 @@ public final class AuditTraceService {
         "risk", "low",
         "traceLinks", List.of(correlationId),
         "redaction", "no secrets, hidden prompts, raw payloads, or cross-tenant evidence"));
+  }
+
+  public SurfaceData requestRedactedExport(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {
+    validateScope(actor, input, correlationId);
+    if (idempotencyKey == null || idempotencyKey.isBlank()) return validation(actor, correlationId, "idempotencyKey", "A client-generated idempotency key is required for export requests.");
+    var requestedFormat = stringInput(input, "format", "jsonl-redacted");
+    var reason = stringInput(input, "reason", "Audit investigation export requested.");
+    if (reason == null || reason.isBlank() || reason.length() > 300) return validation(actor, correlationId, "reason", "Export reason is required and must be at most 300 characters.");
+    authContextResolver.appendProtectedReadTrace(actor, EXPORT_REQUEST_CAPABILITY, "redacted-export-request:policy-gated", correlationId);
+    var exportId = "audit-export-" + stableSuffix(actor.selectedContext().tenantId() + ":" + idempotencyKey);
+    return new SurfaceData("surface-audit-trace-export-request", "decision", "Redacted audit export request", List.of("trace-audit-export-" + stableSuffix(correlationId + ":" + idempotencyKey)), mapOf(
+        "surfaceContract", "audit.trace.exportRequest.v1",
+        "exportId", exportId,
+        "status", "approval_required",
+        "requestedFormat", requestedFormat,
+        "reasonSummary", redacted(reason),
+        "policyDecision", "redacted_export_requires_policy_gate",
+        "recommendation", "Approve only scoped redacted export bundles; unredacted export remains forbidden by default.",
+        "risk", "medium",
+        "allowedActions", List.of(mapOf("actionId", "action-audit-trace-timeline", "label", "Review correlation timeline", "capabilityId", TIMELINE_CAPABILITY), mapOf("actionId", "action-audit-trace-search", "label", "Refine scoped evidence", "capabilityId", SEARCH_CAPABILITY)),
+        "disabledActions", List.of(mapOf("actionId", "action-audit-trace-unredacted-export", "reason", "Unredacted export is not a default browser action and requires a separate policy exception.")),
+        "bundleMetadata", mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "redactionProfile", "browser-safe", "omittedFieldKeys", DEFAULT_OMITTED_FIELDS),
+        "traceLinks", List.of(correlationId),
+        "redaction", "Export request stores scoped metadata only; raw evidence, tokens, provider secrets, hidden prompts, and cross-tenant facts are omitted."));
   }
 
   public SurfaceData appendInvestigationNote(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {
