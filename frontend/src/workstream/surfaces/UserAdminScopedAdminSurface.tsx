@@ -16,11 +16,14 @@ type ScopedAdminData = Record<string, unknown> & {
   redaction?: unknown;
   rows?: Array<Record<string, unknown>>;
   customers?: Array<Record<string, unknown>>;
+  filters?: Record<string, unknown>;
   fields?: Array<{ fieldId: string; label: string; value: string; editable?: boolean }>;
   draft?: Record<string, unknown>;
   roleOptions?: Array<{ value?: string; roleId?: string; id?: string; label?: string; name?: string }>;
   allowedRoleOptions?: Array<{ value?: string; roleId?: string; id?: string; label?: string; name?: string }>;
   policyOptions?: { roles?: Array<{ value?: string; roleId?: string; id?: string; label?: string; name?: string }> };
+  query?: string;
+  status?: string;
   recordId?: string;
   recordLabel?: string;
   recordKind?: string;
@@ -275,6 +278,8 @@ function branchReturnInput(envelope: SurfaceEnvelope<ScopedAdminData>): Record<s
     branchReturnActionId: branch?.branchReturnActionId ?? envelope.data.branchReturnActionId ?? '',
     safeFilterPreservation: branch?.safeFilterPreservation ?? envelope.data.safeFilterPreservation ?? 'backend-authored-only',
     correlationId: branch?.correlationId ?? envelope.data.correlationId ?? envelope.correlationId,
+    query: String(envelope.data.query ?? (typeof envelope.data.filters === 'object' && envelope.data.filters ? (envelope.data.filters as Record<string, unknown>).query : '') ?? ''),
+    status: String(envelope.data.status ?? (typeof envelope.data.filters === 'object' && envelope.data.filters ? (envelope.data.filters as Record<string, unknown>).status : '') ?? ''),
     recordId: String(envelope.data.recordId ?? ''),
     customerId: String(envelope.data.customerId ?? (typeof envelope.data.customerDetail === 'object' && envelope.data.customerDetail ? (envelope.data.customerDetail as Record<string, unknown>).customerId : '') ?? ''),
     customerName: String(envelope.data.customerName ?? (typeof envelope.data.customerDetail === 'object' && envelope.data.customerDetail ? (envelope.data.customerDetail as Record<string, unknown>).customerName : '') ?? '')

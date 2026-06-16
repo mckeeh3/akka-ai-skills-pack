@@ -285,6 +285,8 @@ test('User Admin scoped admin surfaces cover SaaS Owner, Organization Admin, Cus
   assert.match(userAdminScopedAdminSurface, /action-customer-admin-invite/);
   assert.match(userAdminScopedAdminSurface, /customerId: String\(envelope\.data\.customerId/);
   assert.match(userAdminScopedAdminSurface, /customerName: String\(envelope\.data\.customerName/);
+  assert.match(userAdminScopedAdminSurface, /query: String\(envelope\.data\.query/);
+  assert.match(userAdminScopedAdminSurface, /status: String\(envelope\.data\.status/);
   assert.match(workstreamService, /action-customer-admin-invite/);
   assert.match(workstreamService, /ScopeType\.CUSTOMER, actor\.selectedContext\(\)\.tenantId\(\), customer\.customer\(\)\.customerId\(\)/);
   assert.match(workstreamService, /targetScopeProof/);

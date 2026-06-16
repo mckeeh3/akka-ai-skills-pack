@@ -239,9 +239,11 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
 
   @Get("/customers")
   public HttpResponse customers() {
+    var query = requestContext().queryParams().getString("query").orElse(null);
+    var status = requestContext().queryParams().getString("status").orElse(null);
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      var result = StarterSecurityComponents.tenantCustomerAdminService().listCustomers(actor, null, null, correlationId);
+      var result = StarterSecurityComponents.tenantCustomerAdminService().listCustomers(actor, query, status, correlationId);
       return HttpResponses.ok(new CustomerListPayload(result.customers().stream().map(AdminEndpoint::fromCustomerSummary).toList(), result.safeBoundaryNotice(), result.traceRefs(), result.correlationId(), CUSTOMER_REDACTIONS));
     });
   }

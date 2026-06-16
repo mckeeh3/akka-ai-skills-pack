@@ -451,7 +451,7 @@ public final class WorkstreamService {
     } else if ("action-open-organization-admin-invitation-create".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Organization Admin invitation/bootstrap surface loaded.", request.correlationId(), List.of("trace-organization-admin-invite-" + stableSuffix(request.correlationId())), organizationAdminInvitationCreateSurface(actor, request.correlationId()));
     } else if ("action-user-admin-show-customers".equals(request.actionId())) {
-      result = new CapabilityActionResult("accepted", "Customer Directory loaded for selected Organization/Tenant administration.", request.correlationId(), List.of("trace-customer-directory-" + stableSuffix(request.correlationId())), customerDirectorySurface(actor, request.correlationId()));
+      result = new CapabilityActionResult("accepted", "Customer Directory loaded for selected Organization/Tenant administration.", request.correlationId(), List.of("trace-customer-directory-" + stableSuffix(request.correlationId())), customerDirectorySurface(actor, request.input(), request.correlationId()));
     } else if ("action-customer-read".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Customer detail loaded through backend-authoritative Customer surface graph.", request.correlationId(), List.of("trace-customer-read-" + stableSuffix(request.correlationId())), customerDetailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-open-customer-create".equals(request.actionId())) {
@@ -1266,10 +1266,17 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope customerDirectorySurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    var result = StarterSecurityComponents.tenantCustomerAdminService().listCustomers(actor, "", "", correlationId);
+    return customerDirectorySurface(actor, null, correlationId);
+  }
+
+  private SurfaceEnvelope customerDirectorySurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var query = stringInput(input, "query", "");
+    var status = stringInput(input, "status", "");
+    var result = StarterSecurityComponents.tenantCustomerAdminService().listCustomers(actor, query, status, correlationId);
     var rows = result.customers().stream().map(this::customerRowMap).toList();
+    var normalizedStatus = status == null ? "" : status.trim().toLowerCase(Locale.ROOT);
     return envelope("surface-user-admin-customer-directory", "list-search", "Customer Directory", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.customer_directory.v1", "branchNavigation", customerBranchNavigation(correlationId), "query", "", "rows", rows, "customers", rows, "filters", mapOf("tenantId", actor.selectedContext().tenantId(), "backendAuthored", true), "pageInfo", mapOf("visibleCount", rows.size()), "boundaryNotice", result.safeBoundaryNotice(), "safeBoundaryNotice", result.safeBoundaryNotice(), "traceRefs", result.traceRefs(), "correlationId", result.correlationId(), "redaction", List.of("sibling-customers-redacted", "tenant-app-data-redacted", "provider-secrets-redacted"), "emptyMessage", "No Customers are visible in this selected Organization/Tenant scope."),
+        mapOf("surfaceContract", "user_admin.customer_directory.v1", "branchNavigation", customerBranchNavigation(correlationId), "query", query == null ? "" : query.trim(), "status", normalizedStatus, "rows", rows, "customers", rows, "filters", mapOf("tenantId", actor.selectedContext().tenantId(), "query", query == null ? "" : query.trim(), "status", normalizedStatus, "backendAuthored", true), "pageInfo", mapOf("visibleCount", rows.size()), "boundaryNotice", result.safeBoundaryNotice(), "safeBoundaryNotice", result.safeBoundaryNotice(), "traceRefs", result.traceRefs(), "correlationId", result.correlationId(), "redaction", List.of("sibling-customers-redacted", "tenant-app-data-redacted", "provider-secrets-redacted"), "emptyMessage", rows.isEmpty() ? "No visible Customers match the current backend-authorized filters in this selected Organization/Tenant scope." : "No Customers are visible in this selected Organization/Tenant scope."),
         List.of(showCustomersAction(), customerReadAction(), openCustomerCreateAction(), openAuditAction()));
   }
 

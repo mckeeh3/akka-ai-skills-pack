@@ -20,6 +20,7 @@ import ai.first.api.coreapp.admin.AdminEndpoint.CustomerActionApiResponse;
 import ai.first.api.coreapp.admin.AdminEndpoint.CustomerAdminListPayload;
 import ai.first.api.coreapp.admin.AdminEndpoint.CustomerDetailPayload;
 import ai.first.api.coreapp.admin.AdminEndpoint.CustomerLifecycleApiRequest;
+import ai.first.api.coreapp.admin.AdminEndpoint.CustomerListPayload;
 import ai.first.api.coreapp.admin.AdminEndpoint.InvitationActionApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.IdentityRelinkApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.OrganizationActionApiResponse;
@@ -375,6 +376,60 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
         .invoke();
     assertTrue(listAfterReactivate.status().isSuccess());
     assertTrue(listAfterReactivate.body().admins().stream().anyMatch(admin -> "existing-suspended-customer-admin@example.test".equals(admin.accountId())));
+  }
+
+  @Test
+  void customerListApiHonorsQueryAndStatusFiltersWithoutHiddenCountLeakage() throws Exception {
+    var repository = new AkkaIdentityRepository(componentClient);
+    repository.saveCustomer(new Customer("tenant-starter", "customer-acme-active", "Acme Active Customer", true));
+    repository.saveCustomer(new Customer("tenant-starter", "customer-acme-suspended", "Acme Suspended Customer", false));
+    repository.saveCustomer(new Customer("tenant-starter", "customer-beta-active", "Beta Active Customer", true));
+    repository.saveCustomer(new Customer("tenant-other", "customer-hidden-active", "Hidden Active Customer", true));
+
+    var queryFiltered = httpClient
+        .GET("/api/admin/customers?query=acme")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-query-filter")
+        .responseBodyAs(CustomerListPayload.class)
+        .invoke();
+    assertTrue(queryFiltered.status().isSuccess());
+    assertEquals("corr-customer-query-filter", queryFiltered.body().correlationId());
+    assertEquals(2, queryFiltered.body().customers().size());
+    assertTrue(queryFiltered.body().customers().stream().allMatch(customer -> customer.customerName().contains("Acme")));
+    assertTrue(queryFiltered.body().customers().stream().noneMatch(customer -> customer.customerId().contains("hidden")));
+    assertTrue(!queryFiltered.body().toString().contains("customer-hidden-active"));
+
+    var activeFiltered = httpClient
+        .GET("/api/admin/customers?status=active")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-status-active-filter")
+        .responseBodyAs(CustomerListPayload.class)
+        .invoke();
+    assertTrue(activeFiltered.status().isSuccess());
+    assertTrue(activeFiltered.body().customers().stream().allMatch(customer -> customer.status().equals("active")));
+    assertTrue(activeFiltered.body().customers().stream().anyMatch(customer -> customer.customerId().equals("customer-acme-active")));
+    assertTrue(activeFiltered.body().customers().stream().noneMatch(customer -> customer.customerId().equals("customer-acme-suspended")));
+
+    var suspendedFiltered = httpClient
+        .GET("/api/admin/customers?status=suspended")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-status-suspended-filter")
+        .responseBodyAs(CustomerListPayload.class)
+        .invoke();
+    assertTrue(suspendedFiltered.status().isSuccess());
+    assertTrue(suspendedFiltered.body().customers().stream().allMatch(customer -> customer.status().equals("suspended")));
+    assertEquals(List.of("customer-acme-suspended"), suspendedFiltered.body().customers().stream().map(customer -> customer.customerId()).toList());
+
+    var emptyFiltered = httpClient
+        .GET("/api/admin/customers?query=no-match&status=active")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-empty-filter")
+        .responseBodyAs(CustomerListPayload.class)
+        .invoke();
+    assertTrue(emptyFiltered.status().isSuccess());
+    assertTrue(emptyFiltered.body().customers().isEmpty());
+    assertTrue(!emptyFiltered.body().toString().contains("hiddenCount"));
+    assertTrue(!emptyFiltered.body().toString().contains("customer-hidden-active"));
   }
 
   @Test

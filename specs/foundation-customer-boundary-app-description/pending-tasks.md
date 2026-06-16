@@ -318,7 +318,7 @@
 
 ### TASK-FCBAD-02-004: Repair Customer list/search filter parity
 
-- status: pending
+- status: done
 - source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#fcb-rd-02-apiadmincustomers-ignores-querystatus-filters-even-though-the-contract-is-listsearch
 - task brief: specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/08-customer-list-search-parity.md
 - depends on:
@@ -350,6 +350,11 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; `surface-user-admin-customer-directory`; `manage-customers`; `tenant.customer.list`; Organization/Tenant Admin selected context; list/search parity repair
+  - changed runtime paths: `AdminEndpoint.customers()` now reads `query` and `status` request-context parameters and passes them to `TenantCustomerAdminService.listCustomers`; `WorkstreamService` Customer Directory action now preserves backend-authorized `query`/`status` filter input, echoes safe filter state in the surface payload, and uses a safe filtered-empty message without hidden counts
+  - changed frontend contract path: `UserAdminScopedAdminSurface` preserves backend-authored Customer Directory `query`/`status` values in branch/action submissions without deriving authority client-side
+  - tests: backend endpoint tests prove Customer query filtering, active/suspended status filtering, cross-tenant omission, and no hidden-count leakage; workstream tests prove filter preservation, filtered empty state, and active/suspended status filtering; frontend contract test covers preserved query/status payload fields
+  - checks: `mvn clean compile` passed after the initial TestKit descriptor warning; `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest,ai.first.application.coreapp.useradmin.AdminEndpointIntegrationTest test` passed; `npm --prefix frontend test -- --run frontend/src/workstream-user-admin-vertical.contract.test.mjs` passed; `git diff --check` passed
+  - commit message: `customer-boundary-desc: repair customer list search parity`
 
 ### TASK-FCBAD-02-005: Harden Customer Admin backend and frontend coverage
 

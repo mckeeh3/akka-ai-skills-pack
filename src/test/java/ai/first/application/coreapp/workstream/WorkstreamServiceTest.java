@@ -495,11 +495,26 @@ class WorkstreamServiceTest {
     assertTrue(create.resultSurface().toString().contains("Acme Customer"));
     var customerId = ((Map<?, ?>) create.resultSurface().data().get("customerDetail")).get("customerId").toString();
 
+    identityRepository.saveCustomer(new Customer("tenant-1", "customer-beta-visible", "Beta Visible Customer", true));
     var directory = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-user-admin-show-customers", "user-admin.show-customers", "manage-customers", "tenant.customer.list", null, null, "membership-admin", "surface-user-admin-tenant-dashboard", "corr-customer-list"));
     assertEquals("surface-user-admin-customer-directory", directory.resultSurface().surfaceId());
     assertTrue(directory.resultSurface().toString().contains(customerId));
     assertTrue(directory.resultSurface().toString().contains("sibling-customers-redacted"));
+
+    var queryFilteredDirectory = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-customers", "user-admin.show-customers", "manage-customers", "tenant.customer.list", Map.of("query", "Acme"), null, "membership-admin", directory.resultSurface().surfaceId(), "corr-customer-list-query"));
+    assertEquals("surface-user-admin-customer-directory", queryFilteredDirectory.resultSurface().surfaceId());
+    assertEquals("Acme", queryFilteredDirectory.resultSurface().data().get("query"));
+    assertTrue(queryFilteredDirectory.resultSurface().toString().contains(customerId));
+    assertFalse(queryFilteredDirectory.resultSurface().toString().contains("customer-beta-visible"));
+
+    var emptyFilteredDirectory = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-customers", "user-admin.show-customers", "manage-customers", "tenant.customer.list", Map.of("query", "no-match", "status", "active"), null, "membership-admin", directory.resultSurface().surfaceId(), "corr-customer-list-empty-filter"));
+    assertEquals("surface-user-admin-customer-directory", emptyFilteredDirectory.resultSurface().surfaceId());
+    assertTrue(((List<?>) emptyFilteredDirectory.resultSurface().data().get("customers")).isEmpty());
+    assertTrue(emptyFilteredDirectory.resultSurface().toString().contains("No visible Customers match"));
+    assertFalse(emptyFilteredDirectory.resultSurface().toString().contains("hiddenCount"));
 
     var detail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-customer-read", "user-admin.read-customer", "manage-customers", "tenant.customer.read", Map.of("customerId", customerId), null, "membership-admin", directory.resultSurface().surfaceId(), "corr-customer-read"));
@@ -550,6 +565,17 @@ class WorkstreamServiceTest {
         "action-customer-suspend", "user-admin.suspend-customer", "manage-customers", "tenant.customer.suspend", Map.of("customerId", customerId, "reason", "test-suspend"), "idem-customer-suspend", "membership-admin", detail.resultSurface().surfaceId(), "corr-customer-suspend"));
     assertEquals("accepted", suspend.status());
     assertTrue(suspend.resultSurface().toString().contains("suspended"));
+
+    var suspendedFilteredDirectory = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-customers", "user-admin.show-customers", "manage-customers", "tenant.customer.list", Map.of("status", "suspended"), null, "membership-admin", directory.resultSurface().surfaceId(), "corr-customer-list-suspended-filter"));
+    assertEquals("suspended", suspendedFilteredDirectory.resultSurface().data().get("status"));
+    assertTrue(suspendedFilteredDirectory.resultSurface().toString().contains(customerId));
+    assertFalse(suspendedFilteredDirectory.resultSurface().toString().contains("customer-beta-visible"));
+
+    var activeFilteredDirectory = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-customers", "user-admin.show-customers", "manage-customers", "tenant.customer.list", Map.of("status", "active"), null, "membership-admin", directory.resultSurface().surfaceId(), "corr-customer-list-active-filter"));
+    assertTrue(activeFilteredDirectory.resultSurface().toString().contains("customer-beta-visible"));
+    assertFalse(activeFilteredDirectory.resultSurface().toString().contains(customerId));
 
     var suspendedDetail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-customer-read", "user-admin.read-customer", "manage-customers", "tenant.customer.read", Map.of("customerId", customerId), null, "membership-admin", directory.resultSurface().surfaceId(), "corr-customer-suspended-read"));
