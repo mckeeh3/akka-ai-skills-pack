@@ -636,7 +636,7 @@
 
 ### TASK-FSCT-018: Verify or complete runtime testing for `surface-my-account-personal-attention-digest-progress`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-017]
 - surface id: `surface-my-account-personal-attention-digest-progress`
@@ -661,15 +661,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
   - surface type: `workflow-status`
   - surface contract: `my_account.personal_attention_digest.progress.v1`
   - purpose: Autonomous personal briefing/digest task progress.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream My Account functional agent surface `surface-my-account-personal-attention-digest-progress`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-personal-attention-digest-progress`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-16: added protected Akka-hosted My Account personal attention digest progress runtime smoke coverage in `MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyAccountPersonalAttentionDigestProgressRuntimePath`: JWT plus selected AuthContext loads the not-started progress surface, starts digest through `/api/workstream/actions`, observes fail-closed recovery with `noFakeSuccess`, reads the provider fail-closed task, cancels it to a progress surface, verifies repeated terminal cancel idempotency, denies member/cross-account read without enumeration, rejects missing bearer access, and checks browser-safe secret/provider/model/tool boundaries. runtime evidence: readiness level `runtime-ready` for the progress testing scope; role/AuthContext/tenant setup covered tenant admin and tenant employee in `tenant-starter`; denial/provider/fail-closed/trace coverage included cross-account read denial, missing bearer rejection, provider/runtime fail-closed recovery surface, `noFakeSuccess`, `noDirectMutation`, trace refs, and correlation ids; commands passed: `mvn -q -Dtest=MyAccountPersonalAttentionDigestServiceTest,MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyAccountPersonalAttentionDigestProgressRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-019: Verify or complete app-description specification for `surface-my-account-personal-attention-digest-result`
 

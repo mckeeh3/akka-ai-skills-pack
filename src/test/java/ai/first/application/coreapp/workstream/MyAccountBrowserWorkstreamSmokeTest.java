@@ -410,6 +410,101 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesMyAccountPersonalAttentionDigestProgressRuntimePath() throws Exception {
+    var notStarted = getSurface("surface-my-account-personal-attention-digest-progress", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-digest-progress-browser-not-started");
+    assertEquals("surface-my-account-personal-attention-digest-progress", notStarted.surfaceId());
+    assertEquals("workflow-status", notStarted.surfaceType());
+    assertEquals("my_account.personal_attention_digest.progress.v1", notStarted.data().get("surfaceContract"));
+    assertEquals("not_started", notStarted.data().get("status"));
+    assertTrue(notStarted.toString().contains("action-start-my-account-personal-attention-digest"));
+    assertTrue(notStarted.toString().contains("noDirectMutation"));
+    assertTrue(notStarted.toString().contains("trace-my-account-personal-attention-digest-not-started"));
+    assertPersonalAttentionDigestProgressBrowserSafe(notStarted);
+
+    var started = runAction(new CapabilityActionRequest(
+        "action-start-my-account-personal-attention-digest",
+        "action-start-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.start",
+        "my_account.personal_attention_digest.start",
+        Map.of("evidenceScope", "attention"),
+        "idem-my-digest-progress-browser-start",
+        ADMIN_CONTEXT_ID,
+        notStarted.surfaceId(),
+        "corr-my-digest-progress-browser-start"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("blocked_provider_or_runtime", started.status());
+    assertEquals("surface-my-account-personal-attention-digest-blocked", started.resultSurface().surfaceId());
+    assertEquals("my_account.personal_attention_digest.blocked.v1", started.resultSurface().data().get("surfaceContract"));
+    assertEquals(true, started.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, started.resultSurface().data().get("noDirectMutation"));
+    assertTrue(started.resultSurface().toString().contains("blocked_provider_or_runtime"));
+    assertTrue(started.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-personal-attention-digest")));
+    assertPersonalAttentionDigestProgressBrowserSafe(started.resultSurface());
+    var digestTaskId = String.valueOf(started.resultSurface().data().get("digestTaskId"));
+    assertFalse(digestTaskId.isBlank());
+
+    var readBlocked = runAction(new CapabilityActionRequest(
+        "action-read-my-account-personal-attention-digest",
+        "action-read-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.read",
+        "my_account.personal_attention_digest.read",
+        Map.of("digestTaskId", digestTaskId),
+        null,
+        ADMIN_CONTEXT_ID,
+        started.resultSurface().surfaceId(),
+        "corr-my-digest-progress-browser-read-blocked"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", readBlocked.status());
+    assertEquals("surface-my-account-personal-attention-digest-blocked", readBlocked.resultSurface().surfaceId());
+    assertTrue(readBlocked.resultSurface().toString().contains("noFakeSuccess"));
+    assertPersonalAttentionDigestProgressBrowserSafe(readBlocked.resultSurface());
+
+    var cancelled = runAction(new CapabilityActionRequest(
+        "action-cancel-my-account-personal-attention-digest",
+        "action-cancel-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.cancel",
+        "my_account.personal_attention_digest.cancel",
+        Map.of("digestTaskId", digestTaskId, "reason", "browser smoke cancellation"),
+        null,
+        ADMIN_CONTEXT_ID,
+        started.resultSurface().surfaceId(),
+        "corr-my-digest-progress-browser-cancel"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", cancelled.status());
+    assertEquals("surface-my-account-personal-attention-digest-progress", cancelled.resultSurface().surfaceId());
+    assertEquals("my_account.personal_attention_digest.progress.v1", cancelled.resultSurface().data().get("surfaceContract"));
+    assertEquals("cancelled", cancelled.resultSurface().data().get("status"));
+    assertTrue(cancelled.message().contains("source attention unchanged"));
+    assertTrue(cancelled.resultSurface().toString().contains("browser smoke cancellation"));
+    assertPersonalAttentionDigestProgressBrowserSafe(cancelled.resultSurface());
+
+    var cancelAgain = runAction(new CapabilityActionRequest(
+        "action-cancel-my-account-personal-attention-digest",
+        "action-cancel-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.cancel",
+        "my_account.personal_attention_digest.cancel",
+        Map.of("digestTaskId", digestTaskId, "reason", "repeat cancellation"),
+        null,
+        ADMIN_CONTEXT_ID,
+        cancelled.resultSurface().surfaceId(),
+        "corr-my-digest-progress-browser-cancel-again"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", cancelAgain.status());
+    assertEquals("cancelled", cancelAgain.resultSurface().data().get("status"));
+    assertFalse(cancelAgain.resultSurface().toString().contains("repeat cancellation"), "Terminal repeated cancel must be idempotent and preserve the original traceable state.");
+    assertPersonalAttentionDigestProgressBrowserSafe(cancelAgain.resultSurface());
+
+    var memberDeniedRead = new CapabilityActionRequest(
+        "action-read-my-account-personal-attention-digest",
+        "action-read-my-account-personal-attention-digest",
+        "my_account.personal_attention_digest.read",
+        "my_account.personal_attention_digest.read",
+        Map.of("digestTaskId", digestTaskId),
+        null,
+        MEMBER_CONTEXT_ID,
+        "surface-my-account-personal-attention-digest-progress",
+        "corr-my-digest-progress-browser-member-denied");
+    assertThrows(RuntimeException.class, () -> runAction(memberDeniedRead, MEMBER_CONTEXT_ID, "member@example.test", "Member User"));
+    assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-account-personal-attention-digest-progress").responseBodyAs(String.class).invoke());
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesMySettingsRuntimePath() throws Exception {
     var settings = getSurface("surface-my-settings", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-settings-browser-read");
     assertEquals("surface-my-settings", settings.surfaceId());
@@ -675,6 +770,20 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(text.contains("hiddenCategories=["));
     assertFalse(text.contains("slack"));
     assertFalse(text.contains("webhook destination"));
+  }
+
+  private static void assertPersonalAttentionDigestProgressBrowserSafe(SurfaceEnvelope payload) {
+    var text = String.valueOf(payload);
+    assertFalse(text.contains("RESEND_API_KEY"));
+    assertFalse(text.contains("Bearer "));
+    assertFalse(text.contains("workos-admin"));
+    assertFalse(text.contains("providerSecret"));
+    assertFalse(text.contains("test-fake-provider"));
+    assertFalse(text.contains("test-fake-model"));
+    assertFalse(text.contains("fixture success payload"));
+    assertFalse(text.contains("fake digest result"));
+    assertFalse(text.contains("hidden workstream name"));
+    assertFalse(text.contains("raw tool payload"));
   }
 
   private static void assertSettingsSurfaceBrowserSafe(SurfaceEnvelope payload) {
