@@ -495,7 +495,7 @@
 
 ### TASK-FSCT-014: Verify or complete runtime implementation for `surface-my-account-notification-center`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-013]
 - surface id: `surface-my-account-notification-center`
@@ -519,13 +519,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `notification-center`
   - surface contract: `my_account.notification_center.v1`
   - purpose: Personal in-app triage for authorized notifications.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream My Account functional agent surface `surface-my-account-notification-center`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-notification-center`; surface graph node/action edge for opening or acting on `surface-my-account-notification-center`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-16: verified the real runtime implementation for `surface-my-account-notification-center`: protected WorkstreamEndpoint surface/action APIs, backend-owned `my_account.notification_center.v1` in-app notification-center payload, `NotificationService` projection/lifecycle/preference state, `NotificationCenterSurface` triage rendering, external-channel/provider/outbox omission boundaries, source-state-unchanged lifecycle actions, trace/correlation evidence, and no fixture-only/frontend-only normal runtime path. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/fail-closed coverage included missing-bearer rejection in the protected smoke path plus email/provider/outbox/external-channel omission from the browser payload; trace evidence included notification center/action trace refs and correlation ids; commands passed: `mvn -q -Dtest=WorkstreamServiceTest#myAccountNotificationCenterSurfaceRendersBackendProjectionAndLifecycleActions,MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMySettingsRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-015: Verify or complete runtime testing for `surface-my-account-notification-center`
 
