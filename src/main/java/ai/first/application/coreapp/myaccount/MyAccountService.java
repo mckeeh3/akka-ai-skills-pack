@@ -57,9 +57,11 @@ public final class MyAccountService {
       AuthContextResolver.ResolvedMe actor,
       String displayName,
       UserSettings.ThemeId themeId,
+      String locale,
+      String timeZone,
       String idempotencyKey,
       String correlationId) {
-    return authContextResolver.updateOwnProfileSettings(actor, displayName, themeId, idempotencyKey, correlationId);
+    return authContextResolver.updateOwnProfileSettings(actor, displayName, themeId, locale, timeZone, idempotencyKey, correlationId);
   }
 
   public OpenWorkstreamDecision openAuthorizedWorkstream(

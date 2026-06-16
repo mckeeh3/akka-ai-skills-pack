@@ -244,6 +244,87 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-profile").responseBodyAs(String.class).invoke());
   }
 
+  @Test
+  void protectedWorkstreamApiExercisesMySettingsRuntimePath() throws Exception {
+    var settings = getSurface("surface-my-settings", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-settings-browser-read");
+    assertEquals("surface-my-settings", settings.surfaceId());
+    assertEquals("detail-edit", settings.surfaceType());
+    assertEquals("my_account.preferences.self_service.v1", settings.data().get("surfaceContract"));
+    assertTrue(settings.toString().contains("settingsSummary"));
+    assertTrue(settings.toString().contains("preferredThemeId"));
+    assertTrue(settings.toString().contains("availableThemes"));
+    assertTrue(settings.toString().contains("locale"));
+    assertTrue(settings.toString().contains("timeZone"));
+    assertTrue(settings.toString().contains("notification.list_my_account_center"));
+    assertTrue(settings.toString().contains("traceRefs"));
+    assertTrue(settings.toString().contains("corr-my-settings-browser-read"));
+    assertFalse(settings.toString().contains("system mode"));
+    assertSettingsSurfaceBrowserSafe(settings);
+
+    var update = runAction(new CapabilityActionRequest(
+        "action-update-my-settings",
+        "action-update-my-settings",
+        "my_account.update_profile_settings",
+        "my_account.update_profile_settings",
+        Map.of("preferredThemeId", "midnight-dark", "locale", "en-GB", "timeZone", "Europe/London"),
+        "idem-my-settings-browser-update",
+        ADMIN_CONTEXT_ID,
+        settings.surfaceId(),
+        "corr-my-settings-browser-update"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", update.status());
+    assertEquals("surface-my-settings", update.resultSurface().surfaceId());
+    assertTrue(update.resultSurface().toString().contains("midnight-dark"));
+    assertTrue(update.resultSurface().toString().contains("en-GB"));
+    assertTrue(update.resultSurface().toString().contains("Europe/London"));
+    assertTrue(update.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-profile-settings")));
+    assertSettingsSurfaceBrowserSafe(update.resultSurface());
+
+    var postUpdateBootstrap = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-my-settings-browser-bootstrap-after-update")
+        .responseBodyAs(WorkstreamBootstrapResponse.class)
+        .invoke();
+    assertTrue(postUpdateBootstrap.status().isSuccess());
+    assertEquals("midnight-dark", postUpdateBootstrap.body().me().settings().preferredThemeId());
+    assertEquals("en-GB", postUpdateBootstrap.body().me().settings().locale());
+    assertEquals("Europe/London", postUpdateBootstrap.body().me().settings().timeZone());
+    assertBrowserSafe(postUpdateBootstrap.body());
+
+    var invalidTimezone = new CapabilityActionRequest(
+        "action-update-my-settings",
+        "action-update-my-settings",
+        "my_account.update_profile_settings",
+        "my_account.update_profile_settings",
+        Map.of("timeZone", "Hidden/Provider"),
+        "idem-my-settings-browser-invalid",
+        ADMIN_CONTEXT_ID,
+        settings.surfaceId(),
+        "corr-my-settings-browser-invalid");
+    assertThrows(RuntimeException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-my-settings-browser-invalid")
+        .withRequestBody(invalidTimezone)
+        .responseBodyAs(String.class)
+        .invoke());
+
+    var afterDenied = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-my-settings-browser-after-denied")
+        .responseBodyAs(WorkstreamBootstrapResponse.class)
+        .invoke();
+    assertTrue(afterDenied.status().isSuccess());
+    assertEquals("Europe/London", afterDenied.body().me().settings().timeZone(), "Invalid settings values must be denied before mutation.");
+    assertBrowserSafe(afterDenied.body());
+
+    assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-settings").responseBodyAs(String.class).invoke());
+  }
+
   private SurfaceEnvelope getSurface(String surfaceId, String selectedContextId, String email, String name, String correlationId) throws Exception {
     var response = httpClient
         .GET("/api/workstream/surfaces/" + surfaceId)
@@ -295,6 +376,19 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(text.contains("workos-admin"));
     assertFalse(text.contains("test-fake-provider"));
     assertFalse(text.contains("test-fake-model"));
+  }
+
+  private static void assertSettingsSurfaceBrowserSafe(SurfaceEnvelope payload) {
+    var text = String.valueOf(payload);
+    assertTrue(text.contains("omittedFieldKeys"));
+    assertTrue(text.contains("providerSecret"));
+    assertTrue(text.contains("hiddenCategories"));
+    assertFalse(text.contains("RESEND_API_KEY"));
+    assertFalse(text.contains("Bearer "));
+    assertFalse(text.contains("workos-admin"));
+    assertFalse(text.contains("test-fake-provider"));
+    assertFalse(text.contains("test-fake-model"));
+    assertFalse(text.contains("arbitraryCss:"));
   }
 
   private static void assertBrowserSafe(Object payload) {

@@ -77,6 +77,8 @@ public final class AuthContextResolver {
       ResolvedMe actor,
       String displayName,
       UserSettings.ThemeId themeId,
+      String locale,
+      String timeZone,
       String idempotencyKey,
       String correlationId) {
     requireCapability(actor.selectedContext(), "my_account.update_profile_settings");
@@ -84,17 +86,19 @@ public final class AuthContextResolver {
     var settings = actor.settings();
     var nextDisplayName = displayName == null || displayName.isBlank() ? profile.displayName() : displayName.trim();
     var nextThemeId = themeId == null ? settings.themeId() : themeId;
-    var changed = !nextDisplayName.equals(profile.displayName()) || nextThemeId != settings.themeId();
+    var nextLocale = locale == null || locale.isBlank() ? settings.locale() : UserSettings.normalizeLocale(locale);
+    var nextTimeZone = timeZone == null || timeZone.isBlank() ? settings.timeZone() : UserSettings.normalizeTimeZone(timeZone);
+    var changed = !nextDisplayName.equals(profile.displayName()) || nextThemeId != settings.themeId() || !nextLocale.equals(settings.locale()) || !nextTimeZone.equals(settings.timeZone());
     var savedProfile = changed
         ? repository.saveProfile(new UserProfile(profile.accountId(), profile.displayEmail(), nextDisplayName, profile.givenName(), profile.familyName(), profile.avatarUrl()))
         : profile;
-    var savedSettings = changed ? repository.saveSettings(new UserSettings(settings.accountId(), nextThemeId)) : settings;
+    var savedSettings = changed ? repository.saveSettings(new UserSettings(settings.accountId(), nextThemeId, nextLocale, nextTimeZone)) : settings;
     appendAudit(
         "MY_ACCOUNT_PROFILE_SETTINGS_UPDATE",
         AdminAuditEvent.Result.ALLOWED,
         actor.account(),
         selectedMembership(actor),
-        changed ? "changed-fields:displayName/themeId" : "no-op",
+        changed ? "changed-fields:displayName/themeId/locale/timeZone" : "no-op",
         correlationId);
     return new ProfileSettingsUpdateResult(savedProfile, savedSettings, changed, correlationId, idempotencyKey);
   }

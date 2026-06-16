@@ -35,7 +35,7 @@ public record MeResponse(
     var capabilities = browserCapabilityAliases(selectedContext.capabilities(), contexts.size());
     return new MeResponse(
         AccountSummary.from(account),
-        ProfileSummary.from(profile),
+        ProfileSummary.from(profile, settings),
         SettingsSummary.from(settings),
         memberships.stream().map(MembershipSummary::from).toList(),
         AuthContextSummary.from(selectedContext),
@@ -74,14 +74,14 @@ public record MeResponse(
   }
 
   public record ProfileSummary(String displayName, String locale, String timeZone) {
-    static ProfileSummary from(UserProfile profile) {
-      return new ProfileSummary(profile.displayName(), null, null);
+    static ProfileSummary from(UserProfile profile, UserSettings settings) {
+      return new ProfileSummary(profile.displayName(), settings.locale(), settings.timeZone());
     }
   }
 
-  public record SettingsSummary(String preferredThemeId) {
+  public record SettingsSummary(String preferredThemeId, String locale, String timeZone) {
     static SettingsSummary from(UserSettings settings) {
-      return new SettingsSummary(settings.themeId().id());
+      return new SettingsSummary(settings.themeId().id(), settings.locale(), settings.timeZone());
     }
   }
 

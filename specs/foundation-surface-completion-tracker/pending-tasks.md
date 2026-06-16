@@ -283,7 +283,7 @@
 
 ### TASK-FSCT-008: Verify or complete runtime implementation for `surface-my-settings`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-007]
 - surface id: `surface-my-settings`
@@ -307,13 +307,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `detail-edit`
   - surface contract: `my_account.preferences.self_service.v1`
   - purpose: Personal preferences, named theme selection, locale/timezone, and preference save state.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream My Account functional agent surface `surface-my-settings`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-settings`; surface graph node/action edge for opening or acting on `surface-my-settings`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-16: completed and verified the real runtime implementation for `surface-my-settings`: backend-owned `my_account.preferences.self_service.v1` settings surface, protected WorkstreamEndpoint surface/action APIs, governed preference persistence for named theme/locale/timezone through `UserSettings`/`AuthContextResolver`/`MyAccountService`, `/api/me` settings exposure through `MeResponse`, unsupported/invalid preference denial before mutation, notification-center/open-trace action edges, redaction/trace/correlation evidence, and frontend auth typing for persisted settings. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/fail-closed coverage included unsupported role/provider/tenant fields and invalid timezone rejected before mutation plus browser-safe omitted provider/secret/hidden-category/model/CSS fields; trace evidence included settings read/update trace refs and correlation ids; commands passed: `mvn -q -Dtest=WorkstreamServiceTest#myAccountSurfacesAreBackendRetrievedWithAuthorityTraceAndContextData,myAccountSettingsUpdatePersistsThemeLocaleAndTimezone,myAccountSettingsRejectInvalidTimezoneBeforeMutation,myAccountProfileSettingsNoOpIsTracedAndReturnsCurrentSurface,myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation test`, `mvn -q -Dtest=MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMySettingsRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`
 
 ### TASK-FSCT-009: Verify or complete runtime testing for `surface-my-settings`
 

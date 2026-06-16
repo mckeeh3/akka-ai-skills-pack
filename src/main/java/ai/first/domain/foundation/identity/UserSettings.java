@@ -1,6 +1,35 @@
 package ai.first.domain.foundation.identity;
 
-public record UserSettings(String accountId, ThemeId themeId) {
+public record UserSettings(String accountId, ThemeId themeId, String locale, String timeZone) {
+  public static final String DEFAULT_LOCALE = "en-US";
+  public static final String DEFAULT_TIME_ZONE = "America/New_York";
+
+  public UserSettings(String accountId, ThemeId themeId) {
+    this(accountId, themeId, DEFAULT_LOCALE, DEFAULT_TIME_ZONE);
+  }
+
+  public UserSettings {
+    locale = normalizeLocale(locale);
+    timeZone = normalizeTimeZone(timeZone);
+  }
+
+  public static String normalizeLocale(String locale) {
+    if (locale == null || locale.isBlank()) return DEFAULT_LOCALE;
+    var normalized = locale.trim();
+    return switch (normalized) {
+      case "en-US", "en-GB", "fr-FR", "es-ES" -> normalized;
+      default -> throw new IllegalArgumentException("unknown locale: " + locale);
+    };
+  }
+
+  public static String normalizeTimeZone(String timeZone) {
+    if (timeZone == null || timeZone.isBlank()) return DEFAULT_TIME_ZONE;
+    var normalized = timeZone.trim();
+    return switch (normalized) {
+      case "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles", "Europe/London", "Europe/Paris", "UTC" -> normalized;
+      default -> throw new IllegalArgumentException("unknown time zone: " + timeZone);
+    };
+  }
   public enum ThemeId {
     AURORA_LIGHT("aurora-light"),
     COBALT_LIGHT("cobalt-light"),

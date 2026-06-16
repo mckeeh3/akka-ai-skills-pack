@@ -16,6 +16,8 @@ export type UserProfile = {
 
 export type UserSettings = {
   preferredThemeId?: ThemePreference;
+  locale?: string;
+  timeZone?: string;
 };
 
 export type MembershipSummary = {

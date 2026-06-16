@@ -1012,8 +1012,33 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope mySettingsSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    var traceRefs = myAccountService.traceRefs(actor, correlationId);
     return envelope("surface-my-settings", "detail-edit", "User settings", actor, correlationId,
-        mapOf("surfaceContract", "my_account.preferences.self_service.v1", "settingsSummary", mapOf("preferredThemeId", actor.settings().themeId().id(), "themeModel", "named-theme-selection"), "preferredThemeId", actor.settings().themeId().id(), "availableThemes", namedThemeOptions(), "notificationPreferenceSummary", "In-app notification preferences are managed in the notification center.", "digestPreferenceSummary", "Personal digest/export requests are governed task surfaces.", "recordId", actor.account().accountId() + "-settings", "recordLabel", actor.profile().displayName() + " settings", "recordKind", "settings", "summary", "Current signed-in user preferences for the workstream shell and notifications.", "fields", List.of(mapOf("fieldId", "preferredThemeId", "label", "Theme", "value", actor.settings().themeId().id(), "editable", true, "inputType", "select", "options", namedThemeOptions()), mapOf("fieldId", "notificationDigest", "label", "Notification digest", "value", "daily", "editable", false, "inputType", "select", "disabledReason", "Notification digest is deferred beyond My Account."), mapOf("fieldId", "composerDensity", "label", "Composer density", "value", "comfortable", "editable", false, "inputType", "select", "disabledReason", "Composer density is deferred beyond My Account.")), "version", 1, "permissionState", mapOf("canEdit", true, "authoritativeCapabilityId", MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY), "audit", mapOf("lastEventType", "UserSettingsDisplayed", "lastActor", actor.profile().displayName(), "traceIds", List.of("trace-my-settings"))), List.of(updateSettingsAction(), openAuditAction()));
+        mapOf(
+            "surfaceContract", "my_account.preferences.self_service.v1",
+            "settingsSummary", mapOf("preferredThemeId", actor.settings().themeId().id(), "locale", actor.settings().locale(), "timeZone", actor.settings().timeZone(), "themeModel", "named-theme-selection", "lastSavedAt", "current-backend-state"),
+            "preferredThemeId", actor.settings().themeId().id(),
+            "availableThemes", namedThemeOptions(),
+            "locale", actor.settings().locale(),
+            "localeOptions", List.of("en-US", "en-GB", "fr-FR", "es-ES"),
+            "timeZone", actor.settings().timeZone(),
+            "timeZoneOptions", List.of("America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles", "Europe/London", "Europe/Paris", "UTC"),
+            "notificationPreferenceSummary", mapOf("channel", "in_app", "visibleCategoriesOnly", true, "summary", "Open the notification center to tune visible in-app categories; external delivery/provider controls are not exposed here."),
+            "digestPreferenceSummary", mapOf("summary", "Personal digest/export requests are governed task surfaces and do not mutate source attention."),
+            "recordId", actor.account().accountId() + "-settings",
+            "recordLabel", actor.profile().displayName() + " settings",
+            "recordKind", "settings",
+            "summary", "Current signed-in user preferences for named theme, locale, timezone, and in-app notification entry points. Tenant branding, provider delivery, model configuration, and authorization changes are intentionally not editable here.",
+            "fields", List.of(
+                mapOf("fieldId", "preferredThemeId", "label", "Named theme", "value", actor.settings().themeId().id(), "editable", true, "inputType", "select", "required", true, "helperText", "Preview is browser-local until Save/Confirm persists this named theme.", "constraints", mapOf("allowedThemeIds", namedThemeOptions().stream().map(option -> option.get("themeId")).toList()), "lastSavedValue", actor.settings().themeId().id(), "options", namedThemeOptions()),
+                mapOf("fieldId", "locale", "label", "Locale", "value", actor.settings().locale(), "editable", true, "inputType", "select", "required", true, "helperText", "Personal locale preference for browser-safe workstream copy and formatting.", "lastSavedValue", actor.settings().locale(), "options", List.of(mapOf("value", "en-US", "label", "English (US)"), mapOf("value", "en-GB", "label", "English (UK)"), mapOf("value", "fr-FR", "label", "French (France)"), mapOf("value", "es-ES", "label", "Spanish (Spain)"))),
+                mapOf("fieldId", "timeZone", "label", "Time zone", "value", actor.settings().timeZone(), "editable", true, "inputType", "select", "required", true, "helperText", "Personal timezone used for visible timestamps and digest scheduling hints.", "lastSavedValue", actor.settings().timeZone(), "options", List.of(mapOf("value", "America/New_York", "label", "America/New_York"), mapOf("value", "America/Chicago", "label", "America/Chicago"), mapOf("value", "America/Denver", "label", "America/Denver"), mapOf("value", "America/Los_Angeles", "label", "America/Los_Angeles"), mapOf("value", "Europe/London", "label", "Europe/London"), mapOf("value", "Europe/Paris", "label", "Europe/Paris"), mapOf("value", "UTC", "label", "UTC"))),
+                mapOf("fieldId", "notificationCategories", "label", "Notification categories", "value", "visible in-app categories only", "editable", false, "inputType", "text", "disabledReason", "Open the notification center to tune visible in-app notification categories; external delivery/provider controls stay out of My Account settings.")),
+            "version", 1,
+            "permissionState", mapOf("canEdit", true, "reason", "Only changed editable personal preference fields are submitted; unsupported authorization/provider/tenant fields are denied before mutation.", "authoritativeCapabilityId", MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY, "saveActionId", "action-update-my-settings"),
+            "traceRefs", traceRefs,
+            "redaction", mapOf("settings", "self-service-preferences", "omittedFieldKeys", List.of("rawJwt", "sessionToken", "providerPayload", "providerSecret", "hiddenCategories", "tenantBranding", "modelProviderConfig", "arbitraryCss")),
+            "audit", mapOf("lastEventType", "UserSettingsDisplayed", "lastActor", actor.profile().displayName(), "traceIds", traceRefs.stream().map(MyAccountService.TraceRef::traceId).toList())), List.of(updateSettingsAction(), showNotificationCenterAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope myContextSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -2884,7 +2909,7 @@ public final class WorkstreamService {
     if (!(request.input() instanceof Map<?, ?> input)) throw new AuthorizationException(400, "MY_ACCOUNT_UPDATE_INPUT_REQUIRED");
     var unsupported = input.keySet().stream()
         .map(String::valueOf)
-        .filter(key -> !List.of("displayName", "preferredThemeId").contains(key))
+        .filter(key -> !List.of("displayName", "preferredThemeId", "locale", "timeZone").contains(key))
         .sorted()
         .toList();
     if (!unsupported.isEmpty()) throw new AuthorizationException(403, "MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD:" + String.join(",", unsupported));
@@ -2897,7 +2922,13 @@ public final class WorkstreamService {
         throw new AuthorizationException(400, "MY_ACCOUNT_INVALID_THEME_ID");
       }
     }
-    return myAccountService.updateProfileSettings(actor, displayName, themeId, request.idempotencyKey(), request.correlationId());
+    var locale = input.get("locale") instanceof String value ? value : null;
+    var timeZone = input.get("timeZone") instanceof String value ? value : null;
+    try {
+      return myAccountService.updateProfileSettings(actor, displayName, themeId, locale, timeZone, request.idempotencyKey(), request.correlationId());
+    } catch (IllegalArgumentException invalidPreference) {
+      throw new AuthorizationException(400, "MY_ACCOUNT_INVALID_PREFERENCE:" + invalidPreference.getMessage());
+    }
   }
 
   private SurfaceAction showSaasOwnerAdminsAction() { return new SurfaceAction("action-user-admin-show-saas-owner-admins", "Show SaaS Owner Admins", "surface-request", "user-admin.show-saas-owner-admins", "manage-saas-owner-admins", SAAS_OWNER_ADMIN_LIST_CAPABILITY, "schema.saas-owner-admin.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-saas-owner-admins", "inline"), new Audit("SaasOwnerAdminsDisplayed", true)); }

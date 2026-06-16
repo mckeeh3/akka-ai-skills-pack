@@ -1324,6 +1324,9 @@ class WorkstreamServiceTest {
     assertTrue(profile.toString().contains("my_account.update_profile_settings"));
     assertTrue(profile.toString().contains("core.profile.update"));
     assertTrue(settings.toString().contains("preferredThemeId"));
+    assertTrue(settings.toString().contains("locale"));
+    assertTrue(settings.toString().contains("timeZone"));
+    assertTrue(settings.toString().contains("notification.list_my_account_center"));
     assertTrue(context.toString().contains("/api/me?selectedContextId=membership-admin"));
     assertTrue(context.toString().contains("my_account.view_context"));
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-show-my-account-dashboard")));
@@ -1405,11 +1408,37 @@ class WorkstreamServiceTest {
   @Test
   void myAccountProfileSettingsNoOpIsTracedAndReturnsCurrentSurface() {
     var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("displayName", "Tenant Admin", "preferredThemeId", "aurora-light"), "idem-my-account-noop", "membership-admin", "surface-my-settings", "corr-my-account-noop"));
+        "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("displayName", "Tenant Admin", "preferredThemeId", "aurora-light", "locale", "en-US", "timeZone", "America/New_York"), "idem-my-account-noop", "membership-admin", "surface-my-settings", "corr-my-account-noop"));
 
     assertEquals("no-op", result.status());
     assertEquals("surface-my-settings", result.resultSurface().surfaceId());
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("MY_ACCOUNT_PROFILE_SETTINGS_UPDATE") && event.reasonCode().equals("no-op") && event.correlationId().equals("corr-my-account-noop")));
+  }
+
+  @Test
+  void myAccountSettingsUpdatePersistsThemeLocaleAndTimezone() {
+    var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("preferredThemeId", "cobalt-light", "locale", "en-GB", "timeZone", "Europe/London"), "idem-my-account-settings", "membership-admin", "surface-my-settings", "corr-my-account-settings-save"));
+
+    assertEquals("accepted", result.status());
+    assertEquals("surface-my-settings", result.resultSurface().surfaceId());
+    assertTrue(result.resultSurface().toString().contains("cobalt-light"));
+    assertTrue(result.resultSurface().toString().contains("en-GB"));
+    assertTrue(result.resultSurface().toString().contains("Europe/London"));
+    var me = service.bootstrap(identity(), "membership-admin", "corr-my-account-settings-read").me();
+    assertEquals("cobalt-light", me.settings().preferredThemeId());
+    assertEquals("en-GB", me.settings().locale());
+    assertEquals("Europe/London", me.settings().timeZone());
+  }
+
+  @Test
+  void myAccountSettingsRejectInvalidTimezoneBeforeMutation() {
+    var denied = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("timeZone", "Hidden/Provider"), "idem-my-account-settings-invalid", "membership-admin", "surface-my-settings", "corr-my-account-settings-invalid")));
+
+    assertEquals(400, denied.httpStatus());
+    assertTrue(denied.reasonCode().contains("MY_ACCOUNT_INVALID_PREFERENCE"));
+    assertEquals("America/New_York", service.bootstrap(identity(), "membership-admin", "corr-my-account-settings-invalid-read").me().settings().timeZone());
   }
 
   @Test
