@@ -41,5 +41,11 @@ Reusable governed-tool ids used by core starter capability and workstream bindin
 - `simulate-policy-change`
 - `approve-activate-or-rollback-policy`
 - `record-policy-outcome-note`
+- `start-policy-impact-analysis`
+- `read-policy-impact-analysis`
+- `cancel-policy-impact-analysis`
+- `accept-policy-impact-result`
+- `reject-policy-impact-result`
+- `request-policy-impact-changes`
 
 Exposure labels are `browser-tool`, `agent-tool`, or `internal-tool`; prompt content cannot add exposure or authority. Side-effecting tools require backend authorization, idempotency/correlation handling, audit/work traces, and approval/confirmation when policy marks the action risky.
