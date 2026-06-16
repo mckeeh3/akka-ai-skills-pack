@@ -312,7 +312,7 @@ public final class WorkstreamService {
     this.workstreamLogRepository = Objects.requireNonNull(workstreamLogRepository);
     this.workstreamEventRepository = workstreamEventRepository == null ? new EmptyWorkstreamEventRepository() : workstreamEventRepository;
     this.auditTraceService = new AuditTraceService(authContextResolver, Objects.requireNonNull(auditTraceRepository));
-    this.governancePolicyService = new GovernancePolicyService(Objects.requireNonNull(governancePolicyRepository), authContextResolver, Clock.systemUTC());
+    this.governancePolicyService = new GovernancePolicyService(Objects.requireNonNull(governancePolicyRepository), authContextResolver, Clock.systemUTC(), attentionProducerService);
   }
 
   public WorkstreamBootstrapResponse bootstrap(WorkosIdentity identity, String selectedContextId, String correlationId) {

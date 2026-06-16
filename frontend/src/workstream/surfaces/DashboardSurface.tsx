@@ -18,6 +18,9 @@ export function DashboardSurface({ envelope, onAction, onSignOut }: DashboardSur
   if (envelope.surfaceId === 'surface-agent-admin-dashboard' || envelope.data.surfaceContract?.startsWith('agent_admin.dashboard')) {
     return <AgentAdminCommandCenter envelope={envelope} onAction={onAction} />;
   }
+  if (envelope.surfaceId === 'surface-governance-policy-dashboard' || envelope.data.surfaceContract?.startsWith('governance.policy.dashboard')) {
+    return <GovernancePolicyCommandCenter envelope={envelope} onAction={onAction} />;
+  }
 
   const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
   const myAccountSurfaceActions = actionsForIds(envelope.data.utilityActionIds, actionById)
@@ -105,6 +108,71 @@ function agentAdminActionableCards(cards: DashboardSurfaceData['cards'] | undefi
     const action = card.actionId ? actionById.get(card.actionId) : undefined;
     return action ? { card, action } : undefined;
   }).filter((entry): entry is { card: DashboardSurfaceData['cards'][number]; action: SurfaceAction } => Boolean(entry));
+}
+
+function GovernancePolicyCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
+  const data = envelope.data;
+  const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
+  const queues = data.attentionQueues ?? [];
+  const authorizedActions = data.authorizedActions ?? [];
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <p className="sr-only">Surface contract: {data.surfaceContract ?? 'governance.policy.dashboard.v1'}. Policy proposals, simulations, approval gates, activation, rollback, outcomes, and traces are backend-owned and scoped by selected AuthContext.</p>
+      <section className="my-account-command-hero governance-policy-command-hero" aria-label="Governance Policy authority and policy lifecycle summary">
+        <div>
+          <p className="eyebrow">Governance/Policy · selected AuthContext</p>
+          <h3>Review policy proposals, simulations, decisions, activation, rollback, and outcomes safely.</h3>
+          <p>{renderSurfaceValue(data.redaction) ?? 'Browser-safe policy summaries only. Raw prompts, provider secrets, hidden authority, raw tool payloads, and cross-tenant evidence are omitted.'}</p>
+        </div>
+        <dl className="authority-summary-grid" aria-label="Governance Policy readiness summary">
+          <div><dt>Readiness</dt><dd>{formatStatus(data.readiness ?? 'ready')}</dd></div>
+          <div><dt>Lifecycle</dt><dd>{Array.isArray((data as Record<string, unknown>).proposalLifecycle) ? ((data as Record<string, unknown>).proposalLifecycle as unknown[]).join(', ') : 'draft, review, decision, activation, rollback'}</dd></div>
+          <div><dt>Capabilities</dt><dd>{data.capabilityIds?.length ?? envelope.authContext.visibleCapabilityIds.length}</dd></div>
+          <div><dt>Authority</dt><dd>Backend authorization and approval policy</dd></div>
+        </dl>
+      </section>
+
+      {queues.length > 0 && (
+        <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-queues-heading`}>
+          <div className="surface-section-heading">
+            <div><p className="eyebrow">Things that need my attention</p><h4 id={`${envelope.surfaceId}-queues-heading`}>Policy governance queues</h4></div>
+            <p>Each queue opens a backend-authorized policy surface. Frontend state never approves, activates, rolls back, or fabricates impact-analysis success.</p>
+          </div>
+          <div className="attention-counter-strip user-admin-attention-strip" aria-label="Governance Policy attention counters">
+            {queues.map((queue) => {
+              const action = queue.actionId ? actionById.get(queue.actionId) : undefined;
+              const body = <><span>{queue.label}</span><strong>{queue.count ?? 0}</strong><em>{formatStatus(queue.statusText ?? 'Open queue')}</em><small>{queue.redaction ?? queue.sourceCapabilityId ?? 'browser-safe summary'}</small></>;
+              return action ? <button key={queue.queueId} type="button" className={`attention-counter-card ${queue.severity ?? 'info'}`} disabled={Boolean(action.disabled)} onClick={() => !action.disabled && onAction?.(action, envelope.surfaceId, stringRecord({ targetSurfaceId: queue.targetSurfaceId, requiredCapabilityId: queue.sourceCapabilityId, correlationId: queue.traceRefs?.[0] ?? envelope.correlationId }))} aria-label={`Open ${queue.label}: ${queue.statusText ?? 'queue'}; ${queue.count ?? 0} items`}>{body}</button> : <article key={queue.queueId} className={`attention-counter-card ${queue.severity ?? 'info'}`}>{body}</article>;
+            })}
+          </div>
+        </section>
+      )}
+
+      {agentAdminActionableCards(data.cards, actionById).length > 0 && (
+        <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-cards-heading`}>
+          <div className="surface-section-heading"><div><p className="eyebrow">Policy posture</p><h4 id={`${envelope.surfaceId}-cards-heading`}>Clickable governance areas</h4></div><p>Cards are backend-authored projections and open structured surfaces for review.</p></div>
+          <div className="surface-dashboard-grid my-account-workstream-grid" aria-label="Governance Policy actionable cards">
+            {agentAdminActionableCards(data.cards, actionById).map(({ card, action }) => <button key={card.cardId} type="button" className={`ds-card dashboard-card clickable ${card.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId, stringRecord({ targetSurfaceId: card.targetSurfaceId, cardId: card.cardId, correlationId: envelope.correlationId }))}><p>{card.label}</p><strong>{card.value}</strong>{card.status && <span>{card.status}</span>}</button>)}
+          </div>
+        </section>
+      )}
+
+      {authorizedActions.length > 0 && (
+        <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-actions-heading`}>
+          <div className="surface-section-heading"><div><p className="eyebrow">Things I can do</p><h4 id={`${envelope.surfaceId}-actions-heading`}>Authorized Governance/Policy surfaces</h4></div><p>Actions recheck capability, idempotency, approval policy, provider readiness, redaction, and audit requirements.</p></div>
+          <div className="user-admin-action-grid" aria-label="Authorized Governance Policy task entry points">
+            {authorizedActions.map((entry) => {
+              const action = actionById.get(entry.actionId);
+              return <button key={entry.actionId} type="button" className="user-admin-work-card" disabled={!action || Boolean(action.disabled)} onClick={() => action && !action.disabled && onAction?.(action, envelope.surfaceId)}><span className="eyebrow">{entry.approvalRequired || action?.requiresApproval ? 'Approval gated' : 'Authorized surface'}</span><h4>{entry.label}</h4><p>{entry.denialHint ?? 'Backend returns the next safe Governance/Policy surface after rechecking authority.'}</p></button>;
+            })}
+          </div>
+        </section>
+      )}
+
+      {data.attentionItems && data.attentionItems.length > 0 && <AttentionList items={data.attentionItems} label="Backend-derived Governance/Policy attention items" />}
+      {data.recentActivity && data.recentActivity.length > 0 && <details className="dashboard-evidence-drawer"><summary>Role-gated policy activity and trace diagnostics</summary><section className="surface-section-list" aria-label="Recent Governance Policy activity">{data.recentActivity.map((activity) => <article key={activity.activityId} className="surface-section-card"><h4>{activity.label}</h4>{activity.summary && <p>{activity.summary}</p>}{activity.traceId && <a href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(activity.traceId)}`}>{activity.traceId}</a>}</article>)}</section></details>}
+    </SurfaceStateFrame>
+  );
 }
 
 function AgentAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
