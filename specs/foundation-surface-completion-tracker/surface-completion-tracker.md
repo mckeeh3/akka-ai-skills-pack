@@ -134,7 +134,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract verified and completed in `app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md`: includes `surface-my-account-personal-attention-digest-result` identity/owner/placement/purpose, `my_account.personal_attention_digest.result.v1` outcome-panel payload schema for advisory summary, recommendations, material events, pending decisions, evidence window, omissions/redaction, authorized source counts, confidence/quality notes, source refs, decision/review state, actions, trace/correlation, and `advisoryOnly`; governed read/accept/reject/open-source/export/open-trace action mappings; selected AuthContext plus tenant/customer/task visibility rules; review-only no-source-mutation semantics; provider/policy-blocked export recovery; accessibility/responsive expectations; acceptance/security/observability regression coverage; and sufficiency review. Sufficiency review says the result surface is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-16 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

@@ -398,24 +398,71 @@ Render with the workflow-status component anatomy from the current AI-first work
 
 ### Intent
 
-`surface-my-account-personal-attention-digest-result` is an advisory outcome panel for reviewing a completed personal attention digest/export. It summarizes only authorized personal evidence and links back to source work without resolving or mutating that source work.
+`surface-my-account-personal-attention-digest-result` is an advisory outcome panel for reviewing a completed personal attention digest/export. It summarizes only authorized personal evidence, highlights omissions/redactions, lets the signed-in human accept or reject the advisory result, and links back to source work without resolving or mutating that source work. It is not a source-task completion surface, not an admin audit export, and not a deterministic/model-less summary substitute.
 
 ### Contract
 
 - Surface id: `surface-my-account-personal-attention-digest-result`.
 - Surface type: `outcome-panel`.
 - Surface contract: `my_account.personal_attention_digest.result.v1`.
+- Owning workstream: My Account.
 - Owning functional agent: `my-account-agent`.
+- Required context: current authenticated account plus selected tenant/customer membership that can read the completed digest task.
+- Reusable placements: My Account dashboard digest/export panel, personal digest progress result link, notification-center source links for visible digest-complete notifications, and role-gated Audit/Trace timelines may link to this result surface.
 
-### Payload and actions
+### User experience model
 
-Frontend-safe payload includes `digestTaskId`, `summary`, `recommendations[]`, `materialEvents[]`, `pendingDecisions[]`, `omissions/redactionSummary`, `authorizedSourceCounts`, `confidence/quality notes where available`, `traceRefs`, `sourceSurfaceRefs[]`, `decisionState`, and `correlationId`.
+1. **Orient** — show selected context, digest task identity, review status, freshness, advisory-only boundary, and user-safe trace/correlation affordances.
+2. **Review outcome** — present a concise summary, recommendations, material events, and pending decisions derived only from authorized personal evidence in the selected context.
+3. **Explain evidence and omissions** — show authorized source counts, evidence window, redacted/omitted count summaries, confidence/quality notes, and why hidden or unavailable sources are absent without naming hidden workstreams or cross-tenant/customer facts.
+4. **Decide advisory acceptance** — accept records that the human reviewed and accepted the advisory digest; reject requires a reason and records the review rejection. Neither action resolves source attention, mutates source tasks, grants authority, or edits provider/model configuration.
+5. **Route source work safely** — source links reauthorize target surfaces before opening and otherwise render safe not-found/redacted recovery.
+6. **Recover honestly** — partial-data, stale, conflict, provider/model/tool quality notes, and unavailable-source states explain next steps without returning fixture/demo success as normal runtime behavior.
 
-Actions include accept advisory digest, reject advisory digest with required reason, open source item with reauthorization, export/download if policy allows, and open trace. Accept/reject records the user's review decision and does not change source attention/tasks/events.
+### Frontend-safe payload
 
-### States
+- `surfaceContract`, `digestTaskId`, `autonomousAgentTaskId`, `accountContext`, `decisionState`, `reviewStatus`, `summary`, `recommendations[]`, `materialEvents[]`, `pendingDecisions[]`, `omissions`, `redactionSummary`, `authorizedSourceCounts`, `evidenceWindow`, `confidenceNotes`, `qualityNotes`, `sourceSurfaceRefs[]`, `availableActions[]`, `traceRefs`, `correlationId`, `redaction`, and `advisoryOnly`.
+- `accountContext`: browser-safe account display name/email, selected tenant/customer label where authorized, selected context id, and redaction level.
+- `decisionState`: one of `review_required`, `accepted`, `rejected`, `superseded`, `stale`, `forbidden`, or `not_found_or_redacted`, plus reviewed-at/reviewer summary when visible.
+- `reviewStatus`: user-facing label, freshness timestamp, result version, advisory-only explanation, and conflict/stale hint when another review decision or newer digest task exists.
+- `summary`: concise advisory digest title, narrative summary, top risk/urgency indicators, and safe next-action copy.
+- `recommendations[]`: recommendation id, title, rationale, severity/priority, suggested next action, target/source surface ref when visible, confidence/quality note refs, trace refs, and redaction note.
+- `materialEvents[]`: event id, timestamp or range, source workstream label only when authorized, user-safe title, summary, severity, target surface ref, trace refs, and redaction note.
+- `pendingDecisions[]`: decision id, title, decision type, due/freshness hint, source/target surface ref when visible, required capability summary, and redaction note.
+- `omissions` / `redactionSummary`: visible source count, omitted/redacted count summary, reason categories such as `hidden_source`, `not_authorized`, `provider_unavailable`, `stale_source`, or `quality_limited`, and recovery guidance without hidden names.
+- `authorizedSourceCounts`: visible workstream count, visible attention count, material event count, pending decision count, and omitted/redacted aggregate counts for the selected context.
+- `sourceSurfaceRefs[]`: only authorized target surface/action refs with safe labels; hidden targets are omitted or represented by safe denial actions.
+- `availableActions[]`: action id, label, capability id, enabled/disabled state, disabled reason, result surface, idempotency/correlation summary, and whether a reason is required.
+- `traceRefs[]`, `correlationId`, and `redaction` are browser-safe summaries only.
 
-Required states: loading, ready, partial-data, redacted, accepting/rejecting, validation-error, no-op, accepted, rejected, forbidden, stale/reconnect, conflict, and failure.
+Forbidden payload/content:
+
+- Hidden workstream names, hidden attention items, raw source records, cross-tenant/customer facts, raw prompt/model/provider configuration, provider secrets, raw JWT/session data, raw tool payloads, fixture/demo/model-less success content, source attention mutation controls, hidden trace/event ids, or review controls that claim to complete source work.
+
+### Actions
+
+| Action | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| Refresh/read digest result | `my_account.personal_attention_digest.read` / `read-personal-digest-task` | Reload the completed authorized result or render safe not-found/redacted/forbidden/stale recovery. |
+| Accept advisory digest | `my_account.personal_attention_digest.accept` / `record-personal-digest-review` | Record an authorized advisory review acceptance and return accepted result, no-op if already accepted, conflict if stale/superseded, or denial/failure. Source attention/tasks/events remain unchanged. |
+| Reject advisory digest | `my_account.personal_attention_digest.reject` / `record-personal-digest-review` | Require a user reason, record authorized advisory rejection, return rejected result or validation-error/conflict/denial/failure. Source attention/tasks/events remain unchanged. |
+| Open authorized source | source capability such as `attention.open_attention_item` | Reauthorize target source and render the target surface or `surface-my-account-open-denied` / safe `not_found_or_redacted`. |
+| Export/download digest | `my_account.personal_attention_digest.export` | Generate or retrieve a policy-allowed browser-safe export; otherwise render disabled, provider/policy blocked, or forbidden recovery. |
+| Open related trace | `my_account.view_own_trace_refs` | Render authorized Audit/Trace surface or safe redacted message. |
+
+### State and style expectations
+
+Render with the outcome-panel and decision-card anatomy from the current AI-first workstream style: selected-context header, advisory-only result banner, result summary, recommendation cards, material event list, pending-decision list, omissions/redaction summary, governed action bar, source-link group, and trace/evidence block. Required states are loading, empty/no-result, ready, partial-data, redacted, accepting, rejecting, validation-error, no-op, accepted, rejected, forbidden, not_found_or_redacted, stale/reconnect, conflict, policy/provider-blocked export, and failure. The result review must preserve selected context and trace/correlation affordances through every state.
+
+### Specification completeness for implementation
+
+- **Payload schema detail:** implement `digestTaskId`, `autonomousAgentTaskId`, `accountContext`, `decisionState`, `reviewStatus`, `summary`, `recommendations[]`, `materialEvents[]`, `pendingDecisions[]`, `omissions`, `redactionSummary`, `authorizedSourceCounts`, `evidenceWindow`, `confidenceNotes`, `qualityNotes`, `sourceSurfaceRefs[]`, `availableActions[]`, `traceRefs[]`, `correlationId`, `redaction`, and `advisoryOnly` exactly as browser-safe summaries. Result content must come from durable backend/agent task output for the authorized task; hidden sources are represented only by aggregate omitted/redacted summaries.
+- **Authorization and tenant rules:** every read, accept, reject, open-source, export/download, and open-trace action is evaluated against the signed-in account plus selected backend `AuthContext`; tenant/customer scope comes from protected backend context resolution, not client-provided task ids. A result is visible only to its requesting account in the selected authorized context or through a role-gated auditor/support trace surface. Hidden, cross-account, cross-tenant/customer, stale, inactive, superseded, or redacted task/result ids return safe `not_found_or_redacted`/forbidden recovery without enumeration. Accept/reject records review state only and never grants capability access, mutates source attention/tasks/events, or changes provider/model/tool configuration.
+- **Actions and result surfaces:** `refresh-personal-attention-digest-result` reads backend-owned completed result state; `accept-personal-attention-digest` records an advisory acceptance with idempotent already-accepted no-op handling; `reject-personal-attention-digest` requires a reason and records an advisory rejection; `open-authorized-digest-source` reauthorizes the target source capability and renders the source surface or `surface-my-account-open-denied`; `export-personal-attention-digest` returns only policy-allowed browser-safe export output or blocked/forbidden recovery; `open-related-trace` routes to authorized Audit/Trace or safe denial. Consequential actions carry correlation and idempotency metadata.
+- **Trace and audit contract:** each read, accept, reject, open-source, export/download, and open-trace attempt links or emits an audit/work trace containing actor account, selected context, visible task/result id, review decision or no-op/conflict result, rejection reason category when supplied, evidence-window scope, capability decision, target-source decision, export policy decision, redaction level, result state, and correlation id. Browser-visible traces never expose raw JWTs, provider/model records, prompts, tool payloads, hidden workstream/item names, raw event ids, or provider secrets.
+- **Accessibility and responsive expectations:** the surface has a stable heading, advisory-only status announced as status text, recommendation/material-event/pending-decision cards with keyboard-operable source links, accept/reject/export/open-source/open-trace controls with clear disabled/submitting states, rejection reason validation with accessible error associations, focus recovery to the changed review state or first validation error, and non-color-only severity indicators. On narrow viewports, selected context, summary, recommendations, material events, pending decisions, omissions, actions, and traces stack in that order without changing action order.
+- **Acceptance and regression tests:** generated/runtime work must cover result refresh success, partial-data/redacted result, accept success, repeated accept no-op, reject validation for missing reason, reject success, conflict/stale/superseded review denial, forbidden cross-account/cross-tenant result denial without enumeration, open-source reauthorization success and safe denial, policy/provider-blocked export recovery, tenant/customer isolation, audit/trace/correlation visibility, hidden-source redaction/omission, `advisoryOnly` / no source-attention mutation, and frontend secret-boundary checks proving no raw JWT/session/provider/model/tool payload/hidden workstream or fixture success is rendered or submitted.
+- **Surface-description sufficiency review:** yes — this surface definition is sufficiently unambiguous for a developer or generator to implement and review `surface-my-account-personal-attention-digest-result` without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. The default view avoids exposing internal implementation details that do not help the signed-in SaaS user review the advisory digest, understand omissions, accept or reject the review outcome, open authorized source work, recover from stale/blocked export states, or inspect authorized traces.
 
 ## Personal attention digest/export blocked surface
 

@@ -674,7 +674,7 @@
 
 ### TASK-FSCT-019: Verify or complete app-description specification for `surface-my-account-personal-attention-digest-result`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-my-account-personal-attention-digest-result`
@@ -703,6 +703,7 @@
   - purpose: Advisory digest/export result review with evidence, omissions, and accept/reject actions.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-account-personal-attention-digest-result` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-16: added implementation-ready outcome-panel contract detail for personal attention digest result, including advisory summary/recommendation/event/decision payload schema, omissions/redaction/source count/quality fields, read/accept/reject/open-source/export/open-trace action mapping, selected AuthContext/task visibility rules, review-only no-source-mutation semantics, provider/policy-blocked export behavior, trace/audit/correlation requirements, accessibility/responsive expectations, acceptance/security/observability tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-020: Verify or complete runtime implementation for `surface-my-account-personal-attention-digest-result`
 
