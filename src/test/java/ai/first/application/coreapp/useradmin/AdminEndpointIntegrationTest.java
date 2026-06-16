@@ -18,9 +18,11 @@ import ai.first.api.coreapp.admin.AdminEndpoint.ChangeRolesApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.CreateInvitationApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.CustomerActionApiResponse;
 import ai.first.api.coreapp.admin.AdminEndpoint.CustomerAdminListPayload;
+import ai.first.api.coreapp.admin.AdminEndpoint.CustomerCreateApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.CustomerDetailPayload;
 import ai.first.api.coreapp.admin.AdminEndpoint.CustomerLifecycleApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.CustomerListPayload;
+import ai.first.api.coreapp.admin.AdminEndpoint.CustomerRenameApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.InvitationActionApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.IdentityRelinkApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.OrganizationActionApiResponse;
@@ -376,6 +378,239 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
         .invoke();
     assertTrue(listAfterReactivate.status().isSuccess());
     assertTrue(listAfterReactivate.body().admins().stream().anyMatch(admin -> "existing-suspended-customer-admin@example.test".equals(admin.accountId())));
+  }
+
+  @Test
+  void customerLifecycleApiCoversCreateRenameSuspendReactivateIdempotencyRedactionAndDenials() throws Exception {
+    var created = httpClient
+        .POST("/api/admin/customers")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-lifecycle-create")
+        .withRequestBody(new CustomerCreateApiRequest("Lifecycle Customer", "idem-customer-lifecycle-create", "contracted customer"))
+        .responseBodyAs(CustomerActionApiResponse.class)
+        .invoke();
+    assertTrue(created.status().isSuccess());
+    assertEquals("accepted", created.body().status());
+    assertEquals("active", created.body().customer().customer().status());
+    assertTrue(created.body().customer().safeBoundaryNotice().contains("sibling-customer facts"));
+    assertTrue(created.body().customer().redaction().contains("hidden-counts-redacted"));
+    assertTrue(!created.body().toString().contains("providerSecret"));
+    var customerId = created.body().customer().customer().customerId();
+
+    var replay = httpClient
+        .POST("/api/admin/customers")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-lifecycle-create-replay")
+        .withRequestBody(new CustomerCreateApiRequest("Lifecycle Customer", "idem-customer-lifecycle-create", "replay"))
+        .responseBodyAs(CustomerActionApiResponse.class)
+        .invoke();
+    assertEquals("no-op", replay.body().status());
+    assertEquals(customerId, replay.body().customer().customer().customerId());
+
+    var detail = httpClient
+        .GET("/api/admin/customers/" + customerId)
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-lifecycle-read")
+        .responseBodyAs(CustomerDetailPayload.class)
+        .invoke();
+    assertTrue(detail.status().isSuccess());
+    assertTrue(detail.body().visibleActions().contains("suspend"));
+    assertTrue(detail.body().traceRefs().stream().anyMatch(trace -> trace.contains("trace-customer-read")));
+
+    var renamed = httpClient
+        .POST("/api/admin/customers/" + customerId + "/rename")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-lifecycle-rename")
+        .withRequestBody(new CustomerRenameApiRequest("Lifecycle Customer Renamed", "idem-customer-lifecycle-rename", "display name repair"))
+        .responseBodyAs(CustomerActionApiResponse.class)
+        .invoke();
+    assertEquals("accepted", renamed.body().status());
+    assertEquals("Lifecycle Customer Renamed", renamed.body().customer().customer().customerName());
+
+    var renameNoOp = httpClient
+        .POST("/api/admin/customers/" + customerId + "/rename")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-lifecycle-rename-noop")
+        .withRequestBody(new CustomerRenameApiRequest("Lifecycle Customer Renamed", "idem-customer-lifecycle-rename-noop", "same name"))
+        .responseBodyAs(CustomerActionApiResponse.class)
+        .invoke();
+    assertEquals("no-op", renameNoOp.body().status());
+
+    var suspended = httpClient
+        .POST("/api/admin/customers/" + customerId + "/suspend")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-lifecycle-suspend")
+        .withRequestBody(new CustomerLifecycleApiRequest("customer offboarded", "idem-customer-lifecycle-suspend"))
+        .responseBodyAs(CustomerActionApiResponse.class)
+        .invoke();
+    assertEquals("suspended", suspended.body().customer().customer().status());
+    assertTrue(suspended.body().customer().visibleActions().contains("reactivate"));
+
+    var reactivated = httpClient
+        .POST("/api/admin/customers/" + customerId + "/reactivate")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-lifecycle-reactivate")
+        .withRequestBody(new CustomerLifecycleApiRequest("customer returned", "idem-customer-lifecycle-reactivate"))
+        .responseBodyAs(CustomerActionApiResponse.class)
+        .invoke();
+    assertEquals("active", reactivated.body().customer().customer().status());
+
+    var missingIdempotency = assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/admin/customers")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .withRequestBody(new CustomerCreateApiRequest("No Key Customer", null, "missing key"))
+        .responseBodyAs(String.class)
+        .invoke());
+    assertTrue(missingIdempotency.getMessage().contains("400"));
+
+    var repository = new AkkaIdentityRepository(componentClient);
+    repository.saveCustomer(new Customer("tenant-starter", "customer-lifecycle-actor", "Lifecycle Actor Customer", true));
+    seedIdentity(repository, "lifecycle-customer-admin@example.test", "Lifecycle Customer Admin", ScopeType.CUSTOMER, "tenant-starter", "customer-lifecycle-actor", FoundationRole.CUSTOMER_ADMIN);
+    var customerAdminDenied = assertThrows(RuntimeException.class, () -> httpClient
+        .GET("/api/admin/customers")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-lifecycle-customer-admin", "lifecycle-customer-admin@example.test", "Lifecycle Customer Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-lifecycle-customer-admin-denied")
+        .responseBodyAs(String.class)
+        .invoke());
+    assertTrue(customerAdminDenied.getMessage().contains("403"));
+
+    var hidden = assertThrows(RuntimeException.class, () -> httpClient
+        .GET("/api/admin/customers/customer-hidden-other-tenant")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-lifecycle-hidden")
+        .responseBodyAs(String.class)
+        .invoke());
+    assertTrue(hidden.getMessage().contains("404"));
+
+    var audit = httpClient
+        .GET("/api/admin/audit-events?limit=100")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .responseBodyAs(AdminAuditEventsResponse.class)
+        .invoke();
+    assertTrue(audit.body().events().stream().anyMatch(event -> event.actionType().equals("CUSTOMER_CREATE") && event.correlationId().equals("corr-customer-lifecycle-create")));
+    assertTrue(audit.body().events().stream().anyMatch(event -> event.actionType().equals("CUSTOMER_SUSPEND") && event.correlationId().equals("corr-customer-lifecycle-suspend")));
+    assertTrue(audit.body().events().stream().allMatch(event -> event.tenantId() == null || event.tenantId().equals("tenant-starter")));
+  }
+
+  @Test
+  void customerAdminListInviteAndManageApisCoverTargetScopeLastAdminAndRedaction() throws Exception {
+    var repository = new AkkaIdentityRepository(componentClient);
+    repository.saveCustomer(new Customer("tenant-starter", "customer-admin-covered", "Covered Admin Customer", true));
+    repository.saveCustomer(new Customer("tenant-starter", "customer-admin-sibling", "Sibling Admin Customer", true));
+    repository.saveCustomer(new Customer("tenant-other", "customer-admin-hidden", "Hidden Admin Customer", true));
+    seedIdentity(repository, "primary-covered-admin@example.test", "Primary Covered Customer Admin", ScopeType.CUSTOMER, "tenant-starter", "customer-admin-covered", FoundationRole.CUSTOMER_ADMIN);
+    seedIdentity(repository, "secondary-covered-admin@example.test", "Secondary Covered Customer Admin", ScopeType.CUSTOMER, "tenant-starter", "customer-admin-covered", FoundationRole.CUSTOMER_ADMIN);
+    seedIdentity(repository, "sibling-covered-admin@example.test", "Sibling Covered Customer Admin", ScopeType.CUSTOMER, "tenant-starter", "customer-admin-sibling", FoundationRole.CUSTOMER_ADMIN);
+
+    var list = httpClient
+        .GET("/api/admin/customers/customer-admin-covered/admins")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-covered-list")
+        .responseBodyAs(CustomerAdminListPayload.class)
+        .invoke();
+    assertTrue(list.status().isSuccess());
+    assertEquals("customer-admin-covered", list.body().customer().customerId());
+    assertTrue(list.body().admins().stream().anyMatch(admin -> "primary-covered-admin@example.test".equals(admin.accountId()) && "customer-admin-covered".equals(admin.customerId())));
+    assertTrue(list.body().admins().stream().noneMatch(admin -> "sibling-covered-admin@example.test".equals(admin.accountId())));
+    assertTrue(list.body().redaction().contains("sibling-customers-redacted"));
+    assertTrue(!list.body().toString().contains("providerSecret"));
+
+    var invited = httpClient
+        .POST("/api/admin/customers/customer-admin-covered/admins/invitations")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-covered-invite")
+        .withRequestBody(new CreateInvitationApiRequest("covered-invite@example.test", "Covered Invite", List.of("CUSTOMER_ADMIN"), "idem-customer-admin-covered-invite"))
+        .responseBodyAs(InvitationApiResponse.class)
+        .invoke();
+    assertTrue(invited.status().isSuccess());
+    assertEquals("covered-invite@example.test", invited.body().email());
+
+    var listAfterInvite = httpClient
+        .GET("/api/admin/customers/customer-admin-covered/admins")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-covered-list-after-invite")
+        .responseBodyAs(CustomerAdminListPayload.class)
+        .invoke();
+    assertTrue(listAfterInvite.body().invitations().stream()
+        .anyMatch(invitation -> "covered-invite@example.test".equals(invitation.email())
+            && invitation.roles().equals(List.of("CUSTOMER_ADMIN"))
+            && "customer".equals(invitation.scopeType())
+            && "customer-admin-covered".equals(invitation.customerId())));
+
+    var suspended = httpClient
+        .POST("/api/admin/customers/customer-admin-covered/admins/secondary-covered-admin@example.test/suspend")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-covered-suspend-secondary")
+        .withRequestBody(new AccountActionApiRequest("rotate secondary admin", "idem-customer-admin-covered-suspend-secondary"))
+        .responseBodyAs(MembershipActionApiResponse.class)
+        .invoke();
+    assertEquals("accepted", suspended.body().status());
+    assertEquals("suspended", suspended.body().membershipStatus());
+
+    var reactivated = httpClient
+        .POST("/api/admin/customers/customer-admin-covered/admins/secondary-covered-admin@example.test/reactivate")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-covered-reactivate-secondary")
+        .withRequestBody(new AccountActionApiRequest("restore secondary admin", "idem-customer-admin-covered-reactivate-secondary"))
+        .responseBodyAs(MembershipActionApiResponse.class)
+        .invoke();
+    assertEquals("accepted", reactivated.body().status());
+    assertEquals("active", reactivated.body().membershipStatus());
+
+    var roleNoOp = httpClient
+        .PUT("/api/admin/customers/customer-admin-covered/admins/secondary-covered-admin@example.test/roles")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-covered-role-noop")
+        .withRequestBody(new ChangeRolesApiRequest(List.of("CUSTOMER_ADMIN"), "least privilege confirmation", "idem-customer-admin-covered-role-noop"))
+        .responseBodyAs(MembershipActionApiResponse.class)
+        .invoke();
+    assertEquals("no-op", roleNoOp.body().status());
+    assertEquals(List.of("CUSTOMER_ADMIN"), roleNoOp.body().roles());
+
+    var removed = httpClient
+        .POST("/api/admin/customers/customer-admin-covered/admins/secondary-covered-admin@example.test/remove")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-covered-remove-secondary")
+        .withRequestBody(new AccountActionApiRequest("remove secondary admin", "idem-customer-admin-covered-remove-secondary"))
+        .responseBodyAs(MembershipActionApiResponse.class)
+        .invoke();
+    assertEquals("accepted", removed.body().status());
+    assertEquals("removed", removed.body().membershipStatus());
+
+    var lastAdminDenied = assertThrows(RuntimeException.class, () -> httpClient
+        .POST("/api/admin/customers/customer-admin-covered/admins/primary-covered-admin@example.test/suspend")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-covered-last-denied")
+        .withRequestBody(new AccountActionApiRequest("would remove last customer admin", "idem-customer-admin-covered-last-denied"))
+        .responseBodyAs(String.class)
+        .invoke());
+    assertTrue(lastAdminDenied.getMessage().contains("403"));
+
+    var siblingDenied = assertThrows(RuntimeException.class, () -> httpClient
+        .PUT("/api/admin/customers/customer-admin-covered/admins/sibling-covered-admin@example.test/roles")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-covered-sibling-denied")
+        .withRequestBody(new ChangeRolesApiRequest(List.of("CUSTOMER_ADMIN"), "sibling target", "idem-customer-admin-covered-sibling-denied"))
+        .responseBodyAs(String.class)
+        .invoke());
+    assertTrue(siblingDenied.getMessage().contains("404"));
+
+    var hiddenCustomerDenied = assertThrows(RuntimeException.class, () -> httpClient
+        .GET("/api/admin/customers/customer-admin-hidden/admins")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-covered-hidden-customer-denied")
+        .responseBodyAs(String.class)
+        .invoke());
+    assertTrue(hiddenCustomerDenied.getMessage().contains("404"));
+
+    var audit = httpClient
+        .GET("/api/admin/audit-events?limit=100")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .responseBodyAs(AdminAuditEventsResponse.class)
+        .invoke();
+    assertTrue(audit.body().events().stream().anyMatch(event -> event.actionType().equals("USERADMIN_UPDATE_MEMBER_STATUS") && event.result().equals("denied") && event.reasonCode().equals("last-admin-denied") && event.customerId().equals("customer-admin-covered")));
+    assertTrue(audit.body().events().stream().anyMatch(event -> event.actionType().equals("INVITATION_CREATE") && event.customerId().equals("customer-admin-covered")));
+    assertTrue(audit.body().events().stream().noneMatch(event -> "customer-admin-hidden".equals(event.customerId()) && event.result().equals("allowed")));
   }
 
   @Test

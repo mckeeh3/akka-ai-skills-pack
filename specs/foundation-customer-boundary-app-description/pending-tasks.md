@@ -358,7 +358,7 @@
 
 ### TASK-FCBAD-02-005: Harden Customer Admin backend and frontend coverage
 
-- status: pending
+- status: done
 - source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#fcb-rd-07-customer-admin-listmanage-api-behavior-is-under-tested
 - task brief: specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/09-customer-admin-coverage-frontend-hardening.md
 - depends on:
@@ -387,6 +387,10 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; test hardening for Customer lifecycle and Customer Admin branch; `manage-customers`, `manage-customer-admins`; `tenant.customer.*`, `tenant.customer_admin.*`; endpoint/workstream/frontend contract tests
+  - changed runtime path: Customer Admin workstream list surfaces now project backend-authorized Customer Admin membership and invitation rows for the selected Customer, with target scope proof, redaction, and no sibling-customer rows
+  - changed tests: endpoint coverage now exercises Customer lifecycle create/read/rename/suspend/reactivate/idempotency, Customer Admin list/invite/role/status/remove/last-admin/cross-customer/redaction/audit behavior; workstream coverage now asserts populated Customer Admin branch rows and safe target propagation; frontend contract coverage asserts Customer Admin invitation action preference, role-safe options, and no client-side authority inference
+  - checks: `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest,ai.first.application.coreapp.useradmin.AdminEndpointIntegrationTest test` passed; `npm --prefix frontend test -- --run frontend/src/workstream-user-admin-vertical.contract.test.mjs` passed; `git diff --check` passed
+  - commit message: `customer-boundary-desc: harden customer admin coverage`
 
 ### TASK-FCBAD-02-006: Normalize Customer branch action ids or document compatibility aliases
 

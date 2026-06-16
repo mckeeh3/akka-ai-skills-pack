@@ -70,6 +70,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import ai.first.application.foundation.attention.AttentionProducerService;
 import ai.first.application.foundation.attention.AttentionService;
 import ai.first.application.foundation.audit.AuditTraceRepository;
@@ -1339,8 +1340,11 @@ public final class WorkstreamService {
     authContextResolver.requireCapability(actor.selectedContext(), USER_ADMIN_CAPABILITY);
     var detail = activeCustomerListTargetDetail(actor, input, correlationId);
     var target = customerTargetMap(actor, detail, correlationId);
+    var admins = userAdminService.listUsers(actor, ScopeType.CUSTOMER, actor.selectedContext().tenantId(), detail.customer().customerId()).stream().map(this::customerAdminRowMap).toList();
+    var invitations = invitationView.list(actor, ScopeType.CUSTOMER, actor.selectedContext().tenantId(), detail.customer().customerId()).stream().map(this::customerAdminInvitationRowMap).toList();
+    var rows = Stream.concat(admins.stream(), invitations.stream()).toList();
     return envelope("surface-user-admin-customer-admins", "list-search", "Customer Admins", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.customer_admins.v1", "branchNavigation", customerBranchNavigation(correlationId), "customerId", detail.customer().customerId(), "customerName", detail.customer().customerName(), "targetScopeProof", target, "query", "", "rows", List.of(), "admins", List.of(), "invitations", List.of(), "filters", mapOf("role", "CUSTOMER_ADMIN", "customerId", detail.customer().customerId(), "customerName", detail.customer().customerName(), "backendAuthored", true), "pageInfo", mapOf("visibleCount", 0), "summary", "Customer Admin users and invitations for " + detail.customer().customerName() + ". Rows route through backend-authored detail/task surfaces and never expose sibling-customer or tenant-wide authority.", "safeBoundaryNotice", detail.safeBoundaryNotice(), "branchRootSurfaceId", "surface-user-admin-customer-directory", "branchReturnActionId", "action-user-admin-show-customers", "traceRefs", detail.traceRefs(), "correlationId", correlationId, "redaction", List.of("hidden-users-redacted", "sibling-customers-redacted", "provider-payload-redacted", "raw-invitation-token-redacted"), "emptyMessage", "No Customer Admins are visible for this selected Customer yet."),
+        mapOf("surfaceContract", "user_admin.customer_admins.v1", "branchNavigation", customerBranchNavigation(correlationId), "customerId", detail.customer().customerId(), "customerName", detail.customer().customerName(), "targetScopeProof", target, "query", "", "rows", rows, "admins", admins, "invitations", invitations, "filters", mapOf("role", "CUSTOMER_ADMIN", "customerId", detail.customer().customerId(), "customerName", detail.customer().customerName(), "backendAuthored", true), "pageInfo", mapOf("visibleCount", rows.size()), "summary", "Customer Admin users and invitations for " + detail.customer().customerName() + ". Rows route through backend-authored detail/task surfaces and never expose sibling-customer or tenant-wide authority.", "safeBoundaryNotice", detail.safeBoundaryNotice(), "branchRootSurfaceId", "surface-user-admin-customer-directory", "branchReturnActionId", "action-user-admin-show-customers", "traceRefs", detail.traceRefs(), "correlationId", correlationId, "redaction", List.of("hidden-users-redacted", "sibling-customers-redacted", "provider-payload-redacted", "raw-invitation-token-redacted"), "emptyMessage", "No Customer Admins are visible for this selected Customer yet."),
         withCustomerBranchReturn(List.of(openCustomerAdminInvitationCreateAction(), openAuditAction())));
   }
 
@@ -1426,6 +1430,14 @@ public final class WorkstreamService {
 
   private Map<String, Object> customerRowMap(ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerSummary customer) {
     return mapOf("id", customer.customerId(), "customerId", customer.customerId(), "customerName", customer.customerName(), "status", customer.status(), "rowType", "customer", "targetObjectType", "customer", "targetSurfaceId", "surface-user-admin-customer-detail", "targetSurfaceType", "show-inspection", "openActionId", "action-customer-read", "safeLifecycleSummary", customer.status().equals("active") ? "Active Customer boundary" : "Suspended Customer boundary", "traceRefs", customer.traceRefs(), "redactionState", "visible");
+  }
+
+  private Map<String, Object> customerAdminRowMap(UserAdminService.UserDirectoryRow row) {
+    return mapOf("id", row.membershipId(), "accountId", row.accountId(), "membershipId", row.membershipId(), "displayName", row.displayName(), "email", row.accountId(), "customerId", row.customerId(), "tenantId", row.tenantId(), "role", "CUSTOMER_ADMIN", "roles", row.roles().stream().map(Enum::name).toList(), "status", row.status().name().toLowerCase(Locale.ROOT), "rowType", "customer-admin-membership", "targetObjectType", "customer-admin", "targetSurfaceId", "surface-user-admin-customer-admin-detail", "targetSurfaceType", "show-inspection", "openActionId", "action-display-user-detail", "safeActionContext", mapOf("accountId", row.accountId(), "membershipId", row.membershipId(), "customerId", row.customerId()), "visibleActions", List.of("read", "role-preview", "lifecycle"), "traceRefs", List.of("trace-customer-admin-membership-" + stableSuffix(row.membershipId())), "redactionState", "visible");
+  }
+
+  private Map<String, Object> customerAdminInvitationRowMap(InvitationView.InvitationRow row) {
+    return mapOf("id", row.invitationId(), "invitationId", row.invitationId(), "displayName", row.targetEmail(), "email", row.targetEmail(), "customerId", row.customerId(), "tenantId", row.tenantId(), "role", "CUSTOMER_ADMIN", "roles", row.requestedRoles().stream().map(Enum::name).toList(), "status", row.status().name().toLowerCase(Locale.ROOT), "deliveryStatus", row.deliveryStatus().name().toLowerCase(Locale.ROOT), "rowType", "customer-admin-invitation", "targetObjectType", "customer-admin-invitation", "targetSurfaceId", "surface-user-admin-invitation-detail", "targetSurfaceType", "show-inspection", "openActionId", "action-display-invitation-detail", "safeActionContext", mapOf("invitationId", row.invitationId(), "customerId", row.customerId()), "visibleActions", List.of("read", "resend", "revoke"), "traceRefs", List.of("trace-customer-admin-invitation-" + stableSuffix(row.invitationId())), "redactionState", "raw-token-redacted");
   }
 
   private Map<String, Object> customerDetailMap(ai.first.application.coreapp.useradmin.TenantCustomerAdminService.CustomerDetail detail) {
