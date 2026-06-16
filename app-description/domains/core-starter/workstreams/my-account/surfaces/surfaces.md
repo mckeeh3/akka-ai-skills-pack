@@ -468,18 +468,69 @@ Render with the outcome-panel and decision-card anatomy from the current AI-firs
 
 ### Intent
 
-`surface-my-account-personal-attention-digest-blocked` explains fail-closed provider/runtime or governed-tool readiness problems for digest/export work. It must be actionable and honest: no deterministic, model-less, fixture, or simulated success may be returned as normal runtime behavior.
+`surface-my-account-personal-attention-digest-blocked` explains fail-closed provider/runtime or governed-tool readiness problems for digest/export work. It must be actionable and honest: no deterministic, model-less, fixture, or simulated success may be returned as normal runtime behavior. The surface helps the signed-in human understand why personal digest work did not produce an advisory result, what is safe to retry, which administrator/provider readiness gap must be fixed, and where to inspect authorized trace evidence.
 
 ### Contract
 
 - Surface id: `surface-my-account-personal-attention-digest-blocked`.
 - Surface type: `system-message`.
 - Surface contract: `my_account.personal_attention_digest.blocked.v1`.
+- Owning workstream: My Account.
 - Owning functional agent: `my-account-agent`.
+- Required context: current authenticated account plus selected tenant/customer membership that can read the digest task or provider/runtime readiness outcome.
+- Reusable placements: My Account dashboard digest/export panel, personal digest progress blocker link, notification-center source links for visible digest failures, and role-gated Audit/Trace timelines may link to this blocked surface.
 
-### Payload and actions
+### User experience model
 
-Payload includes severity, blocker code, user-safe title/message, recovery steps, required capability/tool/provider readiness hints, trace refs, correlation id, redaction note, and `noFakeSuccess: true`. Actions are retry/read state, open trace, and return to dashboard when authorized.
+1. **State the safe failure** — show a plain-language blocked title and message that explains the digest/export did not run or cannot continue because provider/runtime/tool readiness failed closed.
+2. **Protect the user from fake success** — prominently communicate that no generated digest, deterministic summary, fixture output, or model-less substitute was produced.
+3. **Guide recovery** — list user-safe next steps such as retry after readiness is restored, return to My Account, or contact an administrator; distinguish user retry steps from administrator/provider configuration steps.
+4. **Preserve task context** — show the visible digest task id/phase/status only when authorized, selected-context scope, evidence-window summary, and whether retry is eligible.
+5. **Expose trace affordances safely** — provide trace/correlation links for authorized audit investigation without raw prompts, model/provider configuration, tool payloads, hidden sources, or secrets.
+
+### Frontend-safe payload
+
+- `surfaceContract`, `digestTaskId`, `autonomousAgentTaskId`, `accountContext`, `status`, `severity`, `blockerCode`, `blockerCategory`, `title`, `message`, `blockedAt`, `lastAttemptedPhase`, `retryEligibility`, `recoverySteps[]`, `adminReadinessHints[]`, `requiredCapabilityIds[]`, `requiredToolIds[]`, `providerReadiness`, `runtimeReadiness`, `evidenceWindow`, `availableActions[]`, `traceRefs`, `correlationId`, `redaction`, `noFakeSuccess`, and `noDirectMutation`.
+- `accountContext`: browser-safe account display name/email, selected tenant/customer label where authorized, selected context id, and redaction level.
+- `status`: one of `blocked_provider_or_runtime`, `blocked_tool_boundary`, `blocked_model_provider`, `blocked_reference_access`, `blocked_policy`, `not_found_or_redacted`, `forbidden`, `stale`, or `failed`.
+- `severity`: user-facing severity such as `blocked`, `warning`, or `error`; it must not expose internal provider exception classes.
+- `blockerCode` and `blockerCategory`: stable browser-safe reason code and category for recovery/audit grouping, such as `provider_or_model_not_configured`, `autonomous_agent_runtime_unavailable`, `tool_boundary_not_granted`, `reference_loader_denied`, `policy_blocked_export`, or `task_not_visible`.
+- `retryEligibility`: `retry_allowed_after_readiness`, `retry_not_allowed_terminal`, `retry_requires_admin_readiness`, or `not_visible`; include a short user-facing retry explanation.
+- `recoverySteps[]`: ordered steps with `stepId`, `label`, `description`, `actorType` (`user`, `admin`, `support`, or `system`), optional `actionId`, and disabled reason when applicable.
+- `adminReadinessHints[]`: browser-safe hints for authorized admin/support actors only; ordinary users receive support-contact guidance rather than provider/tool internals.
+- `providerReadiness` and `runtimeReadiness`: high-level readiness state (`missing`, `unconfigured`, `unavailable`, `denied`, `policy_blocked`, or `unknown`) and safe explanation without provider secrets, model ids beyond approved display aliases, or raw errors.
+- `evidenceWindow`: authorized selected-context scope, visible attention/source counts if known, omitted/redacted aggregate counts, and the statement that no source attention was mutated.
+- `availableActions[]`: action id, label, capability id, enabled/disabled state, disabled reason, target/result surface, retry/idempotency behavior, and correlation behavior summary.
+- `traceRefs[]`, `correlationId`, and `redaction` are browser-safe summaries only. `noFakeSuccess: true` and `noDirectMutation: true` are mandatory.
+
+Forbidden payload/content:
+
+- Provider secrets, API keys, raw model/provider configuration, raw prompts, raw tool payloads, raw reference/skill contents, raw JWT/session data, internal stack traces, hidden workstream names, hidden attention items, cross-tenant/customer facts, fixture/demo/model-less digest summaries, source attention mutation controls, hidden trace/event ids, or administrator-only readiness details rendered to ordinary users.
+
+### Actions
+
+| Action | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| Retry/read digest state | `my_account.personal_attention_digest.read` / `read-personal-digest-task` | Re-read the authorized task/readiness state and render progress, result, blocked, stale, forbidden, or safe not-found/redacted recovery. |
+| Start replacement digest after readiness | `my_account.personal_attention_digest.start` / `request-personal-digest-export` | Only enabled when backend readiness permits; starts a new governed digest request or returns blocked/no-op/denied with trace refs. |
+| Return to My Account dashboard | `my_account.view_summary` | Render `surface-my-account-dashboard` with the digest panel showing blocked or retry state. |
+| Open digest progress | `my_account.personal_attention_digest.read` | Render `surface-my-account-personal-attention-digest-progress` for the authorized task when progress context is visible. |
+| Open related trace | `my_account.view_own_trace_refs` | Render authorized Audit/Trace surface or safe redacted message. |
+| Contact/request admin readiness support | support/admin guidance capability if available; otherwise informational only | Open authorized support/request-access guidance or show no configured support channel without implying provider readiness can be changed by the user. |
+
+### State and style expectations
+
+Render with the system-message and provider-fail-closed card anatomy from the current AI-first workstream style: selected-context header, prominent blocked status, user-safe message, `noFakeSuccess`/`noDirectMutation` assurance, recovery-step list, optional admin-readiness details behind role-gated disclosure, governed action bar, and trace/evidence block. Required states are loading, ready-blocked, retrying, retry-unavailable, admin-readiness-required, forbidden, not_found_or_redacted, stale/reconnect, no-op, policy-blocked, provider/runtime-unavailable, partial-data, and failure. The surface must preserve selected context and correlation/trace affordances through every state.
+
+### Specification completeness for implementation
+
+- **Payload schema detail:** implement `surfaceContract`, `digestTaskId`, `autonomousAgentTaskId`, `accountContext`, `status`, `severity`, `blockerCode`, `blockerCategory`, `title`, `message`, `blockedAt`, `lastAttemptedPhase`, `retryEligibility`, `recoverySteps[]`, `adminReadinessHints[]`, `requiredCapabilityIds[]`, `requiredToolIds[]`, `providerReadiness`, `runtimeReadiness`, `evidenceWindow`, `availableActions[]`, `traceRefs[]`, `correlationId`, `redaction`, `noFakeSuccess`, and `noDirectMutation` exactly as browser-safe summaries. Missing task context must render as safe not-found/redacted or generic readiness-blocked state rather than exposing hidden ids.
+- **Authorization and tenant rules:** every blocked-surface read, retry, progress/result navigation, dashboard return, support/request guidance, and trace open is evaluated against the signed-in account plus selected backend `AuthContext`; tenant/customer scope comes from protected backend context resolution, not client-provided task ids. A blocked task is visible only to its requesting account in the selected authorized context or through a role-gated auditor/support trace surface. Hidden, cross-account, cross-tenant/customer, stale, inactive, or redacted task ids return safe `not_found_or_redacted`/forbidden recovery without enumeration.
+- **Actions and result surfaces:** `retry-read-personal-attention-digest-state` re-reads backend-owned task/readiness state and returns progress/result/blocked/denied; `start-replacement-personal-attention-digest` starts only when backend readiness permits and otherwise returns this blocked surface with no fake success; `return-to-my-account-dashboard` renders the dashboard digest panel; `open-personal-attention-digest-progress` renders the authorized progress surface; `open-related-trace` routes to authorized Audit/Trace or safe denial; support guidance opens only if a configured and authorized support/request-access route exists. Consequential retry/start actions carry correlation and idempotency metadata.
+- **Trace and audit contract:** each blocked-surface read, retry/start attempt, trace open, support guidance action, and dashboard return links or emits an audit/work trace containing actor account, selected context, visible task id when authorized, blocker category/code, provider/runtime/tool readiness decision, capability decision, redaction level, no-fake-success assertion, no-source-mutation assertion, result surface decision, and correlation id. Browser-visible traces never expose raw JWTs, provider/model records, prompts, tool payloads, hidden workstream/item names, raw event ids, or provider secrets.
+- **Accessibility and responsive expectations:** the surface has a stable heading, status message announced via `role="status"` or equivalent, recovery steps in logical order, keyboard-operable retry/dashboard/progress/trace controls, disabled-state explanations for unavailable retry/admin actions, non-color-only blocked severity, and focus recovery to the changed message after retry/read actions. On narrow viewports, selected context, blocked message, recovery steps, actions, admin-readiness disclosure, and trace blocks stack in that order without changing action ordering.
+- **Acceptance and regression tests:** generated/runtime work must cover provider/model missing fail-closed state with `noFakeSuccess`, runtime/tool-boundary blocked state, read/refresh of an authorized blocked task, retry disabled until readiness or returning blocked again, safe dashboard return, progress navigation when authorized, missing/hidden/cross-account/cross-tenant task denial without enumeration, stale/reconnect recovery, policy-blocked export recovery, tenant/customer isolation, audit/trace/correlation visibility, admin-readiness redaction for ordinary users, `noDirectMutation` of source attention, and frontend secret-boundary checks proving no raw JWT/session/provider/model/tool payload/hidden workstream or fixture success is rendered or submitted.
+- **Surface-description sufficiency review:** yes — this surface definition is sufficiently unambiguous for a developer or generator to implement and review `surface-my-account-personal-attention-digest-blocked` without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. The default view avoids exposing internal implementation details that do not help the signed-in SaaS user understand the blocked digest, avoid fake success, retry safely, request/admin readiness recovery, return to My Account, or inspect authorized traces.
 
 ## Open denied / unavailable workstream surface
 

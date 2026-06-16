@@ -147,7 +147,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract verified and completed in `app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md`: includes `surface-my-account-personal-attention-digest-blocked` identity/owner/placement/purpose, `my_account.personal_attention_digest.blocked.v1` system-message payload schema for blocker category/code, provider/runtime/tool readiness, retry eligibility, recovery steps, evidence window, actions, trace/correlation, redaction, mandatory `noFakeSuccess` and `noDirectMutation`, forbidden payload boundaries, governed action-to-capability mappings, selected AuthContext/task visibility rules, fail-closed provider/runtime behavior, accessibility/responsive expectations, acceptance/security/observability tests, and sufficiency review. Sufficiency review says the blocked surface is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-16 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
