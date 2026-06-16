@@ -13,6 +13,7 @@ import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActio
 import ai.first.application.coreapp.workstream.WorkstreamService.SurfaceEnvelope;
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamBootstrapResponse;
 import ai.first.application.foundation.identity.AkkaIdentityRepository;
+import ai.first.application.foundation.notification.AkkaNotificationRepository;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.identity.Customer;
@@ -23,6 +24,15 @@ import ai.first.domain.foundation.identity.ScopeType;
 import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.identity.UserProfile;
 import ai.first.domain.foundation.identity.UserSettings;
+import ai.first.domain.foundation.notification.NotificationCategory;
+import ai.first.domain.foundation.notification.NotificationChannel;
+import ai.first.domain.foundation.notification.NotificationItem;
+import ai.first.domain.foundation.notification.NotificationLifecycleStatus;
+import ai.first.domain.foundation.notification.NotificationPriority;
+import ai.first.domain.foundation.notification.NotificationRedactionLevel;
+import ai.first.domain.foundation.notification.NotificationSourceRef;
+import ai.first.domain.foundation.notification.NotificationSurfaceRef;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -327,6 +337,79 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesMyAccountNotificationCenterRuntimePath() throws Exception {
+    seedNotification("notif-read-browser", "Digest blocked", "Personal digest is waiting for provider readiness.", NotificationCategory.PROVIDER_READINESS, NotificationPriority.WARNING, "corr-notification-read-seed");
+    seedNotification("notif-dismiss-browser", "Review available", "A governance review is visible in this context.", NotificationCategory.POLICY_OR_GOVERNANCE, NotificationPriority.INFO, "corr-notification-dismiss-seed");
+    seedNotification("notif-archive-browser", "Audit evidence ready", "Audit trace evidence is available.", NotificationCategory.AUDIT_OR_SECURITY, NotificationPriority.URGENT, "corr-notification-archive-seed");
+    seedNotification("notif-snooze-browser", "Agent work paused", "Agent work needs later review.", NotificationCategory.ATTENTION_REQUIRED, NotificationPriority.INFO, "corr-notification-snooze-seed");
+
+    var center = getSurface("surface-my-account-notification-center", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-notifications-browser-read");
+    assertEquals("surface-my-account-notification-center", center.surfaceId());
+    assertEquals("notification-center", center.surfaceType());
+    assertEquals("my_account.notification_center.v1", center.data().get("surfaceContract"));
+    assertEquals("in_app", center.data().get("channel"));
+    assertTrue(center.toString().contains("notif-read-browser"));
+    assertTrue(center.toString().contains("notification.mark_read"));
+    assertTrue(center.toString().contains("notification.dismiss"));
+    assertTrue(center.toString().contains("notification.archive"));
+    assertTrue(center.toString().contains("notification.snooze"));
+    assertTrue(center.toString().contains("notification.update_preferences"));
+    assertTrue(center.toString().contains("traceRefs"));
+    assertTrue(center.toString().contains("corr-my-notifications-browser-read"));
+    assertNotificationCenterBrowserSafe(center);
+
+    var markedRead = runNotificationAction("action-notification-mark-read", "notif-read-browser", Map.of("notificationId", "notif-read-browser"), "corr-my-notifications-browser-mark-read");
+    assertEquals("full", markedRead.status());
+    assertEquals("surface-my-account-notification-center", markedRead.resultSurface().surfaceId());
+    assertTrue(markedRead.message().contains("source attention/task/event state unchanged"));
+    assertFalse(markedRead.resultSurface().toString().contains("notif-read-browser"), "Read notifications are hidden unless preferences include read items.");
+    assertNotificationCenterBrowserSafe(markedRead.resultSurface());
+
+    var markReadAgain = runNotificationAction("action-notification-mark-read", "notif-read-browser", Map.of("notificationId", "notif-read-browser"), "corr-my-notifications-browser-mark-read-again");
+    assertEquals("full", markReadAgain.status(), "Repeated lifecycle operation remains authorized and no source state is resolved.");
+    assertFalse(markReadAgain.resultSurface().toString().contains("notif-read-browser"));
+    assertNotificationCenterBrowserSafe(markReadAgain.resultSurface());
+
+    var dismissed = runNotificationAction("action-notification-dismiss", "notif-dismiss-browser", Map.of("notificationId", "notif-dismiss-browser"), "corr-my-notifications-browser-dismiss");
+    assertEquals("full", dismissed.status());
+    assertTrue(dismissed.message().contains("source state unchanged"));
+    assertFalse(dismissed.resultSurface().toString().contains("notif-dismiss-browser"));
+    assertNotificationCenterBrowserSafe(dismissed.resultSurface());
+
+    var archived = runNotificationAction("action-notification-archive", "notif-archive-browser", Map.of("notificationId", "notif-archive-browser"), "corr-my-notifications-browser-archive");
+    assertEquals("full", archived.status());
+    assertTrue(archived.message().contains("source state unchanged"));
+    assertFalse(archived.resultSurface().toString().contains("notif-archive-browser"));
+    assertNotificationCenterBrowserSafe(archived.resultSurface());
+
+    var snoozed = runNotificationAction("action-notification-snooze", "notif-snooze-browser", Map.of("notificationId", "notif-snooze-browser"), "corr-my-notifications-browser-snooze");
+    assertEquals("full", snoozed.status());
+    assertTrue(snoozed.message().contains("source state unchanged"));
+    assertFalse(snoozed.resultSurface().toString().contains("notif-snooze-browser"), "Future-snoozed notifications are hidden from active center until due.");
+    assertNotificationCenterBrowserSafe(snoozed.resultSurface());
+
+    var preferences = runNotificationAction("action-notification-update-preferences", null, Map.of("enabled", false, "includeReadInCenter", true), "corr-my-notifications-browser-preferences");
+    assertEquals("accepted", preferences.status());
+    assertEquals("surface-my-account-notification-center", preferences.resultSurface().surfaceId());
+    assertTrue(preferences.message().contains("email delivery remains a separate governed channel"));
+    assertTrue(preferences.resultSurface().toString().contains("preferencesSummary"));
+    assertNotificationCenterBrowserSafe(preferences.resultSurface());
+
+    var memberDenied = new CapabilityActionRequest(
+        "action-notification-mark-read",
+        "action-notification-mark-read",
+        "notification.mark_read",
+        "notification.mark_read",
+        Map.of("notificationId", "notif-read-browser"),
+        null,
+        MEMBER_CONTEXT_ID,
+        "surface-my-account-notification-center",
+        "corr-my-notifications-browser-member-denied");
+    assertThrows(RuntimeException.class, () -> runAction(memberDenied, MEMBER_CONTEXT_ID, "member@example.test", "Member User"));
+    assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-account-notification-center").responseBodyAs(String.class).invoke());
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesMySettingsRuntimePath() throws Exception {
     var settings = getSurface("surface-my-settings", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-settings-browser-read");
     assertEquals("surface-my-settings", settings.surfaceId());
@@ -468,6 +551,27 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     return response.body();
   }
 
+  private CapabilityActionResult runNotificationAction(String actionId, String notificationId, Map<String, Object> input, String correlationId) throws Exception {
+    var capabilityId = switch (actionId) {
+      case "action-notification-mark-read" -> "notification.mark_read";
+      case "action-notification-dismiss" -> "notification.dismiss";
+      case "action-notification-archive" -> "notification.archive";
+      case "action-notification-snooze" -> "notification.snooze";
+      case "action-notification-update-preferences" -> "notification.update_preferences";
+      default -> actionId;
+    };
+    return runAction(new CapabilityActionRequest(
+        actionId,
+        actionId,
+        capabilityId,
+        capabilityId,
+        input,
+        notificationId == null ? null : "idem-" + actionId + "-" + notificationId,
+        ADMIN_CONTEXT_ID,
+        "surface-my-account-notification-center",
+        correlationId), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+  }
+
   private CapabilityActionResult runAction(CapabilityActionRequest request, String selectedContextId, String email, String name) throws Exception {
     var response = httpClient
         .POST("/api/workstream/actions")
@@ -479,6 +583,39 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke();
     assertTrue(response.status().isSuccess());
     return response.body();
+  }
+
+  private void seedNotification(String notificationId, String title, String summary, NotificationCategory category, NotificationPriority priority, String correlationId) {
+    var now = Instant.parse("2026-05-24T10:15:30Z");
+    new AkkaNotificationRepository(componentClient).save(new NotificationItem(
+        notificationId,
+        TENANT_ID,
+        null,
+        "admin@example.test",
+        ADMIN_CONTEXT_ID,
+        NotificationChannel.IN_APP,
+        title,
+        summary,
+        category,
+        priority,
+        NotificationLifecycleStatus.UNREAD,
+        List.of(new NotificationSourceRef("workstream", notificationId + "-source", "Authorized source", "my_account.view_summary", "trace-" + notificationId, correlationId)),
+        new NotificationSurfaceRef("agent-my-account", "surface-my-account-dashboard", "dashboard", notificationId + "-source", "browser-tool-open-source", "my_account.view_summary"),
+        "my_account.view_summary",
+        "my-account",
+        "workstream-event",
+        NotificationRedactionLevel.FULL,
+        "dedupe-" + notificationId,
+        correlationId,
+        List.of("trace-" + notificationId),
+        now,
+        now,
+        now,
+        null,
+        null,
+        null,
+        null,
+        null));
   }
 
   private void seedIdentity(AkkaIdentityRepository repository, String email, String displayName, String membershipId, List<FoundationRole> roles) {
@@ -520,6 +657,24 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(text.contains("hidden-cross-tenant-name"));
     assertFalse(text.contains("test-fake-provider"));
     assertFalse(text.contains("test-fake-model"));
+  }
+
+  private static void assertNotificationCenterBrowserSafe(SurfaceEnvelope payload) {
+    var text = String.valueOf(payload);
+    assertTrue(text.contains("my_account.notification_center.v1"));
+    assertTrue(text.contains("in_app"));
+    assertFalse(text.contains("email channel controls"));
+    assertFalse(text.contains("deliveryAttempt"));
+    assertFalse(text.contains("outboxId"));
+    assertFalse(text.contains("providerSecret"));
+    assertFalse(text.contains("RESEND_API_KEY"));
+    assertFalse(text.contains("Bearer "));
+    assertFalse(text.contains("workos-admin"));
+    assertFalse(text.contains("test-fake-provider"));
+    assertFalse(text.contains("test-fake-model"));
+    assertFalse(text.contains("hiddenCategories=["));
+    assertFalse(text.contains("slack"));
+    assertFalse(text.contains("webhook destination"));
   }
 
   private static void assertSettingsSurfaceBrowserSafe(SurfaceEnvelope payload) {

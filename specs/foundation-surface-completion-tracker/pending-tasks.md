@@ -530,7 +530,7 @@
 
 ### TASK-FSCT-015: Verify or complete runtime testing for `surface-my-account-notification-center`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-014]
 - surface id: `surface-my-account-notification-center`
@@ -555,15 +555,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - notes:
   - surface type: `notification-center`
   - surface contract: `my_account.notification_center.v1`
   - purpose: Personal in-app triage for authorized notifications.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream My Account functional agent surface `surface-my-account-notification-center`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-notification-center`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-16: added protected Akka-hosted notification-center runtime smoke coverage in `MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyAccountNotificationCenterRuntimePath`: JWT plus selected AuthContext loads `surface-my-account-notification-center`, verifies backend-owned `my_account.notification_center.v1` in-app payload/capability actions/trace/correlation/secret-boundary evidence, exercises mark-read including repeat lifecycle/no-source-mutation behavior, dismiss, archive, snooze, and in-app preference update through `/api/workstream/actions`, denies regular-member access to another user's notification without enumeration, rejects missing bearer access, and confirms external-channel/provider/outbox controls are omitted. runtime evidence: readiness level `runtime-ready` for the notification-center testing scope; role/AuthContext/tenant setup covered tenant admin and tenant employee in `tenant-starter`; denial/provider/fail-closed/trace coverage included cross-account/member denial, missing bearer rejection, source-state-unchanged lifecycle messages, external-channel/provider/outbox redaction, trace refs, and correlation ids; commands passed: `mvn -q -Dtest=MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyAccountNotificationCenterRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-016: Verify or complete app-description specification for `surface-my-account-personal-attention-digest-progress`
 
