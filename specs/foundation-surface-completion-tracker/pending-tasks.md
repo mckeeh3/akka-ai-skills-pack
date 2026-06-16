@@ -1,0 +1,7996 @@
+# Pending Tasks: Foundation Surface Completion Tracker
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Mark the selected task `in-progress` before edits and `done` only after checks and done criteria pass.
+- Update `surface-completion-tracker.md` for the matching surface/objective before finishing.
+- Commit the task changes and queue/tracker update together when possible.
+- Valid statuses: `pending`, `in-progress`, `blocked`, `done`, `deferred`, `superseded`.
+
+## Tasks
+
+### TASK-FSCT-000: Create foundation surface completion tracker scaffold
+
+- status: done
+- source: user requested mini-project for every foundation dashboard/surface and three completion objectives
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - app-description/domains/core-starter/workstreams/*/surfaces/surfaces.md
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/conversation-capture.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - specs/foundation-surface-completion-tracker/pending-tasks.md
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - tracker lists every known foundation surface and creates three objective sub-tasks per surface
+- notes:
+  - planning scaffold created in current session; commit deferred to caller because repository already has unrelated uncommitted skills-pack changes
+  - vertical contract: non-runtime docs-only scaffold; validation: `git diff --check`
+
+### TASK-FSCT-001: Verify or complete app-description specification for `surface-my-account-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-my-account-dashboard`
+- workstream: My Account
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `my_account.personal_command_center.v1`
+  - purpose: Personal command center for attention, authority, settings, notifications, and digest/export work.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-account-dashboard` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-002: Verify or complete runtime implementation for `surface-my-account-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-001]
+- surface id: `surface-my-account-dashboard`
+- workstream: My Account
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `my_account.personal_command_center.v1`
+  - purpose: Personal command center for attention, authority, settings, notifications, and digest/export work.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream My Account functional agent surface `surface-my-account-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-dashboard`; surface graph node/action edge for opening or acting on `surface-my-account-dashboard`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-003: Verify or complete runtime testing for `surface-my-account-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-002]
+- surface id: `surface-my-account-dashboard`
+- workstream: My Account
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `my_account.personal_command_center.v1`
+  - purpose: Personal command center for attention, authority, settings, notifications, and digest/export work.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream My Account functional agent surface `surface-my-account-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-dashboard`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-004: Verify or complete app-description specification for `surface-my-profile`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-my-profile`
+- workstream: My Account
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `detail-edit`
+  - surface contract: `my_account.profile.self_service.v1`
+  - purpose: Browser-safe identity/profile self-service with clear immutable/provider-backed fields.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-profile` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-005: Verify or complete runtime implementation for `surface-my-profile`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-004]
+- surface id: `surface-my-profile`
+- workstream: My Account
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `detail-edit`
+  - surface contract: `my_account.profile.self_service.v1`
+  - purpose: Browser-safe identity/profile self-service with clear immutable/provider-backed fields.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream My Account functional agent surface `surface-my-profile`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-profile`; surface graph node/action edge for opening or acting on `surface-my-profile`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-006: Verify or complete runtime testing for `surface-my-profile`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-005]
+- surface id: `surface-my-profile`
+- workstream: My Account
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `detail-edit`
+  - surface contract: `my_account.profile.self_service.v1`
+  - purpose: Browser-safe identity/profile self-service with clear immutable/provider-backed fields.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream My Account functional agent surface `surface-my-profile`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-profile`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-007: Verify or complete app-description specification for `surface-my-settings`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-my-settings`
+- workstream: My Account
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `detail-edit`
+  - surface contract: `my_account.preferences.self_service.v1`
+  - purpose: Personal preferences, named theme selection, locale/timezone, and preference save state.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-settings` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-008: Verify or complete runtime implementation for `surface-my-settings`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-007]
+- surface id: `surface-my-settings`
+- workstream: My Account
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `detail-edit`
+  - surface contract: `my_account.preferences.self_service.v1`
+  - purpose: Personal preferences, named theme selection, locale/timezone, and preference save state.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream My Account functional agent surface `surface-my-settings`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-settings`; surface graph node/action edge for opening or acting on `surface-my-settings`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-009: Verify or complete runtime testing for `surface-my-settings`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-008]
+- surface id: `surface-my-settings`
+- workstream: My Account
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `detail-edit`
+  - surface contract: `my_account.preferences.self_service.v1`
+  - purpose: Personal preferences, named theme selection, locale/timezone, and preference save state.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream My Account functional agent surface `surface-my-settings`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-settings`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-010: Verify or complete app-description specification for `surface-my-context`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-my-context`
+- workstream: My Account
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `detail-edit / authority panel`
+  - surface contract: `my_account.context_authority.v1`
+  - purpose: Selected AuthContext, active membership, role/capability basis, and context-switch targets.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-context` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-011: Verify or complete runtime implementation for `surface-my-context`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-010]
+- surface id: `surface-my-context`
+- workstream: My Account
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `detail-edit / authority panel`
+  - surface contract: `my_account.context_authority.v1`
+  - purpose: Selected AuthContext, active membership, role/capability basis, and context-switch targets.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream My Account functional agent surface `surface-my-context`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-context`; surface graph node/action edge for opening or acting on `surface-my-context`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-012: Verify or complete runtime testing for `surface-my-context`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-011]
+- surface id: `surface-my-context`
+- workstream: My Account
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `detail-edit / authority panel`
+  - surface contract: `my_account.context_authority.v1`
+  - purpose: Selected AuthContext, active membership, role/capability basis, and context-switch targets.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream My Account functional agent surface `surface-my-context`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-context`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-013: Verify or complete app-description specification for `surface-my-account-notification-center`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-my-account-notification-center`
+- workstream: My Account
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `notification-center`
+  - surface contract: `my_account.notification_center.v1`
+  - purpose: Personal in-app triage for authorized notifications.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-account-notification-center` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-014: Verify or complete runtime implementation for `surface-my-account-notification-center`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-013]
+- surface id: `surface-my-account-notification-center`
+- workstream: My Account
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `notification-center`
+  - surface contract: `my_account.notification_center.v1`
+  - purpose: Personal in-app triage for authorized notifications.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream My Account functional agent surface `surface-my-account-notification-center`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-notification-center`; surface graph node/action edge for opening or acting on `surface-my-account-notification-center`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-015: Verify or complete runtime testing for `surface-my-account-notification-center`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-014]
+- surface id: `surface-my-account-notification-center`
+- workstream: My Account
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `notification-center`
+  - surface contract: `my_account.notification_center.v1`
+  - purpose: Personal in-app triage for authorized notifications.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream My Account functional agent surface `surface-my-account-notification-center`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-notification-center`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-016: Verify or complete app-description specification for `surface-my-account-personal-attention-digest-progress`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-my-account-personal-attention-digest-progress`
+- workstream: My Account
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `my_account.personal_attention_digest.progress.v1`
+  - purpose: Autonomous personal briefing/digest task progress.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-account-personal-attention-digest-progress` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-017: Verify or complete runtime implementation for `surface-my-account-personal-attention-digest-progress`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-016]
+- surface id: `surface-my-account-personal-attention-digest-progress`
+- workstream: My Account
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `my_account.personal_attention_digest.progress.v1`
+  - purpose: Autonomous personal briefing/digest task progress.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream My Account functional agent surface `surface-my-account-personal-attention-digest-progress`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-personal-attention-digest-progress`; surface graph node/action edge for opening or acting on `surface-my-account-personal-attention-digest-progress`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-018: Verify or complete runtime testing for `surface-my-account-personal-attention-digest-progress`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-017]
+- surface id: `surface-my-account-personal-attention-digest-progress`
+- workstream: My Account
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `my_account.personal_attention_digest.progress.v1`
+  - purpose: Autonomous personal briefing/digest task progress.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream My Account functional agent surface `surface-my-account-personal-attention-digest-progress`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-personal-attention-digest-progress`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-019: Verify or complete app-description specification for `surface-my-account-personal-attention-digest-result`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-my-account-personal-attention-digest-result`
+- workstream: My Account
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `outcome-panel`
+  - surface contract: `my_account.personal_attention_digest.result.v1`
+  - purpose: Advisory digest/export result review with evidence, omissions, and accept/reject actions.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-account-personal-attention-digest-result` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-020: Verify or complete runtime implementation for `surface-my-account-personal-attention-digest-result`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-019]
+- surface id: `surface-my-account-personal-attention-digest-result`
+- workstream: My Account
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `outcome-panel`
+  - surface contract: `my_account.personal_attention_digest.result.v1`
+  - purpose: Advisory digest/export result review with evidence, omissions, and accept/reject actions.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream My Account functional agent surface `surface-my-account-personal-attention-digest-result`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-personal-attention-digest-result`; surface graph node/action edge for opening or acting on `surface-my-account-personal-attention-digest-result`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-021: Verify or complete runtime testing for `surface-my-account-personal-attention-digest-result`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-020]
+- surface id: `surface-my-account-personal-attention-digest-result`
+- workstream: My Account
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `outcome-panel`
+  - surface contract: `my_account.personal_attention_digest.result.v1`
+  - purpose: Advisory digest/export result review with evidence, omissions, and accept/reject actions.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream My Account functional agent surface `surface-my-account-personal-attention-digest-result`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-personal-attention-digest-result`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-022: Verify or complete app-description specification for `surface-my-account-personal-attention-digest-blocked`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-my-account-personal-attention-digest-blocked`
+- workstream: My Account
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `system-message`
+  - surface contract: `my_account.personal_attention_digest.blocked.v1`
+  - purpose: Provider/runtime fail-closed explanation and recovery.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-account-personal-attention-digest-blocked` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-023: Verify or complete runtime implementation for `surface-my-account-personal-attention-digest-blocked`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-022]
+- surface id: `surface-my-account-personal-attention-digest-blocked`
+- workstream: My Account
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `system-message`
+  - surface contract: `my_account.personal_attention_digest.blocked.v1`
+  - purpose: Provider/runtime fail-closed explanation and recovery.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream My Account functional agent surface `surface-my-account-personal-attention-digest-blocked`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-personal-attention-digest-blocked`; surface graph node/action edge for opening or acting on `surface-my-account-personal-attention-digest-blocked`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-024: Verify or complete runtime testing for `surface-my-account-personal-attention-digest-blocked`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-023]
+- surface id: `surface-my-account-personal-attention-digest-blocked`
+- workstream: My Account
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `system-message`
+  - surface contract: `my_account.personal_attention_digest.blocked.v1`
+  - purpose: Provider/runtime fail-closed explanation and recovery.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream My Account functional agent surface `surface-my-account-personal-attention-digest-blocked`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-personal-attention-digest-blocked`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-025: Verify or complete app-description specification for `surface-my-account-open-denied`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-my-account-open-denied`
+- workstream: My Account
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `system-message`
+  - surface contract: `my_account.open_denied.v1`
+  - purpose: Safe not-found/redacted/unavailable workstream recovery.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-account-open-denied` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-026: Verify or complete runtime implementation for `surface-my-account-open-denied`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-025]
+- surface id: `surface-my-account-open-denied`
+- workstream: My Account
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `system-message`
+  - surface contract: `my_account.open_denied.v1`
+  - purpose: Safe not-found/redacted/unavailable workstream recovery.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream My Account functional agent surface `surface-my-account-open-denied`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-open-denied`; surface graph node/action edge for opening or acting on `surface-my-account-open-denied`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-027: Verify or complete runtime testing for `surface-my-account-open-denied`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-026]
+- surface id: `surface-my-account-open-denied`
+- workstream: My Account
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `system-message`
+  - surface contract: `my_account.open_denied.v1`
+  - purpose: Safe not-found/redacted/unavailable workstream recovery.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream My Account functional agent surface `surface-my-account-open-denied`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-open-denied`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-028: Verify or complete app-description specification for `surface-user-admin-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-dashboard`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `user_admin.dashboard.v1`
+  - purpose: Attention-first User Admin command center for SaaS Owner Admin, Organization, Organization Admin, directory, invitation, role, support, review, provider, and audit health.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-dashboard` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-029: Verify or complete runtime implementation for `surface-user-admin-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-028]
+- surface id: `surface-user-admin-dashboard`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `user_admin.dashboard.v1`
+  - purpose: Attention-first User Admin command center for SaaS Owner Admin, Organization, Organization Admin, directory, invitation, role, support, review, provider, and audit health.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-dashboard`; surface graph node/action edge for opening or acting on `surface-user-admin-dashboard`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-030: Verify or complete runtime testing for `surface-user-admin-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-029]
+- surface id: `surface-user-admin-dashboard`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `user_admin.dashboard.v1`
+  - purpose: Attention-first User Admin command center for SaaS Owner Admin, Organization, Organization Admin, directory, invitation, role, support, review, provider, and audit health.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-dashboard`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-031: Verify or complete app-description specification for `surface-user-admin-saas-owner-admins`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-saas-owner-admins`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.saas_owner_admins.v1`
+  - purpose: SaaS Owner scoped directory for app-owner/admin users and invitations.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-saas-owner-admins` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-032: Verify or complete runtime implementation for `surface-user-admin-saas-owner-admins`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-031]
+- surface id: `surface-user-admin-saas-owner-admins`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.saas_owner_admins.v1`
+  - purpose: SaaS Owner scoped directory for app-owner/admin users and invitations.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-saas-owner-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-saas-owner-admins`; surface graph node/action edge for opening or acting on `surface-user-admin-saas-owner-admins`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-033: Verify or complete runtime testing for `surface-user-admin-saas-owner-admins`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-032]
+- surface id: `surface-user-admin-saas-owner-admins`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.saas_owner_admins.v1`
+  - purpose: SaaS Owner scoped directory for app-owner/admin users and invitations.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-saas-owner-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-saas-owner-admins`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-034: Verify or complete app-description specification for `surface-user-admin-saas-owner-admin-invitation-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-saas-owner-admin-invitation-create`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.saas_owner_admin_invitation_create.v1`
+  - purpose: Invitation form for another SaaS Owner Admin with role validation, idempotency, outbox boundary, and audit.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-saas-owner-admin-invitation-create` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-035: Verify or complete runtime implementation for `surface-user-admin-saas-owner-admin-invitation-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-034]
+- surface id: `surface-user-admin-saas-owner-admin-invitation-create`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.saas_owner_admin_invitation_create.v1`
+  - purpose: Invitation form for another SaaS Owner Admin with role validation, idempotency, outbox boundary, and audit.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-saas-owner-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-saas-owner-admin-invitation-create`; surface graph node/action edge for opening or acting on `surface-user-admin-saas-owner-admin-invitation-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-036: Verify or complete runtime testing for `surface-user-admin-saas-owner-admin-invitation-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-035]
+- surface id: `surface-user-admin-saas-owner-admin-invitation-create`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.saas_owner_admin_invitation_create.v1`
+  - purpose: Invitation form for another SaaS Owner Admin with role validation, idempotency, outbox boundary, and audit.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-saas-owner-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-saas-owner-admin-invitation-create`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-037: Verify or complete app-description specification for `surface-user-admin-users`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-users`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.users.v1`
+  - purpose: Scoped searchable directory for users/memberships.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-users` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-038: Verify or complete runtime implementation for `surface-user-admin-users`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-037]
+- surface id: `surface-user-admin-users`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.users.v1`
+  - purpose: Scoped searchable directory for users/memberships.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-users`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-users`; surface graph node/action edge for opening or acting on `surface-user-admin-users`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-039: Verify or complete runtime testing for `surface-user-admin-users`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-038]
+- surface id: `surface-user-admin-users`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.users.v1`
+  - purpose: Scoped searchable directory for users/memberships.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-users`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-users`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-040: Verify or complete app-description specification for `surface-user-admin-user-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-user-detail`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.user_detail.v1`
+  - purpose: Scoped account, membership, invitation, support-access, access-review, identity, and audit inspection.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-user-detail` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-041: Verify or complete runtime implementation for `surface-user-admin-user-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-040]
+- surface id: `surface-user-admin-user-detail`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.user_detail.v1`
+  - purpose: Scoped account, membership, invitation, support-access, access-review, identity, and audit inspection.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-user-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-user-detail`; surface graph node/action edge for opening or acting on `surface-user-admin-user-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-042: Verify or complete runtime testing for `surface-user-admin-user-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-041]
+- surface id: `surface-user-admin-user-detail`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.user_detail.v1`
+  - purpose: Scoped account, membership, invitation, support-access, access-review, identity, and audit inspection.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-user-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-user-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-043: Verify or complete app-description specification for `surface-user-admin-invitation-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-invitation-create`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.invitation_create.v1`
+  - purpose: Single-purpose invitation creation form.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-invitation-create` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-044: Verify or complete runtime implementation for `surface-user-admin-invitation-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-043]
+- surface id: `surface-user-admin-invitation-create`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.invitation_create.v1`
+  - purpose: Single-purpose invitation creation form.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-create`; surface graph node/action edge for opening or acting on `surface-user-admin-invitation-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-045: Verify or complete runtime testing for `surface-user-admin-invitation-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-044]
+- surface id: `surface-user-admin-invitation-create`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.invitation_create.v1`
+  - purpose: Single-purpose invitation creation form.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-create`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-046: Verify or complete app-description specification for `surface-user-admin-invitation-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-invitation-detail`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `show-inspection / workflow-status`
+  - surface contract: `user_admin.invitation_detail.v1`
+  - purpose: Lifecycle-aware invitation inspection.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-invitation-detail` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-047: Verify or complete runtime implementation for `surface-user-admin-invitation-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-046]
+- surface id: `surface-user-admin-invitation-detail`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `show-inspection / workflow-status`
+  - surface contract: `user_admin.invitation_detail.v1`
+  - purpose: Lifecycle-aware invitation inspection.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-detail`; surface graph node/action edge for opening or acting on `surface-user-admin-invitation-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-048: Verify or complete runtime testing for `surface-user-admin-invitation-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-047]
+- surface id: `surface-user-admin-invitation-detail`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `show-inspection / workflow-status`
+  - surface contract: `user_admin.invitation_detail.v1`
+  - purpose: Lifecycle-aware invitation inspection.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-049: Verify or complete app-description specification for `surface-user-admin-invitation-resend-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-invitation-resend-confirmation`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `user_admin.invitation_resend_confirmation.v1`
+  - purpose: Single-purpose resend confirmation.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-invitation-resend-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-050: Verify or complete runtime implementation for `surface-user-admin-invitation-resend-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-049]
+- surface id: `surface-user-admin-invitation-resend-confirmation`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `user_admin.invitation_resend_confirmation.v1`
+  - purpose: Single-purpose resend confirmation.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-resend-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-resend-confirmation`; surface graph node/action edge for opening or acting on `surface-user-admin-invitation-resend-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-051: Verify or complete runtime testing for `surface-user-admin-invitation-resend-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-050]
+- surface id: `surface-user-admin-invitation-resend-confirmation`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `user_admin.invitation_resend_confirmation.v1`
+  - purpose: Single-purpose resend confirmation.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-resend-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-resend-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-052: Verify or complete app-description specification for `surface-user-admin-invitation-revoke-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-invitation-revoke-confirmation`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.invitation_revoke_confirmation.v1`
+  - purpose: Single-purpose invitation revoke confirmation.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-invitation-revoke-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-053: Verify or complete runtime implementation for `surface-user-admin-invitation-revoke-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-052]
+- surface id: `surface-user-admin-invitation-revoke-confirmation`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.invitation_revoke_confirmation.v1`
+  - purpose: Single-purpose invitation revoke confirmation.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-revoke-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-revoke-confirmation`; surface graph node/action edge for opening or acting on `surface-user-admin-invitation-revoke-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-054: Verify or complete runtime testing for `surface-user-admin-invitation-revoke-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-053]
+- surface id: `surface-user-admin-invitation-revoke-confirmation`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.invitation_revoke_confirmation.v1`
+  - purpose: Single-purpose invitation revoke confirmation.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-revoke-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-revoke-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-055: Verify or complete app-description specification for `surface-user-admin-membership-status-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-membership-status-confirmation`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.membership_status_confirmation.v1`
+  - purpose: Disable/suspend/reactivate/remove membership or account confirmation.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-membership-status-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-056: Verify or complete runtime implementation for `surface-user-admin-membership-status-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-055]
+- surface id: `surface-user-admin-membership-status-confirmation`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.membership_status_confirmation.v1`
+  - purpose: Disable/suspend/reactivate/remove membership or account confirmation.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-membership-status-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-membership-status-confirmation`; surface graph node/action edge for opening or acting on `surface-user-admin-membership-status-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-057: Verify or complete runtime testing for `surface-user-admin-membership-status-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-056]
+- surface id: `surface-user-admin-membership-status-confirmation`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.membership_status_confirmation.v1`
+  - purpose: Disable/suspend/reactivate/remove membership or account confirmation.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-membership-status-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-membership-status-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-058: Verify or complete app-description specification for `surface-user-admin-role-change-preview`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-role-change-preview`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `decision-card / diff`
+  - surface contract: `user_admin.role_change_preview.v1`
+  - purpose: Capability delta and approval preview before role mutation.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-role-change-preview` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-059: Verify or complete runtime implementation for `surface-user-admin-role-change-preview`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-058]
+- surface id: `surface-user-admin-role-change-preview`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `decision-card / diff`
+  - surface contract: `user_admin.role_change_preview.v1`
+  - purpose: Capability delta and approval preview before role mutation.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-role-change-preview`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-role-change-preview`; surface graph node/action edge for opening or acting on `surface-user-admin-role-change-preview`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-060: Verify or complete runtime testing for `surface-user-admin-role-change-preview`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-059]
+- surface id: `surface-user-admin-role-change-preview`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `decision-card / diff`
+  - surface contract: `user_admin.role_change_preview.v1`
+  - purpose: Capability delta and approval preview before role mutation.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-role-change-preview`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-role-change-preview`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-061: Verify or complete app-description specification for `surface-user-admin-support-access-grant`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-support-access-grant`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.support_access_grant.v1`
+  - purpose: Support-access grant/extend form.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-support-access-grant` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-062: Verify or complete runtime implementation for `surface-user-admin-support-access-grant`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-061]
+- surface id: `surface-user-admin-support-access-grant`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.support_access_grant.v1`
+  - purpose: Support-access grant/extend form.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-support-access-grant`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-support-access-grant`; surface graph node/action edge for opening or acting on `surface-user-admin-support-access-grant`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-063: Verify or complete runtime testing for `surface-user-admin-support-access-grant`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-062]
+- surface id: `surface-user-admin-support-access-grant`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.support_access_grant.v1`
+  - purpose: Support-access grant/extend form.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-support-access-grant`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-support-access-grant`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-064: Verify or complete app-description specification for `surface-user-admin-support-access-revoke-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-support-access-revoke-confirmation`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.support_access_revoke_confirmation.v1`
+  - purpose: Support-access revoke confirmation.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-support-access-revoke-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-065: Verify or complete runtime implementation for `surface-user-admin-support-access-revoke-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-064]
+- surface id: `surface-user-admin-support-access-revoke-confirmation`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.support_access_revoke_confirmation.v1`
+  - purpose: Support-access revoke confirmation.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-support-access-revoke-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-support-access-revoke-confirmation`; surface graph node/action edge for opening or acting on `surface-user-admin-support-access-revoke-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-066: Verify or complete runtime testing for `surface-user-admin-support-access-revoke-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-065]
+- surface id: `surface-user-admin-support-access-revoke-confirmation`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.support_access_revoke_confirmation.v1`
+  - purpose: Support-access revoke confirmation.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-support-access-revoke-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-support-access-revoke-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-067: Verify or complete app-description specification for `surface-user-admin-access-review-task`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-access-review-task`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `workflow-status / outcome-panel`
+  - surface contract: `user_admin.access_review_task.v1`
+  - purpose: Durable access-review task progress, result, blockers, and human review.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-access-review-task` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-068: Verify or complete runtime implementation for `surface-user-admin-access-review-task`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-067]
+- surface id: `surface-user-admin-access-review-task`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `workflow-status / outcome-panel`
+  - surface contract: `user_admin.access_review_task.v1`
+  - purpose: Durable access-review task progress, result, blockers, and human review.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-access-review-task`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-access-review-task`; surface graph node/action edge for opening or acting on `surface-user-admin-access-review-task`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-069: Verify or complete runtime testing for `surface-user-admin-access-review-task`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-068]
+- surface id: `surface-user-admin-access-review-task`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `workflow-status / outcome-panel`
+  - surface contract: `user_admin.access_review_task.v1`
+  - purpose: Durable access-review task progress, result, blockers, and human review.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-access-review-task`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-access-review-task`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-070: Verify or complete app-description specification for `surface-user-admin-identity-exception-review`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-identity-exception-review`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `decision-card / workflow-status`
+  - surface contract: `user_admin.identity_exception_review.v1`
+  - purpose: Identity-link/relink exception review and approved recovery routing.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-identity-exception-review` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-071: Verify or complete runtime implementation for `surface-user-admin-identity-exception-review`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-070]
+- surface id: `surface-user-admin-identity-exception-review`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `decision-card / workflow-status`
+  - surface contract: `user_admin.identity_exception_review.v1`
+  - purpose: Identity-link/relink exception review and approved recovery routing.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-identity-exception-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-identity-exception-review`; surface graph node/action edge for opening or acting on `surface-user-admin-identity-exception-review`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-072: Verify or complete runtime testing for `surface-user-admin-identity-exception-review`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-071]
+- surface id: `surface-user-admin-identity-exception-review`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `decision-card / workflow-status`
+  - surface contract: `user_admin.identity_exception_review.v1`
+  - purpose: Identity-link/relink exception review and approved recovery routing.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-identity-exception-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-identity-exception-review`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-073: Verify or complete app-description specification for `surface-user-admin-organization-directory`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-organization-directory`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.organization_directory.v1`
+  - purpose: SaaS Owner Organization directory.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-directory` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-074: Verify or complete runtime implementation for `surface-user-admin-organization-directory`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-073]
+- surface id: `surface-user-admin-organization-directory`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.organization_directory.v1`
+  - purpose: SaaS Owner Organization directory.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-directory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-directory`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-directory`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-075: Verify or complete runtime testing for `surface-user-admin-organization-directory`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-074]
+- surface id: `surface-user-admin-organization-directory`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.organization_directory.v1`
+  - purpose: SaaS Owner Organization directory.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-directory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-directory`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-076: Verify or complete app-description specification for `surface-user-admin-organization-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-organization-detail`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.organization_detail.v1`
+  - purpose: Lifecycle-aware Organization inspection.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-detail` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-077: Verify or complete runtime implementation for `surface-user-admin-organization-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-076]
+- surface id: `surface-user-admin-organization-detail`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.organization_detail.v1`
+  - purpose: Lifecycle-aware Organization inspection.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-detail`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-078: Verify or complete runtime testing for `surface-user-admin-organization-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-077]
+- surface id: `surface-user-admin-organization-detail`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.organization_detail.v1`
+  - purpose: Lifecycle-aware Organization inspection.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-079: Verify or complete app-description specification for `surface-user-admin-organization-admins`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-organization-admins`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.organization_admins.v1`
+  - purpose: Directory of Organization Admin users/invitations for one selected Organization/Tenant.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-admins` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-080: Verify or complete runtime implementation for `surface-user-admin-organization-admins`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-079]
+- surface id: `surface-user-admin-organization-admins`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.organization_admins.v1`
+  - purpose: Directory of Organization Admin users/invitations for one selected Organization/Tenant.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admins`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-admins`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-081: Verify or complete runtime testing for `surface-user-admin-organization-admins`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-080]
+- surface id: `surface-user-admin-organization-admins`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.organization_admins.v1`
+  - purpose: Directory of Organization Admin users/invitations for one selected Organization/Tenant.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admins`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-082: Verify or complete app-description specification for `surface-user-admin-organization-admin-invitation-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-organization-admin-invitation-create`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.organization_admin_invitation_create.v1`
+  - purpose: Bootstrap/invite form for a TENANT_ADMIN.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-admin-invitation-create` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-083: Verify or complete runtime implementation for `surface-user-admin-organization-admin-invitation-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-082]
+- surface id: `surface-user-admin-organization-admin-invitation-create`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.organization_admin_invitation_create.v1`
+  - purpose: Bootstrap/invite form for a TENANT_ADMIN.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admin-invitation-create`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-admin-invitation-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-084: Verify or complete runtime testing for `surface-user-admin-organization-admin-invitation-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-083]
+- surface id: `surface-user-admin-organization-admin-invitation-create`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.organization_admin_invitation_create.v1`
+  - purpose: Bootstrap/invite form for a TENANT_ADMIN.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admin-invitation-create`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-085: Verify or complete app-description specification for `surface-user-admin-organization-admin-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-organization-admin-detail`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.organization_admin_detail.v1`
+  - purpose: Shows one Organization Admin membership/invitation.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-admin-detail` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-086: Verify or complete runtime implementation for `surface-user-admin-organization-admin-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-085]
+- surface id: `surface-user-admin-organization-admin-detail`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.organization_admin_detail.v1`
+  - purpose: Shows one Organization Admin membership/invitation.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admin-detail`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-admin-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-087: Verify or complete runtime testing for `surface-user-admin-organization-admin-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-086]
+- surface id: `surface-user-admin-organization-admin-detail`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.organization_admin_detail.v1`
+  - purpose: Shows one Organization Admin membership/invitation.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admin-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-088: Verify or complete app-description specification for `surface-user-admin-organization-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-organization-create`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.organization_create.v1`
+  - purpose: Organization creation form.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-create` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-089: Verify or complete runtime implementation for `surface-user-admin-organization-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-088]
+- surface id: `surface-user-admin-organization-create`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.organization_create.v1`
+  - purpose: Organization creation form.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-create`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-090: Verify or complete runtime testing for `surface-user-admin-organization-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-089]
+- surface id: `surface-user-admin-organization-create`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.organization_create.v1`
+  - purpose: Organization creation form.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-create`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-091: Verify or complete app-description specification for `surface-user-admin-organization-rename`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-organization-rename`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `edit-form`
+  - surface contract: `user_admin.organization_rename.v1`
+  - purpose: Organization display-name edit surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-rename` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-092: Verify or complete runtime implementation for `surface-user-admin-organization-rename`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-091]
+- surface id: `surface-user-admin-organization-rename`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `edit-form`
+  - surface contract: `user_admin.organization_rename.v1`
+  - purpose: Organization display-name edit surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-rename`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-rename`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-rename`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-093: Verify or complete runtime testing for `surface-user-admin-organization-rename`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-092]
+- surface id: `surface-user-admin-organization-rename`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `edit-form`
+  - surface contract: `user_admin.organization_rename.v1`
+  - purpose: Organization display-name edit surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-rename`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-rename`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-094: Verify or complete app-description specification for `surface-user-admin-organization-suspend-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-organization-suspend-confirmation`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.organization_suspend_confirmation.v1`
+  - purpose: Organization suspension confirmation surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-suspend-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-095: Verify or complete runtime implementation for `surface-user-admin-organization-suspend-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-094]
+- surface id: `surface-user-admin-organization-suspend-confirmation`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.organization_suspend_confirmation.v1`
+  - purpose: Organization suspension confirmation surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-suspend-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-suspend-confirmation`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-suspend-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-096: Verify or complete runtime testing for `surface-user-admin-organization-suspend-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-095]
+- surface id: `surface-user-admin-organization-suspend-confirmation`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.organization_suspend_confirmation.v1`
+  - purpose: Organization suspension confirmation surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-suspend-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-suspend-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-097: Verify or complete app-description specification for `surface-user-admin-organization-reactivate-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-organization-reactivate-confirmation`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `user_admin.organization_reactivate_confirmation.v1`
+  - purpose: Organization reactivation confirmation surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-reactivate-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-098: Verify or complete runtime implementation for `surface-user-admin-organization-reactivate-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-097]
+- surface id: `surface-user-admin-organization-reactivate-confirmation`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `user_admin.organization_reactivate_confirmation.v1`
+  - purpose: Organization reactivation confirmation surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-reactivate-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-reactivate-confirmation`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-reactivate-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-099: Verify or complete runtime testing for `surface-user-admin-organization-reactivate-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-098]
+- surface id: `surface-user-admin-organization-reactivate-confirmation`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `user_admin.organization_reactivate_confirmation.v1`
+  - purpose: Organization reactivation confirmation surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-reactivate-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-reactivate-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-100: Verify or complete app-description specification for `surface-user-admin-customer-directory`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-customer-directory`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.customer_directory.v1`
+  - purpose: Organization Admin Customer directory.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-customer-directory` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-101: Verify or complete runtime implementation for `surface-user-admin-customer-directory`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-100]
+- surface id: `surface-user-admin-customer-directory`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.customer_directory.v1`
+  - purpose: Organization Admin Customer directory.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-directory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-directory`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-directory`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-102: Verify or complete runtime testing for `surface-user-admin-customer-directory`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-101]
+- surface id: `surface-user-admin-customer-directory`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.customer_directory.v1`
+  - purpose: Organization Admin Customer directory.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-directory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-directory`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-103: Verify or complete app-description specification for `surface-user-admin-customer-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-customer-detail`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.customer_detail.v1`
+  - purpose: Lifecycle-aware Customer inspection surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-customer-detail` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-104: Verify or complete runtime implementation for `surface-user-admin-customer-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-103]
+- surface id: `surface-user-admin-customer-detail`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.customer_detail.v1`
+  - purpose: Lifecycle-aware Customer inspection surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-detail`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-105: Verify or complete runtime testing for `surface-user-admin-customer-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-104]
+- surface id: `surface-user-admin-customer-detail`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.customer_detail.v1`
+  - purpose: Lifecycle-aware Customer inspection surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-106: Verify or complete app-description specification for `surface-user-admin-customer-admins`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-customer-admins`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.customer_admins.v1`
+  - purpose: Customer Admin users/invitations for one selected Customer.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-customer-admins` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-107: Verify or complete runtime implementation for `surface-user-admin-customer-admins`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-106]
+- surface id: `surface-user-admin-customer-admins`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.customer_admins.v1`
+  - purpose: Customer Admin users/invitations for one selected Customer.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admins`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-admins`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-108: Verify or complete runtime testing for `surface-user-admin-customer-admins`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-107]
+- surface id: `surface-user-admin-customer-admins`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `user_admin.customer_admins.v1`
+  - purpose: Customer Admin users/invitations for one selected Customer.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admins`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-109: Verify or complete app-description specification for `surface-user-admin-customer-admin-invitation-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-customer-admin-invitation-create`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.customer_admin_invitation_create.v1`
+  - purpose: Bootstrap/invite form for a CUSTOMER_ADMIN.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-customer-admin-invitation-create` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-110: Verify or complete runtime implementation for `surface-user-admin-customer-admin-invitation-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-109]
+- surface id: `surface-user-admin-customer-admin-invitation-create`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.customer_admin_invitation_create.v1`
+  - purpose: Bootstrap/invite form for a CUSTOMER_ADMIN.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admin-invitation-create`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-admin-invitation-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-111: Verify or complete runtime testing for `surface-user-admin-customer-admin-invitation-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-110]
+- surface id: `surface-user-admin-customer-admin-invitation-create`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.customer_admin_invitation_create.v1`
+  - purpose: Bootstrap/invite form for a CUSTOMER_ADMIN.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admin-invitation-create`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-112: Verify or complete app-description specification for `surface-user-admin-customer-admin-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-customer-admin-detail`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.customer_admin_detail.v1`
+  - purpose: Shows one Customer Admin membership/invitation.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-customer-admin-detail` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-113: Verify or complete runtime implementation for `surface-user-admin-customer-admin-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-112]
+- surface id: `surface-user-admin-customer-admin-detail`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.customer_admin_detail.v1`
+  - purpose: Shows one Customer Admin membership/invitation.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admin-detail`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-admin-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-114: Verify or complete runtime testing for `surface-user-admin-customer-admin-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-113]
+- surface id: `surface-user-admin-customer-admin-detail`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `user_admin.customer_admin_detail.v1`
+  - purpose: Shows one Customer Admin membership/invitation.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admin-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-115: Verify or complete app-description specification for `surface-user-admin-customer-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-customer-create`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.customer_create.v1`
+  - purpose: Customer creation form.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-customer-create` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-116: Verify or complete runtime implementation for `surface-user-admin-customer-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-115]
+- surface id: `surface-user-admin-customer-create`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.customer_create.v1`
+  - purpose: Customer creation form.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-create`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-117: Verify or complete runtime testing for `surface-user-admin-customer-create`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-116]
+- surface id: `surface-user-admin-customer-create`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `create-form`
+  - surface contract: `user_admin.customer_create.v1`
+  - purpose: Customer creation form.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-create`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-118: Verify or complete app-description specification for `surface-user-admin-customer-rename`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-customer-rename`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `edit-form`
+  - surface contract: `user_admin.customer_rename.v1`
+  - purpose: Customer display-name/profile edit surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-customer-rename` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-119: Verify or complete runtime implementation for `surface-user-admin-customer-rename`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-118]
+- surface id: `surface-user-admin-customer-rename`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `edit-form`
+  - surface contract: `user_admin.customer_rename.v1`
+  - purpose: Customer display-name/profile edit surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-rename`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-rename`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-rename`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-120: Verify or complete runtime testing for `surface-user-admin-customer-rename`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-119]
+- surface id: `surface-user-admin-customer-rename`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `edit-form`
+  - surface contract: `user_admin.customer_rename.v1`
+  - purpose: Customer display-name/profile edit surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-rename`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-rename`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-121: Verify or complete app-description specification for `surface-user-admin-customer-suspend-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-customer-suspend-confirmation`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.customer_suspend_confirmation.v1`
+  - purpose: Customer suspension/archive confirmation surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-customer-suspend-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-122: Verify or complete runtime implementation for `surface-user-admin-customer-suspend-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-121]
+- surface id: `surface-user-admin-customer-suspend-confirmation`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.customer_suspend_confirmation.v1`
+  - purpose: Customer suspension/archive confirmation surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-suspend-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-suspend-confirmation`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-suspend-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-123: Verify or complete runtime testing for `surface-user-admin-customer-suspend-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-122]
+- surface id: `surface-user-admin-customer-suspend-confirmation`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `destructive-lifecycle-confirmation`
+  - surface contract: `user_admin.customer_suspend_confirmation.v1`
+  - purpose: Customer suspension/archive confirmation surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-suspend-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-suspend-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-124: Verify or complete app-description specification for `surface-user-admin-customer-reactivate-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-customer-reactivate-confirmation`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `user_admin.customer_reactivate_confirmation.v1`
+  - purpose: Customer reactivation confirmation surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-customer-reactivate-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-125: Verify or complete runtime implementation for `surface-user-admin-customer-reactivate-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-124]
+- surface id: `surface-user-admin-customer-reactivate-confirmation`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `user_admin.customer_reactivate_confirmation.v1`
+  - purpose: Customer reactivation confirmation surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-reactivate-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-reactivate-confirmation`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-reactivate-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-126: Verify or complete runtime testing for `surface-user-admin-customer-reactivate-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-125]
+- surface id: `surface-user-admin-customer-reactivate-confirmation`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `user_admin.customer_reactivate_confirmation.v1`
+  - purpose: Customer reactivation confirmation surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-reactivate-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-reactivate-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-127: Verify or complete app-description specification for `surface-user-admin-system-message`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-user-admin-system-message`
+- workstream: User Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `system-message`
+  - surface contract: `user_admin.system_message.v1`
+  - purpose: Safe denial, validation, provider/outbox/model blocked, stale, conflict, and no-op recovery.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-system-message` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-128: Verify or complete runtime implementation for `surface-user-admin-system-message`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-127]
+- surface id: `surface-user-admin-system-message`
+- workstream: User Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `system-message`
+  - surface contract: `user_admin.system_message.v1`
+  - purpose: Safe denial, validation, provider/outbox/model blocked, stale, conflict, and no-op recovery.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-system-message`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-system-message`; surface graph node/action edge for opening or acting on `surface-user-admin-system-message`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-129: Verify or complete runtime testing for `surface-user-admin-system-message`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-128]
+- surface id: `surface-user-admin-system-message`
+- workstream: User Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `system-message`
+  - surface contract: `user_admin.system_message.v1`
+  - purpose: Safe denial, validation, provider/outbox/model blocked, stale, conflict, and no-op recovery.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream User Admin functional agent surface `surface-user-admin-system-message`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-system-message`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-130: Verify or complete app-description specification for `surface-agent-admin-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-admin-dashboard`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `agent_admin.dashboard.v1`
+  - purpose: Agent Admin command center.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-admin-dashboard` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-131: Verify or complete runtime implementation for `surface-agent-admin-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-130]
+- surface id: `surface-agent-admin-dashboard`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `agent_admin.dashboard.v1`
+  - purpose: Agent Admin command center.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-dashboard`; surface graph node/action edge for opening or acting on `surface-agent-admin-dashboard`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-132: Verify or complete runtime testing for `surface-agent-admin-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-131]
+- surface id: `surface-agent-admin-dashboard`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `agent_admin.dashboard.v1`
+  - purpose: Agent Admin command center.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-dashboard`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-133: Verify or complete app-description specification for `surface-agent-admin-catalog`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-admin-catalog`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `list-search`
+  - surface contract: `agent_admin.catalog.v1`
+  - purpose: Managed agent catalog.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-admin-catalog` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-134: Verify or complete runtime implementation for `surface-agent-admin-catalog`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-133]
+- surface id: `surface-agent-admin-catalog`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `agent_admin.catalog.v1`
+  - purpose: Managed agent catalog.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-catalog`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-catalog`; surface graph node/action edge for opening or acting on `surface-agent-admin-catalog`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-135: Verify or complete runtime testing for `surface-agent-admin-catalog`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-134]
+- surface id: `surface-agent-admin-catalog`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `agent_admin.catalog.v1`
+  - purpose: Managed agent catalog.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-catalog`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-catalog`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-136: Verify or complete app-description specification for `surface-agent-admin-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-admin-detail`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `agent_admin.detail.v1`
+  - purpose: Agent readiness/behavior inspection.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-admin-detail` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-137: Verify or complete runtime implementation for `surface-agent-admin-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-136]
+- surface id: `surface-agent-admin-detail`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `agent_admin.detail.v1`
+  - purpose: Agent readiness/behavior inspection.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-detail`; surface graph node/action edge for opening or acting on `surface-agent-admin-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-138: Verify or complete runtime testing for `surface-agent-admin-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-137]
+- surface id: `surface-agent-admin-detail`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `show-inspection`
+  - surface contract: `agent_admin.detail.v1`
+  - purpose: Agent readiness/behavior inspection.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-139: Verify or complete app-description specification for `surface-agent-prompt-governance`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-prompt-governance`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `governance-diff / show-inspection`
+  - surface contract: `agent_admin.prompt_governance.v1`
+  - purpose: Prompt governance and behavior artifact review.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-prompt-governance` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-140: Verify or complete runtime implementation for `surface-agent-prompt-governance`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-139]
+- surface id: `surface-agent-prompt-governance`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `governance-diff / show-inspection`
+  - surface contract: `agent_admin.prompt_governance.v1`
+  - purpose: Prompt governance and behavior artifact review.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-prompt-governance`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-prompt-governance`; surface graph node/action edge for opening or acting on `surface-agent-prompt-governance`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-141: Verify or complete runtime testing for `surface-agent-prompt-governance`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-140]
+- surface id: `surface-agent-prompt-governance`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `governance-diff / show-inspection`
+  - surface contract: `agent_admin.prompt_governance.v1`
+  - purpose: Prompt governance and behavior artifact review.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-prompt-governance`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-prompt-governance`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-142: Verify or complete app-description specification for `surface-agent-skill-manifest-diff`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-skill-manifest-diff`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `governance-diff / show-inspection`
+  - surface contract: `agent_admin.skill_manifest_diff.v1`
+  - purpose: Skill manifest diff/review.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-skill-manifest-diff` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-143: Verify or complete runtime implementation for `surface-agent-skill-manifest-diff`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-142]
+- surface id: `surface-agent-skill-manifest-diff`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `governance-diff / show-inspection`
+  - surface contract: `agent_admin.skill_manifest_diff.v1`
+  - purpose: Skill manifest diff/review.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-skill-manifest-diff`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-skill-manifest-diff`; surface graph node/action edge for opening or acting on `surface-agent-skill-manifest-diff`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-144: Verify or complete runtime testing for `surface-agent-skill-manifest-diff`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-143]
+- surface id: `surface-agent-skill-manifest-diff`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `governance-diff / show-inspection`
+  - surface contract: `agent_admin.skill_manifest_diff.v1`
+  - purpose: Skill manifest diff/review.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-skill-manifest-diff`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-skill-manifest-diff`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-145: Verify or complete app-description specification for `surface-agent-tool-boundary-diff`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-tool-boundary-diff`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `governance-diff / show-inspection`
+  - surface contract: `agent_admin.tool_boundary_diff.v1`
+  - purpose: Tool-boundary simulation and review.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-tool-boundary-diff` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-146: Verify or complete runtime implementation for `surface-agent-tool-boundary-diff`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-145]
+- surface id: `surface-agent-tool-boundary-diff`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `governance-diff / show-inspection`
+  - surface contract: `agent_admin.tool_boundary_diff.v1`
+  - purpose: Tool-boundary simulation and review.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-tool-boundary-diff`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-tool-boundary-diff`; surface graph node/action edge for opening or acting on `surface-agent-tool-boundary-diff`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-147: Verify or complete runtime testing for `surface-agent-tool-boundary-diff`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-146]
+- surface id: `surface-agent-tool-boundary-diff`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `governance-diff / show-inspection`
+  - surface contract: `agent_admin.tool_boundary_diff.v1`
+  - purpose: Tool-boundary simulation and review.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-tool-boundary-diff`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-tool-boundary-diff`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-148: Verify or complete app-description specification for `surface-agent-model-refs`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-model-refs`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `governance-diff / show-inspection`
+  - surface contract: `agent_admin.model_refs.v1`
+  - purpose: Model reference proposal/review.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-model-refs` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-149: Verify or complete runtime implementation for `surface-agent-model-refs`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-148]
+- surface id: `surface-agent-model-refs`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `governance-diff / show-inspection`
+  - surface contract: `agent_admin.model_refs.v1`
+  - purpose: Model reference proposal/review.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-model-refs`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-model-refs`; surface graph node/action edge for opening or acting on `surface-agent-model-refs`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-150: Verify or complete runtime testing for `surface-agent-model-refs`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-149]
+- surface id: `surface-agent-model-refs`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `governance-diff / show-inspection`
+  - surface contract: `agent_admin.model_refs.v1`
+  - purpose: Model reference proposal/review.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-model-refs`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-model-refs`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-151: Verify or complete app-description specification for `surface-agent-test-console`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-test-console`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `agent_admin.test_console.v1`
+  - purpose: No-side-effect runtime test surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-test-console` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-152: Verify or complete runtime implementation for `surface-agent-test-console`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-151]
+- surface id: `surface-agent-test-console`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `agent_admin.test_console.v1`
+  - purpose: No-side-effect runtime test surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-test-console`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-test-console`; surface graph node/action edge for opening or acting on `surface-agent-test-console`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-153: Verify or complete runtime testing for `surface-agent-test-console`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-152]
+- surface id: `surface-agent-test-console`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `agent_admin.test_console.v1`
+  - purpose: No-side-effect runtime test surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-test-console`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-test-console`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-154: Verify or complete app-description specification for `surface-agent-activation-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-activation-confirmation`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `agent_admin.activation_confirmation.v1`
+  - purpose: Activation confirmation surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-activation-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-155: Verify or complete runtime implementation for `surface-agent-activation-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-154]
+- surface id: `surface-agent-activation-confirmation`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `agent_admin.activation_confirmation.v1`
+  - purpose: Activation confirmation surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-activation-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-activation-confirmation`; surface graph node/action edge for opening or acting on `surface-agent-activation-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-156: Verify or complete runtime testing for `surface-agent-activation-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-155]
+- surface id: `surface-agent-activation-confirmation`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `agent_admin.activation_confirmation.v1`
+  - purpose: Activation confirmation surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-activation-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-activation-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-157: Verify or complete app-description specification for `surface-agent-deactivation-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-deactivation-confirmation`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `agent_admin.deactivation_confirmation.v1`
+  - purpose: Deactivation confirmation surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-deactivation-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-158: Verify or complete runtime implementation for `surface-agent-deactivation-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-157]
+- surface id: `surface-agent-deactivation-confirmation`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `agent_admin.deactivation_confirmation.v1`
+  - purpose: Deactivation confirmation surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-deactivation-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-deactivation-confirmation`; surface graph node/action edge for opening or acting on `surface-agent-deactivation-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-159: Verify or complete runtime testing for `surface-agent-deactivation-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-158]
+- surface id: `surface-agent-deactivation-confirmation`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `agent_admin.deactivation_confirmation.v1`
+  - purpose: Deactivation confirmation surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-deactivation-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-deactivation-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-160: Verify or complete app-description specification for `surface-agent-rollback-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-rollback-confirmation`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `agent_admin.rollback_confirmation.v1`
+  - purpose: Rollback confirmation surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-rollback-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-161: Verify or complete runtime implementation for `surface-agent-rollback-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-160]
+- surface id: `surface-agent-rollback-confirmation`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `agent_admin.rollback_confirmation.v1`
+  - purpose: Rollback confirmation surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-rollback-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-rollback-confirmation`; surface graph node/action edge for opening or acting on `surface-agent-rollback-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-162: Verify or complete runtime testing for `surface-agent-rollback-confirmation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-161]
+- surface id: `surface-agent-rollback-confirmation`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `lifecycle-confirmation`
+  - surface contract: `agent_admin.rollback_confirmation.v1`
+  - purpose: Rollback confirmation surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-rollback-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-rollback-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-163: Verify or complete app-description specification for `surface-agent-behavior-proposal`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-behavior-proposal`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `decision-card / decision`
+  - surface contract: `agent_admin.behavior_proposal.v1`
+  - purpose: Behavior proposal decision card.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-behavior-proposal` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-164: Verify or complete runtime implementation for `surface-agent-behavior-proposal`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-163]
+- surface id: `surface-agent-behavior-proposal`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `decision-card / decision`
+  - surface contract: `agent_admin.behavior_proposal.v1`
+  - purpose: Behavior proposal decision card.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-behavior-proposal`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-behavior-proposal`; surface graph node/action edge for opening or acting on `surface-agent-behavior-proposal`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-165: Verify or complete runtime testing for `surface-agent-behavior-proposal`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-164]
+- surface id: `surface-agent-behavior-proposal`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `decision-card / decision`
+  - surface contract: `agent_admin.behavior_proposal.v1`
+  - purpose: Behavior proposal decision card.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-behavior-proposal`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-behavior-proposal`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-166: Verify or complete app-description specification for `surface-agent-admin-prompt-risk-review`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-admin-prompt-risk-review`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `agent_admin.prompt_risk_review.v1`
+  - purpose: Prompt-risk autonomous review result.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-admin-prompt-risk-review` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-167: Verify or complete runtime implementation for `surface-agent-admin-prompt-risk-review`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-166]
+- surface id: `surface-agent-admin-prompt-risk-review`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `agent_admin.prompt_risk_review.v1`
+  - purpose: Prompt-risk autonomous review result.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-prompt-risk-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-prompt-risk-review`; surface graph node/action edge for opening or acting on `surface-agent-admin-prompt-risk-review`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-168: Verify or complete runtime testing for `surface-agent-admin-prompt-risk-review`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-167]
+- surface id: `surface-agent-admin-prompt-risk-review`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `agent_admin.prompt_risk_review.v1`
+  - purpose: Prompt-risk autonomous review result.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-prompt-risk-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-prompt-risk-review`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-169: Verify or complete app-description specification for `surface-agent-admin-trace`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-admin-trace`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `audit-timeline`
+  - surface contract: `agent_admin.trace.v1`
+  - purpose: Agent Admin trace timeline.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-admin-trace` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-170: Verify or complete runtime implementation for `surface-agent-admin-trace`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-169]
+- surface id: `surface-agent-admin-trace`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `audit-timeline`
+  - surface contract: `agent_admin.trace.v1`
+  - purpose: Agent Admin trace timeline.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-trace`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-trace`; surface graph node/action edge for opening or acting on `surface-agent-admin-trace`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-171: Verify or complete runtime testing for `surface-agent-admin-trace`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-170]
+- surface id: `surface-agent-admin-trace`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `audit-timeline`
+  - surface contract: `agent_admin.trace.v1`
+  - purpose: Agent Admin trace timeline.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-trace`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-trace`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-172: Verify or complete app-description specification for `surface-agent-seed-material`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-agent-seed-material`
+- workstream: Agent Admin
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `list-search / workflow-status`
+  - surface contract: `agent_admin.seed_material.v1`
+  - purpose: Seed material discovery/import workflow surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-seed-material` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-173: Verify or complete runtime implementation for `surface-agent-seed-material`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-172]
+- surface id: `surface-agent-seed-material`
+- workstream: Agent Admin
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `list-search / workflow-status`
+  - surface contract: `agent_admin.seed_material.v1`
+  - purpose: Seed material discovery/import workflow surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-seed-material`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-seed-material`; surface graph node/action edge for opening or acting on `surface-agent-seed-material`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-174: Verify or complete runtime testing for `surface-agent-seed-material`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-173]
+- surface id: `surface-agent-seed-material`
+- workstream: Agent Admin
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `list-search / workflow-status`
+  - surface contract: `agent_admin.seed_material.v1`
+  - purpose: Seed material discovery/import workflow surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Agent Admin functional agent surface `surface-agent-seed-material`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-seed-material`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-175: Verify or complete app-description specification for `surface-audit-trace-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-audit-trace-dashboard`
+- workstream: Audit Trace
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `audit.trace.dashboard.v1`
+  - purpose: Investigation command center.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-dashboard` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-176: Verify or complete runtime implementation for `surface-audit-trace-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-175]
+- surface id: `surface-audit-trace-dashboard`
+- workstream: Audit Trace
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `audit.trace.dashboard.v1`
+  - purpose: Investigation command center.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-dashboard`; surface graph node/action edge for opening or acting on `surface-audit-trace-dashboard`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-177: Verify or complete runtime testing for `surface-audit-trace-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-176]
+- surface id: `surface-audit-trace-dashboard`
+- workstream: Audit Trace
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `audit.trace.dashboard.v1`
+  - purpose: Investigation command center.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-dashboard`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-178: Verify or complete app-description specification for `surface-audit-trace-search`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-audit-trace-search`
+- workstream: Audit Trace
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `list-search`
+  - surface contract: `audit.trace.search.v1`
+  - purpose: Scoped trace search.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-search` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-179: Verify or complete runtime implementation for `surface-audit-trace-search`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-178]
+- surface id: `surface-audit-trace-search`
+- workstream: Audit Trace
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `audit.trace.search.v1`
+  - purpose: Scoped trace search.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-search`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-search`; surface graph node/action edge for opening or acting on `surface-audit-trace-search`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-180: Verify or complete runtime testing for `surface-audit-trace-search`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-179]
+- surface id: `surface-audit-trace-search`
+- workstream: Audit Trace
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `audit.trace.search.v1`
+  - purpose: Scoped trace search.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-search`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-search`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-181: Verify or complete app-description specification for `surface-audit-trace-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-audit-trace-detail`
+- workstream: Audit Trace
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `detail-edit as read-only evidence`
+  - surface contract: `audit.trace.detail.v1`
+  - purpose: Browser-safe trace/event evidence detail.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-detail` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-182: Verify or complete runtime implementation for `surface-audit-trace-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-181]
+- surface id: `surface-audit-trace-detail`
+- workstream: Audit Trace
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `detail-edit as read-only evidence`
+  - surface contract: `audit.trace.detail.v1`
+  - purpose: Browser-safe trace/event evidence detail.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-detail`; surface graph node/action edge for opening or acting on `surface-audit-trace-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-183: Verify or complete runtime testing for `surface-audit-trace-detail`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-182]
+- surface id: `surface-audit-trace-detail`
+- workstream: Audit Trace
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `detail-edit as read-only evidence`
+  - surface contract: `audit.trace.detail.v1`
+  - purpose: Browser-safe trace/event evidence detail.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-184: Verify or complete app-description specification for `surface-audit-trace-timeline`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-audit-trace-timeline`
+- workstream: Audit Trace
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `audit-timeline`
+  - surface contract: `audit.trace.timeline.v1`
+  - purpose: Correlation timeline.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-timeline` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-185: Verify or complete runtime implementation for `surface-audit-trace-timeline`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-184]
+- surface id: `surface-audit-trace-timeline`
+- workstream: Audit Trace
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `audit-timeline`
+  - surface contract: `audit.trace.timeline.v1`
+  - purpose: Correlation timeline.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-timeline`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-timeline`; surface graph node/action edge for opening or acting on `surface-audit-trace-timeline`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-186: Verify or complete runtime testing for `surface-audit-trace-timeline`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-185]
+- surface id: `surface-audit-trace-timeline`
+- workstream: Audit Trace
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `audit-timeline`
+  - surface contract: `audit.trace.timeline.v1`
+  - purpose: Correlation timeline.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-timeline`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-timeline`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-187: Verify or complete app-description specification for `surface-audit-trace-failure-evidence`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-audit-trace-failure-evidence`
+- workstream: Audit Trace
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `detail-edit as read-only evidence`
+  - surface contract: `audit.trace.failureEvidence.v1`
+  - purpose: Denial/provider/tool/model/runtime failure evidence.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-failure-evidence` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-188: Verify or complete runtime implementation for `surface-audit-trace-failure-evidence`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-187]
+- surface id: `surface-audit-trace-failure-evidence`
+- workstream: Audit Trace
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `detail-edit as read-only evidence`
+  - surface contract: `audit.trace.failureEvidence.v1`
+  - purpose: Denial/provider/tool/model/runtime failure evidence.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-failure-evidence`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-failure-evidence`; surface graph node/action edge for opening or acting on `surface-audit-trace-failure-evidence`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-189: Verify or complete runtime testing for `surface-audit-trace-failure-evidence`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-188]
+- surface id: `surface-audit-trace-failure-evidence`
+- workstream: Audit Trace
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `detail-edit as read-only evidence`
+  - surface contract: `audit.trace.failureEvidence.v1`
+  - purpose: Denial/provider/tool/model/runtime failure evidence.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-failure-evidence`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-failure-evidence`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-190: Verify or complete app-description specification for `surface-audit-trace-investigation-guide`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-audit-trace-investigation-guide`
+- workstream: Audit Trace
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `audit.trace.investigationGuide.v1`
+  - purpose: Human investigation guidance.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-investigation-guide` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-191: Verify or complete runtime implementation for `surface-audit-trace-investigation-guide`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-190]
+- surface id: `surface-audit-trace-investigation-guide`
+- workstream: Audit Trace
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `audit.trace.investigationGuide.v1`
+  - purpose: Human investigation guidance.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-investigation-guide`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-investigation-guide`; surface graph node/action edge for opening or acting on `surface-audit-trace-investigation-guide`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-192: Verify or complete runtime testing for `surface-audit-trace-investigation-guide`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-191]
+- surface id: `surface-audit-trace-investigation-guide`
+- workstream: Audit Trace
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `audit.trace.investigationGuide.v1`
+  - purpose: Human investigation guidance.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-investigation-guide`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-investigation-guide`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-193: Verify or complete app-description specification for `surface-audit-trace-export-request`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-audit-trace-export-request`
+- workstream: Audit Trace
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `audit.trace.exportRequest.v1`
+  - purpose: Policy-gated scoped redacted export request.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-export-request` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-194: Verify or complete runtime implementation for `surface-audit-trace-export-request`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-193]
+- surface id: `surface-audit-trace-export-request`
+- workstream: Audit Trace
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `audit.trace.exportRequest.v1`
+  - purpose: Policy-gated scoped redacted export request.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-export-request`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-export-request`; surface graph node/action edge for opening or acting on `surface-audit-trace-export-request`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-195: Verify or complete runtime testing for `surface-audit-trace-export-request`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-194]
+- surface id: `surface-audit-trace-export-request`
+- workstream: Audit Trace
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `audit.trace.exportRequest.v1`
+  - purpose: Policy-gated scoped redacted export request.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-export-request`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-export-request`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-196: Verify or complete app-description specification for `surface-audit-trace-investigation-note`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-audit-trace-investigation-note`
+- workstream: Audit Trace
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `system-message`
+  - surface contract: `audit.trace.investigationNote.v1`
+  - purpose: Human investigation note append result.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-investigation-note` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-197: Verify or complete runtime implementation for `surface-audit-trace-investigation-note`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-196]
+- surface id: `surface-audit-trace-investigation-note`
+- workstream: Audit Trace
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `system-message`
+  - surface contract: `audit.trace.investigationNote.v1`
+  - purpose: Human investigation note append result.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-investigation-note`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-investigation-note`; surface graph node/action edge for opening or acting on `surface-audit-trace-investigation-note`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-198: Verify or complete runtime testing for `surface-audit-trace-investigation-note`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-197]
+- surface id: `surface-audit-trace-investigation-note`
+- workstream: Audit Trace
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `system-message`
+  - surface contract: `audit.trace.investigationNote.v1`
+  - purpose: Human investigation note append result.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-investigation-note`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-investigation-note`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-199: Verify or complete app-description specification for `surface-audit-trace-summary-progress`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-audit-trace-summary-progress`
+- workstream: Audit Trace
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `audit.trace.summaryProgress.v1`
+  - purpose: Audit summary worker progress or fail-closed blocker.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-summary-progress` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-200: Verify or complete runtime implementation for `surface-audit-trace-summary-progress`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-199]
+- surface id: `surface-audit-trace-summary-progress`
+- workstream: Audit Trace
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `audit.trace.summaryProgress.v1`
+  - purpose: Audit summary worker progress or fail-closed blocker.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-summary-progress`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-summary-progress`; surface graph node/action edge for opening or acting on `surface-audit-trace-summary-progress`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-201: Verify or complete runtime testing for `surface-audit-trace-summary-progress`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-200]
+- surface id: `surface-audit-trace-summary-progress`
+- workstream: Audit Trace
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `audit.trace.summaryProgress.v1`
+  - purpose: Audit summary worker progress or fail-closed blocker.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-summary-progress`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-summary-progress`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-202: Verify or complete app-description specification for `surface-audit-trace-summary-review`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-audit-trace-summary-review`
+- workstream: Audit Trace
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `audit.trace.summaryReview.v1`
+  - purpose: Human review of redacted advisory summary.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-summary-review` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-203: Verify or complete runtime implementation for `surface-audit-trace-summary-review`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-202]
+- surface id: `surface-audit-trace-summary-review`
+- workstream: Audit Trace
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `audit.trace.summaryReview.v1`
+  - purpose: Human review of redacted advisory summary.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-summary-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-summary-review`; surface graph node/action edge for opening or acting on `surface-audit-trace-summary-review`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-204: Verify or complete runtime testing for `surface-audit-trace-summary-review`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-203]
+- surface id: `surface-audit-trace-summary-review`
+- workstream: Audit Trace
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `audit.trace.summaryReview.v1`
+  - purpose: Human review of redacted advisory summary.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-summary-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-summary-review`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-205: Verify or complete app-description specification for `surface-governance-policy-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-governance-policy-dashboard`
+- workstream: Governance Policy
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `governance.policy.dashboard.v1`
+  - purpose: Governance/Policy dashboard.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-dashboard` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-206: Verify or complete runtime implementation for `surface-governance-policy-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-205]
+- surface id: `surface-governance-policy-dashboard`
+- workstream: Governance Policy
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `governance.policy.dashboard.v1`
+  - purpose: Governance/Policy dashboard.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-dashboard`; surface graph node/action edge for opening or acting on `surface-governance-policy-dashboard`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-207: Verify or complete runtime testing for `surface-governance-policy-dashboard`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-206]
+- surface id: `surface-governance-policy-dashboard`
+- workstream: Governance Policy
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `dashboard`
+  - surface contract: `governance.policy.dashboard.v1`
+  - purpose: Governance/Policy dashboard.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-dashboard`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-208: Verify or complete app-description specification for `surface-governance-policy-inventory`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-governance-policy-inventory`
+- workstream: Governance Policy
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `list-search`
+  - surface contract: `governance.policy.inventory.v1`
+  - purpose: Policy/proposal inventory and queue.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-inventory` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-209: Verify or complete runtime implementation for `surface-governance-policy-inventory`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-208]
+- surface id: `surface-governance-policy-inventory`
+- workstream: Governance Policy
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `governance.policy.inventory.v1`
+  - purpose: Policy/proposal inventory and queue.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-inventory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-inventory`; surface graph node/action edge for opening or acting on `surface-governance-policy-inventory`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-210: Verify or complete runtime testing for `surface-governance-policy-inventory`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-209]
+- surface id: `surface-governance-policy-inventory`
+- workstream: Governance Policy
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `list-search`
+  - surface contract: `governance.policy.inventory.v1`
+  - purpose: Policy/proposal inventory and queue.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-inventory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-inventory`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-211: Verify or complete app-description specification for `surface-governance-policy-proposal`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-governance-policy-proposal`
+- workstream: Governance Policy
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `governance-diff`
+  - surface contract: `governance.policy.proposal.v1`
+  - purpose: Policy proposal lifecycle/diff surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-proposal` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-212: Verify or complete runtime implementation for `surface-governance-policy-proposal`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-211]
+- surface id: `surface-governance-policy-proposal`
+- workstream: Governance Policy
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `governance-diff`
+  - surface contract: `governance.policy.proposal.v1`
+  - purpose: Policy proposal lifecycle/diff surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-proposal`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-proposal`; surface graph node/action edge for opening or acting on `surface-governance-policy-proposal`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-213: Verify or complete runtime testing for `surface-governance-policy-proposal`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-212]
+- surface id: `surface-governance-policy-proposal`
+- workstream: Governance Policy
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `governance-diff`
+  - surface contract: `governance.policy.proposal.v1`
+  - purpose: Policy proposal lifecycle/diff surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-proposal`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-proposal`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-214: Verify or complete app-description specification for `surface-governance-policy-simulation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-governance-policy-simulation`
+- workstream: Governance Policy
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `governance-diff`
+  - surface contract: `governance.policy.simulation.v1`
+  - purpose: Advisory simulation surface.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-simulation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-215: Verify or complete runtime implementation for `surface-governance-policy-simulation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-214]
+- surface id: `surface-governance-policy-simulation`
+- workstream: Governance Policy
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `governance-diff`
+  - surface contract: `governance.policy.simulation.v1`
+  - purpose: Advisory simulation surface.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-simulation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-simulation`; surface graph node/action edge for opening or acting on `surface-governance-policy-simulation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-216: Verify or complete runtime testing for `surface-governance-policy-simulation`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-215]
+- surface id: `surface-governance-policy-simulation`
+- workstream: Governance Policy
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `governance-diff`
+  - surface contract: `governance.policy.simulation.v1`
+  - purpose: Advisory simulation surface.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-simulation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-simulation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-217: Verify or complete app-description specification for `surface-governance-policy-decision`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-governance-policy-decision`
+- workstream: Governance Policy
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `governance.policy.decision.v1`
+  - purpose: Policy decision/activation/rollback card.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-decision` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-218: Verify or complete runtime implementation for `surface-governance-policy-decision`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-217]
+- surface id: `surface-governance-policy-decision`
+- workstream: Governance Policy
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `governance.policy.decision.v1`
+  - purpose: Policy decision/activation/rollback card.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-decision`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-decision`; surface graph node/action edge for opening or acting on `surface-governance-policy-decision`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-219: Verify or complete runtime testing for `surface-governance-policy-decision`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-218]
+- surface id: `surface-governance-policy-decision`
+- workstream: Governance Policy
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `governance.policy.decision.v1`
+  - purpose: Policy decision/activation/rollback card.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-decision`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-decision`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-220: Verify or complete app-description specification for `surface-governance-policy-outcome`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-governance-policy-outcome`
+- workstream: Governance Policy
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `outcome-panel`
+  - surface contract: `governance.policy.outcome.v1`
+  - purpose: Policy outcome notes/metrics/evidence.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-outcome` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-221: Verify or complete runtime implementation for `surface-governance-policy-outcome`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-220]
+- surface id: `surface-governance-policy-outcome`
+- workstream: Governance Policy
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `outcome-panel`
+  - surface contract: `governance.policy.outcome.v1`
+  - purpose: Policy outcome notes/metrics/evidence.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-outcome`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-outcome`; surface graph node/action edge for opening or acting on `surface-governance-policy-outcome`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-222: Verify or complete runtime testing for `surface-governance-policy-outcome`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-221]
+- surface id: `surface-governance-policy-outcome`
+- workstream: Governance Policy
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `outcome-panel`
+  - surface contract: `governance.policy.outcome.v1`
+  - purpose: Policy outcome notes/metrics/evidence.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-outcome`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-outcome`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-223: Verify or complete app-description specification for `surface-governance-policy-impact-analysis-task`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-governance-policy-impact-analysis-task`
+- workstream: Governance Policy
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `governance.policy.impact_analysis.task.v1`
+  - purpose: Impact-analysis task progress/status.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-impact-analysis-task` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-224: Verify or complete runtime implementation for `surface-governance-policy-impact-analysis-task`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-223]
+- surface id: `surface-governance-policy-impact-analysis-task`
+- workstream: Governance Policy
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `governance.policy.impact_analysis.task.v1`
+  - purpose: Impact-analysis task progress/status.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-impact-analysis-task`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-impact-analysis-task`; surface graph node/action edge for opening or acting on `surface-governance-policy-impact-analysis-task`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-225: Verify or complete runtime testing for `surface-governance-policy-impact-analysis-task`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-224]
+- surface id: `surface-governance-policy-impact-analysis-task`
+- workstream: Governance Policy
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `workflow-status`
+  - surface contract: `governance.policy.impact_analysis.task.v1`
+  - purpose: Impact-analysis task progress/status.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-impact-analysis-task`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-impact-analysis-task`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-226: Verify or complete app-description specification for `surface-governance-policy-impact-analysis-result`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-governance-policy-impact-analysis-result`
+- workstream: Governance Policy
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `governance.policy.impact_analysis.result.v1`
+  - purpose: Impact-analysis advisory result review.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-impact-analysis-result` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-227: Verify or complete runtime implementation for `surface-governance-policy-impact-analysis-result`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-226]
+- surface id: `surface-governance-policy-impact-analysis-result`
+- workstream: Governance Policy
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `governance.policy.impact_analysis.result.v1`
+  - purpose: Impact-analysis advisory result review.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-impact-analysis-result`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-impact-analysis-result`; surface graph node/action edge for opening or acting on `surface-governance-policy-impact-analysis-result`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-228: Verify or complete runtime testing for `surface-governance-policy-impact-analysis-result`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-227]
+- surface id: `surface-governance-policy-impact-analysis-result`
+- workstream: Governance Policy
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `decision-card`
+  - surface contract: `governance.policy.impact_analysis.result.v1`
+  - purpose: Impact-analysis advisory result review.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-impact-analysis-result`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-impact-analysis-result`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-229: Verify or complete app-description specification for `surface-governance-policy-system-message`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: []
+- surface id: `surface-governance-policy-system-message`
+- workstream: Governance Policy
+- objective: fully-specified
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - app-description-surface-modeling
+  - app-description-readiness-assessment
+- expected outputs:
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
+- done criteria:
+  - fully-specified objective for this surface is marked `done` with evidence, or task is `blocked` with exact missing decision
+- notes:
+  - surface type: `system-message`
+  - surface contract: `governance.policy.system_message.v1`
+  - purpose: Governance/Policy safe system message.
+  - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
+  - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-system-message` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+
+### TASK-FSCT-230: Verify or complete runtime implementation for `surface-governance-policy-system-message`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-229]
+- surface id: `surface-governance-policy-system-message`
+- workstream: Governance Policy
+- objective: fully-implemented
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-apps
+  - akka-http-endpoints
+- expected outputs:
+  - affected frontend/src/** surface/client files
+  - affected src/main/java/** backend/API/service files
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- required checks:
+  - `git diff --check`
+  - focused backend/frontend checks for touched runtime path
+- done criteria:
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+- notes:
+  - surface type: `system-message`
+  - surface contract: `governance.policy.system_message.v1`
+  - purpose: Governance/Policy safe system message.
+  - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-system-message`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-system-message`; surface graph node/action edge for opening or acting on `surface-governance-policy-system-message`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+
+### TASK-FSCT-231: Verify or complete runtime testing for `surface-governance-policy-system-message`
+
+- status: pending
+- source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+- depends on: [TASK-FSCT-230]
+- surface id: `surface-governance-policy-system-message`
+- workstream: Governance Policy
+- objective: fully-tested
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-http-endpoint-testing
+- expected outputs:
+  - affected src/test/** tests
+  - affected frontend/src/** tests
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - optional specs/** runtime/manual smoke evidence
+- required checks:
+  - `git diff --check`
+  - focused backend tests for touched path
+  - focused frontend tests/typecheck when frontend is in scope
+  - manual/API/browser smoke evidence or explicit blocker
+- done criteria:
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+- notes:
+  - surface type: `system-message`
+  - surface contract: `governance.policy.system_message.v1`
+  - purpose: Governance/Policy safe system message.
+  - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
+  - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-system-message`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-system-message`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+
+### TASK-FSCT-232: Verify foundation surface completion tracker
+
+- status: pending
+- source: terminal verification task for this mini-project
+- depends on: [TASK-FSCT-001, TASK-FSCT-002, TASK-FSCT-003, TASK-FSCT-004, TASK-FSCT-005, TASK-FSCT-006, TASK-FSCT-007, TASK-FSCT-008, TASK-FSCT-009, TASK-FSCT-010, TASK-FSCT-011, TASK-FSCT-012, TASK-FSCT-013, TASK-FSCT-014, TASK-FSCT-015, TASK-FSCT-016, TASK-FSCT-017, TASK-FSCT-018, TASK-FSCT-019, TASK-FSCT-020, TASK-FSCT-021, TASK-FSCT-022, TASK-FSCT-023, TASK-FSCT-024, TASK-FSCT-025, TASK-FSCT-026, TASK-FSCT-027, TASK-FSCT-028, TASK-FSCT-029, TASK-FSCT-030, TASK-FSCT-031, TASK-FSCT-032, TASK-FSCT-033, TASK-FSCT-034, TASK-FSCT-035, TASK-FSCT-036, TASK-FSCT-037, TASK-FSCT-038, TASK-FSCT-039, TASK-FSCT-040, TASK-FSCT-041, TASK-FSCT-042, TASK-FSCT-043, TASK-FSCT-044, TASK-FSCT-045, TASK-FSCT-046, TASK-FSCT-047, TASK-FSCT-048, TASK-FSCT-049, TASK-FSCT-050, TASK-FSCT-051, TASK-FSCT-052, TASK-FSCT-053, TASK-FSCT-054, TASK-FSCT-055, TASK-FSCT-056, TASK-FSCT-057, TASK-FSCT-058, TASK-FSCT-059, TASK-FSCT-060, TASK-FSCT-061, TASK-FSCT-062, TASK-FSCT-063, TASK-FSCT-064, TASK-FSCT-065, TASK-FSCT-066, TASK-FSCT-067, TASK-FSCT-068, TASK-FSCT-069, TASK-FSCT-070, TASK-FSCT-071, TASK-FSCT-072, TASK-FSCT-073, TASK-FSCT-074, TASK-FSCT-075, TASK-FSCT-076, TASK-FSCT-077, TASK-FSCT-078, TASK-FSCT-079, TASK-FSCT-080, TASK-FSCT-081, TASK-FSCT-082, TASK-FSCT-083, TASK-FSCT-084, TASK-FSCT-085, TASK-FSCT-086, TASK-FSCT-087, TASK-FSCT-088, TASK-FSCT-089, TASK-FSCT-090, TASK-FSCT-091, TASK-FSCT-092, TASK-FSCT-093, TASK-FSCT-094, TASK-FSCT-095, TASK-FSCT-096, TASK-FSCT-097, TASK-FSCT-098, TASK-FSCT-099, TASK-FSCT-100, TASK-FSCT-101, TASK-FSCT-102, TASK-FSCT-103, TASK-FSCT-104, TASK-FSCT-105, TASK-FSCT-106, TASK-FSCT-107, TASK-FSCT-108, TASK-FSCT-109, TASK-FSCT-110, TASK-FSCT-111, TASK-FSCT-112, TASK-FSCT-113, TASK-FSCT-114, TASK-FSCT-115, TASK-FSCT-116, TASK-FSCT-117, TASK-FSCT-118, TASK-FSCT-119, TASK-FSCT-120, TASK-FSCT-121, TASK-FSCT-122, TASK-FSCT-123, TASK-FSCT-124, TASK-FSCT-125, TASK-FSCT-126, TASK-FSCT-127, TASK-FSCT-128, TASK-FSCT-129, TASK-FSCT-130, TASK-FSCT-131, TASK-FSCT-132, TASK-FSCT-133, TASK-FSCT-134, TASK-FSCT-135, TASK-FSCT-136, TASK-FSCT-137, TASK-FSCT-138, TASK-FSCT-139, TASK-FSCT-140, TASK-FSCT-141, TASK-FSCT-142, TASK-FSCT-143, TASK-FSCT-144, TASK-FSCT-145, TASK-FSCT-146, TASK-FSCT-147, TASK-FSCT-148, TASK-FSCT-149, TASK-FSCT-150, TASK-FSCT-151, TASK-FSCT-152, TASK-FSCT-153, TASK-FSCT-154, TASK-FSCT-155, TASK-FSCT-156, TASK-FSCT-157, TASK-FSCT-158, TASK-FSCT-159, TASK-FSCT-160, TASK-FSCT-161, TASK-FSCT-162, TASK-FSCT-163, TASK-FSCT-164, TASK-FSCT-165, TASK-FSCT-166, TASK-FSCT-167, TASK-FSCT-168, TASK-FSCT-169, TASK-FSCT-170, TASK-FSCT-171, TASK-FSCT-172, TASK-FSCT-173, TASK-FSCT-174, TASK-FSCT-175, TASK-FSCT-176, TASK-FSCT-177, TASK-FSCT-178, TASK-FSCT-179, TASK-FSCT-180, TASK-FSCT-181, TASK-FSCT-182, TASK-FSCT-183, TASK-FSCT-184, TASK-FSCT-185, TASK-FSCT-186, TASK-FSCT-187, TASK-FSCT-188, TASK-FSCT-189, TASK-FSCT-190, TASK-FSCT-191, TASK-FSCT-192, TASK-FSCT-193, TASK-FSCT-194, TASK-FSCT-195, TASK-FSCT-196, TASK-FSCT-197, TASK-FSCT-198, TASK-FSCT-199, TASK-FSCT-200, TASK-FSCT-201, TASK-FSCT-202, TASK-FSCT-203, TASK-FSCT-204, TASK-FSCT-205, TASK-FSCT-206, TASK-FSCT-207, TASK-FSCT-208, TASK-FSCT-209, TASK-FSCT-210, TASK-FSCT-211, TASK-FSCT-212, TASK-FSCT-213, TASK-FSCT-214, TASK-FSCT-215, TASK-FSCT-216, TASK-FSCT-217, TASK-FSCT-218, TASK-FSCT-219, TASK-FSCT-220, TASK-FSCT-221, TASK-FSCT-222, TASK-FSCT-223, TASK-FSCT-224, TASK-FSCT-225, TASK-FSCT-226, TASK-FSCT-227, TASK-FSCT-228, TASK-FSCT-229, TASK-FSCT-230, TASK-FSCT-231]
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/conversation-capture.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - specs/foundation-surface-completion-tracker/pending-tasks.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - updated specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - updated specs/foundation-surface-completion-tracker/pending-tasks.md if gaps remain
+  - optional verification notes under specs/foundation-surface-completion-tracker/
+- required checks:
+  - `git diff --check`
+  - focused searches proving no pending tracked objectives remain without accepted blocker/defer/supersede rationale
+- done criteria:
+  - every tracked surface objective is `done`, `deferred`, or `superseded` with evidence/rationale
+  - no material runtime-readiness gaps remain for the stated mini-project scope, or follow-up tasks plus a new terminal verification task are appended
+- notes:
+  - vertical contract: non-runtime verification task; foundation scope: all tracked surfaces; local validation: `git diff --check` and tracker/queue consistency searches; audit/trace expectations are verified through child surface testing tasks
