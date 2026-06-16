@@ -47,7 +47,7 @@
 
 ### TASK-FCBAD-01-001: Inventory customer-boundary evidence and graph gaps
 
-- status: pending
+- status: done
 - source: specs/foundation-customer-boundary-app-description/backlog/01-foundation-customer-boundary-app-description-backlog.md#fcbad-01-inventory-current-customer-boundary-evidence-and-graph-gaps
 - task brief: specs/foundation-customer-boundary-app-description/tasks/01-description/01-inventory-evidence-and-gaps.md
 - depends on:
@@ -77,6 +77,11 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: docs-only current-intent inventory; foundation customer boundary and User Admin customer lifecycle/Customer Admin branch; no runtime behavior change; validation path `git diff --check` plus search proof
+  - completed output: `specs/foundation-customer-boundary-app-description/customer-boundary-evidence-and-gap-map.md`
+  - checks: `git diff --check` passed
+  - search proof: `rg -n "Customer|customer|tenant\.customer|action-customer|TenantCustomer" app-description src/main/java frontend/src src/test/java --glob '!**/node_modules/**'` found active app-description, backend, frontend, and test evidence
+  - blocker assessment: no pending question required; `TASK-FCBAD-01-002` is runnable
+  - commit message: `customer-boundary-desc: inventory evidence and gaps`
 
 ### TASK-FCBAD-01-002: Capture customer boundary domain, capability, and state intent
 
