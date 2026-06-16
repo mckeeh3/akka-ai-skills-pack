@@ -250,7 +250,7 @@
 
 ### TASK-FSCT-007: Verify or complete app-description specification for `surface-my-settings`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-my-settings`
@@ -279,6 +279,7 @@
   - purpose: Personal preferences, named theme selection, locale/timezone, and preference save state.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-settings` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-16: added owning workstream/reusable placements plus payload schema, named-theme/locale/timezone/notification/digest fields, preview/save/open-notification/open-trace action semantics, AuthContext/self-account authorization, tenant isolation, trace/audit, accessibility/responsive, test, and sufficiency-review detail to the My Account settings app-description; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-008: Verify or complete runtime implementation for `surface-my-settings`
 
