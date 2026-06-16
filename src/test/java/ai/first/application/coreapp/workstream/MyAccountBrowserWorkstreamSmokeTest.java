@@ -276,12 +276,28 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         ADMIN_CUSTOMER_CONTEXT_ID,
         context.surfaceId(),
         "corr-my-context-browser-select"), ADMIN_CUSTOMER_CONTEXT_ID, "admin@example.test", "Tenant Admin");
-    assertEquals("accepted", selected.status());
+    assertEquals("no-op", selected.status());
     assertEquals("surface-my-context", selected.resultSurface().surfaceId());
     assertEquals(ADMIN_CUSTOMER_CONTEXT_ID, selected.resultSurface().authContext().get("selectedContextId"));
     assertTrue(selected.resultSurface().toString().contains(CUSTOMER_ID));
     assertTrue(selected.resultSurface().toString().contains("staleImpact"));
     assertContextSurfaceBrowserSafe(selected.resultSurface());
+
+    var noOpSelection = runAction(new CapabilityActionRequest(
+        "action-select-my-context",
+        "action-select-my-context",
+        "core.access.context.select",
+        "core.access.context.select",
+        Map.of("selectedContextId", ADMIN_CUSTOMER_CONTEXT_ID),
+        null,
+        ADMIN_CUSTOMER_CONTEXT_ID,
+        selected.resultSurface().surfaceId(),
+        "corr-my-context-browser-select-noop"), ADMIN_CUSTOMER_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("no-op", noOpSelection.status());
+    assertEquals("surface-my-context", noOpSelection.resultSurface().surfaceId());
+    assertEquals(ADMIN_CUSTOMER_CONTEXT_ID, noOpSelection.resultSurface().authContext().get("selectedContextId"));
+    assertTrue(noOpSelection.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-context-select")));
+    assertContextSurfaceBrowserSafe(noOpSelection.resultSurface());
 
     var switchedBootstrap = httpClient
         .GET("/api/workstream/bootstrap")
@@ -295,6 +311,17 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals(CUSTOMER_ID, switchedBootstrap.body().me().selectedAuthContext().customerId());
     assertBrowserSafe(switchedBootstrap.body());
 
+    var hiddenContextSelection = new CapabilityActionRequest(
+        "action-select-my-context",
+        "action-select-my-context",
+        "core.access.context.select",
+        "core.access.context.select",
+        Map.of("selectedContextId", "membership-hidden-cross-tenant"),
+        null,
+        ADMIN_CONTEXT_ID,
+        context.surfaceId(),
+        "corr-my-context-browser-hidden-action-denied");
+    assertThrows(RuntimeException.class, () -> runAction(hiddenContextSelection, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin"));
     assertThrows(RuntimeException.class, () -> getSurface("surface-my-context", "membership-hidden-cross-tenant", "admin@example.test", "Tenant Admin", "corr-my-context-hidden-denied"));
     assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-context").responseBodyAs(String.class).invoke());
   }

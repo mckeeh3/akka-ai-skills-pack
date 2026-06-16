@@ -424,7 +424,7 @@
 
 ### TASK-FSCT-012: Verify or complete runtime testing for `surface-my-context`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-011]
 - surface id: `surface-my-context`
@@ -449,15 +449,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
   - surface type: `detail-edit / authority panel`
   - surface contract: `my_account.context_authority.v1`
   - purpose: Selected AuthContext, active membership, role/capability basis, and context-switch targets.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream My Account functional agent surface `surface-my-context`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-context`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-16: expanded protected Akka-hosted My Account context runtime smoke coverage in `MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyContextRuntimePathAndSelection`: JWT plus selected AuthContext loads `surface-my-context`, verifies backend-owned `my_account.context_authority.v1` payload/available contexts/visible capabilities/support access/stale impact/trace/correlation/redaction, exercises `action-select-my-context` no-op/current-context feedback, validates `/api/workstream/bootstrap` for an authorized customer context, denies hidden/cross-tenant context action and surface requests without enumeration, rejects missing bearer access, and checks browser-safe secret boundaries. runtime evidence: readiness level `runtime-ready` for the context testing scope; role/AuthContext/tenant setup covered tenant admin and authorized customer context in `tenant-starter`; denial/provider/fail-closed/trace coverage included hidden/cross-tenant context denial, no-op selection result, raw JWT/provider/hidden-context redaction, trace refs, and correlation ids; commands passed: `mvn -q -Dtest=MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyContextRuntimePathAndSelection test`, `mvn -q -Dtest=WorkstreamServiceTest#myAccountSurfacesAreBackendRetrievedWithAuthorityTraceAndContextData,MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyContextRuntimePathAndSelection test`, `npm --prefix frontend test -- --run src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-013: Verify or complete app-description specification for `surface-my-account-notification-center`
 

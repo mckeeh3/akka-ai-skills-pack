@@ -620,6 +620,16 @@ public final class WorkstreamService {
     } else if ("action-update-my-profile".equals(request.actionId()) || "action-update-my-settings".equals(request.actionId())) {
       var update = updateOwnProfileSettings(actor, request);
       result = new CapabilityActionResult(update.changed() ? "accepted" : "no-op", update.changed() ? "My Account profile/settings changes were persisted by the backend." : "My Account profile/settings update was a no-op.", request.correlationId(), List.of("trace-my-account-profile-settings-" + stableSuffix(request.idempotencyKey())), surfaceForAction(authContextResolver.resolveMe(identity, selectedContextId, request.correlationId()), request.actionId(), request.correlationId()));
+    } else if ("action-select-my-context".equals(request.actionId())) {
+      var requestedContextId = stringInput(request.input(), "selectedContextId", selectedContextId);
+      var selectedActor = authContextResolver.resolveMe(identity, requestedContextId, request.correlationId());
+      var sameContext = Objects.equals(actor.selectedContext().membershipId(), selectedActor.selectedContext().membershipId());
+      result = new CapabilityActionResult(
+          sameContext ? "no-op" : "accepted",
+          sameContext ? "Selected AuthContext was already active; no authority changed." : "Selected AuthContext refreshed through backend-authoritative context selection.",
+          request.correlationId(),
+          List.of("trace-my-account-context-select-" + stableSuffix(request.correlationId())),
+          myContextSurface(selectedActor, request.correlationId()));
     } else if ("action-start-my-account-personal-attention-digest".equals(request.actionId())) {
       var task = personalAttentionDigestService.start(actor, new MyAccountPersonalAttentionDigestService.StartPersonalAttentionDigestCommand(request.idempotencyKey()), request.correlationId());
       result = personalAttentionDigestActionResult(task, task.status() == MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime" : "accepted", "My Account personal attention digest task is backend-governed; results are advisory, redacted, and source attention is unchanged.", request.correlationId(), actor);
