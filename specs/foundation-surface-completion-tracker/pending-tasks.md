@@ -95,18 +95,18 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `dashboard`
   - surface contract: `my_account.personal_command_center.v1`
   - purpose: Personal command center for attention, authority, settings, notifications, and digest/export work.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream My Account functional agent surface `surface-my-account-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-dashboard`; surface graph node/action edge for opening or acting on `surface-my-account-dashboard`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
-  - completed 2026-06-16: verified existing real runtime path for `surface-my-account-dashboard` via protected WorkstreamEndpoint API, backend My Account surface/action service, frontend DashboardSurface rendering/action routing, trace/redaction/auth evidence, focused Maven/frontend checks, focused rg evidence, and `git diff --check`; tracker updated
+  - completed 2026-06-16: verified existing real runtime path for `surface-my-account-dashboard` via protected WorkstreamEndpoint API, backend My Account surface/action service, frontend DashboardSurface rendering/action routing, trace/redaction/auth evidence, focused Maven/frontend checks, focused rg evidence, and `git diff --check`; tracker updated. runtime evidence: readiness level `api-smoked` for implementation verification, with protected API/surface/action paths, tenant admin AuthContext, safe workstream-open denial evidence, provider fail-closed digest state evidence, audit/trace/correlation evidence, and no fixture-only/frontend-only normal runtime path.
 
 ### TASK-FSCT-003: Verify or complete runtime testing for `surface-my-account-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-002]
 - surface id: `surface-my-account-dashboard`
@@ -133,13 +133,14 @@
   - focused frontend tests/typecheck when frontend is in scope
   - manual/API/browser smoke evidence or explicit blocker
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
   - surface type: `dashboard`
   - surface contract: `my_account.personal_command_center.v1`
   - purpose: Personal command center for attention, authority, settings, notifications, and digest/export work.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream My Account functional agent surface `surface-my-account-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-dashboard`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-16: added `MyAccountBrowserWorkstreamSmokeTest` to exercise the Akka-hosted `/ui` shell plus protected `/api/workstream/bootstrap`, `/api/workstream/surfaces/surface-my-account-dashboard`, and `/api/workstream/actions` paths with JWT/selected AuthContext; verified dashboard contract/actions/trace/correlation, provider fail-closed personal digest system-message surface with `noFakeSuccess`, authorized sibling-workstream open, regular-member hidden target denial, missing-bearer rejection, and browser-safe secret boundaries. runtime evidence: readiness level `runtime-ready` for the dashboard testing scope; role/AuthContext/tenant setup covered tenant admin and tenant employee in `tenant-starter`; denial/provider/fail-closed/trace coverage included `not_found_or_redacted`, digest fail-closed status, trace ids, and correlation ids; commands passed: `mvn -q -Dtest=MyAccountBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`
 
 ### TASK-FSCT-004: Verify or complete app-description specification for `surface-my-profile`
 
