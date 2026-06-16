@@ -65,7 +65,7 @@ public final class UserAdminService {
   public RoleChangePreview previewRoleChange(AuthContextResolver.ResolvedMe actor, String membershipId, List<FoundationRole> roles, String reason, String correlationId) {
     var existing = membership(membershipId);
     requireManage(actor, existing.scopeType(), existing.tenantId(), existing.customerId());
-    ensureAssignable(actor, roles);
+    ensureAssignable(actor, existing, roles, "USERADMIN_PREVIEW_ROLE_CHANGE", correlationId);
     var noOp = existing.roles().equals(roles);
     var lastAdminDenied = wouldRemoveLastAdmin(existing, roles, existing.status());
     var selfRemovalDenied = wouldRemoveOwnAdminRole(actor, existing, roles);
@@ -81,7 +81,7 @@ public final class UserAdminService {
     }
     var existing = membership(membershipId);
     requireManage(actor, existing.scopeType(), existing.tenantId(), existing.customerId());
-    ensureAssignable(actor, roles);
+    ensureAssignable(actor, existing, roles, "USERADMIN_CHANGE_MEMBER_ROLES", correlationId);
     if (existing.roles().equals(roles)) {
       audit(actor, existing, "USERADMIN_CHANGE_MEMBER_ROLES", AdminAuditEvent.Result.NO_OP, "no-op", correlationId);
       return new RoleChangeResult("no-op", "Requested roles already match current assignment.", existing, "trace-useradmin-change-member-roles-" + stableSuffix(idempotencyKey));
@@ -421,11 +421,21 @@ public final class UserAdminService {
     return scopeType == ScopeType.CUSTOMER ? "customer.user.manage" : "tenant.user.manage";
   }
 
-  private void ensureAssignable(AuthContextResolver.ResolvedMe actor, List<FoundationRole> roles) {
-    if (roles.contains(FoundationRole.SAAS_OWNER_ADMIN) && actor.selectedContext().scopeType() != ScopeType.SAAS_OWNER) {
+  private void ensureAssignable(AuthContextResolver.ResolvedMe actor, Membership target, List<FoundationRole> roles, String action, String correlationId) {
+    if (target.scopeType() == ScopeType.CUSTOMER && roles.stream().anyMatch(role -> role.defaultScopeType() != ScopeType.CUSTOMER)) {
+      audit(actor, target, action, AdminAuditEvent.Result.DENIED, "role-escalation-denied", correlationId);
       throw new AuthorizationException(403, "role-escalation-denied");
     }
-    if (roles.stream().anyMatch(role -> role.defaultScopeType() == ScopeType.TENANT) && actor.selectedContext().scopeType() == ScopeType.CUSTOMER) {
+    if (target.scopeType() == ScopeType.TENANT && roles.stream().anyMatch(role -> role.defaultScopeType() != ScopeType.TENANT)) {
+      audit(actor, target, action, AdminAuditEvent.Result.DENIED, "role-escalation-denied", correlationId);
+      throw new AuthorizationException(403, "role-escalation-denied");
+    }
+    if (target.scopeType() == ScopeType.SAAS_OWNER && roles.stream().anyMatch(role -> role != FoundationRole.SAAS_OWNER_ADMIN)) {
+      audit(actor, target, action, AdminAuditEvent.Result.DENIED, "role-escalation-denied", correlationId);
+      throw new AuthorizationException(403, "role-escalation-denied");
+    }
+    if (roles.contains(FoundationRole.SAAS_OWNER_ADMIN) && actor.selectedContext().scopeType() != ScopeType.SAAS_OWNER) {
+      audit(actor, target, action, AdminAuditEvent.Result.DENIED, "role-escalation-denied", correlationId);
       throw new AuthorizationException(403, "role-escalation-denied");
     }
   }

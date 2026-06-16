@@ -16,6 +16,7 @@ import ai.first.api.coreapp.admin.AdminEndpoint.AdminUsersResponse;
 import ai.first.api.coreapp.admin.AdminEndpoint.ChangeMembershipStatusApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.ChangeRolesApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.CreateInvitationApiRequest;
+import ai.first.api.coreapp.admin.AdminEndpoint.CustomerAdminListPayload;
 import ai.first.api.coreapp.admin.AdminEndpoint.InvitationActionApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.IdentityRelinkApiRequest;
 import ai.first.api.coreapp.admin.AdminEndpoint.OrganizationActionApiResponse;
@@ -206,6 +207,91 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
             .responseBodyAs(String.class)
             .invoke());
     assertTrue(hiddenTarget.getMessage().contains("404"));
+  }
+
+  @Test
+  void customerAdminApisDefaultToCustomerAdminAndDenyTenantOrOwnerRoles() throws Exception {
+    var repository = new AkkaIdentityRepository(componentClient);
+    repository.saveCustomer(new Customer("tenant-starter", "customer-role-safe", "Role Safe Customer", true));
+    seedIdentity(repository, "existing-customer-role-admin@example.test", "Existing Customer Admin", ScopeType.CUSTOMER, "tenant-starter", "customer-role-safe", FoundationRole.CUSTOMER_ADMIN);
+
+    var defaulted = httpClient
+        .POST("/api/admin/customers/customer-role-safe/admins/invitations")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-default-role")
+        .withRequestBody(new CreateInvitationApiRequest("default-customer-admin@example.test", "Default Customer Admin", null, "idem-customer-admin-default-role"))
+        .responseBodyAs(InvitationApiResponse.class)
+        .invoke();
+    assertTrue(defaulted.status().isSuccess());
+
+    var adminsAfterDefault = httpClient
+        .GET("/api/admin/customers/customer-role-safe/admins")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-list-default")
+        .responseBodyAs(CustomerAdminListPayload.class)
+        .invoke();
+    assertTrue(adminsAfterDefault.status().isSuccess());
+    assertTrue(adminsAfterDefault.body().invitations().stream()
+        .anyMatch(invitation -> "default-customer-admin@example.test".equals(invitation.email())
+            && invitation.roles().equals(List.of("CUSTOMER_ADMIN"))
+            && "customer-role-safe".equals(invitation.customerId())));
+
+    var tenantRoleInviteDenied = assertThrows(
+        RuntimeException.class,
+        () -> httpClient
+            .POST("/api/admin/customers/customer-role-safe/admins/invitations")
+            .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+            .addHeader("X-Correlation-Id", "corr-customer-admin-tenant-role-denied")
+            .withRequestBody(new CreateInvitationApiRequest("tenant-role-customer-admin@example.test", "Bad Role", List.of("TENANT_ADMIN"), "idem-customer-admin-tenant-role"))
+            .responseBodyAs(String.class)
+            .invoke());
+    assertTrue(tenantRoleInviteDenied.getMessage().contains("403"));
+
+    var ownerRoleInviteDenied = assertThrows(
+        RuntimeException.class,
+        () -> httpClient
+            .POST("/api/admin/customers/customer-role-safe/admins/invitations")
+            .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+            .addHeader("X-Correlation-Id", "corr-customer-admin-owner-role-denied")
+            .withRequestBody(new CreateInvitationApiRequest("owner-role-customer-admin@example.test", "Bad Role", List.of("SAAS_OWNER_ADMIN"), "idem-customer-admin-owner-role"))
+            .responseBodyAs(String.class)
+            .invoke());
+    assertTrue(ownerRoleInviteDenied.getMessage().contains("403"));
+
+    var tenantRoleChangeDenied = assertThrows(
+        RuntimeException.class,
+        () -> httpClient
+            .PUT("/api/admin/customers/customer-role-safe/admins/existing-customer-role-admin@example.test/roles")
+            .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+            .addHeader("X-Correlation-Id", "corr-customer-admin-role-tenant-denied")
+            .withRequestBody(new ChangeRolesApiRequest(List.of("TENANT_ADMIN"), "escalation attempt", "idem-customer-admin-role-tenant"))
+            .responseBodyAs(String.class)
+            .invoke());
+    assertTrue(tenantRoleChangeDenied.getMessage().contains("403"));
+
+    var ownerRoleChangeDenied = assertThrows(
+        RuntimeException.class,
+        () -> httpClient
+            .PUT("/api/admin/customers/customer-role-safe/admins/existing-customer-role-admin@example.test/roles")
+            .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+            .addHeader("X-Correlation-Id", "corr-customer-admin-role-owner-denied")
+            .withRequestBody(new ChangeRolesApiRequest(List.of("SAAS_OWNER_ADMIN"), "escalation attempt", "idem-customer-admin-role-owner"))
+            .responseBodyAs(String.class)
+            .invoke());
+    assertTrue(ownerRoleChangeDenied.getMessage().contains("403"));
+
+    var adminsAfterDenials = httpClient
+        .GET("/api/admin/customers/customer-role-safe/admins")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-admin-list-denials")
+        .responseBodyAs(CustomerAdminListPayload.class)
+        .invoke();
+    assertTrue(adminsAfterDenials.status().isSuccess());
+    assertTrue(adminsAfterDenials.body().admins().stream()
+        .anyMatch(admin -> "existing-customer-role-admin@example.test".equals(admin.accountId())
+            && admin.roles().equals(List.of("CUSTOMER_ADMIN"))));
+    assertTrue(adminsAfterDenials.body().invitations().stream()
+        .noneMatch(invitation -> List.of("tenant-role-customer-admin@example.test", "owner-role-customer-admin@example.test").contains(invitation.email())));
   }
 
   @Test

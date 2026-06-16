@@ -204,7 +204,7 @@
 
 ### TASK-FCBAD-02-001: Repair Customer Admin role-safety backend enforcement
 
-- status: pending
+- status: done
 - source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#fcb-rd-05-customer-admin-role-safety-allows-organizationtenant-roles-through-customer-admin-apis
 - task brief: specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/05-customer-admin-role-safety-backend.md
 - depends on:
@@ -234,6 +234,9 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; security repair for Customer Admin branch; `manage-customer-admins`; `tenant.customer_admin.invite` and `tenant.customer_admin.manage`; Organization/Tenant Admin actor with selected tenant and target Customer; HTTP endpoint/service validation; no frontend authority assumptions
+  - changed runtime paths: `InvitationService` now validates requested roles against target invitation scope; `UserAdminService` now validates replacement roles against target membership scope; Customer Admin tests cover default `CUSTOMER_ADMIN` invitation roles and denial of `TENANT_ADMIN` / `SAAS_OWNER_ADMIN` invite and role-change attempts
+  - checks: `mvn -Dtest=ai.first.application.coreapp.useradmin.AdminEndpointIntegrationTest test` passed; `git diff --check` passed
+  - commit message: `customer-boundary-desc: repair customer admin role safety`
 
 ### TASK-FCBAD-02-002: Repair Customer Admin target propagation and workstream invitation path
 

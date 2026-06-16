@@ -96,7 +96,9 @@ public final class InvitationService {
     var auth = actor.selectedContext();
     requireScope(auth, request.scopeType(), request.tenantId(), request.customerId());
     requireInvitationCapability(auth, request.scopeType());
-    ensureRolesAssignable(auth, request.requestedRoles());
+    if (!rolesAssignable(auth, request.scopeType(), request.requestedRoles())) {
+      throw deny(actor, null, "INVITATION_CREATE", "role-escalation-denied", request.correlationId());
+    }
     var normalizedEmail = normalizeEmail(request.email());
     if (request.expiresAt() == null || !request.expiresAt().isAfter(clock.instant())) {
       throw deny(actor, null, "INVITATION_CREATE", "invalid-expiry", request.correlationId());
@@ -448,13 +450,17 @@ public final class InvitationService {
     }
   }
 
-  private void ensureRolesAssignable(ai.first.domain.foundation.identity.AuthContext auth, List<FoundationRole> roles) {
-    if (roles.contains(FoundationRole.SAAS_OWNER_ADMIN) && auth.scopeType() != ScopeType.SAAS_OWNER) {
-      throw new AuthorizationException(403, "role-escalation-denied");
+  private boolean rolesAssignable(ai.first.domain.foundation.identity.AuthContext auth, ScopeType targetScope, List<FoundationRole> roles) {
+    if (targetScope == ScopeType.CUSTOMER && roles.stream().anyMatch(role -> role.defaultScopeType() != ScopeType.CUSTOMER)) {
+      return false;
     }
-    if (roles.stream().anyMatch(role -> role.defaultScopeType() == ScopeType.TENANT) && auth.scopeType() == ScopeType.CUSTOMER) {
-      throw new AuthorizationException(403, "role-escalation-denied");
+    if (targetScope == ScopeType.TENANT && roles.stream().anyMatch(role -> role.defaultScopeType() != ScopeType.TENANT)) {
+      return false;
     }
+    if (targetScope == ScopeType.SAAS_OWNER && roles.stream().anyMatch(role -> role != FoundationRole.SAAS_OWNER_ADMIN)) {
+      return false;
+    }
+    return !roles.contains(FoundationRole.SAAS_OWNER_ADMIN) || auth.scopeType() == ScopeType.SAAS_OWNER;
   }
 
   private AuthorizationException deny(AuthContextResolver.ResolvedMe actor, Invitation invite, String action, String reason, String correlationId) {
