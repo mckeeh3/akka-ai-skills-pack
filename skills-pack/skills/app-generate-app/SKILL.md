@@ -37,7 +37,7 @@ Use the fixed Java base package `ai.first`. Keep extension work additive and mer
 
 ## Runtime completion doctrine
 
-A generated feature is complete only when the real local runtime path works at the stated scope. Do not count deterministic/demo/mock/simulated/model-less normal runtime behavior as implemented for auth, durability, provider calls, protected capabilities, authorization denials, audit/work traces, or workstream agents.
+A generated feature is complete only when the real local runtime path works at the stated scope. Do not count deterministic/demo/mock/simulated/model-less normal runtime behavior as implemented for auth, durability, provider calls, protected capabilities, authorization denials, audit/work traces, or workstream agents. Report the achieved readiness level (`described`, `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, or `runtime-ready`) and do not call user-visible behavior complete when only lower-level evidence exists.
 
 Model-backed workstream behavior must invoke a concrete Akka `Agent` through the governed runtime path with active configuration, governed loader tools, tool permission boundaries, registered runtime tools, and durable traces. Missing provider or security configuration must fail closed with actionable browser-safe errors and trace references.
 
@@ -68,6 +68,7 @@ Final handoff must include:
 
 - generated/changed files grouped by backend, frontend, description/spec/docs/tests
 - runtime path exercised and commands run with exit codes
+- runtime evidence for feature-bearing changes: readiness level, browser/surface/API/Akka path, role/AuthContext/tenant setup, denial/provider fail-closed coverage, trace/audit evidence, and manual/browser/API smoke result
 - what passed, failed, or could not be run
 - description/spec assumptions or drift discovered
 - incomplete/blocked items with recommended next task

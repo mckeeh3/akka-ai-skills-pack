@@ -35,6 +35,8 @@ The task sounds like:
 
 Use `akka-revised-prd-reconciliation` instead when the input is a full revised PRD or replacement requirements document.
 
+Use `akka-manual-failure-reconciliation` instead when the input is primarily a manual tester failure list or a report that many claimed features do not work through the browser/API/runtime path.
+
 Use `akka-do-next-pending-task` instead when the user wants to execute an existing queue item without changing the plan.
 
 Keep this skill local-delta oriented. It may update affected app-description/spec/backlog/task-brief/queue artifacts, but it must not rederive the whole PRD plan, regenerate the queue from scratch, or create a fresh parallel app. Preserve existing queue IDs/statuses and existing Java base package, app-description location, style-guide, workstream id, dashboard/surface graph context, governed-tool id, capability id, AuthContext/scope, approval, audit/trace, and test decisions unless the change request explicitly modifies them. If implementation artifacts or a legacy `specs/scaffold-report.md` exist, treat the request as SaaS Foundation App extension/repair, not replacement.

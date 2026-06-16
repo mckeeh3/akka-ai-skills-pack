@@ -117,7 +117,7 @@ When updating existing queues:
 
 ## Runtime completion and validation
 
-For generated-app implementation tasks, link `../references/generated-saas-runtime-completion.md`. Plans/backlogs must require validation through the intended local Akka/API/UI path for the selected scope. Fixture-only, mock-only, deterministic/model-less normal runtime behavior cannot satisfy named runtime features.
+For generated-app implementation tasks, link `../references/generated-saas-runtime-completion.md`. Plans/backlogs must require validation through the intended local Akka/API/UI path for the selected scope. Fixture-only, mock-only, deterministic/model-less normal runtime behavior cannot satisfy named runtime features. Backlogs and pending tasks must distinguish readiness levels (`described`, `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, `runtime-ready`) and require runtime evidence before a feature-bearing task can be marked `done` as `runtime-ready`.
 
 ## Anti-patterns
 

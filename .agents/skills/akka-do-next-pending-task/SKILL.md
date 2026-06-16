@@ -35,6 +35,7 @@ The skill must:
 - require or inherit the generated-SaaS vertical contract before coding: workstream/functional agent or internal/foundation scope, attention category, role-specific dashboard, human surface graph node/action edge, governed-tool id and qualified exposure, capability id/API exposure, selected Akka substrate, internal workstream agent graph delegation/result mapping when applicable, autonomous task/result/notification mapping when applicable, auth, traces, and tests
 - generate or update the requested outputs
 - run the task's required checks and local/runtime validation path when the task implements app behavior
+- record the achieved readiness level and runtime evidence for feature-bearing `done` tasks
 - update the queue status before finishing
 - commit the task changes only when the selected task is marked `done`
 - report any blocking pending question or the next runnable pending task
@@ -105,6 +106,8 @@ Block instead of guessing when:
 - the task conflicts with current code or specs
 - a required external credential/service is unavailable for normal runtime; implement fail-closed configuration errors and test-only adapters where appropriate, but do not mark provider-backed user-facing behavior done through mocks, and do not use fail-closed internal persistence as a substitute for Akka component-backed state
 - required local app-run, endpoint, browser, or manual-smoke validation cannot be performed for a feature-bearing task; record incomplete validation and keep the task blocked unless the task is explicitly non-runtime/docs-only or the affected runtime feature is outside the named scope
+- the only passing evidence for a user-visible runtime feature is unit/service/contract/typecheck/build output without a real API/workstream/browser/manual smoke path
+- a task would be marked `done` while its notes still say the required runtime smoke, provider, seed/bootstrap, or protected route validation is blocked, deferred, or not run
 - completing the named feature would require widening into another queue item
 
 ## Queue update discipline
@@ -138,6 +141,8 @@ Before finishing, verify:
 - any AI-first constraints in the task were preserved or explicitly blocked rather than guessed
 - checks were run or explicitly reported as not run
 - generated-SaaS implementation tasks carried a workstream-attention-dashboard/surface-graph-governed-tool-capability/substrate contract, or were explicitly internal-only/foundation/cross-cutting
+- feature-bearing `done` tasks include a `runtime evidence:` note naming readiness level, real path tested, role/AuthContext/tenant setup, denial/provider/fail-closed coverage, trace/audit evidence, and commands or manual-smoke results
+- `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/pending-tasks.md` or installed equivalent was run when available after marking runtime tasks done, or the reason was recorded
 - LLM-backed functional-agent tasks carried workstream-expertise/reference-governance context, including model binding, manifests, `readReferenceDoc`, loader authorization, tool boundary, load traces, expertise surfaces, default-content governance, and tests when applicable
 - autonomous task work carried AutonomousAgent lifecycle, notification, result/progress surface, failure/cancellation attention, and test requirements when applicable
 - if the task was marked `done`, changes were committed or the reason not to commit was reported

@@ -143,6 +143,8 @@ Before finishing, verify:
 - unresolved AI-first blockers are captured as pending questions and block only affected queue entries
 - required tests are named clearly
 - local app-run, endpoint smoke, browser/workstream smoke, or manual-test validation is named for tasks that implement runtime behavior, or the task explicitly says it is non-runtime/internal-only
+- feature-bearing task briefs name the target readiness level and canonical runtime path: browser/surface/action or non-UI trigger -> API/endpoint/client -> Akka component/service/substrate -> trace/audit/view
+- feature-bearing task briefs require runtime evidence in queue notes before `done`: role/AuthContext/tenant setup, denial case, provider configured or fail-closed status, commands/manual-smoke result, and trace/audit evidence
 - the listed skills match the task's component type
 - done criteria define a clear stopping point and do not call a named feature implemented when required backend/API/UI/auth/audit/test pieces are deferred
 - `specs/pending-tasks.md` has a matching entry or updated existing entry for this task brief

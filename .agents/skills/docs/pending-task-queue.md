@@ -28,7 +28,7 @@ If a project already has an equivalent issue tracker or task queue, the harness 
 2. Prefer a fresh context session for every task.
 3. Do not combine adjacent tasks just because their files are nearby.
 4. Select the first `pending` task whose dependencies are `done` or empty.
-5. Mark a task `done` only after its required checks pass and its done criteria are satisfied. A check that is not runnable blocks completion unless the task is explicitly non-runtime/docs-only, or the user/project has accepted the limitation and the task's notes say why the named feature still works.
+5. Mark a task `done` only after its required checks pass, its done criteria are satisfied, and any feature-bearing runtime path has explicit runtime evidence. A check that is not runnable blocks completion unless the task is explicitly non-runtime/docs-only, or the user/project has accepted the limitation and the task's notes say why the named feature still works without claiming `runtime-ready`.
 6. Mark a task `blocked` when required decisions, pending questions, inputs, dependencies, build/runtime preconditions, or local validation prerequisites are missing.
 7. For AI-first work, unresolved delegated authority, approval, policy/risk threshold, evidence, audit/trace, supervision UI, evaluation, or outcome decisions block only the affected tasks.
 8. Mark a task `deferred` only when the user or plan explicitly chooses to postpone it.
@@ -44,7 +44,7 @@ Use these exact status values:
 - `pending` — ready or potentially ready to execute when dependencies are satisfied
 - `in-progress` — currently being executed in this harness run
 - `blocked` — cannot proceed without a decision, dependency, missing input, or failed prerequisite
-- `done` — completed and validated as far as the task requires; for generated app implementation, the implemented behavior works through its intended local runtime/API/UI surface or the task is explicitly non-runtime/internal-only
+- `done` — completed and validated as far as the task requires; for generated app implementation, the implemented behavior works through its intended local runtime/API/UI surface with recorded evidence, or the task is explicitly non-runtime/internal-only. If the achieved level is only `surface-ready`, `backend-ready`, or `frontend-rendered`, say that in notes and do not call the feature `runtime-ready`.
 - `deferred` — intentionally postponed and not eligible for automatic next-task selection
 - `superseded` — replaced by a later requirement, spec, backlog, or task and not eligible for execution
 
@@ -114,6 +114,7 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
   - source requirement ids: <optional stable requirement IDs when available>
   - source capability ids: <optional app-description capability IDs when available>
   - vertical contract: <workstreamId/functional agent or internal/foundation scope; attention category or non-attention reason; role-specific dashboard id/purpose; human surface graph node/state/action edge or non-UI trigger; governed-tool id/type/exposure (browser-tool, agent-tool, internal-tool, workflow/timer/consumer/MCP-tool); capability id/class; API/exposure channel; selected Akka substrate; internal workstream agent graph delegation/result surface when relevant; events/notifications/projections; audit/work trace; tests/local validation>
+  - runtime evidence: <required for feature-bearing `done` tasks: readiness level; real path tested browser/surface/action or non-UI trigger -> API/endpoint/client -> Akka component/service/substrate -> trace/audit/view; role/AuthContext/tenant setup; denial case; commands/manual smoke result; provider configured or fail-closed evidence>
   - autonomous task contract: <optional AutonomousAgent task definition, start/query/result/lifecycle capability ids, notification mapping, result/progress surface ids, failure/cancellation attention behavior, and lifecycle tests>
   - foundation scope: <optional AgentDefinition/PromptDocument/SkillDocument/AgentSkillManifest/readSkill/PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace scope for managed-agent foundation tasks>
   - supersedes: <optional task IDs this task replaces>
@@ -159,6 +160,20 @@ bash .agents/skills/tools/validate-pending-task-workstream-contract.sh specs/pen
 ```
 
 In a downstream fork, use whichever path exists and pass the target queue path. The validator is intentionally conservative: it checks for the presence of the required contract vocabulary, not semantic correctness. Passing the script does not replace reading the task brief; failing it means repair the backlog/task brief/queue before coding.
+
+After marking feature-bearing tasks `done`, also run the runtime evidence validator when available:
+
+```bash
+python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/pending-tasks.md
+```
+
+From an installed skills library:
+
+```bash
+python3 .agents/skills/tools/validate-runtime-completion-evidence.py specs/pending-tasks.md
+```
+
+This validator checks `done` runtime-looking tasks for textual runtime evidence. Failing it means repair the task notes/status or add a remediation task before claiming the feature group is `runtime-ready`.
 
 ## Managed-agent and workstream expertise splitting guardrails
 

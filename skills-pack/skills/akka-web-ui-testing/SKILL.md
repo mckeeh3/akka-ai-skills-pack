@@ -58,11 +58,13 @@ Do not add a new heavy frontend test framework unless the user explicitly wants 
 
 ### 4. Browser or manual smoke tests
 
-For feature-bearing generated SaaS UI work, the sprint/task must have a smoke path even if the project does not yet have a browser automation framework. Prefer an existing cheap/stable automated browser or DOM smoke test when available. If adding Playwright/Cypress/etc. would be heavy or unstable, record an explicit manual smoke checklist/result instead.
+For feature-bearing generated SaaS UI work, the sprint/task must have a smoke path even if the project does not yet have a browser automation framework. Prefer an existing cheap/stable automated browser or DOM smoke test when available. If adding Playwright/Cypress/etc. would be heavy or unstable, record an explicit manual smoke checklist/result instead. A UI feature must not be marked `runtime-ready` from frontend contract tests, screenshots, typecheck, build, fixture rendering, or story/demo data alone.
 
 Cover:
 - page loads in the locally running Akka-hosted app for feature-bearing generated SaaS UI; an equivalent test route is acceptable only for non-feature mechanics or an explicitly recorded limitation
 - primary action works through the intended real API/client path, not fixture-only or frontend-only data
+- role/AuthContext/tenant setup and at least one forbidden/denied/hidden state are exercised when auth is in scope
+- trace/correlation/status copy is visible or inspectable without exposing secrets
 - validation or forbidden error appears when expected
 - keyboard focus path for a key form or dialog
 

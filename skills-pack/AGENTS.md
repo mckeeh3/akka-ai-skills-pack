@@ -29,7 +29,7 @@ The install step copies or symlinks `skills-pack/skills/**`, shared `skills-pack
 
 ## Runtime completion doctrine
 
-Do not teach downstream harnesses to count deterministic/demo/mock/simulated/model-less normal runtime behavior as implemented for generated-app auth, durability, provider calls, protected capabilities, authorization denials, audit/work traces, or workstream agents.
+Do not teach downstream harnesses to count deterministic/demo/mock/simulated/model-less normal runtime behavior as implemented for generated-app auth, durability, provider calls, protected capabilities, authorization denials, audit/work traces, or workstream agents. Skills, docs, and templates must distinguish `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, and `runtime-ready`; only the last level may close a user-visible runtime feature without qualification.
 
 Model-backed workstream agents must invoke a concrete Akka `Agent` component through the governed runtime path with active configuration, governed loader tools, tool permission boundaries, registered runtime tools, and durable traces. Missing provider or security configuration should fail closed with actionable errors.
 
@@ -42,6 +42,7 @@ git diff --check
 ./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run
 ./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune
 ./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check
+python3 tools/validate-runtime-completion-evidence.py ../specs/pending-tasks.md  # when validating target app runtime task evidence
 bash pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh
 ```
 

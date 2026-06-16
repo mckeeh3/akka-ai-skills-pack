@@ -2,7 +2,7 @@
 pack	akka-ai-skills-pack
 source	/home/hxmc/ai/akka-ai-skills-pack/skills-pack
 mode	copy
-installed_at	2026-06-12T12:30:18Z
+installed_at	2026-06-16T17:18:56Z
 entry	file	README.md
 entry	dir	references
 entry	dir	docs
@@ -102,6 +102,7 @@ entry	dir	akka-kve-notifications
 entry	dir	akka-kve-replication
 entry	dir	akka-kve-ttl
 entry	dir	akka-kve-unit-testing
+entry	dir	akka-manual-failure-reconciliation
 entry	dir	akka-mcp-endpoint-component-client
 entry	dir	akka-mcp-endpoint-request-context
 entry	dir	akka-mcp-endpoint-resources-prompts
@@ -113,6 +114,7 @@ entry	dir	akka-pending-task-queue-maintenance
 entry	dir	akka-prd-to-specs-backlog
 entry	dir	akka-resend-email-service
 entry	dir	akka-revised-prd-reconciliation
+entry	dir	akka-runtime-feature-verification
 entry	dir	akka-saas-invitation-onboarding
 entry	dir	akka-slice-spec-to-backlog
 entry	dir	akka-solution-decomposition

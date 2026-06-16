@@ -106,7 +106,9 @@ For SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS prom
 
 ## Implementation completion standard
 
-Generated Akka app features are complete only when they work at the stated scope through the intended local Akka/API/UI runtime path. For the canonical runtime-completion doctrine, including governed Akka `Agent` invocation, provider fail-closed behavior, and fixture/mock boundaries, read `references/generated-saas-runtime-completion.md`.
+Generated Akka app features are complete only when they work at the stated scope through the intended local Akka/API/UI runtime path. For the canonical runtime-completion doctrine, including governed Akka `Agent` invocation, provider fail-closed behavior, fixture/mock boundaries, readiness vocabulary, and required runtime evidence, read `references/generated-saas-runtime-completion.md`.
+
+Use `akka-runtime-feature-verification` before closing a feature group or when a completed slice may only be `surface-ready`, `backend-ready`, or `frontend-rendered`. Use `akka-manual-failure-reconciliation` when manual testing reports broken flows; it classifies each failure as an app-description gap, implementation gap, test gap, provider/config blocker, seed/demo-data gap, UX/state gap, or expectation change before creating remediation tasks.
 
 ## Description-first path
 
@@ -137,6 +139,8 @@ Start here when the user is primarily describing or revising the app before real
 - `akka-backlog-item-to-task-brief`
 - `akka-do-next-pending-task`
 - `akka-pending-task-queue-maintenance`
+- `akka-runtime-feature-verification`
+- `akka-manual-failure-reconciliation`
 - `akka-pending-question-generation`
 - `akka-do-next-pending-question`
 - `akka-pending-question-queue-maintenance`

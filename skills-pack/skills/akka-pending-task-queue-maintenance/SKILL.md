@@ -24,6 +24,7 @@ The skill should:
 - preserve AI-first operating-model context such as delegated authority, policies, decisions, traces, UI surfaces, evaluations, and outcomes across queue repairs
 - preserve workstream-expertise and reference-governance context for LLM-backed functional agents: model binding, prompt/skill/reference governance, compact manifests, `readSkill`/`readReferenceDoc`, loader authorization, tool boundaries, load traces, expertise surfaces, default-content policy, and tests
 - repair or block stale generated-SaaS tasks that have regressed into component-only, CRUD-only, page-only, or dashboard-only work without workstream, role-specific dashboard attention, human surface graph nodes/edges, governed-tool exposure, capability id, API/exposure, Akka substrate, internal workstream agent graph context when relevant, auth, traces, and tests
+- detect `done` feature-bearing tasks that lack runtime evidence or conflate `surface-ready`/`backend-ready`/`frontend-rendered` with `runtime-ready`
 - mark obsolete tasks as `superseded` when justified
 - append maintenance follow-up tasks only when needed
 - report the next runnable task
@@ -112,5 +113,7 @@ Before finishing, verify:
 - LLM-backed functional-agent task entries preserve or inherit workstream expertise, model binding, skill/reference governance, `readReferenceDoc`, manifest assignment, loader authorization, tool boundaries, load traces, expertise surfaces, default-content governance policy, and tests
 - unresolved AI-first blockers are not left runnable
 - completed task history is preserved
+- done runtime tasks have `runtime evidence:` notes or are explicitly downgraded to the achieved readiness level with follow-up remediation tasks
+- `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/pending-tasks.md` or installed equivalent was run when available
 - no code was implemented
 - the next runnable task is reported

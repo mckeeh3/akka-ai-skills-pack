@@ -62,6 +62,9 @@ A feature is complete only when the intended local runtime path works at the sta
 - Provider-backed user-visible behavior should fail closed when configuration is missing and should not be counted as implemented through mocks.
 - Tests may use fixtures and test doubles, but the normal runtime path must remain real and governed.
 - Required validation that cannot run should block completion unless the task is explicitly docs-only, planning-only, or non-runtime.
+- Completion evidence must name the readiness level achieved: `described`, `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, or `runtime-ready`.
+- `runtime-ready` requires evidence for the real path from user/browser/surface action or non-UI trigger through API/endpoint/client, Akka substrate/component/service, authorization, side effect/view/projection, and audit/work trace.
+- Unit/service/contract/typecheck/build evidence may support completion, but cannot alone close a user-visible runtime feature.
 
 ## Planning outputs
 
