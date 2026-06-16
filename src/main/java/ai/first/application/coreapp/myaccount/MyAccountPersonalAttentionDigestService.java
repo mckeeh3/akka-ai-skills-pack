@@ -135,6 +135,10 @@ public final class MyAccountPersonalAttentionDigestService {
   private MyAccountPersonalAttentionDigestTask decide(AuthContextResolver.ResolvedMe actor, String digestTaskId, MyAccountPersonalAttentionDigestTask.Status status, String decision, String reason, String correlationId) {
     var task = task(actor, digestTaskId);
     require(actor, status == MyAccountPersonalAttentionDigestTask.Status.ACCEPTED ? ACCEPT_RESULT_CAPABILITY : REJECT_RESULT_CAPABILITY, correlationId);
+    if (task.status() == status) {
+      authContextResolver.appendProtectedReadTrace(actor, status == MyAccountPersonalAttentionDigestTask.Status.ACCEPTED ? ACCEPT_RESULT_CAPABILITY : REJECT_RESULT_CAPABILITY, decision + ":idempotent-no-op:advisory-only:no source attention mutation", correlationId);
+      return task;
+    }
     if (!task.resultDecisionAllowed()) throw new AuthorizationException(409, "personal-attention-digest-result-not-completed");
     var traceId = "trace-my-account-personal-attention-digest-" + decision + "-" + stableSuffix(correlationId + ":" + task.digestTaskId());
     var decided = task.withDecision(status, decision, firstNonBlank(reason, "Human personal attention digest decision recorded; source attention, workstreams, authorization, and provider config unchanged."), List.of(traceId), Instant.now(clock));

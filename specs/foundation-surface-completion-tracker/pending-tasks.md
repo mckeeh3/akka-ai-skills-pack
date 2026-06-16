@@ -707,7 +707,7 @@
 
 ### TASK-FSCT-020: Verify or complete runtime implementation for `surface-my-account-personal-attention-digest-result`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-019]
 - surface id: `surface-my-account-personal-attention-digest-result`
@@ -731,13 +731,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `outcome-panel`
   - surface contract: `my_account.personal_attention_digest.result.v1`
   - purpose: Advisory digest/export result review with evidence, omissions, and accept/reject actions.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream My Account functional agent surface `surface-my-account-personal-attention-digest-result`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-personal-attention-digest-result`; surface graph node/action edge for opening or acting on `surface-my-account-personal-attention-digest-result`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-16: completed and verified the real runtime implementation for `surface-my-account-personal-attention-digest-result`: protected WorkstreamEndpoint action APIs, backend-owned `my_account.personal_attention_digest.result.v1` outcome-panel envelope for completed review-required/accepted/rejected digest tasks, advisory accept/reject through `MyAccountPersonalAttentionDigestService`, empty/no-result direct surface state, idempotent repeated same-decision no-op, browser-safe omissions/source-count/evidence/review/quality/redaction payload, trace/correlation evidence, and no fixture-only/frontend-only normal runtime path. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/fail-closed coverage included cross-account task denial, non-completed result-decision denial, provider/model-less fake success forbidden by runtime contracts, advisory-only/no source mutation semantics, and redacted hidden-source summaries; commands passed: `mvn -q -Dtest=MyAccountPersonalAttentionDigestServiceTest test`, `mvn -q -Dtest=MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyAccountPersonalAttentionDigestProgressRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`
 
 ### TASK-FSCT-021: Verify or complete runtime testing for `surface-my-account-personal-attention-digest-result`
 
