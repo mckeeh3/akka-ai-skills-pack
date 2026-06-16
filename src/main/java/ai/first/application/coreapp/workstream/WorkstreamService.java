@@ -210,6 +210,11 @@ public final class WorkstreamService {
   private static final String GOVERNANCE_POLICY_ROLLBACK_CAPABILITY = "governance.policy.rollback";
   private static final String GOVERNANCE_OUTCOMES_RECORD_CAPABILITY = GovernancePolicyService.OUTCOMES_RECORD_CAPABILITY;
   private static final String GOVERNANCE_POLICY_ANALYSIS_START_CAPABILITY = GovernancePolicyImpactService.START_CAPABILITY;
+  private static final String GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY = GovernancePolicyImpactService.READ_CAPABILITY;
+  private static final String GOVERNANCE_POLICY_ANALYSIS_CANCEL_CAPABILITY = GovernancePolicyImpactService.CANCEL_CAPABILITY;
+  private static final String GOVERNANCE_POLICY_ANALYSIS_ACCEPT_CAPABILITY = GovernancePolicyImpactService.ACCEPT_RESULT_CAPABILITY;
+  private static final String GOVERNANCE_POLICY_ANALYSIS_REJECT_CAPABILITY = GovernancePolicyImpactService.REJECT_RESULT_CAPABILITY;
+  private static final String GOVERNANCE_POLICY_ANALYSIS_REQUEST_CHANGES_CAPABILITY = GovernancePolicyImpactService.REQUEST_CHANGES_CAPABILITY;
   private final MeService meService;
   private final AuthContextResolver authContextResolver;
   private final MyAccountService myAccountService;
@@ -226,6 +231,7 @@ public final class WorkstreamService {
   private final AgentAdminPromptRiskReviewService promptRiskReviewService;
   private final AuditTraceService auditTraceService;
   private final GovernancePolicyService governancePolicyService;
+  private final GovernancePolicyImpactService governancePolicyImpactService;
   private final AttentionService attentionService;
   private final WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker;
   private final WorkstreamLogRepository workstreamLogRepository;
@@ -313,7 +319,9 @@ public final class WorkstreamService {
     this.workstreamLogRepository = Objects.requireNonNull(workstreamLogRepository);
     this.workstreamEventRepository = workstreamEventRepository == null ? new EmptyWorkstreamEventRepository() : workstreamEventRepository;
     this.auditTraceService = new AuditTraceService(authContextResolver, Objects.requireNonNull(auditTraceRepository));
-    this.governancePolicyService = new GovernancePolicyService(Objects.requireNonNull(governancePolicyRepository), authContextResolver, Clock.systemUTC(), attentionProducerService);
+    var governanceRepository = Objects.requireNonNull(governancePolicyRepository);
+    this.governancePolicyService = new GovernancePolicyService(governanceRepository, authContextResolver, Clock.systemUTC(), attentionProducerService);
+    this.governancePolicyImpactService = new GovernancePolicyImpactService(StarterSecurityComponents.governancePolicyImpactTaskRepository(), governanceRepository, authContextResolver, Clock.systemUTC(), attentionProducerService, workstreamEventPublisher, new ai.first.application.coreapp.governance.FailClosedGovernancePolicyImpactAutonomousAgentRuntime());
   }
 
   public WorkstreamBootstrapResponse bootstrap(WorkosIdentity identity, String selectedContextId, String correlationId) {
@@ -420,8 +428,14 @@ public final class WorkstreamService {
     var actor = authContextResolver.resolveMe(identity, selectedContextId, request.correlationId());
     var action = actionById(request.actionId());
     if (action == null || !Objects.equals(action.capabilityId(), request.capabilityId()) || !Objects.equals(action.governedToolId(), request.governedToolId()) || !Objects.equals(action.browserToolId(), request.browserToolId())) throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
-    if (!isActionCapabilityVisible(actor, action.capabilityId())) throw new AuthorizationException(403, "CAPABILITY_FORBIDDEN");
-    if (action.idempotency().required() && (request.idempotencyKey() == null || request.idempotencyKey().isBlank())) return new CapabilityActionResult("validation-error", "This action requires a client-generated idempotency key.", request.correlationId(), List.of("trace-validation-idempotency"), null);
+    if (!isActionCapabilityVisible(actor, action.capabilityId())) {
+      if (isGovernancePolicyAction(request.actionId())) return governancePolicySystemMessageResult(actor, request.actionId(), "CAPABILITY_FORBIDDEN", governancePolicySafeDenialMessage("CAPABILITY_FORBIDDEN"), request.correlationId());
+      throw new AuthorizationException(403, "CAPABILITY_FORBIDDEN");
+    }
+    if (action.idempotency().required() && (request.idempotencyKey() == null || request.idempotencyKey().isBlank())) {
+      if (isGovernancePolicyAction(request.actionId())) return governancePolicySystemMessageResult(actor, request.actionId(), "idempotency-key-required", governancePolicySafeDenialMessage("idempotency-key-required"), request.correlationId());
+      return new CapabilityActionResult("validation-error", "This action requires a client-generated idempotency key.", request.correlationId(), List.of("trace-validation-idempotency"), null);
+    }
     var actionIdempotencyKey = action.idempotency().required() && !durableActionOwnsIdempotency(request.actionId()) ? actor.selectedContext().tenantId() + ":" + actor.account().accountId() + ":" + request.actionId() + ":" + request.idempotencyKey() : null;
     if (actionIdempotencyKey != null && idempotentActionResults.containsKey(actionIdempotencyKey)) return idempotentActionResults.get(actionIdempotencyKey);
     if (action.disabled() != null) return new CapabilityActionResult("denied", action.disabled().message(), request.correlationId(), List.of("trace-denied-" + action.actionId()), surfaceForAction(actor, request.actionId(), request.correlationId()));
@@ -678,12 +692,26 @@ public final class WorkstreamService {
     } else if ("action-governance-policy-outcome-note".equals(request.actionId()) || "action-govpol-add-outcome-note".equals(request.actionId())) {
       var outcome = governancePolicyService.recordOutcomeNote(actor, request.input(), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult(outcome.status(), outcome.message(), request.correlationId(), outcome.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), outcome.surface(), List.of(governanceOutcomeNoteAction(), openAuditAction())));
-    } else if ("action-governance-policy-start-impact-analysis".equals(request.actionId())) {
-      result = new CapabilityActionResult("blocked_provider_or_runtime", "Governance/Policy impact analysis start is backend-governed and fails closed when provider/runtime configuration is missing; no deterministic, simulated, model-less, or fake impact_ready success is returned.", request.correlationId(), List.of("trace-governance-policy-impact-analysis-blocked"), governancePolicyImpactAnalysisBlockedSurface(actor, request.correlationId()));
+    } else if ("action-governance-policy-start-impact-analysis".equals(request.actionId()) || "action-govpol-start-impact-analysis".equals(request.actionId())) {
+      result = startGovernancePolicyImpactAnalysis(actor, request);
+    } else if ("action-governance-policy-read-impact-analysis".equals(request.actionId()) || "action-govpol-read-impact-analysis".equals(request.actionId())) {
+      var surface = governancePolicyImpactService.taskSurface(actor, stringInput(request.input(), "impactTaskId", stringInput(request.input(), "taskId", "")), request.correlationId());
+      result = new CapabilityActionResult("accepted", "Governance/Policy impact analysis task loaded from backend lifecycle state.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactTaskActions()));
+    } else if ("action-governance-policy-cancel-impact-analysis".equals(request.actionId()) || "action-govpol-cancel-impact-analysis".equals(request.actionId())) {
+      var task = governancePolicyImpactService.cancel(actor, stringInput(request.input(), "impactTaskId", stringInput(request.input(), "taskId", "")), stringInput(request.input(), "reason", "Cancelled by authorized Governance/Policy reviewer."), request.correlationId());
+      var surface = governancePolicyImpactService.taskSurface(actor, task.impactTaskId(), request.correlationId());
+      result = new CapabilityActionResult("accepted", "Governance/Policy impact analysis task cancelled; policy proposal unchanged.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactTaskActions()));
+    } else if ("action-governance-policy-accept-impact-result".equals(request.actionId()) || "action-govpol-accept-impact-result".equals(request.actionId())) {
+      result = decideGovernancePolicyImpactResult(actor, request, "accept");
+    } else if ("action-governance-policy-reject-impact-result".equals(request.actionId()) || "action-govpol-reject-impact-result".equals(request.actionId())) {
+      result = decideGovernancePolicyImpactResult(actor, request, "reject");
+    } else if ("action-governance-policy-request-impact-changes".equals(request.actionId()) || "action-govpol-request-impact-changes".equals(request.actionId())) {
+      result = decideGovernancePolicyImpactResult(actor, request, "request_changes");
     }
     } catch (AuthorizationException denied) {
-      if (!isUserAdminAction(request.actionId())) throw denied;
-      result = userAdminSystemMessageResult(actor, request.actionId(), denied.reasonCode(), userAdminSafeDenialMessage(denied.reasonCode()), request.correlationId());
+      if (isUserAdminAction(request.actionId())) result = userAdminSystemMessageResult(actor, request.actionId(), denied.reasonCode(), userAdminSafeDenialMessage(denied.reasonCode()), request.correlationId());
+      else if (isGovernancePolicyAction(request.actionId())) result = governancePolicySystemMessageResult(actor, request.actionId(), denied.reasonCode(), governancePolicySafeDenialMessage(denied.reasonCode()), request.correlationId());
+      else throw denied;
     }
     if (result == null) result = new CapabilityActionResult("accepted", action.label(), request.correlationId(), List.of("trace-" + request.actionId()), surfaceForAction(actor, request.actionId(), request.correlationId()));
     if (actionIdempotencyKey != null) idempotentActionResults.put(actionIdempotencyKey, result);
@@ -700,6 +728,10 @@ public final class WorkstreamService {
         || actionId.startsWith("action-organization")
         || actionId.startsWith("action-open-organization")
         || actionId.equals("action-display-organization-admin"));
+  }
+
+  private boolean isGovernancePolicyAction(String actionId) {
+    return actionId != null && (actionId.startsWith("action-governance-policy-") || actionId.startsWith("action-govpol-") || actionId.equals("action-simulate-policy") || actionId.equals("action-commit-policy") || actionId.equals("action-open-governance-policy"));
   }
 
   private CapabilityActionResult userAdminSystemMessageResult(AuthContextResolver.ResolvedMe actor, String actionId, String code, String message, String correlationId) {
@@ -1729,6 +1761,67 @@ public final class WorkstreamService {
     return new SurfaceEnvelope(surface.surfaceId(), surface.surfaceType(), "v1", surface.title(), GOVERNANCE_POLICY_AGENT_ID, reusableAgentsForSurface(surface.surfaceId()), mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", actor.selectedContext().capabilities()), correlationId, surface.traceIds(), Instant.now().toString(), null, mapOf("profile", "tenant-admin", "omittedFieldKeys", List.of("rawInvitationToken", "rawJwt", "rawProviderCredential", "hiddenPromptText", "rawToolPayload", "providerSecret")), surface.data(), actions, List.of(mapOf("label", "Open surface", "href", "/ui?surfaceId=" + surface.surfaceId(), "rel", "deep-link")));
   }
 
+  private CapabilityActionResult startGovernancePolicyImpactAnalysis(AuthContextResolver.ResolvedMe actor, CapabilityActionRequest request) {
+    var proposalId = stringInput(request.input(), "proposalId", null);
+    if (proposalId == null || proposalId.isBlank()) {
+      return governancePolicySystemMessageResult(actor, request.actionId(), "governance-impact-proposal-required", "Select a tenant-scoped policy proposal before starting impact analysis.", request.correlationId());
+    }
+    try {
+      var task = governancePolicyImpactService.start(actor, new GovernancePolicyImpactService.StartGovernancePolicyImpactCommand(
+          proposalId,
+          stringInput(request.input(), "targetPolicyId", null),
+          stringInput(request.input(), "evidenceRequest", "Analyze policy proposal impact using governed read-only evidence."),
+          listStringInput(request.input(), "affectedCapabilityIds"),
+          listStringInput(request.input(), "affectedArtifactRefs"),
+          listStringInput(request.input(), "evidenceRefs"),
+          firstNonBlank(request.idempotencyKey(), stringInput(request.input(), "idempotencyKey", null))),
+          request.correlationId());
+      var surface = governancePolicyImpactService.taskSurface(actor, task.impactTaskId(), request.correlationId());
+      var status = task.status().name().toLowerCase(Locale.ROOT);
+      return new CapabilityActionResult(status, "Governance/Policy impact analysis entered backend lifecycle state " + status + "; no policy state was changed.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactTaskActions()));
+    } catch (AuthorizationException missingProposal) {
+      if (!"governance-policy-proposal-not-found-or-forbidden".equals(missingProposal.reasonCode())) throw missingProposal;
+      return new CapabilityActionResult("blocked_provider_or_runtime", "Governance/Policy impact analysis start is backend-governed and fails closed when provider/runtime configuration is missing; no deterministic, simulated, model-less, or fake impact_ready success is returned.", request.correlationId(), List.of("trace-governance-policy-impact-analysis-blocked"), governancePolicyImpactAnalysisBlockedSurface(actor, request.correlationId()));
+    }
+  }
+
+  private CapabilityActionResult decideGovernancePolicyImpactResult(AuthContextResolver.ResolvedMe actor, CapabilityActionRequest request, String decision) {
+    var impactTaskId = stringInput(request.input(), "impactTaskId", stringInput(request.input(), "taskId", ""));
+    var reason = stringInput(request.input(), "reason", "Governance/Policy impact result disposition recorded by authorized reviewer.");
+    if ("accept".equals(decision)) governancePolicyImpactService.acceptResult(actor, impactTaskId, reason, request.correlationId());
+    else if ("reject".equals(decision)) governancePolicyImpactService.rejectResult(actor, impactTaskId, reason, request.correlationId());
+    else governancePolicyImpactService.requestChanges(actor, impactTaskId, reason, request.correlationId());
+    var surface = governancePolicyImpactService.resultSurface(actor, impactTaskId, request.correlationId());
+    return new CapabilityActionResult("approval-required", "Governance/Policy impact result disposition recorded as advisory evidence only; activation remains a separate policy command.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactResultActions()));
+  }
+
+  private SurfaceEnvelope governancePolicyImpactEnvelope(AuthContextResolver.ResolvedMe actor, String correlationId, GovernancePolicyImpactService.SurfaceData surface, List<SurfaceAction> actions) {
+    return new SurfaceEnvelope(surface.surfaceId(), surface.surfaceType(), "v1", surface.title(), GOVERNANCE_POLICY_AGENT_ID, reusableAgentsForSurface(surface.surfaceId()), mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", actor.selectedContext().capabilities()), correlationId, surface.traceIds(), Instant.now().toString(), null, mapOf("profile", "tenant-admin", "omittedFieldKeys", List.of("rawJwt", "rawProviderCredential", "hiddenPromptText", "rawToolPayload", "providerSecret")), surface.data(), actions, List.of(mapOf("label", "Open surface", "href", "/ui?surfaceId=" + surface.surfaceId(), "rel", "deep-link")));
+  }
+
+  private List<SurfaceAction> governanceImpactTaskActions() {
+    return List.of(governanceReadImpactAnalysisAction(), governanceCancelImpactAnalysisAction(), openAuditAction());
+  }
+
+  private List<SurfaceAction> governanceImpactResultActions() {
+    return List.of(governanceAcceptImpactResultAction(), governanceRejectImpactResultAction(), governanceRequestImpactChangesAction(), openAuditAction());
+  }
+
+  private CapabilityActionResult governancePolicySystemMessageResult(AuthContextResolver.ResolvedMe actor, String actionId, String reasonCode, String message, String correlationId) {
+    var surface = envelope("surface-governance-policy-system-message", "system-message", "Governance/Policy action blocked", actor, correlationId,
+        mapOf("surfaceContract", "governance.policy.system_message.v1", "status", "forbidden", "severity", "warning", "title", "Governance/Policy action blocked", "message", message, "safeReasonCode", reasonCode, "capabilityId", actionId, "traceRefs", List.of("trace-governance-policy-denial-" + stableSuffix(correlationId)), "noFakeSuccess", true, "noDirectMutation", true, "redaction", "browser-safe denial; protected data omitted"),
+        List.of(governanceDashboardAction(), openAuditAction()));
+    return new CapabilityActionResult("denied", message, correlationId, surface.traceIds(), surface);
+  }
+
+  private String governancePolicySafeDenialMessage(String reasonCode) {
+    if (reasonCode == null || reasonCode.isBlank()) return "Backend authorization denied this Governance/Policy action for the selected context.";
+    if (reasonCode.contains("idempotency")) return "This Governance/Policy action requires a valid idempotency key before any side effect can be considered.";
+    if (reasonCode.contains("proposal")) return "Select an authorized tenant-scoped policy proposal before continuing.";
+    if (reasonCode.contains("capability") || reasonCode.contains("forbidden")) return "Backend authorization denied this Governance/Policy action for the selected context.";
+    return "Governance/Policy action blocked: " + reasonCode.replace('-', ' ').replace('_', ' ') + ".";
+  }
+
   private CapabilityActionResult governancePolicyDraftProposal(AuthContextResolver.ResolvedMe actor, CapabilityActionRequest request) {
     var proposal = agentRuntimeService.proposeBehaviorChange(new AgentRuntimeService.BehaviorChangeRequest(
         actor.selectedContext().tenantId(),
@@ -2535,7 +2628,8 @@ public final class WorkstreamService {
       case "action-governance-policy-decide" -> governancePolicyDecisionSurface(actor, null, correlationId);
       case "action-governance-policy-activate", "action-commit-policy" -> governancePolicyActivationBlockedSurface(actor, correlationId);
       case "action-governance-policy-rollback" -> governancePolicyRollbackBlockedSurface(actor, correlationId);
-      case "action-governance-policy-start-impact-analysis" -> governancePolicyImpactAnalysisBlockedSurface(actor, correlationId);
+      case "action-governance-policy-start-impact-analysis", "action-governance-policy-read-impact-analysis", "action-governance-policy-cancel-impact-analysis" -> governancePolicyImpactAnalysisBlockedSurface(actor, correlationId);
+      case "action-governance-policy-accept-impact-result", "action-governance-policy-reject-impact-result", "action-governance-policy-request-impact-changes" -> governancePolicyImpactAnalysisBlockedSurface(actor, correlationId);
       case "action-display-agent-catalog" -> agentAdminCatalogSurface(actor, correlationId);
       case "action-open-agent-detail" -> agentAdminDetailSurface(actor, correlationId);
       case "action-activate-agent-definition" -> agentLifecycleConfirmationSurface(actor, correlationId, "activate", false);
@@ -2582,7 +2676,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceAction actionById(String actionId) {
-    return List.of(showDashboardAction(), showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), showProfileAction(), showSettingsAction(), showContextAction(), selectContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), showSaasOwnerAdminsAction(), openSaasOwnerAdminInvitationCreateAction(), displayOrganizationAdminAction(), showOrganizationsAction(), openOrganizationCreateAction(), openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), organizationListAction(), organizationReadAction(), organizationCreateAction(), organizationRenameAction(), organizationSuspendAction(), organizationReactivateAction(), openOrganizationAdminInvitationCreateAction(), showCustomersAction(), customerReadAction(), openCustomerCreateAction(), openCustomerRenameAction(), openCustomerSuspendAction(), openCustomerReactivateAction(), customerCreateAction(), customerRenameAction(), customerSuspendAction(), customerReactivateAction(), showCustomerAdminsAction(), openCustomerAdminInvitationCreateAction(), displayListAction(), showUsersAction(), displayDetailAction(), displayInvitationDetailAction(), openInvitationCreateAction(), openInvitationResendConfirmationAction(), openInvitationRevokeConfirmationAction(), openMembershipStatusConfirmationAction(), openSupportAccessGrantAction(), openSupportAccessRevokeConfirmationAction(), openIdentityExceptionReviewAction(), requestIdentityRelinkAction(), readIdentityRelinkAction(), approveIdentityRelinkAction(), denyIdentityRelinkAction(), completeIdentityRelinkAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), permanentlyRemoveUserAction(), disableAccountAction(), reactivateAccountAction(), readSupportAccessAction(), grantSupportAccessAction(), revokeSupportAccessAction(), extendSupportAccessAction(), previewRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceExportRequestAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSummaryTaskBlockedAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceOutcomeNoteAction(), governanceStartImpactAnalysisAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentAdminDashboardAction(), displayAgentCatalogAction(), openAgentDetailAction(), activateAgentDefinitionAction(), deactivateAgentDefinitionAction(), importAgentSeedDefaultsAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), startPromptRiskReviewAction(), readPromptRiskReviewAction(), cancelPromptRiskReviewAction(), acceptPromptRiskReviewAction(), rejectPromptRiskReviewAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
+    return List.of(showDashboardAction(), showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), showProfileAction(), showSettingsAction(), showContextAction(), selectContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), showSaasOwnerAdminsAction(), openSaasOwnerAdminInvitationCreateAction(), displayOrganizationAdminAction(), showOrganizationsAction(), openOrganizationCreateAction(), openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), organizationListAction(), organizationReadAction(), organizationCreateAction(), organizationRenameAction(), organizationSuspendAction(), organizationReactivateAction(), openOrganizationAdminInvitationCreateAction(), showCustomersAction(), customerReadAction(), openCustomerCreateAction(), openCustomerRenameAction(), openCustomerSuspendAction(), openCustomerReactivateAction(), customerCreateAction(), customerRenameAction(), customerSuspendAction(), customerReactivateAction(), showCustomerAdminsAction(), openCustomerAdminInvitationCreateAction(), displayListAction(), showUsersAction(), displayDetailAction(), displayInvitationDetailAction(), openInvitationCreateAction(), openInvitationResendConfirmationAction(), openInvitationRevokeConfirmationAction(), openMembershipStatusConfirmationAction(), openSupportAccessGrantAction(), openSupportAccessRevokeConfirmationAction(), openIdentityExceptionReviewAction(), requestIdentityRelinkAction(), readIdentityRelinkAction(), approveIdentityRelinkAction(), denyIdentityRelinkAction(), completeIdentityRelinkAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), permanentlyRemoveUserAction(), disableAccountAction(), reactivateAccountAction(), readSupportAccessAction(), grantSupportAccessAction(), revokeSupportAccessAction(), extendSupportAccessAction(), previewRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceExportRequestAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSummaryTaskBlockedAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceOutcomeNoteAction(), governanceStartImpactAnalysisAction(), governanceReadImpactAnalysisAction(), governanceCancelImpactAnalysisAction(), governanceAcceptImpactResultAction(), governanceRejectImpactResultAction(), governanceRequestImpactChangesAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentAdminDashboardAction(), displayAgentCatalogAction(), openAgentDetailAction(), activateAgentDefinitionAction(), deactivateAgentDefinitionAction(), importAgentSeedDefaultsAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), startPromptRiskReviewAction(), readPromptRiskReviewAction(), cancelPromptRiskReviewAction(), acceptPromptRiskReviewAction(), rejectPromptRiskReviewAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
   }
 
   private SurfaceEnvelope envelope(String id, String type, String title, AuthContextResolver.ResolvedMe actor, String correlationId, Map<String, Object> data, List<SurfaceAction> actions) {
@@ -2739,8 +2833,13 @@ public final class WorkstreamService {
   private SurfaceAction governanceDecideProposalAction() { return new SurfaceAction("action-governance-policy-decide", "Approve, reject, or request changes", "approval", browserToolId("action-governance-policy-decide"), governedToolId(GOVERNANCE_PROPOSALS_REVIEW_CAPABILITY), GOVERNANCE_POLICY_APPROVE_CAPABILITY, "schema.governance-policy.proposal.decide.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-governance-policy-decision", "inline"), new Audit("GovernancePolicyDecisionRecorded", true)); }
   private SurfaceAction governanceActivateProposalAction() { return new SurfaceAction("action-governance-policy-activate", "Activate approved policy", "command", browserToolId("action-governance-policy-activate"), governedToolId(GOVERNANCE_PROPOSALS_ACTIVATE_CAPABILITY), GOVERNANCE_POLICY_ACTIVATE_CAPABILITY, "schema.governance-policy.activate.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-governance-policy-activation-blocked", "inline"), new Audit("GovernancePolicyActivationRequested", true)); }
   private SurfaceAction governanceRollbackPolicyAction() { return new SurfaceAction("action-governance-policy-rollback", "Roll back policy change", "command", browserToolId("action-governance-policy-rollback"), governedToolId(GOVERNANCE_PROPOSALS_ACTIVATE_CAPABILITY), GOVERNANCE_POLICY_ROLLBACK_CAPABILITY, "schema.governance-policy.rollback.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-governance-policy-rollback-blocked", "inline"), new Audit("GovernancePolicyRollbackRequested", true)); }
-  private SurfaceAction governanceOutcomeNoteAction() { return new SurfaceAction("action-governance-policy-outcome-note", "Add outcome note", "command", browserToolId("action-governance-policy-outcome-note"), governedToolId(GOVERNANCE_OUTCOMES_RECORD_CAPABILITY), GOVERNANCE_OUTCOMES_RECORD_CAPABILITY, "schema.governance-policy.outcome-note.v1", true, false, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-governance-policy-decision", "inline"), new Audit("GovernancePolicyOutcomeNoteRecorded", true)); }
+  private SurfaceAction governanceOutcomeNoteAction() { return new SurfaceAction("action-governance-policy-outcome-note", "Add outcome note", "command", browserToolId("action-governance-policy-outcome-note"), governedToolId(GOVERNANCE_OUTCOMES_RECORD_CAPABILITY), GOVERNANCE_OUTCOMES_RECORD_CAPABILITY, "schema.governance-policy.outcome-note.v1", true, false, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-governance-policy-outcome", "inline"), new Audit("GovernancePolicyOutcomeNoteRecorded", true)); }
   private SurfaceAction governanceStartImpactAnalysisAction() { return new SurfaceAction("action-governance-policy-start-impact-analysis", "Start impact analysis", "workflow", browserToolId("action-governance-policy-start-impact-analysis"), governedToolId(GOVERNANCE_POLICY_ANALYSIS_START_CAPABILITY), GOVERNANCE_POLICY_ANALYSIS_START_CAPABILITY, "schema.governance-policy.impact-analysis.start.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-governance-policy-impact-analysis-task", "inline"), new Audit("GovernancePolicyImpactAnalysisStartedOrBlocked", true)); }
+  private SurfaceAction governanceReadImpactAnalysisAction() { return new SurfaceAction("action-governance-policy-read-impact-analysis", "Read impact analysis", "read", browserToolId("action-governance-policy-read-impact-analysis"), governedToolId(GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY), GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY, "schema.governance-policy.impact-analysis.read.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-governance-policy-impact-analysis-task", "inline"), new Audit("GovernancePolicyImpactAnalysisRead", true)); }
+  private SurfaceAction governanceCancelImpactAnalysisAction() { return new SurfaceAction("action-governance-policy-cancel-impact-analysis", "Cancel impact analysis", "command", browserToolId("action-governance-policy-cancel-impact-analysis"), governedToolId(GOVERNANCE_POLICY_ANALYSIS_CANCEL_CAPABILITY), GOVERNANCE_POLICY_ANALYSIS_CANCEL_CAPABILITY, "schema.governance-policy.impact-analysis.cancel.v1", true, false, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-governance-policy-impact-analysis-task", "inline"), new Audit("GovernancePolicyImpactAnalysisCancelled", true)); }
+  private SurfaceAction governanceAcceptImpactResultAction() { return new SurfaceAction("action-governance-policy-accept-impact-result", "Accept advisory impact result", "approval", browserToolId("action-governance-policy-accept-impact-result"), governedToolId(GOVERNANCE_POLICY_ANALYSIS_ACCEPT_CAPABILITY), GOVERNANCE_POLICY_ANALYSIS_ACCEPT_CAPABILITY, "schema.governance-policy.impact-analysis.accept.v1", true, true, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-governance-policy-impact-analysis-result", "inline"), new Audit("GovernancePolicyImpactResultAccepted", true)); }
+  private SurfaceAction governanceRejectImpactResultAction() { return new SurfaceAction("action-governance-policy-reject-impact-result", "Reject advisory impact result", "approval", browserToolId("action-governance-policy-reject-impact-result"), governedToolId(GOVERNANCE_POLICY_ANALYSIS_REJECT_CAPABILITY), GOVERNANCE_POLICY_ANALYSIS_REJECT_CAPABILITY, "schema.governance-policy.impact-analysis.reject.v1", true, true, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-governance-policy-impact-analysis-result", "inline"), new Audit("GovernancePolicyImpactResultRejected", true)); }
+  private SurfaceAction governanceRequestImpactChangesAction() { return new SurfaceAction("action-governance-policy-request-impact-changes", "Request impact analysis changes", "approval", browserToolId("action-governance-policy-request-impact-changes"), governedToolId(GOVERNANCE_POLICY_ANALYSIS_REQUEST_CHANGES_CAPABILITY), GOVERNANCE_POLICY_ANALYSIS_REQUEST_CHANGES_CAPABILITY, "schema.governance-policy.impact-analysis.request-changes.v1", true, true, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-governance-policy-impact-analysis-result", "inline"), new Audit("GovernancePolicyImpactChangesRequested", true)); }
   private SurfaceAction simulatePolicyAction() { return new SurfaceAction("action-simulate-policy", "Run governance simulation", "governance", browserToolId("action-simulate-policy"), governedToolId(GOVERNANCE_POLICY_SIMULATE_CAPABILITY), GOVERNANCE_POLICY_SIMULATE_CAPABILITY, "schema.policy.simulate.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-governance-policy-simulation", "inline"), new Audit("PolicySimulationRequested", true)); }
   private SurfaceAction commitPolicyAction() { return new SurfaceAction("action-commit-policy", "Approve governance change", "approval", browserToolId("action-commit-policy"), governedToolId(GOVERNANCE_POLICY_ACTIVATE_CAPABILITY), GOVERNANCE_POLICY_ACTIVATE_CAPABILITY, "schema.policy.commit.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-governance-policy-activation-blocked", "inline"), new Audit("PolicyCommitApprovalRequested", true)); }
   private boolean changeAgentDefinitionStatus(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, AgentLifecycleStatus status, String correlationId) {
@@ -2812,6 +2911,11 @@ public final class WorkstreamService {
 
   private String notificationIdInput(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) { var requested = stringInput(input, "notificationId", null); if (requested != null) return requested; return myAccountNotificationCenterData(actor, correlationId).items().stream().findFirst().map(NotificationItem::notificationId).orElse("missing-notification"); }
   private static String stringInput(Object input, String key, String fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof String value && !value.isBlank()) return value; return fallback; }
+  private static List<String> listStringInput(Object input, String key) {
+    if (input instanceof Map<?, ?> map && map.get(key) instanceof List<?> values) return values.stream().filter(String.class::isInstance).map(String.class::cast).filter(value -> !value.isBlank()).toList();
+    if (input instanceof Map<?, ?> map && map.get(key) instanceof String value && !value.isBlank()) return List.of(value);
+    return List.of();
+  }
   private static boolean booleanInput(Object input, String key, boolean fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof Boolean value) return value; return fallback; }
   private static int intInput(Object input, String key, int fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof Number value) return value.intValue(); return fallback; }
   private static List<FoundationRole> rolesInput(Object input) {

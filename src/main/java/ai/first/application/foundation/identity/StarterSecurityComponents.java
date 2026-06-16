@@ -79,6 +79,9 @@ import ai.first.application.foundation.workstream.WorkstreamEventRepository;
 import ai.first.application.foundation.workstream.WorkstreamLogRepository;
 import ai.first.application.coreapp.useradmin.AccessReviewTaskRepository;
 import ai.first.application.coreapp.useradmin.AkkaAccessReviewTaskRepository;
+import ai.first.application.coreapp.governance.AkkaGovernancePolicyImpactTaskRepository;
+import ai.first.application.coreapp.governance.GovernancePolicyImpactTaskRepository;
+import ai.first.application.coreapp.governance.InMemoryGovernancePolicyImpactTaskRepository;
 import ai.first.application.coreapp.myaccount.AkkaMyAccountPersonalAttentionDigestTaskRepository;
 import ai.first.application.coreapp.myaccount.DigestExportService;
 import ai.first.application.coreapp.useradmin.FailClosedAccessReviewAutonomousAgentRuntime;
@@ -114,6 +117,7 @@ public final class StarterSecurityComponents {
   private static volatile InvitationView invitationView = new InvitationView(invitationService);
   private static volatile AccessReviewTaskRepository accessReviewTaskRepository = new UnboundAccessReviewTaskRepository();
   private static volatile GovernancePolicyRepository governancePolicyRepository = new UnboundGovernancePolicyRepository();
+  private static volatile GovernancePolicyImpactTaskRepository governancePolicyImpactTaskRepository = new InMemoryGovernancePolicyImpactTaskRepository();
   private static volatile AuditTraceService auditTraceService = new AuditTraceService(authContextResolver, auditTraceRepository());
   private static volatile GovernancePolicyService governancePolicyService = new GovernancePolicyService(governancePolicyRepository, authContextResolver, CLOCK);
   private static volatile AttentionRepository attentionRepository = new UnboundAttentionRepository();
@@ -161,6 +165,7 @@ public final class StarterSecurityComponents {
     var durableWorkstreamLog = new AkkaWorkstreamLogRepository(componentClient);
     var durableAccessReviews = new AkkaAccessReviewTaskRepository(componentClient);
     var durableGovernancePolicy = new AkkaGovernancePolicyRepository(componentClient);
+    var durableGovernancePolicyImpactTasks = new AkkaGovernancePolicyImpactTaskRepository(componentClient);
     var durableAttention = new AkkaAttentionRepository(componentClient);
     var durablePersonalAttentionDigests = new AkkaMyAccountPersonalAttentionDigestTaskRepository(componentClient);
     var durableWorkstreamEvents = new AkkaWorkstreamEventRepository(componentClient);
@@ -173,6 +178,7 @@ public final class StarterSecurityComponents {
     agentRuntimeToolResolver = new AgentRuntimeToolResolver(durableAgentBehavior, durableRuntime);
     accessReviewTaskRepository = durableAccessReviews;
     governancePolicyRepository = durableGovernancePolicy;
+    governancePolicyImpactTaskRepository = durableGovernancePolicyImpactTasks;
     attentionRepository = durableAttention;
     attentionService = new AttentionService(durableAttention, authContextResolver, CLOCK);
     personalAttentionDigestTaskRepository = durablePersonalAttentionDigests;
@@ -208,6 +214,10 @@ public final class StarterSecurityComponents {
   public static WorkstreamService workstreamService(ComponentClient componentClient, WorkstreamLogRepository workstreamLogRepository) {
     bindAkkaRuntime(componentClient);
     return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), workstreamLogRepository, accessReviewTaskRepository(), new AkkaAuditTraceRepository(componentClient, workstreamLogRepository), governancePolicyRepository(), attentionService(), attentionProducerService, workstreamEventPublisher, workstreamEventRepository, new ComponentClientAccessReviewAutonomousAgentRuntime(componentClient, agentRuntimeService, agentRuntimeToolResolver), notificationService);
+  }
+
+  public static GovernancePolicyImpactTaskRepository governancePolicyImpactTaskRepository() {
+    return governancePolicyImpactTaskRepository;
   }
 
   public static InvitationService invitationService() {

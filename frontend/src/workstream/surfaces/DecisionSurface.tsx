@@ -16,7 +16,7 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
   return (
     <SurfaceStateFrame envelope={envelope}>
       <article className="decision-card">
-        <p>{envelope.data.recommendation}</p>
+        <p>{envelope.data.recommendation ?? envelope.data.activationBlocker ?? envelope.data.summary ?? 'Backend returned a governed decision state for review.'}</p>
         <dl>
           <dt>Risk</dt><dd>{envelope.data.riskScore ?? envelope.data.risk ?? 'Not scored'}</dd>
           <dt>Confidence</dt><dd>{envelope.data.confidenceScore ?? 'Not scored'}</dd>

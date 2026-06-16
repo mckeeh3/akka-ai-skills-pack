@@ -360,7 +360,8 @@ export type DetailEditSurfaceData = {
 
 export type DecisionSurfaceData = {
   decisionId?: string;
-  recommendation: string;
+  recommendation?: string;
+  summary?: string;
   riskScore?: number | string;
   confidenceScore?: number | string;
   evidence?: Array<{ evidenceId: string; label: string; summary: string }>;

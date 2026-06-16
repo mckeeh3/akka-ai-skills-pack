@@ -1657,14 +1657,19 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void governancePolicyActionsDenyMembersAndCrossTenantInput() {
-    var denied = assertThrows(AuthorizationException.class, () -> service.runAction(memberIdentity(), "membership-member", new WorkstreamService.CapabilityActionRequest(
-        "action-governance-policy-list", "action-governance-policy-list", "governance.policy.read", "governance.policy.read", null, null, "membership-member", "surface-governance-policy-dashboard", "corr-gov-member")));
-    assertEquals("CAPABILITY_FORBIDDEN", denied.reasonCode());
+  void governancePolicyActionsReturnStructuredDenialSurfacesForMembersAndCrossTenantInput() {
+    var denied = service.runAction(memberIdentity(), "membership-member", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-list", "action-governance-policy-list", "governance.policy.read", "governance.policy.read", null, null, "membership-member", "surface-governance-policy-dashboard", "corr-gov-member"));
+    assertEquals("denied", denied.status());
+    assertEquals("system-message", denied.resultSurface().surfaceType());
+    assertEquals("governance.policy.system_message.v1", denied.resultSurface().data().get("surfaceContract"));
+    assertTrue(denied.resultSurface().toString().contains("CAPABILITY_FORBIDDEN"));
 
-    var crossTenant = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-governance-policy-simulate", "action-governance-policy-simulate", "governance.policy.simulate", "governance.policy.simulate", Map.of("tenantId", "tenant-other"), null, "membership-admin", "surface-governance-policy-proposal", "corr-gov-cross")));
-    assertEquals("GOVERNANCE_POLICY_TENANT_FORBIDDEN", crossTenant.reasonCode());
+    var crossTenant = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-governance-policy-simulate", "action-governance-policy-simulate", "governance.policy.simulate", "governance.policy.simulate", Map.of("tenantId", "tenant-other"), null, "membership-admin", "surface-governance-policy-proposal", "corr-gov-cross"));
+    assertEquals("denied", crossTenant.status());
+    assertEquals("system-message", crossTenant.resultSurface().surfaceType());
+    assertTrue(crossTenant.resultSurface().toString().contains("GOVERNANCE_POLICY_TENANT_FORBIDDEN"));
   }
 
   @Test
