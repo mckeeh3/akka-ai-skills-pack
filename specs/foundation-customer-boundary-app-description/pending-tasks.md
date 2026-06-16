@@ -240,7 +240,7 @@
 
 ### TASK-FCBAD-02-002: Repair Customer Admin target propagation and workstream invitation path
 
-- status: pending
+- status: done
 - source: specs/foundation-customer-boundary-app-description/runtime-audit/foundation-customer-boundary-runtime-drift-audit.md#fcb-rd-03-customer-admin-branch-surfaces-do-not-preserve-selected-customer-target and #fcb-rd-04-customer-admin-invitation-from-workstream-can-create-the-wrong-scope
 - task brief: specs/foundation-customer-boundary-app-description/tasks/03-runtime-repair/06-customer-admin-target-propagation-workstream.md
 - depends on:
@@ -274,6 +274,11 @@
   - task changes and queue update are committed
 - notes:
   - vertical contract: User Admin / `user-admin-agent`; Customer detail to Customer Admin branch and invite submit; `manage-customer-admins`; `tenant.customer_admin.list` and `tenant.customer_admin.invite`; selected tenant plus explicit target Customer proof; WorkstreamService + InvitationService + frontend surface renderer
+  - changed runtime paths: `WorkstreamService` now carries backend-authored Customer target proof into Customer Admin list/invite surfaces and uses dedicated `action-customer-admin-invite` to create `ScopeType.CUSTOMER` invitations for the selected Customer; generic tenant invite behavior remains unchanged
+  - changed frontend paths: `UserAdminScopedAdminSurface` preserves backend-authored `customerId`/`customerName` in branch submissions and prefers the dedicated Customer Admin invite action on Customer Admin invitation surfaces
+  - tests: `WorkstreamServiceTest.tenantCustomerBranchUsesDurableCustomerLifecycleState` now proves Customer detail -> Customer Admin list/invite target propagation, customer-scoped Customer Admin invitation creation, and generic tenant invite behavior; frontend contract test proves target payload and action wiring
+  - checks: `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest test` passed; `npm --prefix frontend test -- --run frontend/src/workstream-user-admin-vertical.contract.test.mjs` passed; `git diff --check` passed
+  - commit message: `customer-boundary-desc: repair customer admin target propagation`
 
 ### TASK-FCBAD-02-003: Enforce suspended Customer fail-closed behavior for Customer Admin operations
 

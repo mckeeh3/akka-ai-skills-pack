@@ -138,7 +138,9 @@ function ScopedDirectoryRow({ row, actions, surfaceId, onAction }: { row: Record
 }
 
 function RoleScopedInvitationForm({ envelope, onAction }: Props) {
-  const action = envelope.actions.find((candidate) => candidate.actionId === 'action-invite-user') ?? envelope.actions.find((candidate) => candidate.intent === 'command');
+  const action = envelope.actions.find((candidate) => candidate.actionId === 'action-customer-admin-invite')
+    ?? envelope.actions.find((candidate) => candidate.actionId === 'action-invite-user')
+    ?? envelope.actions.find((candidate) => candidate.intent === 'command');
   const [email, setEmail] = useState(String(envelope.data.draft?.email ?? ''));
   const [displayName, setDisplayName] = useState(String(envelope.data.draft?.displayName ?? ''));
   const roleOptions = roleOptionsFor(envelope);
@@ -273,7 +275,9 @@ function branchReturnInput(envelope: SurfaceEnvelope<ScopedAdminData>): Record<s
     branchReturnActionId: branch?.branchReturnActionId ?? envelope.data.branchReturnActionId ?? '',
     safeFilterPreservation: branch?.safeFilterPreservation ?? envelope.data.safeFilterPreservation ?? 'backend-authored-only',
     correlationId: branch?.correlationId ?? envelope.data.correlationId ?? envelope.correlationId,
-    recordId: String(envelope.data.recordId ?? '')
+    recordId: String(envelope.data.recordId ?? ''),
+    customerId: String(envelope.data.customerId ?? (typeof envelope.data.customerDetail === 'object' && envelope.data.customerDetail ? (envelope.data.customerDetail as Record<string, unknown>).customerId : '') ?? ''),
+    customerName: String(envelope.data.customerName ?? (typeof envelope.data.customerDetail === 'object' && envelope.data.customerDetail ? (envelope.data.customerDetail as Record<string, unknown>).customerName : '') ?? '')
   };
 }
 

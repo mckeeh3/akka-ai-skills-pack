@@ -505,6 +505,46 @@ class WorkstreamServiceTest {
         "action-customer-read", "user-admin.read-customer", "manage-customers", "tenant.customer.read", Map.of("customerId", customerId), null, "membership-admin", directory.resultSurface().surfaceId(), "corr-customer-read"));
     assertEquals("surface-user-admin-customer-detail", detail.resultSurface().surfaceId());
     assertTrue(detail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-customers"));
+    assertTrue(detail.resultSurface().toString().contains("action-user-admin-show-customer-admins"));
+    assertTrue(detail.resultSurface().toString().contains("action-open-customer-admin-invitation-create"));
+
+    var customerAdmins = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-customer-admins", "user-admin.show-customer-admins", "manage-customer-admins", "tenant.customer_admin.list", Map.of("recordId", customerId), null, "membership-admin", detail.resultSurface().surfaceId(), "corr-customer-admins"));
+    assertEquals("surface-user-admin-customer-admins", customerAdmins.resultSurface().surfaceId());
+    assertEquals(customerId, customerAdmins.resultSurface().data().get("customerId"));
+    assertTrue(customerAdmins.resultSurface().toString().contains("targetScopeProof"));
+    assertTrue(customerAdmins.resultSurface().toString().contains("customerId=" + customerId));
+
+    var customerAdminInviteForm = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-customer-admin-invitation-create", "user-admin.open-customer-admin-invite", "manage-customer-admins", "tenant.customer_admin.invite", Map.of("customerId", customerId), null, "membership-admin", detail.resultSurface().surfaceId(), "corr-customer-admin-invite-form"));
+    assertEquals("surface-user-admin-customer-admin-invitation-create", customerAdminInviteForm.resultSurface().surfaceId());
+    assertEquals(customerId, customerAdminInviteForm.resultSurface().data().get("customerId"));
+    assertTrue(customerAdminInviteForm.resultSurface().toString().contains("action-customer-admin-invite"));
+    assertFalse(customerAdminInviteForm.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-invite-user")), "Customer Admin invite form must not submit through generic tenant invite action.");
+
+    var customerAdminInvite = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-customer-admin-invite", "user-admin.invite-customer-admin", "manage-customer-admins", "tenant.customer_admin.invite", Map.of("customerId", customerId, "email", "customer.admin@example.test", "displayName", "Customer Admin", "roles", "CUSTOMER_ADMIN"), "idem-customer-admin-invite", "membership-admin", customerAdminInviteForm.resultSurface().surfaceId(), "corr-customer-admin-invite"));
+    assertEquals("accepted", customerAdminInvite.status());
+    assertEquals("surface-user-admin-invitation-detail", customerAdminInvite.resultSurface().surfaceId());
+    var customerScopedInvitation = invitationRepository.invitations().stream()
+        .filter(invitation -> "customer.admin@example.test".equals(invitation.normalizedEmail()))
+        .findFirst()
+        .orElseThrow();
+    assertEquals(ScopeType.CUSTOMER, customerScopedInvitation.scopeType());
+    assertEquals("tenant-1", customerScopedInvitation.tenantId());
+    assertEquals(customerId, customerScopedInvitation.customerId());
+    assertEquals(List.of(FoundationRole.CUSTOMER_ADMIN), customerScopedInvitation.requestedRoles());
+
+    var genericInvite = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-invite-user", "action-invite-user", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", Map.of("email", "tenant.invitee@example.test", "displayName", "Tenant Invitee", "roles", "TENANT_EMPLOYEE"), "idem-generic-tenant-invite", "membership-admin", "surface-user-admin-invitation-create", "corr-generic-tenant-invite"));
+    assertEquals("accepted", genericInvite.status());
+    var tenantScopedInvitation = invitationRepository.invitations().stream()
+        .filter(invitation -> "tenant.invitee@example.test".equals(invitation.normalizedEmail()))
+        .findFirst()
+        .orElseThrow();
+    assertEquals(ScopeType.TENANT, tenantScopedInvitation.scopeType());
+    assertNull(tenantScopedInvitation.customerId());
+    assertEquals(List.of(FoundationRole.TENANT_EMPLOYEE), tenantScopedInvitation.requestedRoles());
 
     var suspend = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-customer-suspend", "user-admin.suspend-customer", "manage-customers", "tenant.customer.suspend", Map.of("customerId", customerId, "reason", "test-suspend"), "idem-customer-suspend", "membership-admin", detail.resultSurface().surfaceId(), "corr-customer-suspend"));

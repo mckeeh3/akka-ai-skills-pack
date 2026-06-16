@@ -282,6 +282,12 @@ test('User Admin scoped admin surfaces cover SaaS Owner, Organization Admin, Cus
   assert.match(userAdminScopedAdminSurface, /user_admin\.customer_admin_invitation_create\.v1/);
   assert.match(userAdminScopedAdminSurface, /user_admin\.customer_admin_detail\.v1/);
   assert.match(userAdminScopedAdminSurface, /function RoleScopedInvitationForm/);
+  assert.match(userAdminScopedAdminSurface, /action-customer-admin-invite/);
+  assert.match(userAdminScopedAdminSurface, /customerId: String\(envelope\.data\.customerId/);
+  assert.match(userAdminScopedAdminSurface, /customerName: String\(envelope\.data\.customerName/);
+  assert.match(workstreamService, /action-customer-admin-invite/);
+  assert.match(workstreamService, /ScopeType\.CUSTOMER, actor\.selectedContext\(\)\.tenantId\(\), customer\.customer\(\)\.customerId\(\)/);
+  assert.match(workstreamService, /targetScopeProof/);
   assert.match(userAdminScopedAdminSurface, /function CustomerTaskForm/);
   assert.match(userAdminScopedAdminSurface, /function ScopedInspection/);
   assert.match(userAdminScopedAdminSurface, /function ScopedDirectory/);
