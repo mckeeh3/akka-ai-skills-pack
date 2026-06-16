@@ -971,8 +971,44 @@ public final class WorkstreamService {
 
 
   private SurfaceEnvelope myProfileSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY);
+    authContextResolver.appendProtectedReadTrace(actor, "MY_ACCOUNT_PROFILE_SELF_SERVICE_READ", "surface-my-profile", correlationId);
+    var traceRefs = myAccountService.traceRefs(actor, correlationId);
     return envelope("surface-my-profile", "detail-edit", "User profile", actor, correlationId,
-        mapOf("surfaceContract", "my_account.profile.self_service.v1", "profileSummary", mapOf("displayName", actor.profile().displayName(), "email", actor.account().displayEmail(), "accountStatus", actor.account().status().name().toLowerCase(Locale.ROOT)), "providerBoundarySummary", "Email and authentication facts are owned by WorkOS/AuthKit identity reconciliation and are read-only in My Account.", "recordId", actor.account().accountId() + "-profile", "recordLabel", actor.profile().displayName() + " · " + actor.account().displayEmail(), "recordKind", "profile", "summary", "Current signed-in user profile. Administrative role and membership changes are intentionally not editable here.", "fields", List.of(mapOf("fieldId", "displayName", "label", "Display name", "value", actor.profile().displayName(), "editable", true, "inputType", "text"), mapOf("fieldId", "email", "label", "Email", "value", actor.account().displayEmail(), "editable", false, "inputType", "email", "disabledReason", "Email is owned by WorkOS/AuthKit identity reconciliation."), mapOf("fieldId", "locale", "label", "Locale", "value", "en-US", "editable", false, "inputType", "select", "disabledReason", "Locale changes are deferred beyond My Account."), mapOf("fieldId", "timeZone", "label", "Time zone", "value", "America/New_York", "editable", false, "inputType", "text", "disabledReason", "Time zone changes are deferred beyond My Account.")), "version", 1, "permissionState", mapOf("canEdit", true, "authoritativeCapabilityId", MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY, "coreCapabilityAlias", CORE_PROFILE_UPDATE_CAPABILITY), "audit", mapOf("lastEventType", "UserProfileDisplayed", "lastActor", actor.profile().displayName(), "traceIds", List.of("trace-my-profile"))), List.of(updateProfileAction(), openAuditAction()));
+        mapOf(
+            "surfaceContract", "my_account.profile.self_service.v1",
+            "profileSummary", mapOf(
+                "accountId", actor.account().accountId(),
+                "email", actor.account().displayEmail(),
+                "displayName", actor.profile().displayName(),
+                "accountStatus", actor.account().status().name().toLowerCase(Locale.ROOT),
+                "selectedContextLabel", actor.selectedContext().tenantId() + (actor.selectedContext().customerId() == null ? "" : " / " + actor.selectedContext().customerId()),
+                "avatarInitials", initials(actor.profile().displayName(), actor.account().displayEmail())),
+            "providerBoundarySummary", "Email, authentication identifiers, and provider-backed facts are owned by WorkOS/AuthKit identity reconciliation and are read-only in My Account; raw provider payloads and secrets are never exposed.",
+            "recordId", actor.account().accountId() + "-profile",
+            "recordLabel", actor.profile().displayName() + " · " + actor.account().displayEmail(),
+            "recordKind", "profile",
+            "summary", "Current signed-in user profile. Administrative role, membership, account-status, and provider-backed changes are intentionally not editable here.",
+            "fields", List.of(
+                mapOf("fieldId", "displayName", "label", "Display name", "value", actor.profile().displayName(), "editable", true, "inputType", "text", "required", true, "helperText", "Shown in workstream surfaces and audit-safe user summaries.", "constraints", mapOf("minLength", 1, "maxLength", 120), "lastSavedValue", actor.profile().displayName()),
+                mapOf("fieldId", "email", "label", "Email", "value", actor.account().displayEmail(), "editable", false, "inputType", "email", "helperText", "Provider-backed sign-in email.", "disabledReason", "Email is owned by WorkOS/AuthKit identity reconciliation."),
+                mapOf("fieldId", "accountStatus", "label", "Account status", "value", actor.account().status().name().toLowerCase(Locale.ROOT), "editable", false, "inputType", "text", "helperText", "Visible browser-safe account state only.", "disabledReason", "Account status changes require User Admin capabilities, not My Account self-service."),
+                mapOf("fieldId", "locale", "label", "Locale", "value", "en-US", "editable", false, "inputType", "select", "helperText", "Read-only until locale preference persistence is implemented.", "disabledReason", "Locale changes are deferred beyond My Account."),
+                mapOf("fieldId", "timeZone", "label", "Time zone", "value", "America/New_York", "editable", false, "inputType", "text", "helperText", "Read-only until timezone preference persistence is implemented.", "disabledReason", "Time zone changes are deferred beyond My Account.")),
+            "version", 1,
+            "permissionState", mapOf("canEdit", true, "reason", "Only changed editable self-service fields are submitted; unsupported fields are denied before mutation.", "authoritativeCapabilityId", MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY, "coreCapabilityAlias", CORE_PROFILE_UPDATE_CAPABILITY, "saveActionId", "action-update-my-profile"),
+            "traceRefs", traceRefs,
+            "redaction", mapOf("profile", "self-service-profile", "omittedFieldKeys", List.of("rawJwt", "sessionToken", "providerPayload", "providerSecret", "hiddenMemberships", "roleAssignments")),
+            "audit", mapOf("lastEventType", "UserProfileDisplayed", "lastActor", actor.profile().displayName(), "traceIds", traceRefs.stream().map(MyAccountService.TraceRef::traceId).toList()))
+        , List.of(updateProfileAction(), openAuditAction()));
+  }
+
+  private String initials(String displayName, String email) {
+    var source = displayName == null || displayName.isBlank() ? email : displayName;
+    if (source == null || source.isBlank()) return "??";
+    var parts = source.trim().split("\\s+");
+    if (parts.length == 1) return parts[0].substring(0, Math.min(2, parts[0].length())).toUpperCase(Locale.ROOT);
+    return (parts[0].substring(0, 1) + parts[parts.length - 1].substring(0, 1)).toUpperCase(Locale.ROOT);
   }
 
   private SurfaceEnvelope mySettingsSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {

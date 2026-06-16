@@ -470,6 +470,9 @@ function MyAccountDetailOverview({ envelope, fieldValues, onAction }: { envelope
           <h4>Identity boundary</h4>
           <p>{envelope.data.providerBoundarySummary ?? 'Authentication/provider-backed facts are browser-safe and read-only here.'}</p>
           <dl>
+            <div><dt>Account</dt><dd>{String(envelope.data.profileSummary?.email ?? envelope.data.recordLabel ?? 'current signed-in account')}</dd></div>
+            <div><dt>Status</dt><dd>{String(envelope.data.profileSummary?.accountStatus ?? 'browser-safe status')}</dd></div>
+            <div><dt>Selected context</dt><dd>{String(envelope.data.profileSummary?.selectedContextLabel ?? envelope.authContext.tenantId)}</dd></div>
             <div><dt>Editable authority</dt><dd>{envelope.data.permissionState?.authoritativeCapabilityId ?? 'my_account.update_profile_settings'}</dd></div>
             <div><dt>Unsupported changes</dt><dd>Roles, capabilities, account status, provider secrets</dd></div>
           </dl>
