@@ -102,8 +102,10 @@ The dashboard uses the current AI-first workstream style: authority/context pane
 - Surface id: `surface-my-profile`.
 - Surface type: `detail-edit`.
 - Surface contract: `my_account.profile.self_service.v1`.
+- Owning workstream: My Account.
 - Owning functional agent: `my-account-agent`.
 - Required context: active authenticated account; selected `AuthContext` for trace and authorization basis.
+- Reusable placements: My Account dashboard profile panel, `/api/me` account recovery flows, and role-gated Audit/Trace trace summaries may link here for self-service profile recovery; User Admin may link to the separate admin user-detail surface instead of reusing this surface for privileged account administration.
 
 ### User experience model
 
@@ -132,7 +134,17 @@ Forbidden payload/content:
 
 ### State and style expectations
 
-Use tokenized structured-surface form controls from the current style guide. The surface must not render browser-default controls. It includes loading, empty/limited-profile, ready, submitting, validation-error, forbidden, conflict, stale/reconnect, no-op, success, and failure states.
+Use tokenized structured-surface form controls from the current style guide, named-theme contract, and component-catalog form anatomy. The surface must not render browser-default controls. It includes loading, empty/limited-profile, ready, submitting, validation-error, forbidden, conflict, stale/reconnect, no-op, success, and failure states. The layout preserves a single visible form purpose, keeps immutable identity facts visually separate from editable self-service fields, exposes inline field errors with accessible descriptions, and collapses trace/audit diagnostics behind role-authorized evidence affordances.
+
+### Specification completeness for implementation
+
+- **Payload schema detail:** implement `profileSummary` with browser-safe `accountId`, `email`, `displayName`, `accountStatus`, optional avatar/color initials metadata, and selected-context label; implement `providerBoundarySummary` as plain-language read-only facts such as authentication provider family, verified email status, and immutable-provider-field explanations without raw provider payload; implement `fields[]` with `fieldId`, `label`, `value`, `inputType`, `editable`, `required`, `constraints`, `helperText`, `disabledReason`, `lastSavedValue`, and optional browser-safe `options[]`; implement `permissionState` with user-facing `canEdit`, `denialReason`, and `saveActionId`; implement `audit`, `traceRefs[]`, and `correlationId` as user-safe summaries only.
+- **Authorization and tenant rules:** every refresh and save is evaluated against the signed-in account and selected backend `AuthContext`; the subject account must be the actor's own account, not a selected user from User Admin. Tenant/customer scope and membership visibility come from protected backend context resolution, not client-provided record ids. Unsupported fields, hidden memberships, role/capability changes, account status changes, provider-secret edits, and cross-account edits are denied or omitted without mutation.
+- **Actions and result surfaces:** `refresh-profile` reloads the backend-owned surface through `my_account.view_summary`; `save-profile-changes` calls `my_account.update_profile_settings` / `update-own-profile-settings` with correlation and idempotency keys and returns updated surface, no-op, validation-error, forbidden, conflict, stale, or failure system message; `open-related-trace` calls `my_account.view_own_trace_refs` and renders an authorized Audit/Trace target or a safe redacted message. Save requests must submit only changed editable fields and must not include immutable/provider-backed fields.
+- **Trace and audit contract:** each read and consequential save links or emits an audit/work trace containing actor account, selected context, self-subject decision, edited field ids only, validation/authorization result, redaction level, result state, and correlation id. Browser-visible trace summaries never expose raw JWTs, provider records, hidden memberships, raw event ids, or provider secrets.
+- **Accessibility and responsive expectations:** the form has a stable heading, labeled controls, helper text and inline error associations, keyboard-operable Save/Cancel/Refresh/Open trace controls, clear submitting/disabled semantics, and focus recovery to the first validation error or result message. On narrow viewports, immutable facts, editable fields, and trace summaries stack in that order without changing action ordering.
+- **Acceptance and regression tests:** generated/runtime work must cover refresh success, editable display-name/profile-field save, validation error, no-op save, forbidden unsupported-field mutation, conflict/stale recovery, provider-backed immutable facts rendered read-only, tenant/customer context isolation, safe denial for cross-account or admin-only changes, audit/trace/correlation visibility, and frontend secret-boundary checks proving no raw JWT/session/provider payload/hidden membership is rendered or submitted.
+- **Surface-description sufficiency review:** yes — this surface definition is sufficiently unambiguous for a developer or generator to implement and review `surface-my-profile` without inventing payload fields, allowed/forbidden actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. The default view avoids exposing internal implementation details that do not help the signed-in SaaS user inspect safe identity facts, edit allowed profile fields, recover from validation/authorization failures, or understand self-service profile outcomes.
 
 ## My settings and named-theme preferences surface
 

@@ -144,7 +144,7 @@
 
 ### TASK-FSCT-004: Verify or complete app-description specification for `surface-my-profile`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-my-profile`
@@ -173,6 +173,7 @@
   - purpose: Browser-safe identity/profile self-service with clear immutable/provider-backed fields.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: My Account `surface-my-profile` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-16: added owning workstream/reusable placements plus payload schema, action/result, AuthContext/self-account authorization, tenant isolation, trace/audit, accessibility/responsive, test, and sufficiency-review detail to the My Account profile app-description; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-005: Verify or complete runtime implementation for `surface-my-profile`
 

@@ -69,7 +69,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract verified and completed in `app-description/domains/core-starter/workstreams/my-account/surfaces/surfaces.md`: includes `surface-my-profile` identity/owner/placement/purpose, `my_account.profile.self_service.v1` payload schema for `profileSummary`, `providerBoundarySummary`, `fields[]`, permission state, audit/trace/correlation summaries, forbidden payload and unsupported mutation boundaries, governed action-to-capability mappings for refresh/save/open-trace, selected AuthContext and self-account authorization rules, tenant/customer isolation, trace/audit contract, UI states, accessibility/responsive expectations, style/catalog bindings, and acceptance/security/observability regression coverage. Sufficiency review says the profile self-service surface is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-16 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
