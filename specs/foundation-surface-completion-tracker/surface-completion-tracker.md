@@ -578,7 +578,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-customer-suspend-confirmation` destructive-lifecycle contract for `user_admin.customer_suspend_confirmation.v1` covering User Admin/`user-admin-agent` ownership, Customer Directory branch placement and result routing to Customer detail, selected Organization/Tenant Admin `AuthContext` plus active tenant membership, visible active Customer, and `tenant.customer.suspend` authority, browser-safe payload schema for confirmation, eligibility, authorized actions, redaction/forbidden payload boundaries for sibling Customers, tenant app data, hidden Customer/Admin/invitation facts, provider/billing/support secrets, raw trace/correlation/idempotency internals, governed action-to-capability/tool mappings for open/submit/detail/list/audit/dashboard, typed loading/ready/validation/submitting/success/no-op/approval-required/forbidden/stale/failure states, audit/work trace and correlation requirements, accessibility/responsive/style bindings, and acceptance/security/observability regression coverage. Sufficiency review says the destructive-lifecycle objective is implementable without invented payload fields/actions/states/auth/tenant/customer behavior/trace links/tests/visual semantics. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
