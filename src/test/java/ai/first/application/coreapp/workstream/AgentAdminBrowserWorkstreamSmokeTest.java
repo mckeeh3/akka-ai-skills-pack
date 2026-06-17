@@ -207,6 +207,11 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
         .responseBodyAs(String.class)
         .invoke(), "Protected Agent Admin catalog must reject missing bearer tokens.");
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-admin-detail")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin detail must reject missing bearer tokens.");
 
     var seedDefaults = runAction(new CapabilityActionRequest(
         "action-import-agent-seed-defaults",
@@ -377,6 +382,37 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(detailModelRefs.resultSurface().toString().contains("providerCredential=[REDACTED]"));
     assertBrowserSafe(detailModelRefs.resultSurface());
 
+    assertDetailActionRoutes("action-agent-detail-open-prompt-governance", "agent_admin.get_prompt_version", "surface-agent-prompt-governance", "accepted", "corr-agent-admin-detail-prompt-governance");
+    assertDetailActionRoutes("action-agent-detail-open-skill-manifest", "agent_admin.get_manifest", "surface-agent-skill-manifest-diff", "accepted", "corr-agent-admin-detail-skill-manifest");
+    assertDetailActionRoutes("action-agent-detail-open-tool-boundary", "agent_admin.get_tool_boundary", "surface-agent-tool-boundary-diff", "accepted", "corr-agent-admin-detail-tool-boundary");
+    var noSideEffectTest = assertDetailActionRoutes("action-agent-detail-run-test", "agent_admin.draft_behavior_change", "surface-agent-test-console", "accepted", "corr-agent-admin-detail-run-test");
+    assertTrue(noSideEffectTest.resultSurface().toString().contains("noProductionSideEffects=true"));
+    assertTrue(noSideEffectTest.resultSurface().toString().contains("PromptAssemblyTrace"));
+    var promptRiskStatus = assertDetailActionRoutes("action-agent-detail-open-prompt-risk-review", "agent_admin.prompt_risk_review.read", "surface-agent-admin-prompt-risk-review", "accepted", "corr-agent-admin-detail-prompt-risk");
+    assertTrue(promptRiskStatus.resultSurface().toString().contains("blocked_provider_or_runtime"));
+    assertTrue(promptRiskStatus.resultSurface().toString().contains("activationBlockedUntilHumanDecision=true"));
+    assertDetailActionRoutes("action-agent-detail-open-activation", "agent.definitions.manage", "surface-agent-activation-confirmation", "approval-required", "corr-agent-admin-detail-activation");
+    assertDetailActionRoutes("action-agent-detail-open-deactivation", "agent.definitions.manage", "surface-agent-deactivation-confirmation", "approval-required", "corr-agent-admin-detail-deactivation");
+    assertDetailActionRoutes("action-agent-detail-open-rollback", "agent_admin.rollback_behavior_change", "surface-agent-rollback-confirmation", "approval-required", "corr-agent-admin-detail-rollback");
+    assertDetailActionRoutes("action-agent-detail-back-to-catalog", "agent_admin.list_definitions", "surface-agent-admin-catalog", "accepted", "corr-agent-admin-detail-back-to-catalog");
+
+    var hiddenRow = runAction(new CapabilityActionRequest(
+        "action-open-agent-detail",
+        "action-open-agent-detail",
+        "agent_admin.get_definition",
+        "agent_admin.get_definition",
+        Map.of("agentDefinitionId", "hidden-or-stale-agent-row"),
+        null,
+        ADMIN_CONTEXT_ID,
+        catalog.surfaceId(),
+        "corr-agent-admin-detail-hidden-row"));
+    assertEquals("accepted", hiddenRow.status());
+    assertEquals("surface-agent-admin-detail", hiddenRow.resultSurface().surfaceId());
+    assertEquals("not_found_or_redacted", ((Map<String, Object>) hiddenRow.resultSurface().data().get("scopeSummary")).get("visibilityDecision"));
+    assertTrue(hiddenRow.resultSurface().toString().contains("empty-hidden-or-stale-selection"));
+    assertFalse(hiddenRow.resultSurface().toString().contains("hidden-or-stale-agent-row"));
+    assertBrowserSafe(hiddenRow.resultSurface());
+
     var trace = runAction(new CapabilityActionRequest(
         "action-agent-admin-catalog-open-trace",
         "action-agent-admin-catalog-open-trace",
@@ -399,6 +435,13 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "member@example.test",
         "Member User",
         MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin catalog rows or counts.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-admin-detail",
+        "corr-agent-admin-detail-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin detail payloads.");
 
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-agent-admin-catalog",
@@ -407,6 +450,13 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "customer@example.test",
         "Customer Admin",
         CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin catalog rows or tenant governance counts.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-admin-detail",
+        "corr-agent-admin-detail-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin detail rows or tenant governance state.");
   }
 
   @Test
@@ -430,6 +480,25 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
 
   private SurfaceEnvelope getSurface(String surfaceId, String correlationId) throws Exception {
     return getSurfaceAs(surfaceId, correlationId, "workos-admin", "admin@example.test", "Tenant Admin", ADMIN_CONTEXT_ID);
+  }
+
+  private CapabilityActionResult assertDetailActionRoutes(String actionId, String capabilityId, String expectedSurfaceId, String expectedStatus, String correlationId) throws Exception {
+    var result = runAction(new CapabilityActionRequest(
+        actionId,
+        actionId,
+        capabilityId,
+        capabilityId,
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-" + correlationId,
+        ADMIN_CONTEXT_ID,
+        "surface-agent-admin-detail",
+        correlationId));
+    assertEquals(expectedStatus, result.status());
+    assertEquals(expectedSurfaceId, result.resultSurface().surfaceId());
+    assertEquals(correlationId, result.correlationId());
+    assertFalse(result.traceIds().isEmpty());
+    assertBrowserSafe(result.resultSurface());
+    return result;
   }
 
   @SuppressWarnings("unchecked")

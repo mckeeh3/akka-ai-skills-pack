@@ -4876,7 +4876,7 @@
 
 ### TASK-FSCT-138: Verify or complete runtime testing for `surface-agent-admin-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-137]
 - surface id: `surface-agent-admin-detail`
@@ -4910,6 +4910,7 @@
   - purpose: Agent readiness/behavior inspection.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded Agent Admin browser/API smoke coverage for `surface-agent-admin-detail` to cover missing-bearer rejection, tenant-admin AuthContext direct detail and catalog row-open paths, all backend-authorized detail task-entry/action edges, no-side-effect test evidence, prompt-risk/provider fail-closed state, lifecycle confirmation routing, trace/catalog return routing, hidden/stale row `not_found_or_redacted` without id echo, and tenant-member/customer-scope denials. Frontend contract fixtures/tests now assert `agent_admin.detail.v1`, detail task-entry action ids, fail-closed provider readiness, and browser-safe redaction boundaries. Checks passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-139: Verify or complete app-description specification for `surface-agent-prompt-governance`
 

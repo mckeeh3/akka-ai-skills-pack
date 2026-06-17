@@ -2467,11 +2467,15 @@ export const agentAdminDetailSurface = envelope(
   'Agent Admin readiness detail',
   'agent-admin-agent',
   {
-    surfaceContract: 'agent_admin.definition.v1',
+    surfaceContract: 'agent_admin.detail.v1',
+    surfaceContractAliases: ['agent_admin.definition.v1'],
     recordId: 'agent-admin-agent',
     recordLabel: 'Agent Admin Agent',
     recordKind: 'AgentDefinition',
     summary: 'Backend-authoritative AgentDefinition detail; behavior changes must use deterministic proposal/review/activation commands and AgentAdminAgent guidance remains read-only.',
+    detailSummary: { surfaceId: 'surface-agent-admin-detail', title: 'Agent readiness/behavior inspection', type: 'show-inspection', contract: 'agent_admin.detail.v1', lifecycleState: 'active', readinessState: 'blocked_provider_or_runtime', readOnlyNotice: 'No inline mutation; use dedicated governed task surfaces.' },
+    scopeSummary: { selectedAuthContextId: 'membership-admin', scopeType: 'tenant', governanceAuthorized: true, visibilityDecision: 'visible' },
+    readinessNarrative: { outcome: 'blocked_provider_or_runtime', providerModelReadinessCategory: 'blocked_provider_or_runtime', promptRiskStatus: 'deferred_until_provider_runtime_configured', blockedReasons: ['Provider/model runtime is not fully ready; no fake success is shown.'], noFakeSuccess: true },
     fields: [
       { fieldId: 'status', label: 'Status', value: 'active', editable: false, inputType: 'text', disabledReason: 'Disabled AgentDefinitions cannot be invoked or load governed skills/references.' },
       { fieldId: 'authorityLevel', label: 'Authority tier', value: 'APPROVAL_REQUIRED', editable: false, inputType: 'text', disabledReason: 'Authority expansion requires deterministic review and human approval.' },
@@ -2488,7 +2492,24 @@ export const agentAdminDetailSurface = envelope(
       { artifactKind: 'tool_boundary', artifactId: 'tool-boundary-agent-admin', status: 'active', capabilityId: 'agent_admin.get_tool_boundary' },
       { artifactKind: 'model_ref', artifactId: 'model-safe-default', status: 'active', capabilityId: agentModelsReadCapability }
     ],
-    providerReadiness: { status: 'ready', safeReason: 'Provider alias is configured; credentials remain backend-only.', providerAlias: 'approved-primary', secretVisibility: 'redacted' },
+    behaviorArtifactCards: [
+      { artifactCategory: 'prompt', displayLabel: 'Prompt', actionId: 'action-agent-detail-open-prompt-governance', targetSurfaceId: 'surface-agent-prompt-governance', governedCapability: agentPromptReadCapability, redactionNote: 'Raw prompt text omitted.' },
+      { artifactCategory: 'skill_manifest', displayLabel: 'Skill manifest', actionId: 'action-agent-detail-open-skill-manifest', targetSurfaceId: 'surface-agent-skill-manifest-diff', governedCapability: agentManifestReadCapability, redactionNote: 'Full skill/reference bodies omitted.' },
+      { artifactCategory: 'tool_boundary', displayLabel: 'Governed tool boundary', actionId: 'action-agent-detail-open-tool-boundary', targetSurfaceId: 'surface-agent-tool-boundary-diff', governedCapability: 'agent_admin.get_tool_boundary', redactionNote: 'ToolPermissionBoundary denials preserved.' },
+      { artifactCategory: 'model_ref', displayLabel: 'Model reference', actionId: 'action-agent-detail-open-model-refs', targetSurfaceId: 'surface-agent-model-refs', governedCapability: agentModelsReadCapability, redactionNote: 'Provider credentials redacted.' }
+    ],
+    taskEntryPoints: [
+      { actionId: 'action-agent-detail-refresh', targetSurfaceId: 'surface-agent-admin-detail', governedCapability: agentDefinitionReadCapability, disabledReason: null },
+      { actionId: 'action-agent-detail-run-test', targetSurfaceId: 'surface-agent-test-console', governedCapability: agentRuntimeTestCapability, disabledReason: null },
+      { actionId: 'action-agent-detail-open-prompt-risk-review', targetSurfaceId: 'surface-agent-admin-prompt-risk-review', governedCapability: 'agent_admin.prompt_risk_review.read', disabledReason: 'Model-backed review fails closed when provider/runtime is unavailable.' },
+      { actionId: 'action-agent-detail-open-activation', targetSurfaceId: 'surface-agent-activation-confirmation', governedCapability: agentDefinitionsManageCapability, disabledReason: 'Separate approval/provider prerequisites required.' },
+      { actionId: 'action-agent-detail-open-deactivation', targetSurfaceId: 'surface-agent-deactivation-confirmation', governedCapability: agentDefinitionsManageCapability, disabledReason: null },
+      { actionId: 'action-agent-detail-open-rollback', targetSurfaceId: 'surface-agent-rollback-confirmation', governedCapability: agentRollbackCapability, disabledReason: 'Requires backend-visible activated proposal metadata.' },
+      { actionId: 'action-agent-detail-open-trace', targetSurfaceId: 'surface-agent-admin-trace', governedCapability: 'audit.trace.read', disabledReason: null },
+      { actionId: 'action-agent-detail-back-to-catalog', targetSurfaceId: 'surface-agent-admin-catalog', governedCapability: agentDefinitionsCapability, disabledReason: null }
+    ],
+    providerReadiness: { status: 'blocked_provider_or_runtime', safeReason: 'Provider alias readiness is fail-closed in fixture; credentials remain backend-only.', providerAlias: 'approved-primary', secretVisibility: 'redacted' },
+    safeRedactionSummary: { rawPromptText: 'omitted', rawSkillReferenceBodies: 'omitted', providerCredentials: 'omitted', hiddenTenantCustomerIdentifiers: 'omitted', jwtSessionMaterial: 'omitted', rawTraceEvidence: 'role-gated' },
     seedStatus: { seedBundleId: 'starter-v1', contentVersion: 'v1', resourceId: 'agent-definition-agent-admin.yaml', tenantCustomized: false },
     permissionState: {
       canEdit: false,
