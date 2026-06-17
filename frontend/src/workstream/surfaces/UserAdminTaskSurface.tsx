@@ -193,8 +193,9 @@ function InvitationTaskDeliveryPanel({ envelope }: { envelope: SurfaceEnvelope<U
 }
 
 function MembershipStatusTask({ envelope, onAction }: Props) {
-  const suspendAction = findAction(envelope.actions, 'action-useradmin-disable-member') ?? findAction(envelope.actions, 'action-disable-account');
-  const reactivateAction = findAction(envelope.actions, 'action-useradmin-reactivate-member') ?? findAction(envelope.actions, 'action-reactivate-account');
+  const confirmAction = findAction(envelope.actions, 'action-confirm-user-admin-membership-status-change');
+  const suspendAction = confirmAction ?? findAction(envelope.actions, 'action-useradmin-disable-member') ?? findAction(envelope.actions, 'action-disable-account');
+  const reactivateAction = confirmAction ?? findAction(envelope.actions, 'action-useradmin-reactivate-member') ?? findAction(envelope.actions, 'action-reactivate-account');
   const statusOptions = userAdminStatusOptions(envelope);
   const [status, setStatus] = useState(String(envelope.data.proposedStatus ?? statusOptions[0]?.value ?? ''));
   const [reason, setReason] = useState('');

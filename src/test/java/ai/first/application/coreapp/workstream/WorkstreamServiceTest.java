@@ -776,6 +776,34 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void userAdminMembershipStatusCanonicalConfirmMutatesThroughGovernedService() {
+    var opened = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-user-admin-membership-status-confirmation", "action-open-user-admin-membership-status-confirmation", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "suspended"), null, "membership-admin", "surface-user-admin-user-detail", "corr-status-canonical-open"));
+    assertEquals("accepted", opened.status());
+    assertEquals("surface-user-admin-membership-status-confirmation", opened.resultSurface().surfaceId());
+    assertEquals("user_admin.membership_status_confirmation.v1", opened.resultSurface().data().get("surfaceContract"));
+    assertTrue(opened.resultSurface().toString().contains("targetSummary"));
+    assertTrue(opened.resultSurface().toString().contains("proposedLifecycleChange"));
+    assertTrue(opened.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-confirm-user-admin-membership-status-change")));
+    assertBrowserPayloadSafe(opened.resultSurface());
+
+    var confirmed = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-confirm-user-admin-membership-status-change", "action-confirm-user-admin-membership-status-change", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "suspended", "reason", "temporary access pause"), "idem-status-canonical", "membership-admin", opened.resultSurface().surfaceId(), "corr-status-canonical-confirm"));
+    assertEquals("accepted", confirmed.status());
+    assertEquals("surface-user-admin-user-detail", confirmed.resultSurface().surfaceId());
+    assertTrue(confirmed.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-update-member-status")));
+    assertTrue(confirmed.resultSurface().toString().contains("membershipStatus"));
+    assertTrue(confirmed.resultSurface().toString().contains("suspended"));
+    assertBrowserPayloadSafe(confirmed.resultSurface());
+
+    var replay = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-confirm-user-admin-membership-status-change", "action-confirm-user-admin-membership-status-change", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "suspended", "reason", "duplicate pause"), "idem-status-canonical-replay", "membership-admin", opened.resultSurface().surfaceId(), "corr-status-canonical-replay"));
+    assertEquals("no-op", replay.status());
+    assertTrue(replay.message().contains("already matches"));
+    assertBrowserPayloadSafe(replay.resultSurface());
+  }
+
+  @Test
   void userAdminIdentityRecoverySurfaceShowsDurableLifecycleAndSafeActions() {
     var opened = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-open-useradmin-identity-exception-review", "action-open-useradmin-identity-exception-review", "user_admin.identity_relink.review", "user_admin.identity_relink.review", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", "surface-user-admin-user-detail", "corr-identity-open"));
