@@ -4028,7 +4028,7 @@
 
 ### TASK-FSCT-114: Verify or complete runtime testing for `surface-user-admin-customer-admin-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-113]
 - surface id: `surface-user-admin-customer-admin-detail`
@@ -4062,6 +4062,7 @@
   - purpose: Shows one Customer Admin membership/invitation.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admin-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage` for `surface-user-admin-customer-admin-detail`: missing-bearer direct/action denials, direct generic no-target detail, Customer Admin membership detail success through protected `/api/workstream/actions`, Customer Admin invitation detail success after governed invite creation, hidden Customer denial, Customer Admin selected-context denial, trace/correlation assertions, Customer `ScopeType.CUSTOMER` target proof, task-entry/no-inline-mutation evidence, provider/outbox/invitation-token redaction, and browser-safe secret boundaries. Checks passed: `mvn -q -Dtest=ai.first.application.coreapp.workstream.UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`. Runtime readiness level: `runtime-ready`; no validation blocker remains.
 
 ### TASK-FSCT-115: Verify or complete app-description specification for `surface-user-admin-customer-create`
 
