@@ -2935,6 +2935,30 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke(), "Customer create submit action path must reject missing bearer tokens.");
 
     assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-customer-rename")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-rename-missing-bearer-direct")
+        .responseBodyAs(String.class)
+        .invoke(), "Customer rename surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-rename-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-submit-customer-rename",
+            "user-admin.submit-customer-rename",
+            "manage-customers",
+            "tenant.customer.rename",
+            Map.of("customerId", "cust-alpha", "customerName", "Bearerless Rename", "reason", "missing bearer must not rename"),
+            "idem-customer-rename-missing-bearer",
+            SELECTED_CONTEXT_ID,
+            "surface-user-admin-customer-rename",
+            "corr-customer-rename-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Customer rename submit action path must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-user-admin-customer-admin-detail")
         .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
         .addHeader("X-Correlation-Id", "corr-customer-admin-detail-missing-bearer-direct")
@@ -3202,6 +3226,24 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
     assertBrowserSafe(customerCreateDenied.resultSurface());
 
+    var directRenameWithoutTarget = getSurface("surface-user-admin-customer-rename", "corr-customer-rename-direct-missing-target");
+    assertEquals("surface-user-admin-customer-rename", directRenameWithoutTarget.surfaceId());
+    assertEquals("edit-form", directRenameWithoutTarget.surfaceType());
+    assertEquals("user_admin.customer_rename.v1", directRenameWithoutTarget.data().get("surfaceContract"));
+    assertEquals("missing-target", directRenameWithoutTarget.data().get("formState"));
+    assertTrue(directRenameWithoutTarget.toString().contains("missing-visible-customer"));
+    assertTrue(directRenameWithoutTarget.toString().contains("action-submit-customer-rename"));
+    assertFalse(directRenameWithoutTarget.toString().contains("Hidden Customer"));
+    assertBrowserSafe(directRenameWithoutTarget);
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-user-admin-customer-rename",
+        "corr-customer-rename-customer-admin-denied-direct",
+        "workos-customer-admin",
+        "customer-admin@example.test",
+        "Customer Admin",
+        "membership-customer-admin"), "Customer Admin selected contexts must not direct-load Customer rename forms.");
+
     var renameForm = runAction(new CapabilityActionRequest(
         "action-open-customer-rename",
         "user-admin.open-customer-rename",
@@ -3263,6 +3305,63 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
     assertBrowserSafe(replayedCustomerRename.resultSurface());
 
+    var missingIdempotencyRename = runAction(new CapabilityActionRequest(
+        "action-submit-customer-rename",
+        "user-admin.submit-customer-rename",
+        "manage-customers",
+        "tenant.customer.rename",
+        Map.of("customerId", createdCustomerId, "customerName", "Rename Without Idempotency", "reason", "missing idempotency must fail closed"),
+        null,
+        SELECTED_CONTEXT_ID,
+        renameForm.resultSurface().surfaceId(),
+        "corr-customer-rename-missing-idempotency"));
+    assertEquals("validation-error", missingIdempotencyRename.status());
+    assertEquals("surface-user-admin-system-message", missingIdempotencyRename.resultSurface().surfaceId());
+    assertTrue(missingIdempotencyRename.resultSurface().toString().contains("idempotency-key-required"));
+    assertTrue(missingIdempotencyRename.resultSurface().toString().contains("noFakeSuccess=true"));
+    assertFalse(missingIdempotencyRename.resultSurface().toString().contains("Rename Without Idempotency"));
+    assertEquals("Browser Smoke Customer Renamed", repository.customer(TENANT_ID, createdCustomerId).orElseThrow().displayName());
+    assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
+    assertBrowserSafe(missingIdempotencyRename.resultSurface());
+
+    var hiddenCustomerRename = runAction(new CapabilityActionRequest(
+        "action-submit-customer-rename",
+        "user-admin.submit-customer-rename",
+        "manage-customers",
+        "tenant.customer.rename",
+        Map.of("customerId", "cust-hidden", "customerName", "Hidden Customer Rename Attempt", "reason", "hidden customer must not enumerate"),
+        "idem-customer-rename-hidden-denied",
+        SELECTED_CONTEXT_ID,
+        renameForm.resultSurface().surfaceId(),
+        "corr-customer-rename-hidden-denied"));
+    assertEquals("denied", hiddenCustomerRename.status());
+    assertEquals("surface-user-admin-system-message", hiddenCustomerRename.resultSurface().surfaceId());
+    assertTrue(hiddenCustomerRename.resultSurface().toString().contains("target-not-found-or-forbidden"));
+    assertTrue(hiddenCustomerRename.resultSurface().toString().contains("noFakeSuccess=true"));
+    assertFalse(hiddenCustomerRename.resultSurface().toString().contains("Hidden Customer"));
+    assertFalse(hiddenCustomerRename.resultSurface().toString().contains("tenant-hidden"));
+    assertFalse(hiddenCustomerRename.resultSurface().toString().contains("Hidden Customer Rename Attempt"));
+    assertEquals("Browser Smoke Customer Renamed", repository.customer(TENANT_ID, createdCustomerId).orElseThrow().displayName());
+    assertBrowserSafe(hiddenCustomerRename.resultSurface());
+
+    var customerAdminRenameDenied = runActionAs(new CapabilityActionRequest(
+        "action-submit-customer-rename",
+        "user-admin.submit-customer-rename",
+        "manage-customers",
+        "tenant.customer.rename",
+        Map.of("customerId", createdCustomerId, "customerName", "Customer Admin Unauthorized Rename", "reason", "customer admin must not rename customers"),
+        "idem-customer-rename-customer-admin-denied",
+        "membership-customer-admin",
+        renameForm.resultSurface().surfaceId(),
+        "corr-customer-rename-customer-admin-denied"), "workos-customer-admin", "customer-admin@example.test", "Customer Admin", "membership-customer-admin");
+    assertEquals("denied", customerAdminRenameDenied.status());
+    assertEquals("surface-user-admin-system-message", customerAdminRenameDenied.resultSurface().surfaceId());
+    assertTrue(customerAdminRenameDenied.resultSurface().toString().contains("scope-forbidden"));
+    assertTrue(customerAdminRenameDenied.resultSurface().toString().contains("noFakeSuccess=true"));
+    assertFalse(customerAdminRenameDenied.resultSurface().toString().contains("Customer Admin Unauthorized Rename"));
+    assertEquals("Browser Smoke Customer Renamed", repository.customer(TENANT_ID, createdCustomerId).orElseThrow().displayName());
+    assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
+    assertBrowserSafe(customerAdminRenameDenied.resultSurface());
 
     var directCustomerAdmins = getSurface("surface-user-admin-customer-admins", "corr-customer-admins-direct-no-target");
     assertEquals("surface-user-admin-customer-admins", directCustomerAdmins.surfaceId());

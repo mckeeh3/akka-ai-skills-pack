@@ -4240,7 +4240,7 @@
 
 ### TASK-FSCT-120: Verify or complete runtime testing for `surface-user-admin-customer-rename`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-119]
 - surface id: `surface-user-admin-customer-rename`
@@ -4274,6 +4274,7 @@
   - purpose: Customer display-name/profile edit surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-rename`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-rename`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted User Admin Customer branch smoke coverage for `surface-user-admin-customer-rename`: missing-bearer direct surface and canonical submit action rejections, authorized direct missing-target form load, detail-to-rename traversal, canonical submit success through `/api/workstream/actions`, persisted display-name update, no-op/idempotent replay, missing-idempotency validation fail-closed system message, hidden/cross-tenant Customer no-enumeration denial, Customer Admin selected-context denial, trace/correlation evidence, no fake success, repository side-effect guards, and browser-safe redaction checks. Checks passed: `mvn -q -Dtest=ai.first.application.coreapp.workstream.UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`. Runtime readiness level: `runtime-ready`; no validation blocker remains.
 
 ### TASK-FSCT-121: Verify or complete app-description specification for `surface-user-admin-customer-suspend-confirmation`
 
