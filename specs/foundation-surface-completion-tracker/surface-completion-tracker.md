@@ -632,7 +632,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-admin-catalog` for `agent_admin.catalog.v1` with Agent Admin/`agent-admin-agent` ownership, dashboard/deep-link placement, collection-discovery role, browser-safe `catalogSummary`, `scopeSummary`, `filters`, `agents[]`, empty-state, authorized-action, redaction and diagnostics payload schemas, governed refresh/search/reset/open-detail/open-trace action mappings, selected AuthContext/tenant/organization authorization and no-enumeration denial rules, audit/work trace and correlation requirements, explicit loading/empty/forbidden/stale/partial/provider-fail-closed/validation/no-op/failure states, accessibility/responsive/style bindings, and acceptance/security/observability regression coverage. Sufficiency review says the catalog is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

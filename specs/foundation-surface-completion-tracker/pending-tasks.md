@@ -4702,7 +4702,7 @@
 
 ### TASK-FSCT-133: Verify or complete app-description specification for `surface-agent-admin-catalog`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-admin-catalog`
@@ -4731,6 +4731,7 @@
   - purpose: Managed agent catalog.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-admin-catalog` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: expanded the Agent Admin catalog app-description with identity/ownership, placement, browser-safe payload schema (`catalogSummary`, `scopeSummary`, `filters`, `agents[]`, empty-state, authorized actions, redaction/diagnostics), governed action mappings for refresh/search/reset/open-detail/open-trace, selected AuthContext/tenant/organization authorization and no-enumeration rules, audit/work trace and correlation requirements, explicit UI/error/fail-closed states, accessibility/responsive/style bindings, tests, and sufficiency review; tracker evidence updated. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description.
 
 ### TASK-FSCT-134: Verify or complete runtime implementation for `surface-agent-admin-catalog`
 
