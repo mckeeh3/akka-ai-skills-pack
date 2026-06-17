@@ -1685,6 +1685,154 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-organization-directory")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Directory surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-directory-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-user-admin-show-organizations",
+            "user-admin.show-organizations",
+            "manage-organizations",
+            "saas_owner.organization.list",
+            Map.of("scope", "saas-owner"),
+            null,
+            "membership-owner",
+            "surface-user-admin-saas-owner-dashboard",
+            "corr-org-directory-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Directory action path must reject missing bearer tokens.");
+
+    var bootstrap = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "SaaS Owner"))
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-directory-bootstrap")
+        .responseBodyAs(WorkstreamBootstrapResponse.class)
+        .invoke();
+    assertTrue(bootstrap.status().isSuccess());
+    assertEquals("membership-owner", bootstrap.body().me().selectedAuthContext().selectedContextId());
+    assertBrowserSafe(bootstrap.body());
+
+    var dashboard = getSurfaceAs("surface-user-admin-dashboard", "corr-org-directory-dashboard", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-saas-owner-dashboard", dashboard.surfaceId());
+    assertEquals("user_admin.saas_owner_dashboard.v1", dashboard.data().get("surfaceContract"));
+    assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-user-admin-show-organizations")));
+    assertTrue(dashboard.toString().contains("manage-organizations"));
+    assertTrue(dashboard.toString().contains("saas_owner.organization.list"));
+    assertBrowserSafe(dashboard);
+
+    var directory = runActionAs(new CapabilityActionRequest(
+        "action-user-admin-show-organizations",
+        "user-admin.show-organizations",
+        "manage-organizations",
+        "saas_owner.organization.list",
+        Map.of("scope", "saas-owner"),
+        null,
+        "membership-owner",
+        dashboard.surfaceId(),
+        "corr-org-directory-open"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", directory.status());
+    assertEquals("corr-org-directory-open", directory.correlationId());
+    assertEquals("surface-user-admin-organization-directory", directory.resultSurface().surfaceId());
+    assertEquals("list-search", directory.resultSurface().surfaceType());
+    assertEquals("user_admin.organization_directory.v1", directory.resultSurface().data().get("surfaceContract"));
+    assertEquals("saas_owner", directory.resultSurface().data().get("scopeType"));
+    assertEquals("corr-org-directory-open", directory.resultSurface().correlationId());
+    assertTrue(directory.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-admin")));
+    assertTrue(directory.resultSurface().toString().contains("Starter Tenant"));
+    assertTrue(directory.resultSurface().toString().contains("tenant-starter"));
+    assertTrue(directory.resultSurface().toString().contains("targetSurfaceId=surface-user-admin-organization-detail"));
+    assertTrue(directory.resultSurface().toString().contains("action-organization-read"));
+    assertTrue(directory.resultSurface().toString().contains("action-open-organization-create"));
+    assertTrue(directory.resultSurface().toString().contains("Tenant lifecycle boundary"));
+    assertTrue(directory.resultSurface().toString().contains("tenant-app-data-redacted"));
+    assertTrue(directory.resultSurface().toString().contains("provider-secrets-redacted"));
+    assertBrowserSafe(directory.resultSurface());
+
+    var directDirectory = getSurfaceAs("surface-user-admin-organization-directory", "corr-org-directory-direct", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-organization-directory", directDirectory.surfaceId());
+    assertEquals("user_admin.organization_directory.v1", directDirectory.data().get("surfaceContract"));
+    assertEquals("corr-org-directory-direct", directDirectory.correlationId());
+    assertTrue(directDirectory.toString().contains("action-organization-list"));
+    assertTrue(directDirectory.toString().contains("trace-organization-list"));
+    assertBrowserSafe(directDirectory);
+
+    var filteredEmpty = runActionAs(new CapabilityActionRequest(
+        "action-organization-list",
+        "action-organization-list",
+        "saas_owner.organization.list",
+        "saas_owner.organization.list",
+        Map.of("query", "no-such-organization", "status", "active"),
+        null,
+        "membership-owner",
+        directory.resultSurface().surfaceId(),
+        "corr-org-directory-filter-empty"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", filteredEmpty.status());
+    assertEquals("surface-user-admin-organization-directory", filteredEmpty.resultSurface().surfaceId());
+    assertTrue(filteredEmpty.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-list")));
+    assertTrue(String.valueOf(filteredEmpty.resultSurface().data().get("pageInfo")).contains("visibleCount=0"));
+    assertTrue(filteredEmpty.resultSurface().toString().contains("empty"));
+    assertTrue(filteredEmpty.resultSurface().toString().contains("No Organizations are visible"));
+    assertFalse(filteredEmpty.resultSurface().toString().contains("tenant-hidden"));
+    assertBrowserSafe(filteredEmpty.resultSurface());
+
+    var detail = runActionAs(new CapabilityActionRequest(
+        "action-organization-read",
+        "action-organization-read",
+        "saas_owner.organization.read",
+        "saas_owner.organization.read",
+        Map.of("organizationId", TENANT_ID),
+        null,
+        "membership-owner",
+        directory.resultSurface().surfaceId(),
+        "corr-org-directory-read-detail"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", detail.status());
+    assertEquals("surface-user-admin-organization-detail", detail.resultSurface().surfaceId());
+    assertEquals("show-inspection", detail.resultSurface().surfaceType());
+    assertEquals("user_admin.organization_detail.v1", detail.resultSurface().data().get("surfaceContract"));
+    assertTrue(detail.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-read")));
+    assertTrue(detail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-organizations"));
+    assertTrue(detail.resultSurface().toString().contains("Back to organizations"));
+    assertTrue(detail.resultSurface().toString().contains("does not grant tenant/customer application-data access"));
+    assertBrowserSafe(detail.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-user-admin-show-organizations",
+        "user-admin.show-organizations",
+        "manage-organizations",
+        "saas_owner.organization.list",
+        Map.of("scope", "saas-owner"),
+        null,
+        SELECTED_CONTEXT_ID,
+        "surface-user-admin-dashboard",
+        "corr-org-directory-tenant-denied")),
+        "Tenant Admin selected contexts must not open the SaaS Owner Organization Directory through the protected action API.");
+
+    var hiddenRead = runActionAs(new CapabilityActionRequest(
+        "action-organization-read",
+        "action-organization-read",
+        "saas_owner.organization.read",
+        "saas_owner.organization.read",
+        Map.of("organizationId", "missing-organization-never-seeded"),
+        null,
+        "membership-owner",
+        directory.resultSurface().surfaceId(),
+        "corr-org-directory-hidden-read"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("denied", hiddenRead.status());
+    assertEquals("surface-user-admin-system-message", hiddenRead.resultSurface().surfaceId());
+    assertTrue(hiddenRead.resultSurface().surfaceType().contains("system"));
+    assertFalse(hiddenRead.resultSurface().toString().contains("missing-organization-never-seeded"));
+    assertBrowserSafe(hiddenRead.resultSurface());
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesUserAdminAccessReviewTaskRuntimePath() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-user-admin-access-review-task")

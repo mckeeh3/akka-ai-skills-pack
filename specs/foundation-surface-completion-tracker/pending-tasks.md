@@ -2650,7 +2650,7 @@
 
 ### TASK-FSCT-075: Verify or complete runtime testing for `surface-user-admin-organization-directory`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-074]
 - surface id: `surface-user-admin-organization-directory`
@@ -2675,15 +2675,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - notes:
   - surface type: `list-search`
   - surface contract: `user_admin.organization_directory.v1`
   - purpose: SaaS Owner Organization directory.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-directory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-directory`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added protected Akka-hosted Organization Directory runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath` and tightened the backend `user_admin.organization_directory.v1` envelope/rows to expose the app-description-required branch metadata, summary, actions, row target/open action ids, redaction state, and no-enumeration denial evidence. runtime evidence: readiness level `runtime-ready` for the Organization Directory testing scope; SaaS Owner Admin selected `AuthContext` opens the directory through `/api/workstream/actions` and direct `/api/workstream/surfaces`, backend filter/empty state and row activation to Organization detail are exercised, Tenant Admin and hidden/missing Organization attempts deny safely, missing bearer requests reject, trace/correlation refs and tenant-app/provider-secret redaction are asserted. commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`, `mvn -q -Dtest=WorkstreamServiceTest#saasOwnerUserAdminDashboardExposesOrganizationAdminSurface,tenantUserAdminOmitsOrganizationBranchAndDirectAccessIsDeniedSafely,userAdminOrganizationDeepLinkDenialUsesSafeSystemMessageForHiddenTargets,organizationSurfaceGraphRoutesBySelectedOrganizationLifecycleState test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`
 
 ### TASK-FSCT-076: Verify or complete app-description specification for `surface-user-admin-organization-detail`
 

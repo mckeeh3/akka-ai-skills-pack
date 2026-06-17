@@ -1533,22 +1533,34 @@ public final class WorkstreamService {
         ? listResult.organizations().stream().map(this::organizationSummaryMap).toList()
         : List.of(organizationSummaryMap(detail.organization()));
     var traceRefs = detail == null ? List.of(listResult.traceId()) : detail.traceRefs();
+    var activeOrganizationCount = organizations.stream().filter(organization -> "active".equals(organization.get("status"))).count();
+    var suspendedOrganizationCount = organizations.stream().filter(organization -> "suspended".equals(organization.get("status"))).count();
+    var branchNavigation = organizationBranchNavigation(correlationId);
     var data = mapOf(
         "surfaceContract", contract,
         "scopeLabel", "SaaS Owner scope",
         "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT),
         "authorityBasis", "Backend checks selected AuthContext and saas_owner.organization.* mapped to internal tenant lifecycle capabilities; browser state cannot grant Organization authority.",
-        "branchNavigation", organizationBranchNavigation(correlationId),
+        "branchNavigation", branchNavigation,
+        "branchRootSurfaceId", branchNavigation.get("branchRootSurfaceId"),
+        "branchReturnActionId", branchNavigation.get("branchReturnActionId"),
+        "branchReturnLabel", branchNavigation.get("branchReturnLabel"),
         "boundaryNotice", boundary,
         "safeBoundaryNotice", boundary,
+        "query", query == null ? "" : query,
         "traceRefs", traceRefs,
         "correlationId", correlationId,
         "redaction", List.of("tenant-app-data-redacted", "provider-secrets-redacted", "billing-authority-redacted", "support-access-internals-redacted", "hidden-counts-redacted"),
+        "summary", mapOf("visibleOrganizationCount", organizations.size(), "activeOrganizationCount", activeOrganizationCount, "suspendedOrganizationCount", suspendedOrganizationCount, "pendingSetupCount", 0, "organizationAdminAttentionCount", 0, "invitationAttentionCount", 0, "providerBlockedCount", 0, "outboxBlockedCount", 0, "traceRefs", traceRefs),
         "organizations", organizations,
-        "filters", mapOf("query", query == null ? "" : query, "status", status == null ? "" : status),
-        "pageInfo", mapOf("visibleCount", organizations.size()),
+        "filters", mapOf("query", query == null ? "" : query, "status", status == null ? "" : status, "backendAuthored", true),
+        "sort", mapOf("default", "backend-policy"),
+        "pageInfo", mapOf("visibleCount", organizations.size(), "hasMore", false),
+        "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(),
         "systemStates", List.of(organizations.isEmpty() ? "empty" : "ready"),
-        "emptyMessage", "No Organizations are visible for this backend-authorized filter.");
+        "emptyMessage", "No Organizations are visible for this backend-authorized filter.",
+        "forbiddenMessage", "Unauthorized or hidden Organizations return a safe system message without enumeration.",
+        "lastResult", mapOf("status", organizations.isEmpty() ? "empty" : "ready", "message", "Organization Directory loaded through backend-authorized workstream runtime path.", "correlationId", correlationId));
     if (detail != null) data.put("organizationDetail", organizationDetailMap(detail));
     return envelope(surfaceId, surfaceType, title, actor, correlationId, data, actions);
   }
@@ -3231,7 +3243,7 @@ public final class WorkstreamService {
   }
 
   private Map<String, Object> organizationSummaryMap(ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationSummary organization) {
-    return mapOf("organizationId", organization.organizationId(), "organizationName", organization.organizationName(), "status", organization.status(), "safeLifecycleSummary", organization.status().equals("active") ? "Active Tenant boundary" : "Suspended Tenant boundary", "actionAvailability", organization.status().equals("active") ? List.of("rename", "suspend") : List.of("rename", "reactivate"), "traceRefs", organization.traceRefs());
+    return mapOf("organizationId", organization.organizationId(), "organizationName", organization.organizationName(), "status", organization.status(), "safeLifecycleSummary", organization.status().equals("active") ? "Active Tenant boundary" : "Suspended Tenant boundary", "attentionBadges", List.of(), "visibleTenantAdminCount", null, "pendingAdminInvitationCount", null, "actionAvailability", organization.status().equals("active") ? List.of("open-detail", "rename", "suspend") : List.of("open-detail", "rename", "reactivate"), "targetSurfaceId", "surface-user-admin-organization-detail", "targetSurfaceType", "show-inspection", "targetActionId", "action-organization-read", "openActionId", "action-organization-read", "traceRefs", organization.traceRefs(), "redactionState", "tenant-app-data-redacted");
   }
 
   private Map<String, Object> organizationDetailMap(ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail detail) {
