@@ -344,7 +344,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-access-review-task` workflow-status/outcome-panel contract covering identity/owner/placement, selected app-owner/tenant/customer `AuthContext` and access-review read/start/cancel/accept/reject authority, durable task/progress/result/blocker payload schema, model/provider/tool/data/policy fail-closed readiness, evidence/omission and advisory recommendation summaries, human accept/reject review semantics, follow-up routing to role/membership/support task surfaces without direct mutation, forbidden/redacted payload boundaries for prompts/model/provider/JWT/evidence secrets and hidden scopes, governed action-to-capability mappings, no-enumeration denial behavior, trace/audit/correlation contract, accessibility/responsive expectations, acceptance/security/observability regression coverage, and sufficiency review. Checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description, and `git diff --check`. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

@@ -2370,7 +2370,7 @@
 
 ### TASK-FSCT-067: Verify or complete app-description specification for `surface-user-admin-access-review-task`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-access-review-task`
@@ -2399,6 +2399,7 @@
   - purpose: Durable access-review task progress, result, blockers, and human review.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-access-review-task` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated `surface-user-admin-access-review-task` workflow-status/outcome-panel app-description contract with payload schema, read/start/cancel/accept/reject actions, selected AuthContext authorization, advisory-only/no-direct-mutation human review, model/provider/tool fail-closed blockers, redaction boundaries, trace/audit/correlation, accessibility/responsive expectations, tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-068: Verify or complete runtime implementation for `surface-user-admin-access-review-task`
 
