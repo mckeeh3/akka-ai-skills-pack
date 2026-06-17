@@ -341,6 +341,7 @@ test('Customer branch action ids are normalized between app-description and runt
     'action-submit-customer-create',
     'action-customer-create',
     'action-open-customer-rename',
+    'action-submit-customer-rename',
     'action-customer-rename',
     'action-open-customer-suspend',
     'action-customer-suspend',

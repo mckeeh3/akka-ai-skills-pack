@@ -3202,6 +3202,68 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
     assertBrowserSafe(customerCreateDenied.resultSurface());
 
+    var renameForm = runAction(new CapabilityActionRequest(
+        "action-open-customer-rename",
+        "user-admin.open-customer-rename",
+        "manage-customers",
+        "tenant.customer.rename",
+        Map.of("customerId", createdCustomerId),
+        null,
+        SELECTED_CONTEXT_ID,
+        createdCustomer.resultSurface().surfaceId(),
+        "corr-customer-rename-open"));
+    assertEquals("accepted", renameForm.status());
+    assertEquals("surface-user-admin-customer-rename", renameForm.resultSurface().surfaceId());
+    assertEquals("edit-form", renameForm.resultSurface().surfaceType());
+    assertEquals("user_admin.customer_rename.v1", renameForm.resultSurface().data().get("surfaceContract"));
+    assertTrue(renameForm.resultSurface().toString().contains("action-submit-customer-rename"));
+    assertTrue(renameForm.resultSurface().toString().contains("action-customer-rename"));
+    assertTrue(renameForm.resultSurface().toString().contains("validationPolicy"));
+    assertTrue(renameForm.resultSurface().toString().contains("changePreview"));
+    assertTrue(renameForm.resultSurface().toString().contains("tenant.customer.rename"));
+    assertTrue(renameForm.resultSurface().toString().contains("sibling-customers-redacted"));
+    assertBrowserSafe(renameForm.resultSurface());
+
+    var renamedCustomer = runAction(new CapabilityActionRequest(
+        "action-submit-customer-rename",
+        "user-admin.submit-customer-rename",
+        "manage-customers",
+        "tenant.customer.rename",
+        Map.of("customerId", createdCustomerId, "customerName", "Browser Smoke Customer Renamed", "reason", "runtime test customer rename"),
+        "idem-customer-rename-browser-smoke",
+        SELECTED_CONTEXT_ID,
+        renameForm.resultSurface().surfaceId(),
+        "corr-customer-rename-submit"));
+    assertEquals("accepted", renamedCustomer.status());
+    assertEquals("surface-user-admin-customer-detail", renamedCustomer.resultSurface().surfaceId());
+    assertEquals("show-inspection", renamedCustomer.resultSurface().surfaceType());
+    assertEquals("user_admin.customer_detail.v1", renamedCustomer.resultSurface().data().get("surfaceContract"));
+    assertTrue(renamedCustomer.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-rename")));
+    assertTrue(renamedCustomer.resultSurface().toString().contains("Browser Smoke Customer Renamed"));
+    assertTrue(renamedCustomer.resultSurface().toString().contains("canMutateInline=false"));
+    assertTrue(renamedCustomer.resultSurface().toString().contains("sibling-customers-redacted"));
+    assertEquals("Browser Smoke Customer Renamed", repository.customer(TENANT_ID, createdCustomerId).orElseThrow().displayName());
+    assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
+    assertBrowserSafe(renamedCustomer.resultSurface());
+
+    var replayedCustomerRename = runAction(new CapabilityActionRequest(
+        "action-submit-customer-rename",
+        "user-admin.submit-customer-rename",
+        "manage-customers",
+        "tenant.customer.rename",
+        Map.of("customerId", createdCustomerId, "customerName", "Browser Smoke Customer Renamed", "reason", "runtime test customer rename replay"),
+        "idem-customer-rename-browser-smoke-replay",
+        SELECTED_CONTEXT_ID,
+        renameForm.resultSurface().surfaceId(),
+        "corr-customer-rename-submit-replay"));
+    assertEquals("no-op", replayedCustomerRename.status());
+    assertEquals("surface-user-admin-customer-detail", replayedCustomerRename.resultSurface().surfaceId());
+    assertEquals(createdCustomerId, replayedCustomerRename.resultSurface().data().get("recordId"));
+    assertTrue(replayedCustomerRename.message().contains("already matches"));
+    assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
+    assertBrowserSafe(replayedCustomerRename.resultSurface());
+
+
     var directCustomerAdmins = getSurface("surface-user-admin-customer-admins", "corr-customer-admins-direct-no-target");
     assertEquals("surface-user-admin-customer-admins", directCustomerAdmins.surfaceId());
     assertEquals("list-search", directCustomerAdmins.surfaceType());

@@ -4205,7 +4205,7 @@
 
 ### TASK-FSCT-119: Verify or complete runtime implementation for `surface-user-admin-customer-rename`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-118]
 - surface id: `surface-user-admin-customer-rename`
@@ -4236,6 +4236,7 @@
   - purpose: Customer display-name/profile edit surface.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-rename`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-rename`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-rename`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented and verified the protected runtime path for `surface-user-admin-customer-rename`: backend direct surface/action loading now requires `tenant.customer.rename`, returns `user_admin.customer_rename.v1` with canonical `action-submit-customer-rename`, validation policy, change preview, branch/detail return metadata, missing-target fail-closed state, trace/correlation, and redaction metadata; canonical submit and compatibility alias route through `TenantCustomerAdminService#renameCustomer` for tenant-scoped Customer visibility, idempotency, audit/work trace, no-op replay, and Customer detail result routing; frontend `UserAdminScopedAdminSurface` submits the canonical action when present while retaining the compatibility fallback. Checks passed: `mvn -q clean compile`, `mvn -q -Dtest=ai.first.application.coreapp.workstream.UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`. Initial focused Maven smoke failed before `mvn clean compile` because Akka component descriptors were stale/missing; rerun after compile passed. Runtime readiness level: `api-smoked`; no implementation blocker remains.
 
 ### TASK-FSCT-120: Verify or complete runtime testing for `surface-user-admin-customer-rename`
 
