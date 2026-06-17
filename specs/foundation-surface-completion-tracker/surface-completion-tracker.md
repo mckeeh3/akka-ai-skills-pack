@@ -214,7 +214,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: includes `surface-user-admin-users` identity/type/contract, owning User Admin workstream and `user-admin-agent`, User Directory branch-root placement and return metadata, selected app-owner/tenant/customer `AuthContext` plus `user_admin.list_members` authority, discovery-only list/search semantics, frontend-safe envelope/summary/row/filter/action payload schema, state-aware backend-authored row activation to user detail, invitation detail, support/access-review/identity task surfaces, forbidden/redacted payload boundaries for WorkOS/JWT/invitation/provider secrets and hidden population facts, governed capability/tool action mappings for list/search, invite-form open, visible row opens, audit, and dashboard return, loading/empty/ready/searching/validation/forbidden/stale/partial-data states, no-enumeration recovery through `surface-user-admin-system-message`, trace/audit/correlation requirements, accessibility/responsive and keyboard test expectations, and a sufficiency-review statement that the list/search objective is implementable without invented fields/actions/states/auth/tenant behavior/trace links/tests/visual semantics. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

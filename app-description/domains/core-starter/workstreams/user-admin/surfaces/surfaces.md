@@ -507,6 +507,64 @@ The backend owns row `targetSurfaceId`, `targetSurfaceType`, `targetObjectType`,
 - Browser payloads use role-appropriate User Admin language: App Admin users, Tenant Admin users, tenant employees, Customer Admin users, Customer Users, memberships, invitations, support access, access reviews, and identity exceptions. They must not imply authority outside selected scope.
 - Forbidden payload content: hidden users/memberships/counts, cross-scope identities, raw WorkOS/provider ids unless policy-safe, raw JWT/session data, invitation tokens/token hashes, Resend/provider secrets, full email bodies, private profile/settings data, raw model/provider config, or unredacted audit evidence.
 
+### `surface-user-admin-users` list/search contract
+
+- Surface id: `surface-user-admin-users`.
+- Surface type: `list-search`.
+- Surface contract: `user_admin.users.v1`.
+- Owning workstream: User Admin.
+- Owning functional agent: `user-admin-agent`.
+- Placement: User Directory branch root opened from `surface-user-admin-dashboard` by `action-user-admin-show-users`, from visible dashboard population/attention cards, and from user-branch return actions. Branch descendants return through `action-user-admin-show-users` with backend-shaped safe filters and focus hints.
+- Required context: authenticated active account, selected app-owner, tenant, or customer `AuthContext`, active membership, and backend `user_admin.list_members` capability for the selected scope. SaaS Owner/App Admin, Tenant Admin, Customer Admin, auditor/support, disabled actor, stale selected context, or missing-membership variants are backend-authorized per selected scope; unsupported or hidden direct loads return `surface-user-admin-system-message` without enumerating hidden people, memberships, invitations, customers, tenants, roles, or counts.
+- User goal: find visible users, memberships, invitations, support-access markers, access-review items, and identity exceptions in the current admin scope, then open the lifecycle-appropriate inspection or task surface. The directory is discovery-only: filtering, paging, row/card activation, and create/invite entry are allowed; inline role, status, support-access, invitation, identity, or access-review mutation is forbidden.
+
+Frontend-safe payload for `user_admin.users.v1`:
+
+- Envelope fields: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType`, `authorityBasis`, `branchRootSurfaceId`, `branchReturnActionId`, `branchReturnLabel`, `dashboardOriginQueueId?`, `traceRefs[]`, `correlationId`, `redaction`, `boundaryNotice`, `query`, `filters`, `sort`, `pageInfo`, `emptyMessage`, `systemStates`, and `lastResult`.
+- `summary`: `{ visibleUserCount, visibleMembershipCount, visibleInvitationCount, activeCount, pendingInvitationCount, expiredInvitationCount, disabledOrSuspendedCount, supportAccessAttentionCount?, accessReviewAttentionCount?, identityExceptionCount?, providerBlockedCount?, outboxBlockedCount?, traceRefs[] }`. Counts are backend-authorized for the selected scope and omitted/redacted when they would disclose hidden app-owner, tenant, customer, or cross-scope facts.
+- `rows[]`: unified backend-ordered rows with `{ rowId, recordKind: account|membership|invitation|support_access|access_review|identity_exception, displayName?, email?, scopeLabel, scopeType, customerLabel?, status, roles[], invitationStatus?, deliveryStatus?, supportAccessState?, reviewState?, identityExceptionState?, attentionBadges[], actionAvailability[], targetSurfaceId, targetSurfaceType, targetObjectType, openActionId, traceRefs[], redactionState }`. Row/card activation always submits the backend-authored `openActionId` and opens the target result surface; frontend status labels must not infer routing.
+- `filters`: backend-authored safe options for text query, population type, status, role, invitation status, support-access state, review state, identity exception state, attention state, customer label where authorized, and delivery/outbox state. Filter values must not expose hidden counts, hidden role lists, unsupported scopes, or cross-tenant/customer identifiers.
+- `authorizedActions[]`: refresh/search, open invite form, open visible user/detail row, open visible invitation/detail row, open support/access-review/identity task row, open admin audit evidence, and return to dashboard. Unavailable actions are omitted; disabled reasons are shown only when the reason does not reveal hidden population or policy facts.
+- `diagnosticMetadata` is role-gated and visually subordinate; default rows may show trace/evidence labels but not raw event ids, raw correlation/idempotency values, provider payloads, token hashes, or policy implementation ids.
+
+Redaction and forbidden payload boundaries:
+
+- Must not expose raw WorkOS ids unless explicitly policy-safe, raw JWT/session values, invitation tokens/token hashes, Resend/provider payloads or secrets, full email bodies, model/provider config, hidden user identities/counts, hidden roles/capabilities, sibling customer identities, cross-tenant facts, private profile/settings data beyond the browser-safe User Admin summary, support-access internals outside the selected scope, or unredacted audit evidence.
+- User-facing copy uses positive scoped language such as “Users visible in this Organization” or “Customer Users visible to you.” Empty visible scopes show safe zero/empty copy; direct denied or stale attempts use no-enumeration recovery through `surface-user-admin-system-message`.
+
+Actions and result surfaces:
+
+| Action id | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Reload this directory with backend-shaped filters, pagination, branch metadata, trace refs, and selected-scope summary. |
+| `action-open-user-admin-invitation-create` | `user_admin.invite_user` / `create-or-resend-invitation` | Open `surface-user-admin-invitation-create` with selected scope, role options, outbox/provider readiness, and branch return metadata. |
+| `action-open-user-admin-user-detail` | `user_admin.read_user_account` / `search-user-directory` | Open `surface-user-admin-user-detail` for a visible account/membership; hidden, stale, disabled-actor, or cross-scope targets return `surface-user-admin-system-message`. |
+| `action-open-user-admin-invitation-detail` | `user_admin.acceptance_status.read` / `create-or-resend-invitation` | Open `surface-user-admin-invitation-detail` for a visible invitation; hidden/stale targets return `surface-user-admin-system-message`. |
+| `action-open-user-admin-support-access-task` | `user_admin.support_access.grant_revoke_extend` / `grant-or-revoke-support-access` | Open user detail or the support grant/revoke surface selected by backend eligibility. |
+| `action-open-user-admin-access-review-task` | `user_admin.access_review.read` / `run-access-review` | Open `surface-user-admin-access-review-task` for a visible review task or a safe system message when hidden/stale. |
+| `action-open-user-admin-identity-exception-review` | `user_admin.identity_relink.review` | Open `surface-user-admin-identity-exception-review` for a visible exception or a safe system message when hidden/stale. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` with focus on the originating population card or attention queue. |
+
+States and outcomes:
+
+- Loading: skeleton directory with selected scope label and no rows until backend authorization completes.
+- Empty: no visible users, memberships, invitations, or tasks match the filters; show create/invite action only when authorized for the selected scope.
+- Ready: backend-derived rows, summaries, filters, branch metadata, trace/correlation, and keyboard-operable row/card actions are visible.
+- Searching/submitting: preserve current filters and focus while backend reauthorizes selected context and query.
+- Validation-error: invalid query/filter/page/sort is reported inline without broadening the search.
+- Forbidden/hidden-not-found: return `surface-user-admin-system-message` with no hidden population enumeration.
+- Stale/conflict: refresh guidance when selected context, membership, invitation status, row target, or page cursor changed.
+- Partial-data/failure: show safe provider/outbox/readiness messages without fake rows, hidden counts, fixture data, or provider internals.
+
+Trace, audit, accessibility, and tests:
+
+- Every load, search/filter, page/sort, row open, invite-form open, denied hidden target, stale result, branch return, and audit drilldown emits or links an admin work trace with correlation id, selected `AuthContext` summary, safe query/filter summary, redaction summary, and result surface id.
+- Accessibility/responsive expectations: list rows are keyboard-operable, cards preserve the same backend action ids as table rows, focus returns to the originating dashboard card or list row after navigation, responsive layout does not hide action availability or redaction notices, and empty/error states remain announced to assistive tech.
+- Acceptance/regression coverage must verify dashboard-to-users traversal, scoped list filtering/search/empty state, row activation to user detail and invitation detail, invitation create-form open, support/access-review/identity row routing, SaaS Owner vs Tenant Admin vs Customer Admin scope behavior, hidden/cross-tenant/customer denial without enumeration, stale row recovery, provider/outbox fail-closed indicators, audit/work trace/correlation links, frontend secret boundaries, keyboard row activation, focus return, and responsive table-to-card rendering.
+
+Surface-description sufficiency review: `surface-user-admin-users` is sufficiently unambiguous for developers/generators to implement and review the list/search objective without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove protected API/action paths, backend-derived row routing, role-specific scope variants, denial/no-enumeration behavior, trace/correlation, and browser secret boundaries before marking implementation/testing objectives done.
+
 ### Surface payloads and task routing
 
 - Directory: `surfaceContract`, selected `AuthContext`, filters, pagination/sort, dashboard-origin queue id, `rows[]`, visible create/invite action where allowed, redaction, trace refs, and correlation id. Each row includes frontend-safe user/member/invitation/support/review badges, backend-authored `targetSurfaceId`, `targetObjectType`, `openActionId`, action availability, and redaction state; activation opens the target inspection/task surface and never performs mutation inline.
