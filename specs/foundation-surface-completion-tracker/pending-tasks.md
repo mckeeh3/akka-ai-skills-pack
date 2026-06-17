@@ -1946,7 +1946,7 @@
 
 ### TASK-FSCT-055: Verify or complete app-description specification for `surface-user-admin-membership-status-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-membership-status-confirmation`
@@ -1975,6 +1975,7 @@
   - purpose: Disable/suspend/reactivate/remove membership or account confirmation.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-membership-status-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated implementation-ready destructive-lifecycle-confirmation contract for membership/account status changes, including payload schema, confirm/cancel/return/role-preview/audit action mapping, selected AuthContext/task visibility rules, last-admin/self-action/no-op/stale/approval-required/idempotent replay behavior, trace/audit/correlation requirements, accessibility/responsive expectations, acceptance/security/observability tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-056: Verify or complete runtime implementation for `surface-user-admin-membership-status-confirmation`
 
