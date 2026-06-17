@@ -3478,6 +3478,78 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(repository.customer(TENANT_ID, createdCustomerId).orElseThrow().active());
     assertBrowserSafe(replayedCustomerSuspend.resultSurface());
 
+    var directReactivateWithoutTarget = getSurface("surface-user-admin-customer-reactivate-confirmation", "corr-customer-reactivate-direct-missing-target");
+    assertEquals("surface-user-admin-customer-reactivate-confirmation", directReactivateWithoutTarget.surfaceId());
+    assertEquals("lifecycle-confirmation", directReactivateWithoutTarget.surfaceType());
+    assertEquals("user_admin.customer_reactivate_confirmation.v1", directReactivateWithoutTarget.data().get("surfaceContract"));
+    assertEquals("missing-target", directReactivateWithoutTarget.data().get("formState"));
+    assertTrue(directReactivateWithoutTarget.toString().contains("tenant.customer.reactivate"));
+    assertTrue(directReactivateWithoutTarget.toString().contains("reactivationEligibility"));
+    assertTrue(directReactivateWithoutTarget.toString().contains("noFakeSuccess=true"));
+    assertFalse(directReactivateWithoutTarget.toString().contains("Hidden Customer"));
+    assertBrowserSafe(directReactivateWithoutTarget);
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-user-admin-customer-reactivate-confirmation",
+        "corr-customer-reactivate-customer-admin-denied-direct",
+        "workos-customer-admin",
+        "customer-admin@example.test",
+        "Customer Admin",
+        "membership-customer-admin"), "Customer Admin selected contexts must not direct-load Customer reactivate confirmation surfaces.");
+
+    var reactivateForm = runAction(new CapabilityActionRequest(
+        "action-open-customer-reactivate-confirmation",
+        "user-admin.open-customer-reactivate-confirmation",
+        "manage-customers",
+        "tenant.customer.reactivate",
+        Map.of("customerId", createdCustomerId),
+        null,
+        SELECTED_CONTEXT_ID,
+        replayedCustomerSuspend.resultSurface().surfaceId(),
+        "corr-customer-reactivate-open"));
+    assertEquals("accepted", reactivateForm.status());
+    assertEquals("surface-user-admin-customer-reactivate-confirmation", reactivateForm.resultSurface().surfaceId());
+    assertEquals("lifecycle-confirmation", reactivateForm.resultSurface().surfaceType());
+    assertEquals("user_admin.customer_reactivate_confirmation.v1", reactivateForm.resultSurface().data().get("surfaceContract"));
+    assertTrue(reactivateForm.resultSurface().toString().contains("tenant.customer.reactivate"));
+    assertTrue(reactivateForm.resultSurface().toString().contains("reactivationEligibility"));
+    assertTrue(reactivateForm.resultSurface().toString().contains("Customer Admin memberships and invitations are not changed"));
+    assertTrue(reactivateForm.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-reactivate")));
+    assertBrowserSafe(reactivateForm.resultSurface());
+
+    var reactivatedCustomer = runAction(new CapabilityActionRequest(
+        "action-customer-reactivate",
+        "user-admin.reactivate-customer",
+        "manage-customers",
+        "tenant.customer.reactivate",
+        Map.of("customerId", createdCustomerId, "reason", "runtime test customer reactivate", "confirmation", "REACTIVATE"),
+        "idem-customer-reactivate-browser-smoke",
+        SELECTED_CONTEXT_ID,
+        reactivateForm.resultSurface().surfaceId(),
+        "corr-customer-reactivate-submit"));
+    assertEquals("accepted", reactivatedCustomer.status());
+    assertEquals("surface-user-admin-customer-detail", reactivatedCustomer.resultSurface().surfaceId());
+    assertTrue(reactivatedCustomer.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-reactivate")));
+    assertTrue(reactivatedCustomer.resultSurface().toString().contains("status=active"));
+    assertTrue(repository.customer(TENANT_ID, createdCustomerId).orElseThrow().active());
+    assertBrowserSafe(reactivatedCustomer.resultSurface());
+
+    var replayedCustomerReactivate = runAction(new CapabilityActionRequest(
+        "action-customer-reactivate",
+        "user-admin.reactivate-customer",
+        "manage-customers",
+        "tenant.customer.reactivate",
+        Map.of("customerId", createdCustomerId, "reason", "runtime test customer reactivate replay"),
+        "idem-customer-reactivate-browser-smoke-replay",
+        SELECTED_CONTEXT_ID,
+        reactivateForm.resultSurface().surfaceId(),
+        "corr-customer-reactivate-submit-replay"));
+    assertEquals("no-op", replayedCustomerReactivate.status());
+    assertEquals("surface-user-admin-customer-detail", replayedCustomerReactivate.resultSurface().surfaceId());
+    assertTrue(replayedCustomerReactivate.message().contains("already active"));
+    assertTrue(repository.customer(TENANT_ID, createdCustomerId).orElseThrow().active());
+    assertBrowserSafe(replayedCustomerReactivate.resultSurface());
+
     var hiddenCustomerSuspend = runAction(new CapabilityActionRequest(
         "action-customer-suspend",
         "user-admin.suspend-customer",

@@ -4417,7 +4417,7 @@
 
 ### TASK-FSCT-125: Verify or complete runtime implementation for `surface-user-admin-customer-reactivate-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-124]
 - surface id: `surface-user-admin-customer-reactivate-confirmation`
@@ -4448,6 +4448,7 @@
   - purpose: Customer reactivation confirmation surface.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-reactivate-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-reactivate-confirmation`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-reactivate-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented and verified the protected Customer reactivation confirmation runtime path for `surface-user-admin-customer-reactivate-confirmation`: `WorkstreamService` now authorizes direct/open loads with `tenant.customer.reactivate`, accepts canonical `action-open-customer-reactivate` plus compatibility `action-open-customer-reactivate-confirmation`, returns a backend-owned `user_admin.customer_reactivate_confirmation.v1` lifecycle-confirmation envelope with selected tenant scope, Customer identity/status, `confirmation`, `reactivationEligibility`, branch/detail return metadata, redaction, trace/correlation, missing-target `noFakeSuccess`, and typed system states, and submits `action-customer-reactivate` through `TenantCustomerAdminService#reactivateCustomer` to persist the Customer lifecycle boundary and route back to Customer detail. Runtime evidence: readiness level `api-smoked` for implementation verification with protected Akka-hosted `/api/workstream/surfaces` and `/api/workstream/actions`, Organization/Tenant Admin AuthContext in `tenant-starter`, Customer Admin direct-load denial, idempotent already-active no-op, trace/correlation evidence, browser-safe secret redaction, and no fixture-only/frontend-only normal runtime path. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#tenantCustomerBranchUsesDurableCustomerLifecycleState test`, `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`.
 
 ### TASK-FSCT-126: Verify or complete runtime testing for `surface-user-admin-customer-reactivate-confirmation`
 

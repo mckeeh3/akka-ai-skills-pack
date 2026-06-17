@@ -716,7 +716,7 @@ class WorkstreamServiceTest {
     assertEquals(List.of(FoundationRole.TENANT_EMPLOYEE), tenantScopedInvitation.requestedRoles());
 
     var suspend = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-customer-suspend", "user-admin.suspend-customer", "manage-customers", "tenant.customer.suspend", Map.of("customerId", customerId, "reason", "test-suspend"), "idem-customer-suspend", "membership-admin", detail.resultSurface().surfaceId(), "corr-customer-suspend"));
+        "action-customer-suspend", "user-admin.suspend-customer", "manage-customers", "tenant.customer.suspend", Map.of("customerId", customerId, "reason", "test-suspend", "confirmation", "SUSPEND"), "idem-customer-suspend", "membership-admin", detail.resultSurface().surfaceId(), "corr-customer-suspend"));
     assertEquals("accepted", suspend.status());
     assertTrue(suspend.resultSurface().toString().contains("suspended"));
 
@@ -735,6 +735,24 @@ class WorkstreamServiceTest {
         "action-customer-read", "user-admin.read-customer", "manage-customers", "tenant.customer.read", Map.of("customerId", customerId), null, "membership-admin", directory.resultSurface().surfaceId(), "corr-customer-suspended-read"));
     assertEquals("surface-user-admin-customer-detail", suspendedDetail.resultSurface().surfaceId());
     assertTrue(suspendedDetail.resultSurface().toString().contains("reactivate"));
+
+    var directReactivate = service.surface(identity(), "membership-admin", "surface-user-admin-customer-reactivate-confirmation", "corr-customer-reactivate-direct");
+    assertEquals("surface-user-admin-customer-reactivate-confirmation", directReactivate.surfaceId());
+    assertEquals("user_admin.customer_reactivate_confirmation.v1", directReactivate.data().get("surfaceContract"));
+    assertTrue(directReactivate.toString().contains("tenant.customer.reactivate"));
+    assertTrue(directReactivate.toString().contains("missing-visible-customer"));
+    assertTrue(directReactivate.toString().contains("noFakeSuccess=true"));
+
+    var reactivateOpen = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-customer-reactivate-confirmation", "user-admin.open-customer-reactivate-confirmation", "manage-customers", "tenant.customer.reactivate", Map.of("customerId", customerId), null, "membership-admin", suspendedDetail.resultSurface().surfaceId(), "corr-customer-reactivate-open"));
+    assertEquals("surface-user-admin-customer-reactivate-confirmation", reactivateOpen.resultSurface().surfaceId());
+    assertEquals("user_admin.customer_reactivate_confirmation.v1", reactivateOpen.resultSurface().data().get("surfaceContract"));
+    assertEquals("tenant", reactivateOpen.resultSurface().data().get("scopeType"));
+    assertEquals(customerId, reactivateOpen.resultSurface().data().get("customerId"));
+    assertTrue(reactivateOpen.resultSurface().toString().contains("reactivationEligibility"));
+    assertTrue(reactivateOpen.resultSurface().toString().contains("action-customer-reactivate"));
+    assertTrue(reactivateOpen.resultSurface().toString().contains("action-customer-read"));
+    assertBrowserPayloadSafe(reactivateOpen.resultSurface());
 
     var suspendedAdmins = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-user-admin-show-customer-admins", "user-admin.show-customer-admins", "manage-customer-admins", "tenant.customer_admin.list", Map.of("customerId", customerId), null, "membership-admin", suspendedDetail.resultSurface().surfaceId(), "corr-customer-admins-suspended"));
