@@ -2403,7 +2403,7 @@
 
 ### TASK-FSCT-068: Verify or complete runtime implementation for `surface-user-admin-access-review-task`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-067]
 - surface id: `surface-user-admin-access-review-task`
@@ -2427,13 +2427,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation gap remains in this task)
 - notes:
   - surface type: `workflow-status / outcome-panel`
   - surface contract: `user_admin.access_review_task.v1`
   - purpose: Durable access-review task progress, result, blockers, and human review.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-access-review-task`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-access-review-task`; surface graph node/action edge for opening or acting on `surface-user-admin-access-review-task`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: verified the real runtime implementation for `surface-user-admin-access-review-task`: protected WorkstreamEndpoint surface/action APIs, backend-owned `user_admin.access_review_task.v1` workflow-status/outcome-panel envelope, durable access-review task repository binding through `StarterSecurityComponents`, start/read/cancel/accept/reject actions through `UserAdminAccessReviewService`, governed AutonomousAgent provider/runtime fail-closed readiness behavior, model/tool/data/policy usage trace links, advisory-only human review with no direct access mutation, and frontend rendering through generic workflow/status/action surfaces. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/fail-closed coverage included missing bearer rejection and provider/runtime/tool-boundary fail-closed state with `noFakeSuccess`/`noDirectMutation`; trace evidence included access-review trace refs, audit links, and correlation ids; commands passed: `mvn -q -Dtest=WorkstreamServiceTest#userAdminAccessReviewTaskLifecycleProducesTypedProviderBlockedSurface+userAdminAccessReviewCompletedResultSurfaceShowsSafeModelToolTraceLinksAndHumanReviewActions,UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiTraverseUserAdminSurfaceGraph test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-069: Verify or complete runtime testing for `surface-user-admin-access-review-task`
 
