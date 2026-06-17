@@ -1699,6 +1699,12 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke(), "Organization Detail surface must reject missing bearer tokens.");
 
     assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-organization-create")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Create surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
         .POST("/api/workstream/actions")
         .addHeader("X-Selected-Context-Id", "membership-owner")
         .addHeader("X-Correlation-Id", "corr-org-directory-missing-bearer-action")
@@ -1780,6 +1786,60 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(createForm.toString().contains("Organization Admin bootstrap remains a separate"));
     assertBrowserSafe(createForm);
 
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-create-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-submit-organization-create",
+            "user-admin.submit-organization-create",
+            "manage-organizations",
+            "saas_owner.tenant.manage",
+            Map.of("organizationName", "Bearerless Org", "reason", "missing bearer must fail"),
+            "idem-org-create-missing-bearer",
+            "membership-owner",
+            createForm.surfaceId(),
+            "corr-org-create-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Create submit action must reject missing bearer tokens.");
+
+    var invalidCreate = runActionAs(new CapabilityActionRequest(
+        "action-submit-organization-create",
+        "user-admin.submit-organization-create",
+        "manage-organizations",
+        "saas_owner.tenant.manage",
+        Map.of("organizationName", "A", "reason", "short name should fail closed"),
+        "idem-org-create-validation-short-name",
+        "membership-owner",
+        createForm.surfaceId(),
+        "corr-org-create-validation-short-name"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("denied", invalidCreate.status());
+    assertEquals("surface-user-admin-system-message", invalidCreate.resultSurface().surfaceId());
+    assertTrue(invalidCreate.resultSurface().toString().contains("organization-name-too-short"));
+    assertTrue(invalidCreate.resultSurface().surfaceType().contains("system"));
+    assertBrowserSafe(invalidCreate.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-user-admin-organization-create",
+        "corr-org-create-tenant-direct-denied",
+        "workos-admin",
+        "admin@example.test",
+        "Tenant Admin",
+        SELECTED_CONTEXT_ID),
+        "Tenant Admin selected contexts must not directly load the SaaS Owner Organization Create form.");
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-submit-organization-create",
+        "user-admin.submit-organization-create",
+        "manage-organizations",
+        "saas_owner.tenant.manage",
+        Map.of("organizationName", "Tenant Admin Forbidden Org", "reason", "tenant admin must not create organizations"),
+        "idem-org-create-tenant-denied",
+        SELECTED_CONTEXT_ID,
+        createForm.surfaceId(),
+        "corr-org-create-tenant-denied")),
+        "Tenant Admin selected contexts must not submit SaaS Owner Organization creation.");
+
     var createdOrganization = runActionAs(new CapabilityActionRequest(
         "action-submit-organization-create",
         "user-admin.submit-organization-create",
@@ -1812,6 +1872,23 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-user-admin-organization-detail", createReplay.resultSurface().surfaceId());
     assertTrue(createReplay.message().contains("replay"));
     assertBrowserSafe(createReplay.resultSurface());
+
+    var duplicateOrganization = runActionAs(new CapabilityActionRequest(
+        "action-submit-organization-create",
+        "user-admin.submit-organization-create",
+        "manage-organizations",
+        "saas_owner.tenant.manage",
+        Map.of("organizationName", "Acme Launch Org", "reason", "protected browser smoke duplicate visible name"),
+        "idem-org-create-duplicate-visible-name",
+        "membership-owner",
+        createForm.surfaceId(),
+        "corr-org-create-duplicate-visible-name"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("no-op", duplicateOrganization.status());
+    assertEquals("surface-user-admin-organization-detail", duplicateOrganization.resultSurface().surfaceId());
+    assertTrue(duplicateOrganization.message().contains("visible Organization already uses this name"));
+    assertTrue(duplicateOrganization.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-create")));
+    assertTrue(duplicateOrganization.resultSurface().toString().contains("Acme Launch Org"));
+    assertBrowserSafe(duplicateOrganization.resultSurface());
 
     var filteredEmpty = runActionAs(new CapabilityActionRequest(
         "action-organization-list",

@@ -3180,7 +3180,7 @@
 
 ### TASK-FSCT-090: Verify or complete runtime testing for `surface-user-admin-organization-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-089]
 - surface id: `surface-user-admin-organization-create`
@@ -3207,13 +3207,14 @@
   - focused frontend tests/typecheck when frontend is in scope
   - manual/API/browser smoke evidence or explicit blocker
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.organization_create.v1`
   - purpose: Organization creation form.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-create`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted Organization create smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath`: direct create-form load, protected submit, created detail routing, idempotent replay, visible duplicate-name no-op, invalid-name fail-closed system message, missing-bearer direct/action rejection, Tenant Admin direct/submit denial, trace/correlation checks, and browser-safe tenant-boundary/provider/secret redaction. runtime evidence: readiness level `runtime-ready` for the Organization create testing scope; role/AuthContext/tenant setup covered SaaS Owner `membership-owner` in `tenant-starter` and Tenant Admin denial via `membership-admin`; validation/denial/idempotency evidence included short-name denial, duplicate visible-name no-op, replay no-op, missing bearer rejection, and no fixture/frontend-only normal runtime path; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-organization-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`
 
 ### TASK-FSCT-091: Verify or complete app-description specification for `surface-user-admin-organization-rename`
 
