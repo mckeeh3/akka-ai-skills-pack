@@ -4558,7 +4558,7 @@
 
 ### TASK-FSCT-129: Verify or complete runtime testing for `surface-user-admin-system-message`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-128]
 - surface id: `surface-user-admin-system-message`
@@ -4592,6 +4592,7 @@
   - purpose: Safe denial, validation, provider/outbox/model blocked, stale, conflict, and no-op recovery.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-system-message`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-system-message`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added protected Akka-hosted runtime smoke coverage for `surface-user-admin-system-message` in `UserAdminBrowserWorkstreamSmokeTest`: `/ui` shell browser-safe boundary, missing-bearer direct surface rejection, authorized direct generic recovery load with selected tenant-admin `AuthContext`, backend-authored `user_admin.system_message.v1` no-enumeration/no-fake-success/no-direct-mutation payload, readiness/validation fail-closed summaries, trace/correlation assertions, hidden invitation navigation denial returning the typed system-message without target enumeration, and dashboard recovery through `/api/workstream/actions`; existing frontend contract/typecheck coverage verifies canonical system-message rendering and frontend secret boundaries. Runtime readiness level: `runtime-ready` for this testing scope. Checks passed: `mvn -q -Dtest=ai.first.application.coreapp.workstream.UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminSystemMessageRuntimeCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-130: Verify or complete app-description specification for `surface-agent-admin-dashboard`
 

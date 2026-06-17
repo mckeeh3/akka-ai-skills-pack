@@ -519,6 +519,77 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesUserAdminSystemMessageRuntimeCoverage() throws Exception {
+    var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
+    assertTrue(shell.status().isSuccess(), "Hosted /ui shell must load before browser-safe system-message API smoke.");
+    assertFalse(shell.body().contains("providerSecret"));
+    assertFalse(shell.body().contains("invite-token"));
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-system-message")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-useradmin-system-message-missing-bearer")
+        .responseBodyAs(String.class)
+        .invoke(), "Protected system-message surface must reject missing bearer tokens.");
+
+    var recovery = getSurface("surface-user-admin-system-message", "corr-useradmin-system-message-direct-http");
+    assertEquals("surface-user-admin-system-message", recovery.surfaceId());
+    assertEquals("system-message", recovery.surfaceType());
+    assertEquals("user_admin.system_message.v1", recovery.data().get("surfaceContract"));
+    assertEquals("not_found_or_redacted", recovery.data().get("status"));
+    assertEquals("direct_recovery", recovery.data().get("reasonCode"));
+    assertEquals(true, recovery.data().get("noEnumeration"));
+    assertEquals(true, recovery.data().get("noFakeSuccess"));
+    assertEquals(true, recovery.data().get("noDirectMutation"));
+    assertEquals("corr-useradmin-system-message-direct-http", recovery.correlationId());
+    assertTrue(recovery.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-system-message")));
+    assertTrue(recovery.toString().contains("selectedAuthContext"));
+    assertTrue(recovery.toString().contains("readinessSummary"));
+    assertTrue(recovery.toString().contains("validationSummary"));
+    assertTrue(recovery.toString().contains("rawJwt"));
+    assertTrue(recovery.actions().stream().anyMatch(action -> action.actionId().equals("action-user-admin-return-dashboard")));
+    assertTrue(recovery.actions().stream().anyMatch(action -> action.actionId().equals("action-user-admin-show-users")));
+    assertFalse(recovery.toString().contains("hidden@example.test"));
+    assertBrowserSafe(recovery);
+
+    var hiddenNavigation = runAction(new CapabilityActionRequest(
+        "action-display-invitation-detail",
+        "action-display-invitation-detail",
+        "USERADMIN_LIST_INVITATIONS",
+        "USERADMIN_LIST_INVITATIONS",
+        Map.of("invitationId", "invitation-hidden-cross-scope"),
+        null,
+        SELECTED_CONTEXT_ID,
+        "surface-user-admin-users",
+        "corr-useradmin-system-message-hidden-target"));
+    assertEquals("denied", hiddenNavigation.status());
+    assertEquals("surface-user-admin-system-message", hiddenNavigation.resultSurface().surfaceId());
+    assertEquals("user_admin.system_message.v1", hiddenNavigation.resultSurface().data().get("surfaceContract"));
+    assertEquals(true, hiddenNavigation.resultSurface().data().get("noEnumeration"));
+    assertEquals(true, hiddenNavigation.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, hiddenNavigation.resultSurface().data().get("noDirectMutation"));
+    assertTrue(hiddenNavigation.resultSurface().traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-system-message")));
+    assertFalse(hiddenNavigation.resultSurface().toString().contains("invitation-hidden-cross-scope"));
+    assertFalse(hiddenNavigation.resultSurface().toString().contains("hidden@example.test"));
+    assertBrowserSafe(hiddenNavigation.resultSurface());
+
+    var returned = runAction(new CapabilityActionRequest(
+        "action-user-admin-return-dashboard",
+        "user-admin.return-dashboard",
+        "search-user-directory",
+        "secure-tenant-user-foundation",
+        null,
+        null,
+        SELECTED_CONTEXT_ID,
+        recovery.surfaceId(),
+        "corr-useradmin-system-message-return-dashboard"));
+    assertEquals("accepted", returned.status());
+    assertEquals("surface-user-admin-tenant-dashboard", returned.resultSurface().surfaceId());
+    assertEquals("user_admin.tenant_dashboard.v1", returned.resultSurface().data().get("surfaceContract"));
+    assertBrowserSafe(returned.resultSurface());
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesUserAdminIdentityExceptionReviewRuntimePath() throws Exception {
     var repository = new AkkaIdentityRepository(componentClient);
     seedIdentity(repository, "identity.case@example.test", "Identity Case", "membership-identity-case", List.of(FoundationRole.TENANT_EMPLOYEE));
