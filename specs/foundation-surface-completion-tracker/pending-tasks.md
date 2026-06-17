@@ -2756,7 +2756,7 @@
 
 ### TASK-FSCT-078: Verify or complete runtime testing for `surface-user-admin-organization-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-077]
 - surface id: `surface-user-admin-organization-detail`
@@ -2790,6 +2790,7 @@
   - purpose: Lifecycle-aware Organization inspection.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted User Admin Organization Detail runtime smoke coverage for missing-bearer direct detail rejection, direct and directory-to-detail `user_admin.organization_detail.v1` loads under SaaS Owner AuthContext, backend-authored task action/branch return/trace/correlation/redaction assertions, rename no-op, suspend, stale suspend denial, reactivate, Organization Admin list, Organization Admin invite task routing, hidden Organization no-enumeration denial, Tenant Admin selected-context denial, frontend Organization detail/lifecycle contract assertions, and browser secret-boundary evidence. Runtime readiness level: `runtime-ready`; commands passed: `mvn -q compile`, `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-079: Verify or complete app-description specification for `surface-user-admin-organization-admins`
 

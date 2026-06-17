@@ -1693,6 +1693,12 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke(), "Organization Directory surface must reject missing bearer tokens.");
 
     assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-organization-detail")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Detail surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
         .POST("/api/workstream/actions")
         .addHeader("X-Selected-Context-Id", "membership-owner")
         .addHeader("X-Correlation-Id", "corr-org-directory-missing-bearer-action")
@@ -1801,9 +1807,143 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(detail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-organizations"));
     assertTrue(detail.resultSurface().toString().contains("Back to organizations"));
     assertTrue(detail.resultSurface().toString().contains("action-user-admin-show-organization-admins"));
+    assertTrue(detail.resultSurface().toString().contains("action-open-organization-admin-invitation-create"));
     assertTrue(detail.resultSurface().toString().contains("availableTaskActions"));
+    assertTrue(detail.resultSurface().toString().contains("organizationDetail"));
+    assertTrue(detail.resultSurface().toString().contains("visibleActions=[read, rename, suspend]"));
     assertTrue(detail.resultSurface().toString().contains("does not grant tenant/customer application-data access"));
     assertBrowserSafe(detail.resultSurface());
+
+    var directDetail = getSurfaceAs("surface-user-admin-organization-detail", "corr-org-detail-direct", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-organization-detail", directDetail.surfaceId());
+    assertEquals("show-inspection", directDetail.surfaceType());
+    assertEquals("user_admin.organization_detail.v1", directDetail.data().get("surfaceContract"));
+    assertEquals("corr-org-detail-direct", directDetail.correlationId());
+    assertTrue(directDetail.toString().contains("action-open-organization-rename"));
+    assertTrue(directDetail.toString().contains("action-open-organization-suspend"));
+    assertTrue(directDetail.toString().contains("action-open-organization-reactivate"));
+    assertTrue(directDetail.toString().contains("action-user-admin-show-organization-admins"));
+    assertTrue(directDetail.toString().contains("action-open-organization-admin-invitation-create"));
+    assertTrue(directDetail.toString().contains("providerBlockedCount=0"));
+    assertBrowserSafe(directDetail);
+
+    var renameTask = runActionAs(new CapabilityActionRequest(
+        "action-open-organization-rename",
+        "action-open-organization-rename",
+        "saas_owner.tenant.manage",
+        "saas_owner.tenant.manage",
+        Map.of("organizationId", TENANT_ID),
+        null,
+        "membership-owner",
+        detail.resultSurface().surfaceId(),
+        "corr-org-detail-open-rename"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", renameTask.status());
+    assertEquals("surface-user-admin-organization-rename", renameTask.resultSurface().surfaceId());
+    assertEquals("edit-form", renameTask.resultSurface().surfaceType());
+    assertEquals("user_admin.organization_rename.v1", renameTask.resultSurface().data().get("surfaceContract"));
+    assertTrue(renameTask.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-organizations"));
+    assertTrue(renameTask.resultSurface().toString().contains("organizationDetail"));
+    assertBrowserSafe(renameTask.resultSurface());
+
+    var renameNoOp = runActionAs(new CapabilityActionRequest(
+        "action-organization-rename",
+        "action-organization-rename",
+        "saas_owner.tenant.manage",
+        "saas_owner.tenant.manage",
+        Map.of("organizationId", TENANT_ID, "organizationName", "Starter Tenant", "reason", "browser smoke no-op rename"),
+        "idem-org-detail-rename-noop",
+        "membership-owner",
+        renameTask.resultSurface().surfaceId(),
+        "corr-org-detail-rename-noop"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("no-op", renameNoOp.status());
+    assertEquals("surface-user-admin-organization-detail", renameNoOp.resultSurface().surfaceId());
+    assertTrue(renameNoOp.message().contains("already matches"));
+    assertTrue(renameNoOp.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-rename")));
+    assertTrue(renameNoOp.resultSurface().toString().contains("status=active"));
+    assertBrowserSafe(renameNoOp.resultSurface());
+
+    var suspendTask = runActionAs(new CapabilityActionRequest(
+        "action-open-organization-suspend",
+        "action-open-organization-suspend",
+        "saas_owner.tenant.manage",
+        "saas_owner.tenant.manage",
+        Map.of("organizationId", TENANT_ID),
+        null,
+        "membership-owner",
+        detail.resultSurface().surfaceId(),
+        "corr-org-detail-open-suspend"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", suspendTask.status());
+    assertEquals("surface-user-admin-organization-suspend-confirmation", suspendTask.resultSurface().surfaceId());
+    assertEquals("destructive-lifecycle-confirmation", suspendTask.resultSurface().surfaceType());
+    assertEquals("user_admin.organization_suspend_confirmation.v1", suspendTask.resultSurface().data().get("surfaceContract"));
+    assertTrue(suspendTask.resultSurface().toString().contains("visibleActions=[read, rename, suspend]"));
+    assertBrowserSafe(suspendTask.resultSurface());
+
+    var suspended = runActionAs(new CapabilityActionRequest(
+        "action-organization-suspend",
+        "action-organization-suspend",
+        "saas_owner.tenant.manage",
+        "saas_owner.tenant.manage",
+        Map.of("organizationId", TENANT_ID, "reason", "protected browser smoke suspend"),
+        "idem-org-detail-suspend",
+        "membership-owner",
+        suspendTask.resultSurface().surfaceId(),
+        "corr-org-detail-suspend"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", suspended.status());
+    assertEquals("surface-user-admin-organization-detail", suspended.resultSurface().surfaceId());
+    assertTrue(suspended.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-suspend")));
+    assertTrue(suspended.resultSurface().toString().contains("status=suspended"));
+    assertTrue(suspended.resultSurface().toString().contains("visibleActions=[read, rename, reactivate]"));
+    assertFalse(suspended.resultSurface().toString().contains("tenant application data"));
+    assertBrowserSafe(suspended.resultSurface());
+
+    var staleSuspend = runActionAs(new CapabilityActionRequest(
+        "action-open-organization-suspend",
+        "action-open-organization-suspend",
+        "saas_owner.tenant.manage",
+        "saas_owner.tenant.manage",
+        Map.of("organizationId", TENANT_ID),
+        null,
+        "membership-owner",
+        suspended.resultSurface().surfaceId(),
+        "corr-org-detail-stale-suspend"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("denied", staleSuspend.status());
+    assertTrue(staleSuspend.resultSurface().surfaceId().contains("denied"));
+    assertTrue(staleSuspend.resultSurface().surfaceType().contains("system"));
+    assertFalse(staleSuspend.resultSurface().toString().contains("missing-organization-never-seeded"));
+    assertBrowserSafe(staleSuspend.resultSurface());
+
+    var reactivateTask = runActionAs(new CapabilityActionRequest(
+        "action-open-organization-reactivate",
+        "action-open-organization-reactivate",
+        "saas_owner.tenant.manage",
+        "saas_owner.tenant.manage",
+        Map.of("organizationId", TENANT_ID),
+        null,
+        "membership-owner",
+        suspended.resultSurface().surfaceId(),
+        "corr-org-detail-open-reactivate"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", reactivateTask.status());
+    assertEquals("surface-user-admin-organization-reactivate-confirmation", reactivateTask.resultSurface().surfaceId());
+    assertEquals("lifecycle-confirmation", reactivateTask.resultSurface().surfaceType());
+    assertEquals("user_admin.organization_reactivate_confirmation.v1", reactivateTask.resultSurface().data().get("surfaceContract"));
+    assertBrowserSafe(reactivateTask.resultSurface());
+
+    var reactivated = runActionAs(new CapabilityActionRequest(
+        "action-organization-reactivate",
+        "action-organization-reactivate",
+        "saas_owner.tenant.manage",
+        "saas_owner.tenant.manage",
+        Map.of("organizationId", TENANT_ID, "reason", "protected browser smoke reactivate"),
+        "idem-org-detail-reactivate",
+        "membership-owner",
+        reactivateTask.resultSurface().surfaceId(),
+        "corr-org-detail-reactivate"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", reactivated.status());
+    assertEquals("surface-user-admin-organization-detail", reactivated.resultSurface().surfaceId());
+    assertTrue(reactivated.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-reactivate")));
+    assertTrue(reactivated.resultSurface().toString().contains("status=active"));
+    assertBrowserSafe(reactivated.resultSurface());
 
     var admins = runActionAs(new CapabilityActionRequest(
         "action-user-admin-show-organization-admins",
@@ -1820,6 +1960,25 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals(TENANT_ID, admins.resultSurface().data().get("organizationId"));
     assertTrue(admins.resultSurface().toString().contains("targetScope"));
     assertBrowserSafe(admins.resultSurface());
+
+    var adminInviteTask = runActionAs(new CapabilityActionRequest(
+        "action-open-organization-admin-invitation-create",
+        "user-admin.open-organization-admin-invite",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.invite",
+        Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID),
+        null,
+        "membership-owner",
+        detail.resultSurface().surfaceId(),
+        "corr-org-detail-admin-invite"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", adminInviteTask.status());
+    assertEquals("surface-user-admin-organization-admin-invitation-create", adminInviteTask.resultSurface().surfaceId());
+    assertEquals("create-form", adminInviteTask.resultSurface().surfaceType());
+    assertEquals("user_admin.organization_admin_invitation_create.v1", adminInviteTask.resultSurface().data().get("surfaceContract"));
+    assertEquals(TENANT_ID, adminInviteTask.resultSurface().data().get("organizationId"));
+    assertTrue(adminInviteTask.resultSurface().toString().contains("Provider/outbox failures return system-message without fake success"));
+    assertTrue(adminInviteTask.resultSurface().toString().contains("provider-payload-redacted"));
+    assertBrowserSafe(adminInviteTask.resultSurface());
 
     assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
         "action-user-admin-show-organizations",

@@ -16,6 +16,7 @@ const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
 const userAdminTaskSurface = read('./workstream/surfaces/UserAdminTaskSurface.tsx');
 const userAdminScopedAdminSurface = read('./workstream/surfaces/UserAdminScopedAdminSurface.tsx');
+const organizationAdminSurface = read('./workstream/surfaces/OrganizationAdminSurface.tsx');
 const workflowStatusSurface = read('./workstream/surfaces/WorkflowStatusSurface.tsx');
 const systemMessageSurface = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const adminUsersPage = read('./screens/admin/AdminUsersPage.tsx');
@@ -272,6 +273,16 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
 test('User Admin scoped admin surfaces cover SaaS Owner, Organization Admin, Customer, and Customer Admin branches', () => {
   assert.match(renderer, /isUserAdminScopedAdminSurface\(selectedEnvelope\)/);
   assert.match(renderer, /isOrganizationLifecycleSurface\(selectedEnvelope\)/);
+  assert.match(organizationAdminSurface, /surface-user-admin-organization-detail/);
+  assert.match(organizationAdminSurface, /user_admin\.organization_detail\.v1/);
+  assert.match(organizationAdminSurface, /action-open-organization-rename/);
+  assert.match(organizationAdminSurface, /action-open-organization-suspend/);
+  assert.match(organizationAdminSurface, /action-open-organization-reactivate/);
+  assert.match(organizationAdminSurface, /action-user-admin-show-organization-admins/);
+  assert.match(organizationAdminSurface, /action-open-organization-admin-invitation-create/);
+  assert.match(organizationAdminSurface, /organizationBranchReturnActionId = 'action-user-admin-show-organizations'/);
+  assert.match(organizationAdminSurface, /The browser does not infer hidden targets, role eligibility, or authority from labels|backend did not authorize this Organization task action/);
+  assert.doesNotMatch(organizationAdminSurface, /Authorization:\s*Bearer|RESEND_API_KEY|WORKOS_API_KEY|invite-token|tokenHash|sk-secret|api_key=|dangerouslySetInnerHTML/);
   assert.match(userAdminScopedAdminSurface, /user_admin\.saas_owner_admins\.v1/);
   assert.match(userAdminScopedAdminSurface, /user_admin\.saas_owner_admin_invitation_create\.v1/);
   assert.match(userAdminScopedAdminSurface, /user_admin\.organization_admins\.v1/);
