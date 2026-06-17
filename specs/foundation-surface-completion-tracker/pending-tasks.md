@@ -2085,7 +2085,7 @@
 
 ### TASK-FSCT-059: Verify or complete runtime implementation for `surface-user-admin-role-change-preview`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-058]
 - surface id: `surface-user-admin-role-change-preview`
@@ -2109,13 +2109,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `decision-card / diff`
   - surface contract: `user_admin.role_change_preview.v1`
   - purpose: Capability delta and approval preview before role mutation.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-role-change-preview`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-role-change-preview`; surface graph node/action edge for opening or acting on `surface-user-admin-role-change-preview`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: completed and verified the real runtime implementation for `surface-user-admin-role-change-preview`: protected WorkstreamEndpoint surface/action paths, backend-owned `user_admin.role_change_preview.v1` decision-card/diff envelope, direct protected surface load, canonical open/revise/commit action ids, role-change proposal/capability-delta/policy-decision/decision-evidence/confirmation-form payloads, backend reauthorization through `UserAdminService#previewRoleChange`, idempotent role-only commit through `UserAdminService#changeMemberRoles`, no-op/last-admin/self-action/scope guardrails, trace/correlation evidence, and browser-safe raw JWT/provider/private-profile/hidden-role/raw-policy/sibling-scope redaction. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/fail-closed coverage included no-op/idempotent replay and backend guardrail evidence with no frontend-only or fixture-only normal runtime path; commands passed: `mvn -q -Dtest=WorkstreamServiceTest#userAdminContractCapabilityActionsPreviewApplyAuditAndIdempotency test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-060: Verify or complete runtime testing for `surface-user-admin-role-change-preview`
 

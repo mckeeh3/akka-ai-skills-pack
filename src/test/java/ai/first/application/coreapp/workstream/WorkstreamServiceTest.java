@@ -1199,6 +1199,19 @@ class WorkstreamServiceTest {
     assertEquals("user_admin.role_change_preview.v1", preview.resultSurface().data().get("surfaceContract"));
     assertTrue(preview.resultSurface().toString().contains("capabilityDelta"));
     assertTrue(preview.resultSurface().toString().contains("affectedWorkstreams"));
+    assertTrue(preview.resultSurface().toString().contains("targetSummary"));
+    assertTrue(preview.resultSurface().toString().contains("policyDecision"));
+    assertTrue(preview.resultSurface().toString().contains("confirmationForm"));
+    assertTrue(preview.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-commit-user-admin-role-change")));
+
+    var directPreview = service.surface(identity(), "membership-admin", "surface-user-admin-role-change-preview", "corr-useradmin-direct-preview");
+    assertEquals("surface-user-admin-role-change-preview", directPreview.surfaceId());
+    assertEquals("user_admin.role_change_preview.v1", directPreview.data().get("surfaceContract"));
+    assertTrue(directPreview.toString().contains("backend-derived"));
+
+    var aliasPreview = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-user-admin-role-change-preview", "action-open-user-admin-role-change-preview", "USERADMIN_PREVIEW_ROLE_CHANGE", "USERADMIN_PREVIEW_ROLE_CHANGE", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "promotion"), null, "membership-admin", "surface-user-admin-user-detail", "corr-useradmin-preview-alias"));
+    assertEquals("surface-user-admin-role-change-preview", aliasPreview.resultSurface().surfaceId());
 
     var changed = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-useradmin-change-member-roles", "action-useradmin-change-member-roles", "USERADMIN_CHANGE_MEMBER_ROLES", "USERADMIN_CHANGE_MEMBER_ROLES", Map.of("membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "promotion"), "idem-useradmin-change", "membership-admin", "surface-user-admin-user-detail", "corr-useradmin-change"));
