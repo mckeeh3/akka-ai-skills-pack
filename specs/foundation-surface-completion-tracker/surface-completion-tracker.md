@@ -370,7 +370,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-organization-directory` list-search contract for `user_admin.organization_directory.v1` covering identity/owner/placement, selected SaaS Owner/App Admin `AuthContext` and `saas_owner.organization.list` authority, frontend-safe envelope/summary/`organizations[]`/filters/actions payload schema, forbidden tenant/customer/provider/billing/support/JWT/hidden-count boundaries, governed action ids and result surfaces, loading/empty/ready/searching/validation/forbidden/stale/partial/failure states, audit/work trace/correlation requirements, accessibility/responsive expectations, acceptance/security/observability coverage, and a sufficiency review stating the surface is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

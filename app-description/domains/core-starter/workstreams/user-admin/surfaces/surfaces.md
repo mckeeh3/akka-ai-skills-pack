@@ -330,6 +330,61 @@ All graph nodes are owned by `user-admin-agent`. Reusable placements are limited
 - Product/runtime language: browser copy, route labels, DTOs, and forms use **Organization**; backend enforcement, audit partitioning, and persisted isolation use **Tenant**.
 - Forbidden payload content: tenant/customer application data, customer records, provider ids/secrets, raw billing provider state, raw JWT/session data, hidden Organization counts, support-access internals, unredacted audit evidence, or fields that would let a browser infer hidden tenant/customer existence.
 
+### `surface-user-admin-organization-directory` list/search contract
+
+- Surface id: `surface-user-admin-organization-directory`.
+- Surface type: `list-search`.
+- Surface contract: `user_admin.organization_directory.v1`.
+- Owning workstream: User Admin.
+- Owning functional agent: `user-admin-agent`.
+- Placement: Organization Directory branch root opened from `surface-user-admin-dashboard` by `action-user-admin-show-organizations`, from visible SaaS Owner Organization attention/population cards, and from Organization-branch return actions. Branch descendants return through `action-user-admin-show-organizations` with backend-shaped safe filters and focus hints.
+- Required context: authenticated active account, selected SaaS Owner/App Admin `AuthContext`, active app-owner membership, and backend `saas_owner.organization.list` capability for directory reads. Tenant Admin, Customer Admin, support-only, disabled-actor, stale selected context, missing-membership, or missing-capability direct loads return `surface-user-admin-system-message` without revealing whether hidden Organizations, tenants, admins, invitations, customers, or counts exist.
+- User goal: find visible customer-facing Organizations, understand lifecycle/readiness at a safe summary level, and open the lifecycle-aware Organization detail or a dedicated Organization create/admin task surface. The directory is discovery-only: filtering, paging, sorting, row/card activation, and create/admin entry points are allowed; inline Organization lifecycle, rename, admin invitation, role, status, billing, support-access, or tenant application-data mutation is forbidden.
+
+Frontend-safe payload for `user_admin.organization_directory.v1`:
+
+- Envelope fields: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType: saas_owner`, `authorityBasis`, `branchRootSurfaceId`, `branchReturnActionId`, `branchReturnLabel`, `dashboardOriginQueueId?`, `traceRefs[]`, `correlationId`, `redaction`, `boundaryNotice`, `query`, `filters`, `sort`, `pageInfo`, `emptyMessage`, `systemStates`, `forbiddenMessage`, and `lastResult`.
+- `summary`: `{ visibleOrganizationCount, activeOrganizationCount, suspendedOrganizationCount, pendingSetupCount?, organizationAdminAttentionCount?, invitationAttentionCount?, providerBlockedCount?, outboxBlockedCount?, traceRefs[] }`. Counts are backend-authorized for SaaS Owner scope and are omitted/redacted when they would disclose hidden tenants, customers, admins, invitations, or lifecycle facts.
+- `organizations[]`: backend-ordered rows/cards with `{ organizationId, organizationName, status, updatedAt?, safeLifecycleSummary?, visibleTenantAdminCount?, pendingAdminInvitationCount?, attentionBadges[], actionAvailability[], targetSurfaceId: 'surface-user-admin-organization-detail', openActionId: 'action-organization-read', traceRefs[], redactionState }`. Row/card activation always submits the backend-authored `openActionId`; frontend status labels must not infer lifecycle eligibility or hidden routing.
+- `filters`: backend-authored safe options for text query, lifecycle status, admin-attention state, invitation state, setup/readiness state, and visible attention badges. Filter values must not expose hidden counts, unsupported lifecycle states, tenant/customer identifiers, or role/capability lists outside SaaS Owner scope.
+- `authorizedActions[]`: refresh/search, open visible Organization detail row/card, open Organization create form, open Organization Admins for a selected visible Organization when available, open authorized audit evidence, and return to dashboard. Unavailable actions are omitted; disabled reasons are shown only when they do not reveal hidden Organization or policy facts.
+- `diagnosticMetadata` is role-gated and visually subordinate; default rows may show trace/evidence labels but not raw event ids, raw correlation/idempotency values, provider payloads, tenant internals, or policy implementation ids.
+
+Redaction and forbidden payload boundaries:
+
+- Must not expose tenant/customer application data, customer identities/counts within an Organization, hidden Organization identities/counts, raw WorkOS/provider ids unless explicitly policy-safe, raw JWT/session values, invitation tokens/token hashes, billing provider state, support-access internals, raw model/provider config, hidden roles/capabilities, cross-tenant facts, or unredacted audit evidence.
+- User-facing copy uses positive SaaS Owner language such as “Organizations visible to you” and “No Organizations need attention.” Empty visible scopes show safe zero/empty copy; direct denied or stale attempts use no-enumeration recovery through `surface-user-admin-system-message`.
+
+Actions and result surfaces:
+
+| Action id | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| `action-user-admin-show-organizations` | `saas_owner.organization.list` / `manage-organizations` | Reload this directory with backend-shaped filters, pagination, branch metadata, trace refs, and selected SaaS Owner scope summary. |
+| `action-organization-read` | `saas_owner.organization.read` / `manage-organizations` | Open `surface-user-admin-organization-detail` for a visible Organization; hidden, stale, disabled-actor, cross-scope, or missing-capability targets return `surface-user-admin-system-message` without enumerating hidden Organizations. |
+| `action-open-organization-create` | `saas_owner.organization.create` / `manage-organizations` | Open `surface-user-admin-organization-create` with boundary notice, validation rules, idempotency guidance, trace refs, and branch return metadata. |
+| `action-user-admin-show-organization-admins` | `saas_owner.organization_admin.list` / `manage-organization-admins` | Open `surface-user-admin-organization-admins` for the selected visible Organization when backend exposes it; hidden/stale targets return a safe system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` with focus on the originating Organization branch card or attention queue. |
+
+States and outcomes:
+
+- Loading: skeleton directory with selected SaaS Owner scope label and no rows until backend authorization completes.
+- Empty: no visible Organizations match the filters; show create action only when `saas_owner.organization.create` is authorized.
+- Ready: backend-derived rows, summaries, filters, branch metadata, trace/correlation, and keyboard-operable row/card actions are visible.
+- Searching/submitting: preserve current filters and focus while backend reauthorizes selected context and query.
+- Validation-error: invalid query/filter/page/sort is reported inline without broadening the search.
+- Forbidden/hidden-not-found: return `surface-user-admin-system-message` with no hidden Organization, tenant, customer, admin, or invitation enumeration.
+- Stale/conflict: refresh guidance when selected context, Organization lifecycle, row target, or page cursor changed.
+- Partial-data/failure: show safe provider/outbox/readiness messages without fake Organizations, hidden counts, fixture data, or provider internals.
+
+Trace, audit, accessibility, and tests:
+
+- Every load, search/filter, page/sort, row open, create-form open, Organization Admins open, denied hidden target, stale result, branch return, and audit drilldown emits or links an admin work trace with correlation id, selected `AuthContext` summary, safe query/filter summary, redaction summary, and result surface id.
+- Accessibility/responsive expectations: list rows are keyboard-operable, cards preserve the same backend action ids as table rows, focus returns to the originating dashboard card or list row after navigation, responsive layout does not hide action availability or redaction notices, and empty/error states remain announced to assistive tech.
+- Acceptance/regression coverage must verify dashboard-to-Organization-directory traversal, scoped list filtering/search/empty state, row activation to Organization detail, create-form open, Organization Admins open for a visible Organization, SaaS Owner vs Tenant Admin vs Customer Admin authorization behavior, hidden/cross-scope denial without enumeration, stale row recovery, provider/outbox fail-closed indicators, audit/work trace/correlation links, frontend secret boundaries, keyboard row activation, focus return, and responsive table-to-card rendering.
+
+Surface-description sufficiency review: `surface-user-admin-organization-directory` is sufficiently unambiguous for developers/generators to implement and review the list/search objective without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove protected API/action paths, backend-derived Organization row routing, SaaS Owner scope authorization, denial/no-enumeration behavior, trace/correlation, and browser secret boundaries before marking implementation/testing objectives done.
+
 ### Frontend-safe payloads
 
 - Directory: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType`, `authorityBasis`, `boundaryNotice`, `traceRefs`, `correlationId`, `redaction`, `organizations[]`, `filters`, `systemStates`, `emptyMessage`, `forbiddenMessage`, `lastResult`. Each `organizations[]` row contains `{ organizationId, organizationName, status, updatedAt?, safeLifecycleSummary?, visibleTenantAdminCount?, actionAvailability[], traceRefs[] }`; counts are omitted unless backend marks them safe and non-enumerating.
