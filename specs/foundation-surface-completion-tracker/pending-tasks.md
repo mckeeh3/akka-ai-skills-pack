@@ -1555,7 +1555,7 @@
 
 ### TASK-FSCT-044: Verify or complete runtime implementation for `surface-user-admin-invitation-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-043]
 - surface id: `surface-user-admin-invitation-create`
@@ -1579,13 +1579,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.invitation_create.v1`
   - purpose: Single-purpose invitation creation form.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-create`; surface graph node/action edge for opening or acting on `surface-user-admin-invitation-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: completed and verified the real runtime implementation for `surface-user-admin-invitation-create`: backend-owned `user_admin.invitation_create.v1` create-form payload now includes canonical form/scope/policy/delivery-readiness/action/redaction metadata; canonical `action-open-user-admin-invitation-create` and `action-submit-user-admin-invitation` route through protected `/api/workstream/actions` with selected AuthContext while preserving the legacy action alias for compatibility; `UserAdminTaskSurface` submits through the canonical action. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/provider/fail-closed/trace coverage included protected no-bearer rejection, hidden user task denial without enumeration in the same User Admin surface-graph smoke, outbox/provider boundary metadata, `noFakeSuccess`, invitation detail routing, trace refs, correlation ids, and browser-safe invitation-token/provider/raw-JWT redaction; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiTraverseUserAdminSurfaceGraph,WorkstreamServiceTest#userAdminDedicatedUserBranchTaskSurfacesOpenWithBackendReturnMetadata test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-045: Verify or complete runtime testing for `surface-user-admin-invitation-create`
 

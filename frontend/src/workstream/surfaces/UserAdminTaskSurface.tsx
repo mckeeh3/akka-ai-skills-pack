@@ -123,7 +123,7 @@ function UserAdminTaskValidationMessages({ envelope }: { envelope: SurfaceEnvelo
 }
 
 function InvitationCreateTask({ envelope, onAction }: Props) {
-  const action = findAction(envelope.actions, 'action-invite-user');
+  const action = findAction(envelope.actions, 'action-submit-user-admin-invitation') ?? findAction(envelope.actions, 'action-invite-user');
   const [email, setEmail] = useState(String(envelope.data.draft?.email ?? ''));
   const [displayName, setDisplayName] = useState(String(envelope.data.draft?.displayName ?? ''));
   const roleOptions = userAdminRoleOptions(envelope);

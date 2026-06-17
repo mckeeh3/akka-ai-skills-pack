@@ -256,8 +256,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertBrowserSafe(hiddenUserTask.resultSurface());
 
     var task = runAction(new CapabilityActionRequest(
-        "action-open-useradmin-invitation-create",
-        "action-open-useradmin-invitation-create",
+        "action-open-user-admin-invitation-create",
+        "action-open-user-admin-invitation-create",
         "USERADMIN_SEND_INVITATION",
         "USERADMIN_SEND_INVITATION",
         null,
@@ -270,12 +270,16 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("create-form", task.resultSurface().surfaceType());
     assertEquals("user_admin.invitation_create.v1", task.resultSurface().data().get("surfaceContract"));
     assertTrue(task.resultSurface().data().containsKey("roleOptions"));
+    assertTrue(task.resultSurface().data().containsKey("form"));
+    assertTrue(task.resultSurface().data().containsKey("deliveryReadiness"));
+    assertTrue(task.resultSurface().toString().contains("action-submit-user-admin-invitation"));
+    assertTrue(task.resultSurface().toString().contains("noFakeSuccess=true"));
     assertTrue(task.resultSurface().toString().contains("expiry"));
     assertBrowserSafe(task.resultSurface());
 
     var invited = runAction(new CapabilityActionRequest(
-        "action-invite-user",
-        "action-invite-user",
+        "action-submit-user-admin-invitation",
+        "action-submit-user-admin-invitation",
         "USERADMIN_SEND_INVITATION",
         "USERADMIN_SEND_INVITATION",
         Map.of("email", "smoke.invitee@example.test", "displayName", "Smoke Invitee"),
