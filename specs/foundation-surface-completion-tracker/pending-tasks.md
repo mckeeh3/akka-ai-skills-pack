@@ -3816,7 +3816,7 @@
 
 ### TASK-FSCT-108: Verify or complete runtime testing for `surface-user-admin-customer-admins`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-107]
 - surface id: `surface-user-admin-customer-admins`
@@ -3850,6 +3850,7 @@
   - purpose: Customer Admin users/invitations for one selected Customer.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admins`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage` for `surface-user-admin-customer-admins`: missing-bearer action rejection, direct protected no-target fail-safe surface, backend-authorized Customer-detail-to-Customer-Admins action path, visible Customer scope proof and Customer Admin row rendering, invite/audit/branch-return action metadata, trace/correlation evidence, browser-safe provider/invitation-token/sibling-customer redaction, hidden/sibling Customer no-enumeration denial, and Customer Admin selected-context denial through `surface-user-admin-system-message`. Runtime evidence: readiness level `runtime-ready` for this testing scope via protected API/action/surface paths with tenant admin and Customer Admin AuthContext coverage and no fixture-only/frontend-only normal runtime path. Commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-109: Verify or complete app-description specification for `surface-user-admin-customer-admin-invitation-create`
 
