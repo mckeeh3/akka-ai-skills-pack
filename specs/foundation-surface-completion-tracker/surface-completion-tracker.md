@@ -552,7 +552,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-customer-create` create-form contract for `user_admin.customer_create.v1` covering User Admin/`user-admin-agent` ownership, Customer Directory branch placement and result routing to Customer detail, selected Organization/Tenant Admin `AuthContext` plus active tenant membership and `tenant.customer.create` authority, browser-safe payload schema for form drafts, validation policy, Customer boundary, authorized actions, redaction/forbidden payload boundaries, typed result states, idempotent duplicate/no-op behavior, audit/work trace and correlation requirements, accessibility/responsive/style bindings, and acceptance/security/observability regression coverage. Sufficiency review says the create-form objective is implementable without invented payload fields/actions/states/auth/tenant/customer behavior/trace links/tests/visual semantics. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

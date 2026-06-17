@@ -4066,7 +4066,7 @@
 
 ### TASK-FSCT-115: Verify or complete app-description specification for `surface-user-admin-customer-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-customer-create`
@@ -4095,6 +4095,7 @@
   - purpose: Customer creation form.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-customer-create` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated `surface-user-admin-customer-create` create-form app-description contract covering Customer Directory branch placement, Organization/Tenant Admin AuthContext and `tenant.customer.create` authority, browser-safe payload/schema, governed open/submit/return/audit actions, validation/idempotency/duplicate/no-op/stale/provider-runtime states, redaction and forbidden payload boundaries, audit/work trace and correlation expectations, accessibility/responsive/style bindings, and acceptance/security/observability tests. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests.
 
 ### TASK-FSCT-116: Verify or complete runtime implementation for `surface-user-admin-customer-create`
 
