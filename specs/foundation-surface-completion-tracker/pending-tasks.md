@@ -4134,7 +4134,7 @@
 
 ### TASK-FSCT-117: Verify or complete runtime testing for `surface-user-admin-customer-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-116]
 - surface id: `surface-user-admin-customer-create`
@@ -4168,6 +4168,7 @@
   - purpose: Customer creation form.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-create`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage` for `surface-user-admin-customer-create`: missing-bearer direct/create-submit rejection, authorized direct create-form load, canonical form-open action, canonical submit success through `/api/workstream/actions` into `TenantCustomerAdminService#createCustomer`, durable Customer repository proof, Customer detail result routing, idempotent replay/no-op, missing-idempotency safe `surface-user-admin-system-message`, Customer Admin selected-context denial with no Customer creation, trace/correlation assertions, browser-safe redaction, and no fixture-only/frontend-only normal runtime path. Added a narrow runtime repair so the canonical User Admin Customer-create submit idempotency validation returns the safe system-message surface. Checks passed: `mvn -q -Dtest=ai.first.application.coreapp.workstream.UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`. Runtime readiness level: `runtime-ready`; provider/outbox fail-closed is not applicable to Customer creation beyond no-fake-success and redaction assertions.
 
 ### TASK-FSCT-118: Verify or complete app-description specification for `surface-user-admin-customer-rename`
 

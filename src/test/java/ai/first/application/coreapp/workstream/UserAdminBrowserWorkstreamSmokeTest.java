@@ -2911,6 +2911,30 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke(), "Customer Admin list action path must reject missing bearer tokens.");
 
     assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-customer-create")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-create-missing-bearer-direct")
+        .responseBodyAs(String.class)
+        .invoke(), "Customer create surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-create-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-submit-customer-create",
+            "user-admin.create-customer",
+            "manage-customers",
+            "tenant.customer.create",
+            Map.of("customerName", "Bearerless Customer", "reason", "missing bearer must not create"),
+            "idem-customer-create-missing-bearer",
+            SELECTED_CONTEXT_ID,
+            "surface-user-admin-customer-create",
+            "corr-customer-create-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Customer create submit action path must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-user-admin-customer-admin-detail")
         .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
         .addHeader("X-Correlation-Id", "corr-customer-admin-detail-missing-bearer-direct")
@@ -3081,6 +3105,102 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(createForm.resultSurface().toString().contains("creationBoundary"));
     assertTrue(createForm.resultSurface().toString().contains("idempotencyKeyHint=client-generated"));
     assertBrowserSafe(createForm.resultSurface());
+
+    var directCreateForm = getSurface("surface-user-admin-customer-create", "corr-customer-create-direct-authorized");
+    assertEquals("surface-user-admin-customer-create", directCreateForm.surfaceId());
+    assertEquals("create-form", directCreateForm.surfaceType());
+    assertEquals("user_admin.customer_create.v1", directCreateForm.data().get("surfaceContract"));
+    assertEquals("corr-customer-create-direct-authorized", directCreateForm.correlationId());
+    assertTrue(directCreateForm.toString().contains("tenant.customer.create"));
+    assertTrue(directCreateForm.toString().contains("action-submit-customer-create"));
+    assertTrue(directCreateForm.toString().contains("sibling-customers-redacted"));
+    assertTrue(directCreateForm.toString().contains("tenant-app-data-redacted"));
+    assertBrowserSafe(directCreateForm);
+
+    var customerRowsBeforeCreate = repository.customerRows().size();
+    var createdCustomer = runAction(new CapabilityActionRequest(
+        "action-submit-customer-create",
+        "user-admin.create-customer",
+        "manage-customers",
+        "tenant.customer.create",
+        Map.of("customerName", "Browser Smoke Customer", "reason", "runtime test customer create"),
+        "idem-customer-create-browser-smoke",
+        SELECTED_CONTEXT_ID,
+        createForm.resultSurface().surfaceId(),
+        "corr-customer-create-submit"));
+    assertEquals("accepted", createdCustomer.status());
+    assertEquals("corr-customer-create-submit", createdCustomer.correlationId());
+    assertEquals("surface-user-admin-customer-detail", createdCustomer.resultSurface().surfaceId());
+    assertEquals("show-inspection", createdCustomer.resultSurface().surfaceType());
+    assertEquals("user_admin.customer_detail.v1", createdCustomer.resultSurface().data().get("surfaceContract"));
+    assertTrue(createdCustomer.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-create")));
+    assertTrue(createdCustomer.resultSurface().toString().contains("Browser Smoke Customer"));
+    assertTrue(createdCustomer.resultSurface().toString().contains("status=active"));
+    assertTrue(createdCustomer.resultSurface().toString().contains("canMutateInline=false"));
+    assertTrue(createdCustomer.resultSurface().toString().contains("action-open-customer-admin-invitation-create"));
+    assertTrue(createdCustomer.resultSurface().toString().contains("sibling-customers-redacted"));
+    assertTrue(createdCustomer.resultSurface().toString().contains("tenant-app-data-redacted"));
+    var createdCustomerId = String.valueOf(createdCustomer.resultSurface().data().get("recordId"));
+    assertFalse(createdCustomerId.isBlank());
+    var savedCreatedCustomer = repository.customer(TENANT_ID, createdCustomerId).orElseThrow();
+    assertEquals("Browser Smoke Customer", savedCreatedCustomer.displayName());
+    assertTrue(savedCreatedCustomer.active());
+    assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
+    assertBrowserSafe(createdCustomer.resultSurface());
+
+    var replayedCustomerCreate = runAction(new CapabilityActionRequest(
+        "action-submit-customer-create",
+        "user-admin.create-customer",
+        "manage-customers",
+        "tenant.customer.create",
+        Map.of("customerName", "Browser Smoke Customer", "reason", "runtime test customer create replay"),
+        "idem-customer-create-browser-smoke",
+        SELECTED_CONTEXT_ID,
+        createForm.resultSurface().surfaceId(),
+        "corr-customer-create-submit-replay"));
+    assertEquals("no-op", replayedCustomerCreate.status());
+    assertEquals("surface-user-admin-customer-detail", replayedCustomerCreate.resultSurface().surfaceId());
+    assertEquals(createdCustomerId, replayedCustomerCreate.resultSurface().data().get("recordId"));
+    assertTrue(replayedCustomerCreate.message().contains("replay"));
+    assertTrue(replayedCustomerCreate.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-create")));
+    assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
+    assertBrowserSafe(replayedCustomerCreate.resultSurface());
+
+    var missingIdempotencyCreate = runAction(new CapabilityActionRequest(
+        "action-submit-customer-create",
+        "user-admin.create-customer",
+        "manage-customers",
+        "tenant.customer.create",
+        Map.of("customerName", "Missing Idempotency Customer", "reason", "missing idempotency must fail closed"),
+        null,
+        SELECTED_CONTEXT_ID,
+        createForm.resultSurface().surfaceId(),
+        "corr-customer-create-missing-idempotency"));
+    assertEquals("validation-error", missingIdempotencyCreate.status());
+    assertEquals("surface-user-admin-system-message", missingIdempotencyCreate.resultSurface().surfaceId());
+    assertTrue(missingIdempotencyCreate.resultSurface().toString().contains("idempotency-key-required"));
+    assertTrue(missingIdempotencyCreate.resultSurface().toString().contains("noFakeSuccess=true"));
+    assertFalse(missingIdempotencyCreate.resultSurface().toString().contains("Missing Idempotency Customer"));
+    assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
+    assertBrowserSafe(missingIdempotencyCreate.resultSurface());
+
+    var customerCreateDenied = runActionAs(new CapabilityActionRequest(
+        "action-submit-customer-create",
+        "user-admin.create-customer",
+        "manage-customers",
+        "tenant.customer.create",
+        Map.of("customerName", "Customer Admin Unauthorized Customer", "reason", "customer admin must not create sibling customer"),
+        "idem-customer-create-customer-admin-denied",
+        "membership-customer-admin",
+        createForm.resultSurface().surfaceId(),
+        "corr-customer-create-customer-admin-denied"), "workos-customer-admin", "customer-admin@example.test", "Customer Admin", "membership-customer-admin");
+    assertEquals("denied", customerCreateDenied.status());
+    assertEquals("surface-user-admin-system-message", customerCreateDenied.resultSurface().surfaceId());
+    assertTrue(customerCreateDenied.resultSurface().toString().contains("scope-forbidden"));
+    assertTrue(customerCreateDenied.resultSurface().toString().contains("noFakeSuccess=true"));
+    assertFalse(customerCreateDenied.resultSurface().toString().contains("Customer Admin Unauthorized Customer"));
+    assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
+    assertBrowserSafe(customerCreateDenied.resultSurface());
 
     var directCustomerAdmins = getSurface("surface-user-admin-customer-admins", "corr-customer-admins-direct-no-target");
     assertEquals("surface-user-admin-customer-admins", directCustomerAdmins.surfaceId());

@@ -438,6 +438,7 @@ public final class WorkstreamService {
     }
     if (action.idempotency().required() && (request.idempotencyKey() == null || request.idempotencyKey().isBlank())) {
       if (isGovernancePolicyAction(request.actionId())) return governancePolicySystemMessageResult(actor, request.actionId(), "idempotency-key-required", governancePolicySafeDenialMessage("idempotency-key-required"), request.correlationId());
+      if (isUserAdminAction(request.actionId())) return userAdminSystemMessageResult(actor, request.actionId(), "idempotency-key-required", userAdminSafeDenialMessage("idempotency-key-required"), request.correlationId());
       return new CapabilityActionResult("validation-error", "This action requires a client-generated idempotency key.", request.correlationId(), List.of("trace-validation-idempotency"), null);
     }
     var actionIdempotencyKey = action.idempotency().required() && !durableActionOwnsIdempotency(request.actionId()) ? actor.selectedContext().tenantId() + ":" + actor.account().accountId() + ":" + request.actionId() + ":" + request.idempotencyKey() : null;
@@ -803,6 +804,7 @@ public final class WorkstreamService {
         || actionId.startsWith("action-open-organization")
         || actionId.startsWith("action-customer")
         || actionId.startsWith("action-open-customer")
+        || actionId.equals("action-submit-customer-create")
         || actionId.equals("action-submit-organization-create")
         || actionId.equals("action-submit-organization-rename")
         || actionId.equals("action-submit-organization-admin-invitation")
