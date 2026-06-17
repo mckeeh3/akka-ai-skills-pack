@@ -474,7 +474,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-organization-reactivate-confirmation` lifecycle confirmation contract for `user_admin.organization_reactivate_confirmation.v1` covering owning User Admin workstream/`user-admin-agent`, Organization Directory/detail branch placement, SaaS Owner/App Admin selected `AuthContext` and `saas_owner.organization.reactivate` authorization, frontend-safe confirmation/eligibility/action payloads, reactivation consequence and reason/confirmation requirements, no-enumeration denial/hidden/stale/no-op/idempotent replay/approval-required states, Tenant/customer/billing/provider/browser-secret redaction boundaries, audit/work trace/correlation obligations, accessibility/responsive and style/catalog expectations, acceptance/regression/security test coverage, and sufficiency review. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

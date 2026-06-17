@@ -3430,7 +3430,7 @@
 
 ### TASK-FSCT-097: Verify or complete app-description specification for `surface-user-admin-organization-reactivate-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-organization-reactivate-confirmation`
@@ -3459,6 +3459,7 @@
   - purpose: Organization reactivation confirmation surface.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-reactivate-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated app-description lifecycle-confirmation contract for `surface-user-admin-organization-reactivate-confirmation` covering `user_admin.organization_reactivate_confirmation.v1`, User Admin/`user-admin-agent` ownership, Organization branch placement, SaaS Owner/App Admin selected AuthContext and `saas_owner.organization.reactivate` authority, frontend-safe confirmation/eligibility/action payloads, reason/confirmation/idempotency/stale/no-op states, no-enumeration denial and tenant/customer/provider/browser-secret redaction boundaries, audit/work trace/correlation obligations, accessibility/responsive/style expectations, acceptance/regression tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
 
 ### TASK-FSCT-098: Verify or complete runtime implementation for `surface-user-admin-organization-reactivate-confirmation`
 
