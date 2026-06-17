@@ -656,6 +656,41 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(replayed.resultSurface().toString().contains("supportAccess=true"));
     assertBrowserSafe(replayed.resultSurface());
 
+    var revokeOpened = runAction(new CapabilityActionRequest(
+        "action-open-user-admin-support-access-revoke-confirmation",
+        "action-open-user-admin-support-access-revoke-confirmation",
+        "USERADMIN_SUPPORT_ACCESS_REVOKE",
+        "USERADMIN_SUPPORT_ACCESS_REVOKE",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member"),
+        null,
+        SELECTED_CONTEXT_ID,
+        submitted.resultSurface().surfaceId(),
+        "corr-user-support-revoke-open"));
+    assertEquals("accepted", revokeOpened.status());
+    assertEquals("surface-user-admin-support-access-revoke-confirmation", revokeOpened.resultSurface().surfaceId());
+    assertEquals("user_admin.support_access_revoke_confirmation.v1", revokeOpened.resultSurface().data().get("surfaceContract"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("activeSupportGrant"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("action-confirm-user-admin-support-access-revoke"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("noMembershipLifecycleMutation=true"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("support-provider-internals-redacted"));
+    assertBrowserSafe(revokeOpened.resultSurface());
+
+    var revoked = runAction(new CapabilityActionRequest(
+        "action-confirm-user-admin-support-access-revoke",
+        "action-confirm-user-admin-support-access-revoke",
+        "USERADMIN_SUPPORT_ACCESS_REVOKE",
+        "USERADMIN_SUPPORT_ACCESS_REVOKE",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member", "reason", "case complete"),
+        "idem-user-support-revoke-runtime",
+        SELECTED_CONTEXT_ID,
+        revokeOpened.resultSurface().surfaceId(),
+        "corr-user-support-revoke-submit"));
+    assertEquals("accepted", revoked.status());
+    assertEquals("surface-user-admin-user-detail", revoked.resultSurface().surfaceId());
+    assertTrue(revoked.resultSurface().toString().contains("Support access revoked"));
+    assertTrue(revoked.resultSurface().toString().contains("supportAccess=false"));
+    assertBrowserSafe(revoked.resultSurface());
+
     assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
         "action-open-user-admin-support-access-grant",
         "action-open-user-admin-support-access-grant",

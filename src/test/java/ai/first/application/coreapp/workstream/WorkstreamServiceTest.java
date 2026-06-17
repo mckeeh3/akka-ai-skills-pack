@@ -803,6 +803,25 @@ class WorkstreamServiceTest {
     assertTrue(submitted.resultSurface().toString().contains("lastResult"));
     assertTrue(submitted.resultSurface().toString().contains("Support access granted or extended"));
     assertBrowserPayloadSafe(submitted.resultSurface());
+
+    var revokeOpened = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-user-admin-support-access-revoke-confirmation", "action-open-user-admin-support-access-revoke-confirmation", "USERADMIN_SUPPORT_ACCESS_REVOKE", "USERADMIN_SUPPORT_ACCESS_REVOKE", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", submitted.resultSurface().surfaceId(), "corr-support-revoke-canonical-open"));
+    assertEquals("accepted", revokeOpened.status());
+    assertEquals("surface-user-admin-support-access-revoke-confirmation", revokeOpened.resultSurface().surfaceId());
+    assertEquals("user_admin.support_access_revoke_confirmation.v1", revokeOpened.resultSurface().data().get("surfaceContract"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("targetSummary"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("activeSupportGrant"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("action-confirm-user-admin-support-access-revoke"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("noMembershipLifecycleMutation=true"));
+    assertBrowserPayloadSafe(revokeOpened.resultSurface());
+
+    var revoked = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-confirm-user-admin-support-access-revoke", "action-confirm-user-admin-support-access-revoke", "USERADMIN_SUPPORT_ACCESS_REVOKE", "USERADMIN_SUPPORT_ACCESS_REVOKE", Map.of("accountId", "member@example.test", "membershipId", "membership-member", "reason", "case resolved"), "idem-support-canonical-revoke", "membership-admin", revokeOpened.resultSurface().surfaceId(), "corr-support-revoke-canonical-confirm"));
+    assertEquals("accepted", revoked.status());
+    assertEquals("surface-user-admin-user-detail", revoked.resultSurface().surfaceId());
+    assertTrue(revoked.resultSurface().toString().contains("Support access revoked"));
+    assertTrue(revoked.resultSurface().toString().contains("supportAccess=false"));
+    assertBrowserPayloadSafe(revoked.resultSurface());
   }
 
   @Test

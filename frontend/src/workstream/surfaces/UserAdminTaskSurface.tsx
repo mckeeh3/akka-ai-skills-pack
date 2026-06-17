@@ -249,7 +249,7 @@ function SupportAccessGrantTask({ envelope, onAction }: Props) {
 }
 
 function SupportAccessRevokeTask({ envelope, onAction }: Props) {
-  const action = findAction(envelope.actions, 'action-useradmin-revoke-support-access') ?? findAction(envelope.actions, 'action-revoke-support-access');
+  const action = findAction(envelope.actions, 'action-confirm-user-admin-support-access-revoke') ?? findAction(envelope.actions, 'action-useradmin-revoke-support-access') ?? findAction(envelope.actions, 'action-revoke-support-access');
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string>();
   function submit(event: FormEvent<HTMLFormElement>) {

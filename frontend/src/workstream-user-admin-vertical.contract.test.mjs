@@ -236,6 +236,7 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.match(userAdminTaskSurface, /action-user-admin-show-users/);
   assert.match(userAdminTaskSurface, /action-useradmin-grant-support-access/);
   assert.match(userAdminTaskSurface, /action-useradmin-extend-support-access/);
+  assert.match(userAdminTaskSurface, /action-confirm-user-admin-support-access-revoke/);
   assert.match(userAdminTaskSurface, /action-useradmin-revoke-support-access/);
   assert.match(userAdminTaskSurface, /branchRootSurfaceId: branch\?\.branchRootSurfaceId \?\? envelope\.data\.branchRootSurfaceId \?\? 'surface-user-admin-users'/);
   assert.match(userAdminTaskSurface, /safeFilterPreservation: branch\?\.safeFilterPreservation \?\? envelope\.data\.safeFilterPreservation \?\? 'backend-authored-only'/);
@@ -262,7 +263,7 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.match(workstreamService, /lifecycleStatus/);
   assert.match(workstreamService, /provider-boundary:redacted/);
   assert.match(workstreamService, /withUserBranchReturn\(List\.of\(validateSupportAccessGrantAction\(\), submitSupportAccessGrantAction\(\), grantSupportAccessAction\(\), extendSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);
-  assert.match(workstreamService, /withUserBranchReturn\(List\.of\(revokeSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);
+  assert.match(workstreamService, /withUserBranchReturn\(List\.of\(confirmUserAdminSupportAccessRevokeAction\(\), revokeSupportAccessAction\(\), displayDetailAction\(\), showUsersAction\(\), openAuditAction\(\)\)\)/);
   assert.match(componentsCss, /\.user-admin-task-surface/);
   assert.match(componentsCss, /\.user-admin-task-form label/);
   assert.doesNotMatch(userAdminTaskSurface, /JSON\.stringify|dangerouslySetInnerHTML|Authorization:\s*Bearer|RESEND_API_KEY|sk-secret|api_key=/);
