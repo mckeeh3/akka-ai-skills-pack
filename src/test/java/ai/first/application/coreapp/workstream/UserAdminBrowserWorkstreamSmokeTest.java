@@ -1947,11 +1947,20 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(directDetail.toString().contains("providerBlockedCount=0"));
     assertBrowserSafe(directDetail);
 
+    var directRenameWithoutTarget = getSurfaceAs("surface-user-admin-organization-rename", "corr-org-rename-direct-missing-target", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-organization-rename", directRenameWithoutTarget.surfaceId());
+    assertEquals("edit-form", directRenameWithoutTarget.surfaceType());
+    assertEquals("user_admin.organization_rename.v1", directRenameWithoutTarget.data().get("surfaceContract"));
+    assertEquals("missing-target", directRenameWithoutTarget.data().get("formState"));
+    assertFalse(directRenameWithoutTarget.toString().contains("tenant-hidden"));
+    assertTrue(directRenameWithoutTarget.toString().contains("noFakeSuccess=true"));
+    assertBrowserSafe(directRenameWithoutTarget);
+
     var renameTask = runActionAs(new CapabilityActionRequest(
         "action-open-organization-rename",
         "action-open-organization-rename",
-        "saas_owner.tenant.manage",
-        "saas_owner.tenant.manage",
+        "manage-organizations",
+        "saas_owner.organization.rename",
         Map.of("organizationId", TENANT_ID),
         null,
         "membership-owner",
@@ -1963,6 +1972,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("user_admin.organization_rename.v1", renameTask.resultSurface().data().get("surfaceContract"));
     assertTrue(renameTask.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-organizations"));
     assertTrue(renameTask.resultSurface().toString().contains("organizationDetail"));
+    assertTrue(renameTask.resultSurface().toString().contains("action-submit-organization-rename"));
+    assertTrue(renameTask.resultSurface().toString().contains("currentOrganizationName=Starter Tenant"));
     assertBrowserSafe(renameTask.resultSurface());
 
     var renameNoOp = runActionAs(new CapabilityActionRequest(
@@ -1981,6 +1992,23 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(renameNoOp.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-rename")));
     assertTrue(renameNoOp.resultSurface().toString().contains("status=active"));
     assertBrowserSafe(renameNoOp.resultSurface());
+
+    var renamed = runActionAs(new CapabilityActionRequest(
+        "action-submit-organization-rename",
+        "user-admin.submit-organization-rename",
+        "manage-organizations",
+        "saas_owner.organization.rename",
+        Map.of("organizationId", TENANT_ID, "organizationName", "Starter Tenant Renamed", "reason", "protected browser smoke rename"),
+        "idem-org-detail-rename-accepted",
+        "membership-owner",
+        renameTask.resultSurface().surfaceId(),
+        "corr-org-detail-rename-accepted"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", renamed.status());
+    assertEquals("surface-user-admin-organization-detail", renamed.resultSurface().surfaceId());
+    assertTrue(renamed.message().contains("display name updated"));
+    assertTrue(renamed.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-rename")));
+    assertTrue(renamed.resultSurface().toString().contains("Starter Tenant Renamed"));
+    assertBrowserSafe(renamed.resultSurface());
 
     var suspendTask = runActionAs(new CapabilityActionRequest(
         "action-open-organization-suspend",

@@ -3251,7 +3251,7 @@
 
 ### TASK-FSCT-092: Verify or complete runtime implementation for `surface-user-admin-organization-rename`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-091]
 - surface id: `surface-user-admin-organization-rename`
@@ -3282,6 +3282,7 @@
   - purpose: Organization display-name edit surface.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-rename`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-rename`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-rename`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: completed and verified the runtime implementation for `surface-user-admin-organization-rename`: protected WorkstreamEndpoint surface/action APIs, backend-owned `user_admin.organization_rename.v1` edit-form payload with missing-target fail-closed direct-load state, detail-to-rename target binding, `action-submit-organization-rename` product capability metadata mapped to internal Tenant lifecycle authorization, current-name form payload, validation/change-preview policy, branch/detail returns, trace/correlation/redaction, frontend form submission via the governed workstream action path, and backend rename handling for accepted, no-op, idempotent, visible duplicate-name validation, hidden/not-found denial, audit/work trace, and browser-safe secret boundaries. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered SaaS Owner `membership-owner` in `tenant-starter`; denial/fail-closed coverage included missing bearer inherited from protected API path, direct missing-target no-fake-success state, Tenant Admin/regular-member denial in existing Organization Admin smoke flow, hidden target no-enumeration, and visible duplicate validation in service path; trace evidence included rename form/action trace refs and correlation ids; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`, `npm --prefix frontend run typecheck`, `npm --prefix frontend test -- --run src/workstream-organization-admin-vertical.contract.test.mjs`, focused `rg` evidence, and `git diff --check`
 
 ### TASK-FSCT-093: Verify or complete runtime testing for `surface-user-admin-organization-rename`
 

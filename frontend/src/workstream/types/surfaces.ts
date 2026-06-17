@@ -201,6 +201,10 @@ export type OrganizationAdminSurfaceData = {
   scopeLabel?: string;
   scopeType?: string;
   authorityBasis?: string;
+  organizationId?: string;
+  organizationName?: string;
+  organizationStatus?: string;
+  detailReturnActionId?: string;
   boundaryNotice?: string;
   safeBoundaryNotice?: string;
   traceRefs?: string[];
@@ -227,16 +231,20 @@ export type OrganizationAdminSurfaceData = {
     correlationId?: string;
   };
   form?: {
+    currentOrganizationName?: string;
     organizationNameDraft?: string;
+    proposedOrganizationNameDraft?: string;
     reasonDraft?: string;
     submitLabel?: string;
     submitActionId?: string;
     cancelActionId?: string;
     idempotencyKeyHint?: string;
+    freshnessVersionHint?: string;
     disabledReason?: string;
   };
   validationPolicy?: Record<string, unknown>;
   creationBoundary?: Record<string, unknown>;
+  changePreview?: Record<string, unknown>;
   filters?: Record<string, string | number | boolean | undefined>;
   systemStates?: string[];
   emptyMessage?: string;

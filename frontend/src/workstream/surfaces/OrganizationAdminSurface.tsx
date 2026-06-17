@@ -21,6 +21,8 @@ const organizationBranchRootSurfaceId = 'surface-user-admin-organization-directo
 const organizationBranchReturnActionId = 'action-user-admin-show-organizations';
 const organizationCreateSubmitActionId = 'action-submit-organization-create';
 const legacyOrganizationCreateActionId = 'action-organization-create';
+const organizationRenameSubmitActionId = 'action-submit-organization-rename';
+const legacyOrganizationRenameActionId = 'action-organization-rename';
 
 export function OrganizationAdminSurface({ envelope, onAction }: Props) {
   const data = envelope.data;
@@ -179,25 +181,30 @@ function OrganizationCreateForm({ envelope, onAction }: Props) {
 }
 
 function OrganizationRenameForm({ envelope, organization, onAction }: Props & { organization?: OrganizationLike }) {
-  const [renameName, setRenameName] = useState(organization?.organizationName ?? '');
-  const [reason, setReason] = useState('');
+  const form = envelope.data.form;
+  const organizationId = organization?.organizationId ?? envelope.data.organizationId ?? '';
+  const currentName = form?.currentOrganizationName ?? organization?.organizationName ?? envelope.data.organizationName ?? '';
+  const submitActionId = form?.submitActionId ?? (envelope.actions.some((action) => action.actionId === organizationRenameSubmitActionId) ? organizationRenameSubmitActionId : legacyOrganizationRenameActionId);
+  const [renameName, setRenameName] = useState(form?.proposedOrganizationNameDraft ?? form?.organizationNameDraft ?? currentName);
+  const [reason, setReason] = useState(form?.reasonDraft ?? '');
   const [validationError, setValidationError] = useState<string>();
   function submitRename(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!organization?.organizationId) return setValidationError('Choose an Organization before renaming.');
+    if (!organizationId) return setValidationError('Choose an Organization before renaming.');
     if (!renameName.trim()) return setValidationError('Organization name is required.');
     setValidationError(undefined);
-    run(envelope, onAction, 'action-organization-rename', { organizationId: organization.organizationId, organizationName: renameName.trim(), reason: reason.trim(), idempotencyKey: idempotencyKey('rename', organization.organizationId) });
+    run(envelope, onAction, submitActionId, { organizationId, organizationName: renameName.trim(), reason: reason.trim(), idempotencyKey: idempotencyKey('rename', organizationId) });
   }
   return (
     <form className="organization-admin-command-form" aria-label="Rename Organization" onSubmit={submitRename}>
       <h4>Rename selected Organization</h4>
       {validationError && <p className="surface-state-inline validation-error" role="alert">{validationError}</p>}
-      <p className="surface-empty-copy">Rename updates the Organization display label only and returns to safe detail.</p>
-      <label>New Organization name<input className="designed-control" value={renameName} onChange={(event) => setRenameName(event.currentTarget.value)} required /></label>
-      <label>Reason<input className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} placeholder="Reason for audit/work trace" /></label>
+      <p className="surface-empty-copy">Rename updates the Organization display label only and returns to safe detail. Tenant/customer application data, provider state, billing details, and support access remain outside this form.</p>
+      <dl className="organization-admin-detail"><div><dt>Current display name</dt><dd>{currentName || 'No Organization selected'}</dd></div><div><dt>Selected boundary</dt><dd>{organizationId || 'Open from Organization detail'}</dd></div></dl>
+      <label>New Organization name<input className="designed-control" value={renameName} onChange={(event) => setRenameName(event.currentTarget.value)} required disabled={!organizationId || Boolean(form?.disabledReason)} /></label>
+      <label>Reason<input className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} placeholder="Reason for audit/work trace" disabled={!organizationId || Boolean(form?.disabledReason)} /></label>
       <div className="organization-admin-lifecycle-actions">
-        <button className="surface-action-link secondary" type="submit">Rename</button>
+        <button className="surface-action-link secondary" type="submit" disabled={!organizationId || Boolean(form?.disabledReason)}>{form?.submitLabel ?? 'Rename'}</button>
         <OrganizationBranchReturn envelope={envelope} onAction={onAction} compact />
       </div>
     </form>

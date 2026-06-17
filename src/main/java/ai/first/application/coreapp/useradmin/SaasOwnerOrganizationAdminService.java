@@ -86,6 +86,14 @@ public final class SaasOwnerOrganizationAdminService {
       audit(actor, "ORGANIZATION_RENAME", AdminAuditEvent.Result.NO_OP, "no-op idempotency", existing.tenantId(), correlationId);
       return action("no-op", "Requested Organization name already matches current state.", existing, "rename", idempotencyKey, correlationId);
     }
+    var duplicateVisibleName = repository.tenantRows().stream()
+        .filter(tenant -> !tenant.tenantId().equals(existing.tenantId()))
+        .filter(tenant -> tenant.displayName().equalsIgnoreCase(displayName))
+        .findFirst();
+    if (duplicateVisibleName.isPresent()) {
+      audit(actor, "ORGANIZATION_RENAME", AdminAuditEvent.Result.DENIED, "duplicate-visible-organization-name", existing.tenantId(), correlationId);
+      return action("validation-error", "A visible Organization already uses this name; choose a distinct display name before renaming.", existing, "rename", idempotencyKey, correlationId);
+    }
     var updated = repository.saveTenant(new Tenant(existing.tenantId(), displayName, existing.active()));
     audit(actor, "ORGANIZATION_RENAME", AdminAuditEvent.Result.ALLOWED, safeReason(reason, "organization-renamed"), updated.tenantId(), correlationId);
     return action("accepted", "Organization display name updated without changing Tenant isolation or support access.", updated, "rename", idempotencyKey, correlationId);
