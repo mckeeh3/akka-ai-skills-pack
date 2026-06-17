@@ -668,10 +668,30 @@ class WorkstreamServiceTest {
     assertTrue(populatedCustomerAdmins.resultSurface().toString().contains("existing.customer.admin@example.test"));
     assertTrue(populatedCustomerAdmins.resultSurface().toString().contains("customer.admin@example.test"));
     assertTrue(populatedCustomerAdmins.resultSurface().toString().contains("surface-user-admin-customer-admin-detail"));
-    assertTrue(populatedCustomerAdmins.resultSurface().toString().contains("action-display-user-detail"));
-    assertTrue(populatedCustomerAdmins.resultSurface().toString().contains("action-display-invitation-detail"));
+    assertTrue(populatedCustomerAdmins.resultSurface().toString().contains("action-open-customer-admin-detail"));
+    assertTrue(populatedCustomerAdmins.resultSurface().toString().contains("action-open-customer-admin-invitation-detail"));
     assertTrue(populatedCustomerAdmins.resultSurface().toString().contains("sibling-customers-redacted"));
     assertFalse(populatedCustomerAdmins.resultSurface().toString().contains("sibling.customer.admin@example.test"));
+
+    var customerAdminMembershipDetail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-customer-admin-detail", "user-admin.open-customer-admin-detail", "manage-customer-admins", "tenant.customer_admin.list", Map.of("customerId", customerId, "membershipId", "membership-existing-customer-admin"), null, "membership-admin", populatedCustomerAdmins.resultSurface().surfaceId(), "corr-customer-admin-membership-detail"));
+    assertEquals("accepted", customerAdminMembershipDetail.status());
+    assertEquals("surface-user-admin-customer-admin-detail", customerAdminMembershipDetail.resultSurface().surfaceId());
+    assertEquals("user_admin.customer_admin_detail.v1", customerAdminMembershipDetail.resultSurface().data().get("surfaceContract"));
+    assertEquals("customer-admin-membership", customerAdminMembershipDetail.resultSurface().data().get("recordKind"));
+    assertTrue(customerAdminMembershipDetail.resultSurface().toString().contains("tenant.customer_admin.list"));
+    assertTrue(customerAdminMembershipDetail.resultSurface().toString().contains("action-open-user-admin-role-change-preview"));
+    assertTrue(customerAdminMembershipDetail.resultSurface().toString().contains("action-open-user-admin-membership-status-confirmation"));
+    assertTrue(customerAdminMembershipDetail.resultSurface().toString().contains("sibling-customers-redacted"));
+
+    var customerAdminInvitationDetail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-customer-admin-invitation-detail", "user-admin.open-customer-admin-invitation-detail", "manage-customer-admins", "tenant.customer_admin.list", Map.of("customerId", customerId, "invitationId", customerScopedInvitation.invitationId()), null, "membership-admin", populatedCustomerAdmins.resultSurface().surfaceId(), "corr-customer-admin-invitation-detail"));
+    assertEquals("accepted", customerAdminInvitationDetail.status());
+    assertEquals("surface-user-admin-customer-admin-detail", customerAdminInvitationDetail.resultSurface().surfaceId());
+    assertEquals("customer-admin-invitation", customerAdminInvitationDetail.resultSurface().data().get("recordKind"));
+    assertTrue(customerAdminInvitationDetail.resultSurface().toString().contains("action-open-useradmin-invitation-resend-confirmation"));
+    assertTrue(customerAdminInvitationDetail.resultSurface().toString().contains("action-open-useradmin-invitation-revoke-confirmation"));
+    assertFalse(customerAdminInvitationDetail.resultSurface().toString().contains("rawToken"));
 
     var genericInvite = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-invite-user", "action-invite-user", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", Map.of("email", "tenant.invitee@example.test", "displayName", "Tenant Invitee", "roles", "TENANT_EMPLOYEE"), "idem-generic-tenant-invite", "membership-admin", "surface-user-admin-invitation-create", "corr-generic-tenant-invite"));

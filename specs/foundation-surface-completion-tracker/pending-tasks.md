@@ -3993,7 +3993,7 @@
 
 ### TASK-FSCT-113: Verify or complete runtime implementation for `surface-user-admin-customer-admin-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-112]
 - surface id: `surface-user-admin-customer-admin-detail`
@@ -4024,6 +4024,7 @@
   - purpose: Shows one Customer Admin membership/invitation.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admin-detail`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-admin-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented and verified the real runtime path for `surface-user-admin-customer-admin-detail`: protected WorkstreamEndpoint action APIs route `action-open-customer-admin-detail` and `action-open-customer-admin-invitation-detail` to backend-owned `WorkstreamService`, which reauthorizes Organization/Tenant Admin selected `AuthContext`, visible active Customer target, and `tenant.customer_admin.list`; Customer Admin list rows now use backend-authored detail actions; membership/invitation targets are resolved only inside the selected `ScopeType.CUSTOMER` Customer boundary; detail payloads expose `user_admin.customer_admin_detail.v1` with Customer boundary proof, admin target summary, task entries, branch returns, trace/correlation refs, no-inline-mutation state, and redaction/no-enumeration for sibling Customers, tenant app data, raw JWTs, provider payloads, and invitation tokens. Frontend generic scoped inspection rendering already consumes the contract without client-side authority inference. Checks passed: focused WorkstreamService test, protected Akka-hosted UserAdminBrowserWorkstreamSmokeTest Customer branch test, frontend typecheck, frontend contract test, focused `rg` evidence, and `git diff --check`. Readiness level: `api-smoked`; full testing remains queued in TASK-FSCT-114.
 
 ### TASK-FSCT-114: Verify or complete runtime testing for `surface-user-admin-customer-admin-detail`
 
