@@ -367,7 +367,8 @@ public final class UserAdminService {
   private void requireRead(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
     requireScope(actor, scopeType, tenantId, customerId);
     var capability = readCapability(actor, scopeType);
-    if (!actor.selectedContext().hasCapability(capability)) {
+    if (!actor.selectedContext().hasCapability(capability)
+        && !(scopeType == ScopeType.TENANT && actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER && actor.selectedContext().hasCapability("saas_owner.tenant.read"))) {
       audit(actor, null, "USER_DIRECTORY_SEARCH", AdminAuditEvent.Result.DENIED, "missing-capability:" + capability, actor.correlationId());
       throw new AuthorizationException(403, "missing-capability:" + capability);
     }
@@ -376,7 +377,8 @@ public final class UserAdminService {
   private void requireManage(AuthContextResolver.ResolvedMe actor, ScopeType scopeType, String tenantId, String customerId) {
     requireScope(actor, scopeType, tenantId, customerId);
     var capability = manageCapability(actor, scopeType);
-    if (!actor.selectedContext().hasCapability(capability)) {
+    if (!actor.selectedContext().hasCapability(capability)
+        && !(scopeType == ScopeType.TENANT && actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER && actor.selectedContext().hasCapability("saas_owner.tenant.manage"))) {
       throw new AuthorizationException(403, "missing-capability:" + capability);
     }
   }

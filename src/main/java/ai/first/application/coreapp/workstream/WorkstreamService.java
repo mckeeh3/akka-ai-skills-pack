@@ -1644,23 +1644,155 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope organizationAdminsSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_READ_CAPABILITY);
-    return adminSubjectSurface(actor, correlationId, "surface-user-admin-organization-admins", "Organization Admins", "user_admin.organization_admins.v1", organizationBranchNavigation(correlationId), "TENANT_ADMIN", "Organization Admin users and invitations for the selected Organization/Tenant appear here when a target Organization is selected. Rows route to inspection/task surfaces and never expose tenant application data.", withOrganizationBranchReturn(List.of(openOrganizationAdminInvitationCreateAction(), openAuditAction())));
+    var branchNavigation = organizationBranchNavigation(correlationId);
+    return envelope("surface-user-admin-organization-admins", "list-search", "Organization Admins", actor, correlationId,
+        mapOf(
+            "surfaceContract", "user_admin.organization_admins.v1",
+            "scopeLabel", "SaaS Owner scope",
+            "scopeType", "saas_owner",
+            "authorityBasis", "Backend checks selected SaaS Owner AuthContext, visible Organization read authority, and saas_owner.organization_admin.list before loading rows; browser filters cannot grant Organization Admin authority.",
+            "branchNavigation", branchNavigation,
+            "branchRootSurfaceId", branchNavigation.get("branchRootSurfaceId"),
+            "branchReturnActionId", branchNavigation.get("branchReturnActionId"),
+            "branchReturnLabel", branchNavigation.get("branchReturnLabel"),
+            "detailReturnActionId", "action-organization-read",
+            "query", "",
+            "rows", List.of(),
+            "admins", List.of(),
+            "invitations", List.of(),
+            "filters", mapOf("role", "TENANT_ADMIN", "query", "", "membershipStatus", List.of("active", "suspended", "removed"), "invitationStatus", List.of("pending", "expired", "accepted", "revoked"), "attentionState", List.of("first-admin-bootstrap", "last-admin-risk", "provider-blocked"), "backendAuthored", true),
+            "sort", mapOf("default", "backend-policy"),
+            "pageInfo", mapOf("visibleCount", 0, "hasMore", false),
+            "summary", "Select an Organization before listing Organization Admin users and invitations. Rows are backend-authored and never expose tenant application data.",
+            "adminSummary", mapOf("visibleAdminCount", 0, "activeAdminCount", 0, "suspendedOrDisabledAdminCount", 0, "pendingInvitationCount", 0, "expiredInvitationCount", 0, "deliveryFailureCount", 0, "firstAdminBootstrapEligible", false, "lastAdminRiskCount", 0, "providerBlockedCount", 0, "outboxBlockedCount", 0, "traceRefs", List.of("trace-organization-admins-summary-" + stableSuffix(correlationId))),
+            "authorizedActions", List.of("action-user-admin-show-organization-admins", "action-open-organization-admin-invitation-create", "action-display-user-detail", "action-display-invitation-detail", "action-organization-read", "action-open-audit-trace"),
+            "availableTaskActions", organizationAdminListActions().stream().map(this::surfaceActionSummary).toList(),
+            "systemStates", List.of("missing-target"),
+            "lastResult", mapOf("status", "missing-target", "message", "Open Organization Admins from a visible Organization detail so the backend can include selected Organization scope proof.", "correlationId", correlationId),
+            "traceRefs", List.of("trace-organization-admins-missing-target-" + stableSuffix(correlationId)),
+            "correlationId", correlationId,
+            "redaction", List.of("tenant-app-data-redacted", "customer-facts-redacted", "raw-workos-ids-redacted", "raw-jwt-redacted", "invitation-token-redacted", "provider-payload-redacted", "hidden-organization-admin-counts-redacted"),
+            "emptyMessage", "Select a visible Organization before loading Organization Admins.",
+            "boundaryNotice", "Organization Admin management is SaaS Owner scoped to one selected Organization/Tenant and does not expose tenant application data, customers, provider secrets, billing, support internals, or hidden admin counts."),
+        organizationAdminListActions());
   }
 
   private SurfaceEnvelope organizationAdminsSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_READ_CAPABILITY);
     var detail = readOrganizationDetail(actor, input, correlationId);
     var organization = detail.organization();
-    var surface = organizationAdminsSurface(actor, correlationId);
-    surface.data().put("recordId", organization.organizationId());
-    surface.data().put("recordLabel", organization.organizationName());
-    surface.data().put("recordKind", "organization");
-    surface.data().put("tenantId", organization.organizationId());
-    surface.data().put("organizationId", organization.organizationId());
-    surface.data().put("organizationName", organization.organizationName());
-    surface.data().put("targetScope", mapOf("scopeType", ScopeType.TENANT.name(), "tenantId", organization.organizationId(), "organizationId", organization.organizationId(), "organizationName", organization.organizationName(), "source", "backend-authored-organization-detail", "correlationId", correlationId, "traceRefs", detail.traceRefs()));
-    surface.data().put("traceRefs", detail.traceRefs());
-    return surface;
+    var organizationId = organization.organizationId();
+    var adminRows = userDirectoryView.list(actor, ScopeType.TENANT, organizationId, null).stream()
+        .filter(user -> user.roles().contains(FoundationRole.TENANT_ADMIN))
+        .map(user -> mapOf(
+            "id", user.membershipId(),
+            "rowId", user.membershipId(),
+            "recordKind", "organization_admin_membership",
+            "accountId", user.accountId(),
+            "membershipId", user.membershipId(),
+            "tenantId", organizationId,
+            "organizationId", organizationId,
+            "organizationName", organization.organizationName(),
+            "rowType", "organization-admin",
+            "targetObjectType", "organization-admin-membership",
+            "targetSurfaceId", "surface-user-admin-user-detail",
+            "targetSurfaceType", "show-inspection",
+            "targetActionId", "action-display-user-detail",
+            "openActionId", "action-display-user-detail",
+            "displayName", user.displayName(),
+            "email", user.accountId(),
+            "roles", roleLabels(user.roles()),
+            "role", roleLabels(user.roles()),
+            "status", user.membershipStatus().name().toLowerCase(Locale.ROOT),
+            "lastAdminRisk", false,
+            "attentionBadges", user.membershipStatus() == MembershipStatus.ACTIVE ? List.of() : List.of("membership-not-active"),
+            "actionAvailability", List.of("open-detail", "open-audit"),
+            "safeActionContext", mapOf("organizationId", organizationId, "tenantId", organizationId, "membershipId", user.membershipId(), "accountId", user.accountId()),
+            "traceRefs", List.of("trace-organization-admin-membership-" + stableSuffix(user.membershipId())),
+            "redactionState", "visible"))
+        .toList();
+    var invitationRows = invitationView.list(actor, ScopeType.TENANT, organizationId, null).stream()
+        .filter(invitation -> invitation.requestedRoles().contains(FoundationRole.TENANT_ADMIN))
+        .map(invitation -> mapOf(
+            "id", invitation.invitationId(),
+            "rowId", invitation.invitationId(),
+            "recordKind", "organization_admin_invitation",
+            "invitationId", invitation.invitationId(),
+            "tenantId", organizationId,
+            "organizationId", organizationId,
+            "organizationName", organization.organizationName(),
+            "rowType", "organization-admin-invitation",
+            "targetObjectType", "organization-admin-invitation",
+            "targetSurfaceId", "surface-user-admin-invitation-detail",
+            "targetSurfaceType", "show-inspection",
+            "targetActionId", "action-display-invitation-detail",
+            "openActionId", "action-display-invitation-detail",
+            "displayName", invitation.targetEmail(),
+            "email", invitation.targetEmail(),
+            "roles", roleLabels(invitation.requestedRoles()),
+            "role", roleLabels(invitation.requestedRoles()),
+            "status", invitation.status().name().toLowerCase(Locale.ROOT),
+            "invitationStatus", invitation.status().name().toLowerCase(Locale.ROOT),
+            "deliveryStatus", invitation.deliveryStatus().name().toLowerCase(Locale.ROOT),
+            "lastAdminRisk", false,
+            "attentionBadges", invitation.canResend() ? List.of("resend-available") : List.of(),
+            "actionAvailability", List.of("open-invitation-detail", "open-audit"),
+            "safeActionContext", mapOf("organizationId", organizationId, "tenantId", organizationId, "invitationId", invitation.invitationId()),
+            "traceRefs", List.of("trace-organization-admin-invitation-" + stableSuffix(invitation.invitationId())),
+            "redactionState", "invitation-token-redacted"))
+        .toList();
+    var rows = new ArrayList<Map<String, Object>>();
+    rows.addAll(adminRows);
+    rows.addAll(invitationRows);
+    var activeAdminCount = adminRows.stream().filter(row -> "active".equals(row.get("status"))).count();
+    var suspendedOrDisabledAdminCount = adminRows.size() - activeAdminCount;
+    var pendingInvitationCount = invitationRows.stream().filter(row -> "pending".equals(row.get("invitationStatus"))).count();
+    var expiredInvitationCount = invitationRows.stream().filter(row -> "expired".equals(row.get("invitationStatus"))).count();
+    var providerBlockedCount = invitationRows.stream().filter(row -> String.valueOf(row.get("deliveryStatus")).contains("failed") || String.valueOf(row.get("deliveryStatus")).contains("blocked")).count();
+    var branchNavigation = organizationBranchNavigation(correlationId);
+    var traceRefs = Stream.concat(detail.traceRefs().stream(), Stream.of("trace-organization-admins-" + stableSuffix(correlationId))).toList();
+    return envelope("surface-user-admin-organization-admins", "list-search", "Organization Admins", actor, correlationId,
+        mapOf(
+            "surfaceContract", "user_admin.organization_admins.v1",
+            "scopeLabel", "SaaS Owner scope",
+            "scopeType", "saas_owner",
+            "authorityBasis", "Backend checks selected SaaS Owner AuthContext, visible Organization read authority, and saas_owner.organization_admin.list before listing TENANT_ADMIN memberships/invitations; browser filters cannot grant authority.",
+            "branchNavigation", branchNavigation,
+            "branchRootSurfaceId", branchNavigation.get("branchRootSurfaceId"),
+            "branchReturnActionId", branchNavigation.get("branchReturnActionId"),
+            "branchReturnLabel", branchNavigation.get("branchReturnLabel"),
+            "detailReturnActionId", "action-organization-read",
+            "recordId", organizationId,
+            "recordLabel", organization.organizationName(),
+            "recordKind", "organization",
+            "tenantId", organizationId,
+            "organizationId", organizationId,
+            "organizationName", organization.organizationName(),
+            "organizationStatus", organization.status(),
+            "targetScope", mapOf("scopeType", ScopeType.TENANT.name(), "tenantId", organizationId, "organizationId", organizationId, "organizationName", organization.organizationName(), "source", "backend-authored-organization-detail", "correlationId", correlationId, "traceRefs", detail.traceRefs()),
+            "query", "",
+            "rows", rows,
+            "admins", adminRows,
+            "invitations", invitationRows,
+            "filters", mapOf("role", "TENANT_ADMIN", "query", "", "membershipStatus", List.of("active", "suspended", "removed"), "invitationStatus", List.of("pending", "expired", "accepted", "revoked"), "attentionState", List.of("first-admin-bootstrap", "last-admin-risk", "provider-blocked"), "backendAuthored", true),
+            "sort", mapOf("default", "backend-policy"),
+            "pageInfo", mapOf("visibleCount", rows.size(), "hasMore", false),
+            "summary", "Organization Admin users and invitations visible for the selected Organization. Rows route through backend-authored actions and never expose tenant application data.",
+            "adminSummary", mapOf("visibleAdminCount", adminRows.size(), "activeAdminCount", activeAdminCount, "suspendedOrDisabledAdminCount", suspendedOrDisabledAdminCount, "pendingInvitationCount", pendingInvitationCount, "expiredInvitationCount", expiredInvitationCount, "deliveryFailureCount", providerBlockedCount, "firstAdminBootstrapEligible", activeAdminCount == 0, "lastAdminRiskCount", activeAdminCount == 1 ? 1 : 0, "providerBlockedCount", providerBlockedCount, "outboxBlockedCount", providerBlockedCount, "traceRefs", traceRefs),
+            "authorizedActions", List.of("action-user-admin-show-organization-admins", "action-open-organization-admin-invitation-create", "action-display-user-detail", "action-display-invitation-detail", "action-organization-read", "action-open-audit-trace"),
+            "availableTaskActions", organizationAdminListActions().stream().map(this::surfaceActionSummary).toList(),
+            "systemStates", List.of(rows.isEmpty() ? "empty" : "ready"),
+            "lastResult", mapOf("status", rows.isEmpty() ? "empty" : "ready", "message", "Organization Admin list loaded through protected workstream runtime path with backend-owned Organization scope proof.", "correlationId", correlationId),
+            "traceRefs", traceRefs,
+            "correlationId", correlationId,
+            "redaction", List.of("tenant-app-data-redacted", "customer-facts-redacted", "raw-workos-ids-redacted", "raw-jwt-redacted", "invitation-token-redacted", "provider-payload-redacted", "hidden-organization-admin-counts-redacted"),
+            "emptyMessage", "No Organization Admin users or invitations are visible for this selected Organization.",
+            "boundaryNotice", "Organization Admin management is SaaS Owner scoped to one selected Organization/Tenant and does not expose tenant application data, customers, provider secrets, billing, support internals, or hidden admin counts."),
+        organizationAdminListActions());
+  }
+
+  private List<SurfaceAction> organizationAdminListActions() {
+    return withOrganizationBranchReturn(List.of(organizationReadAction(), displayDetailAction(), displayInvitationDetailAction(), openOrganizationAdminInvitationCreateAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope organizationAdminInvitationCreateSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {

@@ -1958,7 +1958,11 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("accepted", admins.status());
     assertEquals("surface-user-admin-organization-admins", admins.resultSurface().surfaceId());
     assertEquals(TENANT_ID, admins.resultSurface().data().get("organizationId"));
+    assertTrue(admins.resultSurface().toString().contains("user_admin.organization_admins.v1"));
+    assertTrue(admins.resultSurface().toString().contains("TENANT_ADMIN"));
+    assertTrue(admins.resultSurface().toString().contains("adminSummary"));
     assertTrue(admins.resultSurface().toString().contains("targetScope"));
+    assertTrue(admins.resultSurface().toString().contains("tenant-app-data-redacted"));
     assertBrowserSafe(admins.resultSurface());
 
     var adminInviteTask = runActionAs(new CapabilityActionRequest(

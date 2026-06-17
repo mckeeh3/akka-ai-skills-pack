@@ -491,7 +491,11 @@ class WorkstreamServiceTest {
     assertEquals("accepted", orgAdmins.status());
     assertEquals("surface-user-admin-organization-admins", orgAdmins.resultSurface().surfaceId());
     assertEquals("tenant-starter", orgAdmins.resultSurface().data().get("organizationId"));
+    assertTrue(orgAdmins.resultSurface().toString().contains("user_admin.organization_admins.v1"));
+    assertTrue(orgAdmins.resultSurface().toString().contains("TENANT_ADMIN"));
+    assertTrue(orgAdmins.resultSurface().toString().contains("adminSummary"));
     assertTrue(orgAdmins.resultSurface().toString().contains("targetScope"));
+    assertTrue(orgAdmins.resultSurface().toString().contains("tenant-app-data-redacted"));
     assertBrowserPayloadSafe(orgAdmins.resultSurface());
 
     var directOrganizationDetail = service.surface(ownerIdentity(), "membership-owner", "surface-user-admin-organization-detail", "corr-tree-org-detail-direct");
