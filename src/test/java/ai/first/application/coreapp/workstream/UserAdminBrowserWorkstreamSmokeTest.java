@@ -236,7 +236,61 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("user_admin.membership_status_confirmation.v1", membershipTask.resultSurface().data().get("surfaceContract"));
     assertTrue(membershipTask.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-users"));
     assertTrue(membershipTask.resultSurface().toString().contains("last-admin-denied"));
+    assertTrue(membershipTask.resultSurface().toString().contains("noRoleMutation=true"));
+    assertTrue(membershipTask.resultSurface().toString().contains("noSupportAccessMutation=true"));
+    assertTrue(membershipTask.resultSurface().toString().contains("noInvitationMutation=true"));
     assertBrowserSafe(membershipTask.resultSurface());
+
+    var membershipChanged = runAction(new CapabilityActionRequest(
+        "action-confirm-user-admin-membership-status-change",
+        "action-confirm-user-admin-membership-status-change",
+        "USERADMIN_UPDATE_MEMBER_STATUS",
+        "USERADMIN_UPDATE_MEMBER_STATUS",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "suspended", "reason", "protected browser smoke pause"),
+        "idem-browser-smoke-membership-status-suspend",
+        SELECTED_CONTEXT_ID,
+        membershipTask.resultSurface().surfaceId(),
+        "corr-browser-smoke-membership-status-suspend"));
+    assertEquals("accepted", membershipChanged.status());
+    assertEquals("surface-user-admin-user-detail", membershipChanged.resultSurface().surfaceId());
+    assertEquals("corr-browser-smoke-membership-status-suspend", membershipChanged.correlationId());
+    assertTrue(membershipChanged.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-update-member-status")));
+    assertTrue(membershipChanged.resultSurface().toString().contains("membershipStatus=suspended"));
+    assertTrue(membershipChanged.resultSurface().toString().contains("role"));
+    assertTrue(membershipChanged.resultSurface().toString().contains("supportAccess"));
+    assertTrue(membershipChanged.resultSurface().toString().contains("canMutateInline=false"));
+    assertBrowserSafe(membershipChanged.resultSurface());
+
+    var membershipReplay = runAction(new CapabilityActionRequest(
+        "action-confirm-user-admin-membership-status-change",
+        "action-confirm-user-admin-membership-status-change",
+        "USERADMIN_UPDATE_MEMBER_STATUS",
+        "USERADMIN_UPDATE_MEMBER_STATUS",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "suspended", "reason", "duplicate protected browser smoke pause"),
+        "idem-browser-smoke-membership-status-replay",
+        SELECTED_CONTEXT_ID,
+        membershipTask.resultSurface().surfaceId(),
+        "corr-browser-smoke-membership-status-replay"));
+    assertEquals("no-op", membershipReplay.status());
+    assertTrue(membershipReplay.message().contains("already matches"));
+    assertTrue(membershipReplay.resultSurface().toString().contains("membershipStatus=suspended"));
+    assertBrowserSafe(membershipReplay.resultSurface());
+
+    var membershipReactivated = runAction(new CapabilityActionRequest(
+        "action-confirm-user-admin-membership-status-change",
+        "action-confirm-user-admin-membership-status-change",
+        "USERADMIN_UPDATE_MEMBER_STATUS",
+        "USERADMIN_UPDATE_MEMBER_STATUS",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "active", "reason", "protected browser smoke restore"),
+        "idem-browser-smoke-membership-status-reactivate",
+        SELECTED_CONTEXT_ID,
+        membershipTask.resultSurface().surfaceId(),
+        "corr-browser-smoke-membership-status-reactivate"));
+    assertEquals("accepted", membershipReactivated.status());
+    assertEquals("surface-user-admin-user-detail", membershipReactivated.resultSurface().surfaceId());
+    assertTrue(membershipReactivated.resultSurface().toString().contains("membershipStatus=active"));
+    assertTrue(membershipReactivated.resultSurface().toString().contains("trace-useradmin-status-action"));
+    assertBrowserSafe(membershipReactivated.resultSurface());
 
     var hiddenUserTask = runAction(new CapabilityActionRequest(
         "action-open-useradmin-membership-status-confirmation",
