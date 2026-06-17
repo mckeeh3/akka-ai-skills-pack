@@ -1378,7 +1378,7 @@
 
 ### TASK-FSCT-039: Verify or complete runtime testing for `surface-user-admin-users`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-038]
 - surface id: `surface-user-admin-users`
@@ -1403,15 +1403,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
   - surface type: `list-search`
   - surface contract: `user_admin.users.v1`
   - purpose: Scoped searchable directory for users/memberships.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-users`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-users`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted User Admin users-directory runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiTraverseUserAdminSurfaceGraph`: `/ui` shell loads, missing-bearer users surface/action calls are rejected, JWT plus selected tenant-admin `AuthContext` directly loads and action-opens `surface-user-admin-users`, verifies backend-owned `user_admin.users.v1` payload/visible member row/backend-authored row target/action/invite action/trace/correlation/secret-boundary evidence, opens user detail, exercises invite create/result and identity-exception routing, and denies hidden invitation detail without enumeration. runtime evidence: readiness level `runtime-ready` for the users-directory testing scope; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/provider/fail-closed/trace coverage included missing-bearer rejection, hidden-target no-enumeration denial, access-review provider/runtime fail-closed evidence, trace refs, and correlation ids; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiTraverseUserAdminSurfaceGraph test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and runtime evidence validator.
 
 ### TASK-FSCT-040: Verify or complete app-description specification for `surface-user-admin-user-detail`
 

@@ -64,6 +64,12 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .responseBodyAs(String.class)
         .invoke(), "Protected dashboard surface must reject missing bearer tokens.");
 
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-users")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected users directory surface must reject missing bearer tokens.");
+
     var bootstrap = httpClient
         .GET("/api/workstream/bootstrap")
         .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
@@ -87,6 +93,19 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-user-admin-show-users")));
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-invitation-create")));
     assertBrowserSafe(dashboard);
+
+    var directUsers = getSurface("surface-user-admin-users", "corr-browser-smoke-users-direct");
+    assertEquals("surface-user-admin-users", directUsers.surfaceId());
+    assertEquals("list-search", directUsers.surfaceType());
+    assertEquals("user_admin.users.v1", directUsers.data().get("surfaceContract"));
+    assertEquals("corr-browser-smoke-users-direct", directUsers.correlationId());
+    assertTrue(directUsers.toString().contains("surface-user-admin-users"));
+    assertTrue(directUsers.toString().contains("action-user-admin-show-users"));
+    assertTrue(directUsers.toString().contains("member@example.test"));
+    assertTrue(directUsers.toString().contains("targetSurfaceId=surface-user-admin-user-detail"));
+    assertTrue(directUsers.toString().contains("action-open-useradmin-invitation-create"));
+    assertTrue(directUsers.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-user-admin-users")));
+    assertBrowserSafe(directUsers);
 
     var accessReviewBlocked = runAction(new CapabilityActionRequest(
         "action-useradmin-start-access-review",
@@ -136,13 +155,17 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         dashboard.surfaceId(),
         "corr-browser-smoke-users"));
     assertEquals("accepted", users.status());
+    assertEquals("corr-browser-smoke-users", users.correlationId());
     assertNotNull(users.resultSurface());
     assertEquals("surface-user-admin-users", users.resultSurface().surfaceId());
     assertEquals("list-search", users.resultSurface().surfaceType());
     assertEquals("user_admin.users.v1", users.resultSurface().data().get("surfaceContract"));
+    assertTrue(users.resultSurface().toString().contains("action-user-admin-show-users"));
+    assertTrue(users.resultSurface().toString().contains("status"));
     assertTrue(users.resultSurface().toString().contains("member@example.test"));
     assertTrue(users.resultSurface().toString().contains("targetSurfaceId=surface-user-admin-user-detail"));
     assertTrue(users.resultSurface().toString().contains("openActionId=action-display-user-detail"));
+    assertTrue(users.resultSurface().toString().contains("trace-surface-user-admin-users"));
     assertBrowserSafe(users.resultSurface());
 
     var detail = runAction(new CapabilityActionRequest(
