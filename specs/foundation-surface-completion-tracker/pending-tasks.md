@@ -3324,7 +3324,7 @@
 
 ### TASK-FSCT-094: Verify or complete app-description specification for `surface-user-admin-organization-suspend-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-organization-suspend-confirmation`
@@ -3353,6 +3353,7 @@
   - purpose: Organization suspension confirmation surface.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-suspend-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated app-description contract for `surface-user-admin-organization-suspend-confirmation` covering User Admin/`user-admin-agent` ownership, Organization branch placement, SaaS Owner/App Admin `AuthContext`, `saas_owner.organization.suspend` authorization, frontend-safe confirmation/eligibility/action payloads, destructive consequence and reason requirements, no-enumeration denial/stale/no-op/idempotent/approval states, redaction/secret boundaries, audit/work trace/correlation obligations, accessibility/responsive behavior, and acceptance/regression/security tests; tracker evidence updated. checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
 
 ### TASK-FSCT-095: Verify or complete runtime implementation for `surface-user-admin-organization-suspend-confirmation`
 
