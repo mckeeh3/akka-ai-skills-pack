@@ -357,7 +357,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-identity-exception-review` decision-card/workflow-status contract covering identity/owner/placement, selected app-owner/tenant/customer `AuthContext` and `user_admin.identity_relink.review` authority, frontend-safe envelope/subject/exception/evidence/provider-readiness/review-decision/recovery-plan/progress/action payload schema, approve/deny/more-info/retry/cancel/return/audit action mappings, forbidden provider/JWT/WorkOS/token/hidden-scope payload boundaries, no-enumeration authorization behavior, validation/stale/conflict/provider-tool-policy-blocked/resolved/rejected/no-op/idempotent replay states, trace/audit/correlation contract, accessibility/responsive expectations, acceptance/security/observability regression coverage, and sufficiency review. Checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description, and `git diff --check`. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

@@ -2476,7 +2476,7 @@
 
 ### TASK-FSCT-070: Verify or complete app-description specification for `surface-user-admin-identity-exception-review`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-identity-exception-review`
@@ -2505,6 +2505,7 @@
   - purpose: Identity-link/relink exception review and approved recovery routing.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-identity-exception-review` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated implementation-ready decision-card/workflow-status contract for identity exception review, including payload schema, approve/deny/more-info/retry/cancel/return/audit actions, selected AuthContext authorization, hidden/cross-scope no-enumeration denial, provider/tool/policy fail-closed behavior, recovery-plan semantics, trace/audit/correlation, accessibility/responsive expectations, acceptance/security/observability tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-071: Verify or complete runtime implementation for `surface-user-admin-identity-exception-review`
 
