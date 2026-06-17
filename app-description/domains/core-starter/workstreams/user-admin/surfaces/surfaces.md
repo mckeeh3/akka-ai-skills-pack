@@ -625,6 +625,64 @@ Authorization, trace, accessibility, and tests:
 
 Surface-description sufficiency review: `surface-user-admin-user-detail` is sufficiently unambiguous for developers/generators to implement and review the show/inspection objective without inventing payload fields, task actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove protected API/action paths, backend-derived task routing, role-specific scope variants, denial/no-enumeration behavior, trace/correlation, provider/outbox/model fail-closed summaries, and browser secret boundaries before marking implementation/testing objectives done.
 
+### `surface-user-admin-invitation-create` create-form contract
+
+- Surface id: `surface-user-admin-invitation-create`.
+- Surface type: `create-form`.
+- Surface contract: `user_admin.invitation_create.v1`.
+- Owning workstream: User Admin.
+- Owning functional agent: `user-admin-agent`.
+- Placement: User Directory branch descendant opened from `surface-user-admin-dashboard` visible invite actions, `surface-user-admin-users` empty/ready invite actions, and authorized deep links by `action-open-user-admin-invitation-create`; branch return uses `action-user-admin-show-users` with backend-shaped safe filters and focus hints.
+- Required context: authenticated active account, selected app-owner, tenant, or customer `AuthContext`, active actor membership, and backend `user_admin.invite_user` capability for the exact target scope. SaaS Owner/App Admin, Tenant Admin, and Customer Admin role options are backend-derived for the selected scope; disabled actors, stale contexts, missing memberships, support-only contexts, hidden targets, cross-tenant/customer scopes, and missing capability attempts return `surface-user-admin-system-message` without enumerating hidden people, roles, customers, tenants, invitations, or policies.
+- User goal: invite a user into the currently selected authorized scope with a safe role, clear reason, outbox/provider readiness, idempotent submission, and success routing to the lifecycle-aware invitation detail surface. The form never mutates an existing membership inline and never sends or claims email delivery outside the governed invitation/outbox path.
+
+Frontend-safe payload for `user_admin.invitation_create.v1`:
+
+- Envelope fields: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType`, `customerLabel?`, `authorityBasis`, `branchRootSurfaceId`, `branchReturnActionId`, `branchReturnLabel`, `dashboardOriginQueueId?`, `traceRefs[]`, `correlationId`, `redaction`, `boundaryNotice`, `formState`, `validationMessages`, `systemStates`, and `lastResult`.
+- `form`: `{ emailDraft?, displayNameDraft?, reasonDraft?, targetRoleOptions[], selectedTargetRoles[], targetCustomerOptions?, selectedCustomerId?, expiryOptions[], selectedExpiry?, idempotencyKeyHint, submitLabel, cancelActionId, submitActionId, disabledReason? }`. Role, customer, and expiry options are backend-authored for the selected scope; unsupported roles, sibling customers, hidden tenants, provider-managed fields, and policy-internal ids are not rendered.
+- `scopeSummary`: browser-safe selected-scope label/type, visible administered population, invite authority summary, customer boundary when applicable, support-access boundary when applicable, and stale-context freshness marker.
+- `policyContext`: `{ duplicateOpenInvitePolicy, selfInvitePolicy, lastAdminPolicyImpact?, allowedEmailDomains?, maxPendingInviteCount?, approvalRequired?, reasonRequired, traceRefs[] }` rendered as user-facing guidance rather than raw policy clauses.
+- `deliveryReadiness`: `{ outboxStatus, providerStatus, retryEligible, failClosedMessage?, expectedDeliveryChannel: in_app_or_email, noFakeSuccess, traceRefs[] }`; provider/outbox blocked states must not fabricate invitation delivery or hide failed readiness.
+- `authorizedActions[]`: validate draft, submit invitation, return to users, return to dashboard, open visible duplicate invitation detail when authorized, and open admin audit evidence. Unavailable actions are omitted or include only a safe disabled reason.
+- Role-gated `diagnosticMetadata` may include support/audit labels for trace or outbox evidence; default payload must not expose raw trace event ids, idempotency/correlation secrets, provider payloads, token hashes, or policy implementation ids.
+
+Redaction and forbidden payload boundaries:
+
+- Must not expose raw WorkOS ids unless explicitly policy-safe, raw JWT/session values, invitation tokens/token hashes, Resend/provider payloads or secrets, full email body content, hidden user or invitation identities/counts, hidden role/capability lists, sibling customer or cross-tenant facts, private My Account settings/profile data beyond the browser-safe target draft, model/provider config, raw idempotency keys, or unredacted audit evidence.
+- User-facing copy uses scoped language such as “Invite a Tenant Admin”, “Invite a Customer User”, or “Invite a user visible in this Organization.” Direct denied, duplicate-hidden, stale, or cross-scope attempts use no-enumeration recovery through `surface-user-admin-system-message`.
+
+Actions and result surfaces:
+
+| Action id | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| `action-open-user-admin-invitation-create` | `user_admin.invite_user` / `create-or-resend-invitation` | Open this create form with selected scope, role/customer/expiry options, provider/outbox readiness, branch metadata, trace refs, and safe draft defaults. |
+| `action-validate-user-admin-invitation-draft` | `user_admin.invite_user` / `create-or-resend-invitation` | Validate email, display label, reason, role, customer/scope, duplicate/open-invite state, and policy limits without creating or sending an invitation; return inline validation messages on this form. |
+| `action-submit-user-admin-invitation` | `user_admin.invite_user` / `create-or-resend-invitation` | Reauthorize selected context and target scope, validate draft, enforce idempotency and duplicate/open-invite policy, create or reuse a visible invitation, enqueue delivery only when provider/outbox readiness allows it, audit the attempt, and route to `surface-user-admin-invitation-detail`. Validation, duplicate-hidden, provider/outbox blocked, stale/conflict, approval-required, no-op, or denial results return this form with inline state or `surface-user-admin-system-message`; fake delivery success is forbidden. |
+| `action-open-user-admin-invitation-detail` | `user_admin.acceptance_status.read` / `create-or-resend-invitation` | Open the visible created or duplicate invitation detail; hidden/stale targets return `surface-user-admin-system-message`. |
+| `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to `surface-user-admin-users` with safe filter/context preservation and focus on the invite action or created invitation row when visible. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` with focus on the originating invite/population card when authorized. |
+
+States and outcomes:
+
+- Loading: skeleton create form with selected scope label only until backend authorization and options complete.
+- Ready: backend-authored scope, role/customer/expiry options, boundary notice, policy context, delivery readiness, trace/correlation, branch return, and submit action are visible.
+- Draft validation-error: invalid email, unsupported domain, missing required reason, unsupported role, target customer outside selected scope, duplicate open invitation, self-invite, disabled actor, max pending invites, stale selected context, or policy conflict is reported inline without creating or sending an invitation.
+- Submitting: preserve draft values and focus while backend reauthorizes selected context, target role/scope/customer, duplicate state, provider/outbox readiness, idempotency, and policy.
+- Success: route to `surface-user-admin-invitation-detail` with browser-safe invitation summary, delivery/outbox status, trace/correlation, and branch return metadata.
+- Duplicate/no-op: route to the existing visible invitation detail when authorized or a safe no-enumeration system message when the duplicate target is hidden.
+- Provider/outbox blocked: return a blocked state or system message with recovery steps, trace refs, `noFakeSuccess`, no invitation-token exposure, and no fake delivery state.
+- Forbidden/hidden-not-found/stale/conflict: return `surface-user-admin-system-message` with no hidden population, role, customer, tenant, invitation, or policy enumeration.
+- Partial-data/failure: keep draft values safe for retry and show recovery without fixture/mock delivery data.
+
+Trace, audit, accessibility, and tests:
+
+- Every open, draft validation, submit, duplicate/no-op, provider/outbox blocked result, denial, stale/conflict, branch return, invitation-detail routing, and audit drilldown emits or links an admin work trace with actor account, selected `AuthContext`, safe target email/domain summary, target scope summary, action id, capability decision, provider/outbox readiness summary, result surface id, redaction level, and correlation id.
+- Accessibility/responsive expectations: the form has a stable heading, selected-scope boundary notice, labeled email/display/reason/role/customer/expiry controls, inline errors associated with fields, status messages announced as status text, keyboard-operable submit/cancel/return controls, focus restored to the first invalid field or result message, and responsive stacking that keeps policy/readiness guidance visible before submission.
+- Acceptance/regression coverage must verify dashboard/list-to-create traversal, protected direct create-form load, role-specific SaaS Owner/Tenant Admin/Customer Admin option shaping, successful invitation submission and detail routing, idempotent replay or duplicate-open-invite handling, email/role/customer/reason validation, provider/outbox fail-closed behavior with `noFakeSuccess`, disabled/stale context denial, hidden/cross-tenant/customer denial without enumeration, branch return to users, audit/work trace/correlation links, frontend secret boundaries, keyboard form operation, focus recovery, and responsive form rendering.
+
+Surface-description sufficiency review: `surface-user-admin-invitation-create` is sufficiently unambiguous for developers/generators to implement and review the create-form objective without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove protected API/action paths, backend-authored role/customer/expiry options, idempotent invitation creation or duplicate routing, provider/outbox fail-closed behavior, denial/no-enumeration behavior, trace/correlation, and browser secret boundaries before marking implementation/testing objectives done.
+
 ### Surface payloads and task routing
 
 - Directory: `surfaceContract`, selected `AuthContext`, filters, pagination/sort, dashboard-origin queue id, `rows[]`, visible create/invite action where allowed, redaction, trace refs, and correlation id. Each row includes frontend-safe user/member/invitation/support/review badges, backend-authored `targetSurfaceId`, `targetObjectType`, `openActionId`, action availability, and redaction state; activation opens the target inspection/task surface and never performs mutation inline.

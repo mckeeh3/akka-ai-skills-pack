@@ -240,7 +240,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-invitation-create` create-form contract covering identity/owner/placement, selected AuthContext and `user_admin.invite_user` authority, frontend-safe envelope/form/scope/policy/delivery-readiness payload schema, backend-authored role/customer/expiry options, validate/submit/detail/return/audit actions, forbidden payload and redaction boundaries, provider/outbox fail-closed and duplicate/no-op semantics with `noFakeSuccess`, no-enumeration authorization behavior, trace/audit/correlation contract, accessibility/responsive expectations, acceptance/security/observability regression coverage, and sufficiency review. Checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description, and `git diff --check`. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
