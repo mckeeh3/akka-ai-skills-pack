@@ -492,6 +492,179 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesUserAdminInvitationDetailRuntimePath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-invitation-detail")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Invitation detail surface must reject missing bearer tokens.");
+
+    var create = getSurface("surface-user-admin-invitation-create", "corr-user-invite-detail-create");
+    var submitted = runAction(new CapabilityActionRequest(
+        "action-submit-user-admin-invitation",
+        "action-submit-user-admin-invitation",
+        "USERADMIN_SEND_INVITATION",
+        "USERADMIN_SEND_INVITATION",
+        Map.of("email", "detail.invitee@example.test", "displayName", "Detail Invitee", "roles", "TENANT_EMPLOYEE", "reason", "runtime invitation detail smoke"),
+        "idem-user-invite-detail-runtime",
+        SELECTED_CONTEXT_ID,
+        create.surfaceId(),
+        "corr-user-invite-detail-submit"));
+    assertEquals("accepted", submitted.status());
+    assertEquals("surface-user-admin-invitation-detail", submitted.resultSurface().surfaceId());
+    assertEquals("show-inspection", submitted.resultSurface().surfaceType());
+    assertEquals("user_admin.invitation_detail.v1", submitted.resultSurface().data().get("surfaceContract"));
+    assertEquals("corr-user-invite-detail-submit", submitted.resultSurface().correlationId());
+    assertTrue(submitted.resultSurface().toString().contains("detail.invitee@example.test"));
+    assertTrue(submitted.resultSurface().toString().contains("invitationSummary"));
+    assertTrue(submitted.resultSurface().toString().contains("deliveryStatus"));
+    assertTrue(submitted.resultSurface().toString().contains("lifecycleStatus"));
+    assertTrue(submitted.resultSurface().toString().contains("eligibility"));
+    assertTrue(submitted.resultSurface().toString().contains("availableTaskActions"));
+    assertTrue(submitted.resultSurface().toString().contains("canMutateInline=false"));
+    assertTrue(submitted.resultSurface().toString().contains("action-open-useradmin-invitation-resend-confirmation"));
+    assertTrue(submitted.resultSurface().toString().contains("action-open-useradmin-invitation-revoke-confirmation"));
+    assertTrue(submitted.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-users"));
+    assertFalse(submitted.resultSurface().toString().contains("invite-token"));
+    assertFalse(submitted.resultSurface().toString().contains("tokenHash"));
+    assertFalse(submitted.resultSurface().toString().contains("providerMessageId"));
+    assertBrowserSafe(submitted.resultSurface());
+
+    var actionContext = (Map<?, ?>) submitted.resultSurface().data().get("actionContext");
+    var invitationId = String.valueOf(actionContext.get("invitationId"));
+    assertNotNull(invitationId);
+
+    var directDetail = getSurface("surface-user-admin-invitation-detail", "corr-user-invite-detail-direct");
+    assertEquals("surface-user-admin-invitation-detail", directDetail.surfaceId());
+    assertEquals("user_admin.invitation_detail.v1", directDetail.data().get("surfaceContract"));
+    assertEquals("corr-user-invite-detail-direct", directDetail.correlationId());
+    assertTrue(directDetail.toString().contains("detail.invitee@example.test"));
+    assertBrowserSafe(directDetail);
+
+    var readDetail = runAction(new CapabilityActionRequest(
+        "action-display-invitation-detail",
+        "action-display-invitation-detail",
+        "USERADMIN_LIST_INVITATIONS",
+        "USERADMIN_LIST_INVITATIONS",
+        Map.of("invitationId", invitationId),
+        null,
+        SELECTED_CONTEXT_ID,
+        "surface-user-admin-users",
+        "corr-user-invite-detail-read"));
+    assertEquals("accepted", readDetail.status());
+    assertEquals("surface-user-admin-invitation-detail", readDetail.resultSurface().surfaceId());
+    assertEquals("corr-user-invite-detail-read", readDetail.resultSurface().correlationId());
+    assertTrue(readDetail.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-user-admin-invitation")));
+    assertBrowserSafe(readDetail.resultSurface());
+
+    var resendConfirmation = runAction(new CapabilityActionRequest(
+        "action-open-useradmin-invitation-resend-confirmation",
+        "action-open-useradmin-invitation-resend-confirmation",
+        "USERADMIN_RESEND_INVITATION",
+        "USERADMIN_RESEND_INVITATION",
+        Map.of("invitationId", invitationId),
+        null,
+        SELECTED_CONTEXT_ID,
+        readDetail.resultSurface().surfaceId(),
+        "corr-user-invite-detail-resend-confirm"));
+    assertEquals("accepted", resendConfirmation.status());
+    assertEquals("surface-user-admin-invitation-resend-confirmation", resendConfirmation.resultSurface().surfaceId());
+    assertEquals("user_admin.invitation_resend_confirmation.v1", resendConfirmation.resultSurface().data().get("surfaceContract"));
+    assertTrue(resendConfirmation.resultSurface().toString().contains("idempotencyKeyHint=client-generated"));
+    assertTrue(resendConfirmation.resultSurface().toString().contains("deliveryState"));
+    assertBrowserSafe(resendConfirmation.resultSurface());
+
+    var resent = runAction(new CapabilityActionRequest(
+        "action-useradmin-resend-invitation",
+        "action-useradmin-resend-invitation",
+        "USERADMIN_RESEND_INVITATION",
+        "USERADMIN_RESEND_INVITATION",
+        Map.of("invitationId", invitationId, "reason", "runtime resend smoke"),
+        "idem-user-invite-detail-resend",
+        SELECTED_CONTEXT_ID,
+        resendConfirmation.resultSurface().surfaceId(),
+        "corr-user-invite-detail-resend"));
+    assertEquals("accepted", resent.status());
+    assertEquals("surface-user-admin-invitation-detail", resent.resultSurface().surfaceId());
+    assertTrue(resent.resultSurface().toString().contains("resendCount=1"));
+    assertBrowserSafe(resent.resultSurface());
+
+    var revokeConfirmation = runAction(new CapabilityActionRequest(
+        "action-open-useradmin-invitation-revoke-confirmation",
+        "action-open-useradmin-invitation-revoke-confirmation",
+        "USERADMIN_REVOKE_INVITATION",
+        "USERADMIN_REVOKE_INVITATION",
+        Map.of("invitationId", invitationId),
+        null,
+        SELECTED_CONTEXT_ID,
+        resent.resultSurface().surfaceId(),
+        "corr-user-invite-detail-revoke-confirm"));
+    assertEquals("accepted", revokeConfirmation.status());
+    assertEquals("surface-user-admin-invitation-revoke-confirmation", revokeConfirmation.resultSurface().surfaceId());
+    assertEquals("destructive-lifecycle-confirmation", revokeConfirmation.resultSurface().surfaceType());
+    assertEquals("user_admin.invitation_revoke_confirmation.v1", revokeConfirmation.resultSurface().data().get("surfaceContract"));
+    assertTrue(revokeConfirmation.resultSurface().toString().contains("reasonRequired=true"));
+    assertBrowserSafe(revokeConfirmation.resultSurface());
+
+    var revoked = runAction(new CapabilityActionRequest(
+        "action-useradmin-revoke-invitation",
+        "action-useradmin-revoke-invitation",
+        "USERADMIN_REVOKE_INVITATION",
+        "USERADMIN_REVOKE_INVITATION",
+        Map.of("invitationId", invitationId, "reason", "runtime revoke smoke"),
+        "idem-user-invite-detail-revoke",
+        SELECTED_CONTEXT_ID,
+        revokeConfirmation.resultSurface().surfaceId(),
+        "corr-user-invite-detail-revoke"));
+    assertEquals("accepted", revoked.status());
+    assertEquals("surface-user-admin-invitation-detail", revoked.resultSurface().surfaceId());
+    assertTrue(revoked.resultSurface().toString().contains("revoked"));
+    assertTrue(revoked.resultSurface().toString().contains("revoke_unavailable"));
+    assertBrowserSafe(revoked.resultSurface());
+
+    var revokeReplay = runAction(new CapabilityActionRequest(
+        "action-useradmin-revoke-invitation",
+        "action-useradmin-revoke-invitation",
+        "USERADMIN_REVOKE_INVITATION",
+        "USERADMIN_REVOKE_INVITATION",
+        Map.of("invitationId", invitationId, "reason", "runtime revoke replay"),
+        "idem-user-invite-detail-revoke-replay",
+        SELECTED_CONTEXT_ID,
+        revoked.resultSurface().surfaceId(),
+        "corr-user-invite-detail-revoke-replay"));
+    assertEquals("no-op", revokeReplay.status());
+    assertEquals("surface-user-admin-invitation-detail", revokeReplay.resultSurface().surfaceId());
+    assertBrowserSafe(revokeReplay.resultSurface());
+
+    var hidden = runAction(new CapabilityActionRequest(
+        "action-display-invitation-detail",
+        "action-display-invitation-detail",
+        "USERADMIN_LIST_INVITATIONS",
+        "USERADMIN_LIST_INVITATIONS",
+        Map.of("invitationId", "invitation-hidden-cross-scope"),
+        null,
+        SELECTED_CONTEXT_ID,
+        "surface-user-admin-users",
+        "corr-user-invite-detail-hidden"));
+    assertEquals("denied", hidden.status());
+    assertEquals("surface-user-admin-system-message", hidden.resultSurface().surfaceId());
+    assertFalse(hidden.resultSurface().toString().contains("invitation-hidden-cross-scope"));
+    assertBrowserSafe(hidden.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> runActionAs(new CapabilityActionRequest(
+        "action-display-invitation-detail",
+        "action-display-invitation-detail",
+        "USERADMIN_LIST_INVITATIONS",
+        "USERADMIN_LIST_INVITATIONS",
+        Map.of("invitationId", invitationId),
+        null,
+        "membership-member",
+        "surface-user-admin-users",
+        "corr-user-invite-detail-member-denied"), "workos-member", "member@example.test", "Member User", "membership-member"),
+        "Regular members must not inspect invitation detail through the protected action API.");
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesSaasOwnerAdminsRuntimePath() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-user-admin-saas-owner-admins")

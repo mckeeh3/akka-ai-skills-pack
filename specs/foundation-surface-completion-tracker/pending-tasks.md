@@ -1696,7 +1696,7 @@
 
 ### TASK-FSCT-048: Verify or complete runtime testing for `surface-user-admin-invitation-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-047]
 - surface id: `surface-user-admin-invitation-detail`
@@ -1721,15 +1721,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - notes:
   - surface type: `show-inspection / workflow-status`
   - surface contract: `user_admin.invitation_detail.v1`
   - purpose: Lifecycle-aware invitation inspection.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added dedicated protected Akka-hosted invitation-detail runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminInvitationDetailRuntimePath`, covering create-to-detail, direct protected detail, action read, resend/revoke confirmation task routing, resend, revoke, repeated revoke no-op, hidden invitation denial without enumeration, regular-member denial, missing-bearer rejection, trace/correlation, and browser-safe token/provider/JWT/email-body redaction. Fixed a direct-surface/action fallback overload bug in `WorkstreamService` so invitation-detail routes use the request-input overload instead of the nullable `Invitation` overload. runtime evidence: readiness level `runtime-ready` for invitation-detail testing scope; role/AuthContext/tenant setup covered tenant admin and tenant employee in `tenant-starter`; denial/provider/fail-closed/trace coverage included hidden no-enumeration denial, member denial, provider/outbox boundary coverage via focused service test, no-op revoke/idempotency, trace refs, and correlation ids; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminInvitationDetailRuntimePath test`, `mvn -q -Dtest=WorkstreamServiceTest#userAdminInvitationActionsCreateResendRevokeAndReplayThroughDeterministicServices+userAdminInvitationDetailRendersProviderBlockedDeliveryAsTypedRecoveryState test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-049: Verify or complete app-description specification for `surface-user-admin-invitation-resend-confirmation`
 

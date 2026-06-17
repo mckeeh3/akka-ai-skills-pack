@@ -2765,7 +2765,7 @@ public final class WorkstreamService {
       case "surface-user-admin-users" -> listSurface(actor, correlationId);
       case "surface-user-admin-user-detail" -> detailSurface(actor, correlationId);
       case "surface-user-admin-invitation-create" -> invitationCreateSurface(actor, null, correlationId);
-      case "surface-user-admin-invitation-detail" -> invitationDetailSurface(actor, null, correlationId);
+      case "surface-user-admin-invitation-detail" -> invitationDetailSurface(actor, (Object) null, correlationId);
       case "surface-user-admin-invitation-resend-confirmation" -> invitationResendConfirmationSurface(actor, null, correlationId);
       case "surface-user-admin-invitation-revoke-confirmation" -> invitationRevokeConfirmationSurface(actor, null, correlationId);
       case "surface-user-admin-membership-status-confirmation" -> membershipStatusConfirmationSurface(actor, null, correlationId);
@@ -3186,7 +3186,7 @@ public final class WorkstreamService {
       case "action-open-customer-reactivate" -> customerReactivateSurface(actor, correlationId);
       case "action-user-admin-show-customer-admins" -> customerAdminsSurface(actor, correlationId);
       case "action-open-customer-admin-invitation-create" -> customerAdminInvitationCreateSurface(actor, correlationId);
-      case "action-customer-admin-invite" -> invitationDetailSurface(actor, null, correlationId);
+      case "action-customer-admin-invite" -> invitationDetailSurface(actor, (Object) null, correlationId);
       case "action-customer-create", "action-customer-rename", "action-customer-suspend", "action-customer-reactivate" -> customerDetailSurface(actor, correlationId);
       case "action-open-organization-create" -> organizationCreateSurface(actor, correlationId);
       case "action-open-organization-rename" -> organizationRenameSurface(actor, correlationId);
@@ -3194,10 +3194,10 @@ public final class WorkstreamService {
       case "action-open-organization-reactivate" -> organizationReactivateSurface(actor, correlationId);
       case "action-display-user-detail", "action-replace-membership-role", "action-useradmin-preview-role-change", "action-useradmin-change-member-roles", "action-useradmin-disable-account", "action-useradmin-reactivate-account" -> detailSurface(actor, correlationId);
       case "action-open-useradmin-invitation-create" -> invitationCreateSurface(actor, null, correlationId);
-      case "action-display-invitation-detail", "action-invite-user" -> invitationDetailSurface(actor, null, correlationId);
+      case "action-display-invitation-detail", "action-invite-user" -> invitationDetailSurface(actor, (Object) null, correlationId);
       case "action-open-useradmin-invitation-resend-confirmation" -> invitationResendConfirmationSurface(actor, null, correlationId);
       case "action-open-useradmin-invitation-revoke-confirmation" -> invitationRevokeConfirmationSurface(actor, null, correlationId);
-      case "action-useradmin-resend-invitation", "action-useradmin-revoke-invitation" -> invitationDetailSurface(actor, null, correlationId);
+      case "action-useradmin-resend-invitation", "action-useradmin-revoke-invitation" -> invitationDetailSurface(actor, (Object) null, correlationId);
       case "action-open-useradmin-membership-status-confirmation" -> membershipStatusConfirmationSurface(actor, null, correlationId);
       case "action-open-useradmin-support-access-grant" -> supportAccessGrantSurface(actor, null, correlationId);
       case "action-open-useradmin-support-access-revoke-confirmation" -> supportAccessRevokeConfirmationSurface(actor, null, correlationId);
