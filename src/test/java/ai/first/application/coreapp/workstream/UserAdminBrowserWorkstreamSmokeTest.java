@@ -3363,6 +3363,87 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
     assertBrowserSafe(customerAdminRenameDenied.resultSurface());
 
+    var directSuspendWithoutTarget = getSurface("surface-user-admin-customer-suspend-confirmation", "corr-customer-suspend-direct-missing-target");
+    assertEquals("surface-user-admin-customer-suspend-confirmation", directSuspendWithoutTarget.surfaceId());
+    assertEquals("destructive-lifecycle-confirmation", directSuspendWithoutTarget.surfaceType());
+    assertEquals("user_admin.customer_suspend_confirmation.v1", directSuspendWithoutTarget.data().get("surfaceContract"));
+    assertEquals("missing-target", directSuspendWithoutTarget.data().get("formState"));
+    assertTrue(directSuspendWithoutTarget.toString().contains("tenant.customer.suspend"));
+    assertTrue(directSuspendWithoutTarget.toString().contains("confirmationPhrase=SUSPEND"));
+    assertTrue(directSuspendWithoutTarget.toString().contains("noFakeSuccess=true"));
+    assertFalse(directSuspendWithoutTarget.toString().contains("Hidden Customer"));
+    assertBrowserSafe(directSuspendWithoutTarget);
+
+    var suspendForm = runAction(new CapabilityActionRequest(
+        "action-open-customer-suspend",
+        "user-admin.open-customer-suspend",
+        "manage-customers",
+        "tenant.customer.suspend",
+        Map.of("customerId", createdCustomerId),
+        null,
+        SELECTED_CONTEXT_ID,
+        renamedCustomer.resultSurface().surfaceId(),
+        "corr-customer-suspend-open"));
+    assertEquals("accepted", suspendForm.status());
+    assertEquals("surface-user-admin-customer-suspend-confirmation", suspendForm.resultSurface().surfaceId());
+    assertEquals("destructive-lifecycle-confirmation", suspendForm.resultSurface().surfaceType());
+    assertEquals("user_admin.customer_suspend_confirmation.v1", suspendForm.resultSurface().data().get("surfaceContract"));
+    assertTrue(suspendForm.resultSurface().toString().contains("tenant.customer.suspend"));
+    assertTrue(suspendForm.resultSurface().toString().contains("confirmationPhrase=SUSPEND"));
+    assertTrue(suspendForm.resultSurface().toString().contains("Customer Admin memberships and invitations are not changed"));
+    assertTrue(suspendForm.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-suspend")));
+    assertBrowserSafe(suspendForm.resultSurface());
+
+    var missingConfirmationSuspend = runAction(new CapabilityActionRequest(
+        "action-customer-suspend",
+        "user-admin.suspend-customer",
+        "manage-customers",
+        "tenant.customer.suspend",
+        Map.of("customerId", createdCustomerId, "reason", "runtime test customer suspend missing confirmation", "confirmation", ""),
+        "idem-customer-suspend-missing-confirmation",
+        SELECTED_CONTEXT_ID,
+        suspendForm.resultSurface().surfaceId(),
+        "corr-customer-suspend-missing-confirmation"));
+    assertEquals("validation-error", missingConfirmationSuspend.status());
+    assertEquals("surface-user-admin-system-message", missingConfirmationSuspend.resultSurface().surfaceId());
+    assertTrue(missingConfirmationSuspend.resultSurface().toString().contains("confirmation-required"));
+    assertTrue(repository.customer(TENANT_ID, createdCustomerId).orElseThrow().active());
+    assertBrowserSafe(missingConfirmationSuspend.resultSurface());
+
+    var suspendedCustomer = runAction(new CapabilityActionRequest(
+        "action-customer-suspend",
+        "user-admin.suspend-customer",
+        "manage-customers",
+        "tenant.customer.suspend",
+        Map.of("customerId", createdCustomerId, "reason", "runtime test customer suspend", "confirmation", "SUSPEND"),
+        "idem-customer-suspend-browser-smoke",
+        SELECTED_CONTEXT_ID,
+        suspendForm.resultSurface().surfaceId(),
+        "corr-customer-suspend-submit"));
+    assertEquals("accepted", suspendedCustomer.status());
+    assertEquals("surface-user-admin-customer-detail", suspendedCustomer.resultSurface().surfaceId());
+    assertTrue(suspendedCustomer.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-suspend")));
+    assertTrue(suspendedCustomer.resultSurface().toString().contains("status=suspended"));
+    assertFalse(repository.customer(TENANT_ID, createdCustomerId).orElseThrow().active());
+    assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
+    assertBrowserSafe(suspendedCustomer.resultSurface());
+
+    var customerAdminSuspendDenied = runActionAs(new CapabilityActionRequest(
+        "action-customer-suspend",
+        "user-admin.suspend-customer",
+        "manage-customers",
+        "tenant.customer.suspend",
+        Map.of("customerId", "cust-alpha", "reason", "customer admin must not suspend customers", "confirmation", "SUSPEND"),
+        "idem-customer-suspend-customer-admin-denied",
+        "membership-customer-admin",
+        suspendForm.resultSurface().surfaceId(),
+        "corr-customer-suspend-customer-admin-denied"), "workos-customer-admin", "customer-admin@example.test", "Customer Admin", "membership-customer-admin");
+    assertEquals("denied", customerAdminSuspendDenied.status());
+    assertEquals("surface-user-admin-system-message", customerAdminSuspendDenied.resultSurface().surfaceId());
+    assertTrue(customerAdminSuspendDenied.resultSurface().toString().contains("scope-forbidden"));
+    assertTrue(repository.customer(TENANT_ID, "cust-alpha").orElseThrow().active());
+    assertBrowserSafe(customerAdminSuspendDenied.resultSurface());
+
     var directCustomerAdmins = getSurface("surface-user-admin-customer-admins", "corr-customer-admins-direct-no-target");
     assertEquals("surface-user-admin-customer-admins", directCustomerAdmins.surfaceId());
     assertEquals("list-search", directCustomerAdmins.surfaceType());
