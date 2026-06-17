@@ -227,7 +227,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-user-detail` show/inspection contract covering identity/owner/placement, selected AuthContext and `user_admin.read_user_account` authority, frontend-safe envelope plus identity/membership/role-capability/invitation/support-access/access-review/identity-exception/audit payload schema, backend-authored task-entry actions, forbidden/redacted payload boundaries, no-inline-mutation rule, no-enumeration denial behavior, provider/model/outbox fail-closed states, trace/audit/correlation contract, accessibility/responsive expectations, acceptance/security/observability regression coverage, and sufficiency review. Checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description, and `git diff --check`. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

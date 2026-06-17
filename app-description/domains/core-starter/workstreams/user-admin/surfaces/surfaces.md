@@ -565,6 +565,66 @@ Trace, audit, accessibility, and tests:
 
 Surface-description sufficiency review: `surface-user-admin-users` is sufficiently unambiguous for developers/generators to implement and review the list/search objective without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove protected API/action paths, backend-derived row routing, role-specific scope variants, denial/no-enumeration behavior, trace/correlation, and browser secret boundaries before marking implementation/testing objectives done.
 
+### `surface-user-admin-user-detail` show/inspection contract
+
+- Surface id: `surface-user-admin-user-detail`.
+- Surface type: `show-inspection` and task-router; it must not perform inline mutations.
+- Surface contract: `user_admin.user_detail.v1`.
+- Owning workstream: User Admin.
+- Owning functional agent: `user-admin-agent`.
+- Placement: User Directory branch descendant opened from `surface-user-admin-users` rows, dashboard single-target attention, and authorized deep links by `action-open-user-admin-user-detail`; branch return uses `action-user-admin-show-users` with backend-shaped safe filters and focus hints.
+- Required context: authenticated active account, selected app-owner/tenant/customer `AuthContext`, active actor membership, and backend `user_admin.read_user_account` capability for the requested account or membership in the selected scope. Hidden, stale, disabled-actor, cross-tenant, sibling-customer, or out-of-scope direct loads return `surface-user-admin-system-message` without enumerating hidden identities, roles, customers, invitations, support grants, access-review tasks, or identity exceptions.
+- User goal: inspect one visible access subject, understand why they are visible in the selected scope, and choose the next dedicated task surface for lifecycle, role, support-access, access-review, identity, invitation, or audit work. The detail surface is inspection-first and action-routing-only.
+
+Frontend-safe payload for `user_admin.user_detail.v1`:
+
+- Envelope fields: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType`, `branchRootSurfaceId`, `branchReturnActionId`, `branchReturnLabel`, `recordId`, `recordKind`, `recordLabel`, `authorityBasis`, `redaction`, `traceRefs[]`, `correlationId`, `boundaryNotice`, `systemStates`, and `lastResult`.
+- `identitySummary`: browser-safe display name, email, account status, account/member/invitation identifiers only when policy-safe, identity provider family/status, verified-email state, and provider-boundary copy. It must not include raw WorkOS ids unless explicitly policy-safe, raw JWT/session data, provider payloads, secrets, or private My Account preferences.
+- `membershipSummary`: selected-scope membership id, scope type/label, membership status, role labels, admin level, customer label where authorized, active/suspended/disabled/removed markers, last-admin/self-action risk summary, and stale/freshness marker.
+- `roleCapabilitySummary`: current role labels, visible capability category counts, affected workstream summaries, role/capability change eligibility, approval requirement summary, and safe target action ids. Raw capability policy internals are hidden outside role-gated audit/support drilldowns.
+- `invitationSummary`: pending/open/accepted/expired/revoked/failed-delivery invitation references for this subject when visible, delivery/outbox/provider readiness status, expiry/accepted timestamps, resend/revoke eligibility, and target invitation-detail action ids. Invitation tokens, token hashes, full email bodies, and provider payloads are forbidden.
+- `supportAccessSummary`: active/expiring/requested/revoked/support-only state, purpose/expiry/approver summary when visible, grant/extend/revoke eligibility, policy blocker summary, and target support-access task action ids. It must not expose support session secrets or unrelated tenant/customer data.
+- `accessReviewSummary`: latest review task status, review-needed badges, provider/model readiness or blocked summary, recommendation/result state when visible, human-review requirement, `noDirectMutation` marker for review output, and target access-review action ids.
+- `identityExceptionSummary`: link/relink/provider mismatch state, risk level, recovery eligibility, provider-boundary redaction, and target identity-exception-review action ids without raw provider internals.
+- `auditSummary`: recent browser-safe admin events, denial/no-op excerpts, trace labels, redaction notes, and role-gated audit drilldown action ids. Default view must not show raw event ids, raw correlation/idempotency values, or unredacted audit evidence.
+- `availableTaskActions[]`: backend-authored action id, label, purpose, governed capability/tool, target surface id/type, target object type/id when safe, enabled/disabled state, disabled reason only when it does not disclose hidden policy facts, required confirmation/approval/reason/idempotency summary, and expected result surface.
+
+Actions and result surfaces:
+
+| Action id | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| `action-open-user-admin-user-detail` | `user_admin.read_user_account` / `search-user-directory` | Reload this inspection surface with current selected-scope summaries, trace refs, and no-enumeration redaction. |
+| `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to `surface-user-admin-users` with backend-shaped filters, branch metadata, and focus hint. |
+| `action-open-user-admin-invitation-detail` | `user_admin.acceptance_status.read` / `create-or-resend-invitation` | Open visible invitation detail; hidden/stale targets return `surface-user-admin-system-message`. |
+| `action-open-user-admin-membership-status-confirmation` | `user_admin.update_member_status` / `change-membership-role-or-status` | Open dedicated lifecycle confirmation for disable/suspend/reactivate/remove/account-state work; self-action and last-admin protections are evaluated there before mutation. |
+| `action-open-user-admin-role-change-preview` | `user_admin.preview_role_change` / `change-membership-role-or-status` | Open role/capability diff decision surface; commit is not performed by user detail. |
+| `action-open-user-admin-support-access-grant` | `user_admin.support_access.grant_revoke_extend` / `grant-or-revoke-support-access` | Open support grant/extend form with backend-supplied policy limits and approval state. |
+| `action-open-user-admin-support-access-revoke-confirmation` | `user_admin.support_access.grant_revoke_extend` / `grant-or-revoke-support-access` | Open revoke confirmation; no inline support-access mutation occurs on user detail. |
+| `action-open-user-admin-access-review-task` | `user_admin.access_review.read` / `run-access-review` | Open durable access-review task progress/result or provider/model blocked recovery; review output remains advisory until human-routed task surfaces act. |
+| `action-open-user-admin-identity-exception-review` | `user_admin.identity_relink.review` | Open identity exception review/recovery surface without provider internals. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+
+States and outcomes:
+
+- Loading: show selected scope and subject placeholder only after backend authorization starts.
+- Ready: identity, membership, role/capability, invitation, support-access, access-review, identity-exception, audit, task actions, branch return, trace refs, and correlation are backend-derived.
+- Empty/limited: subject is visible but has no invitation/support/review/identity-exception summaries; show safe absence copy and available task entry points only when authorized.
+- Submitting/opening task: preserve detail context and focus while backend reauthorizes the target action.
+- Validation-error: malformed subject id, selected context, task target, or action payload is reported without widening scope.
+- Forbidden/hidden-not-found: return `surface-user-admin-system-message` with no hidden identity, role, invitation, customer, or capability enumeration.
+- Conflict/stale: selected context, membership status, invitation state, role version, support grant, review task, or identity exception changed; show refresh/back-to-users recovery and trace refs.
+- Provider/model/outbox fail-closed: show provider/model/outbox readiness summaries only for visible task areas; never invent fixture success or mutate source access from advisory review output.
+- No-op/success: detail refresh and task-open no-ops are traceable; consequential success is shown by the dedicated result/detail surface after the task surface completes.
+
+Authorization, trace, accessibility, and tests:
+
+- Authorization and tenant rules: every refresh, branch return, task-open, and audit drilldown is evaluated against the selected backend `AuthContext`; Tenant Admins cannot see sibling tenants, Customer Admins cannot see sibling customers or tenant-wide users, SaaS Owner admins cannot inspect tenant application data unless a separate authorized Organization branch grants it, support-only access is bounded by policy, and disabled/missing actors receive safe recovery.
+- Trace/audit contract: each detail load, denied hidden target, branch return, task-open, audit-open, stale result, and provider/model/outbox blocked result emits or links an admin work trace with actor account, selected context, subject summary only when visible, action id, capability decision, result surface, redaction level, and correlation id. Browser-visible trace summaries never expose raw provider records, raw event ids, raw JWTs, invitation tokens, provider secrets, hidden roles, or sibling-scope facts.
+- Accessibility/responsive expectations: the surface has a stable heading, selected-scope boundary, summary sections with semantic headings, task actions as keyboard-operable grouped controls, status/denial messages announced as status text, focus return to the originating row or first result message, and responsive stacking in identity, membership, task actions, support/review/identity, and audit order without losing action availability.
+- Acceptance/regression coverage must verify users-directory-to-detail traversal, direct protected detail load, hidden/cross-tenant/customer denial without enumeration, role-specific SaaS Owner/Tenant Admin/Customer Admin visibility, branch return, lifecycle/role/support/access-review/identity task entry routing, stale/conflict recovery, last-admin/self-action risk visibility without mutation, provider/model/outbox fail-closed summaries, audit/work trace/correlation links, frontend secret boundaries, keyboard task activation, focus return, and no inline mutation from the detail surface.
+
+Surface-description sufficiency review: `surface-user-admin-user-detail` is sufficiently unambiguous for developers/generators to implement and review the show/inspection objective without inventing payload fields, task actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove protected API/action paths, backend-derived task routing, role-specific scope variants, denial/no-enumeration behavior, trace/correlation, provider/outbox/model fail-closed summaries, and browser secret boundaries before marking implementation/testing objectives done.
+
 ### Surface payloads and task routing
 
 - Directory: `surfaceContract`, selected `AuthContext`, filters, pagination/sort, dashboard-origin queue id, `rows[]`, visible create/invite action where allowed, redaction, trace refs, and correlation id. Each row includes frontend-safe user/member/invitation/support/review badges, backend-authored `targetSurfaceId`, `targetObjectType`, `openActionId`, action availability, and redaction state; activation opens the target inspection/task surface and never performs mutation inline.
