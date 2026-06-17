@@ -4629,7 +4629,7 @@
 
 ### TASK-FSCT-131: Verify or complete runtime implementation for `surface-agent-admin-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-130]
 - surface id: `surface-agent-admin-dashboard`
@@ -4660,6 +4660,7 @@
   - purpose: Agent Admin command center.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-dashboard`; surface graph node/action edge for opening or acting on `surface-agent-admin-dashboard`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented and verified the protected Agent Admin dashboard runtime path: `WorkstreamService` requires selected-context `agent_admin.list_definitions`, appends protected `agent_admin.dashboard.v1` trace evidence, returns app-description-aligned browser-safe payload fields (`surfaceSummary`, `scopeSummary`, `attentionSections`, readiness/provider/model/approval/manifest/tool/seed/redaction summaries, trace refs, fail-closed states), and routes backend-owned `action-agent-admin-*` dashboard actions to catalog, behavior proposals, prompt-risk review, seed material, manifest drift, tool-boundary, model refs, trace, and refresh while retaining legacy action compatibility. Runtime readiness level: `api-smoked` for implementation verification; checks passed: `mvn -q -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#myAccountOpenWorkstreamActionReturnsBackendResolvedSurface test`, `mvn -q -DskipTests test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`.
 
 ### TASK-FSCT-132: Verify or complete runtime testing for `surface-agent-admin-dashboard`
 
