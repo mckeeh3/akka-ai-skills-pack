@@ -482,7 +482,17 @@ class WorkstreamServiceTest {
     assertEquals("surface-user-admin-organization-detail", organizationDetail.resultSurface().surfaceId());
     assertTrue(organizationDetail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-organizations"));
     assertTrue(organizationDetail.resultSurface().toString().contains("Back to organizations"));
+    assertTrue(organizationDetail.resultSurface().toString().contains("action-user-admin-show-organization-admins"));
+    assertTrue(organizationDetail.resultSurface().toString().contains("availableTaskActions"));
     assertBrowserPayloadSafe(organizationDetail.resultSurface());
+
+    var orgAdmins = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-organization-admins", "user-admin.show-organization-admins", "manage-organization-admins", "saas_owner.organization_admin.list", Map.of("organizationId", "tenant-starter", "tenantId", "tenant-starter"), null, "membership-owner", organizationDetail.resultSurface().surfaceId(), "corr-tree-org-admins"));
+    assertEquals("accepted", orgAdmins.status());
+    assertEquals("surface-user-admin-organization-admins", orgAdmins.resultSurface().surfaceId());
+    assertEquals("tenant-starter", orgAdmins.resultSurface().data().get("organizationId"));
+    assertTrue(orgAdmins.resultSurface().toString().contains("targetScope"));
+    assertBrowserPayloadSafe(orgAdmins.resultSurface());
 
     var directOrganizationDetail = service.surface(ownerIdentity(), "membership-owner", "surface-user-admin-organization-detail", "corr-tree-org-detail-direct");
     assertTrue(directOrganizationDetail.toString().contains("action-open-organization-admin-invitation-create"));

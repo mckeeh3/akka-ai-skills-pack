@@ -2721,7 +2721,7 @@
 
 ### TASK-FSCT-077: Verify or complete runtime implementation for `surface-user-admin-organization-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-076]
 - surface id: `surface-user-admin-organization-detail`
@@ -2752,6 +2752,7 @@
   - purpose: Lifecycle-aware Organization inspection.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-detail`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: completed and verified the real runtime implementation for `surface-user-admin-organization-detail`: protected workstream surface/action APIs, backend-owned `user_admin.organization_detail.v1` Organization inspection payload, backend-authored `availableTaskActions`, `action-user-admin-show-organization-admins` routing to the Organization Admin list surface, no-inline-mutation task entry points for rename/suspend/reactivate/admin invite/audit, SaaS Owner selected `AuthContext` capability enforcement, safe hidden-target and Tenant Admin denial behavior, trace/correlation refs, and frontend governed action rendering without client-derived authority. runtime evidence: readiness level `api-smoked`; commands passed: `mvn -q -Dtest=WorkstreamServiceTest#userAdminNavigationTreeTraversesBranchesWithTraceCorrelationAndSafePayloads test`, `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`, `npm --prefix frontend run typecheck`, `npm --prefix frontend test -- --run src/workstream-organization-admin-vertical.contract.test.mjs`, and `git diff --check`.
 
 ### TASK-FSCT-078: Verify or complete runtime testing for `surface-user-admin-organization-detail`
 

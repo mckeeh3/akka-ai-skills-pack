@@ -1800,8 +1800,26 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(detail.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-read")));
     assertTrue(detail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-organizations"));
     assertTrue(detail.resultSurface().toString().contains("Back to organizations"));
+    assertTrue(detail.resultSurface().toString().contains("action-user-admin-show-organization-admins"));
+    assertTrue(detail.resultSurface().toString().contains("availableTaskActions"));
     assertTrue(detail.resultSurface().toString().contains("does not grant tenant/customer application-data access"));
     assertBrowserSafe(detail.resultSurface());
+
+    var admins = runActionAs(new CapabilityActionRequest(
+        "action-user-admin-show-organization-admins",
+        "user-admin.show-organization-admins",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.list",
+        Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID),
+        null,
+        "membership-owner",
+        detail.resultSurface().surfaceId(),
+        "corr-org-detail-admins"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", admins.status());
+    assertEquals("surface-user-admin-organization-admins", admins.resultSurface().surfaceId());
+    assertEquals(TENANT_ID, admins.resultSurface().data().get("organizationId"));
+    assertTrue(admins.resultSurface().toString().contains("targetScope"));
+    assertBrowserSafe(admins.resultSurface());
 
     assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
         "action-user-admin-show-organizations",
