@@ -954,7 +954,7 @@
 
 ### TASK-FSCT-027: Verify or complete runtime testing for `surface-my-account-open-denied`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-026]
 - surface id: `surface-my-account-open-denied`
@@ -979,15 +979,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - notes:
   - surface type: `system-message`
   - surface contract: `my_account.open_denied.v1`
   - purpose: Safe not-found/redacted/unavailable workstream recovery.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream My Account functional agent surface `surface-my-account-open-denied`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-my-account-open-denied`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-16: added dedicated protected Akka-hosted My Account open-denied runtime smoke coverage in `MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyAccountOpenDeniedRuntimePath`: JWT plus selected member AuthContext loads the My Account dashboard, attempts hidden Agent Admin open through `/api/workstream/actions`, verifies backend-owned `my_account.open_denied.v1` system-message payload with `not_found_or_redacted` status/decision, `noEnumeration`, dashboard/context/request-access recovery, trace/correlation evidence, and browser-safe redaction of hidden workstream names, missing capabilities/roles, provider/model fixture data, provider secrets, and bearer/provider payloads; direct protected surface read returns the generic recovery surface; missing bearer access is rejected. runtime evidence: readiness level `runtime-ready` for the open-denied testing scope; role/AuthContext/tenant setup covered tenant employee/member in `tenant-starter`; denial/provider/fail-closed/trace coverage included hidden-target/no-enumeration denial, missing bearer rejection, safe recovery actions, trace refs, correlation ids, and secret-boundary assertions; commands passed: `mvn -q -Dtest=MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyAccountOpenDeniedRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-028: Verify or complete app-description specification for `surface-user-admin-dashboard`
 

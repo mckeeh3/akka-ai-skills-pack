@@ -169,6 +169,56 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesMyAccountOpenDeniedRuntimePath() throws Exception {
+    var memberDashboard = getSurface("surface-my-account-dashboard", MEMBER_CONTEXT_ID, "member@example.test", "Member User", "corr-open-denied-member-dashboard");
+    assertEquals("surface-my-account-dashboard", memberDashboard.surfaceId());
+
+    var denied = runAction(new CapabilityActionRequest(
+        "action-open-agent-admin",
+        "action-open-agent-admin",
+        "my_account.open_authorized_workstream",
+        "my_account.open_authorized_workstream",
+        Map.of("requestedWorkstreamId", "agent-admin"),
+        "idem-open-denied-agent-admin",
+        MEMBER_CONTEXT_ID,
+        memberDashboard.surfaceId(),
+        "corr-open-denied-action"), MEMBER_CONTEXT_ID, "member@example.test", "Member User");
+    assertEquals("denied", denied.status());
+    assertEquals("corr-open-denied-action", denied.correlationId());
+    assertTrue(denied.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-open")));
+    assertNotNull(denied.resultSurface());
+    assertEquals("surface-my-account-open-denied", denied.resultSurface().surfaceId());
+    assertEquals("system_message", denied.resultSurface().surfaceType());
+    assertEquals("my_account.open_denied.v1", denied.resultSurface().data().get("surfaceContract"));
+    assertEquals("not_found_or_redacted", denied.resultSurface().data().get("status"));
+    assertEquals("not_found_or_redacted", denied.resultSurface().data().get("decision"));
+    assertEquals(true, denied.resultSurface().data().get("noEnumeration"));
+    assertTrue(denied.resultSurface().data().toString().contains("action-show-my-account-dashboard"));
+    assertTrue(denied.resultSurface().data().toString().contains("action-show-my-context"));
+    assertTrue(denied.resultSurface().data().toString().contains("request-access-guidance"));
+    assertTrue(denied.resultSurface().data().toString().contains("corr-open-denied-action"));
+    assertOpenDeniedBrowserSafe(denied.resultSurface());
+
+    var directDenied = getSurface("surface-my-account-open-denied", MEMBER_CONTEXT_ID, "member@example.test", "Member User", "corr-open-denied-direct");
+    assertEquals("surface-my-account-open-denied", directDenied.surfaceId());
+    assertEquals("system_message", directDenied.surfaceType());
+    assertEquals("my_account.open_denied.v1", directDenied.data().get("surfaceContract"));
+    assertEquals("not_available_in_selected_context", directDenied.data().get("safeReasonCode"));
+    assertEquals(true, directDenied.data().get("noEnumeration"));
+    assertTrue(directDenied.data().toString().contains("action-show-my-account-dashboard"));
+    assertTrue(directDenied.data().toString().contains("action-show-my-context"));
+    assertTrue(directDenied.data().toString().contains("corr-open-denied-direct"));
+    assertOpenDeniedBrowserSafe(directDenied);
+
+    assertThrows(RuntimeException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-my-account-open-denied")
+        .addHeader("X-Selected-Context-Id", MEMBER_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-open-denied-missing-bearer")
+        .responseBodyAs(String.class)
+        .invoke());
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesMyProfileRuntimePathAndDenials() throws Exception {
     var profile = getSurface("surface-my-profile", ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin", "corr-my-profile-browser-read");
     assertEquals("surface-my-profile", profile.surfaceId());
@@ -968,6 +1018,25 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     var header = Base64.getEncoder().encodeToString("{\"alg\":\"none\"}".getBytes());
     var payload = Base64.getEncoder().encodeToString(JsonSupport.getObjectMapper().writeValueAsBytes(Map.of("sub", subject, "email", email, "name", name)));
     return header + "." + payload;
+  }
+
+  private static void assertOpenDeniedBrowserSafe(SurfaceEnvelope payload) {
+    var text = String.valueOf(payload);
+    assertTrue(text.contains("my_account.open_denied.v1"));
+    assertTrue(text.contains("noEnumeration"));
+    assertTrue(text.contains("recoveryStepDetails"));
+    assertTrue(text.contains("availableActions"));
+    assertTrue(text.contains("traceRefs"));
+    assertFalse(text.contains("agent_admin.list_definitions"));
+    assertFalse(text.contains("Agent Admin"));
+    assertFalse(text.contains("missingRoles"));
+    assertFalse(text.contains("missingCapabilities"));
+    assertFalse(text.contains("RESEND_API_KEY"));
+    assertFalse(text.contains("Bearer "));
+    assertFalse(text.contains("workos-member"));
+    assertFalse(text.contains("providerSecret"));
+    assertFalse(text.contains("test-fake-provider"));
+    assertFalse(text.contains("test-fake-model"));
   }
 
   private static void assertProfileSurfaceBrowserSafe(SurfaceEnvelope payload) {
