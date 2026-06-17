@@ -409,7 +409,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-organization-admin-invitation-create` create-form contract for `user_admin.organization_admin_invitation_create.v1` covering owning workstream/agent and Organization branch placement, SaaS Owner/App Admin selected `AuthContext` plus `saas_owner.organization_admin.invite` authority, frontend-safe envelope/form/policy/delivery/action payload schema, `TENANT_ADMIN`-only role constraints, idempotent submit/result routing, no-inline-membership-mutation and no tenant/customer app-data boundaries, safe denial/stale/duplicate/provider-outbox states, trace/audit requirements, accessibility/responsive expectations, frontend secret boundaries, acceptance/regression tests, and a sufficiency review confirming implementation can proceed without invented fields/actions/states/auth/traces/tests. Validation evidence: `git diff --check` and focused `rg` checks for surface id, payload/actions/auth/traces/tests in app-description. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

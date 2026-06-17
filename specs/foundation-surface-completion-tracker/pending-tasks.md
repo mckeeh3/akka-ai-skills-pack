@@ -2900,7 +2900,7 @@
 
 ### TASK-FSCT-082: Verify or complete app-description specification for `surface-user-admin-organization-admin-invitation-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-organization-admin-invitation-create`
@@ -2929,6 +2929,7 @@
   - purpose: Bootstrap/invite form for a TENANT_ADMIN.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-admin-invitation-create` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated Organization Admin invite/bootstrap create-form app-description contract covering owner/placement, SaaS Owner/App Admin AuthContext and `saas_owner.organization_admin.invite` authority, frontend-safe payload/action/result/state/auth/trace/audit/accessibility/test semantics, `TENANT_ADMIN`-only role constraints, no-enumeration denial/provider-outbox fail-closed behavior, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-083: Verify or complete runtime implementation for `surface-user-admin-organization-admin-invitation-create`
 
