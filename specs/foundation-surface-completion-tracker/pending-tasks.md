@@ -4914,7 +4914,7 @@
 
 ### TASK-FSCT-139: Verify or complete app-description specification for `surface-agent-prompt-governance`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-prompt-governance`
@@ -4943,6 +4943,7 @@
   - purpose: Prompt governance and behavior artifact review.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-prompt-governance` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: expanded the Agent Admin prompt-governance app-description contract with surface identity/owner/placement/purpose, browser-safe payload schema, redaction/diagnostics boundaries, governed action-to-capability mappings, selected AuthContext and tenant/scope authorization rules, no-enumeration denials, audit/work trace and correlation expectations, explicit states, no-direct-activation mutation boundaries, accessibility/responsive/style bindings, test coverage expectations, and sufficiency-review evidence. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description.
 
 ### TASK-FSCT-140: Verify or complete runtime implementation for `surface-agent-prompt-governance`
 

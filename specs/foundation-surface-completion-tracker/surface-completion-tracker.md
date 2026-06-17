@@ -658,7 +658,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-prompt-governance` for `agent_admin.prompt_governance.v1` with Agent Admin/`agent-admin-agent` ownership, detail/proposal/risk-review placement, browser-safe `governanceSummary`, `scopeSummary`, `redactedPromptDiff`, `impactSummary`, `riskAndEvidence`, `reviewState`, `authorizedActions[]`, diagnostics, and redaction payload schemas; governed refresh, simulate, submit-review, approve, reject, risk-review, trace, and back-to-detail action mappings; selected AuthContext/capability/tenant-scope authorization and no-enumeration denial rules; audit/work trace and correlation requirements; explicit UI states, no-direct-activation mutation boundary, accessibility/responsive/style bindings, and acceptance/security/observability tests. Sufficiency review says the prompt-governance surface is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
