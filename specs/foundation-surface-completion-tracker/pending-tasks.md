@@ -3960,7 +3960,7 @@
 
 ### TASK-FSCT-112: Verify or complete app-description specification for `surface-user-admin-customer-admin-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-customer-admin-detail`
@@ -3989,6 +3989,7 @@
   - purpose: Shows one Customer Admin membership/invitation.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-customer-admin-detail` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated `surface-user-admin-customer-admin-detail` show/inspection and Customer Admin task-router app-description contract for `user_admin.customer_admin_detail.v1`, including payload schema, Customer/Admin target authorization, Customer branch placement/returns, governed actions, states, redaction/secret boundaries, trace/audit/correlation, accessibility/responsive expectations, tests, and sufficiency review. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests.
 
 ### TASK-FSCT-113: Verify or complete runtime implementation for `surface-user-admin-customer-admin-detail`
 

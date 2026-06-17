@@ -539,7 +539,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-customer-admin-detail` show/inspection and Customer Admin task-router contract for `user_admin.customer_admin_detail.v1` covering owning User Admin workstream/`user-admin-agent`, Customer Directory branch placement and returns, selected Organization/Tenant Admin `AuthContext`, active tenant membership, visible Customer and visible Customer Admin membership/invitation target authorization, frontend-safe envelope/adminTarget/policy/task-entry/audit payload schema, redaction and forbidden payload boundaries for sibling Customers, tenant app data, hidden admins/invitations/roles/counts, provider secrets, invitation tokens, and raw trace/correlation internals, governed action-to-capability/tool mappings for detail reload, invitation detail, role preview, membership lifecycle, invitation resend/revoke, returns, and audit, loading/ready/limited/opening/validation/forbidden/stale/provider-blocked/no-op states, trace/audit/correlation requirements, accessibility/responsive expectations, acceptance/security/observability coverage, and a sufficiency review stating implementation can proceed without invented fields/actions/states/auth/traces/tests. Evidence: focused `rg` for surface id, payload, actions, auth, traces, and tests; `git diff --check`. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
