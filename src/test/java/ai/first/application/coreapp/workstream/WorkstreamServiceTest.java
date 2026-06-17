@@ -141,6 +141,33 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void userAdminSystemMessageDirectRecoverySurfaceIsBackendAuthoredAndReturnsDashboard() {
+    var recovery = service.surface(identity(), "membership-admin", "surface-user-admin-system-message", "corr-useradmin-system-message-direct");
+
+    assertEquals("surface-user-admin-system-message", recovery.surfaceId());
+    assertEquals("system-message", recovery.surfaceType());
+    assertEquals("user_admin.system_message.v1", recovery.data().get("surfaceContract"));
+    assertEquals("not_found_or_redacted", recovery.data().get("status"));
+    assertEquals(true, recovery.data().get("noEnumeration"));
+    assertEquals(true, recovery.data().get("noFakeSuccess"));
+    assertEquals(true, recovery.data().get("noDirectMutation"));
+    assertTrue(recovery.toString().contains("selectedAuthContext"));
+    assertTrue(recovery.toString().contains("readinessSummary"));
+    assertTrue(recovery.toString().contains("validationSummary"));
+    assertTrue(recovery.actions().stream().anyMatch(action -> action.actionId().equals("action-user-admin-return-dashboard")));
+    assertTrue(recovery.actions().stream().anyMatch(action -> action.actionId().equals("action-user-admin-show-users")));
+    assertBrowserPayloadSafe(recovery);
+
+    var returned = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-return-dashboard", "user-admin.return-dashboard", "search-user-directory", "secure-tenant-user-foundation", null, null, "membership-admin", recovery.surfaceId(), "corr-useradmin-system-message-return"));
+
+    assertEquals("accepted", returned.status());
+    assertEquals("surface-user-admin-tenant-dashboard", returned.resultSurface().surfaceId());
+    assertEquals("user_admin.tenant_dashboard.v1", returned.resultSurface().data().get("surfaceContract"));
+    assertBrowserPayloadSafe(returned.resultSurface());
+  }
+
+  @Test
   void saasOwnerPlatformInvitationEventsDoNotBreakMyAccountNotificationCenter() {
     var ownerIdentity = new WorkosIdentity("workos-owner@example.test", "owner@example.test", "SaaS Owner");
     var owner = new AuthContextResolver(identityRepository).resolveMe(ownerIdentity, "membership-owner", "corr-owner-resolve");

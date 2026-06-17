@@ -4523,7 +4523,7 @@
 
 ### TASK-FSCT-128: Verify or complete runtime implementation for `surface-user-admin-system-message`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-127]
 - surface id: `surface-user-admin-system-message`
@@ -4554,6 +4554,7 @@
   - purpose: Safe denial, validation, provider/outbox/model blocked, stale, conflict, and no-op recovery.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-system-message`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-system-message`; surface graph node/action edge for opening or acting on `surface-user-admin-system-message`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: completed and verified runtime implementation for `surface-user-admin-system-message`: protected `/api/workstream/surfaces/surface-user-admin-system-message` direct generic recovery load now resolves selected `AuthContext`, appends protected read trace evidence, returns backend-authored `user_admin.system_message.v1` no-enumeration payload with message/recovery/readiness/validation metadata, `noFakeSuccess`/`noDirectMutation`, trace/correlation refs, redaction metadata, and authorized dashboard/user-branch/audit recovery actions; `/api/workstream/actions` User Admin denial/validation/no-op/provider-runtime paths continue reusing the typed system-message; `action-user-admin-return-dashboard` now round trips to the protected User Admin dashboard; existing frontend renderer/action bar handles the canonical system-message. Runtime evidence level: `api-smoked`; checks passed: `mvn -q -Dtest=WorkstreamServiceTest#userAdminSystemMessageDirectRecoverySurfaceIsBackendAuthoredAndReturnsDashboard test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-129: Verify or complete runtime testing for `surface-user-admin-system-message`
 
