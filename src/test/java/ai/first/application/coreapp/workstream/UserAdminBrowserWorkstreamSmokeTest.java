@@ -2213,8 +2213,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var reactivateTask = runActionAs(new CapabilityActionRequest(
         "action-open-organization-reactivate",
         "action-open-organization-reactivate",
-        "saas_owner.tenant.manage",
-        "saas_owner.tenant.manage",
+        "manage-organizations",
+        "saas_owner.organization.reactivate",
         Map.of("organizationId", TENANT_ID),
         null,
         "membership-owner",
@@ -2224,14 +2224,57 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-user-admin-organization-reactivate-confirmation", reactivateTask.resultSurface().surfaceId());
     assertEquals("lifecycle-confirmation", reactivateTask.resultSurface().surfaceType());
     assertEquals("user_admin.organization_reactivate_confirmation.v1", reactivateTask.resultSurface().data().get("surfaceContract"));
+    assertTrue(reactivateTask.resultSurface().toString().contains("confirmationPhrase=REACTIVATE"));
+    assertTrue(reactivateTask.resultSurface().toString().contains("saas_owner.organization.reactivate"));
     assertBrowserSafe(reactivateTask.resultSurface());
+
+    var directReactivateWithoutTarget = getSurfaceAs("surface-user-admin-organization-reactivate-confirmation", "corr-org-reactivate-direct-missing-target", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-organization-reactivate-confirmation", directReactivateWithoutTarget.surfaceId());
+    assertEquals("lifecycle-confirmation", directReactivateWithoutTarget.surfaceType());
+    assertEquals("user_admin.organization_reactivate_confirmation.v1", directReactivateWithoutTarget.data().get("surfaceContract"));
+    assertEquals("missing-target", directReactivateWithoutTarget.data().get("formState"));
+    assertTrue(directReactivateWithoutTarget.toString().contains("noFakeSuccess=true"));
+    assertFalse(directReactivateWithoutTarget.toString().contains("tenant-hidden"));
+    assertBrowserSafe(directReactivateWithoutTarget);
+
+    var missingReactivateReason = runActionAs(new CapabilityActionRequest(
+        "action-organization-reactivate",
+        "action-organization-reactivate",
+        "manage-organizations",
+        "saas_owner.organization.reactivate",
+        Map.of("organizationId", TENANT_ID, "reason", " ", "confirmationPhrase", "REACTIVATE"),
+        "idem-org-reactivate-missing-reason",
+        "membership-owner",
+        reactivateTask.resultSurface().surfaceId(),
+        "corr-org-reactivate-missing-reason"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("validation-error", missingReactivateReason.status());
+    assertEquals("surface-user-admin-system-message", missingReactivateReason.resultSurface().surfaceId());
+    assertTrue(missingReactivateReason.resultSurface().toString().contains("reason-required"));
+    assertFalse(missingReactivateReason.resultSurface().toString().contains("status=active"));
+    assertBrowserSafe(missingReactivateReason.resultSurface());
+
+    var missingReactivateConfirmation = runActionAs(new CapabilityActionRequest(
+        "action-organization-reactivate",
+        "action-organization-reactivate",
+        "manage-organizations",
+        "saas_owner.organization.reactivate",
+        Map.of("organizationId", TENANT_ID, "reason", "protected browser smoke missing confirmation", "confirmationPhrase", ""),
+        "idem-org-reactivate-missing-confirmation",
+        "membership-owner",
+        reactivateTask.resultSurface().surfaceId(),
+        "corr-org-reactivate-missing-confirmation"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("validation-error", missingReactivateConfirmation.status());
+    assertEquals("surface-user-admin-system-message", missingReactivateConfirmation.resultSurface().surfaceId());
+    assertTrue(missingReactivateConfirmation.resultSurface().toString().contains("confirmation-phrase-required"));
+    assertFalse(missingReactivateConfirmation.resultSurface().toString().contains("status=active"));
+    assertBrowserSafe(missingReactivateConfirmation.resultSurface());
 
     var reactivated = runActionAs(new CapabilityActionRequest(
         "action-organization-reactivate",
         "action-organization-reactivate",
-        "saas_owner.tenant.manage",
-        "saas_owner.tenant.manage",
-        Map.of("organizationId", TENANT_ID, "reason", "protected browser smoke reactivate"),
+        "manage-organizations",
+        "saas_owner.organization.reactivate",
+        Map.of("organizationId", TENANT_ID, "reason", "protected browser smoke reactivate", "confirmationPhrase", "REACTIVATE"),
         "idem-org-detail-reactivate",
         "membership-owner",
         reactivateTask.resultSurface().surfaceId(),

@@ -118,8 +118,14 @@ public final class SaasOwnerOrganizationAdminService {
     return action("accepted", "Organization suspended at the Tenant lifecycle boundary without exposing tenant application data.", updated, "suspend", idempotencyKey, correlationId);
   }
 
-  public OrganizationActionResult reactivateOrganization(AuthContextResolver.ResolvedMe actor, String organizationId, String reason, String idempotencyKey, String correlationId) {
+  public OrganizationActionResult reactivateOrganization(AuthContextResolver.ResolvedMe actor, String organizationId, String reason, String confirmationPhrase, String idempotencyKey, String correlationId) {
     requireIdempotency(idempotencyKey);
+    if (reason == null || reason.isBlank()) {
+      throw new AuthorizationException(400, "reason-required");
+    }
+    if (!"REACTIVATE".equalsIgnoreCase(confirmationPhrase == null ? "" : confirmationPhrase.trim())) {
+      throw new AuthorizationException(400, "confirmation-phrase-required");
+    }
     requireManage(actor, "ORGANIZATION_REACTIVATE", correlationId);
     var existing = findTenantOrDeny(actor, organizationId, "ORGANIZATION_REACTIVATE", correlationId);
     if (existing.active()) {

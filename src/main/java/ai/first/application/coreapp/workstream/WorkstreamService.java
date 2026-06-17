@@ -105,6 +105,7 @@ public final class WorkstreamService {
   private static final String SAAS_OWNER_ORGANIZATION_READ_CAPABILITY = "saas_owner.organization.read";
   private static final String SAAS_OWNER_ORGANIZATION_RENAME_CAPABILITY = "saas_owner.organization.rename";
   private static final String SAAS_OWNER_ORGANIZATION_SUSPEND_CAPABILITY = "saas_owner.organization.suspend";
+  private static final String SAAS_OWNER_ORGANIZATION_REACTIVATE_CAPABILITY = "saas_owner.organization.reactivate";
   private static final String SAAS_OWNER_ORGANIZATION_MANAGE_CAPABILITY = "saas_owner.organization.manage";
   private static final String SAAS_OWNER_USER_MANAGE_CAPABILITY = "saas_owner.user.manage";
   private static final String SAAS_OWNER_ADMIN_LIST_CAPABILITY = "saas_owner.admin.list";
@@ -1618,14 +1619,43 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope organizationReactivateSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_MANAGE_CAPABILITY);
-    return organizationSurface(actor, correlationId, "surface-user-admin-organization-reactivate-confirmation", "lifecycle-confirmation", "Reactivate Organization", "user_admin.organization_reactivate_confirmation.v1", withOrganizationBranchReturn(List.of(organizationReactivateAction())));
+    authContextResolver.appendProtectedReadTrace(actor, SAAS_OWNER_ORGANIZATION_REACTIVATE_CAPABILITY, "user_admin.organization_reactivate_confirmation.v1", correlationId);
+    var branchNavigation = organizationBranchNavigation(correlationId);
+    var traceRefs = List.of("trace-organization-reactivate-confirmation-missing-target-" + stableSuffix(correlationId));
+    return envelope("surface-user-admin-organization-reactivate-confirmation", "lifecycle-confirmation", "Reactivate Organization", actor, correlationId,
+        mapOf(
+            "surfaceContract", "user_admin.organization_reactivate_confirmation.v1",
+            "scopeLabel", "SaaS Owner scope",
+            "scopeType", "saas_owner",
+            "authorityBasis", "Backend checks selected SaaS Owner AuthContext and saas_owner.organization.reactivate mapped to internal tenant lifecycle management before confirmation load and submit; browser state cannot grant Organization authority.",
+            "branchNavigation", branchNavigation,
+            "branchRootSurfaceId", branchNavigation.get("branchRootSurfaceId"),
+            "branchReturnActionId", branchNavigation.get("branchReturnActionId"),
+            "branchReturnLabel", branchNavigation.get("branchReturnLabel"),
+            "detailReturnActionId", "action-organization-read",
+            "boundaryNotice", "Open reactivate from a visible suspended Organization detail so the backend can bind the lifecycle confirmation to exactly one Organization/Tenant boundary.",
+            "safeBoundaryNotice", "Organization reactivation changes only the Tenant lifecycle boundary and does not expose tenant/customer application data, billing, provider state, Organization Admin roles, or support-access internals.",
+            "organizations", List.of(),
+            "formState", "missing-target",
+            "validationMessages", List.of("Choose a visible suspended Organization detail before reactivating."),
+            "confirmation", mapOf("consequenceCopy", "Reactivation changes only the selected Organization/Tenant lifecycle boundary back to active administration; tenant application data, Customer records, billing/provider settings, Organization Admin roles, and support access stay outside this action.", "confirmationPhrase", "REACTIVATE", "confirmationRequired", true, "reasonDraft", "", "reasonRequired", true, "submitLabel", "Reactivate Organization", "submitActionId", "action-organization-reactivate", "cancelActionId", "action-organization-read", "idempotencyKeyHint", "client-generated", "freshnessVersionHint", "detail-trace-boundary", "disabledReason", "missing-visible-suspended-organization"),
+            "reactivationEligibility", mapOf("currentStatus", "unknown", "allowedStatuses", List.of("suspended"), "blockedReason", "missing-visible-suspended-organization", "approvalRequired", false, "traceRefs", traceRefs),
+            "authorizedActions", withOrganizationBranchReturn(List.of(organizationReactivateAction(), organizationReadAction(), openAuditAction())).stream().map(SurfaceAction::actionId).toList(),
+            "availableTaskActions", withOrganizationBranchReturn(List.of(organizationReactivateAction(), organizationReadAction(), openAuditAction())).stream().map(this::surfaceActionSummary).toList(),
+            "systemStates", List.of("missing-target"),
+            "lastResult", mapOf("status", "missing-target", "message", "Organization reactivation requires a visible suspended Organization target loaded through the protected detail-to-reactivate action path.", "correlationId", correlationId, "traceRefs", traceRefs, "noFakeSuccess", true),
+            "traceRefs", traceRefs,
+            "correlationId", correlationId,
+            "redaction", List.of("tenant-app-data-redacted", "customer-facts-redacted", "hidden-organization-counts-redacted", "raw-workos-ids-redacted", "raw-jwt-redacted", "provider-secrets-redacted", "billing-authority-redacted", "support-access-internals-redacted", "raw-idempotency-redacted")),
+        withOrganizationBranchReturn(List.of(organizationReactivateAction(), organizationReadAction(), openAuditAction())));
   }
 
   private SurfaceEnvelope organizationReactivateSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_MANAGE_CAPABILITY);
+    authContextResolver.appendProtectedReadTrace(actor, SAAS_OWNER_ORGANIZATION_REACTIVATE_CAPABILITY, "user_admin.organization_reactivate_confirmation.v1", correlationId);
     var detail = readOrganizationDetail(actor, input, correlationId);
     requireOrganizationLifecycleAction(detail, "reactivate", correlationId);
-    return organizationSurface(actor, correlationId, "surface-user-admin-organization-reactivate-confirmation", "lifecycle-confirmation", "Reactivate Organization", "user_admin.organization_reactivate_confirmation.v1", withOrganizationBranchReturn(List.of(organizationReactivateAction())), detail);
+    return organizationSurface(actor, correlationId, "surface-user-admin-organization-reactivate-confirmation", "lifecycle-confirmation", "Reactivate Organization", "user_admin.organization_reactivate_confirmation.v1", withOrganizationBranchReturn(List.of(organizationReactivateAction(), organizationReadAction(), openAuditAction())), detail);
   }
 
   private SurfaceEnvelope organizationSurface(AuthContextResolver.ResolvedMe actor, String correlationId, String surfaceId, String surfaceType, String title, String contract, List<SurfaceAction> actions) {
@@ -1677,6 +1707,7 @@ public final class WorkstreamService {
     if (detail != null) data.put("organizationDetail", organizationDetailMap(detail));
     if ("surface-user-admin-organization-rename".equals(surfaceId) && detail != null) addOrganizationRenameFormData(data, detail, traceRefs, correlationId);
     if ("surface-user-admin-organization-suspend-confirmation".equals(surfaceId) && detail != null) addOrganizationSuspendFormData(data, detail, traceRefs, correlationId);
+    if ("surface-user-admin-organization-reactivate-confirmation".equals(surfaceId) && detail != null) addOrganizationReactivateFormData(data, detail, traceRefs, correlationId);
     return envelope(surfaceId, surfaceType, title, actor, correlationId, data, actions);
   }
 
@@ -1751,6 +1782,36 @@ public final class WorkstreamService {
         "approvalRequired", false,
         "traceRefs", traceRefs));
     data.put("lastResult", mapOf("status", "ready", "message", "Organization suspend confirmation loaded through protected detail-to-suspend runtime path.", "correlationId", correlationId, "traceRefs", traceRefs));
+  }
+
+  private void addOrganizationReactivateFormData(Map<String, Object> data, ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail detail, List<String> traceRefs, String correlationId) {
+    var organization = detail.organization();
+    data.put("organizationId", organization.organizationId());
+    data.put("organizationName", organization.organizationName());
+    data.put("organizationStatus", organization.status());
+    data.put("detailReturnActionId", "action-organization-read");
+    data.put("formState", "ready");
+    data.put("validationMessages", List.of());
+    data.put("confirmation", mapOf(
+        "consequenceCopy", "Reactivation changes only the selected Organization/Tenant lifecycle boundary back to active administration; tenant application data, Customer records, billing/provider settings, Organization Admin roles, and support access stay outside this action.",
+        "confirmationPhrase", "REACTIVATE",
+        "confirmationRequired", true,
+        "reasonDraft", "",
+        "reasonRequired", true,
+        "submitLabel", "Reactivate Organization",
+        "submitActionId", "action-organization-reactivate",
+        "cancelActionId", "action-organization-read",
+        "idempotencyKeyHint", "client-generated",
+        "freshnessVersionHint", "detail-trace-boundary"));
+    data.put("reactivationEligibility", mapOf(
+        "currentStatus", organization.status(),
+        "allowedStatuses", List.of("suspended"),
+        "blockedReason", organization.status().equals("suspended") ? null : "unsupported-status",
+        "unresolvedSuspensionReasonSummary", "Browser-safe suspension reason details are available only through authorized audit evidence.",
+        "providerOrOutboxReadinessSummary", "No provider, billing, or outbox mutation is required for this Tenant lifecycle boundary action.",
+        "approvalRequired", false,
+        "traceRefs", traceRefs));
+    data.put("lastResult", mapOf("status", "ready", "message", "Organization reactivate confirmation loaded through protected detail-to-reactivate runtime path.", "correlationId", correlationId, "traceRefs", traceRefs));
   }
 
   private SurfaceEnvelope saasOwnerAdminsSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -3762,7 +3823,7 @@ public final class WorkstreamService {
       case "action-submit-organization-create", "action-organization-create" -> service.createOrganization(actor, stringInput(input, "organizationName", ""), idempotencyKey, stringInput(input, "reason", "organization-created"), correlationId);
       case "action-submit-organization-rename", "action-organization-rename" -> service.renameOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), stringInput(input, "organizationName", ""), idempotencyKey, stringInput(input, "reason", "organization-renamed"), correlationId);
       case "action-organization-suspend" -> service.suspendOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), rawStringInput(input, "reason", ""), stringInput(input, "confirmationPhrase", stringInput(input, "confirmation", "")), idempotencyKey, correlationId);
-      case "action-organization-reactivate" -> service.reactivateOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), stringInput(input, "reason", "organization-reactivated"), idempotencyKey, correlationId);
+      case "action-organization-reactivate" -> service.reactivateOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), rawStringInput(input, "reason", ""), stringInput(input, "confirmationPhrase", stringInput(input, "confirmation", "")), idempotencyKey, correlationId);
       default -> throw new AuthorizationException(404, "target-not-found-or-forbidden");
     };
   }
@@ -4012,7 +4073,7 @@ public final class WorkstreamService {
   private SurfaceAction openOrganizationCreateAction() { return new SurfaceAction("action-open-organization-create", "Open Organization create form", "surface-request", browserToolId("action-open-organization-create"), governedToolId(SAAS_OWNER_TENANT_MANAGE_CAPABILITY), SAAS_OWNER_TENANT_MANAGE_CAPABILITY, "schema.organization-admin.create.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-create", "inline"), new Audit("OrganizationCreateFormDisplayed", true)); }
   private SurfaceAction openOrganizationRenameAction() { return new SurfaceAction("action-open-organization-rename", "Open Organization rename form", "surface-request", browserToolId("action-open-organization-rename"), "manage-organizations", SAAS_OWNER_ORGANIZATION_RENAME_CAPABILITY, "schema.organization-admin.rename.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-rename", "inline"), new Audit("OrganizationRenameFormDisplayed", true)); }
   private SurfaceAction openOrganizationSuspendAction() { return new SurfaceAction("action-open-organization-suspend", "Open Organization suspend confirmation", "surface-request", browserToolId("action-open-organization-suspend"), "manage-organizations", SAAS_OWNER_ORGANIZATION_SUSPEND_CAPABILITY, "schema.organization-admin.suspend.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-suspend-confirmation", "inline"), new Audit("OrganizationSuspendConfirmationDisplayed", true)); }
-  private SurfaceAction openOrganizationReactivateAction() { return new SurfaceAction("action-open-organization-reactivate", "Open Organization reactivate confirmation", "surface-request", browserToolId("action-open-organization-reactivate"), governedToolId(SAAS_OWNER_TENANT_MANAGE_CAPABILITY), SAAS_OWNER_TENANT_MANAGE_CAPABILITY, "schema.organization-admin.reactivate.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-reactivate-confirmation", "inline"), new Audit("OrganizationReactivateConfirmationDisplayed", true)); }
+  private SurfaceAction openOrganizationReactivateAction() { return new SurfaceAction("action-open-organization-reactivate", "Open Organization reactivate confirmation", "surface-request", browserToolId("action-open-organization-reactivate"), "manage-organizations", SAAS_OWNER_ORGANIZATION_REACTIVATE_CAPABILITY, "schema.organization-admin.reactivate.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-reactivate-confirmation", "inline"), new Audit("OrganizationReactivateConfirmationDisplayed", true)); }
   private SurfaceAction organizationListAction() { return new SurfaceAction("action-organization-list", "Refresh Organizations", "read", browserToolId("action-organization-list"), governedToolId(SAAS_OWNER_ORGANIZATION_LIST_CAPABILITY), SAAS_OWNER_ORGANIZATION_LIST_CAPABILITY, "schema.organization-admin.list.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-directory", "inline"), new Audit("OrganizationListRequested", true)); }
   private SurfaceAction organizationReadAction() { return new SurfaceAction("action-organization-read", "Read Organization", "read", browserToolId("action-organization-read"), governedToolId(SAAS_OWNER_ORGANIZATION_READ_CAPABILITY), SAAS_OWNER_ORGANIZATION_READ_CAPABILITY, "schema.organization-admin.read.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-detail", "inline"), new Audit("OrganizationReadRequested", true)); }
   private SurfaceAction submitOrganizationCreateAction() { return new SurfaceAction("action-submit-organization-create", "Create Organization", "command", "user-admin.submit-organization-create", "manage-organizations", SAAS_OWNER_TENANT_MANAGE_CAPABILITY, "schema.organization-admin.create.submit.v1", true, false, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-organization-detail", "inline"), new Audit("OrganizationCreateRequested", true)); }
@@ -4020,7 +4081,7 @@ public final class WorkstreamService {
   private SurfaceAction submitOrganizationRenameAction() { return new SurfaceAction("action-submit-organization-rename", "Rename Organization", "command", "user-admin.submit-organization-rename", "manage-organizations", SAAS_OWNER_ORGANIZATION_RENAME_CAPABILITY, "schema.organization-admin.rename.submit.v1", true, false, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-organization-detail", "inline"), new Audit("OrganizationRenameRequested", true)); }
   private SurfaceAction organizationRenameAction() { return new SurfaceAction("action-organization-rename", "Rename Organization", "command", browserToolId("action-organization-rename"), governedToolId(SAAS_OWNER_TENANT_MANAGE_CAPABILITY), SAAS_OWNER_TENANT_MANAGE_CAPABILITY, "schema.organization-admin.rename.v1", true, false, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-organization-detail", "inline"), new Audit("OrganizationRenameRequested", true)); }
   private SurfaceAction organizationSuspendAction() { return new SurfaceAction("action-organization-suspend", "Suspend Organization", "command", browserToolId("action-organization-suspend"), "manage-organizations", SAAS_OWNER_ORGANIZATION_SUSPEND_CAPABILITY, "schema.organization-admin.suspend.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-organization-detail", "inline"), new Audit("OrganizationSuspendRequested", true)); }
-  private SurfaceAction organizationReactivateAction() { return new SurfaceAction("action-organization-reactivate", "Reactivate Organization", "command", browserToolId("action-organization-reactivate"), governedToolId(SAAS_OWNER_TENANT_MANAGE_CAPABILITY), SAAS_OWNER_TENANT_MANAGE_CAPABILITY, "schema.organization-admin.reactivate.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-organization-detail", "inline"), new Audit("OrganizationReactivateRequested", true)); }
+  private SurfaceAction organizationReactivateAction() { return new SurfaceAction("action-organization-reactivate", "Reactivate Organization", "command", browserToolId("action-organization-reactivate"), "manage-organizations", SAAS_OWNER_ORGANIZATION_REACTIVATE_CAPABILITY, "schema.organization-admin.reactivate.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-organization-detail", "inline"), new Audit("OrganizationReactivateRequested", true)); }
   private SurfaceAction showOrganizationAdminsAction() { return new SurfaceAction("action-user-admin-show-organization-admins", "Show Organization Admins", "surface-request", "user-admin.show-organization-admins", "manage-organization-admins", SAAS_OWNER_ORGANIZATION_ADMIN_LIST_CAPABILITY, "schema.organization-admin.admins.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-admins", "inline"), new Audit("OrganizationAdminsDisplayed", true)); }
   private SurfaceAction openOrganizationAdminDetailAction() { return new SurfaceAction("action-open-organization-admin-detail", "View Organization Admin", "read", "user-admin.open-organization-admin-detail", "manage-organization-admins", SAAS_OWNER_ORGANIZATION_ADMIN_LIST_CAPABILITY, "schema.organization-admin.detail.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-admin-detail", "inline"), new Audit("OrganizationAdminDetailDisplayed", true)); }
   private SurfaceAction openOrganizationAdminInvitationDetailAction() { return new SurfaceAction("action-open-organization-admin-invitation-detail", "View Organization Admin invitation", "read", "user-admin.open-organization-admin-invitation-detail", "manage-organization-admins", SAAS_OWNER_ORGANIZATION_ADMIN_LIST_CAPABILITY, "schema.organization-admin.invitation-detail.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-admin-detail", "inline"), new Audit("OrganizationAdminInvitationDetailDisplayed", true)); }
@@ -4166,7 +4227,7 @@ public final class WorkstreamService {
     if (actor.selectedContext().capabilities().contains(capabilityId) || USER_ADMIN_CAPABILITY.equals(capabilityId)) return true;
     if (SAAS_OWNER_ADMIN_LIST_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ADMIN_INVITE_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ADMIN_MANAGE_CAPABILITY.equals(capabilityId)) return actor.selectedContext().capabilities().contains(SAAS_OWNER_USER_MANAGE_CAPABILITY);
     if (SAAS_OWNER_ORGANIZATION_LIST_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ORGANIZATION_READ_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ORGANIZATION_ADMIN_LIST_CAPABILITY.equals(capabilityId)) return actor.selectedContext().capabilities().contains(SAAS_OWNER_TENANT_READ_CAPABILITY);
-    if (SAAS_OWNER_ORGANIZATION_RENAME_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ORGANIZATION_SUSPEND_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ORGANIZATION_MANAGE_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ORGANIZATION_ADMIN_INVITE_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ORGANIZATION_ADMIN_MANAGE_CAPABILITY.equals(capabilityId)) return actor.selectedContext().capabilities().contains(SAAS_OWNER_TENANT_MANAGE_CAPABILITY);
+    if (SAAS_OWNER_ORGANIZATION_RENAME_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ORGANIZATION_SUSPEND_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ORGANIZATION_REACTIVATE_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ORGANIZATION_MANAGE_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ORGANIZATION_ADMIN_INVITE_CAPABILITY.equals(capabilityId) || SAAS_OWNER_ORGANIZATION_ADMIN_MANAGE_CAPABILITY.equals(capabilityId)) return actor.selectedContext().capabilities().contains(SAAS_OWNER_TENANT_MANAGE_CAPABILITY);
     if (capabilityId != null && (capabilityId.startsWith("tenant.customer") || capabilityId.startsWith("tenant.customer_admin"))) return actor.selectedContext().capabilities().contains(USER_ADMIN_CAPABILITY) || actor.selectedContext().capabilities().contains("tenant.customer.manage") || actor.selectedContext().capabilities().contains("tenant.user.manage");
     if (CORE_ACCESS_ME_CAPABILITY.equals(capabilityId)) return true;
     if (CORE_PROFILE_UPDATE_CAPABILITY.equals(capabilityId)) return actor.selectedContext().capabilities().contains(MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY) || actor.selectedContext().capabilities().contains("profile.update");

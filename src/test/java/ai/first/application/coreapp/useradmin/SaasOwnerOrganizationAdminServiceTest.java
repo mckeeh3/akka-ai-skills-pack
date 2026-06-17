@@ -82,7 +82,7 @@ class SaasOwnerOrganizationAdminServiceTest {
     var suspendNoOp = service.suspendOrganization(saasOwner, createdId, "contract ended", "SUSPEND", "suspend-acme-replay", "corr-suspend-replay");
     assertEquals("no-op", suspendNoOp.status());
 
-    var reactivated = service.reactivateOrganization(saasOwner, createdId, "contract restored", "reactivate-acme", "corr-reactivate");
+    var reactivated = service.reactivateOrganization(saasOwner, createdId, "contract restored", "REACTIVATE", "reactivate-acme", "corr-reactivate");
     assertEquals("accepted", reactivated.status());
     assertTrue(repository.tenant(createdId).orElseThrow().active());
 

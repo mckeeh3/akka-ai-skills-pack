@@ -168,7 +168,7 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
         .POST("/api/admin/organizations/" + organizationId + "/reactivate")
         .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "Owner"))
         .addHeader("X-Correlation-Id", "corr-org-reactivate")
-        .withRequestBody(new OrganizationLifecycleApiRequest("contract restored", "idem-org-endpoint-reactivate", null))
+        .withRequestBody(new OrganizationLifecycleApiRequest("contract restored", "idem-org-endpoint-reactivate", "REACTIVATE"))
         .responseBodyAs(OrganizationActionApiResponse.class)
         .invoke();
     assertEquals("accepted", reactivated.body().status());

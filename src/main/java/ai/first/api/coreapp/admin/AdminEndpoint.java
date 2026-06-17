@@ -156,7 +156,7 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      var result = StarterSecurityComponents.saasOwnerOrganizationAdminService().reactivateOrganization(actor, organizationId, request == null ? null : request.reason(), stableIdempotencyKey, correlationId);
+      var result = StarterSecurityComponents.saasOwnerOrganizationAdminService().reactivateOrganization(actor, organizationId, request == null ? null : request.reason(), request == null ? null : request.confirmationPhrase(), stableIdempotencyKey, correlationId);
       return HttpResponses.ok(OrganizationActionApiResponse.from(result));
     });
   }

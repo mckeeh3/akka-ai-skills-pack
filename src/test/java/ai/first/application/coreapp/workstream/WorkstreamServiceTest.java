@@ -561,7 +561,7 @@ class WorkstreamServiceTest {
     assertTrue(activeDetail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-organizations"));
 
     var suspend = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
-        "action-open-organization-suspend", "action-open-organization-suspend", "saas_owner.tenant.manage", "saas_owner.tenant.manage", Map.of("organizationId", "tenant-starter"), null, "membership-owner", activeDetail.resultSurface().surfaceId(), "corr-open-suspend"));
+        "action-open-organization-suspend", "action-open-organization-suspend", "manage-organizations", "saas_owner.organization.suspend", Map.of("organizationId", "tenant-starter"), null, "membership-owner", activeDetail.resultSurface().surfaceId(), "corr-open-suspend"));
     assertEquals("accepted", suspend.status());
     assertEquals("surface-user-admin-organization-suspend-confirmation", suspend.resultSurface().surfaceId());
     assertTrue(suspend.resultSurface().toString().contains("tenant-starter"));
@@ -573,13 +573,13 @@ class WorkstreamServiceTest {
     assertTrue(suspendedDetail.resultSurface().toString().contains("reactivate"));
 
     var reactivate = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
-        "action-open-organization-reactivate", "action-open-organization-reactivate", "saas_owner.tenant.manage", "saas_owner.tenant.manage", Map.of("organizationId", "tenant-suspended"), null, "membership-owner", suspendedDetail.resultSurface().surfaceId(), "corr-open-reactivate"));
+        "action-open-organization-reactivate", "action-open-organization-reactivate", "manage-organizations", "saas_owner.organization.reactivate", Map.of("organizationId", "tenant-suspended"), null, "membership-owner", suspendedDetail.resultSurface().surfaceId(), "corr-open-reactivate"));
     assertEquals("accepted", reactivate.status());
     assertEquals("surface-user-admin-organization-reactivate-confirmation", reactivate.resultSurface().surfaceId());
     assertTrue(reactivate.resultSurface().toString().contains("tenant-suspended"));
 
     var wrongState = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
-        "action-open-organization-reactivate", "action-open-organization-reactivate", "saas_owner.tenant.manage", "saas_owner.tenant.manage", Map.of("organizationId", "tenant-starter"), null, "membership-owner", activeDetail.resultSurface().surfaceId(), "corr-wrong-reactivate"));
+        "action-open-organization-reactivate", "action-open-organization-reactivate", "manage-organizations", "saas_owner.organization.reactivate", Map.of("organizationId", "tenant-starter"), null, "membership-owner", activeDetail.resultSurface().surfaceId(), "corr-wrong-reactivate"));
     assertEquals("denied", wrongState.status());
     assertEquals("system_message", wrongState.resultSurface().surfaceType());
   }
