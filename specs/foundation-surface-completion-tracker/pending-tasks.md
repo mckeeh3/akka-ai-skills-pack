@@ -1237,7 +1237,7 @@
 
 ### TASK-FSCT-035: Verify or complete runtime implementation for `surface-user-admin-saas-owner-admin-invitation-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-034]
 - surface id: `surface-user-admin-saas-owner-admin-invitation-create`
@@ -1268,6 +1268,7 @@
   - purpose: Invitation form for another SaaS Owner Admin with role validation, idempotency, outbox boundary, and audit.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-saas-owner-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-saas-owner-admin-invitation-create`; surface graph node/action edge for opening or acting on `surface-user-admin-saas-owner-admin-invitation-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented and verified the protected runtime path for the SaaS Owner Admin invitation create surface. `WorkstreamService#saasOwnerAdminInvitationCreateSurface` returns a backend-owned `user_admin.saas_owner_admin_invitation_create.v1` create-form envelope with SaaS Owner scope, branch metadata, form/policy/delivery-readiness payload, submit action, trace/correlation refs, and redaction boundaries; `action-submit-saas-owner-admin-invitation` uses the dedicated `saas_owner.admin.invite` capability/tool mapping, enforces selected SaaS Owner `AuthContext`, limits submitted roles to `SAAS_OWNER_ADMIN`, creates/reuses invitations through `InvitationService` with idempotency/outbox/provider boundaries, and routes to browser-safe invitation detail. Frontend `UserAdminScopedAdminSurface` now submits the dedicated SaaS Owner action instead of the generic user-invite action. runtime evidence: readiness level `api-smoked` via protected `/api/workstream/actions` and direct protected surface path in `UserAdminBrowserWorkstreamSmokeTest`, SaaS Owner Admin AuthContext `membership-owner`, Tenant Admin denial inherited from the branch, successful app-owner invitation submission, trace/correlation and browser-safe token/provider/outbox redaction evidence, and no fixture-only/frontend-only normal runtime path. commands passed: `mvn -q -Dtest=WorkstreamServiceTest#saasOwnerUserAdminDashboardExposesOrganizationAdminSurface test`, `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesSaasOwnerAdminsRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`
 
 ### TASK-FSCT-036: Verify or complete runtime testing for `surface-user-admin-saas-owner-admin-invitation-create`
 

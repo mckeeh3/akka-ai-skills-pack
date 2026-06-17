@@ -326,6 +326,40 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(list.resultSurface().toString().contains("trace-saas-owner-admin"));
     assertBrowserSafe(list.resultSurface());
 
+    var createForm = runActionAs(new CapabilityActionRequest(
+        "action-open-saas-owner-admin-invitation-create",
+        "user-admin.open-saas-owner-admin-invite",
+        "manage-saas-owner-admins",
+        "saas_owner.admin.invite",
+        Map.of("scope", "saas-owner"),
+        null,
+        "membership-owner",
+        list.resultSurface().surfaceId(),
+        "corr-saas-owner-admins-create-form"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", createForm.status());
+    assertEquals("surface-user-admin-saas-owner-admin-invitation-create", createForm.resultSurface().surfaceId());
+    assertEquals("user_admin.saas_owner_admin_invitation_create.v1", createForm.resultSurface().data().get("surfaceContract"));
+    assertTrue(createForm.resultSurface().toString().contains("action-submit-saas-owner-admin-invitation"));
+    assertTrue(createForm.resultSurface().toString().contains("deliveryReadiness"));
+    assertBrowserSafe(createForm.resultSurface());
+
+    var submitted = runActionAs(new CapabilityActionRequest(
+        "action-submit-saas-owner-admin-invitation",
+        "user-admin.submit-saas-owner-admin-invite",
+        "manage-saas-owner-admins",
+        "saas_owner.admin.invite",
+        Map.of("email", "browser-owner-admin@example.test", "displayName", "Browser Owner Admin", "roles", "SAAS_OWNER_ADMIN", "reason", "browser smoke"),
+        "idem-browser-owner-admin",
+        "membership-owner",
+        createForm.resultSurface().surfaceId(),
+        "corr-saas-owner-admins-submit"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertTrue(List.of("accepted", "blocked-runtime").contains(submitted.status()));
+    assertEquals("surface-user-admin-invitation-detail", submitted.resultSurface().surfaceId());
+    assertTrue(submitted.resultSurface().toString().contains("browser-owner-admin@example.test"));
+    assertFalse(submitted.resultSurface().toString().contains("invite-token"));
+    assertFalse(submitted.resultSurface().toString().contains("tokenHash"));
+    assertBrowserSafe(submitted.resultSurface());
+
     var directList = getSurfaceAs("surface-user-admin-saas-owner-admins", "corr-saas-owner-admins-direct", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
     assertEquals("surface-user-admin-saas-owner-admins", directList.surfaceId());
     assertEquals("corr-saas-owner-admins-direct", directList.correlationId());

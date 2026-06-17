@@ -144,7 +144,8 @@ function ScopedDirectoryRow({ row, actions, surfaceId, onAction }: { row: Record
 }
 
 function RoleScopedInvitationForm({ envelope, onAction }: Props) {
-  const action = envelope.actions.find((candidate) => candidate.actionId === 'action-customer-admin-invite')
+  const action = envelope.actions.find((candidate) => candidate.actionId === 'action-submit-saas-owner-admin-invitation')
+    ?? envelope.actions.find((candidate) => candidate.actionId === 'action-customer-admin-invite')
     ?? envelope.actions.find((candidate) => candidate.actionId === 'action-invite-user')
     ?? envelope.actions.find((candidate) => candidate.intent === 'command');
   const [email, setEmail] = useState(String(envelope.data.draft?.email ?? ''));

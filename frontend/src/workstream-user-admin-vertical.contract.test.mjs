@@ -286,7 +286,8 @@ test('User Admin scoped admin surfaces cover SaaS Owner, Organization Admin, Cus
   assert.match(userAdminScopedAdminSurface, /user_admin\.customer_admin_invitation_create\.v1/);
   assert.match(userAdminScopedAdminSurface, /user_admin\.customer_admin_detail\.v1/);
   assert.match(userAdminScopedAdminSurface, /function RoleScopedInvitationForm/);
-  assert.match(userAdminScopedAdminSurface, /const action = envelope\.actions\.find\(\(candidate\) => candidate\.actionId === 'action-customer-admin-invite'\)/);
+  assert.match(userAdminScopedAdminSurface, /candidate\.actionId === 'action-submit-saas-owner-admin-invitation'/);
+  assert.match(userAdminScopedAdminSurface, /candidate\.actionId === 'action-customer-admin-invite'/);
   assert.match(userAdminScopedAdminSurface, /No backend-authorized role option is available for this selected scope/);
   assert.match(userAdminScopedAdminSurface, /The browser does not infer hidden targets, role eligibility, or authority from labels/);
   assert.doesNotMatch(userAdminScopedAdminSurface, /TENANT_ADMIN|SAAS_OWNER_ADMIN/);
