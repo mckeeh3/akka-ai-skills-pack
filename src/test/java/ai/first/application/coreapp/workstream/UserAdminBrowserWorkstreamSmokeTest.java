@@ -539,6 +539,29 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .responseBodyAs(String.class)
         .invoke(), "Support access grant action must reject missing bearer tokens.");
 
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-support-access-revoke-confirmation")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Support access revoke confirmation surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-user-support-revoke-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-confirm-user-admin-support-access-revoke",
+            "action-confirm-user-admin-support-access-revoke",
+            "USERADMIN_SUPPORT_ACCESS_REVOKE",
+            "USERADMIN_SUPPORT_ACCESS_REVOKE",
+            Map.of("accountId", "member@example.test", "membershipId", "membership-member", "reason", "missing bearer"),
+            "idem-user-support-revoke-missing-bearer",
+            SELECTED_CONTEXT_ID,
+            "surface-user-admin-support-access-revoke-confirmation",
+            "corr-user-support-revoke-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Support access revoke action must reject missing bearer tokens.");
+
     var dashboard = getSurface("surface-user-admin-dashboard", "corr-user-support-grant-dashboard");
     var users = runAction(new CapabilityActionRequest(
         "action-user-admin-show-users",
@@ -668,11 +691,29 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "corr-user-support-revoke-open"));
     assertEquals("accepted", revokeOpened.status());
     assertEquals("surface-user-admin-support-access-revoke-confirmation", revokeOpened.resultSurface().surfaceId());
+    assertEquals("destructive-lifecycle-confirmation", revokeOpened.resultSurface().surfaceType());
     assertEquals("user_admin.support_access_revoke_confirmation.v1", revokeOpened.resultSurface().data().get("surfaceContract"));
+    assertEquals("corr-user-support-revoke-open", revokeOpened.resultSurface().correlationId());
+    assertTrue(revokeOpened.resultSurface().toString().contains("trace-useradmin-support-access-revoke-surface"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("targetSummary"));
     assertTrue(revokeOpened.resultSurface().toString().contains("activeSupportGrant"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("currentSupportAccess"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("eligibility"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("confirmationForm"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("idempotencyKeyHint=client-generated"));
     assertTrue(revokeOpened.resultSurface().toString().contains("action-confirm-user-admin-support-access-revoke"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("noRoleMutation=true"));
     assertTrue(revokeOpened.resultSurface().toString().contains("noMembershipLifecycleMutation=true"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("noInvitationMutation=true"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("noIdentityProviderMutation=true"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("noDirectAccessReviewMutation=true"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("noFakeSuccess=true"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("noDirectMutation=true"));
     assertTrue(revokeOpened.resultSurface().toString().contains("support-provider-internals-redacted"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("raw-jwt-redacted"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("private-profile-redacted"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("hidden-grant-redacted"));
+    assertTrue(revokeOpened.resultSurface().toString().contains("sibling-scope-redacted"));
     assertBrowserSafe(revokeOpened.resultSurface());
 
     var revoked = runAction(new CapabilityActionRequest(
@@ -687,9 +728,40 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "corr-user-support-revoke-submit"));
     assertEquals("accepted", revoked.status());
     assertEquals("surface-user-admin-user-detail", revoked.resultSurface().surfaceId());
+    assertEquals("corr-user-support-revoke-submit", revoked.resultSurface().correlationId());
+    assertTrue(revoked.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-support-access")));
     assertTrue(revoked.resultSurface().toString().contains("Support access revoked"));
     assertTrue(revoked.resultSurface().toString().contains("supportAccess=false"));
+    assertTrue(revoked.resultSurface().toString().contains("canMutateInline=false"));
+    assertFalse(revoked.resultSurface().toString().contains("providerSecret"));
     assertBrowserSafe(revoked.resultSurface());
+
+    var revokeReplay = runAction(new CapabilityActionRequest(
+        "action-confirm-user-admin-support-access-revoke",
+        "action-confirm-user-admin-support-access-revoke",
+        "USERADMIN_SUPPORT_ACCESS_REVOKE",
+        "USERADMIN_SUPPORT_ACCESS_REVOKE",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member", "reason", "case already complete"),
+        "idem-user-support-revoke-runtime-replay",
+        SELECTED_CONTEXT_ID,
+        revokeOpened.resultSurface().surfaceId(),
+        "corr-user-support-revoke-replay"));
+    assertEquals("accepted", revokeReplay.status());
+    assertEquals("surface-user-admin-user-detail", revokeReplay.resultSurface().surfaceId());
+    assertTrue(revokeReplay.resultSurface().toString().contains("supportAccess=false"));
+    assertBrowserSafe(revokeReplay.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> runActionAs(new CapabilityActionRequest(
+        "action-open-user-admin-support-access-revoke-confirmation",
+        "action-open-user-admin-support-access-revoke-confirmation",
+        "USERADMIN_SUPPORT_ACCESS_REVOKE",
+        "USERADMIN_SUPPORT_ACCESS_REVOKE",
+        Map.of("accountId", "admin@example.test", "membershipId", SELECTED_CONTEXT_ID),
+        null,
+        "membership-member",
+        submitted.resultSurface().surfaceId(),
+        "corr-user-support-revoke-member-denied"), "workos-member", "member@example.test", "Member User", "membership-member"),
+        "Regular members must not open support access revoke confirmation through the protected action API.");
 
     assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
         "action-open-user-admin-support-access-grant",

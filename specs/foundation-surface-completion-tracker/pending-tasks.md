@@ -2332,7 +2332,7 @@
 
 ### TASK-FSCT-066: Verify or complete runtime testing for `surface-user-admin-support-access-revoke-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-065]
 - surface id: `surface-user-admin-support-access-revoke-confirmation`
@@ -2357,15 +2357,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - notes:
   - surface type: `destructive-lifecycle-confirmation`
   - surface contract: `user_admin.support_access_revoke_confirmation.v1`
   - purpose: Support-access revoke confirmation.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-support-access-revoke-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-support-access-revoke-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted User Admin support-access revoke-confirmation runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminSupportAccessGrantRuntimePath`: missing-bearer direct surface/action requests are rejected, tenant-admin AuthContext grants support access, opens backend-owned `user_admin.support_access_revoke_confirmation.v1`, verifies destructive-lifecycle payload/action/trace/correlation/no-mutation/secret-boundary evidence, confirms revoke through `/api/workstream/actions`, verifies refreshed user detail with `supportAccess=false`, replays terminal revoke safely, and verifies regular-member denial through the protected action API. runtime evidence: readiness level `runtime-ready` for the support-access revoke-confirmation testing scope; role/AuthContext/tenant setup covered tenant admin and tenant employee/member in `tenant-starter`; denial/provider/fail-closed/trace coverage included missing bearer rejection, regular member capability denial, no role/membership/invitation/identity-provider/access-review mutation markers, raw JWT/provider/private-profile/hidden-grant/sibling-scope redaction, trace refs, and correlation ids; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminSupportAccessGrantRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-067: Verify or complete app-description specification for `surface-user-admin-access-review-task`
 
