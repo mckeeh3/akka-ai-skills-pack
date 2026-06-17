@@ -15,6 +15,7 @@ import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamBoots
 import ai.first.application.foundation.identity.AkkaIdentityRepository;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.identity.Customer;
 import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.identity.Membership;
 import ai.first.domain.foundation.identity.MembershipStatus;
@@ -2834,6 +2835,202 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         organizationDetail.resultSurface().surfaceId(),
         "corr-org-admin-invite-tenant-denied")),
         "Tenant Admin selected contexts must not open SaaS Owner Organization Admin invitation forms.");
+  }
+
+  @Test
+  void protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage() throws Exception {
+    var repository = new AkkaIdentityRepository(componentClient);
+    repository.saveTenant(new Tenant("tenant-hidden", "Hidden Tenant", true));
+    repository.saveCustomer(new Customer(TENANT_ID, "cust-alpha", "Alpha Customer", true));
+    repository.saveCustomer(new Customer(TENANT_ID, "cust-beta", "Beta Customer", false));
+    repository.saveCustomer(new Customer("tenant-hidden", "cust-hidden", "Hidden Customer", true));
+    repository.saveAccount(new Account("customer-admin@example.test", null, "customer-admin@example.test", "customer-admin@example.test", AccountStatus.ACTIVE, "UNLINKED"));
+    repository.saveProfile(new UserProfile("customer-admin@example.test", "customer-admin@example.test", "Customer Admin", null, null, null));
+    repository.saveSettings(new UserSettings("customer-admin@example.test", UserSettings.ThemeId.AURORA_LIGHT));
+    repository.saveMembership(new Membership("membership-customer-admin", "customer-admin@example.test", ScopeType.CUSTOMER, TENANT_ID, "cust-alpha", List.of(FoundationRole.CUSTOMER_ADMIN), MembershipStatus.ACTIVE, false, null));
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-customer-directory")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-directory-missing-bearer-direct")
+        .responseBodyAs(String.class)
+        .invoke(), "Customer Directory surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-directory-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-user-admin-show-customers",
+            "user-admin.show-customers",
+            "manage-customers",
+            "tenant.customer.list",
+            Map.of("query", "Alpha"),
+            null,
+            SELECTED_CONTEXT_ID,
+            "surface-user-admin-dashboard",
+            "corr-customer-directory-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Customer Directory action path must reject missing bearer tokens.");
+
+    var direct = getSurface("surface-user-admin-customer-directory", "corr-customer-directory-direct");
+    assertEquals("surface-user-admin-customer-directory", direct.surfaceId());
+    assertEquals("list-search", direct.surfaceType());
+    assertEquals("user_admin.customer_directory.v1", direct.data().get("surfaceContract"));
+    assertEquals("corr-customer-directory-direct", direct.correlationId());
+    assertTrue(direct.toString().contains("Alpha Customer"));
+    assertTrue(direct.toString().contains("Beta Customer"));
+    assertTrue(direct.toString().contains("targetSurfaceId=surface-user-admin-customer-detail"));
+    assertTrue(direct.toString().contains("openActionId=action-customer-read"));
+    assertTrue(direct.toString().contains("branchReturnActionId=action-user-admin-show-customers"));
+    assertTrue(direct.toString().contains("sibling-customers-redacted"));
+    assertTrue(direct.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-user-admin-customer-directory")));
+    assertFalse(direct.toString().contains("Hidden Customer"));
+    assertFalse(direct.toString().contains("tenant-hidden"));
+    assertBrowserSafe(direct);
+
+    var filtered = runAction(new CapabilityActionRequest(
+        "action-user-admin-show-customers",
+        "user-admin.show-customers",
+        "manage-customers",
+        "tenant.customer.list",
+        Map.of("query", "Beta", "status", "suspended"),
+        null,
+        SELECTED_CONTEXT_ID,
+        "surface-user-admin-dashboard",
+        "corr-customer-directory-filtered"));
+    assertEquals("accepted", filtered.status());
+    assertEquals("surface-user-admin-customer-directory", filtered.resultSurface().surfaceId());
+    assertEquals("user_admin.customer_directory.v1", filtered.resultSurface().data().get("surfaceContract"));
+    assertEquals("corr-customer-directory-filtered", filtered.resultSurface().correlationId());
+    assertTrue(filtered.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-directory")));
+    assertTrue(String.valueOf(filtered.resultSurface().data().get("pageInfo")).contains("visibleCount=1"));
+    assertTrue(filtered.resultSurface().toString().contains("query=Beta"));
+    assertTrue(filtered.resultSurface().toString().contains("status=suspended"));
+    assertTrue(filtered.resultSurface().toString().contains("Beta Customer"));
+    assertFalse(filtered.resultSurface().toString().contains("Alpha Customer"));
+    assertFalse(filtered.resultSurface().toString().contains("Hidden Customer"));
+    assertBrowserSafe(filtered.resultSurface());
+
+    var detail = runAction(new CapabilityActionRequest(
+        "action-customer-read",
+        "user-admin.read-customer",
+        "manage-customers",
+        "tenant.customer.read",
+        Map.of("customerId", "cust-alpha"),
+        null,
+        SELECTED_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-customer-directory-row-open"));
+    assertEquals("accepted", detail.status());
+    assertEquals("surface-user-admin-customer-detail", detail.resultSurface().surfaceId());
+    assertEquals("show-inspection", detail.resultSurface().surfaceType());
+    assertEquals("user_admin.customer_detail.v1", detail.resultSurface().data().get("surfaceContract"));
+    assertTrue(detail.resultSurface().toString().contains("Alpha Customer"));
+    assertTrue(detail.resultSurface().toString().contains("canMutateInline=false"));
+    assertTrue(detail.resultSurface().toString().contains("visibleActions=[read, rename, suspend]"));
+    assertTrue(detail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-customers"));
+    assertTrue(detail.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-read")));
+    assertBrowserSafe(detail.resultSurface());
+
+    var createForm = runAction(new CapabilityActionRequest(
+        "action-open-customer-create",
+        "user-admin.open-customer-create",
+        "manage-customers",
+        "tenant.customer.create",
+        null,
+        null,
+        SELECTED_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-customer-directory-create-open"));
+    assertEquals("accepted", createForm.status());
+    assertEquals("surface-user-admin-customer-create", createForm.resultSurface().surfaceId());
+    assertEquals("create-form", createForm.resultSurface().surfaceType());
+    assertEquals("user_admin.customer_create.v1", createForm.resultSurface().data().get("surfaceContract"));
+    assertTrue(createForm.resultSurface().toString().contains("action-customer-create"));
+    assertTrue(createForm.resultSurface().toString().contains("idempotencyKeyHint=client-generated"));
+    assertBrowserSafe(createForm.resultSurface());
+
+    var customerAdmins = runAction(new CapabilityActionRequest(
+        "action-user-admin-show-customer-admins",
+        "user-admin.show-customer-admins",
+        "manage-customer-admins",
+        "tenant.customer_admin.list",
+        Map.of("customerId", "cust-alpha"),
+        null,
+        SELECTED_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-customer-directory-admins-open"));
+    assertEquals("accepted", customerAdmins.status());
+    assertEquals("surface-user-admin-customer-admins", customerAdmins.resultSurface().surfaceId());
+    assertEquals("user_admin.customer_admins.v1", customerAdmins.resultSurface().data().get("surfaceContract"));
+    assertTrue(customerAdmins.resultSurface().toString().contains("customerId=cust-alpha"));
+    assertTrue(customerAdmins.resultSurface().toString().contains("targetScopeProof"));
+    assertTrue(customerAdmins.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-customers"));
+    assertFalse(customerAdmins.resultSurface().toString().contains("Hidden Customer"));
+    assertBrowserSafe(customerAdmins.resultSurface());
+
+    var inviteForm = runAction(new CapabilityActionRequest(
+        "action-open-customer-admin-invitation-create",
+        "user-admin.open-customer-admin-invite",
+        "manage-customer-admins",
+        "tenant.customer_admin.invite",
+        Map.of("customerId", "cust-alpha"),
+        null,
+        SELECTED_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-customer-directory-admin-invite-open"));
+    assertEquals("accepted", inviteForm.status());
+    assertEquals("surface-user-admin-customer-admin-invitation-create", inviteForm.resultSurface().surfaceId());
+    assertEquals("user_admin.customer_admin_invitation_create.v1", inviteForm.resultSurface().data().get("surfaceContract"));
+    assertTrue(inviteForm.resultSurface().toString().contains("CUSTOMER_ADMIN"));
+    assertTrue(inviteForm.resultSurface().toString().contains("outboxReadiness=backend-derived"));
+    assertTrue(inviteForm.resultSurface().toString().contains("provider-payload-redacted"));
+    assertTrue(inviteForm.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-customers"));
+    assertBrowserSafe(inviteForm.resultSurface());
+
+    var hiddenRead = runActionAs(new CapabilityActionRequest(
+        "action-customer-read",
+        "user-admin.read-customer",
+        "manage-customers",
+        "tenant.customer.read",
+        Map.of("customerId", "cust-hidden"),
+        null,
+        SELECTED_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-customer-directory-hidden-read"), "workos-admin", "admin@example.test", "Tenant Admin", SELECTED_CONTEXT_ID);
+    assertEquals("denied", hiddenRead.status());
+    assertEquals("surface-user-admin-system-message", hiddenRead.resultSurface().surfaceId());
+    assertTrue(hiddenRead.resultSurface().toString().contains("target-not-found-or-forbidden"));
+    assertFalse(hiddenRead.resultSurface().toString().contains("Hidden Customer"));
+    assertFalse(hiddenRead.resultSurface().toString().contains("tenant-hidden"));
+    assertBrowserSafe(hiddenRead.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-user-admin-customer-directory",
+        "corr-customer-directory-customer-admin-denied-direct",
+        "workos-customer-admin",
+        "customer-admin@example.test",
+        "Customer Admin",
+        "membership-customer-admin"),
+        "Customer Admin selected contexts must not direct-load the Organization/Tenant Customer Directory.");
+
+    var customerAdminDenied = runActionAs(new CapabilityActionRequest(
+        "action-user-admin-show-customers",
+        "user-admin.show-customers",
+        "manage-customers",
+        "tenant.customer.list",
+        null,
+        null,
+        "membership-customer-admin",
+        "surface-user-admin-dashboard",
+        "corr-customer-directory-customer-admin-denied-action"), "workos-customer-admin", "customer-admin@example.test", "Customer Admin", "membership-customer-admin");
+    assertEquals("denied", customerAdminDenied.status());
+    assertEquals("surface-user-admin-system-message", customerAdminDenied.resultSurface().surfaceId());
+    assertTrue(customerAdminDenied.resultSurface().toString().contains("scope-forbidden"));
+    assertFalse(customerAdminDenied.resultSurface().toString().contains("Beta Customer"));
+    assertFalse(customerAdminDenied.resultSurface().toString().contains("Hidden Customer"));
+    assertBrowserSafe(customerAdminDenied.resultSurface());
   }
 
   @Test

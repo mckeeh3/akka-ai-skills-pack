@@ -3604,7 +3604,7 @@
 
 ### TASK-FSCT-102: Verify or complete runtime testing for `surface-user-admin-customer-directory`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-101]
 - surface id: `surface-user-admin-customer-directory`
@@ -3638,6 +3638,7 @@
   - purpose: Organization Admin Customer directory.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-directory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-directory`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added protected Akka-hosted Customer Directory smoke coverage to `UserAdminBrowserWorkstreamSmokeTest`, covering missing-bearer rejection, direct surface load, canonical `action-user-admin-show-customers` filter/search path, backend-authored Customer row activation to detail, Customer create and Customer Admin list/invite entrypoint opens, hidden/cross-tenant Customer no-enumeration denial, Customer Admin selected-context denial, trace/correlation evidence, frontend secret/redaction boundaries, and existing User Admin frontend contract/typecheck coverage; checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`
 
 ### TASK-FSCT-103: Verify or complete app-description specification for `surface-user-admin-customer-detail`
 
