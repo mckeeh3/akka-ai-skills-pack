@@ -382,7 +382,92 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(detailModelRefs.resultSurface().toString().contains("providerCredential=[REDACTED]"));
     assertBrowserSafe(detailModelRefs.resultSurface());
 
-    assertDetailActionRoutes("action-agent-detail-open-prompt-governance", "agent_admin.get_prompt_version", "surface-agent-prompt-governance", "accepted", "corr-agent-admin-detail-prompt-governance");
+    var promptGovernance = assertDetailActionRoutes("action-agent-detail-open-prompt-governance", "agent_admin.get_prompt_version", "surface-agent-prompt-governance", "accepted", "corr-agent-admin-detail-prompt-governance");
+    assertEquals("agent_admin.prompt_governance.v1", promptGovernance.resultSurface().data().get("surfaceContract"));
+    assertTrue(promptGovernance.resultSurface().toString().contains("governanceSummary"));
+    assertTrue(promptGovernance.resultSurface().toString().contains("redactedPromptDiff"));
+    assertTrue(promptGovernance.resultSurface().toString().contains("reviewState"));
+    assertTrue(promptGovernance.resultSurface().toString().contains("action-agent-prompt-governance-submit-review"));
+    assertTrue(promptGovernance.resultSurface().toString().contains("action-agent-prompt-governance-open-risk-review"));
+
+    var directPromptGovernance = getSurface("surface-agent-prompt-governance", "corr-agent-admin-prompt-governance-direct");
+    assertEquals("agent_admin.prompt_governance.v1", directPromptGovernance.data().get("surfaceContract"));
+    assertTrue(directPromptGovernance.toString().contains("safeRedactionSummary"));
+    assertTrue(directPromptGovernance.toString().contains("blocked_provider_or_runtime"));
+    assertBrowserSafe(directPromptGovernance);
+
+    var promptRefresh = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-governance-refresh",
+        "action-agent-prompt-governance-refresh",
+        "agent_admin.get_prompt_version",
+        "agent_admin.get_prompt_version",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        promptGovernance.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-governance-refresh"));
+    assertEquals("no-op", promptRefresh.status());
+    assertEquals("surface-agent-prompt-governance", promptRefresh.resultSurface().surfaceId());
+    assertBrowserSafe(promptRefresh.resultSurface());
+
+    var promptSimulation = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-governance-simulate",
+        "action-agent-prompt-governance-simulate",
+        "agent_admin.draft_behavior_change",
+        "agent_admin.draft_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-prompt-governance-simulate",
+        ADMIN_CONTEXT_ID,
+        promptGovernance.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-governance-simulate"));
+    assertEquals("accepted", promptSimulation.status());
+    assertEquals("surface-agent-test-console", promptSimulation.resultSurface().surfaceId());
+    assertTrue(promptSimulation.resultSurface().toString().contains("noProductionSideEffects=true"));
+    assertBrowserSafe(promptSimulation.resultSurface());
+
+    var promptSubmit = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-governance-submit-review",
+        "action-agent-prompt-governance-submit-review",
+        "agent_admin.submit_behavior_change_for_review",
+        "agent_admin.submit_behavior_change_for_review",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-prompt-governance-submit",
+        ADMIN_CONTEXT_ID,
+        promptGovernance.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-governance-submit"));
+    assertEquals("approval-required", promptSubmit.status());
+    assertEquals("surface-agent-behavior-proposal", promptSubmit.resultSurface().surfaceId());
+    assertBrowserSafe(promptSubmit.resultSurface());
+
+    var promptRiskFromGovernance = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-governance-open-risk-review",
+        "action-agent-prompt-governance-open-risk-review",
+        "agent_admin.prompt_risk_review.read",
+        "agent_admin.prompt_risk_review.read",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        promptGovernance.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-governance-risk"));
+    assertEquals("accepted", promptRiskFromGovernance.status());
+    assertEquals("surface-agent-admin-prompt-risk-review", promptRiskFromGovernance.resultSurface().surfaceId());
+    assertTrue(promptRiskFromGovernance.resultSurface().toString().contains("blocked_provider_or_runtime"));
+    assertBrowserSafe(promptRiskFromGovernance.resultSurface());
+
+    var promptBackToDetail = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-governance-back-to-detail",
+        "action-agent-prompt-governance-back-to-detail",
+        "agent_admin.get_definition",
+        "agent_admin.get_definition",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        promptGovernance.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-governance-detail-return"));
+    assertEquals("accepted", promptBackToDetail.status());
+    assertEquals("surface-agent-admin-detail", promptBackToDetail.resultSurface().surfaceId());
+    assertBrowserSafe(promptBackToDetail.resultSurface());
+
     assertDetailActionRoutes("action-agent-detail-open-skill-manifest", "agent_admin.get_manifest", "surface-agent-skill-manifest-diff", "accepted", "corr-agent-admin-detail-skill-manifest");
     assertDetailActionRoutes("action-agent-detail-open-tool-boundary", "agent_admin.get_tool_boundary", "surface-agent-tool-boundary-diff", "accepted", "corr-agent-admin-detail-tool-boundary");
     var noSideEffectTest = assertDetailActionRoutes("action-agent-detail-run-test", "agent_admin.draft_behavior_change", "surface-agent-test-console", "accepted", "corr-agent-admin-detail-run-test");
