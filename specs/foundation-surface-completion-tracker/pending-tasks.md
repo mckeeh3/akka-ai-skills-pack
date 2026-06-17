@@ -4770,7 +4770,7 @@
 
 ### TASK-FSCT-135: Verify or complete runtime testing for `surface-agent-admin-catalog`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-134]
 - surface id: `surface-agent-admin-catalog`
@@ -4804,6 +4804,7 @@
   - purpose: Managed agent catalog.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-catalog`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-catalog`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added protected Akka-hosted catalog runtime smoke coverage for direct catalog auth rejection, protected seed-default setup, backend-owned `agent_admin.catalog.v1` direct surface reads, backend-authoritative filters/rows/actions/redaction/provider fail-closed readiness/trace evidence, search, empty no-match, reset/no-op, row-open to detail, catalog trace open, regular-member denial, and customer-scoped denial. Runtime evidence: readiness level `runtime-ready` for the catalog testing scope with tenant admin/member/customer AuthContext coverage, API/action path evidence, correlation/trace and secret-boundary checks, and no fixture-only/frontend-only normal runtime path. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#agentAdminCatalogDetailAndArtifactReadsAreBackendAuthoritativeAndRedacted,WorkstreamServiceTest#agentAdminCatalogIsTenantScoped,AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-136: Verify or complete app-description specification for `surface-agent-admin-detail`
 

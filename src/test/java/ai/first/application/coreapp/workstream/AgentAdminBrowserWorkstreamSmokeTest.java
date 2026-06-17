@@ -12,6 +12,7 @@ import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActio
 import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActionResult;
 import ai.first.application.coreapp.workstream.WorkstreamService.SurfaceEnvelope;
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamBootstrapResponse;
+import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
 import ai.first.application.foundation.identity.AkkaIdentityRepository;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
@@ -199,6 +200,159 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-admin-catalog")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin catalog must reject missing bearer tokens.");
+
+    var seedDefaults = runAction(new CapabilityActionRequest(
+        "action-import-agent-seed-defaults",
+        "action-import-agent-seed-defaults",
+        "agent_admin.reseed_missing_defaults",
+        "agent_admin.reseed_missing_defaults",
+        Map.of("reason", "catalog-runtime-smoke"),
+        "idem-agent-admin-catalog-seed",
+        ADMIN_CONTEXT_ID,
+        "surface-agent-admin-dashboard",
+        "corr-agent-admin-catalog-seed"));
+    assertTrue(seedDefaults.status().equals("accepted") || seedDefaults.status().equals("no-op"));
+    assertEquals("surface-agent-seed-import-confirmation", seedDefaults.resultSurface().surfaceId());
+    assertBrowserSafe(seedDefaults.resultSurface());
+
+    var catalog = getCatalogWithRows("corr-agent-admin-catalog-direct");
+    assertEquals("surface-agent-admin-catalog", catalog.surfaceId());
+    assertEquals("list-search", catalog.surfaceType());
+    assertEquals("agent_admin.catalog.v1", catalog.data().get("surfaceContract"));
+    assertTrue(catalog.correlationId().startsWith("corr-agent-admin-catalog-direct"));
+    assertTrue(catalog.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-agent-admin-catalog")));
+    assertTrue(catalog.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-refresh-catalog")));
+    assertTrue(catalog.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-search-catalog")));
+    assertTrue(catalog.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-reset-catalog-filters")));
+    assertTrue(catalog.actions().stream().anyMatch(action -> action.actionId().equals("action-open-agent-detail") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail")));
+    assertTrue(catalog.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-catalog-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+    assertFalse(catalog.actions().stream().anyMatch(action -> action.actionId().contains("activate") || action.actionId().contains("deactivate") || action.actionId().contains("rollback")), "Catalog must not expose inline lifecycle mutation actions.");
+
+    var catalogSummary = (Map<String, Object>) catalog.data().get("catalogSummary");
+    assertEquals("surface-agent-admin-catalog", catalogSummary.get("surfaceId"));
+    assertEquals("agent_admin.catalog.v1", catalogSummary.get("contract"));
+    assertTrue(((Number) catalogSummary.get("resultCount")).intValue() > 0);
+    assertTrue(String.valueOf(catalogSummary.get("providerReadinessCounts")).contains("blocked_provider_or_runtime") || catalog.toString().contains("provider-fail-closed"));
+    var scopeSummary = (Map<String, Object>) catalog.data().get("scopeSummary");
+    assertEquals(ADMIN_CONTEXT_ID, scopeSummary.get("selectedAuthContextId"));
+    assertEquals("tenant", scopeSummary.get("scopeType"));
+    assertEquals(Boolean.TRUE, scopeSummary.get("governanceAuthorized"));
+    var filters = (Map<String, Object>) catalog.data().get("filters");
+    assertEquals(Boolean.TRUE, filters.get("backendAuthoritative"));
+    assertEquals("", filters.get("searchText"));
+    var rows = (List<Map<String, Object>>) catalog.data().get("rows");
+    assertFalse(rows.isEmpty());
+    assertTrue(rows.stream().anyMatch(row -> AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(row.get("id")) && "action-open-agent-detail".equals(row.get("openActionId")) && "surface-agent-admin-detail".equals(row.get("targetSurfaceId"))));
+    assertTrue(catalog.toString().contains("safeRedactionSummary"));
+    assertTrue(catalog.toString().contains("providerCredentials=omitted"));
+    assertTrue(catalog.toString().contains("rawTraceEvidence=role-gated"));
+    assertTrue(catalog.toString().contains("secretVisibility=redacted"));
+    assertTrue(catalog.toString().contains("trace-agent-admin-catalog"));
+    assertBrowserSafe(catalog);
+
+    var search = runAction(new CapabilityActionRequest(
+        "action-agent-admin-search-catalog",
+        "action-agent-admin-search-catalog",
+        "agent_admin.list_definitions",
+        "agent_admin.list_definitions",
+        Map.of("query", "Agent Admin"),
+        null,
+        ADMIN_CONTEXT_ID,
+        catalog.surfaceId(),
+        "corr-agent-admin-catalog-search"));
+    assertEquals("accepted", search.status());
+    assertEquals("surface-agent-admin-catalog", search.resultSurface().surfaceId());
+    assertEquals("Agent Admin", ((Map<String, Object>) search.resultSurface().data().get("filters")).get("searchText"));
+    assertTrue(search.resultSurface().toString().contains("Agent Admin Agent"));
+    assertFalse(search.resultSurface().toString().contains("tenant:tenant-2"));
+    assertBrowserSafe(search.resultSurface());
+
+    var noMatches = runAction(new CapabilityActionRequest(
+        "action-agent-admin-search-catalog",
+        "action-agent-admin-search-catalog",
+        "agent_admin.list_definitions",
+        "agent_admin.list_definitions",
+        Map.of("query", "no matching governed agent"),
+        null,
+        ADMIN_CONTEXT_ID,
+        catalog.surfaceId(),
+        "corr-agent-admin-catalog-empty"));
+    assertEquals("accepted", noMatches.status());
+    assertEquals("empty-no-filter-matches", ((Map<String, Object>) noMatches.resultSurface().data().get("emptyState")).get("state"));
+    assertTrue(((List<Map<String, Object>>) noMatches.resultSurface().data().get("rows")).isEmpty());
+    assertBrowserSafe(noMatches.resultSurface());
+
+    var reset = runAction(new CapabilityActionRequest(
+        "action-agent-admin-reset-catalog-filters",
+        "action-agent-admin-reset-catalog-filters",
+        "agent_admin.list_definitions",
+        "agent_admin.list_definitions",
+        Map.of("query", "Agent Admin"),
+        null,
+        ADMIN_CONTEXT_ID,
+        catalog.surfaceId(),
+        "corr-agent-admin-catalog-reset"));
+    assertEquals("no-op", reset.status());
+    assertEquals("", ((Map<String, Object>) reset.resultSurface().data().get("filters")).get("searchText"));
+    assertFalse(((List<Map<String, Object>>) reset.resultSurface().data().get("rows")).isEmpty());
+    assertBrowserSafe(reset.resultSurface());
+
+    var detail = runAction(new CapabilityActionRequest(
+        "action-open-agent-detail",
+        "action-open-agent-detail",
+        "agent_admin.get_definition",
+        "agent_admin.get_definition",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        catalog.surfaceId(),
+        "corr-agent-admin-catalog-open-row"));
+    assertEquals("accepted", detail.status());
+    assertEquals("surface-agent-admin-detail", detail.resultSurface().surfaceId());
+    assertEquals(AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, detail.resultSurface().data().get("recordId"));
+    assertTrue(detail.resultSurface().toString().contains("noDirectMutation=true"));
+    assertBrowserSafe(detail.resultSurface());
+
+    var trace = runAction(new CapabilityActionRequest(
+        "action-agent-admin-catalog-open-trace",
+        "action-agent-admin-catalog-open-trace",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("traceId", "trace-agent-admin-catalog"),
+        null,
+        ADMIN_CONTEXT_ID,
+        catalog.surfaceId(),
+        "corr-agent-admin-catalog-trace"));
+    assertEquals("accepted", trace.status());
+    assertEquals("surface-agent-admin-trace", trace.resultSurface().surfaceId());
+    assertTrue(trace.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-admin-catalog-open-trace")));
+    assertBrowserSafe(trace.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-admin-catalog",
+        "corr-agent-admin-catalog-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin catalog rows or counts.");
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-admin-catalog",
+        "corr-agent-admin-catalog-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin catalog rows or tenant governance counts.");
+  }
+
+  @Test
   void protectedAgentAdminDashboardDeniesUnauthorizedAndCustomerScopedContextsSafely() {
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-agent-admin-dashboard",
@@ -219,6 +373,18 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
 
   private SurfaceEnvelope getSurface(String surfaceId, String correlationId) throws Exception {
     return getSurfaceAs(surfaceId, correlationId, "workos-admin", "admin@example.test", "Tenant Admin", ADMIN_CONTEXT_ID);
+  }
+
+  @SuppressWarnings("unchecked")
+  private SurfaceEnvelope getCatalogWithRows(String correlationId) throws Exception {
+    SurfaceEnvelope latest = null;
+    for (int attempt = 0; attempt < 10; attempt++) {
+      latest = getSurface("surface-agent-admin-catalog", correlationId + "-attempt-" + attempt);
+      var catalogSummary = (Map<String, Object>) latest.data().get("catalogSummary");
+      if (((Number) catalogSummary.get("resultCount")).intValue() > 0) return latest;
+      Thread.sleep(100);
+    }
+    return latest == null ? getSurface("surface-agent-admin-catalog", correlationId) : latest;
   }
 
   private SurfaceEnvelope getSurfaceAs(String surfaceId, String correlationId, String subject, String email, String name, String selectedContextId) throws Exception {
