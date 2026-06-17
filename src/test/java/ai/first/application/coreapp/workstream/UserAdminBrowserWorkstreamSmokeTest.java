@@ -3,6 +3,7 @@ package ai.first.application.coreapp.workstream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import akka.javasdk.JsonSupport;
@@ -50,6 +51,18 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(shell.body().contains("tokenHash"));
     assertFalse(shell.body().contains("providerSecret"));
 
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected bootstrap must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-dashboard")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected dashboard surface must reject missing bearer tokens.");
+
     var bootstrap = httpClient
         .GET("/api/workstream/bootstrap")
         .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
@@ -66,6 +79,10 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-user-admin-tenant-dashboard", dashboard.surfaceId());
     assertEquals("dashboard", dashboard.surfaceType());
     assertEquals("user_admin.tenant_dashboard.v1", dashboard.data().get("surfaceContract"));
+    assertEquals("corr-browser-smoke-dashboard", dashboard.correlationId());
+    assertTrue(dashboard.traceIds().stream().anyMatch(traceId -> traceId.contains("surface-user-admin-tenant-dashboard")));
+    assertTrue(String.valueOf(dashboard.data().get("hero")).contains("traceRefs"));
+    assertNotNull(dashboard.redaction());
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-user-admin-show-users")));
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-invitation-create")));
     assertBrowserSafe(dashboard);
@@ -81,12 +98,31 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         dashboard.surfaceId(),
         "corr-browser-smoke-access-review"));
     assertEquals("blocked-runtime", accessReviewBlocked.status());
+    assertEquals("corr-browser-smoke-access-review", accessReviewBlocked.correlationId());
+    assertTrue(accessReviewBlocked.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-access-review")));
     assertEquals("surface-user-admin-access-review-task", accessReviewBlocked.resultSurface().surfaceId());
     assertEquals("blocked_provider_or_runtime", accessReviewBlocked.resultSurface().data().get("status"));
     assertTrue(accessReviewBlocked.resultSurface().toString().contains("modelToolDataPolicyUsage"));
     assertTrue(accessReviewBlocked.resultSurface().toString().contains("surface-audit-trace-detail"));
     assertTrue(accessReviewBlocked.resultSurface().toString().contains("noDirectMutation=true"));
     assertBrowserSafe(accessReviewBlocked.resultSurface());
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-browser-smoke-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-user-admin-show-users",
+            "user-admin.show-users",
+            "search-user-directory",
+            "USERADMIN_LIST_MEMBERS",
+            null,
+            null,
+            SELECTED_CONTEXT_ID,
+            dashboard.surfaceId(),
+            "corr-browser-smoke-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected dashboard action path must reject missing bearer tokens.");
 
     var users = runAction(new CapabilityActionRequest(
         "action-user-admin-show-users",

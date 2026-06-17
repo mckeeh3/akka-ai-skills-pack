@@ -1060,7 +1060,7 @@
 
 ### TASK-FSCT-030: Verify or complete runtime testing for `surface-user-admin-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-029]
 - surface id: `surface-user-admin-dashboard`
@@ -1085,15 +1085,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - notes:
   - surface type: `dashboard`
   - surface contract: `user_admin.dashboard.v1`
   - purpose: Attention-first User Admin command center for SaaS Owner Admin, Organization, Organization Admin, directory, invitation, role, support, review, provider, and audit health.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-dashboard`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded `UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiTraverseUserAdminSurfaceGraph` to assert missing-bearer rejection for protected bootstrap, dashboard-surface, and dashboard-action paths; verified Akka-hosted `/ui`, protected `/api/workstream/bootstrap`, `surface-user-admin-dashboard` tenant variant `user_admin.tenant_dashboard.v1`, dashboard action edges, trace/correlation evidence, access-review provider/runtime fail-closed `blocked_provider_or_runtime` with `noDirectMutation`, dashboard-to-users-to-detail and invitation-create/detail action paths, identity-exception review routing, hidden invitation denial through `surface-user-admin-system-message`, and browser-safe secret/token boundaries. runtime evidence: readiness level `runtime-ready` for the User Admin dashboard testing scope; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/provider/fail-closed/trace coverage included missing bearer rejection, hidden invitation denial without enumeration, access-review fail-closed state, trace refs, correlation ids, and provider-secret/token redaction; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-031: Verify or complete app-description specification for `surface-user-admin-saas-owner-admins`
 
