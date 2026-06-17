@@ -422,7 +422,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-organization-admin-detail` show/inspection and task-router contract for `user_admin.organization_admin_detail.v1` covering owning User Admin workstream/`user-admin-agent`, Organization branch placement, SaaS Owner/App Admin selected `AuthContext` plus visible Organization/Tenant and visible Organization Admin target authorization, frontend-safe envelope/admin-target/policy/task/audit payloads, forbidden payload/redaction boundaries, governed action-to-capability mappings for detail reload, role preview, membership lifecycle, invitation resend/revoke, branch returns, and audit, explicit loading/ready/empty/validation/forbidden/stale/provider-fail-closed/no-op states, tenant/customer no-enumeration rules, trace/audit/correlation contract, accessibility/responsive/style expectations, and acceptance/security/observability regression coverage. Sufficiency review says the Organization Admin detail is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
