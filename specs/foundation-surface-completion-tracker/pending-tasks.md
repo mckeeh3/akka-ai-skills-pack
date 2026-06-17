@@ -4490,7 +4490,7 @@
 
 ### TASK-FSCT-127: Verify or complete app-description specification for `surface-user-admin-system-message`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-system-message`
@@ -4519,6 +4519,7 @@
   - purpose: Safe denial, validation, provider/outbox/model blocked, stale, conflict, and no-op recovery.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-system-message` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated `surface-user-admin-system-message` app-description system-message contract covering identity/owner/placement, safe payload, recovery actions, AuthContext/no-enumeration authorization, redaction/forbidden boundaries, direct denial/validation/stale/no-op/provider-outbox-model-tool blocker result behavior, `noFakeSuccess`, trace/audit/correlation, accessibility/responsive/style expectations, tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-128: Verify or complete runtime implementation for `surface-user-admin-system-message`
 

@@ -604,7 +604,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-system-message` system-message contract for `user_admin.system_message.v1` covering User Admin/`user-admin-agent` ownership, protected recovery/result placement, selected `AuthContext` and no-enumeration authorization rules, frontend-safe envelope/message/recovery/readiness/validation payload fields, backend-authored recovery actions, direct-denial/validation/stale/no-op/provider-outbox-model-tool blocked result behavior, redaction and forbidden payload boundaries, fail-closed `noFakeSuccess` semantics, trace/audit/correlation requirements, accessibility/responsive/style expectations, and acceptance/security/observability tests. Sufficiency review says the system-message surface is implementable without invented payload fields/actions/states/auth/traces/tests. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
