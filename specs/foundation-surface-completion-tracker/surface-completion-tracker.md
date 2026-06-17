@@ -435,7 +435,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-organization-create` create-form contract for `user_admin.organization_create.v1` covering owning User Admin workstream/`user-admin-agent`, Organization Directory branch placement, SaaS Owner/App Admin selected `AuthContext` and `saas_owner.organization.create` authorization, frontend-safe form/validation/boundary payload schema, submit/return/audit action mappings, Tenant-backed Organization isolation and forbidden payload boundaries, typed validation/duplicate/idempotent/no-op/denial/stale/success states, trace/audit/correlation requirements, accessibility/responsive/style bindings, acceptance/security/observability tests, and sufficiency review. The description is ready for implementation without invented fields/actions/states/auth/traces/tests. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

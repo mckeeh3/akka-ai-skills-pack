@@ -3112,7 +3112,7 @@
 
 ### TASK-FSCT-088: Verify or complete app-description specification for `surface-user-admin-organization-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-organization-create`
@@ -3141,6 +3141,7 @@
   - purpose: Organization creation form.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-organization-create` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added dedicated Organization create-form app-description contract covering payload, actions, SaaS Owner/App Admin AuthContext and tenant-backed Organization authorization/no-enumeration, trace/audit/correlation, states, accessibility/responsive/style, tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-089: Verify or complete runtime implementation for `surface-user-admin-organization-create`
 

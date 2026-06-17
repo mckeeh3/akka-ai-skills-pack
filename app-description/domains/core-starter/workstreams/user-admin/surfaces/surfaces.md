@@ -439,6 +439,62 @@ Authorization, trace, accessibility, and tests:
 
 Surface-description sufficiency review: `surface-user-admin-organization-detail` is sufficiently unambiguous for developers/generators to implement and review the show/inspection objective without inventing payload fields, task actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove protected API/action paths, backend-derived task routing, SaaS Owner scope authorization, Tenant/Customer Admin denial/no-enumeration behavior, trace/correlation, provider/outbox fail-closed boundaries, and browser secret boundaries before marking implementation/testing objectives done.
 
+### `surface-user-admin-organization-create` create-form contract
+
+- Surface id: `surface-user-admin-organization-create`.
+- Surface type: `create-form`.
+- Surface contract: `user_admin.organization_create.v1`.
+- Owning workstream: User Admin.
+- Owning functional agent: `user-admin-agent`.
+- Placement: Organization Directory branch descendant opened from `surface-user-admin-organization-directory`, `surface-user-admin-organization-detail`, or a visible dashboard Organization action by `action-open-organization-create`; success routes to `surface-user-admin-organization-detail`; branch return uses `action-user-admin-show-organizations` with backend-shaped safe filters and focus hints.
+- Required context: authenticated active account, selected SaaS Owner/App Admin `AuthContext`, active app-owner membership, backend `saas_owner.organization.create` capability, and an actor that is not disabled, stale, support-only, Tenant Admin, or Customer Admin. Unauthorized or stale direct loads and submissions return `surface-user-admin-system-message` without revealing hidden Organizations, tenants, customers, admins, invitations, counts, roles, capabilities, provider state, or policy internals.
+- User goal: create a new customer-facing Organization backed by an isolated Tenant boundary, with safe Organization-language copy, backend-authored validation rules, idempotent submission, audit/work trace evidence, and an immediate route to the created Organization detail. The form never exposes tenant application data, billing/provider internals, customer records, or Organization Admin bootstrap shortcuts as inline mutations.
+
+Frontend-safe payload for `user_admin.organization_create.v1`:
+
+- Envelope fields: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType: saas_owner`, `authorityBasis`, `branchRootSurfaceId: 'surface-user-admin-organization-directory'`, `branchReturnActionId: 'action-user-admin-show-organizations'`, `branchReturnLabel`, `dashboardOriginQueueId?`, `traceRefs[]`, `correlationId`, `redaction`, `boundaryNotice`, `formState`, `validationMessages`, `systemStates`, and `lastResult`.
+- `form`: `{ organizationNameDraft?, reasonDraft?, submitLabel, submitActionId: 'action-submit-organization-create', cancelActionId: 'action-user-admin-show-organizations', idempotencyKeyHint, disabledReason? }`. The default form asks only for the Organization display name and audit reason unless a later policy explicitly adds browser-safe fields; the browser must not infer tenant identifiers, lifecycle state, Organization Admin roles, customer setup, billing details, or provider configuration.
+- `validationPolicy`: `{ organizationNameRules, reasonRequired, duplicateNamePolicy, maxLength?, allowedCharacterSummary?, idempotentReplayPolicy, traceRefs[] }` rendered as user-facing guidance rather than raw policy ids.
+- `creationBoundary`: `{ createsIsolatedTenantBoundary: true, initialLifecycleStatus: 'active' | 'pending_setup', tenantApplicationDataExcluded: true, organizationAdminBootstrapSeparateSurfaceId: 'surface-user-admin-organization-admin-invitation-create', traceRefs[] }`; default copy explains the Organization/Tenant isolation boundary without exposing internal Tenant records.
+- `authorizedActions[]`: open/reload create form, submit create, validate draft, return to Organization Directory, open authorized Organization audit evidence, and return to dashboard. Unavailable actions are omitted or represented with safe disabled copy only when it does not disclose hidden policy or Organization facts.
+- `diagnosticMetadata` is role-gated and visually subordinate; default payload may include trace/evidence labels but not raw trace event ids, raw idempotency/correlation values, raw provider ids, backend component names, or policy implementation ids.
+
+Redaction and forbidden payload boundaries:
+
+- Must not expose tenant/customer application data, customer identities/counts, hidden Organization identities/counts, raw tenant ids unless explicitly policy-safe, raw WorkOS/provider ids, raw JWT/session values, billing provider state, invitation tokens/token hashes, support-access internals, raw model/provider config, hidden roles/capabilities, raw idempotency keys, or unredacted audit evidence.
+- User-facing copy uses positive SaaS Owner language such as “Create Organization” and “Set up an isolated Organization boundary.” Validation and denial copy describes visible recovery steps without enumerating unavailable Organizations, tenant internals, or missing privileged capabilities.
+
+Actions and result surfaces:
+
+| Action id | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| `action-open-organization-create` | `saas_owner.organization.create` / `manage-organizations` | Open or reload this create form with selected SaaS Owner scope, backend-authored validation policy, boundary notice, idempotency guidance, trace refs, and branch metadata. |
+| `action-submit-organization-create` | `saas_owner.organization.create` / `manage-organizations` | Validate Organization name and reason, enforce selected AuthContext, duplicate/open-name policy, idempotency/correlation, and disabled/stale actor checks, create or reuse the Organization/Tenant boundary when authorized, audit the attempt, then open `surface-user-admin-organization-detail` for the visible result. Validation-error, duplicate/no-op, idempotent replay, conflict/stale, provider/runtime blocked, approval-required, forbidden, or hidden results return this form with inline state or `surface-user-admin-system-message`; fake success is forbidden. |
+| `action-user-admin-show-organizations` | `saas_owner.organization.list` / `manage-organizations` | Return to `surface-user-admin-organization-directory` with backend-shaped safe filters, focus restoration, trace refs, and no hidden Organization counts. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` focused on the Organization branch or originating attention queue when authorized. |
+
+States and outcomes:
+
+- Loading: skeleton create form with selected SaaS Owner scope label and boundary notice only after backend authorization starts; no hidden Organizations, tenant ids, customer facts, provider data, or policy internals render while authorization is unresolved.
+- Ready: backend-authored draft fields, validation policy, boundary copy, submit/return actions, trace refs, correlation id, redaction, style/catalog bindings, and keyboard-operable controls are visible.
+- Draft validation-error: missing/invalid Organization name, unsupported characters/length, missing reason when required, duplicate visible Organization name, disabled actor, stale selected context, or policy gate is reported inline without creating a Tenant boundary or broadening search scope.
+- Submitting: preserve draft input and focus while backend reauthorizes selected context, create capability, duplicate state, idempotency replay, and policy/runtime readiness.
+- Success: route to `surface-user-admin-organization-detail` with the created visible Organization summary, `lastResult`, trace/correlation refs, and branch return metadata; Organization Admin bootstrap remains a separate task surface.
+- Duplicate/no-op/idempotent replay: route to the visible existing/created Organization detail when authorized, or return safe no-enumeration recovery when the duplicate target is hidden.
+- Forbidden/hidden-not-found: return `surface-user-admin-system-message` without hidden Organization, tenant, customer, admin, invitation, role, capability, count, provider, or policy enumeration.
+- Conflict/stale/partial-data/failure: keep the draft safe for retry, show refresh/back-to-organizations recovery, and never fabricate Organization creation, provider readiness, audit evidence, or fixture data.
+
+Authorization, trace, accessibility, and tests:
+
+- Authorization and tenant rules: every create-form load, draft validation, submit, branch return, and audit drilldown is evaluated against the selected backend SaaS Owner/App Admin `AuthContext` and app-owner membership. Tenant Admins, Customer Admins, support-only actors, disabled actors, stale contexts, missing memberships, and missing capabilities receive safe recovery; no browser payload contains tenant/customer app data, hidden Organization facts, hidden capabilities, raw provider data, or raw JWT/session values.
+- Trace/audit contract: each open, submit attempt, validation failure, duplicate/no-op, idempotent replay, success, denial, stale/conflict result, branch return, and audit drilldown emits or links an admin work trace with actor account, selected context summary, redacted draft Organization name/reason, action id, capability decision, result surface id, redaction level, and correlation id. Browser-visible trace summaries never expose raw event ids, raw correlation/idempotency mechanics, provider secrets, tenant internals, hidden roles, hidden Organization facts, or unredacted audit evidence.
+- Accessibility/responsive expectations: the form has a stable heading, selected-scope and Organization/Tenant boundary notice, semantic field/error/help text associations, keyboard-operable submit/cancel/audit controls, announced validation/submission/result messages, focus return to the originating Organization Directory action or first result message, and responsive stacking that preserves boundary, validation, trace, and redaction notices.
+- UI realization must follow the current web UI style guide, named-theme contract, and component catalog anatomy; frontend code may render backend payloads and submit backend-authored actions but must not infer authority, duplicate state, tenant identifiers, lifecycle status, Organization Admin options, provider readiness, or result routing from client-local labels/status.
+- Acceptance/regression coverage must verify dashboard/directory/detail-to-create traversal, protected direct create-form load, successful Organization creation and detail result routing, idempotent replay/no-op behavior, duplicate visible-name handling, validation errors, SaaS Owner/App Admin authorization, Tenant Admin and Customer Admin denial without enumeration, disabled/stale context denial, hidden/cross-scope duplicate no-enumeration, audit/work trace/correlation links, browser secret boundaries, keyboard form operation, focus return to Organization Directory, responsive rendering, and separation of Organization creation from Organization Admin bootstrap.
+
+Surface-description sufficiency review: `surface-user-admin-organization-create` is sufficiently unambiguous for developers/generators to implement and review the create-form objective without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove protected API/action paths, backend-derived validation/result routing, SaaS Owner scope authorization, Tenant/Customer Admin denial/no-enumeration behavior, idempotent replay/duplicate handling, trace/correlation, and browser secret boundaries before marking implementation/testing objectives done.
+
 ### `surface-user-admin-organization-admins` list/search contract
 
 - Surface id: `surface-user-admin-organization-admins`.
