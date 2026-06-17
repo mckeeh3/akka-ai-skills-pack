@@ -305,7 +305,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-role-change-preview` decision-card/diff contract covering identity/owner/placement, selected AuthContext and preview/commit authority, frontend-safe envelope/targetSummary/roleChangeProposal/capabilityDelta/policyDecision/decisionEvidence/confirmationForm/action payload schema, open/commit/revise/cancel/return/audit action mappings, forbidden provider/JWT/private-profile/hidden-role/raw-policy and sibling-scope boundaries, no-enumeration authorization behavior, stale/conflict/last-admin/self-action/approval-required/no-op/idempotent replay states, trace/audit/correlation contract, accessibility/responsive expectations, acceptance/security/observability regression coverage, and sufficiency review. Checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description, and `git diff --check`. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

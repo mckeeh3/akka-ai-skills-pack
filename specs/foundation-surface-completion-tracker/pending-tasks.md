@@ -2052,7 +2052,7 @@
 
 ### TASK-FSCT-058: Verify or complete app-description specification for `surface-user-admin-role-change-preview`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-role-change-preview`
@@ -2081,6 +2081,7 @@
   - purpose: Capability delta and approval preview before role mutation.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-role-change-preview` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated decision-card/diff app-description contract for the User Admin role-change preview, including payload schema, open/commit/revise/cancel/return/audit action mappings, selected AuthContext and preview/commit authorization, tenant/customer no-enumeration rules, trace/audit/correlation expectations, accessibility/responsive behavior, acceptance/security/observability tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-059: Verify or complete runtime implementation for `surface-user-admin-role-change-preview`
 
