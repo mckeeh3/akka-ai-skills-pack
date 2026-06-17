@@ -515,6 +515,173 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesUserAdminSupportAccessGrantRuntimePath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-support-access-grant")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Support access grant surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-user-support-grant-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-submit-user-admin-support-access-grant",
+            "action-submit-user-admin-support-access-grant",
+            "USERADMIN_SUPPORT_ACCESS_GRANT",
+            "USERADMIN_SUPPORT_ACCESS_GRANT",
+            Map.of("accountId", "member@example.test", "membershipId", "membership-member", "purpose", "missing bearer", "expiryHours", "2"),
+            "idem-user-support-grant-missing-bearer",
+            SELECTED_CONTEXT_ID,
+            "surface-user-admin-support-access-grant",
+            "corr-user-support-grant-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Support access grant action must reject missing bearer tokens.");
+
+    var dashboard = getSurface("surface-user-admin-dashboard", "corr-user-support-grant-dashboard");
+    var users = runAction(new CapabilityActionRequest(
+        "action-user-admin-show-users",
+        "user-admin.show-users",
+        "search-user-directory",
+        "USERADMIN_LIST_MEMBERS",
+        null,
+        null,
+        SELECTED_CONTEXT_ID,
+        dashboard.surfaceId(),
+        "corr-user-support-grant-users"));
+    assertEquals("accepted", users.status());
+    assertEquals("surface-user-admin-users", users.resultSurface().surfaceId());
+
+    var detail = runAction(new CapabilityActionRequest(
+        "action-display-user-detail",
+        "action-display-user-detail",
+        "USERADMIN_LIST_MEMBERS",
+        "USERADMIN_LIST_MEMBERS",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member"),
+        null,
+        SELECTED_CONTEXT_ID,
+        users.resultSurface().surfaceId(),
+        "corr-user-support-grant-detail"));
+    assertEquals("accepted", detail.status());
+    assertEquals("surface-user-admin-user-detail", detail.resultSurface().surfaceId());
+    assertTrue(detail.resultSurface().toString().contains("supportAccess=false"));
+    assertTrue(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-support-access-grant")));
+    assertBrowserSafe(detail.resultSurface());
+
+    var directGrant = getSurface("surface-user-admin-support-access-grant", "corr-user-support-grant-direct");
+    assertEquals("surface-user-admin-support-access-grant", directGrant.surfaceId());
+    assertEquals("create-form", directGrant.surfaceType());
+    assertEquals("user_admin.support_access_grant.v1", directGrant.data().get("surfaceContract"));
+    assertEquals("corr-user-support-grant-direct", directGrant.correlationId());
+    assertTrue(directGrant.toString().contains("grantRequestForm"));
+    assertTrue(directGrant.toString().contains("policyContext"));
+    assertTrue(directGrant.toString().contains("decisionEvidence"));
+    assertTrue(directGrant.toString().contains("noDirectMutation=true"));
+    assertTrue(directGrant.toString().contains("noFakeSuccess=true"));
+    assertTrue(directGrant.actions().stream().anyMatch(action -> action.actionId().equals("action-submit-user-admin-support-access-grant")));
+    assertTrue(directGrant.actions().stream().anyMatch(action -> action.actionId().equals("action-validate-user-admin-support-access-grant")));
+    assertBrowserSafe(directGrant);
+
+    var opened = runAction(new CapabilityActionRequest(
+        "action-open-user-admin-support-access-grant",
+        "action-open-user-admin-support-access-grant",
+        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member"),
+        null,
+        SELECTED_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-user-support-grant-open"));
+    assertEquals("accepted", opened.status());
+    assertEquals("surface-user-admin-support-access-grant", opened.resultSurface().surfaceId());
+    assertEquals("user_admin.support_access_grant.v1", opened.resultSurface().data().get("surfaceContract"));
+    assertEquals("corr-user-support-grant-open", opened.resultSurface().correlationId());
+    assertTrue(opened.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-support-access-grant")));
+    assertTrue(opened.resultSurface().toString().contains("recordLabel=Member User"));
+    assertTrue(opened.resultSurface().toString().contains("membershipId=membership-member"));
+    assertTrue(opened.resultSurface().toString().contains("branchReturnActionId=action-display-user-detail"));
+    assertTrue(opened.resultSurface().toString().contains("expiryHoursOptions"));
+    assertTrue(opened.resultSurface().toString().contains("support-provider-internals-redacted"));
+    assertBrowserSafe(opened.resultSurface());
+
+    var validation = runAction(new CapabilityActionRequest(
+        "action-validate-user-admin-support-access-grant",
+        "action-validate-user-admin-support-access-grant",
+        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member"),
+        null,
+        SELECTED_CONTEXT_ID,
+        opened.resultSurface().surfaceId(),
+        "corr-user-support-grant-validation"));
+    assertEquals("validation-error", validation.status());
+    assertEquals("surface-user-admin-support-access-grant", validation.resultSurface().surfaceId());
+    assertTrue(validation.resultSurface().toString().contains("Purpose is required"));
+    assertTrue(validation.resultSurface().toString().contains("supportAccessSummary=not-active"));
+    assertBrowserSafe(validation.resultSurface());
+
+    var submitted = runAction(new CapabilityActionRequest(
+        "action-submit-user-admin-support-access-grant",
+        "action-submit-user-admin-support-access-grant",
+        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member", "purpose", "customer-requested-support", "expiryHours", "2"),
+        "idem-user-support-grant-runtime",
+        SELECTED_CONTEXT_ID,
+        opened.resultSurface().surfaceId(),
+        "corr-user-support-grant-submit"));
+    assertEquals("accepted", submitted.status());
+    assertEquals("corr-user-support-grant-submit", submitted.correlationId());
+    assertEquals("surface-user-admin-user-detail", submitted.resultSurface().surfaceId());
+    assertEquals("user_admin.user_detail.v1", submitted.resultSurface().data().get("surfaceContract"));
+    assertTrue(submitted.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-support-access")));
+    assertTrue(submitted.resultSurface().toString().contains("supportAccess=true"));
+    assertTrue(submitted.resultSurface().toString().contains("Support access granted or extended"));
+    assertTrue(submitted.resultSurface().toString().contains("canMutateInline=false"));
+    assertBrowserSafe(submitted.resultSurface());
+
+    var replayed = runAction(new CapabilityActionRequest(
+        "action-submit-user-admin-support-access-grant",
+        "action-submit-user-admin-support-access-grant",
+        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member", "purpose", "customer-requested-support", "expiryHours", "2"),
+        "idem-user-support-grant-runtime-replay",
+        SELECTED_CONTEXT_ID,
+        opened.resultSurface().surfaceId(),
+        "corr-user-support-grant-replay"));
+    assertEquals("accepted", replayed.status());
+    assertEquals("surface-user-admin-user-detail", replayed.resultSurface().surfaceId());
+    assertTrue(replayed.resultSurface().toString().contains("supportAccess=true"));
+    assertBrowserSafe(replayed.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-open-user-admin-support-access-grant",
+        "action-open-user-admin-support-access-grant",
+        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        Map.of("accountId", "hidden@example.test", "membershipId", "membership-hidden"),
+        null,
+        SELECTED_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-user-support-grant-hidden-open")),
+        "Hidden support-access grant targets must be denied without a successful browser payload.");
+
+    assertThrows(RuntimeException.class, () -> runActionAs(new CapabilityActionRequest(
+        "action-open-user-admin-support-access-grant",
+        "action-open-user-admin-support-access-grant",
+        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        Map.of("accountId", "admin@example.test", "membershipId", SELECTED_CONTEXT_ID),
+        null,
+        "membership-member",
+        detail.resultSurface().surfaceId(),
+        "corr-user-support-grant-member-denied"), "workos-member", "member@example.test", "Member User", "membership-member"),
+        "Regular members must not open support access grant through the protected action API.");
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesUserAdminInvitationCreateRuntimePath() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-user-admin-invitation-create")

@@ -2226,7 +2226,7 @@
 
 ### TASK-FSCT-063: Verify or complete runtime testing for `surface-user-admin-support-access-grant`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-062]
 - surface id: `surface-user-admin-support-access-grant`
@@ -2251,15 +2251,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.support_access_grant.v1`
   - purpose: Support-access grant/extend form.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-support-access-grant`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-support-access-grant`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added protected Akka-hosted User Admin support-access grant runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminSupportAccessGrantRuntimePath`: JWT plus selected tenant-admin AuthContext traverses dashboard -> users -> user detail -> `surface-user-admin-support-access-grant`, verifies backend-owned `user_admin.support_access_grant.v1` create-form payload/action/trace/correlation/noDirectMutation/noFakeSuccess/redaction evidence, validates missing-purpose inline error/no mutation, submits support grant through `/api/workstream/actions`, verifies refreshed user detail with active support access, exercises repeat grant safety, denies hidden target and regular-member access through the protected API, and rejects missing bearer surface/action access. runtime evidence: readiness level `runtime-ready` for the support-access grant testing scope; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/provider/fail-closed/trace coverage included missing bearer rejection, hidden target denial, regular-member denial, validation failure, no fixture/frontend-only success, trace refs, correlation ids, and raw JWT/provider/private-profile/hidden-grant/sibling-scope redaction; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminSupportAccessGrantRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-064: Verify or complete app-description specification for `surface-user-admin-support-access-revoke-confirmation`
 
