@@ -383,7 +383,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-organization-detail` show/inspection/task-router contract for `user_admin.organization_detail.v1` covering owner/placement, SaaS Owner/App Admin `AuthContext` and `saas_owner.organization.read` authority, frontend-safe envelope/organization/admin/lifecycle/audit/task-action payload schema, no-inline-mutation boundaries, hidden/cross-scope/Tenant/Customer Admin denial behavior, branch return/task actions, trace/audit/correlation/redaction rules, accessibility/responsive expectations, acceptance/regression tests, and sufficiency review. Validation passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests and `git diff --check`. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

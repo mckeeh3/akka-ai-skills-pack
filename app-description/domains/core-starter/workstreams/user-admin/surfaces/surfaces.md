@@ -385,6 +385,60 @@ Trace, audit, accessibility, and tests:
 
 Surface-description sufficiency review: `surface-user-admin-organization-directory` is sufficiently unambiguous for developers/generators to implement and review the list/search objective without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove protected API/action paths, backend-derived Organization row routing, SaaS Owner scope authorization, denial/no-enumeration behavior, trace/correlation, and browser secret boundaries before marking implementation/testing objectives done.
 
+### `surface-user-admin-organization-detail` show/inspection contract
+
+- Surface id: `surface-user-admin-organization-detail`.
+- Surface type: `show-inspection` and Organization task-router; it must not perform inline rename, suspend, reactivate, admin-invitation, role/status, support, billing, or tenant application-data mutations.
+- Surface contract: `user_admin.organization_detail.v1`.
+- Owning workstream: User Admin.
+- Owning functional agent: `user-admin-agent`.
+- Placement: Organization Directory branch descendant opened from `surface-user-admin-organization-directory` rows/cards, SaaS Owner Organization attention cards, create/rename/lifecycle result routing, and authorized deep links by `action-organization-read`; branch return uses `action-user-admin-show-organizations` with backend-shaped safe filters and focus hints.
+- Required context: authenticated active account, selected SaaS Owner/App Admin `AuthContext`, active app-owner membership, and backend `saas_owner.organization.read` capability for the requested Organization/Tenant boundary. Tenant Admin, Customer Admin, support-only, disabled-actor, stale selected context, missing-membership, hidden Organization, cross-scope, or missing-capability direct loads return `surface-user-admin-system-message` without revealing whether hidden Organizations, tenants, admins, invitations, customers, or counts exist.
+- User goal: inspect one visible Organization, understand its lifecycle and administration readiness at a browser-safe level, and choose a dedicated task surface for Organization rename, suspend/reactivate, Organization Admin list/invite/detail, return-to-directory, or authorized audit evidence. The detail surface is inspection-first and action-routing-only.
+
+Frontend-safe payload for `user_admin.organization_detail.v1`:
+
+- Envelope fields: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType: saas_owner`, `authorityBasis`, `branchRootSurfaceId`, `branchReturnActionId`, `branchReturnLabel`, `recordId`, `recordLabel`, `dashboardOriginQueueId?`, `traceRefs[]`, `correlationId`, `redaction`, `boundaryNotice`, `systemStates`, and `lastResult`.
+- `organizationDetail`: `{ organizationId, organizationName, status, safeLifecycleSummary, lifecycleFreshness?, setupReadiness?, safeBoundaryNotice, visibleActions[], traceRefs[], correlationId }`. The default view may mention that the Organization is backed by an isolated Tenant boundary, but must not expose tenant application data, raw tenant internals, customer records, provider ids/secrets, billing provider state, hidden counts, or raw policy ids.
+- `adminSummary`: visible SaaS Owner-safe Organization Admin totals, pending invitation summary, first-admin/bootstrap eligibility, last-admin risk summary, provider/outbox readiness summary, and target action ids for Organization Admin list or invite task surfaces. Counts are omitted or redacted when they would disclose hidden admins, invitations, customers, or tenant facts.
+- `lifecycleTaskSummary`: rename eligibility, suspend eligibility, reactivate eligibility, policy/approval/reason/idempotency summaries, stale/conflict markers, no-op expectations, and target action ids. It summarizes task availability only; mutations occur only on dedicated rename or lifecycle confirmation surfaces.
+- `auditSummary`: recent browser-safe Organization administration events, denial/no-op excerpts, trace labels, redaction notes, and role-gated audit drilldown action ids. Default view must not show raw event ids, raw correlation/idempotency values, provider payloads, tenant internals, or unredacted audit evidence.
+- `availableTaskActions[]`: backend-authored action id, label, purpose, governed capability/tool, target surface id/type, target object type/id when safe, enabled/disabled state, disabled reason only when it does not disclose hidden policy or Organization facts, required confirmation/approval/reason/idempotency summary, and expected result surface.
+
+Actions and result surfaces:
+
+| Action id | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| `action-organization-read` | `saas_owner.organization.read` / `manage-organizations` | Reload this inspection surface with current Organization summary, branch metadata, trace refs, and no-enumeration redaction; hidden, stale, disabled-actor, cross-scope, or missing-capability targets return `surface-user-admin-system-message`. |
+| `action-user-admin-show-organizations` | `saas_owner.organization.list` / `manage-organizations` | Return to `surface-user-admin-organization-directory` with backend-shaped safe filters, branch metadata, and focus hint. |
+| `action-open-organization-rename` | `saas_owner.organization.rename` / `manage-organizations` | Open `surface-user-admin-organization-rename` with current display-name state, validation rules, idempotency guidance, and trace refs; no inline rename occurs on detail. |
+| `action-open-organization-suspend-confirmation` | `saas_owner.organization.suspend` / `manage-organizations` | Open `surface-user-admin-organization-suspend-confirmation` when lifecycle state allows suspension; unavailable/hidden/stale targets return a safe system message. |
+| `action-open-organization-reactivate-confirmation` | `saas_owner.organization.reactivate` / `manage-organizations` | Open `surface-user-admin-organization-reactivate-confirmation` when lifecycle state allows reactivation; unavailable/hidden/stale targets return a safe system message. |
+| `action-user-admin-show-organization-admins` | `saas_owner.organization_admin.list` / `manage-organization-admins` | Open `surface-user-admin-organization-admins` for the selected visible Organization or return safe hidden/not-found/forbidden recovery. |
+| `action-open-organization-admin-invitation-create` | `saas_owner.organization_admin.invite` / `manage-organization-admins` | Open `surface-user-admin-organization-admin-invitation-create` with Organization boundary, target-role options, outbox/provider readiness, and branch return metadata. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+
+States and outcomes:
+
+- Loading: show selected SaaS Owner scope and Organization placeholder only after backend authorization starts; no hidden identifiers or counts are rendered while authorization is unresolved.
+- Ready: Organization identity, lifecycle, admin readiness, task actions, branch return, trace refs, correlation, and redaction notices are backend-derived.
+- Empty/limited: Organization is visible but has no Organization Admins, invitations, lifecycle alerts, or audit excerpts; show safe absence copy and authorized task entry points only.
+- Submitting/opening task: preserve detail context and focus while backend reauthorizes the target action.
+- Validation-error: malformed Organization id, selected context, task target, or action payload is reported without broadening scope.
+- Forbidden/hidden-not-found: return `surface-user-admin-system-message` with no hidden Organization, tenant, customer, admin, invitation, count, role, or capability enumeration.
+- Conflict/stale: selected context, Organization lifecycle, policy eligibility, or admin readiness changed; show refresh/back-to-organizations recovery and trace refs.
+- Provider/outbox fail-closed: show provider/outbox readiness summaries only for visible admin-invitation task areas; never invent fixture success or expose provider internals.
+- No-op/success: detail refresh and task-open no-ops are traceable; consequential success is shown by the dedicated result/detail surface after the task surface completes.
+
+Authorization, trace, accessibility, and tests:
+
+- Authorization and tenant rules: every detail load, branch return, task-open, and audit drilldown is evaluated against the selected backend SaaS Owner/App Admin `AuthContext`; Tenant Admins and Customer Admins cannot open Organization detail through this surface graph, support-only access is non-authoritative, disabled/missing actors receive safe recovery, and no browser payload contains tenant application data or hidden customer/Organization facts.
+- Trace/audit contract: each detail load, denied hidden target, branch return, task-open, audit-open, stale result, no-op, and provider/outbox blocked result emits or links an admin work trace with actor account, selected context, Organization summary only when visible, action id, capability decision, result surface, redaction level, and correlation id. Browser-visible trace summaries never expose raw provider records, raw event ids, raw JWTs, invitation tokens, provider secrets, hidden roles, tenant internals, or raw correlation/idempotency mechanics.
+- Accessibility/responsive expectations: the surface has a stable heading, selected-scope boundary, Organization summary sections with semantic headings, task actions as keyboard-operable grouped controls, status/denial messages announced as status text, focus return to the originating row or first result message, and responsive stacking in Organization summary, admin readiness, lifecycle tasks, and audit order without losing action availability or redaction notices.
+- Acceptance/regression coverage must verify Organization-directory-to-detail traversal, direct protected detail load, hidden/cross-scope denial without enumeration, SaaS Owner/App Admin authorization and Tenant/Customer Admin denial, branch return, rename/suspend/reactivate/Admin-list/Admin-invite task entry routing, stale/conflict recovery, provider/outbox fail-closed summaries for admin invitation tasks, audit/work trace/correlation links, frontend secret boundaries, keyboard operation, focus return, and responsive rendering.
+
+Surface-description sufficiency review: `surface-user-admin-organization-detail` is sufficiently unambiguous for developers/generators to implement and review the show/inspection objective without inventing payload fields, task actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove protected API/action paths, backend-derived task routing, SaaS Owner scope authorization, Tenant/Customer Admin denial/no-enumeration behavior, trace/correlation, provider/outbox fail-closed boundaries, and browser secret boundaries before marking implementation/testing objectives done.
+
 ### Frontend-safe payloads
 
 - Directory: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType`, `authorityBasis`, `boundaryNotice`, `traceRefs`, `correlationId`, `redaction`, `organizations[]`, `filters`, `systemStates`, `emptyMessage`, `forbiddenMessage`, `lastResult`. Each `organizations[]` row contains `{ organizationId, organizationName, status, updatedAt?, safeLifecycleSummary?, visibleTenantAdminCount?, actionAvailability[], traceRefs[] }`; counts are omitted unless backend marks them safe and non-enumerating.
