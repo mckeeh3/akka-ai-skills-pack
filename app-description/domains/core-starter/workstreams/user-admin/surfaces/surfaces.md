@@ -736,6 +736,58 @@ Authorization, trace, accessibility, and tests:
 
 Surface-description sufficiency review: `surface-user-admin-invitation-detail` is sufficiently unambiguous for developers/generators to implement and review the show/inspection and lifecycle workflow-status objective without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove protected API/action paths, backend-derived invitation state and task routing, role-specific scope variants, denial/no-enumeration behavior, trace/correlation, provider/outbox fail-closed summaries, and browser secret boundaries before marking implementation/testing objectives done.
 
+### `surface-user-admin-invitation-resend-confirmation` lifecycle-confirmation contract
+
+- Surface id: `surface-user-admin-invitation-resend-confirmation`.
+- Surface type: `lifecycle-confirmation`; it confirms one invitation resend attempt and never changes invitation lifecycle inline before submit.
+- Surface contract: `user_admin.invitation_resend_confirmation.v1`.
+- Owning workstream: User Admin.
+- Owning functional agent: `user-admin-agent`.
+- Placement: User Directory branch descendant opened from `surface-user-admin-invitation-detail`, invitation attention queues, and authorized deep links by `action-open-user-admin-invitation-resend-confirmation`; branch return uses the backend-authored invitation-detail return action and `action-user-admin-show-users` for the containing list branch.
+- Required context: authenticated active account, selected app-owner/tenant/customer `AuthContext`, active actor membership, a visible invitation in the selected scope, and backend `user_admin.resend_invitation` or narrower app-owner/organization/customer invitation-resend authority. Hidden, revoked, accepted, cross-tenant, sibling-customer, support-only, disabled-actor, missing-membership, stale, and missing-capability attempts return `surface-user-admin-system-message` without revealing whether the target invitation, email, role, delivery record, tenant, or customer exists.
+- User goal: verify the visible invitation, understand why resend is allowed or blocked, optionally provide a reason, confirm a governed resend attempt, and return to refreshed invitation detail with delivery/outbox status and trace evidence. This surface must not fabricate email delivery success; provider/outbox unavailability is a fail-closed result with recovery steps and `noFakeSuccess`.
+
+Frontend-safe payload for `user_admin.invitation_resend_confirmation.v1`:
+
+- Envelope fields: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType`, `customerLabel?`, `branchRootSurfaceId`, `branchReturnActionId`, `branchReturnLabel`, `recordId`, `recordKind: invitation`, `recordLabel`, `authorityBasis`, `redaction`, `boundaryNotice`, `traceRefs[]`, `correlationId`, `systemStates`, and `lastResult`.
+- `invitationSummary`: masked target email/display label according to policy, target scope label/type, requested role labels, current invitation status, expiry timestamp, last sent/attempt timestamp, inviter summary, and freshness marker. Invitation tokens, token hashes, raw provider ids, raw JWT/session data, full email bodies, and hidden target details are forbidden.
+- `resendEligibility`: `{ canResend, disabledReason?, terminalState?, staleVersion?, retryWindow?, duplicateOpenInviteSummary?, approvalRequired?, reasonRequired, traceRefs[] }` with disabled reasons written in user-safe language and no hidden capability or population enumeration.
+- `deliveryReadiness`: `{ channel, outboxStatus, providerStatus, retryEligible, failClosedMessage?, lastAttemptSummary?, nextRetryAt?, noFakeSuccess, traceRefs[] }`; raw Resend/provider errors, outbox payloads, SMTP/email bodies, provider secrets, and diagnostic stack traces are internal or role-gated only.
+- `confirmationForm`: `{ reasonDraft?, reasonRequired, confirmationCopy, submitLabel, cancelActionId, submitActionId, idempotencyHint, disabledReason? }`; the idempotency hint is user-language only and never exposes raw idempotency/correlation secrets.
+- `authorizedActions[]`: confirm resend, cancel/back to invitation detail, return to users, open authorized audit evidence, and refresh eligibility. Unavailable actions are omitted or use safe disabled reasons that do not reveal hidden policy facts.
+- Role-gated `diagnosticMetadata` may include audit/support labels for trace or outbox evidence; the default browser payload must not expose raw event ids, correlation/idempotency keys, provider payloads, email contents, token hashes, hidden roles, hidden capabilities, or policy implementation ids.
+
+Actions and result surfaces:
+
+| Action id | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| `action-open-user-admin-invitation-resend-confirmation` | `user_admin.resend_invitation` / `create-or-resend-invitation` | Open this confirmation with backend-derived invitation summary, eligibility, delivery readiness, branch metadata, and trace refs; hidden, terminal, stale, or out-of-scope targets return `surface-user-admin-system-message`. |
+| `action-confirm-user-admin-invitation-resend` | `user_admin.resend_invitation` / `create-or-resend-invitation` | Reauthorize selected context and invitation visibility, validate reason/eligibility/current version, enforce idempotency, enqueue a resend only when outbox/provider readiness allows it, audit the attempt, and return refreshed `surface-user-admin-invitation-detail`. Validation, stale/conflict, already-terminal, no-op replay, provider/outbox blocked, hidden, or denial results return this confirmation with inline state or `surface-user-admin-system-message`; fake delivery success is forbidden. |
+| `action-open-user-admin-invitation-detail` | `user_admin.acceptance_status.read` / `create-or-resend-invitation` | Cancel or return to the visible invitation detail with safe focus/context preservation; hidden/stale targets return `surface-user-admin-system-message`. |
+| `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to `surface-user-admin-users` with backend-shaped invitation filters and focus hint when authorized. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+
+States and outcomes:
+
+- Loading: show selected scope and invitation placeholder only after backend authorization starts.
+- Ready: invitation summary, resend eligibility, delivery readiness, confirmation copy, branch return, trace refs, correlation id, and redaction are backend-derived.
+- Validation-error: malformed invitation id, missing required reason, stale version, unsupported action, invalid selected context, or ineligible state is reported without running a resend.
+- Submitting: preserve reason and focus while backend reauthorizes selected context, invitation version, eligibility, provider/outbox readiness, and idempotency.
+- Success: route to `surface-user-admin-invitation-detail` with updated delivery status, last attempt summary, trace/correlation, and branch return metadata.
+- Duplicate/no-op replay: repeated confirm with the same idempotency scope returns the current invitation detail or a no-op confirmation/result state with trace evidence and no extra delivery attempt.
+- Provider/outbox blocked: return this confirmation or `surface-user-admin-system-message` with recovery steps, retry eligibility, `noFakeSuccess`, and no invitation-token or provider-payload exposure.
+- Forbidden/hidden-not-found/stale/conflict: return `surface-user-admin-system-message` with no hidden invitation, target email, role, tenant, customer, policy, or provider enumeration.
+- Partial-data/failure: keep only safe draft reason text for retry and show user-safe recovery without fixture/mock delivery state.
+
+Authorization, trace, accessibility, and tests:
+
+- Authorization and tenant rules: every open, confirm, cancel/detail return, branch return, and audit drilldown is evaluated against the selected backend `AuthContext`; Tenant Admins cannot resend sibling-tenant invitations, Customer Admins cannot resend sibling-customer or tenant-wide invitations, SaaS Owner admins cannot resend tenant/customer invitations without an authorized Organization/Customer branch, support-only contexts are bounded by policy, and disabled/missing actors receive safe recovery.
+- Trace/audit contract: each confirmation load, eligibility denial, submit, provider/outbox blocked result, no-op replay, stale/conflict result, hidden denial, detail return, branch return, and audit-open emits or links an admin work trace with actor account, selected context, invitation summary only when visible, action id, capability decision, delivery/outbox readiness summary, result surface id, redaction level, and correlation id. Browser-visible trace summaries never expose raw provider records, raw event ids, raw JWTs, invitation tokens, provider secrets, email bodies, hidden roles, or sibling-scope facts.
+- Accessibility/responsive expectations: the confirmation has a stable heading, selected-scope boundary notice, invitation and readiness summaries with semantic headings, reason field with associated validation, explicit consequence/confirmation copy, keyboard-operable confirm/cancel/return controls, status messages announced as status text, focus restored to the first invalid field or result message, and responsive stacking that keeps eligibility and fail-closed recovery visible before submission.
+- Acceptance/regression coverage must verify invitation-detail-to-resend traversal, protected direct confirmation load, successful resend and refreshed-detail routing, idempotent replay/no duplicate delivery attempt, required-reason validation, terminal/ineligible/no-op behavior, stale/conflict recovery, provider/outbox fail-closed behavior with `noFakeSuccess`, role-specific SaaS Owner/Tenant Admin/Customer Admin visibility, hidden/cross-tenant/customer denial without enumeration, branch return to invitation detail and users, audit/work trace/correlation links, frontend secret boundaries, keyboard operation, focus recovery, and responsive lifecycle-confirmation rendering.
+
+Surface-description sufficiency review: `surface-user-admin-invitation-resend-confirmation` is sufficiently unambiguous for developers/generators to implement and review the lifecycle-confirmation objective without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove protected API/action paths, backend-derived resend eligibility, idempotent delivery attempts, provider/outbox fail-closed behavior, denial/no-enumeration behavior, trace/correlation, and browser secret boundaries before marking implementation/testing objectives done.
+
 ### Surface payloads and task routing
 
 - Directory: `surfaceContract`, selected `AuthContext`, filters, pagination/sort, dashboard-origin queue id, `rows[]`, visible create/invite action where allowed, redaction, trace refs, and correlation id. Each row includes frontend-safe user/member/invitation/support/review badges, backend-authored `targetSurfaceId`, `targetObjectType`, `openActionId`, action availability, and redaction state; activation opens the target inspection/task surface and never performs mutation inline.

@@ -1734,7 +1734,7 @@
 
 ### TASK-FSCT-049: Verify or complete app-description specification for `surface-user-admin-invitation-resend-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-invitation-resend-confirmation`
@@ -1763,6 +1763,7 @@
   - purpose: Single-purpose resend confirmation.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-invitation-resend-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated lifecycle-confirmation app-description contract for `surface-user-admin-invitation-resend-confirmation` covering identity/owner/placement, selected AuthContext and resend authority, payload schema (`invitationSummary`, `resendEligibility`, `deliveryReadiness`, `confirmationForm`, actions), confirm/cancel/return/audit action semantics, hidden/forbidden redaction boundaries, no-enumeration authorization, stale/conflict/no-op/idempotent replay and provider/outbox fail-closed `noFakeSuccess` states, trace/audit/correlation, accessibility/responsive expectations, acceptance/security/observability tests, and sufficiency review; tracker evidence updated; checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description and `git diff --check`
 
 ### TASK-FSCT-050: Verify or complete runtime implementation for `surface-user-admin-invitation-resend-confirmation`
 
