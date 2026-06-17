@@ -2120,7 +2120,7 @@
 
 ### TASK-FSCT-060: Verify or complete runtime testing for `surface-user-admin-role-change-preview`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-059]
 - surface id: `surface-user-admin-role-change-preview`
@@ -2145,15 +2145,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - notes:
   - surface type: `decision-card / diff`
   - surface contract: `user_admin.role_change_preview.v1`
   - purpose: Capability delta and approval preview before role mutation.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-role-change-preview`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-role-change-preview`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted role-change-preview runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiTraverseUserAdminSurfaceGraph`: JWT plus selected tenant-admin AuthContext traverses dashboard/users/detail to backend-owned `user_admin.role_change_preview.v1`, verifies target/proposal/capability-delta/policy-decision/evidence/confirmation/action/redaction payloads, commits canonical `action-commit-user-admin-role-change` through `/api/workstream/actions` via `UserAdminService#changeMemberRoles`, verifies refreshed detail state, idempotent repeated commit as `no-op`, self-admin-role-removal denial in the preview surface, missing-bearer rejection, trace/correlation evidence, and raw JWT/provider/private-profile/hidden-role/raw-policy/sibling-scope secret boundaries. runtime evidence: readiness level `runtime-ready` for the role-change-preview testing scope; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/fail-closed/trace coverage included self-admin-role-removal denial, idempotent no-op, missing-bearer rejection, trace refs, correlation ids, and browser-safe redaction; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiTraverseUserAdminSurfaceGraph test`, `mvn -q -Dtest=WorkstreamServiceTest#userAdminContractCapabilityActionsPreviewApplyAuditAndIdempotency test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-061: Verify or complete app-description specification for `surface-user-admin-support-access-grant`
 

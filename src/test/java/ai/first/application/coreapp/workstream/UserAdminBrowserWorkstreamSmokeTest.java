@@ -76,6 +76,12 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .responseBodyAs(String.class)
         .invoke(), "Protected user detail surface must reject missing bearer tokens.");
 
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-role-change-preview")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected role-change preview surface must reject missing bearer tokens.");
+
     var bootstrap = httpClient
         .GET("/api/workstream/bootstrap")
         .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
@@ -220,6 +226,86 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-change-member-roles")), "User detail must route role changes through the preview task surface, not inline mutation.");
     assertFalse(detail.resultSurface().toString().contains("recordLabel=Tenant Admin"));
     assertBrowserSafe(detail.resultSurface());
+
+    var rolePreview = runAction(new CapabilityActionRequest(
+        "action-useradmin-preview-role-change",
+        "action-useradmin-preview-role-change",
+        "USERADMIN_PREVIEW_ROLE_CHANGE",
+        "USERADMIN_PREVIEW_ROLE_CHANGE",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "protected browser smoke role preview"),
+        null,
+        SELECTED_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-browser-smoke-role-preview"));
+    assertEquals("accepted", rolePreview.status());
+    assertEquals("surface-user-admin-role-change-preview", rolePreview.resultSurface().surfaceId());
+    assertEquals("decision-card", rolePreview.resultSurface().surfaceType());
+    assertEquals("user_admin.role_change_preview.v1", rolePreview.resultSurface().data().get("surfaceContract"));
+    assertEquals("corr-browser-smoke-role-preview", rolePreview.resultSurface().correlationId());
+    assertTrue(rolePreview.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-preview-role-change")));
+    assertTrue(rolePreview.resultSurface().toString().contains("targetSummary"));
+    assertTrue(rolePreview.resultSurface().toString().contains("roleChangeProposal"));
+    assertTrue(rolePreview.resultSurface().toString().contains("capabilityDelta"));
+    assertTrue(rolePreview.resultSurface().toString().contains("policyDecision"));
+    assertTrue(rolePreview.resultSurface().toString().contains("decisionEvidence"));
+    assertTrue(rolePreview.resultSurface().toString().contains("confirmationForm"));
+    assertTrue(rolePreview.resultSurface().toString().contains("approvalRequired=true"));
+    assertTrue(rolePreview.resultSurface().toString().contains("action-commit-user-admin-role-change"));
+    assertTrue(rolePreview.resultSurface().toString().contains("raw-policy-redacted"));
+    assertTrue(rolePreview.resultSurface().toString().contains("sibling-scope-facts-redacted"));
+    assertBrowserSafe(rolePreview.resultSurface());
+
+    var roleChanged = runAction(new CapabilityActionRequest(
+        "action-commit-user-admin-role-change",
+        "action-commit-user-admin-role-change",
+        "USERADMIN_CHANGE_MEMBER_ROLES",
+        "USERADMIN_CHANGE_MEMBER_ROLES",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "protected browser smoke role commit"),
+        "idem-browser-smoke-role-change",
+        SELECTED_CONTEXT_ID,
+        rolePreview.resultSurface().surfaceId(),
+        "corr-browser-smoke-role-commit"));
+    assertEquals("accepted", roleChanged.status());
+    assertEquals("surface-user-admin-user-detail", roleChanged.resultSurface().surfaceId());
+    assertEquals("corr-browser-smoke-role-commit", roleChanged.correlationId());
+    assertTrue(roleChanged.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-change-member-roles")));
+    assertTrue(roleChanged.resultSurface().toString().contains("recordLabel=Member User"));
+    assertTrue(roleChanged.resultSurface().toString().contains("Tenant Admin"));
+    assertTrue(roleChanged.resultSurface().toString().contains("canMutateInline=false"));
+    assertTrue(roleChanged.resultSurface().toString().contains("trace-useradmin-status-action"));
+    assertBrowserSafe(roleChanged.resultSurface());
+
+    var roleReplay = runAction(new CapabilityActionRequest(
+        "action-commit-user-admin-role-change",
+        "action-commit-user-admin-role-change",
+        "USERADMIN_CHANGE_MEMBER_ROLES",
+        "USERADMIN_CHANGE_MEMBER_ROLES",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "protected browser smoke role replay"),
+        "idem-browser-smoke-role-change-replay",
+        SELECTED_CONTEXT_ID,
+        rolePreview.resultSurface().surfaceId(),
+        "corr-browser-smoke-role-replay"));
+    assertEquals("no-op", roleReplay.status());
+    assertTrue(roleReplay.message().contains("already match"));
+    assertTrue(roleReplay.resultSurface().toString().contains("Tenant Admin"));
+    assertBrowserSafe(roleReplay.resultSurface());
+
+    var selfRemovalPreview = runAction(new CapabilityActionRequest(
+        "action-useradmin-preview-role-change",
+        "action-useradmin-preview-role-change",
+        "USERADMIN_PREVIEW_ROLE_CHANGE",
+        "USERADMIN_PREVIEW_ROLE_CHANGE",
+        Map.of("accountId", "admin@example.test", "membershipId", SELECTED_CONTEXT_ID, "roles", List.of("TENANT_EMPLOYEE"), "reason", "protected browser smoke self-removal denial"),
+        null,
+        SELECTED_CONTEXT_ID,
+        directUserDetail.surfaceId(),
+        "corr-browser-smoke-role-self-denied"));
+    assertEquals("denied", selfRemovalPreview.status());
+    assertEquals("surface-user-admin-role-change-preview", selfRemovalPreview.resultSurface().surfaceId());
+    assertTrue(selfRemovalPreview.resultSurface().toString().contains("self-admin-role-removal-denied"));
+    assertTrue(selfRemovalPreview.resultSurface().toString().contains("selfActionRisk=blocked"));
+    assertTrue(selfRemovalPreview.resultSurface().toString().contains("disabledReason=self-admin-role-removal-denied"));
+    assertBrowserSafe(selfRemovalPreview.resultSurface());
 
     var membershipTask = runAction(new CapabilityActionRequest(
         "action-open-useradmin-membership-status-confirmation",
