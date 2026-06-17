@@ -2959,6 +2959,30 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke(), "Customer rename submit action path must reject missing bearer tokens.");
 
     assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-customer-suspend-confirmation")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-suspend-missing-bearer-direct")
+        .responseBodyAs(String.class)
+        .invoke(), "Customer suspend confirmation surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-suspend-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-customer-suspend",
+            "user-admin.suspend-customer",
+            "manage-customers",
+            "tenant.customer.suspend",
+            Map.of("customerId", "cust-alpha", "reason", "missing bearer must not suspend", "confirmation", "SUSPEND"),
+            "idem-customer-suspend-missing-bearer",
+            SELECTED_CONTEXT_ID,
+            "surface-user-admin-customer-suspend-confirmation",
+            "corr-customer-suspend-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Customer suspend submit action path must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-user-admin-customer-admin-detail")
         .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
         .addHeader("X-Correlation-Id", "corr-customer-admin-detail-missing-bearer-direct")
@@ -3374,6 +3398,14 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(directSuspendWithoutTarget.toString().contains("Hidden Customer"));
     assertBrowserSafe(directSuspendWithoutTarget);
 
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-user-admin-customer-suspend-confirmation",
+        "corr-customer-suspend-customer-admin-denied-direct",
+        "workos-customer-admin",
+        "customer-admin@example.test",
+        "Customer Admin",
+        "membership-customer-admin"), "Customer Admin selected contexts must not direct-load Customer suspend confirmation surfaces.");
+
     var suspendForm = runAction(new CapabilityActionRequest(
         "action-open-customer-suspend",
         "user-admin.open-customer-suspend",
@@ -3427,6 +3459,61 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(repository.customer(TENANT_ID, createdCustomerId).orElseThrow().active());
     assertEquals(customerRowsBeforeCreate + 1, repository.customerRows().size());
     assertBrowserSafe(suspendedCustomer.resultSurface());
+
+    var replayedCustomerSuspend = runAction(new CapabilityActionRequest(
+        "action-customer-suspend",
+        "user-admin.suspend-customer",
+        "manage-customers",
+        "tenant.customer.suspend",
+        Map.of("customerId", createdCustomerId, "reason", "runtime test customer suspend replay", "confirmation", "SUSPEND"),
+        "idem-customer-suspend-browser-smoke-replay",
+        SELECTED_CONTEXT_ID,
+        suspendForm.resultSurface().surfaceId(),
+        "corr-customer-suspend-submit-replay"));
+    assertEquals("no-op", replayedCustomerSuspend.status());
+    assertEquals("surface-user-admin-customer-detail", replayedCustomerSuspend.resultSurface().surfaceId());
+    assertEquals(createdCustomerId, replayedCustomerSuspend.resultSurface().data().get("recordId"));
+    assertTrue(replayedCustomerSuspend.message().contains("already suspended"));
+    assertTrue(replayedCustomerSuspend.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-suspend")));
+    assertFalse(repository.customer(TENANT_ID, createdCustomerId).orElseThrow().active());
+    assertBrowserSafe(replayedCustomerSuspend.resultSurface());
+
+    var hiddenCustomerSuspend = runAction(new CapabilityActionRequest(
+        "action-customer-suspend",
+        "user-admin.suspend-customer",
+        "manage-customers",
+        "tenant.customer.suspend",
+        Map.of("customerId", "cust-hidden", "reason", "hidden customer must not enumerate", "confirmation", "SUSPEND"),
+        "idem-customer-suspend-hidden-denied",
+        SELECTED_CONTEXT_ID,
+        suspendForm.resultSurface().surfaceId(),
+        "corr-customer-suspend-hidden-denied"));
+    assertEquals("denied", hiddenCustomerSuspend.status());
+    assertEquals("surface-user-admin-system-message", hiddenCustomerSuspend.resultSurface().surfaceId());
+    assertTrue(hiddenCustomerSuspend.resultSurface().toString().contains("target-not-found-or-forbidden"));
+    assertTrue(hiddenCustomerSuspend.resultSurface().toString().contains("noFakeSuccess=true"));
+    assertFalse(hiddenCustomerSuspend.resultSurface().toString().contains("Hidden Customer"));
+    assertFalse(hiddenCustomerSuspend.resultSurface().toString().contains("tenant-hidden"));
+    assertFalse(hiddenCustomerSuspend.resultSurface().toString().contains("hidden customer must not enumerate"));
+    assertTrue(repository.customer("tenant-hidden", "cust-hidden").orElseThrow().active());
+    assertBrowserSafe(hiddenCustomerSuspend.resultSurface());
+
+    var missingIdempotencySuspend = runAction(new CapabilityActionRequest(
+        "action-customer-suspend",
+        "user-admin.suspend-customer",
+        "manage-customers",
+        "tenant.customer.suspend",
+        Map.of("customerId", "cust-alpha", "reason", "missing idempotency must fail closed", "confirmation", "SUSPEND"),
+        null,
+        SELECTED_CONTEXT_ID,
+        suspendForm.resultSurface().surfaceId(),
+        "corr-customer-suspend-missing-idempotency"));
+    assertEquals("validation-error", missingIdempotencySuspend.status());
+    assertEquals("surface-user-admin-system-message", missingIdempotencySuspend.resultSurface().surfaceId());
+    assertTrue(missingIdempotencySuspend.resultSurface().toString().contains("idempotency-key-required"));
+    assertTrue(missingIdempotencySuspend.resultSurface().toString().contains("noFakeSuccess=true"));
+    assertTrue(repository.customer(TENANT_ID, "cust-alpha").orElseThrow().active());
+    assertBrowserSafe(missingIdempotencySuspend.resultSurface());
 
     var customerAdminSuspendDenied = runActionAs(new CapabilityActionRequest(
         "action-customer-suspend",

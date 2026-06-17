@@ -4346,7 +4346,7 @@
 
 ### TASK-FSCT-123: Verify or complete runtime testing for `surface-user-admin-customer-suspend-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-122]
 - surface id: `surface-user-admin-customer-suspend-confirmation`
@@ -4380,6 +4380,7 @@
   - purpose: Customer suspension/archive confirmation surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-suspend-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-suspend-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted User Admin Customer branch runtime smoke coverage for `surface-user-admin-customer-suspend-confirmation` with missing-bearer direct/action rejections, direct missing-target load, Customer-detail-to-suspend traversal, backend-authored confirmation payload, required confirmation validation, successful `/api/workstream/actions` suspension with persisted lifecycle boundary, idempotent/already-suspended no-op replay, missing-idempotency fail-closed validation, hidden/sibling Customer no-enumeration denial, Customer Admin direct-load and submit denials, trace/correlation evidence, `noFakeSuccess`, browser-safe redaction/secret assertions, frontend contract coverage, and typecheck. Checks passed: `mvn -q -Dtest=ai.first.application.coreapp.workstream.UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`. Runtime readiness level: `runtime-ready` for this testing scope; provider-backed side effects are not used by Customer suspension.
 
 ### TASK-FSCT-124: Verify or complete app-description specification for `surface-user-admin-customer-reactivate-confirmation`
 
