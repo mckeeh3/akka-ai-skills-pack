@@ -4841,7 +4841,7 @@
 
 ### TASK-FSCT-137: Verify or complete runtime implementation for `surface-agent-admin-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-136]
 - surface id: `surface-agent-admin-detail`
@@ -4872,6 +4872,7 @@
   - purpose: Agent readiness/behavior inspection.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-detail`; surface graph node/action edge for opening or acting on `surface-agent-admin-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented backend-authorized `agent_admin.detail.v1` `show-inspection` runtime surface for `surface-agent-admin-detail` with protected API/action paths, tenant-admin AuthContext authorization, browser-safe detail/readiness/artifact/task-entry/redaction/diagnostics payloads, safe hidden/stale row state, no-direct-mutation and provider fail-closed evidence, detail-specific action routing for refresh/task/lifecycle/trace/catalog return, and existing generic frontend `show-inspection` rendering path. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#agentAdminCatalogDetailAndArtifactReadsAreBackendAuthoritativeAndRedacted test`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, focused `rg` evidence, and `git diff --check`. Runtime readiness level: `api-smoked`; no frontend-only/fixture-only normal runtime path remains for this implementation objective.
 
 ### TASK-FSCT-138: Verify or complete runtime testing for `surface-agent-admin-detail`
 

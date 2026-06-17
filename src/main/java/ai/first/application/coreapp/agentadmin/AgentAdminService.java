@@ -109,40 +109,128 @@ public final class AgentAdminService {
   }
 
   public Map<String, Object> definitionDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String correlationId) {
-    require(actor, GET_DEFINITION, correlationId, "agent_admin.definition.v1");
-    var agent = agent(actor, firstNonBlank(agentDefinitionId, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID));
+    require(actor, GET_DEFINITION, correlationId, "agent_admin.detail.v1");
+    var requestedAgentId = firstNonBlank(agentDefinitionId, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID);
+    var maybeAgent = repository.agentDefinition(actor.selectedContext().tenantId(), requestedAgentId);
+    if (maybeAgent.isEmpty()) return hiddenOrStaleDetail(actor, requestedAgentId, correlationId);
+
+    var agent = maybeAgent.orElseThrow();
     var prompt = repository.promptDocument(actor.selectedContext().tenantId(), agent.promptDocumentId()).orElse(null);
     var skillManifest = repository.skillManifest(actor.selectedContext().tenantId(), agent.skillManifestId()).orElse(null);
     var referenceManifest = repository.referenceManifest(actor.selectedContext().tenantId(), agent.referenceManifestId()).orElse(null);
     var boundary = repository.toolBoundary(actor.selectedContext().tenantId(), agent.toolBoundaryId()).orElse(null);
     var model = repository.modelConfigRef(actor.selectedContext().tenantId(), agent.modelConfigRefId()).orElse(null);
+    var provider = providerReadiness(actor, agent);
+    var providerStatus = String.valueOf(provider.get("status"));
+    var readinessState = "ready".equals(providerStatus) && agent.status() == AgentLifecycleStatus.ACTIVE ? "ready" : "blocked_provider_or_runtime";
+    var traceId = traceId("definition", agent.agentDefinitionId(), correlationId);
+    var fields = List.of(
+        field("status", "Status", agent.status().name().toLowerCase(Locale.ROOT), false, null),
+        field("authorityLevel", "Authority tier", agent.authorityLevel().name(), false, null),
+        field("promptDocumentId", "Prompt", agent.promptDocumentId() + "@" + agent.activePromptVersion(), false, null),
+        field("skillManifestId", "Skill manifest", agent.skillManifestId() + "@" + agent.activeSkillManifestVersion(), false, null),
+        field("referenceManifestId", "Reference manifest", agent.referenceManifestId() + "@" + agent.activeReferenceManifestVersion(), false, null),
+        field("toolBoundaryId", "Tool boundary", agent.toolBoundaryId() + "@" + agent.activeToolBoundaryVersion(), false, null),
+        field("modelConfigRef", "Model ref", agent.modelConfigRefId(), false, "Provider credential values are never browser-visible"));
+    var relatedArtifacts = List.of(
+        artifactRef("prompt", agent.promptDocumentId(), prompt == null ? null : prompt.status().name(), GET_PROMPT_VERSION),
+        artifactRef("skill_manifest", agent.skillManifestId(), skillManifest == null ? null : skillManifest.status().name(), GET_MANIFEST),
+        artifactRef("reference_manifest", agent.referenceManifestId(), referenceManifest == null ? null : referenceManifest.status().name(), GET_MANIFEST),
+        artifactRef("tool_boundary", agent.toolBoundaryId(), boundary == null ? null : boundary.status().name(), GET_TOOL_BOUNDARY),
+        artifactRef("model_ref", agent.modelConfigRefId(), model == null ? null : model.status().name(), GET_MODEL_REF));
+    var artifactCards = List.of(
+        behaviorArtifactCard("prompt", "Prompt", agent.promptDocumentId(), agent.activePromptVersion(), prompt == null ? "missing" : prompt.status().name().toLowerCase(Locale.ROOT), "Redacted prompt/version diff; raw prompt text omitted.", "action-agent-detail-open-prompt-governance", "surface-agent-prompt-governance", GET_PROMPT_VERSION),
+        behaviorArtifactCard("skill_manifest", "Skill manifest", agent.skillManifestId(), agent.activeSkillManifestVersion(), skillManifest == null ? "missing" : skillManifest.status().name().toLowerCase(Locale.ROOT), "Compact skill manifest review; full skill bodies omitted.", "action-agent-detail-open-skill-manifest", "surface-agent-skill-manifest-diff", GET_MANIFEST),
+        behaviorArtifactCard("reference_manifest", "Reference bundle", agent.referenceManifestId(), agent.activeReferenceManifestVersion(), referenceManifest == null ? "missing" : referenceManifest.status().name().toLowerCase(Locale.ROOT), "Reference manifest health with raw evidence bodies omitted.", "action-agent-detail-open-skill-manifest", "surface-agent-skill-manifest-diff", GET_MANIFEST),
+        behaviorArtifactCard("tool_boundary", "Governed tool boundary", agent.toolBoundaryId(), agent.activeToolBoundaryVersion(), boundary == null ? "missing" : boundary.status().name().toLowerCase(Locale.ROOT), "ToolPermissionBoundary grants and denial semantics remain backend-authoritative.", "action-agent-detail-open-tool-boundary", "surface-agent-tool-boundary-diff", GET_TOOL_BOUNDARY),
+        behaviorArtifactCard("model_ref", "Model reference", agent.modelConfigRefId(), null, model == null ? "missing" : model.status().name().toLowerCase(Locale.ROOT), "Provider/model readiness is shown without credentials or raw provider errors.", "action-agent-detail-open-model-refs", "surface-agent-model-refs", GET_MODEL_REF));
+    var taskEntryPoints = List.of(
+        taskEntryPoint("action-agent-detail-refresh", "Refresh read-only detail", "surface-agent-admin-detail", GET_DEFINITION, true, "Read-only refresh; no mutation."),
+        taskEntryPoint("action-agent-detail-open-prompt-governance", "Review prompt governance", "surface-agent-prompt-governance", GET_PROMPT_VERSION, true, "Raw prompt text stays omitted."),
+        taskEntryPoint("action-agent-detail-open-skill-manifest", "Review skill/reference manifest", "surface-agent-skill-manifest-diff", GET_MANIFEST, true, "Compact manifests only."),
+        taskEntryPoint("action-agent-detail-open-tool-boundary", "Simulate tool boundary", "surface-agent-tool-boundary-diff", GET_TOOL_BOUNDARY, true, "ToolPermissionBoundary denials preserved."),
+        taskEntryPoint("action-agent-detail-open-model-refs", "Inspect model refs", "surface-agent-model-refs", GET_MODEL_REF, true, "Provider credentials redacted."),
+        taskEntryPoint("action-agent-detail-run-test", "Run no-side-effect runtime test", "surface-agent-test-console", "agent_admin.draft_behavior_change", true, "Advisory test cannot activate behavior."),
+        taskEntryPoint("action-agent-detail-open-prompt-risk-review", "Open prompt-risk review", "surface-agent-admin-prompt-risk-review", "agent_admin.prompt_risk_review.read", true, "Model-backed review fails closed when provider/runtime is unavailable."),
+        taskEntryPoint("action-agent-detail-open-activation", "Open activation confirmation", "surface-agent-activation-confirmation", "agent_admin.manage_definitions", "ready".equals(readinessState), "Separate approval/provider prerequisites required."),
+        taskEntryPoint("action-agent-detail-open-deactivation", "Open deactivation confirmation", "surface-agent-deactivation-confirmation", "agent_admin.manage_definitions", true, "Separate consequential confirmation required."),
+        taskEntryPoint("action-agent-detail-open-rollback", "Open rollback confirmation", "surface-agent-rollback-confirmation", "agent_admin.rollback_behavior_change", false, "Requires backend-visible activated proposal metadata."),
+        taskEntryPoint("action-agent-detail-open-trace", "Open redacted trace", "surface-agent-admin-trace", "audit.trace.read", true, "Raw trace evidence remains role-gated."),
+        taskEntryPoint("action-agent-detail-back-to-catalog", "Back to catalog", "surface-agent-admin-catalog", LIST_DEFINITIONS, true, "Catalog filters remain backend-validated."));
     return mapOf(
-        "surfaceContract", "agent_admin.definition.v1",
-        "surfaceContractAliases", List.of("surface.agent_admin.definition_detail.v1"),
+        "surfaceContract", "agent_admin.detail.v1",
+        "surfaceContractAliases", List.of("surface.agent_admin.detail.v1", "agent_admin.definition.v1", "surface.agent_admin.definition_detail.v1"),
         "recordId", agent.agentDefinitionId(),
         "recordLabel", agent.displayName(),
         "recordKind", "AgentDefinition",
-        "summary", "Backend-authoritative AgentDefinition detail; behavior changes must use deterministic proposal/review/activation commands.",
-        "fields", List.of(
-            field("status", "Status", agent.status().name().toLowerCase(), false, null),
-            field("authorityLevel", "Authority tier", agent.authorityLevel().name(), false, null),
-            field("promptDocumentId", "Prompt", agent.promptDocumentId() + "@" + agent.activePromptVersion(), false, null),
-            field("skillManifestId", "Skill manifest", agent.skillManifestId() + "@" + agent.activeSkillManifestVersion(), false, null),
-            field("referenceManifestId", "Reference manifest", agent.referenceManifestId() + "@" + agent.activeReferenceManifestVersion(), false, null),
-            field("toolBoundaryId", "Tool boundary", agent.toolBoundaryId() + "@" + agent.activeToolBoundaryVersion(), false, null),
-            field("modelConfigRef", "Model ref", agent.modelConfigRefId(), false, "Provider credential values are never browser-visible")),
-        "relatedArtifacts", List.of(
-            artifactRef("prompt", agent.promptDocumentId(), prompt == null ? null : prompt.status().name(), GET_PROMPT_VERSION),
-            artifactRef("skill_manifest", agent.skillManifestId(), skillManifest == null ? null : skillManifest.status().name(), GET_MANIFEST),
-            artifactRef("reference_manifest", agent.referenceManifestId(), referenceManifest == null ? null : referenceManifest.status().name(), GET_MANIFEST),
-            artifactRef("tool_boundary", agent.toolBoundaryId(), boundary == null ? null : boundary.status().name(), GET_TOOL_BOUNDARY),
-            artifactRef("model_ref", agent.modelConfigRefId(), model == null ? null : model.status().name(), GET_MODEL_REF)),
-        "providerReadiness", providerReadiness(actor, agent),
+        "summary", "Backend-authoritative managed-agent readiness inspection; behavior and lifecycle changes must use separate governed task surfaces.",
+        "detailSummary", mapOf("surfaceId", "surface-agent-admin-detail", "title", "Agent readiness/behavior inspection", "type", "show-inspection", "contract", "agent_admin.detail.v1", "selectedManagedAgentDisplayName", agent.displayName(), "shortPurpose", safe(agent.description()), "lifecycleState", agent.status().name().toLowerCase(Locale.ROOT), "readinessState", readinessState, "authorityTier", agent.authorityLevel().name(), "owningScopeLabel", scopeLabel(actor), "lastChangedAt", agent.updatedAt() == null ? null : agent.updatedAt().toString(), "lastReviewedAt", agent.updatedAt() == null ? null : agent.updatedAt().toString(), "lastRefreshedAt", Instant.now().toString(), "readOnlyNotice", "No inline mutation; use dedicated governed task surfaces."),
+        "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", actor.selectedContext().tenantId(), "organizationDisplayName", actor.selectedContext().tenantId(), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true, "visibilityDecision", "visible"),
+        "readinessNarrative", mapOf("outcome", readinessState, "providerModelReadinessCategory", providerStatus, "promptRiskStatus", "ready".equals(providerStatus) ? "review-ready" : "deferred_until_provider_runtime_configured", "manifestToolBoundaryReferenceHealth", "active compact manifests and tool boundary are available when their artifact cards are active.", "seedCustomizationState", Boolean.TRUE.equals(seedStatus(agent.seedProvenance()).get("tenantCustomized")) ? "tenant-customized" : "starter-default", "blockedReasons", "ready".equals(readinessState) ? List.of() : List.of("Provider/model runtime is not fully ready; no fake success is shown."), "recoveryRouteLabels", List.of("Model references", "Prompt-risk review", "Trace"), "noFakeSuccess", !"ready".equals(providerStatus)),
+        "fields", fields,
+        "relatedArtifacts", relatedArtifacts,
+        "behaviorArtifactCards", artifactCards,
+        "taskEntryPoints", taskEntryPoints,
+        "providerReadiness", provider,
         "seedStatus", seedStatus(agent.seedProvenance()),
-        "permissionState", mapOf("canEdit", false, "reason", "Use inert behavior-change proposals; no direct mutation from read surfaces.", "authoritativeCapabilityId", GET_DEFINITION),
-        "audit", mapOf("lastEventType", "AgentDefinitionDetailDisplayed", "traceIds", List.of(traceId("definition", agent.agentDefinitionId(), correlationId))),
+        "permissionState", mapOf("canEdit", false, "reason", "Read-only inspection. Use inert behavior-change proposals, lifecycle confirmations, no-side-effect tests, and trace drill-ins; no direct mutation from this surface.", "authoritativeCapabilityId", GET_DEFINITION),
+        "safeRedactionSummary", mapOf("rawPromptText", "omitted", "rawSkillReferenceBodies", "omitted", "providerCredentials", "omitted", "hiddenTenantCustomerIdentifiers", "omitted", "rawLoaderToolInputs", "omitted", "jwtSessionMaterial", "omitted", "internalStackTraces", "omitted", "fullEvidenceDocuments", "role-gated"),
         "redaction", redactionMetadata(),
+        "traceLinks", List.of(traceId),
+        "audit", mapOf("lastEventType", "AgentDefinitionDetailDisplayed", "selectedManagedAgentVisibilityDecision", "visible", "traceIds", List.of(traceId), "correlationId", correlationId, "redactionProfile", "agent-admin-detail-browser-safe"),
+        "diagnostics", mapOf("agentDefinitionId", agent.agentDefinitionId(), "promptVersionId", agent.promptDocumentId() + "@" + agent.activePromptVersion(), "manifestVersionIds", List.of(agent.skillManifestId() + "@" + agent.activeSkillManifestVersion(), agent.referenceManifestId() + "@" + agent.activeReferenceManifestVersion()), "toolBoundaryVersionId", agent.toolBoundaryId() + "@" + agent.activeToolBoundaryVersion(), "modelConfigRefId", agent.modelConfigRefId(), "capabilityIds", List.of(GET_DEFINITION, GET_PROMPT_VERSION, GET_MANIFEST, GET_MODEL_REF, GET_TOOL_BOUNDARY), "traceIds", List.of(traceId), "correlationId", correlationId, "rowContextHash", traceId("row-context", agent.agentDefinitionId(), correlationId), "redactionProfile", "agent-admin-detail-browser-safe"),
+        "actionContext", mapOf("agentDefinitionId", agent.agentDefinitionId(), "rowContextHash", traceId("row-context", agent.agentDefinitionId(), correlationId)),
+        "systemStates", List.of("loading", "ready", "empty-hidden-or-stale-selection", "submitting/refreshing", "forbidden", "not-found-or-redacted", "stale/reconnect", "partial-data", "provider-fail-closed", "approval-required", "conflict", "validation-error", "no-op", "failure"),
         "noDirectMutation", true);
+  }
+
+  private Map<String, Object> hiddenOrStaleDetail(AuthContextResolver.ResolvedMe actor, String requestedAgentId, String correlationId) {
+    var traceId = traceId("definition-denied", requestedAgentId, correlationId);
+    return mapOf(
+        "surfaceContract", "agent_admin.detail.v1",
+        "surfaceContractAliases", List.of("surface.agent_admin.detail.v1"),
+        "recordKind", "AgentDefinition",
+        "summary", "The selected managed agent is unavailable, hidden, stale, inactive, or outside the selected governance scope.",
+        "detailSummary", mapOf("surfaceId", "surface-agent-admin-detail", "title", "Agent readiness/behavior inspection", "type", "show-inspection", "contract", "agent_admin.detail.v1", "readinessState", "empty-hidden-or-stale-selection", "owningScopeLabel", scopeLabel(actor), "lastRefreshedAt", Instant.now().toString(), "readOnlyNotice", "No inline mutation; choose a backend-authorized catalog row."),
+        "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", actor.selectedContext().tenantId(), "organizationDisplayName", actor.selectedContext().tenantId(), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true, "visibilityDecision", "not_found_or_redacted", "safeReason", "Selected managed-agent row is not visible in this AuthContext."),
+        "readinessNarrative", mapOf("outcome", "not_found_or_redacted", "blockedReasons", List.of("Open a visible managed agent from the backend-authorized catalog."), "noFakeSuccess", true),
+        "fields", List.of(),
+        "relatedArtifacts", List.of(),
+        "behaviorArtifactCards", List.of(),
+        "taskEntryPoints", List.of(taskEntryPoint("action-agent-detail-back-to-catalog", "Back to catalog", "surface-agent-admin-catalog", LIST_DEFINITIONS, true, "Catalog filters remain backend-validated."), taskEntryPoint("action-agent-detail-open-trace", "Open redacted trace", "surface-agent-admin-trace", "audit.trace.read", true, "Raw trace evidence remains role-gated.")),
+        "safeRedactionSummary", mapOf("hiddenTenantCustomerIdentifiers", "omitted", "rawPromptText", "omitted", "rawSkillReferenceBodies", "omitted", "providerCredentials", "omitted", "rawTraceEvidence", "role-gated"),
+        "redaction", redactionMetadata(),
+        "traceLinks", List.of(traceId),
+        "audit", mapOf("lastEventType", "AgentDefinitionDetailDenied", "selectedManagedAgentVisibilityDecision", "not_found_or_redacted", "traceIds", List.of(traceId), "correlationId", correlationId, "redactionProfile", "agent-admin-detail-browser-safe"),
+        "diagnostics", mapOf("rowContextHash", traceId("row-context", requestedAgentId, correlationId), "traceIds", List.of(traceId), "correlationId", correlationId, "redactionProfile", "agent-admin-detail-browser-safe"),
+        "systemStates", List.of("empty-hidden-or-stale-selection", "not-found-or-redacted", "forbidden", "stale/reconnect", "failure"),
+        "noDirectMutation", true);
+  }
+
+  private Map<String, Object> behaviorArtifactCard(String category, String label, String artifactId, Integer version, String status, String summary, String actionId, String targetSurfaceId, String capabilityId) {
+    return mapOf(
+        "artifactCategory", category,
+        "displayLabel", label,
+        "artifactId", artifactId,
+        "currentVersionLabel", version == null ? "current" : "v" + version,
+        "riskReadinessSummary", summary,
+        "lastReviewStatus", status,
+        "redactionNote", "Browser payload omits raw prompt, skill, reference, provider, loader-tool, hidden-scope, and full trace data.",
+        "actionId", actionId,
+        "targetSurfaceId", targetSurfaceId,
+        "governedCapability", capabilityId,
+        "disabledOrOmittedReason", null);
+  }
+
+  private Map<String, Object> taskEntryPoint(String actionId, String label, String targetSurfaceId, String capabilityId, boolean prerequisitesSatisfied, String reason) {
+    return mapOf(
+        "actionId", actionId,
+        "label", label,
+        "targetSurfaceId", targetSurfaceId,
+        "governedCapability", capabilityId,
+        "approvalProviderRuntimePrerequisitesSatisfied", prerequisitesSatisfied,
+        "disabledOrOmittedReason", prerequisitesSatisfied ? null : reason,
+        "safeReason", reason);
   }
 
   public Map<String, Object> promptDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String correlationId) {

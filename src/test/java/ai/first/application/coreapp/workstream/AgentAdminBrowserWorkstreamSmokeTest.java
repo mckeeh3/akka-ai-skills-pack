@@ -316,9 +316,66 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "corr-agent-admin-catalog-open-row"));
     assertEquals("accepted", detail.status());
     assertEquals("surface-agent-admin-detail", detail.resultSurface().surfaceId());
+    assertEquals("show-inspection", detail.resultSurface().surfaceType());
+    assertEquals("agent_admin.detail.v1", detail.resultSurface().data().get("surfaceContract"));
     assertEquals(AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, detail.resultSurface().data().get("recordId"));
+    assertTrue(detail.resultSurface().toString().contains("detailSummary"));
+    assertTrue(detail.resultSurface().toString().contains("scopeSummary"));
+    assertTrue(detail.resultSurface().toString().contains("readinessNarrative"));
+    assertTrue(detail.resultSurface().toString().contains("behaviorArtifactCards"));
+    assertTrue(detail.resultSurface().toString().contains("taskEntryPoints"));
+    assertTrue(detail.resultSurface().toString().contains("safeRedactionSummary"));
+    assertTrue(detail.resultSurface().toString().contains("action-agent-detail-open-prompt-governance"));
+    assertTrue(detail.resultSurface().toString().contains("action-agent-detail-open-skill-manifest"));
+    assertTrue(detail.resultSurface().toString().contains("action-agent-detail-open-tool-boundary"));
+    assertTrue(detail.resultSurface().toString().contains("action-agent-detail-open-model-refs"));
+    assertTrue(detail.resultSurface().toString().contains("action-agent-detail-run-test"));
+    assertTrue(detail.resultSurface().toString().contains("action-agent-detail-open-prompt-risk-review"));
+    assertTrue(detail.resultSurface().toString().contains("action-agent-detail-open-activation"));
+    assertTrue(detail.resultSurface().toString().contains("action-agent-detail-open-deactivation"));
+    assertTrue(detail.resultSurface().toString().contains("action-agent-detail-open-rollback"));
+    assertTrue(detail.resultSurface().toString().contains("action-agent-detail-open-trace"));
+    assertTrue(detail.resultSurface().toString().contains("action-agent-detail-back-to-catalog"));
+    assertTrue(detail.resultSurface().toString().contains("providerCredentials=omitted"));
+    assertTrue(detail.resultSurface().toString().contains("trace-agent-admin-definition"));
     assertTrue(detail.resultSurface().toString().contains("noDirectMutation=true"));
     assertBrowserSafe(detail.resultSurface());
+
+    var directDetail = getSurface("surface-agent-admin-detail", "corr-agent-admin-detail-direct");
+    assertEquals("surface-agent-admin-detail", directDetail.surfaceId());
+    assertEquals("show-inspection", directDetail.surfaceType());
+    assertEquals("agent_admin.detail.v1", directDetail.data().get("surfaceContract"));
+    assertTrue(directDetail.toString().contains("authorizedActions"));
+    assertBrowserSafe(directDetail);
+
+    var refreshedDetail = runAction(new CapabilityActionRequest(
+        "action-agent-detail-refresh",
+        "action-agent-detail-refresh",
+        "agent_admin.get_definition",
+        "agent_admin.get_definition",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-agent-admin-detail-refresh"));
+    assertEquals("no-op", refreshedDetail.status());
+    assertEquals("surface-agent-admin-detail", refreshedDetail.resultSurface().surfaceId());
+    assertBrowserSafe(refreshedDetail.resultSurface());
+
+    var detailModelRefs = runAction(new CapabilityActionRequest(
+        "action-agent-detail-open-model-refs",
+        "action-agent-detail-open-model-refs",
+        "agent_admin.get_model_ref",
+        "agent_admin.get_model_ref",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-agent-admin-detail-model-refs"));
+    assertEquals("accepted", detailModelRefs.status());
+    assertEquals("surface-agent-model-refs", detailModelRefs.resultSurface().surfaceId());
+    assertTrue(detailModelRefs.resultSurface().toString().contains("providerCredential=[REDACTED]"));
+    assertBrowserSafe(detailModelRefs.resultSurface());
 
     var trace = runAction(new CapabilityActionRequest(
         "action-agent-admin-catalog-open-trace",
