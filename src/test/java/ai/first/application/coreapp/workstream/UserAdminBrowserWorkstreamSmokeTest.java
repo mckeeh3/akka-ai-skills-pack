@@ -1515,6 +1515,129 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "Tenant Admin selected contexts must not open the SaaS Owner Admins branch through the protected action API.");
   }
 
+  @Test
+  void protectedWorkstreamApiExercisesUserAdminAccessReviewTaskRuntimePath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-access-review-task")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Access-review task surface must reject missing bearer tokens.");
+
+    var directStatus = getSurface("surface-user-admin-access-review-task", "corr-access-review-task-direct");
+    assertEquals("surface-user-admin-access-review-task", directStatus.surfaceId());
+    assertEquals("workflow-status", directStatus.surfaceType());
+    assertEquals("user_admin.access_review_task.v1", directStatus.data().get("surfaceContract"));
+    assertEquals("blocked_provider_or_runtime", directStatus.data().get("status"));
+    assertEquals(true, directStatus.data().get("noFakeSuccess"));
+    assertEquals(true, directStatus.data().get("noDirectMutation"));
+    assertTrue(directStatus.toString().contains("modelToolDataPolicyUsage"));
+    assertTrue(directStatus.toString().contains("surface-audit-trace-detail"));
+    assertAccessReviewBrowserSafe(directStatus);
+
+    var started = runAction(new CapabilityActionRequest(
+        "action-useradmin-start-access-review",
+        "action-useradmin-start-access-review",
+        "user_admin.access_review.start",
+        "user_admin.access_review.start",
+        Map.of("scope", "tenant"),
+        "idem-access-review-task-browser-smoke",
+        SELECTED_CONTEXT_ID,
+        "surface-user-admin-dashboard",
+        "corr-access-review-task-start"));
+    assertEquals("blocked-runtime", started.status());
+    assertEquals("corr-access-review-task-start", started.correlationId());
+    assertEquals("surface-user-admin-access-review-task", started.resultSurface().surfaceId());
+    assertEquals("user_admin.access_review_task.v1", started.resultSurface().data().get("surfaceContract"));
+    assertEquals("blocked_provider_or_runtime", started.resultSurface().data().get("status"));
+    assertEquals(true, started.resultSurface().data().get("noDirectMutation"));
+    assertTrue(started.resultSurface().toString().contains("providerFailures"));
+    assertTrue(started.resultSurface().toString().contains("modelToolDataPolicyUsage"));
+    assertTrue(started.resultSurface().toString().contains("surface-audit-trace-detail"));
+    assertTrue(started.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-access-review")));
+    assertAccessReviewBrowserSafe(started.resultSurface());
+
+    var taskId = String.valueOf(started.resultSurface().data().get("taskId"));
+    assertFalse(taskId.isBlank());
+
+    var read = runAction(new CapabilityActionRequest(
+        "action-useradmin-read-access-review",
+        "action-useradmin-read-access-review",
+        "user_admin.access_review.read",
+        "user_admin.access_review.read",
+        Map.of("taskId", taskId),
+        null,
+        SELECTED_CONTEXT_ID,
+        started.resultSurface().surfaceId(),
+        "corr-access-review-task-read"));
+    assertEquals("accepted", read.status());
+    assertEquals(taskId, read.resultSurface().data().get("taskId"));
+    assertEquals("blocked_provider_or_runtime", read.resultSurface().data().get("status"));
+    assertTrue(read.resultSurface().toString().contains("providerFailures"));
+    assertTrue(read.resultSurface().toString().contains("noDirectMutation=true"));
+    assertAccessReviewBrowserSafe(read.resultSurface());
+
+    var notCompletedAccept = runAction(new CapabilityActionRequest(
+        "action-useradmin-accept-access-review-result",
+        "action-useradmin-accept-access-review-result",
+        "user_admin.access_review.accept_result",
+        "user_admin.access_review.accept_result",
+        Map.of("taskId", taskId, "reason", "browser smoke should not accept provider-blocked task"),
+        "idem-access-review-task-accept-not-completed",
+        SELECTED_CONTEXT_ID,
+        read.resultSurface().surfaceId(),
+        "corr-access-review-task-accept-not-completed"));
+    assertEquals("denied", notCompletedAccept.status());
+    assertEquals("surface-user-admin-system-message", notCompletedAccept.resultSurface().surfaceId());
+    assertTrue(notCompletedAccept.resultSurface().surfaceType().contains("system"));
+    assertAccessReviewBrowserSafe(notCompletedAccept.resultSurface());
+
+    var cancelled = runAction(new CapabilityActionRequest(
+        "action-useradmin-cancel-access-review",
+        "action-useradmin-cancel-access-review",
+        "user_admin.access_review.cancel",
+        "user_admin.access_review.cancel",
+        Map.of("taskId", taskId, "reason", "browser smoke cancel"),
+        "idem-access-review-task-cancel",
+        SELECTED_CONTEXT_ID,
+        read.resultSurface().surfaceId(),
+        "corr-access-review-task-cancel"));
+    assertEquals("accepted", cancelled.status());
+    assertEquals("cancelled", cancelled.resultSurface().data().get("status"));
+    assertEquals(true, cancelled.resultSurface().data().get("noDirectMutation"));
+    assertTrue(cancelled.message().contains("access state unchanged"));
+    assertTrue(cancelled.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-access-review")));
+    assertAccessReviewBrowserSafe(cancelled.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> runActionAs(new CapabilityActionRequest(
+        "action-useradmin-read-access-review",
+        "action-useradmin-read-access-review",
+        "user_admin.access_review.read",
+        "user_admin.access_review.read",
+        Map.of("taskId", taskId),
+        null,
+        "membership-member",
+        cancelled.resultSurface().surfaceId(),
+        "corr-access-review-task-member-denied"), "workos-member", "member@example.test", "Member User", "membership-member"),
+        "Regular members must not read tenant access-review task state through the protected action API.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-access-review-task-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-useradmin-read-access-review",
+            "action-useradmin-read-access-review",
+            "user_admin.access_review.read",
+            "user_admin.access_review.read",
+            Map.of("taskId", taskId),
+            null,
+            SELECTED_CONTEXT_ID,
+            cancelled.resultSurface().surfaceId(),
+            "corr-access-review-task-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Access-review task action path must reject missing bearer tokens.");
+  }
+
   private SurfaceEnvelope getSurface(String surfaceId, String correlationId) throws Exception {
     return getSurfaceAs(surfaceId, correlationId, "workos-admin", "admin@example.test", "Tenant Admin", SELECTED_CONTEXT_ID);
   }
@@ -1566,6 +1689,16 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var header = Base64.getEncoder().encodeToString("{\"alg\":\"none\"}".getBytes());
     var payload = Base64.getEncoder().encodeToString(JsonSupport.getObjectMapper().writeValueAsBytes(Map.of("sub", subject, "email", email, "name", name)));
     return header + "." + payload;
+  }
+
+  private static void assertAccessReviewBrowserSafe(Object payload) {
+    var text = String.valueOf(payload);
+    assertFalse(text.contains("invite-token"));
+    assertFalse(text.contains("tokenHash"));
+    assertFalse(text.contains("providerSecret"));
+    assertFalse(text.contains("Bearer "));
+    assertFalse(text.contains("test-fake-provider"));
+    assertFalse(text.contains("test-fake-model"));
   }
 
   private static void assertBrowserSafe(Object payload) {

@@ -2438,7 +2438,7 @@
 
 ### TASK-FSCT-069: Verify or complete runtime testing for `surface-user-admin-access-review-task`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-068]
 - surface id: `surface-user-admin-access-review-task`
@@ -2472,6 +2472,7 @@
   - purpose: Durable access-review task progress, result, blockers, and human review.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-access-review-task`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-access-review-task`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added dedicated protected Akka-hosted access-review task runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminAccessReviewTaskRuntimePath`: missing-bearer direct surface/action rejection, tenant-admin `AuthContext` direct `surface-user-admin-access-review-task` load, start/read/cancel action path through `/api/workstream/actions`, provider/runtime fail-closed `blocked_provider_or_runtime` with `noFakeSuccess`/`noDirectMutation`, model/tool/data/policy usage and audit-trace links, typed denial for accept-before-completion, regular-member protected action denial, trace/correlation evidence, and browser-safe secret-boundary assertions. runtime evidence: readiness level `runtime-ready` for the access-review task testing scope; role/AuthContext/tenant setup covered tenant admin and tenant employee in `tenant-starter`; denial/provider/fail-closed/trace coverage included missing bearer, member denial, not-completed accept denial, provider/runtime fail-closed state, trace refs, and correlation ids; provider smoke remains blocked outside named scope until live model/provider configuration is supplied; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminAccessReviewTaskRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`
 
 ### TASK-FSCT-070: Verify or complete app-description specification for `surface-user-admin-identity-exception-review`
 
