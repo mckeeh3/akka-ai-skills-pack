@@ -2063,9 +2063,53 @@ public final class WorkstreamService {
   private SurfaceEnvelope invitationResendConfirmationSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     var invite = invitationForTaskSurface(actor, input);
     authContextResolver.appendProtectedReadTrace(actor, USERADMIN_RESEND_INVITATION, "user_admin.invitation_resend_confirmation.v1", correlationId);
+    var traceRefs = List.of("trace-useradmin-invitation-resend-confirmation-" + stableSuffix(invite.invitationId() + correlationId));
+    var deliveryState = invitationDeliveryState(invite, correlationId);
+    var canResend = invite.canResend();
+    var resendEligibility = mapOf(
+        "canResend", canResend,
+        "disabledReason", canResend ? null : "Invitation lifecycle state is not resendable in the selected authorized scope.",
+        "terminalState", invite.status().name().toLowerCase(Locale.ROOT),
+        "staleVersion", false,
+        "retryWindow", invite.expiresAt().toString(),
+        "duplicateOpenInviteSummary", "backend-detects-visible-duplicates-or-returns-safe-no-enumeration",
+        "approvalRequired", false,
+        "reasonRequired", false,
+        "traceRefs", traceRefs);
+    var actions = withUserBranchReturn(List.of(resendInvitationAction(), displayInvitationDetailAction(), openAuditAction()));
     return envelope("surface-user-admin-invitation-resend-confirmation", "lifecycle-confirmation", "Resend invitation", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.invitation_resend_confirmation.v1", "branchNavigation", userBranchNavigation(correlationId), "recordId", invite.invitationId(), "recordLabel", invite.targetEmail(), "recordKind", "invitation", "status", invite.canResend() ? "ready" : "no-op", "confirmationCopy", invite.canResend() ? "Resend a scoped invitation email through the governed backend outbox." : "This invitation is not eligible for resend in the selected context.", "actionContext", mapOf("invitationId", invite.invitationId()), "reasonRequired", false, "idempotencyKeyHint", "client-generated", "delivery", invitationDeliveryState(invite, correlationId), "deliveryState", invitationDeliveryState(invite, correlationId), "recoverySteps", invitationRecoverySteps(invite), "systemStates", invitationSystemStates(invite), "traceRefs", List.of("trace-useradmin-invitation-resend-confirmation-" + stableSuffix(invite.invitationId() + correlationId)), "correlationId", correlationId, "redaction", List.of("invitation-token-redacted", "email-body-redacted", "provider-secret-redacted")),
-        withUserBranchReturn(List.of(resendInvitationAction(), displayInvitationDetailAction(), openAuditAction())));
+        mapOf(
+            "surfaceContract", "user_admin.invitation_resend_confirmation.v1",
+            "branchNavigation", userBranchNavigation(correlationId),
+            "branchRootSurfaceId", "surface-user-admin-users",
+            "branchReturnActionId", "action-user-admin-show-users",
+            "branchReturnLabel", "Show users",
+            "recordId", invite.invitationId(),
+            "recordLabel", invite.targetEmail(),
+            "recordKind", "invitation",
+            "status", canResend ? "ready" : "no-op",
+            "summary", "Confirm one scoped invitation resend through backend authorization, idempotency, outbox/provider fail-closed checks, audit trace, and refreshed invitation detail routing.",
+            "confirmationCopy", canResend ? "Resend this visible invitation through the governed backend outbox after rechecking eligibility." : "This invitation is not eligible for resend in the selected context.",
+            "invitationSummary", mapOf("targetEmail", invite.targetEmail(), "targetScopeType", invite.scopeType().name().toLowerCase(Locale.ROOT), "tenantId", invite.tenantId(), "customerId", invite.customerId(), "requestedRoleLabels", roleLabels(invite.requestedRoles()), "invitationStatus", invite.status().name().toLowerCase(Locale.ROOT), "deliveryStatus", invite.deliveryStatus().name().toLowerCase(Locale.ROOT), "expiresAt", invite.expiresAt().toString(), "freshness", "backend-derived"),
+            "resendEligibility", resendEligibility,
+            "deliveryReadiness", mapOf("outboxStatus", deliveryState.get("providerReadiness"), "providerStatus", deliveryState.get("providerReadiness"), "retryEligible", canResend, "failClosedMessage", invite.deliveryStatus() == EmailDeliveryStatus.FAILED ? firstNonBlank(invite.lastDeliveryErrorSummary(), "provider-or-outbox-delivery-failed") : null, "noFakeSuccess", true, "traceRefs", traceRefs),
+            "confirmationForm", mapOf("reasonDraft", "", "reasonRequired", false, "confirmationRequired", true, "submitLabel", "Resend invitation", "submitActionId", "action-useradmin-resend-invitation", "cancelActionId", "action-display-invitation-detail", "idempotencyKeyHint", "client-generated"),
+            "actionContext", mapOf("invitationId", invite.invitationId()),
+            "reasonRequired", false,
+            "confirmationRequired", true,
+            "idempotencyKeyHint", "client-generated",
+            "delivery", deliveryState,
+            "deliveryState", deliveryState,
+            "recoverySteps", invitationRecoverySteps(invite),
+            "systemStates", invitationSystemStates(invite),
+            "authorizedActions", actions.stream().map(this::authorizedActionMap).toList(),
+            "traceRefs", traceRefs,
+            "correlationId", correlationId,
+            "redaction", List.of("invitation-token-redacted", "email-body-redacted", "provider-payload-redacted", "provider-secret-redacted", "raw-jwt-redacted", "hidden-scope-facts-redacted"),
+            "noFakeSuccess", true,
+            "noDirectMutation", true,
+            "boundaryNotice", "The browser surface never exposes invitation tokens, full email bodies, raw JWTs, provider payloads, provider secrets, hidden scopes, or sibling-customer facts."),
+        actions);
   }
 
   private SurfaceEnvelope invitationRevokeConfirmationSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
