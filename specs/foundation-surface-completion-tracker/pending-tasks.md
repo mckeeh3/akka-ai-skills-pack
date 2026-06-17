@@ -1449,7 +1449,7 @@
 
 ### TASK-FSCT-041: Verify or complete runtime implementation for `surface-user-admin-user-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-040]
 - surface id: `surface-user-admin-user-detail`
@@ -1473,13 +1473,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `show-inspection`
   - surface contract: `user_admin.user_detail.v1`
   - purpose: Scoped account, membership, invitation, support-access, access-review, identity, and audit inspection.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-user-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-user-detail`; surface graph node/action edge for opening or acting on `surface-user-admin-user-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: verified the real runtime implementation for `surface-user-admin-user-detail`: backend-owned `user_admin.user_detail.v1` show-inspection envelope from `WorkstreamService#detailSurface`, protected WorkstreamEndpoint surface/action APIs, backend-authored user-directory row activation via `action-display-user-detail`, inspection-only `canMutateInline=false` behavior, dedicated task-entry routing for membership status, role preview, support-access grant/revoke, identity-exception review, and access-review read, trace/correlation/audit metadata, and frontend rendering through the canonical detail/show surface path with browser-safe payloads. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/provider/fail-closed coverage included missing-bearer rejection in the protected smoke path, hidden-target/no-enumeration coverage in the User Admin conformance path, and access-review provider/runtime fail-closed evidence; trace evidence included protected read trace refs and correlation ids; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseUserAdminDashboardRuntimePath,WorkstreamServiceTest#userAdminConformancePathCoversBackendAuthoredRoutingTypedResultsAndSafePayloads test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-042: Verify or complete runtime testing for `surface-user-admin-user-detail`
 
