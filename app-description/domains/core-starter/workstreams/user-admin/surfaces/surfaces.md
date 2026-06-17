@@ -249,6 +249,59 @@ Actions include list/search (`saas_owner.admin.list` / `manage-saas-owner-admins
 
 Surface-description sufficiency review: `surface-user-admin-saas-owner-admins` is sufficiently unambiguous for developers/generators to implement and review the list/search objective without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Downstream runtime realization may still need to add or map concrete app-owner admin detail/role/lifecycle surfaces for row destinations before claiming those separate surfaces fully implemented.
 
+#### `surface-user-admin-saas-owner-admin-invitation-create` create-form contract
+
+- Surface id: `surface-user-admin-saas-owner-admin-invitation-create`.
+- Surface type: `create-form`.
+- Surface contract: `user_admin.saas_owner_admin_invitation_create.v1`.
+- Owning workstream: User Admin.
+- Owning functional agent: `user-admin-agent`.
+- Placement: child of the SaaS Owner Admin branch root, opened from `surface-user-admin-saas-owner-admins` by `action-open-saas-owner-admin-invitation-create`; return navigation uses `action-user-admin-show-saas-owner-admins` with label **Back to SaaS Owner Admins**.
+- Required context: authenticated active account, selected SaaS Owner/App Admin `AuthContext`, backend `saas_owner.admin.invite` capability, and active inviter account. Tenant Admin, Customer Admin, support-only, disabled-actor, stale selected context, missing membership, or policy-blocked attempts return `surface-user-admin-system-message` without revealing hidden app-owner population details.
+- User goal: invite another trusted SaaS Owner Admin to administer the SaaS app itself. The form is single-purpose: it validates the invitee email/display name/reason, limits role selection to app-owner-safe roles, submits an idempotent invitation request, and routes success to a lifecycle-aware invitation detail/result surface. It never changes an existing membership inline and never exposes tenant/customer application data.
+
+Frontend-safe payload for `user_admin.saas_owner_admin_invitation_create.v1`:
+
+- Envelope fields: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType: saas_owner`, `authorityBasis`, `branchRootSurfaceId`, `branchReturnActionId`, `branchReturnLabel`, `traceRefs[]`, `correlationId`, `redaction`, `boundaryNotice`, `formState`, `validationMessages`, `systemStates`, and `lastResult`.
+- `form`: `{ emailDraft?, displayNameDraft?, reasonDraft?, targetRoleOptions[], selectedTargetRole, idempotencyKeyHint, submitLabel, cancelActionId, submitActionId, disabledReason? }`. `targetRoleOptions[]` defaults to `SAAS_OWNER_ADMIN` only unless a later policy explicitly adds a browser-safe app-owner auditor/support role; no tenant, customer, billing, or provider roles are offered.
+- `policyContext`: `{ lastOwnerAdminRisk, duplicateOpenInvitePolicy, allowedEmailDomains?, maxPendingInviteCount?, approvalRequired?, traceRefs[] }` rendered as user-facing guidance rather than raw policy ids.
+- `deliveryReadiness`: `{ outboxStatus, providerStatus, retryEligible, failClosedMessage?, traceRefs[] }`; provider/outbox failures are shown as blocked or retryable states and must not fabricate delivery success.
+- `authorizedActions[]`: submit invite, validate draft, return to SaaS Owner Admins, open app-owner audit evidence, and open dashboard. Unavailable actions are omitted or represented by a safe disabled reason only when showing the reason does not reveal hidden policy/population facts.
+- `diagnosticMetadata` is role-gated and visually subordinate; default payload may include trace/evidence labels but not raw trace event ids, idempotency/correlation secrets, provider payloads, or outbox internals.
+
+Redaction and forbidden payload boundaries:
+
+- Must not expose invitation tokens/token hashes, raw WorkOS ids, raw JWT/session values, Resend/provider payloads or secrets, hidden app-owner admin identities/counts, hidden capability/role lists, tenant/customer application data, billing authority, model/provider config, raw idempotency keys, or unredacted audit evidence.
+- User-facing copy uses scoped language such as “Invite a SaaS Owner Admin” and “This person will help administer the SaaS app.” Direct denied or stale attempts use `surface-user-admin-system-message` with no-enumeration recovery.
+
+Actions and result surfaces:
+
+| Action id | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| `action-open-saas-owner-admin-invitation-create` | `saas_owner.admin.invite` / `manage-saas-owner-admins` | Open this create form with backend-authored role options, policy context, delivery readiness, branch metadata, and trace refs. |
+| `action-submit-saas-owner-admin-invitation` | `saas_owner.admin.invite` / `manage-saas-owner-admins` | Validate email/display name/reason/target role, enforce idempotency and duplicate/open-invite policy, create or reuse an app-owner invitation, enqueue delivery only when outbox/provider readiness is available, audit the attempt, then open `surface-user-admin-invitation-detail` or a dedicated app-owner invitation detail with branch context. Validation, duplicate, provider/outbox blocked, stale, approval-required, no-op, or denial results return this form with inline state or `surface-user-admin-system-message`; fake delivery success is forbidden. |
+| `action-user-admin-show-saas-owner-admins` | `saas_owner.admin.list` / `manage-saas-owner-admins` | Return to `surface-user-admin-saas-owner-admins` with safe filter/context preservation. |
+| `action-open-saas-owner-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` focused on the SaaS Owner Admin population card when authorized. |
+
+States and outcomes:
+
+- Loading: skeleton create form with selected SaaS Owner scope label and no role/options until backend authorizes them.
+- Ready: backend-authored role options, boundary notice, policy context, delivery readiness, trace/correlation, and submit/return actions are visible.
+- Draft validation-error: invalid email format, unsupported domain, missing reason when required, unsupported role, duplicate open invite, self-invite, disabled inviter, max pending invites, or last-owner-admin policy conflict are reported inline without creating or sending an invitation.
+- Submitting: preserve form input and focus while backend reauthorizes selected context, role, duplicate state, provider/outbox readiness, and idempotency.
+- Success: route to invitation detail/result with browser-safe invitation summary, delivery status, trace/correlation, and branch return metadata.
+- Duplicate/no-op: show the existing visible invitation/detail when authorized, or a safe no-enumeration system message when the duplicate target is hidden.
+- Provider/outbox blocked: return a blocked state or system message with recovery steps, trace refs, `noFakeSuccess`, and no invitation-token or provider payload exposure.
+- Forbidden/hidden-not-found/stale/conflict: return `surface-user-admin-system-message` with no app-owner population enumeration.
+- Partial-data/failure: keep draft safe for retry and show user-safe recovery without fixture/mock delivery status.
+
+Trace, audit, and tests:
+
+- Every open, draft validation, submit, duplicate/no-op, provider/outbox blocked result, denial, branch return, and audit drilldown emits or links an admin work trace with correlation id, selected `AuthContext` summary, inviter account summary, redacted target email/domain, result surface id, and delivery/outbox readiness summary.
+- Acceptance/regression coverage must verify SaaS Owner dashboard/list-to-create traversal, protected direct create-form load, successful app-owner invite submission and result routing, idempotent replay/duplicate-open-invite behavior, email/role/reason validation, outbox/provider fail-closed behavior, Tenant/Customer Admin authorization denial without enumeration, disabled/stale context denial, browser secret boundaries, trace/correlation links, keyboard form operation, focus return to list, and responsive create-form layout.
+- Surface-description sufficiency review: `surface-user-admin-saas-owner-admin-invitation-create` is sufficiently unambiguous for developers/generators to implement and review the create-form objective without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Runtime realization must still prove provider/outbox fail-closed behavior and real protected API/action paths before marking implementation/testing objectives done.
+
 ## Organization Admin surface graph
 
 ### Intent

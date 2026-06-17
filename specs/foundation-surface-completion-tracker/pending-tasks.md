@@ -1204,7 +1204,7 @@
 
 ### TASK-FSCT-034: Verify or complete app-description specification for `surface-user-admin-saas-owner-admin-invitation-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-saas-owner-admin-invitation-create`
@@ -1233,6 +1233,7 @@
   - purpose: Invitation form for another SaaS Owner Admin with role validation, idempotency, outbox boundary, and audit.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-saas-owner-admin-invitation-create` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added an implementation-ready create-form contract for the SaaS Owner Admin invitation surface, covering branch placement/return, selected SaaS Owner AuthContext and `saas_owner.admin.invite` authority, frontend-safe form/policy/delivery-readiness payload, governed open/submit/return/audit actions, validation/duplicate/no-op/provider-outbox-blocked/forbidden/stale/failure states, token/provider/outbox/hidden-population redaction boundaries, trace/audit/correlation requirements, accessibility/responsive test expectations, and a sufficiency-review statement; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-035: Verify or complete runtime implementation for `surface-user-admin-saas-owner-admin-invitation-create`
 

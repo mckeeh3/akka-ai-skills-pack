@@ -201,7 +201,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: includes `surface-user-admin-saas-owner-admin-invitation-create` identity/type/contract, owning User Admin workstream and `user-admin-agent`, SaaS Owner Admin branch placement and return metadata, selected SaaS Owner/App Admin `AuthContext` plus `saas_owner.admin.invite` authority, single-purpose invite semantics, frontend-safe envelope/form/policy-context/delivery-readiness/action payload schema, forbidden/redacted payload boundaries for invitation tokens, WorkOS/JWT/provider/outbox secrets and hidden app-owner population details, governed capability/tool action mappings for open, submit, branch return, audit, and dashboard return, validation/duplicate/no-op/provider-outbox-blocked/forbidden/stale/failure states, no-enumeration recovery through `surface-user-admin-system-message`, trace/audit/correlation requirements, accessibility/responsive and keyboard test expectations, and a sufficiency-review statement that the create-form objective is implementable without invented fields/actions/states/auth/tenant behavior/trace links/tests/visual semantics. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
