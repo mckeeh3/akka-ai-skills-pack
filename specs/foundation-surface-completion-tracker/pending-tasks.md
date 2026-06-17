@@ -3039,7 +3039,7 @@
 
 ### TASK-FSCT-086: Verify or complete runtime implementation for `surface-user-admin-organization-admin-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-085]
 - surface id: `surface-user-admin-organization-admin-detail`
@@ -3070,6 +3070,7 @@
   - purpose: Shows one Organization Admin membership/invitation.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admin-detail`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-admin-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented backend-owned `user_admin.organization_admin_detail.v1` show/inspection runtime path for visible Organization Admin membership and invitation targets. Protected WorkstreamEndpoint action path now opens dedicated `surface-user-admin-organization-admin-detail` through `action-open-organization-admin-detail` and `action-open-organization-admin-invitation-detail`; Organization Admin list rows route to these dedicated actions; direct protected surface load returns a safe missing-target recovery surface. Evidence covers SaaS Owner selected AuthContext, visible Organization/Tenant target reauthorization, `TENANT_ADMIN` membership/invitation filtering, last-admin and provider/outbox summaries, branch returns, task-entry metadata, trace/correlation refs, tenant/customer/provider/JWT/invitation-token redaction, hidden target no-enumeration, and no frontend-only/fixture-only normal runtime path. Checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationAdminsRuntimeTestCoverage+protectedWorkstreamApiExercisesUserAdminOrganizationAdminInvitationCreateRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`.
 
 ### TASK-FSCT-087: Verify or complete runtime testing for `surface-user-admin-organization-admin-detail`
 

@@ -465,6 +465,8 @@ public final class WorkstreamService {
       result = new CapabilityActionResult("accepted", "Organization Admin directory loaded for the selected visible Organization.", request.correlationId(), List.of("trace-organization-admins-" + stableSuffix(request.correlationId())), organizationAdminsSurface(actor, request.input(), request.correlationId()));
     } else if ("action-open-organization-admin-invitation-create".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Organization Admin invitation/bootstrap surface loaded.", request.correlationId(), List.of("trace-organization-admin-invite-" + stableSuffix(request.correlationId())), organizationAdminInvitationCreateSurface(actor, request.input(), request.correlationId()));
+    } else if ("action-open-organization-admin-detail".equals(request.actionId()) || "action-open-organization-admin-invitation-detail".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Organization Admin detail loaded through backend-authoritative Organization Admin surface graph.", request.correlationId(), List.of("trace-organization-admin-detail-" + stableSuffix(request.correlationId())), organizationAdminDetailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-submit-organization-admin-invitation".equals(request.actionId())) {
       var detail = readOrganizationDetail(actor, request.input(), request.correlationId());
       var requestedRoles = rolesInput(request.input());
@@ -1680,7 +1682,7 @@ public final class WorkstreamService {
             "pageInfo", mapOf("visibleCount", 0, "hasMore", false),
             "summary", "Select an Organization before listing Organization Admin users and invitations. Rows are backend-authored and never expose tenant application data.",
             "adminSummary", mapOf("visibleAdminCount", 0, "activeAdminCount", 0, "suspendedOrDisabledAdminCount", 0, "pendingInvitationCount", 0, "expiredInvitationCount", 0, "deliveryFailureCount", 0, "firstAdminBootstrapEligible", false, "lastAdminRiskCount", 0, "providerBlockedCount", 0, "outboxBlockedCount", 0, "traceRefs", List.of("trace-organization-admins-summary-" + stableSuffix(correlationId))),
-            "authorizedActions", List.of("action-user-admin-show-organization-admins", "action-open-organization-admin-invitation-create", "action-display-user-detail", "action-display-invitation-detail", "action-organization-read", "action-open-audit-trace"),
+            "authorizedActions", List.of("action-user-admin-show-organization-admins", "action-open-organization-admin-invitation-create", "action-open-organization-admin-detail", "action-open-organization-admin-invitation-detail", "action-organization-read", "action-open-audit-trace"),
             "availableTaskActions", organizationAdminListActions().stream().map(this::surfaceActionSummary).toList(),
             "systemStates", List.of("missing-target"),
             "lastResult", mapOf("status", "missing-target", "message", "Open Organization Admins from a visible Organization detail so the backend can include selected Organization scope proof.", "correlationId", correlationId),
@@ -1710,10 +1712,10 @@ public final class WorkstreamService {
             "organizationName", organization.organizationName(),
             "rowType", "organization-admin",
             "targetObjectType", "organization-admin-membership",
-            "targetSurfaceId", "surface-user-admin-user-detail",
+            "targetSurfaceId", "surface-user-admin-organization-admin-detail",
             "targetSurfaceType", "show-inspection",
-            "targetActionId", "action-display-user-detail",
-            "openActionId", "action-display-user-detail",
+            "targetActionId", "action-open-organization-admin-detail",
+            "openActionId", "action-open-organization-admin-detail",
             "displayName", user.displayName(),
             "email", user.accountId(),
             "roles", roleLabels(user.roles()),
@@ -1738,10 +1740,10 @@ public final class WorkstreamService {
             "organizationName", organization.organizationName(),
             "rowType", "organization-admin-invitation",
             "targetObjectType", "organization-admin-invitation",
-            "targetSurfaceId", "surface-user-admin-invitation-detail",
+            "targetSurfaceId", "surface-user-admin-organization-admin-detail",
             "targetSurfaceType", "show-inspection",
-            "targetActionId", "action-display-invitation-detail",
-            "openActionId", "action-display-invitation-detail",
+            "targetActionId", "action-open-organization-admin-invitation-detail",
+            "openActionId", "action-open-organization-admin-invitation-detail",
             "displayName", invitation.targetEmail(),
             "email", invitation.targetEmail(),
             "roles", roleLabels(invitation.requestedRoles()),
@@ -1794,7 +1796,7 @@ public final class WorkstreamService {
             "pageInfo", mapOf("visibleCount", rows.size(), "hasMore", false),
             "summary", "Organization Admin users and invitations visible for the selected Organization. Rows route through backend-authored actions and never expose tenant application data.",
             "adminSummary", mapOf("visibleAdminCount", adminRows.size(), "activeAdminCount", activeAdminCount, "suspendedOrDisabledAdminCount", suspendedOrDisabledAdminCount, "pendingInvitationCount", pendingInvitationCount, "expiredInvitationCount", expiredInvitationCount, "deliveryFailureCount", providerBlockedCount, "firstAdminBootstrapEligible", activeAdminCount == 0, "lastAdminRiskCount", activeAdminCount == 1 ? 1 : 0, "providerBlockedCount", providerBlockedCount, "outboxBlockedCount", providerBlockedCount, "traceRefs", traceRefs),
-            "authorizedActions", List.of("action-user-admin-show-organization-admins", "action-open-organization-admin-invitation-create", "action-display-user-detail", "action-display-invitation-detail", "action-organization-read", "action-open-audit-trace"),
+            "authorizedActions", List.of("action-user-admin-show-organization-admins", "action-open-organization-admin-invitation-create", "action-open-organization-admin-detail", "action-open-organization-admin-invitation-detail", "action-organization-read", "action-open-audit-trace"),
             "availableTaskActions", organizationAdminListActions().stream().map(this::surfaceActionSummary).toList(),
             "systemStates", List.of(rows.isEmpty() ? "empty" : "ready"),
             "lastResult", mapOf("status", rows.isEmpty() ? "empty" : "ready", "message", "Organization Admin list loaded through protected workstream runtime path with backend-owned Organization scope proof.", "correlationId", correlationId),
@@ -1807,7 +1809,7 @@ public final class WorkstreamService {
   }
 
   private List<SurfaceAction> organizationAdminListActions() {
-    return withOrganizationBranchReturn(List.of(organizationReadAction(), displayDetailAction(), displayInvitationDetailAction(), openOrganizationAdminInvitationCreateAction(), openAuditAction()));
+    return withOrganizationBranchReturn(List.of(organizationReadAction(), openOrganizationAdminDetailAction(), openOrganizationAdminInvitationDetailAction(), openOrganizationAdminInvitationCreateAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope organizationAdminInvitationCreateSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -1833,7 +1835,185 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope organizationAdminDetailSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_TENANT_READ_CAPABILITY);
-    return scopedAdminDetailSurface(actor, correlationId, "surface-user-admin-organization-admin-detail", "Organization Admin Detail", "user_admin.organization_admin_detail.v1", organizationBranchNavigation(correlationId), "Organization Admin membership/invitation inspection. Role, status, resend, revoke, and audit changes route to dedicated User Admin task surfaces.", withOrganizationBranchReturn(List.of(openMembershipStatusConfirmationAction(), previewRoleChangeAction(), openAuditAction())));
+    return envelope("surface-user-admin-organization-admin-detail", "show-inspection", "Organization Admin Detail", actor, correlationId,
+        mapOf(
+            "surfaceContract", "user_admin.organization_admin_detail.v1",
+            "scopeLabel", "SaaS Owner scope",
+            "scopeType", "saas_owner",
+            "authorityBasis", "Backend checks selected SaaS Owner AuthContext plus a visible Organization Admin membership or invitation target before returning target detail.",
+            "branchNavigation", organizationBranchNavigation(correlationId),
+            "branchRootSurfaceId", "surface-user-admin-organization-directory",
+            "branchReturnActionId", "action-user-admin-show-organizations",
+            "branchReturnLabel", "Back to organizations",
+            "adminListReturnActionId", "action-user-admin-show-organization-admins",
+            "organizationDetailReturnActionId", "action-organization-read",
+            "recordId", "missing-target",
+            "recordLabel", "Select an Organization Admin",
+            "recordKind", "organization-admin-target-missing",
+            "summary", "Select a visible Organization Admin membership or invitation from the Organization Admins list before inspecting detail. Consequential role, status, resend, revoke, and audit work opens dedicated backend-authorized task surfaces.",
+            "systemStates", List.of("missing-target"),
+            "lastResult", mapOf("status", "missing-target", "message", "Select an Organization Admin membership or invitation from a backend-authorized Organization Admins list before opening detail.", "correlationId", correlationId),
+            "fields", List.of(mapOf("fieldId", "selectedContext", "label", "Selected context", "value", actor.selectedContext().membershipId(), "editable", false, "inputType", "text")),
+            "permissionState", mapOf("canMutateInline", false, "canOpenTaskSurfaces", false, "reason", "No target was selected; detail actions require a backend-visible Organization Admin target."),
+            "traceRefs", List.of("trace-organization-admin-detail-missing-target-" + stableSuffix(correlationId)),
+            "correlationId", correlationId,
+            "redaction", List.of("hidden-organization-admin-counts-redacted", "tenant-app-data-redacted", "provider-payload-redacted", "raw-jwt-redacted", "invitation-token-redacted"),
+            "boundaryNotice", "Organization Admin detail is SaaS Owner scoped and does not expose tenant application data, customers, provider secrets, billing, support internals, hidden roles, or hidden admin counts."),
+        withOrganizationBranchReturn(List.of(openAuditAction())));
+  }
+
+  private SurfaceEnvelope organizationAdminDetailSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    if (!isActionCapabilityVisible(actor, SAAS_OWNER_ORGANIZATION_ADMIN_LIST_CAPABILITY)) throw new AuthorizationException(403, "CAPABILITY_FORBIDDEN");
+    var detail = readOrganizationDetail(actor, input, correlationId);
+    var organization = detail.organization();
+    var membershipId = stringInput(input, "membershipId", "");
+    var accountId = stringInput(input, "accountId", "");
+    var invitationId = stringInput(input, "invitationId", "");
+    if (!membershipId.isBlank() || !accountId.isBlank()) {
+      var target = userDirectoryView.list(actor, ScopeType.TENANT, organization.organizationId(), null).stream()
+          .filter(user -> user.roles().contains(FoundationRole.TENANT_ADMIN))
+          .filter(user -> Objects.equals(user.membershipId(), membershipId) || Objects.equals(user.accountId(), accountId))
+          .findFirst()
+          .orElseThrow(() -> new AuthorizationException(404, "organization-admin-target-not-found-or-forbidden"));
+      return organizationAdminMembershipDetailSurface(actor, detail, target, correlationId);
+    }
+    if (!invitationId.isBlank()) {
+      var invite = invitationView.list(actor, ScopeType.TENANT, organization.organizationId(), null).stream()
+          .filter(row -> row.requestedRoles().contains(FoundationRole.TENANT_ADMIN))
+          .filter(row -> Objects.equals(row.invitationId(), invitationId))
+          .findFirst()
+          .orElseThrow(() -> new AuthorizationException(404, "organization-admin-target-not-found-or-forbidden"));
+      return organizationAdminInvitationDetailSurface(actor, detail, invite, correlationId);
+    }
+    throw new AuthorizationException(404, "organization-admin-target-required");
+  }
+
+  private SurfaceEnvelope organizationAdminMembershipDetailSurface(AuthContextResolver.ResolvedMe actor, ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail detail, UserDirectoryView.UserDirectoryRow target, String correlationId) {
+    var organization = detail.organization();
+    var activeAdminCount = userDirectoryView.list(actor, ScopeType.TENANT, organization.organizationId(), null).stream()
+        .filter(user -> user.roles().contains(FoundationRole.TENANT_ADMIN))
+        .filter(user -> user.membershipStatus() == MembershipStatus.ACTIVE)
+        .count();
+    var lastAdminRisk = target.membershipStatus() == MembershipStatus.ACTIVE && activeAdminCount <= 1;
+    var traceRefs = Stream.concat(detail.traceRefs().stream(), Stream.of("trace-organization-admin-detail-membership-" + stableSuffix(target.membershipId()))).toList();
+    var adminTarget = mapOf(
+        "recordKind", "organization_admin_membership",
+        "adminAccountId", target.accountId(),
+        "membershipId", target.membershipId(),
+        "displayName", target.displayName(),
+        "email", target.accountId(),
+        "organizationAdminStatus", target.membershipStatus().name().toLowerCase(Locale.ROOT),
+        "roles", roleLabels(target.roles()),
+        "roleLabel", roleLabels(target.roles()),
+        "membershipStatus", target.membershipStatus().name().toLowerCase(Locale.ROOT),
+        "accountStatus", "active",
+        "lastActivitySummary", "Visible Organization Admin membership in selected Organization scope.",
+        "traceRefs", traceRefs,
+        "redactionState", "visible");
+    return envelope("surface-user-admin-organization-admin-detail", "show-inspection", "Organization Admin Detail", actor, correlationId,
+        organizationAdminDetailData(actor, detail, "organization_admin_membership", target.membershipId(), target.displayName(), adminTarget,
+            List.of(
+                mapOf("fieldId", "organization", "label", "Organization", "value", organization.organizationName(), "editable", false, "inputType", "text"),
+                mapOf("fieldId", "displayName", "label", "Name", "value", target.displayName(), "editable", false, "inputType", "text"),
+                mapOf("fieldId", "email", "label", "Email", "value", target.accountId(), "editable", false, "inputType", "email"),
+                mapOf("fieldId", "role", "label", "Role", "value", roleLabels(target.roles()), "editable", false, "inputType", "text"),
+                mapOf("fieldId", "membershipStatus", "label", "Membership status", "value", target.membershipStatus().name().toLowerCase(Locale.ROOT), "editable", false, "inputType", "text")),
+            mapOf("lastAdminRisk", lastAdminRisk, "selfActionRisk", Objects.equals(actor.account().accountId(), target.accountId()), "roleReplacementEligible", true, "lifecycleChangeEligible", !lastAdminRisk, "invitationResendEligible", false, "invitationRevokeEligible", false, "providerBlockedCount", 0, "outboxBlockedCount", 0, "approvalRequired", lastAdminRisk, "disabledReason", lastAdminRisk ? "Last active Organization Admin changes require a dedicated protected policy path and cannot mutate inline." : null, "traceRefs", traceRefs),
+            traceRefs,
+            correlationId,
+            mapOf("accountId", target.accountId(), "membershipId", target.membershipId(), "organizationId", organization.organizationId(), "tenantId", organization.organizationId()),
+            List.of("action-open-user-admin-role-change-preview", "action-open-user-admin-membership-status-confirmation", "action-user-admin-show-organization-admins", "action-organization-read", "action-open-organization-admin-audit")),
+        organizationAdminDetailActions());
+  }
+
+  private SurfaceEnvelope organizationAdminInvitationDetailSurface(AuthContextResolver.ResolvedMe actor, ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail detail, InvitationView.InvitationRow invite, String correlationId) {
+    var organization = detail.organization();
+    var traceRefs = Stream.concat(detail.traceRefs().stream(), Stream.of("trace-organization-admin-detail-invitation-" + stableSuffix(invite.invitationId()))).toList();
+    var deliveryBlocked = String.valueOf(invite.deliveryStatus()).toLowerCase(Locale.ROOT).contains("failed") || String.valueOf(invite.deliveryStatus()).toLowerCase(Locale.ROOT).contains("blocked");
+    var adminTarget = mapOf(
+        "recordKind", "organization_admin_invitation",
+        "invitationId", invite.invitationId(),
+        "displayName", invite.targetEmail(),
+        "email", invite.targetEmail(),
+        "organizationAdminStatus", invite.status().name().toLowerCase(Locale.ROOT),
+        "roles", roleLabels(invite.requestedRoles()),
+        "roleLabel", roleLabels(invite.requestedRoles()),
+        "invitationStatus", invite.status().name().toLowerCase(Locale.ROOT),
+        "deliveryStatus", invite.deliveryStatus().name().toLowerCase(Locale.ROOT),
+        "acceptedAt", invite.acceptedAt() == null ? null : invite.acceptedAt().toString(),
+        "expiresAt", invite.expiresAt() == null ? null : invite.expiresAt().toString(),
+        "traceRefs", traceRefs,
+        "redactionState", "invitation-token-redacted");
+    return envelope("surface-user-admin-organization-admin-detail", "show-inspection", "Organization Admin Invitation Detail", actor, correlationId,
+        organizationAdminDetailData(actor, detail, "organization_admin_invitation", invite.invitationId(), invite.targetEmail(), adminTarget,
+            List.of(
+                mapOf("fieldId", "organization", "label", "Organization", "value", organization.organizationName(), "editable", false, "inputType", "text"),
+                mapOf("fieldId", "email", "label", "Email", "value", invite.targetEmail(), "editable", false, "inputType", "email"),
+                mapOf("fieldId", "role", "label", "Requested role", "value", roleLabels(invite.requestedRoles()), "editable", false, "inputType", "text"),
+                mapOf("fieldId", "invitationStatus", "label", "Invitation status", "value", invite.status().name().toLowerCase(Locale.ROOT), "editable", false, "inputType", "text"),
+                mapOf("fieldId", "deliveryStatus", "label", "Delivery status", "value", invite.deliveryStatus().name().toLowerCase(Locale.ROOT), "editable", false, "inputType", "text")),
+            mapOf("lastAdminRisk", false, "selfActionRisk", false, "roleReplacementEligible", false, "lifecycleChangeEligible", false, "invitationResendEligible", invite.canResend(), "invitationRevokeEligible", invite.canRevoke(), "duplicateOpenInviteSummary", "Visible Organization Admin invitation in selected Organization scope.", "providerBlockedCount", deliveryBlocked ? 1 : 0, "outboxBlockedCount", deliveryBlocked ? 1 : 0, "approvalRequired", false, "disabledReason", deliveryBlocked ? "Provider/outbox readiness is fail-closed; no fake delivery success is shown." : null, "traceRefs", traceRefs),
+            traceRefs,
+            correlationId,
+            mapOf("invitationId", invite.invitationId(), "organizationId", organization.organizationId(), "tenantId", organization.organizationId()),
+            List.of("action-open-user-admin-invitation-resend-confirmation", "action-open-user-admin-invitation-revoke-confirmation", "action-user-admin-show-organization-admins", "action-organization-read", "action-open-organization-admin-audit")),
+        organizationAdminDetailActions());
+  }
+
+  private Map<String, Object> organizationAdminDetailData(AuthContextResolver.ResolvedMe actor, ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail detail, String recordKind, String recordId, String recordLabel, Map<String, Object> adminTarget, List<Map<String, Object>> fields, Map<String, Object> policySummary, List<String> traceRefs, String correlationId, Map<String, Object> actionContext, List<String> authorizedActions) {
+    var organization = detail.organization();
+    return mapOf(
+        "surfaceContract", "user_admin.organization_admin_detail.v1",
+        "scopeLabel", "SaaS Owner scope",
+        "scopeType", "saas_owner",
+        "authorityBasis", "Backend checked selected SaaS Owner AuthContext, visible Organization/Tenant boundary, and saas_owner.organization_admin.list before returning this Organization Admin target.",
+        "branchNavigation", organizationBranchNavigation(correlationId),
+        "branchRootSurfaceId", "surface-user-admin-organization-directory",
+        "branchReturnActionId", "action-user-admin-show-organizations",
+        "branchReturnLabel", "Back to organizations",
+        "adminListReturnActionId", "action-user-admin-show-organization-admins",
+        "organizationDetailReturnActionId", "action-organization-read",
+        "recordId", recordId,
+        "recordLabel", recordLabel,
+        "recordKind", recordKind,
+        "tenantId", organization.organizationId(),
+        "organizationId", organization.organizationId(),
+        "organizationName", organization.organizationName(),
+        "organizationStatus", organization.status(),
+        "targetScope", mapOf("scopeType", ScopeType.TENANT.name(), "tenantId", organization.organizationId(), "organizationId", organization.organizationId(), "organizationName", organization.organizationName(), "source", "backend-authored-organization-admin-detail", "traceRefs", detail.traceRefs()),
+        "adminTarget", adminTarget,
+        "policySummary", policySummary,
+        "taskEntryPoints", organizationAdminDetailTaskEntryPoints(recordKind, actionContext),
+        "actionContext", actionContext,
+        "fields", fields,
+        "permissionState", mapOf("canMutateInline", false, "canOpenTaskSurfaces", true, "reason", "Organization Admin detail is inspection-only; consequential work routes to dedicated backend-authorized task surfaces."),
+        "auditSummary", mapOf("recentEvents", List.of("OrganizationAdminDetailDisplayed"), "traceRefs", traceRefs, "redaction", "browser-safe audit excerpts only"),
+        "authorizedActions", authorizedActions,
+        "systemStates", List.of("ready"),
+        "lastResult", mapOf("status", "ready", "message", "Organization Admin detail loaded through protected workstream runtime path with backend-owned Organization scope proof.", "correlationId", correlationId),
+        "traceRefs", traceRefs,
+        "correlationId", correlationId,
+        "redaction", List.of("tenant-app-data-redacted", "customer-facts-redacted", "raw-workos-ids-redacted", "raw-jwt-redacted", "invitation-token-redacted", "provider-payload-redacted", "hidden-organization-admin-counts-redacted"),
+        "boundaryNotice", "Organization Admin detail is SaaS Owner scoped to one selected Organization/Tenant and does not expose tenant application data, customers, provider secrets, billing, support internals, hidden roles, or hidden admin counts.");
+  }
+
+  private List<Map<String, Object>> organizationAdminDetailTaskEntryPoints(String recordKind, Map<String, Object> actionContext) {
+    var common = new ArrayList<Map<String, Object>>();
+    common.add(mapOf("actionId", "action-user-admin-show-organization-admins", "label", "Back to Organization Admins", "purpose", "Return to the backend-authorized Organization Admin list.", "targetSurfaceId", "surface-user-admin-organization-admins", "enabled", true, "safeActionContext", actionContext));
+    common.add(mapOf("actionId", "action-organization-read", "label", "Back to Organization detail", "purpose", "Return to the selected Organization detail.", "targetSurfaceId", "surface-user-admin-organization-detail", "enabled", true, "safeActionContext", actionContext));
+    if ("organization_admin_membership".equals(recordKind)) {
+      common.add(mapOf("actionId", "action-open-user-admin-role-change-preview", "label", "Open role-change preview", "purpose", "Route role replacement to the dedicated role preview surface; no inline mutation occurs here.", "targetSurfaceId", "surface-user-admin-role-change-preview", "enabled", true, "safeActionContext", actionContext));
+      common.add(mapOf("actionId", "action-open-user-admin-membership-status-confirmation", "label", "Open membership lifecycle confirmation", "purpose", "Route suspend/reactivate/remove work to the dedicated lifecycle confirmation surface with last-admin protections.", "targetSurfaceId", "surface-user-admin-membership-status-confirmation", "enabled", true, "safeActionContext", actionContext));
+    } else {
+      common.add(mapOf("actionId", "action-open-user-admin-invitation-resend-confirmation", "label", "Open resend confirmation", "purpose", "Route resend work to the dedicated invitation lifecycle surface with provider/outbox fail-closed handling.", "targetSurfaceId", "surface-user-admin-invitation-resend-confirmation", "enabled", true, "safeActionContext", actionContext));
+      common.add(mapOf("actionId", "action-open-user-admin-invitation-revoke-confirmation", "label", "Open revoke confirmation", "purpose", "Route revoke work to the dedicated destructive lifecycle surface with idempotency and audit.", "targetSurfaceId", "surface-user-admin-invitation-revoke-confirmation", "enabled", true, "safeActionContext", actionContext));
+    }
+    common.add(mapOf("actionId", "action-open-organization-admin-audit", "label", "Open audit evidence", "purpose", "Open authorized Audit/Trace evidence or safe redacted recovery.", "targetSurfaceId", "surface-audit-trace-dashboard", "enabled", true, "safeActionContext", actionContext));
+    return common;
+  }
+
+  private List<SurfaceAction> organizationAdminDetailActions() {
+    return withOrganizationBranchReturn(List.of(showOrganizationAdminsAction(), organizationReadAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope customerDirectorySurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -3504,6 +3684,7 @@ public final class WorkstreamService {
       case "action-submit-saas-owner-admin-invitation" -> invitationDetailSurface(actor, null, correlationId);
       case "action-display-organization-admin", "action-user-admin-show-organizations" -> organizationAdminSurface(actor, correlationId);
       case "action-open-organization-admin-invitation-create" -> organizationAdminInvitationCreateSurface(actor, correlationId);
+      case "action-open-organization-admin-detail", "action-open-organization-admin-invitation-detail" -> organizationAdminDetailSurface(actor, correlationId);
       case "action-user-admin-show-customers" -> customerDirectorySurface(actor, correlationId);
       case "action-customer-read" -> customerDetailSurface(actor, correlationId);
       case "action-open-customer-create" -> customerCreateSurface(actor, correlationId);
@@ -3535,7 +3716,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceAction actionById(String actionId) {
-    return List.of(showDashboardAction(), showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), showProfileAction(), showSettingsAction(), showContextAction(), selectContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), showSaasOwnerAdminsAction(), openSaasOwnerAdminInvitationCreateAction(), submitSaasOwnerAdminInvitationAction(), displayOrganizationAdminAction(), showOrganizationsAction(), openOrganizationCreateAction(), openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), organizationListAction(), organizationReadAction(), organizationCreateAction(), organizationRenameAction(), organizationSuspendAction(), organizationReactivateAction(), showOrganizationAdminsAction(), openOrganizationAdminInvitationCreateAction(), organizationAdminInviteAction(), showCustomersAction(), customerReadAction(), openCustomerCreateAction(), openCustomerRenameAction(), openCustomerSuspendAction(), openCustomerReactivateAction(), customerCreateAction(), customerRenameAction(), customerSuspendAction(), customerReactivateAction(), showCustomerAdminsAction(), openCustomerAdminInvitationCreateAction(), customerAdminInviteAction(), displayListAction(), showUsersAction(), displayDetailAction(), displayInvitationDetailAction(), openInvitationCreateAction(), openUserAdminInvitationCreateAction(), openInvitationResendConfirmationAction(), openInvitationRevokeConfirmationAction(), openUserAdminInvitationRevokeConfirmationAction(), openMembershipStatusConfirmationAction(), openUserAdminMembershipStatusConfirmationAction(), confirmMembershipStatusChangeAction(), openSupportAccessGrantAction(), openUserAdminSupportAccessGrantAction(), openSupportAccessRevokeConfirmationAction(), openUserAdminSupportAccessRevokeConfirmationAction(), openIdentityExceptionReviewAction(), requestIdentityRelinkAction(), readIdentityRelinkAction(), approveIdentityRelinkAction(), denyIdentityRelinkAction(), completeIdentityRelinkAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), confirmUserAdminInvitationRevokeAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), permanentlyRemoveUserAction(), disableAccountAction(), reactivateAccountAction(), readSupportAccessAction(), validateSupportAccessGrantAction(), submitSupportAccessGrantAction(), grantSupportAccessAction(), revokeSupportAccessAction(), confirmUserAdminSupportAccessRevokeAction(), extendSupportAccessAction(), previewRoleChangeAction(), openUserAdminRoleChangePreviewAction(), reviseUserAdminRoleChangeAction(), commitUserAdminRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), submitUserAdminInvitationAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceExportRequestAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSummaryTaskBlockedAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceOutcomeNoteAction(), governanceStartImpactAnalysisAction(), governanceReadImpactAnalysisAction(), governanceCancelImpactAnalysisAction(), governanceAcceptImpactResultAction(), governanceRejectImpactResultAction(), governanceRequestImpactChangesAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentAdminDashboardAction(), displayAgentCatalogAction(), openAgentDetailAction(), activateAgentDefinitionAction(), deactivateAgentDefinitionAction(), importAgentSeedDefaultsAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), startPromptRiskReviewAction(), readPromptRiskReviewAction(), cancelPromptRiskReviewAction(), acceptPromptRiskReviewAction(), rejectPromptRiskReviewAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
+    return List.of(showDashboardAction(), showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), showProfileAction(), showSettingsAction(), showContextAction(), selectContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), openAgentAdminAction(), openGovernancePolicyAction(), showSaasOwnerAdminsAction(), openSaasOwnerAdminInvitationCreateAction(), submitSaasOwnerAdminInvitationAction(), displayOrganizationAdminAction(), showOrganizationsAction(), openOrganizationCreateAction(), openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationReactivateAction(), organizationListAction(), organizationReadAction(), organizationCreateAction(), organizationRenameAction(), organizationSuspendAction(), organizationReactivateAction(), showOrganizationAdminsAction(), openOrganizationAdminDetailAction(), openOrganizationAdminInvitationDetailAction(), openOrganizationAdminInvitationCreateAction(), organizationAdminInviteAction(), showCustomersAction(), customerReadAction(), openCustomerCreateAction(), openCustomerRenameAction(), openCustomerSuspendAction(), openCustomerReactivateAction(), customerCreateAction(), customerRenameAction(), customerSuspendAction(), customerReactivateAction(), showCustomerAdminsAction(), openCustomerAdminInvitationCreateAction(), customerAdminInviteAction(), displayListAction(), showUsersAction(), displayDetailAction(), displayInvitationDetailAction(), openInvitationCreateAction(), openUserAdminInvitationCreateAction(), openInvitationResendConfirmationAction(), openInvitationRevokeConfirmationAction(), openUserAdminInvitationRevokeConfirmationAction(), openMembershipStatusConfirmationAction(), openUserAdminMembershipStatusConfirmationAction(), confirmMembershipStatusChangeAction(), openSupportAccessGrantAction(), openUserAdminSupportAccessGrantAction(), openSupportAccessRevokeConfirmationAction(), openUserAdminSupportAccessRevokeConfirmationAction(), openIdentityExceptionReviewAction(), requestIdentityRelinkAction(), readIdentityRelinkAction(), approveIdentityRelinkAction(), denyIdentityRelinkAction(), completeIdentityRelinkAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), confirmUserAdminInvitationRevokeAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), permanentlyRemoveUserAction(), disableAccountAction(), reactivateAccountAction(), readSupportAccessAction(), validateSupportAccessGrantAction(), submitSupportAccessGrantAction(), grantSupportAccessAction(), revokeSupportAccessAction(), confirmUserAdminSupportAccessRevokeAction(), extendSupportAccessAction(), previewRoleChangeAction(), openUserAdminRoleChangePreviewAction(), reviseUserAdminRoleChangeAction(), commitUserAdminRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), submitUserAdminInvitationAction(), traceAction(), openAuditAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceExportRequestAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSummaryTaskBlockedAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceOutcomeNoteAction(), governanceStartImpactAnalysisAction(), governanceReadImpactAnalysisAction(), governanceCancelImpactAnalysisAction(), governanceAcceptImpactResultAction(), governanceRejectImpactResultAction(), governanceRequestImpactChangesAction(), simulatePolicyAction(), commitPolicyAction(), displayAgentAdminDashboardAction(), displayAgentCatalogAction(), openAgentDetailAction(), activateAgentDefinitionAction(), deactivateAgentDefinitionAction(), importAgentSeedDefaultsAction(), proposePromptDiffAction(), testPromptAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), startPromptRiskReviewAction(), readPromptRiskReviewAction(), cancelPromptRiskReviewAction(), acceptPromptRiskReviewAction(), rejectPromptRiskReviewAction(), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
   }
 
   private SurfaceEnvelope envelope(String id, String type, String title, AuthContextResolver.ResolvedMe actor, String correlationId, Map<String, Object> data, List<SurfaceAction> actions) {
@@ -3670,6 +3851,8 @@ public final class WorkstreamService {
   private SurfaceAction organizationSuspendAction() { return new SurfaceAction("action-organization-suspend", "Suspend Organization", "command", browserToolId("action-organization-suspend"), governedToolId(SAAS_OWNER_TENANT_MANAGE_CAPABILITY), SAAS_OWNER_TENANT_MANAGE_CAPABILITY, "schema.organization-admin.suspend.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-organization-detail", "inline"), new Audit("OrganizationSuspendRequested", true)); }
   private SurfaceAction organizationReactivateAction() { return new SurfaceAction("action-organization-reactivate", "Reactivate Organization", "command", browserToolId("action-organization-reactivate"), governedToolId(SAAS_OWNER_TENANT_MANAGE_CAPABILITY), SAAS_OWNER_TENANT_MANAGE_CAPABILITY, "schema.organization-admin.reactivate.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-organization-detail", "inline"), new Audit("OrganizationReactivateRequested", true)); }
   private SurfaceAction showOrganizationAdminsAction() { return new SurfaceAction("action-user-admin-show-organization-admins", "Show Organization Admins", "surface-request", "user-admin.show-organization-admins", "manage-organization-admins", SAAS_OWNER_ORGANIZATION_ADMIN_LIST_CAPABILITY, "schema.organization-admin.admins.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-admins", "inline"), new Audit("OrganizationAdminsDisplayed", true)); }
+  private SurfaceAction openOrganizationAdminDetailAction() { return new SurfaceAction("action-open-organization-admin-detail", "View Organization Admin", "read", "user-admin.open-organization-admin-detail", "manage-organization-admins", SAAS_OWNER_ORGANIZATION_ADMIN_LIST_CAPABILITY, "schema.organization-admin.detail.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-admin-detail", "inline"), new Audit("OrganizationAdminDetailDisplayed", true)); }
+  private SurfaceAction openOrganizationAdminInvitationDetailAction() { return new SurfaceAction("action-open-organization-admin-invitation-detail", "View Organization Admin invitation", "read", "user-admin.open-organization-admin-invitation-detail", "manage-organization-admins", SAAS_OWNER_ORGANIZATION_ADMIN_LIST_CAPABILITY, "schema.organization-admin.invitation-detail.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-admin-detail", "inline"), new Audit("OrganizationAdminInvitationDetailDisplayed", true)); }
   private SurfaceAction openOrganizationAdminInvitationCreateAction() { return new SurfaceAction("action-open-organization-admin-invitation-create", "Invite Organization Admin", "surface-request", "user-admin.open-organization-admin-invite", "manage-organization-admins", SAAS_OWNER_ORGANIZATION_ADMIN_INVITE_CAPABILITY, "schema.organization-admin.invitation-create.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-organization-admin-invitation-create", "inline"), new Audit("OrganizationAdminInvitationCreateDisplayed", true)); }
   private SurfaceAction organizationAdminInviteAction() { return new SurfaceAction("action-submit-organization-admin-invitation", "Create Organization Admin invitation", "command", "user-admin.invite-organization-admin", "manage-organization-admins", SAAS_OWNER_ORGANIZATION_ADMIN_INVITE_CAPABILITY, "schema.organization-admin.invitation-create.v1", true, false, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-user-admin-invitation-detail", "inline"), new Audit("OrganizationAdminInvitationRequested", true)); }
   private SurfaceAction showCustomersAction() { return new SurfaceAction("action-user-admin-show-customers", "Show customers", "surface-request", "user-admin.show-customers", "manage-customers", TENANT_CUSTOMER_LIST_CAPABILITY, "schema.customer-admin.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-customer-directory", "inline"), new Audit("CustomerDirectoryDisplayed", true)); }

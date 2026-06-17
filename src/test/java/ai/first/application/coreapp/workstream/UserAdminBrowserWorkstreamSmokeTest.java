@@ -2114,11 +2114,37 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(admins.resultSurface().toString().contains("providerBlockedCount=0"));
     assertTrue(admins.resultSurface().toString().contains("outboxBlockedCount=0"));
     assertTrue(admins.resultSurface().toString().contains("action-open-organization-admin-invitation-create"));
-    assertTrue(admins.resultSurface().toString().contains("action-display-user-detail"));
+    assertTrue(admins.resultSurface().toString().contains("action-open-organization-admin-detail"));
+    assertTrue(admins.resultSurface().toString().contains("surface-user-admin-organization-admin-detail"));
     assertTrue(admins.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-organizations"));
     assertTrue(admins.resultSurface().toString().contains("tenant-app-data-redacted"));
     assertTrue(admins.resultSurface().toString().contains("provider-payload-redacted"));
     assertBrowserSafe(admins.resultSurface());
+
+    var adminDetail = runActionAs(new CapabilityActionRequest(
+        "action-open-organization-admin-detail",
+        "user-admin.open-organization-admin-detail",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.list",
+        Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID, "membershipId", "membership-admin", "accountId", "admin@example.test"),
+        null,
+        "membership-owner",
+        admins.resultSurface().surfaceId(),
+        "corr-org-admins-detail-open"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", adminDetail.status());
+    assertEquals("surface-user-admin-organization-admin-detail", adminDetail.resultSurface().surfaceId());
+    assertEquals("show-inspection", adminDetail.resultSurface().surfaceType());
+    assertEquals("user_admin.organization_admin_detail.v1", adminDetail.resultSurface().data().get("surfaceContract"));
+    assertEquals("organization_admin_membership", adminDetail.resultSurface().data().get("recordKind"));
+    assertEquals(TENANT_ID, adminDetail.resultSurface().data().get("organizationId"));
+    assertTrue(adminDetail.resultSurface().toString().contains("adminTarget"));
+    assertTrue(adminDetail.resultSurface().toString().contains("admin@example.test"));
+    assertTrue(adminDetail.resultSurface().toString().contains("lastAdminRisk=true"));
+    assertTrue(adminDetail.resultSurface().toString().contains("action-open-user-admin-role-change-preview"));
+    assertTrue(adminDetail.resultSurface().toString().contains("action-open-user-admin-membership-status-confirmation"));
+    assertTrue(adminDetail.resultSurface().toString().contains("trace-organization-admin-detail-membership"));
+    assertTrue(adminDetail.resultSurface().toString().contains("hidden-organization-admin-counts-redacted"));
+    assertBrowserSafe(adminDetail.resultSurface());
 
     var hiddenAdmins = runActionAs(new CapabilityActionRequest(
         "action-user-admin-show-organization-admins",
@@ -2262,9 +2288,30 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(submitted.resultSurface().toString().contains("tenant-app-data-redacted"));
     assertBrowserSafe(submitted.resultSurface());
 
+    var invitationDetail = runActionAs(new CapabilityActionRequest(
+        "action-open-organization-admin-invitation-detail",
+        "user-admin.open-organization-admin-invitation-detail",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.list",
+        Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID, "invitationId", submitted.resultSurface().data().get("recordId")),
+        null,
+        "membership-owner",
+        submitted.resultSurface().surfaceId(),
+        "corr-org-admin-invite-detail-open"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", invitationDetail.status());
+    assertEquals("surface-user-admin-organization-admin-detail", invitationDetail.resultSurface().surfaceId());
+    assertEquals("user_admin.organization_admin_detail.v1", invitationDetail.resultSurface().data().get("surfaceContract"));
+    assertEquals("organization_admin_invitation", invitationDetail.resultSurface().data().get("recordKind"));
+    assertTrue(invitationDetail.resultSurface().toString().contains("runtime-org-admin@example.test"));
+    assertTrue(invitationDetail.resultSurface().toString().contains("action-open-user-admin-invitation-resend-confirmation"));
+    assertTrue(invitationDetail.resultSurface().toString().contains("action-open-user-admin-invitation-revoke-confirmation"));
+    assertTrue(invitationDetail.resultSurface().toString().contains("trace-organization-admin-detail-invitation"));
+    assertTrue(invitationDetail.resultSurface().toString().contains("invitation-token-redacted"));
+    assertBrowserSafe(invitationDetail.resultSurface());
+
     var repeatedSubmit = runActionAs(submitRequest, "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
     assertEquals("accepted", repeatedSubmit.status());
-    assertEquals(submitted.resultSurface().data().get("invitationId"), repeatedSubmit.resultSurface().data().get("invitationId"));
+    assertEquals(submitted.resultSurface().data().get("recordId"), repeatedSubmit.resultSurface().data().get("recordId"));
     assertBrowserSafe(repeatedSubmit.resultSurface());
 
     var invalidRole = runActionAs(new CapabilityActionRequest(
