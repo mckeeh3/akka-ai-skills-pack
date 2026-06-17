@@ -2983,6 +2983,30 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke(), "Customer suspend submit action path must reject missing bearer tokens.");
 
     assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-customer-reactivate-confirmation")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-reactivate-missing-bearer-direct")
+        .responseBodyAs(String.class)
+        .invoke(), "Customer reactivate confirmation surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-reactivate-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-customer-reactivate",
+            "user-admin.reactivate-customer",
+            "manage-customers",
+            "tenant.customer.reactivate",
+            Map.of("customerId", "cust-beta", "reason", "missing bearer must not reactivate", "confirmation", "REACTIVATE"),
+            "idem-customer-reactivate-missing-bearer",
+            SELECTED_CONTEXT_ID,
+            "surface-user-admin-customer-reactivate-confirmation",
+            "corr-customer-reactivate-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Customer reactivate submit action path must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-user-admin-customer-admin-detail")
         .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
         .addHeader("X-Correlation-Id", "corr-customer-admin-detail-missing-bearer-direct")
@@ -3513,6 +3537,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("user_admin.customer_reactivate_confirmation.v1", reactivateForm.resultSurface().data().get("surfaceContract"));
     assertTrue(reactivateForm.resultSurface().toString().contains("tenant.customer.reactivate"));
     assertTrue(reactivateForm.resultSurface().toString().contains("reactivationEligibility"));
+    assertTrue(reactivateForm.resultSurface().toString().contains("confirmationPhrase=REACTIVATE"));
+    assertTrue(reactivateForm.resultSurface().toString().contains("providerOrOutboxReadinessSummary=No external provider or outbox success is fabricated by Customer reactivation."));
     assertTrue(reactivateForm.resultSurface().toString().contains("Customer Admin memberships and invitations are not changed"));
     assertTrue(reactivateForm.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-reactivate")));
     assertBrowserSafe(reactivateForm.resultSurface());
@@ -3547,8 +3573,64 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("no-op", replayedCustomerReactivate.status());
     assertEquals("surface-user-admin-customer-detail", replayedCustomerReactivate.resultSurface().surfaceId());
     assertTrue(replayedCustomerReactivate.message().contains("already active"));
+    assertTrue(replayedCustomerReactivate.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-reactivate")));
     assertTrue(repository.customer(TENANT_ID, createdCustomerId).orElseThrow().active());
     assertBrowserSafe(replayedCustomerReactivate.resultSurface());
+
+    var missingIdempotencyReactivate = runAction(new CapabilityActionRequest(
+        "action-customer-reactivate",
+        "user-admin.reactivate-customer",
+        "manage-customers",
+        "tenant.customer.reactivate",
+        Map.of("customerId", createdCustomerId, "reason", "missing idempotency must fail closed", "confirmation", "REACTIVATE"),
+        null,
+        SELECTED_CONTEXT_ID,
+        reactivateForm.resultSurface().surfaceId(),
+        "corr-customer-reactivate-missing-idempotency"));
+    assertEquals("validation-error", missingIdempotencyReactivate.status());
+    assertEquals("surface-user-admin-system-message", missingIdempotencyReactivate.resultSurface().surfaceId());
+    assertTrue(missingIdempotencyReactivate.resultSurface().toString().contains("idempotency-key-required"));
+    assertTrue(missingIdempotencyReactivate.resultSurface().toString().contains("noFakeSuccess=true"));
+    assertTrue(repository.customer(TENANT_ID, createdCustomerId).orElseThrow().active());
+    assertBrowserSafe(missingIdempotencyReactivate.resultSurface());
+
+    var hiddenCustomerReactivate = runAction(new CapabilityActionRequest(
+        "action-customer-reactivate",
+        "user-admin.reactivate-customer",
+        "manage-customers",
+        "tenant.customer.reactivate",
+        Map.of("customerId", "cust-hidden", "reason", "hidden customer must not enumerate", "confirmation", "REACTIVATE"),
+        "idem-customer-reactivate-hidden-denied",
+        SELECTED_CONTEXT_ID,
+        reactivateForm.resultSurface().surfaceId(),
+        "corr-customer-reactivate-hidden-denied"));
+    assertEquals("denied", hiddenCustomerReactivate.status());
+    assertEquals("surface-user-admin-system-message", hiddenCustomerReactivate.resultSurface().surfaceId());
+    assertTrue(hiddenCustomerReactivate.resultSurface().toString().contains("target-not-found-or-forbidden"));
+    assertTrue(hiddenCustomerReactivate.resultSurface().toString().contains("noFakeSuccess=true"));
+    assertFalse(hiddenCustomerReactivate.resultSurface().toString().contains("Hidden Customer"));
+    assertFalse(hiddenCustomerReactivate.resultSurface().toString().contains("tenant-hidden"));
+    assertFalse(hiddenCustomerReactivate.resultSurface().toString().contains("hidden customer must not enumerate"));
+    assertTrue(repository.customer("tenant-hidden", "cust-hidden").orElseThrow().active());
+    assertBrowserSafe(hiddenCustomerReactivate.resultSurface());
+
+    var customerAdminReactivateDenied = runActionAs(new CapabilityActionRequest(
+        "action-customer-reactivate",
+        "user-admin.reactivate-customer",
+        "manage-customers",
+        "tenant.customer.reactivate",
+        Map.of("customerId", createdCustomerId, "reason", "customer admin must not reactivate customers", "confirmation", "REACTIVATE"),
+        "idem-customer-reactivate-customer-admin-denied",
+        "membership-customer-admin",
+        reactivateForm.resultSurface().surfaceId(),
+        "corr-customer-reactivate-customer-admin-denied"), "workos-customer-admin", "customer-admin@example.test", "Customer Admin", "membership-customer-admin");
+    assertEquals("denied", customerAdminReactivateDenied.status());
+    assertEquals("surface-user-admin-system-message", customerAdminReactivateDenied.resultSurface().surfaceId());
+    assertTrue(customerAdminReactivateDenied.resultSurface().toString().contains("scope-forbidden"));
+    assertTrue(customerAdminReactivateDenied.resultSurface().toString().contains("noFakeSuccess=true"));
+    assertFalse(customerAdminReactivateDenied.resultSurface().toString().contains("customer admin must not reactivate customers"));
+    assertTrue(repository.customer(TENANT_ID, createdCustomerId).orElseThrow().active());
+    assertBrowserSafe(customerAdminReactivateDenied.resultSurface());
 
     var hiddenCustomerSuspend = runAction(new CapabilityActionRequest(
         "action-customer-suspend",

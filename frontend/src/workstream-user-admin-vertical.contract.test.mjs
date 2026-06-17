@@ -318,6 +318,10 @@ test('User Admin scoped admin surfaces cover SaaS Owner, Organization Admin, Cus
   assert.match(userAdminScopedAdminSurface, /function CustomerTaskForm/);
   assert.match(userAdminScopedAdminSurface, /action-submit-customer-create/);
   assert.match(userAdminScopedAdminSurface, /action-customer-create/);
+  assert.match(userAdminScopedAdminSurface, /action-customer-reactivate/);
+  assert.match(userAdminScopedAdminSurface, /isReactivate \|\| envelope\.data\.confirmationRequired/);
+  assert.match(userAdminScopedAdminSurface, /Type a confirmation before continuing/);
+  assert.match(userAdminScopedAdminSurface, /idempotencyKey\(actionId, customerName \|\| envelope\.surfaceId\)/);
   assert.match(userAdminScopedAdminSurface, /function ScopedInspection/);
   assert.match(userAdminScopedAdminSurface, /function ScopedDirectory/);
   assert.match(userAdminScopedAdminSurface, /BranchReturn/);
