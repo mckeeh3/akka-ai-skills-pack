@@ -3074,7 +3074,7 @@
 
 ### TASK-FSCT-087: Verify or complete runtime testing for `surface-user-admin-organization-admin-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-086]
 - surface id: `surface-user-admin-organization-admin-detail`
@@ -3101,13 +3101,14 @@
   - focused frontend tests/typecheck when frontend is in scope
   - manual/API/browser smoke evidence or explicit blocker
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence
 - notes:
   - surface type: `show-inspection`
   - surface contract: `user_admin.organization_admin_detail.v1`
   - purpose: Shows one Organization Admin membership/invitation.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admin-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted `UserAdminBrowserWorkstreamSmokeTest` coverage for Organization Admin detail missing-bearer direct/action rejection, backend-owned missing-target recovery, SaaS Owner dashboard -> Organization Directory -> Organization Detail -> Organization Admins -> membership detail traversal, hidden membership no-enumeration denial, invitation-create -> Organization Admin invitation detail traversal, task entry point/branch return evidence, last-admin and provider/outbox fail-closed summaries, trace/correlation, idempotent duplicate invitation, unsupported-role validation, Tenant Admin denial, and browser-safe tenant/customer/provider/JWT/invitation-token boundaries. Runtime evidence: readiness level `runtime-ready` for the Organization Admin detail testing scope through the protected Akka-hosted API/action smoke path. Tracker updated. Checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationAdminsRuntimeTestCoverage+protectedWorkstreamApiExercisesUserAdminOrganizationAdminInvitationCreateRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-088: Verify or complete app-description specification for `surface-user-admin-organization-create`
 

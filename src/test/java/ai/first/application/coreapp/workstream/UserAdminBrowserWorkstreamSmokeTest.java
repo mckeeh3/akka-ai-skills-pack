@@ -2039,6 +2039,41 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .responseBodyAs(String.class)
         .invoke(), "Organization Admins action path must reject missing bearer tokens.");
 
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-organization-admin-detail")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-admin-detail-missing-bearer-direct")
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Admin detail surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-admin-detail-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-open-organization-admin-detail",
+            "user-admin.open-organization-admin-detail",
+            "manage-organization-admins",
+            "saas_owner.organization_admin.list",
+            Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID, "membershipId", "membership-admin", "accountId", "admin@example.test"),
+            null,
+            "membership-owner",
+            "surface-user-admin-organization-admins",
+            "corr-org-admin-detail-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Admin detail action path must reject missing bearer tokens.");
+
+    var directDetailMissingTarget = getSurfaceAs("surface-user-admin-organization-admin-detail", "corr-org-admin-detail-direct-missing-target", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-organization-admin-detail", directDetailMissingTarget.surfaceId());
+    assertEquals("show-inspection", directDetailMissingTarget.surfaceType());
+    assertEquals("user_admin.organization_admin_detail.v1", directDetailMissingTarget.data().get("surfaceContract"));
+    assertEquals("corr-org-admin-detail-direct-missing-target", directDetailMissingTarget.correlationId());
+    assertTrue(directDetailMissingTarget.toString().contains("missing-target"));
+    assertTrue(directDetailMissingTarget.toString().contains("Select an Organization Admin membership or invitation"));
+    assertTrue(directDetailMissingTarget.toString().contains("trace-organization-admin-detail-missing-target"));
+    assertTrue(directDetailMissingTarget.toString().contains("hidden-organization-admin-counts-redacted"));
+    assertBrowserSafe(directDetailMissingTarget);
+
     var directMissingTarget = getSurfaceAs("surface-user-admin-organization-admins", "corr-org-admins-direct-missing-target", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
     assertEquals("surface-user-admin-organization-admins", directMissingTarget.surfaceId());
     assertEquals("list-search", directMissingTarget.surfaceType());
@@ -2140,11 +2175,31 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(adminDetail.resultSurface().toString().contains("adminTarget"));
     assertTrue(adminDetail.resultSurface().toString().contains("admin@example.test"));
     assertTrue(adminDetail.resultSurface().toString().contains("lastAdminRisk=true"));
+    assertTrue(adminDetail.resultSurface().toString().contains("canMutateInline=false"));
     assertTrue(adminDetail.resultSurface().toString().contains("action-open-user-admin-role-change-preview"));
     assertTrue(adminDetail.resultSurface().toString().contains("action-open-user-admin-membership-status-confirmation"));
+    assertTrue(adminDetail.resultSurface().toString().contains("action-user-admin-show-organization-admins"));
+    assertTrue(adminDetail.resultSurface().toString().contains("action-organization-read"));
     assertTrue(adminDetail.resultSurface().toString().contains("trace-organization-admin-detail-membership"));
     assertTrue(adminDetail.resultSurface().toString().contains("hidden-organization-admin-counts-redacted"));
+    assertTrue(adminDetail.resultSurface().toString().contains("tenant-app-data-redacted"));
     assertBrowserSafe(adminDetail.resultSurface());
+
+    var hiddenAdminDetail = runActionAs(new CapabilityActionRequest(
+        "action-open-organization-admin-detail",
+        "user-admin.open-organization-admin-detail",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.list",
+        Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID, "membershipId", "missing-membership-never-seeded", "accountId", "hidden-admin@example.test"),
+        null,
+        "membership-owner",
+        admins.resultSurface().surfaceId(),
+        "corr-org-admin-detail-hidden-target"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("denied", hiddenAdminDetail.status());
+    assertEquals("surface-user-admin-system-message", hiddenAdminDetail.resultSurface().surfaceId());
+    assertFalse(hiddenAdminDetail.resultSurface().toString().contains("missing-membership-never-seeded"));
+    assertFalse(hiddenAdminDetail.resultSurface().toString().contains("hidden-admin@example.test"));
+    assertBrowserSafe(hiddenAdminDetail.resultSurface());
 
     var hiddenAdmins = runActionAs(new CapabilityActionRequest(
         "action-user-admin-show-organization-admins",
@@ -2303,10 +2358,15 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("user_admin.organization_admin_detail.v1", invitationDetail.resultSurface().data().get("surfaceContract"));
     assertEquals("organization_admin_invitation", invitationDetail.resultSurface().data().get("recordKind"));
     assertTrue(invitationDetail.resultSurface().toString().contains("runtime-org-admin@example.test"));
+    assertTrue(invitationDetail.resultSurface().toString().contains("canMutateInline=false"));
     assertTrue(invitationDetail.resultSurface().toString().contains("action-open-user-admin-invitation-resend-confirmation"));
     assertTrue(invitationDetail.resultSurface().toString().contains("action-open-user-admin-invitation-revoke-confirmation"));
+    assertTrue(invitationDetail.resultSurface().toString().contains("action-user-admin-show-organization-admins"));
+    assertTrue(invitationDetail.resultSurface().toString().contains("providerBlockedCount=0"));
+    assertTrue(invitationDetail.resultSurface().toString().contains("outboxBlockedCount=0"));
     assertTrue(invitationDetail.resultSurface().toString().contains("trace-organization-admin-detail-invitation"));
     assertTrue(invitationDetail.resultSurface().toString().contains("invitation-token-redacted"));
+    assertTrue(invitationDetail.resultSurface().toString().contains("provider-payload-redacted"));
     assertBrowserSafe(invitationDetail.resultSurface());
 
     var repeatedSubmit = runActionAs(submitRequest, "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
