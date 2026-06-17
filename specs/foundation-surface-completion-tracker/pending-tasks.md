@@ -2615,7 +2615,7 @@
 
 ### TASK-FSCT-074: Verify or complete runtime implementation for `surface-user-admin-organization-directory`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-073]
 - surface id: `surface-user-admin-organization-directory`
@@ -2639,13 +2639,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `list-search`
   - surface contract: `user_admin.organization_directory.v1`
   - purpose: SaaS Owner Organization directory.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-directory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-directory`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-directory`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: verified existing real runtime path for `surface-user-admin-organization-directory` through protected `WorkstreamEndpoint` `/api/workstream/surfaces/{surfaceId}` and `/api/workstream/actions`, `WorkstreamService#organizationDirectorySurface`/`#organizationAdminSurface`, backend `SaasOwnerOrganizationAdminService#listOrganizations`, and frontend `OrganizationAdminSurface`/`SurfaceRenderer`. runtime evidence: readiness level `api-smoked` for implementation verification with backend-owned `user_admin.organization_directory.v1` list-search envelope, SaaS Owner Admin AuthContext, Tenant Admin branch omission/direct-action denial, member deep-link no-enumeration system-message denial, trace/correlation/redaction evidence, frontend secret-boundary coverage, and no fixture-only/frontend-only normal runtime path. checks passed: `mvn -q -Dtest=WorkstreamServiceTest#saasOwnerUserAdminDashboardExposesOrganizationAdminSurface+userAdminNavigationTreeTraversesBranchesWithTraceCorrelationAndSafePayloads+tenantUserAdminOmitsOrganizationBranchAndDirectAccessIsDeniedSafely+userAdminOrganizationDeepLinkDenialUsesSafeSystemMessageForHiddenTargets test`, `npm --prefix frontend test -- --run src/workstream-organization-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`
 
 ### TASK-FSCT-075: Verify or complete runtime testing for `surface-user-admin-organization-directory`
 
