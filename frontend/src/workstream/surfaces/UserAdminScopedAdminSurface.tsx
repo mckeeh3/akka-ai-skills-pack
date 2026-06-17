@@ -191,8 +191,10 @@ function CustomerTaskForm({ envelope, onAction }: Props) {
   const isRename = envelope.data.surfaceContract === 'user_admin.customer_rename.v1';
   const isSuspend = envelope.data.surfaceContract === 'user_admin.customer_suspend_confirmation.v1';
   const isReactivate = envelope.data.surfaceContract === 'user_admin.customer_reactivate_confirmation.v1';
-  const actionId = isRename ? 'action-customer-rename' : isSuspend ? 'action-customer-suspend' : isReactivate ? 'action-customer-reactivate' : 'action-customer-create';
-  const action = envelope.actions.find((candidate) => candidate.actionId === actionId) ?? envelope.actions.find((candidate) => candidate.intent === 'command');
+  const actionId = isRename ? 'action-customer-rename' : isSuspend ? 'action-customer-suspend' : isReactivate ? 'action-customer-reactivate' : 'action-submit-customer-create';
+  const action = envelope.actions.find((candidate) => candidate.actionId === actionId)
+    ?? (!isRename && !isSuspend && !isReactivate ? envelope.actions.find((candidate) => candidate.actionId === 'action-customer-create') : undefined)
+    ?? envelope.actions.find((candidate) => candidate.intent === 'command');
   const [customerName, setCustomerName] = useState(String(envelope.data.draft?.customerName ?? envelope.data.recordLabel ?? ''));
   const [reason, setReason] = useState(String(envelope.data.draft?.reason ?? ''));
   const [confirmation, setConfirmation] = useState('');

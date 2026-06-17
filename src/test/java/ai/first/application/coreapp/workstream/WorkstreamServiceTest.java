@@ -586,8 +586,19 @@ class WorkstreamServiceTest {
 
   @Test
   void tenantCustomerBranchUsesDurableCustomerLifecycleState() {
+    var createForm = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-customer-create", "user-admin.open-customer-create", "manage-customers", "tenant.customer.create", null, null, "membership-admin", "surface-user-admin-customer-directory", "corr-customer-create-open"));
+    assertEquals("accepted", createForm.status());
+    assertEquals("surface-user-admin-customer-create", createForm.resultSurface().surfaceId());
+    assertEquals("user_admin.customer_create.v1", createForm.resultSurface().data().get("surfaceContract"));
+    assertTrue(createForm.resultSurface().toString().contains("action-submit-customer-create"));
+    assertTrue(createForm.resultSurface().toString().contains("tenant.customer.create"));
+    assertTrue(createForm.resultSurface().toString().contains("validationPolicy"));
+    assertTrue(createForm.resultSurface().toString().contains("creationBoundary"));
+    assertTrue(createForm.resultSurface().toString().contains("tenant-app-data-redacted"));
+
     var create = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-customer-create", "user-admin.create-customer", "manage-customers", "tenant.customer.create", Map.of("customerName", "Acme Customer", "reason", "test-create"), "idem-customer-create", "membership-admin", "surface-user-admin-customer-create", "corr-customer-create"));
+        "action-submit-customer-create", "user-admin.create-customer", "manage-customers", "tenant.customer.create", Map.of("customerName", "Acme Customer", "reason", "test-create"), "idem-customer-create", "membership-admin", createForm.resultSurface().surfaceId(), "corr-customer-create"));
     assertEquals("accepted", create.status());
     assertEquals("surface-user-admin-customer-detail", create.resultSurface().surfaceId());
     assertTrue(create.resultSurface().toString().contains("Acme Customer"));

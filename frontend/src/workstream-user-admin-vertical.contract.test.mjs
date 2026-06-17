@@ -316,6 +316,8 @@ test('User Admin scoped admin surfaces cover SaaS Owner, Organization Admin, Cus
   assert.match(workstreamService, /ScopeType\.CUSTOMER, actor\.selectedContext\(\)\.tenantId\(\), customer\.customer\(\)\.customerId\(\)/);
   assert.match(workstreamService, /targetScopeProof/);
   assert.match(userAdminScopedAdminSurface, /function CustomerTaskForm/);
+  assert.match(userAdminScopedAdminSurface, /action-submit-customer-create/);
+  assert.match(userAdminScopedAdminSurface, /action-customer-create/);
   assert.match(userAdminScopedAdminSurface, /function ScopedInspection/);
   assert.match(userAdminScopedAdminSurface, /function ScopedDirectory/);
   assert.match(userAdminScopedAdminSurface, /BranchReturn/);
@@ -336,6 +338,7 @@ test('Customer branch action ids are normalized between app-description and runt
     'action-user-admin-show-customers',
     'action-customer-read',
     'action-open-customer-create',
+    'action-submit-customer-create',
     'action-customer-create',
     'action-open-customer-rename',
     'action-customer-rename',

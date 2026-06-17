@@ -3075,7 +3075,10 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-user-admin-customer-create", createForm.resultSurface().surfaceId());
     assertEquals("create-form", createForm.resultSurface().surfaceType());
     assertEquals("user_admin.customer_create.v1", createForm.resultSurface().data().get("surfaceContract"));
+    assertTrue(createForm.resultSurface().toString().contains("action-submit-customer-create"));
     assertTrue(createForm.resultSurface().toString().contains("action-customer-create"));
+    assertTrue(createForm.resultSurface().toString().contains("validationPolicy"));
+    assertTrue(createForm.resultSurface().toString().contains("creationBoundary"));
     assertTrue(createForm.resultSurface().toString().contains("idempotencyKeyHint=client-generated"));
     assertBrowserSafe(createForm.resultSurface());
 
