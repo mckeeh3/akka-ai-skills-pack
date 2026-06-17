@@ -4664,7 +4664,7 @@
 
 ### TASK-FSCT-132: Verify or complete runtime testing for `surface-agent-admin-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-131]
 - surface id: `surface-agent-admin-dashboard`
@@ -4698,6 +4698,7 @@
   - purpose: Agent Admin command center.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-dashboard`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completion evidence (2026-06-17): added `src/test/java/ai/first/application/coreapp/workstream/AgentAdminBrowserWorkstreamSmokeTest.java`; passed `mvn -q -Dtest=ai.first.application.coreapp.workstream.AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`. Evidence covers `/ui` shell, protected dashboard/action API success and missing-bearer denials, selected tenant-admin AuthContext, member/customer-scope denials, dashboard payload/action targets, trace/correlation, provider/prompt-risk fail-closed behavior, and browser secret boundaries.
 
 ### TASK-FSCT-133: Verify or complete app-description specification for `surface-agent-admin-catalog`
 
