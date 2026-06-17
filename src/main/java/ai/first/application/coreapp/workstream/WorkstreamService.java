@@ -3761,7 +3761,7 @@ public final class WorkstreamService {
     return switch (actionId) {
       case "action-submit-organization-create", "action-organization-create" -> service.createOrganization(actor, stringInput(input, "organizationName", ""), idempotencyKey, stringInput(input, "reason", "organization-created"), correlationId);
       case "action-submit-organization-rename", "action-organization-rename" -> service.renameOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), stringInput(input, "organizationName", ""), idempotencyKey, stringInput(input, "reason", "organization-renamed"), correlationId);
-      case "action-organization-suspend" -> service.suspendOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), stringInput(input, "reason", "organization-suspended"), stringInput(input, "confirmationPhrase", stringInput(input, "confirmation", "")), idempotencyKey, correlationId);
+      case "action-organization-suspend" -> service.suspendOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), rawStringInput(input, "reason", ""), stringInput(input, "confirmationPhrase", stringInput(input, "confirmation", "")), idempotencyKey, correlationId);
       case "action-organization-reactivate" -> service.reactivateOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), stringInput(input, "reason", "organization-reactivated"), idempotencyKey, correlationId);
       default -> throw new AuthorizationException(404, "target-not-found-or-forbidden");
     };
@@ -4199,6 +4199,7 @@ public final class WorkstreamService {
   }
 
   private static String stringInput(Object input, String key, String fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof String value && !value.isBlank()) return value; return fallback; }
+  private static String rawStringInput(Object input, String key, String fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof String value) return value; return fallback; }
   private static List<String> listStringInput(Object input, String key) {
     if (input instanceof Map<?, ?> map && map.get(key) instanceof List<?> values) return values.stream().filter(String.class::isInstance).map(String.class::cast).filter(value -> !value.isBlank()).toList();
     if (input instanceof Map<?, ?> map && map.get(key) instanceof String value && !value.isBlank()) return List.of(value);

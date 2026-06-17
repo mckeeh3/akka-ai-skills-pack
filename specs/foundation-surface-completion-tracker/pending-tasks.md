@@ -3392,7 +3392,7 @@
 
 ### TASK-FSCT-096: Verify or complete runtime testing for `surface-user-admin-organization-suspend-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-095]
 - surface id: `surface-user-admin-organization-suspend-confirmation`
@@ -3426,6 +3426,7 @@
   - purpose: Organization suspension confirmation surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-suspend-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-suspend-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted User Admin Organization suspend confirmation runtime smoke coverage for direct missing-target/no-fake-success state, missing-bearer direct load and submit rejection, Tenant Admin direct-load and submit denial, required reason and confirmation phrase validation, successful SaaS Owner suspension and detail result routing, stale/already-suspended safe system-message recovery, trace/correlation evidence, and browser-safe redaction/secret boundaries. Fixed the workstream action path to preserve blank browser-provided suspend reasons so backend validation returns `reason-required` instead of a default reason. Runtime evidence: readiness level `runtime-ready` for this testing scope; protected `/api/workstream/surfaces` and `/api/workstream/actions` paths exercised with SaaS Owner `membership-owner` and Tenant Admin denial; service/API lifecycle and frontend Organization Admin contract/typecheck evidence passed. Checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`; `mvn -q -Dtest=SaasOwnerOrganizationAdminServiceTest,AdminEndpointIntegrationTest#saasOwnerOrganizationAdminApiSupportsSafeLifecycleAndDenials,UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`; `npm --prefix frontend test -- --run src/workstream-organization-admin-vertical.contract.test.mjs`; `npm --prefix frontend run typecheck`; `git diff --check`. Note: an earlier focused Maven run failed because blank suspend reasons were silently defaulted; the runtime path was repaired and the focused checks then passed.
 
 ### TASK-FSCT-097: Verify or complete app-description specification for `surface-user-admin-organization-reactivate-confirmation`
 

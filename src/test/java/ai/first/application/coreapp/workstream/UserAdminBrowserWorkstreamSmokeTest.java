@@ -2090,6 +2090,92 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(suspendTask.resultSurface().toString().contains("visibleActions=[read, rename, suspend]"));
     assertBrowserSafe(suspendTask.resultSurface());
 
+    var directSuspendWithoutTarget = getSurfaceAs("surface-user-admin-organization-suspend-confirmation", "corr-org-suspend-direct-missing-target", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-organization-suspend-confirmation", directSuspendWithoutTarget.surfaceId());
+    assertEquals("destructive-lifecycle-confirmation", directSuspendWithoutTarget.surfaceType());
+    assertEquals("user_admin.organization_suspend_confirmation.v1", directSuspendWithoutTarget.data().get("surfaceContract"));
+    assertEquals("missing-target", directSuspendWithoutTarget.data().get("formState"));
+    assertTrue(directSuspendWithoutTarget.toString().contains("noFakeSuccess=true"));
+    assertFalse(directSuspendWithoutTarget.toString().contains("tenant-hidden"));
+    assertBrowserSafe(directSuspendWithoutTarget);
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-organization-suspend-confirmation")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-suspend-missing-bearer-direct")
+        .responseBodyAs(String.class)
+        .invoke(), "Organization suspend confirmation direct load must reject missing bearer tokens.");
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-user-admin-organization-suspend-confirmation",
+        "corr-org-suspend-tenant-direct-denied",
+        "workos-admin",
+        "admin@example.test",
+        "Tenant Admin",
+        SELECTED_CONTEXT_ID),
+        "Tenant Admin selected contexts must not directly load the SaaS Owner Organization suspend confirmation.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-suspend-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-organization-suspend",
+            "action-organization-suspend",
+            "manage-organizations",
+            "saas_owner.organization.suspend",
+            Map.of("organizationId", TENANT_ID, "reason", "missing bearer must fail", "confirmationPhrase", "SUSPEND"),
+            "idem-org-suspend-missing-bearer",
+            "membership-owner",
+            suspendTask.resultSurface().surfaceId(),
+            "corr-org-suspend-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Organization suspend submit action must reject missing bearer tokens.");
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-organization-suspend",
+        "action-organization-suspend",
+        "manage-organizations",
+        "saas_owner.organization.suspend",
+        Map.of("organizationId", TENANT_ID, "reason", "tenant admin must not suspend Organizations", "confirmationPhrase", "SUSPEND"),
+        "idem-org-suspend-tenant-denied",
+        SELECTED_CONTEXT_ID,
+        suspendTask.resultSurface().surfaceId(),
+        "corr-org-suspend-tenant-denied")),
+        "Tenant Admin selected contexts must not submit SaaS Owner Organization suspension.");
+
+    var missingReason = runActionAs(new CapabilityActionRequest(
+        "action-organization-suspend",
+        "action-organization-suspend",
+        "manage-organizations",
+        "saas_owner.organization.suspend",
+        Map.of("organizationId", TENANT_ID, "reason", " ", "confirmationPhrase", "SUSPEND"),
+        "idem-org-suspend-missing-reason",
+        "membership-owner",
+        suspendTask.resultSurface().surfaceId(),
+        "corr-org-suspend-missing-reason"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("validation-error", missingReason.status());
+    assertEquals("surface-user-admin-system-message", missingReason.resultSurface().surfaceId());
+    assertTrue(missingReason.resultSurface().toString().contains("reason-required"));
+    assertFalse(missingReason.resultSurface().toString().contains("status=suspended"));
+    assertBrowserSafe(missingReason.resultSurface());
+
+    var missingConfirmation = runActionAs(new CapabilityActionRequest(
+        "action-organization-suspend",
+        "action-organization-suspend",
+        "manage-organizations",
+        "saas_owner.organization.suspend",
+        Map.of("organizationId", TENANT_ID, "reason", "protected browser smoke missing confirmation", "confirmationPhrase", ""),
+        "idem-org-suspend-missing-confirmation",
+        "membership-owner",
+        suspendTask.resultSurface().surfaceId(),
+        "corr-org-suspend-missing-confirmation"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("validation-error", missingConfirmation.status());
+    assertEquals("surface-user-admin-system-message", missingConfirmation.resultSurface().surfaceId());
+    assertTrue(missingConfirmation.resultSurface().toString().contains("confirmation-phrase-required"));
+    assertFalse(missingConfirmation.resultSurface().toString().contains("status=suspended"));
+    assertBrowserSafe(missingConfirmation.resultSurface());
+
     var suspended = runActionAs(new CapabilityActionRequest(
         "action-organization-suspend",
         "action-organization-suspend",
