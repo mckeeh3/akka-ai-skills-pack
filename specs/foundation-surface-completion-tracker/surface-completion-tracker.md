@@ -684,7 +684,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-tool-boundary-diff` for `agent_admin.tool_boundary_diff.v1` with Agent Admin/`agent-admin-agent` ownership, dashboard/detail/skill-manifest/proposal placement, browser-safe `toolBoundarySummary`, `scopeSummary`, `redactedToolBoundaryDiff`, `impactSummary`, `riskAndEvidence`, `reviewState`, `authorizedActions[]`, diagnostics, and redaction payloads; governed refresh/simulate/submit-review/approve/reject/model-refs/trace/back-to-detail actions; selected AuthContext, tenant/organization authorization, no-enumeration denial, `ToolPermissionBoundary`, fail-closed provider/runtime, audit/work trace, accessibility/responsive, mutation-boundary, and regression/security/observability test expectations. Sufficiency review says the surface is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

@@ -5126,7 +5126,7 @@
 
 ### TASK-FSCT-145: Verify or complete app-description specification for `surface-agent-tool-boundary-diff`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-tool-boundary-diff`
@@ -5155,6 +5155,7 @@
   - purpose: Tool-boundary simulation and review.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-tool-boundary-diff` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: expanded the Agent Admin tool-boundary diff app-description with identity/ownership, placement, payload schema, governed actions, AuthContext/tenant rules, trace/audit, states, accessibility/responsive, mutation-boundary, test, and sufficiency-review detail; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-146: Verify or complete runtime implementation for `surface-agent-tool-boundary-diff`
 
