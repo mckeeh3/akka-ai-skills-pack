@@ -2074,8 +2074,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var suspendTask = runActionAs(new CapabilityActionRequest(
         "action-open-organization-suspend",
         "action-open-organization-suspend",
-        "saas_owner.tenant.manage",
-        "saas_owner.tenant.manage",
+        "manage-organizations",
+        "saas_owner.organization.suspend",
         Map.of("organizationId", TENANT_ID),
         null,
         "membership-owner",
@@ -2085,15 +2085,17 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-user-admin-organization-suspend-confirmation", suspendTask.resultSurface().surfaceId());
     assertEquals("destructive-lifecycle-confirmation", suspendTask.resultSurface().surfaceType());
     assertEquals("user_admin.organization_suspend_confirmation.v1", suspendTask.resultSurface().data().get("surfaceContract"));
+    assertTrue(suspendTask.resultSurface().toString().contains("confirmationPhrase=SUSPEND"));
+    assertTrue(suspendTask.resultSurface().toString().contains("saas_owner.organization.suspend"));
     assertTrue(suspendTask.resultSurface().toString().contains("visibleActions=[read, rename, suspend]"));
     assertBrowserSafe(suspendTask.resultSurface());
 
     var suspended = runActionAs(new CapabilityActionRequest(
         "action-organization-suspend",
         "action-organization-suspend",
-        "saas_owner.tenant.manage",
-        "saas_owner.tenant.manage",
-        Map.of("organizationId", TENANT_ID, "reason", "protected browser smoke suspend"),
+        "manage-organizations",
+        "saas_owner.organization.suspend",
+        Map.of("organizationId", TENANT_ID, "reason", "protected browser smoke suspend", "confirmationPhrase", "SUSPEND"),
         "idem-org-detail-suspend",
         "membership-owner",
         suspendTask.resultSurface().surfaceId(),
@@ -2109,8 +2111,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var staleSuspend = runActionAs(new CapabilityActionRequest(
         "action-open-organization-suspend",
         "action-open-organization-suspend",
-        "saas_owner.tenant.manage",
-        "saas_owner.tenant.manage",
+        "manage-organizations",
+        "saas_owner.organization.suspend",
         Map.of("organizationId", TENANT_ID),
         null,
         "membership-owner",

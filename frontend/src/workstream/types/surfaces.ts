@@ -242,6 +242,20 @@ export type OrganizationAdminSurfaceData = {
     freshnessVersionHint?: string;
     disabledReason?: string;
   };
+  confirmation?: {
+    consequenceCopy?: string;
+    confirmationPhrase?: string;
+    confirmationRequired?: boolean;
+    reasonDraft?: string;
+    reasonRequired?: boolean;
+    submitLabel?: string;
+    submitActionId?: string;
+    cancelActionId?: string;
+    idempotencyKeyHint?: string;
+    freshnessVersionHint?: string;
+    disabledReason?: string;
+  };
+  suspensionEligibility?: Record<string, unknown>;
   validationPolicy?: Record<string, unknown>;
   creationBoundary?: Record<string, unknown>;
   changePreview?: Record<string, unknown>;

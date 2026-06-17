@@ -74,12 +74,12 @@ class SaasOwnerOrganizationAdminServiceTest {
     var renameNoOp = service.renameOrganization(saasOwner, createdId, "Acme Renamed", "rename-acme-replay", "replay", "corr-rename-replay");
     assertEquals("no-op", renameNoOp.status());
 
-    var suspended = service.suspendOrganization(saasOwner, createdId, "contract ended", "suspend-acme", "corr-suspend");
+    var suspended = service.suspendOrganization(saasOwner, createdId, "contract ended", "SUSPEND", "suspend-acme", "corr-suspend");
     assertEquals("accepted", suspended.status());
     assertEquals("suspended", suspended.organization().organization().status());
     assertFalse(repository.tenant(createdId).orElseThrow().active());
 
-    var suspendNoOp = service.suspendOrganization(saasOwner, createdId, "contract ended", "suspend-acme-replay", "corr-suspend-replay");
+    var suspendNoOp = service.suspendOrganization(saasOwner, createdId, "contract ended", "SUSPEND", "suspend-acme-replay", "corr-suspend-replay");
     assertEquals("no-op", suspendNoOp.status());
 
     var reactivated = service.reactivateOrganization(saasOwner, createdId, "contract restored", "reactivate-acme", "corr-reactivate");
@@ -119,8 +119,11 @@ class SaasOwnerOrganizationAdminServiceTest {
     var missingIdempotency = assertThrows(AuthorizationException.class, () -> service.renameOrganization(saasOwner, "tenant-1", "Tenant 1", "", "rename", "corr-missing-idem"));
     assertEquals("idempotency-key-required", missingIdempotency.reasonCode());
 
-    var missingReason = assertThrows(AuthorizationException.class, () -> service.suspendOrganization(saasOwner, "tenant-1", " ", "suspend-key", "corr-missing-reason"));
+    var missingReason = assertThrows(AuthorizationException.class, () -> service.suspendOrganization(saasOwner, "tenant-1", " ", "SUSPEND", "suspend-key", "corr-missing-reason"));
     assertEquals("reason-required", missingReason.reasonCode());
+
+    var missingConfirmation = assertThrows(AuthorizationException.class, () -> service.suspendOrganization(saasOwner, "tenant-1", "valid reason", "", "suspend-key", "corr-missing-confirmation"));
+    assertEquals("confirmation-phrase-required", missingConfirmation.reasonCode());
 
     var hidden = assertThrows(AuthorizationException.class, () -> service.readOrganization(saasOwner, "missing-tenant", "corr-hidden"));
     assertEquals("target-not-found-or-forbidden", hidden.reasonCode());

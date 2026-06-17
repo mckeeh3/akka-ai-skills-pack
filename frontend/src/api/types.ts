@@ -128,6 +128,7 @@ export type OrganizationRenameRequest = OrganizationCreateRequest;
 export type OrganizationLifecycleRequest = {
   reason: string;
   idempotencyKey: string;
+  confirmationPhrase?: string;
 };
 
 export type AdminSubjectSummary = {

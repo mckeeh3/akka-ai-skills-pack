@@ -212,23 +212,31 @@ function OrganizationRenameForm({ envelope, organization, onAction }: Props & { 
 }
 
 function OrganizationLifecycleConfirmation({ envelope, organization, actionId, title, submitLabel, consequence, onAction }: Props & { organization?: OrganizationLike; actionId: 'action-organization-suspend' | 'action-organization-reactivate'; title: string; submitLabel: string; consequence: string }) {
-  const [reason, setReason] = useState('');
+  const confirmation = envelope.data.confirmation;
+  const expectedPhrase = confirmation?.confirmationPhrase ?? (actionId === 'action-organization-suspend' ? 'SUSPEND' : undefined);
+  const submitActionId = (confirmation?.submitActionId as 'action-organization-suspend' | 'action-organization-reactivate' | undefined) ?? actionId;
+  const disabledReason = confirmation?.disabledReason;
+  const [reason, setReason] = useState(confirmation?.reasonDraft ?? '');
+  const [confirmationPhrase, setConfirmationPhrase] = useState('');
   const [validationError, setValidationError] = useState<string>();
   function submitLifecycle() {
     if (!organization?.organizationId) return setValidationError('Choose an Organization before changing lifecycle state.');
-    if (!reason.trim()) return setValidationError('Reason is required for Organization lifecycle changes.');
+    if ((confirmation?.reasonRequired ?? true) && !reason.trim()) return setValidationError('Reason is required for Organization lifecycle changes.');
+    if (expectedPhrase && confirmationPhrase.trim().toUpperCase() !== expectedPhrase.toUpperCase()) return setValidationError(`Type ${expectedPhrase} to confirm this Organization lifecycle change.`);
     setValidationError(undefined);
-    run(envelope, onAction, actionId, { organizationId: organization.organizationId, reason: reason.trim(), idempotencyKey: idempotencyKey(actionId, organization.organizationId) });
+    run(envelope, onAction, submitActionId, { organizationId: organization.organizationId, reason: reason.trim(), confirmationPhrase: confirmationPhrase.trim(), idempotencyKey: idempotencyKey(submitActionId, organization.organizationId) });
   }
   return (
     <section className="organization-admin-command-form" aria-label={title}>
       <h4>{title}</h4>
       {validationError && <p className="surface-state-inline validation-error" role="alert">{validationError}</p>}
-      <p className="surface-empty-copy">{consequence}</p>
+      <p className="surface-empty-copy">{confirmation?.consequenceCopy ?? consequence}</p>
       <dl className="organization-admin-detail"><div><dt>Organization</dt><dd>{organization?.organizationName ?? 'No Organization selected'}</dd></div><div><dt>Status</dt><dd>{organization?.status ?? 'unknown'}</dd></div></dl>
-      <label>Reason<input className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} placeholder="Required reason for audit/work trace" required /></label>
+      <label>Reason<input className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} placeholder="Required reason for audit/work trace" required={confirmation?.reasonRequired ?? true} disabled={Boolean(disabledReason)} /></label>
+      {expectedPhrase && <label>Confirmation phrase<input className="designed-control" value={confirmationPhrase} onChange={(event) => setConfirmationPhrase(event.currentTarget.value)} placeholder={`Type ${expectedPhrase} to confirm`} required disabled={Boolean(disabledReason)} /></label>}
+      {disabledReason && <p className="surface-state-inline validation-error" role="status">{disabledReason}</p>}
       <div className="organization-admin-lifecycle-actions">
-        <button className={`surface-action-link ${actionId === 'action-organization-suspend' ? 'danger' : 'secondary'}`} type="button" onClick={submitLifecycle}>{submitLabel}</button>
+        <button className={`surface-action-link ${actionId === 'action-organization-suspend' ? 'danger' : 'secondary'}`} type="button" onClick={submitLifecycle} disabled={Boolean(disabledReason)}>{confirmation?.submitLabel ?? submitLabel}</button>
         <OrganizationBranchReturn envelope={envelope} onAction={onAction} compact />
       </div>
     </section>

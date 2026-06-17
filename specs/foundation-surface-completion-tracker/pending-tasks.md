@@ -3357,7 +3357,7 @@
 
 ### TASK-FSCT-095: Verify or complete runtime implementation for `surface-user-admin-organization-suspend-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-094]
 - surface id: `surface-user-admin-organization-suspend-confirmation`
@@ -3388,6 +3388,7 @@
   - purpose: Organization suspension confirmation surface.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-suspend-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-suspend-confirmation`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-suspend-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented/verified the backend-owned Organization suspend confirmation runtime path: WorkstreamService now provides a safe missing-target direct-load state, detail-to-suspend `user_admin.organization_suspend_confirmation.v1` confirmation payload with confirmation phrase, suspension eligibility, product `saas_owner.organization.suspend` action metadata, branch/detail return actions, trace/correlation refs, and browser-safe redaction; SaasOwnerOrganizationAdminService and AdminEndpoint require idempotency, reason, and confirmation phrase before changing only the Tenant lifecycle boundary; OrganizationAdminSurface renders/submits the backend confirmation through governed `/api/workstream/actions`. Runtime evidence: readiness level `api-smoked`; SaaS Owner `membership-owner` path suspends a visible Organization, Tenant Admin/stale-suspended denial paths remain safe/no-enumeration, traces/correlation and browser-safe redaction were verified, and no fixture-only/frontend-only normal path is used. Checks passed: `mvn -q -Dtest=SaasOwnerOrganizationAdminServiceTest,UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`, `mvn -q -Dtest=AdminEndpointIntegrationTest#saasOwnerOrganizationAdminApiSupportsSafeLifecycleAndDenials test`, `npm --prefix frontend test -- --run src/workstream-organization-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`; an earlier focused Maven run failed with `CAPABILITY_FORBIDDEN` before adding the product capability alias mapping and then passed after repair.
 
 ### TASK-FSCT-096: Verify or complete runtime testing for `surface-user-admin-organization-suspend-confirmation`
 

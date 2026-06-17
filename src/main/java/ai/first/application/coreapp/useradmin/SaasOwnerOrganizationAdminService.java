@@ -99,10 +99,13 @@ public final class SaasOwnerOrganizationAdminService {
     return action("accepted", "Organization display name updated without changing Tenant isolation or support access.", updated, "rename", idempotencyKey, correlationId);
   }
 
-  public OrganizationActionResult suspendOrganization(AuthContextResolver.ResolvedMe actor, String organizationId, String reason, String idempotencyKey, String correlationId) {
+  public OrganizationActionResult suspendOrganization(AuthContextResolver.ResolvedMe actor, String organizationId, String reason, String confirmationPhrase, String idempotencyKey, String correlationId) {
     requireIdempotency(idempotencyKey);
     if (reason == null || reason.isBlank()) {
       throw new AuthorizationException(400, "reason-required");
+    }
+    if (!"SUSPEND".equalsIgnoreCase(confirmationPhrase == null ? "" : confirmationPhrase.trim())) {
+      throw new AuthorizationException(400, "confirmation-phrase-required");
     }
     requireManage(actor, "ORGANIZATION_SUSPEND", correlationId);
     var existing = findTenantOrDeny(actor, organizationId, "ORGANIZATION_SUSPEND", correlationId);

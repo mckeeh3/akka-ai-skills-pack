@@ -157,7 +157,7 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
         .POST("/api/admin/organizations/" + organizationId + "/suspend")
         .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "Owner"))
         .addHeader("X-Correlation-Id", "corr-org-suspend")
-        .withRequestBody(new OrganizationLifecycleApiRequest("contract ended", "idem-org-endpoint-suspend"))
+        .withRequestBody(new OrganizationLifecycleApiRequest("contract ended", "idem-org-endpoint-suspend", "SUSPEND"))
         .responseBodyAs(OrganizationActionApiResponse.class)
         .invoke();
     assertEquals("accepted", suspended.body().status());
@@ -168,7 +168,7 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
         .POST("/api/admin/organizations/" + organizationId + "/reactivate")
         .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "Owner"))
         .addHeader("X-Correlation-Id", "corr-org-reactivate")
-        .withRequestBody(new OrganizationLifecycleApiRequest("contract restored", "idem-org-endpoint-reactivate"))
+        .withRequestBody(new OrganizationLifecycleApiRequest("contract restored", "idem-org-endpoint-reactivate", null))
         .responseBodyAs(OrganizationActionApiResponse.class)
         .invoke();
     assertEquals("accepted", reactivated.body().status());

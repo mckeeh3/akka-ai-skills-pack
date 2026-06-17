@@ -145,7 +145,7 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      var result = StarterSecurityComponents.saasOwnerOrganizationAdminService().suspendOrganization(actor, organizationId, request == null ? null : request.reason(), stableIdempotencyKey, correlationId);
+      var result = StarterSecurityComponents.saasOwnerOrganizationAdminService().suspendOrganization(actor, organizationId, request == null ? null : request.reason(), request == null ? null : request.confirmationPhrase(), stableIdempotencyKey, correlationId);
       return HttpResponses.ok(OrganizationActionApiResponse.from(result));
     });
   }
@@ -953,7 +953,7 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   }
   public record OrganizationCreateApiRequest(String organizationName, String idempotencyKey, String reason) {}
   public record OrganizationRenameApiRequest(String organizationName, String idempotencyKey, String reason) {}
-  public record OrganizationLifecycleApiRequest(String reason, String idempotencyKey) {}
+  public record OrganizationLifecycleApiRequest(String reason, String idempotencyKey, String confirmationPhrase) {}
   private static final List<String> ORGANIZATION_REDACTIONS = List.of("tenant-app-data-redacted", "provider-secrets-redacted", "billing-authority-redacted", "support-access-internals-redacted", "hidden-counts-redacted");
   private static final List<String> ADMIN_SUBJECT_REDACTIONS = List.of("raw-provider-ids-redacted", "raw-invitation-token-redacted", "tenant-customer-data-redacted", "hidden-counts-redacted");
   private static final String CUSTOMER_BOUNDARY_NOTICE = "Customer administration is scoped to the selected Organization/Tenant; sibling-customer facts, tenant application data, provider secrets, and hidden counts are omitted.";
