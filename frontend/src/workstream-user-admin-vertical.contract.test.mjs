@@ -261,7 +261,7 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.match(workstreamService, /completeIdentityRelinkAction\(\)/);
   assert.match(workstreamService, /lifecycleStatus/);
   assert.match(workstreamService, /provider-boundary:redacted/);
-  assert.match(workstreamService, /withUserBranchReturn\(List\.of\(grantSupportAccessAction\(\), extendSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);
+  assert.match(workstreamService, /withUserBranchReturn\(List\.of\(validateSupportAccessGrantAction\(\), submitSupportAccessGrantAction\(\), grantSupportAccessAction\(\), extendSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);
   assert.match(workstreamService, /withUserBranchReturn\(List\.of\(revokeSupportAccessAction\(\), displayDetailAction\(\), openAuditAction\(\)\)\)/);
   assert.match(componentsCss, /\.user-admin-task-surface/);
   assert.match(componentsCss, /\.user-admin-task-form label/);

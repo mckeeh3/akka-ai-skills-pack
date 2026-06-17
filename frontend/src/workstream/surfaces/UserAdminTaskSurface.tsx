@@ -223,7 +223,7 @@ function MembershipStatusTask({ envelope, onAction }: Props) {
 }
 
 function SupportAccessGrantTask({ envelope, onAction }: Props) {
-  const grantAction = findAction(envelope.actions, 'action-useradmin-grant-support-access') ?? findAction(envelope.actions, 'action-useradmin-extend-support-access') ?? findAction(envelope.actions, 'action-grant-support-access') ?? findAction(envelope.actions, 'action-extend-support-access');
+  const grantAction = findAction(envelope.actions, 'action-submit-user-admin-support-access-grant') ?? findAction(envelope.actions, 'action-useradmin-grant-support-access') ?? findAction(envelope.actions, 'action-useradmin-extend-support-access') ?? findAction(envelope.actions, 'action-grant-support-access') ?? findAction(envelope.actions, 'action-extend-support-access');
   const [purpose, setPurpose] = useState('');
   const expiryOptions = userAdminExpiryOptions(envelope);
   const [expiryHours, setExpiryHours] = useState(expiryOptions[0]?.value ?? '');

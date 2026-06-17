@@ -776,6 +776,36 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void userAdminSupportAccessGrantCanonicalFormAndSubmitUseGovernedRuntimePath() {
+    var opened = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-user-admin-support-access-grant", "action-open-user-admin-support-access-grant", "USERADMIN_SUPPORT_ACCESS_GRANT", "USERADMIN_SUPPORT_ACCESS_GRANT", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", "surface-user-admin-user-detail", "corr-support-canonical-open"));
+    assertEquals("accepted", opened.status());
+    assertEquals("surface-user-admin-support-access-grant", opened.resultSurface().surfaceId());
+    assertEquals("user_admin.support_access_grant.v1", opened.resultSurface().data().get("surfaceContract"));
+    assertTrue(opened.resultSurface().toString().contains("targetSummary"));
+    assertTrue(opened.resultSurface().toString().contains("grantRequestForm"));
+    assertTrue(opened.resultSurface().toString().contains("action-submit-user-admin-support-access-grant"));
+    assertTrue(opened.resultSurface().toString().contains("action-validate-user-admin-support-access-grant"));
+    assertTrue(opened.resultSurface().toString().contains("noRoleMutation=true"));
+    assertBrowserPayloadSafe(opened.resultSurface());
+
+    var validation = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-validate-user-admin-support-access-grant", "action-validate-user-admin-support-access-grant", "USERADMIN_SUPPORT_ACCESS_GRANT", "USERADMIN_SUPPORT_ACCESS_GRANT", Map.of("accountId", "member@example.test", "membershipId", "membership-member"), null, "membership-admin", opened.resultSurface().surfaceId(), "corr-support-canonical-validation"));
+    assertEquals("validation-error", validation.status());
+    assertEquals("surface-user-admin-support-access-grant", validation.resultSurface().surfaceId());
+    assertTrue(validation.resultSurface().toString().contains("Purpose is required"));
+
+    var submitted = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-submit-user-admin-support-access-grant", "action-submit-user-admin-support-access-grant", "USERADMIN_SUPPORT_ACCESS_GRANT", "USERADMIN_SUPPORT_ACCESS_GRANT", Map.of("accountId", "member@example.test", "membershipId", "membership-member", "purpose", "customer-requested-support", "expiryHours", "2"), "idem-support-canonical-grant", "membership-admin", opened.resultSurface().surfaceId(), "corr-support-canonical-submit"));
+    assertEquals("accepted", submitted.status());
+    assertEquals("surface-user-admin-user-detail", submitted.resultSurface().surfaceId());
+    assertTrue(submitted.resultSurface().toString().contains("supportAccess=true"));
+    assertTrue(submitted.resultSurface().toString().contains("lastResult"));
+    assertTrue(submitted.resultSurface().toString().contains("Support access granted or extended"));
+    assertBrowserPayloadSafe(submitted.resultSurface());
+  }
+
+  @Test
   void userAdminMembershipStatusCanonicalConfirmMutatesThroughGovernedService() {
     var opened = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-open-user-admin-membership-status-confirmation", "action-open-user-admin-membership-status-confirmation", "USERADMIN_UPDATE_MEMBER_STATUS", "USERADMIN_UPDATE_MEMBER_STATUS", Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "suspended"), null, "membership-admin", "surface-user-admin-user-detail", "corr-status-canonical-open"));

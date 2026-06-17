@@ -2191,7 +2191,7 @@
 
 ### TASK-FSCT-062: Verify or complete runtime implementation for `surface-user-admin-support-access-grant`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-061]
 - surface id: `surface-user-admin-support-access-grant`
@@ -2215,13 +2215,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.support_access_grant.v1`
   - purpose: Support-access grant/extend form.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-support-access-grant`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-support-access-grant`; surface graph node/action edge for opening or acting on `surface-user-admin-support-access-grant`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: completed and verified the real runtime implementation for `surface-user-admin-support-access-grant`: backend-owned `user_admin.support_access_grant.v1` create-form payload with target summary, current support-access state, grant request form, purpose/expiry policy, decision evidence, canonical open/validate/submit action ids, branch return/audit actions, trace/correlation refs, no-direct-mutation flags, and browser-safe redaction; protected `/api/workstream/surfaces` and `/api/workstream/actions` route through `WorkstreamService`, `WorkstreamEndpoint`, and `UserAdminService#updateSupportAccess`; frontend `UserAdminTaskSurface` submits the canonical backend action. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/fail-closed coverage included inline validation failure/no mutation for missing purpose, idempotency-required backend path, selected-scope capability checks, trace refs, correlation ids, and raw JWT/provider/private-profile/hidden-grant/sibling-scope redaction; commands passed: `mvn -q -Dtest=WorkstreamServiceTest#userAdminSupportAccessGrantCanonicalFormAndSubmitUseGovernedRuntimePath+userAdminBackendAuthoredFormOptionsAreExposedForFrontendRendering+userAdminDedicatedUserBranchTaskSurfacesOpenWithBackendReturnMetadata test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`
 
 ### TASK-FSCT-063: Verify or complete runtime testing for `surface-user-admin-support-access-grant`
 
