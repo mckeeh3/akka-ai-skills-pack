@@ -3710,7 +3710,7 @@
 
 ### TASK-FSCT-105: Verify or complete runtime testing for `surface-user-admin-customer-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-104]
 - surface id: `surface-user-admin-customer-detail`
@@ -3744,6 +3744,7 @@
   - purpose: Lifecycle-aware Customer inspection surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted User Admin Customer Directory/Detail smoke coverage for `surface-user-admin-customer-detail`: missing-bearer rejection on `action-customer-read`, backend-authorized directory row activation to `user_admin.customer_detail.v1`, Customer detail payload/fields/status, read-only permission state and dedicated task actions, branch return, trace/correlation, browser-safe redaction, hidden cross-tenant no-enumeration denial, and Customer Admin selected-context denial. Runtime evidence: readiness level `runtime-ready` for this testing scope; checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, and `git diff --check`.
 
 ### TASK-FSCT-106: Verify or complete app-description specification for `surface-user-admin-customer-admins`
 

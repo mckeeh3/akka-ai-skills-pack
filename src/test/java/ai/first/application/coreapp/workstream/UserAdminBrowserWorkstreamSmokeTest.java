@@ -2873,6 +2873,23 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .responseBodyAs(String.class)
         .invoke(), "Customer Directory action path must reject missing bearer tokens.");
 
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-detail-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-customer-read",
+            "user-admin.read-customer",
+            "manage-customers",
+            "tenant.customer.read",
+            Map.of("customerId", "cust-alpha"),
+            null,
+            SELECTED_CONTEXT_ID,
+            "surface-user-admin-customer-directory",
+            "corr-customer-detail-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Customer Detail read action path must reject missing bearer tokens.");
+
     var direct = getSurface("surface-user-admin-customer-directory", "corr-customer-directory-direct");
     assertEquals("surface-user-admin-customer-directory", direct.surfaceId());
     assertEquals("list-search", direct.surfaceType());
@@ -2926,11 +2943,27 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-user-admin-customer-detail", detail.resultSurface().surfaceId());
     assertEquals("show-inspection", detail.resultSurface().surfaceType());
     assertEquals("user_admin.customer_detail.v1", detail.resultSurface().data().get("surfaceContract"));
+    assertEquals("corr-customer-directory-row-open", detail.resultSurface().correlationId());
     assertTrue(detail.resultSurface().toString().contains("Alpha Customer"));
+    assertTrue(detail.resultSurface().toString().contains("customerDetail={"));
+    assertTrue(detail.resultSurface().toString().contains("customerId=cust-alpha"));
+    assertTrue(detail.resultSurface().toString().contains("customerName=Alpha Customer"));
+    assertTrue(detail.resultSurface().toString().contains("status=active"));
+    assertTrue(detail.resultSurface().toString().contains("Customer lifecycle inspection"));
     assertTrue(detail.resultSurface().toString().contains("canMutateInline=false"));
+    assertTrue(detail.resultSurface().toString().contains("canOpenTaskSurfaces=true"));
     assertTrue(detail.resultSurface().toString().contains("visibleActions=[read, rename, suspend]"));
+    assertTrue(detail.resultSurface().toString().contains("action-open-customer-rename"));
+    assertTrue(detail.resultSurface().toString().contains("action-open-customer-suspend"));
+    assertTrue(detail.resultSurface().toString().contains("action-user-admin-show-customer-admins"));
+    assertTrue(detail.resultSurface().toString().contains("action-open-customer-admin-invitation-create"));
+    assertTrue(detail.resultSurface().toString().contains("action-open-audit-trace"));
     assertTrue(detail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-customers"));
+    assertTrue(detail.resultSurface().toString().contains("sibling-customers-redacted"));
+    assertTrue(detail.resultSurface().toString().contains("tenant-app-data-redacted"));
+    assertTrue(detail.resultSurface().toString().contains("provider-secrets-redacted"));
     assertTrue(detail.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-read")));
+    assertTrue(detail.resultSurface().toString().contains("trace-customer-read"));
     assertBrowserSafe(detail.resultSurface());
 
     var createForm = runAction(new CapabilityActionRequest(
@@ -3005,6 +3038,24 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(hiddenRead.resultSurface().toString().contains("Hidden Customer"));
     assertFalse(hiddenRead.resultSurface().toString().contains("tenant-hidden"));
     assertBrowserSafe(hiddenRead.resultSurface());
+
+    var customerAdminReadDenied = runActionAs(new CapabilityActionRequest(
+        "action-customer-read",
+        "user-admin.read-customer",
+        "manage-customers",
+        "tenant.customer.read",
+        Map.of("customerId", "cust-alpha"),
+        null,
+        "membership-customer-admin",
+        direct.surfaceId(),
+        "corr-customer-detail-customer-admin-denied-action"), "workos-customer-admin", "customer-admin@example.test", "Customer Admin", "membership-customer-admin");
+    assertEquals("denied", customerAdminReadDenied.status());
+    assertEquals("surface-user-admin-system-message", customerAdminReadDenied.resultSurface().surfaceId());
+    assertTrue(customerAdminReadDenied.resultSurface().toString().contains("scope-forbidden"));
+    assertFalse(customerAdminReadDenied.resultSurface().toString().contains("Beta Customer"));
+    assertFalse(customerAdminReadDenied.resultSurface().toString().contains("Hidden Customer"));
+    assertFalse(customerAdminReadDenied.resultSurface().toString().contains("tenant-hidden"));
+    assertBrowserSafe(customerAdminReadDenied.resultSurface());
 
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-user-admin-customer-directory",
