@@ -3286,7 +3286,7 @@
 
 ### TASK-FSCT-093: Verify or complete runtime testing for `surface-user-admin-organization-rename`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-092]
 - surface id: `surface-user-admin-organization-rename`
@@ -3320,6 +3320,7 @@
   - purpose: Organization display-name edit surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-rename`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-rename`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath` for the Organization rename surface: missing-bearer direct surface and submit rejection, Tenant Admin direct-load and submit denial, detail-to-rename open, visible duplicate validation fail-closed result, no-op and accepted submit, trace/correlation, no hidden-target enumeration, and browser-safe redaction/secret-boundary assertions through protected `/api/workstream/surfaces` and `/api/workstream/actions`; frontend Organization Admin contract/typecheck also passed. runtime evidence: readiness level `runtime-ready`; role/AuthContext/tenant setup covered SaaS Owner `membership-owner` and denied Tenant Admin `membership-admin`; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-organization-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`
 
 ### TASK-FSCT-094: Verify or complete app-description specification for `surface-user-admin-organization-suspend-confirmation`
 

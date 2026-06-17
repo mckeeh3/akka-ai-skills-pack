@@ -1705,6 +1705,12 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke(), "Organization Create surface must reject missing bearer tokens.");
 
     assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-organization-rename")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Rename surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
         .POST("/api/workstream/actions")
         .addHeader("X-Selected-Context-Id", "membership-owner")
         .addHeader("X-Correlation-Id", "corr-org-directory-missing-bearer-action")
@@ -1956,6 +1962,15 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(directRenameWithoutTarget.toString().contains("noFakeSuccess=true"));
     assertBrowserSafe(directRenameWithoutTarget);
 
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-user-admin-organization-rename",
+        "corr-org-rename-tenant-direct-denied",
+        "workos-admin",
+        "admin@example.test",
+        "Tenant Admin",
+        SELECTED_CONTEXT_ID),
+        "Tenant Admin selected contexts must not directly load the SaaS Owner Organization Rename form.");
+
     var renameTask = runActionAs(new CapabilityActionRequest(
         "action-open-organization-rename",
         "action-open-organization-rename",
@@ -1975,6 +1990,52 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(renameTask.resultSurface().toString().contains("action-submit-organization-rename"));
     assertTrue(renameTask.resultSurface().toString().contains("currentOrganizationName=Starter Tenant"));
     assertBrowserSafe(renameTask.resultSurface());
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-rename-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-submit-organization-rename",
+            "user-admin.submit-organization-rename",
+            "manage-organizations",
+            "saas_owner.organization.rename",
+            Map.of("organizationId", TENANT_ID, "organizationName", "Bearerless Rename", "reason", "missing bearer must fail"),
+            "idem-org-rename-missing-bearer",
+            "membership-owner",
+            renameTask.resultSurface().surfaceId(),
+            "corr-org-rename-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Rename submit action must reject missing bearer tokens.");
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-submit-organization-rename",
+        "user-admin.submit-organization-rename",
+        "manage-organizations",
+        "saas_owner.organization.rename",
+        Map.of("organizationId", TENANT_ID, "organizationName", "Tenant Admin Forbidden Rename", "reason", "tenant admin must not rename organizations"),
+        "idem-org-rename-tenant-denied",
+        SELECTED_CONTEXT_ID,
+        renameTask.resultSurface().surfaceId(),
+        "corr-org-rename-tenant-denied")),
+        "Tenant Admin selected contexts must not submit SaaS Owner Organization rename.");
+
+    var renameDuplicate = runActionAs(new CapabilityActionRequest(
+        "action-submit-organization-rename",
+        "user-admin.submit-organization-rename",
+        "manage-organizations",
+        "saas_owner.organization.rename",
+        Map.of("organizationId", TENANT_ID, "organizationName", "Acme Launch Org", "reason", "visible duplicate should fail closed"),
+        "idem-org-detail-rename-duplicate",
+        "membership-owner",
+        renameTask.resultSurface().surfaceId(),
+        "corr-org-detail-rename-duplicate"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("validation-error", renameDuplicate.status());
+    assertEquals("surface-user-admin-organization-detail", renameDuplicate.resultSurface().surfaceId());
+    assertTrue(renameDuplicate.message().contains("visible Organization already uses this name"));
+    assertTrue(renameDuplicate.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-rename")));
+    assertFalse(renameDuplicate.resultSurface().toString().contains("tenant-hidden"));
+    assertBrowserSafe(renameDuplicate.resultSurface());
 
     var renameNoOp = runActionAs(new CapabilityActionRequest(
         "action-organization-rename",
