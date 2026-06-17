@@ -2509,7 +2509,7 @@
 
 ### TASK-FSCT-071: Verify or complete runtime implementation for `surface-user-admin-identity-exception-review`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-070]
 - surface id: `surface-user-admin-identity-exception-review`
@@ -2540,6 +2540,7 @@
   - purpose: Identity-link/relink exception review and approved recovery routing.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-identity-exception-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-identity-exception-review`; surface graph node/action edge for opening or acting on `surface-user-admin-identity-exception-review`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: verified existing runtime implementation for `surface-user-admin-identity-exception-review` through protected WorkstreamEndpoint surface/action paths, `WorkstreamService#identityExceptionReviewSurface`, `UserAdminService` durable identity-relink request/read/approve/deny/complete lifecycle, `UserAdminTaskSurface` governed browser actions, selected tenant-admin AuthContext authorization, no-enumeration hidden-target handling, audit/trace/correlation, provider-boundary and JWT/WorkOS secret redaction, and no fixture-only/frontend-only normal runtime path; tracker evidence updated; checks passed: `mvn -q -Dtest=WorkstreamServiceTest#userAdminIdentityRecoverySurfaceShowsDurableLifecycleAndSafeActions test`, `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiTraverseUserAdminSurfaceGraph test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, focused `rg` evidence, and `git diff --check`
 
 ### TASK-FSCT-072: Verify or complete runtime testing for `surface-user-admin-identity-exception-review`
 
