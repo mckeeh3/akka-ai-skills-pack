@@ -1098,7 +1098,7 @@
 
 ### TASK-FSCT-031: Verify or complete app-description specification for `surface-user-admin-saas-owner-admins`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-saas-owner-admins`
@@ -1127,6 +1127,7 @@
   - purpose: SaaS Owner scoped directory for app-owner/admin users and invitations.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-saas-owner-admins` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added implementation-ready list/search contract detail for `surface-user-admin-saas-owner-admins`, covering identity/owner/placement, selected SaaS Owner AuthContext and `saas_owner.admin.list` authorization, frontend-safe envelope/summary/row/filter/action payloads, redaction/forbidden boundaries, governed action mappings, typed states, trace/audit/correlation, keyboard/responsive/test expectations, and sufficiency review; tracker evidence updated. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description.
 
 ### TASK-FSCT-032: Verify or complete runtime implementation for `surface-user-admin-saas-owner-admins`
 

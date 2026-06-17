@@ -191,11 +191,63 @@ SaaS Owner Admin user management is an app-owner surface graph inside User Admin
 | App-owner admin list/search | `surface-user-admin-saas-owner-admins` | `user_admin.saas_owner_admins.v1` | Lists/searches visible SaaS Owner Admin users and app-owner invitations. Every row/card opens a user/invitation detail through backend-authored target routing. |
 | App-owner admin invite | `surface-user-admin-saas-owner-admin-invitation-create` | `user_admin.saas_owner_admin_invitation_create.v1` | Owns invitation of another `SAAS_OWNER_ADMIN`, including role validation, idempotency, outbox/Resend boundary, last-owner-admin policy context, and success routing to detail. |
 
-Payloads must include selected SaaS Owner `AuthContext`, app-owner scope label, browser-safe account/invitation rows, role options limited to `SAAS_OWNER_ADMIN` and any explicitly safe app-owner auditor/support variants, last-owner-admin risk flags, safe actions, trace refs, correlation id, and redaction metadata. Payloads must not expose raw WorkOS/JWT/provider ids, invitation tokens, hidden app-owner counts, provider secrets, or tenant/customer application data.
+#### `surface-user-admin-saas-owner-admins` list/search contract
+
+- Surface id: `surface-user-admin-saas-owner-admins`.
+- Surface type: `list-search`.
+- Surface contract: `user_admin.saas_owner_admins.v1`.
+- Owning workstream: User Admin.
+- Owning functional agent: `user-admin-agent`.
+- Placement: first-level SaaS Owner Admin branch root opened from `surface-user-admin-dashboard` by `action-user-admin-show-saas-owner-admins`; branch descendants return through `action-user-admin-show-saas-owner-admins`.
+- Required context: authenticated active account, selected SaaS Owner/App Admin `AuthContext`, backend `saas_owner.admin.list` capability, and SaaS Owner scope visibility. Tenant Admin, Customer Admin, missing-membership, disabled-actor, support-only, or stale selected context attempts return `surface-user-admin-system-message` without revealing whether app-owner admins exist.
+- User goal: find visible SaaS Owner Admin accounts and open app-owner admin invitation records in order to inspect authority, invitation state, and safe next actions. The list is discovery-only; it never changes roles, membership status, or invitation lifecycle inline.
+
+Frontend-safe payload for `user_admin.saas_owner_admins.v1`:
+
+- Envelope fields: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType: saas_owner`, `authorityBasis`, `branchRootSurfaceId`, `branchReturnActionId`, `branchReturnLabel`, `traceRefs[]`, `correlationId`, `redaction`, `boundaryNotice`, `query`, `filters`, `sort`, `pageInfo`, `emptyMessage`, `systemStates`, and `lastResult`.
+- `summary`: `{ visibleAdminCount, visibleInvitationCount, activeAdminCount, pendingInvitationCount, expiredInvitationCount, lastOwnerAdminRiskCount?, outboxBlockedCount?, providerBlockedCount?, reviewNeededCount?, traceRefs[] }`. Counts are backend-authorized and must be omitted or redacted if they would disclose hidden app-owner population details.
+- `rows[]`: unified rows sorted by backend policy, each with `{ rowId, recordKind: admin_account|admin_membership|admin_invitation, displayName?, email?, status, roles[], invitationStatus?, deliveryStatus?, lastOwnerAdminRisk?, attentionBadges[], actionAvailability[], targetSurfaceId, targetActionId, traceRefs[], redactionState }`.
+- `filters`: backend-authored safe options for text query, status, role, invitation status, attention state, and delivery/outbox state. Filter values must never include hidden counts or unsupported roles.
+- `authorizedActions[]`: refresh/list, open invite form, open visible admin/detail row, open visible invitation detail row, open role/status task where backend exposes it, open app-owner audit evidence, and return to dashboard. Unavailable actions are omitted.
+- `diagnosticMetadata` is role-gated and visually subordinate; default rows may show trace/evidence labels but not raw trace event ids unless the actor has audit/support scope.
+
+Redaction and forbidden payload boundaries:
+
+- Must not expose raw WorkOS ids, raw JWT/session values, invitation token/token hash, Resend/provider payload or secrets, hidden app-owner admin identities/counts, tenant/customer application data, support-access internals, billing authority, model/provider config, raw correlation/idempotency keys, or hidden capability/role lists.
+- App-owner copy uses positive scoped language such as “SaaS Owner Admins visible to you” and “No SaaS Owner Admin invitations need attention.” Direct denied attempts use safe no-enumeration recovery through `surface-user-admin-system-message`.
+
+Actions and result surfaces:
+
+| Action id | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| `action-user-admin-show-saas-owner-admins` | `saas_owner.admin.list` / `manage-saas-owner-admins` | Reload this list with backend-shaped filters and branch metadata. |
+| `action-open-saas-owner-admin-invitation-create` | `saas_owner.admin.invite` / `manage-saas-owner-admins` | Open `surface-user-admin-saas-owner-admin-invitation-create`; unavailable when last-owner or policy state blocks safe invite setup. |
+| `action-open-saas-owner-admin-detail` | `saas_owner.admin.list` / `manage-saas-owner-admins` | Open the lifecycle-aware app-owner admin detail surface when implemented or map to `surface-user-admin-user-detail` with app-owner branch context; hidden/stale targets return `surface-user-admin-system-message`. |
+| `action-open-saas-owner-admin-invitation-detail` | `saas_owner.admin.list` / `manage-saas-owner-admins` | Open `surface-user-admin-invitation-detail` or a dedicated app-owner invitation detail with branch context; hidden/stale targets return `surface-user-admin-system-message`. |
+| `action-open-saas-owner-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` with focus on the SaaS Owner Admin population card. |
+
+States and outcomes:
+
+- Loading: skeleton list with selected SaaS Owner scope label only.
+- Empty: no visible app-owner admins or invitations matching filters; show safe invite action only when authorized.
+- Ready: rows and summaries are backend-derived and keyboard-operable; selecting a row opens its target surface/action.
+- Submitting/searching: preserve current filters and focus while backend reauthorizes.
+- Validation-error: invalid query/filter/sort is reported inline without running a broad search.
+- Forbidden/hidden-not-found: return `surface-user-admin-system-message` with no app-owner population enumeration.
+- Stale/conflict: refresh guidance when selected context, membership, invitation status, or list cursor changed.
+- Partial-data/failure: show safe provider/outbox/readiness messages without fake counts or fixture data.
+
+Trace, audit, and tests:
+
+- Every load, filter, row open, invite-form open, denial, stale result, and audit drilldown emits/links an admin work trace with correlation id and selected `AuthContext` summary.
+- Acceptance/regression coverage must verify dashboard-to-list traversal, list filtering and empty state, row/card activation to admin/invitation detail or mapped detail, invite-form open, SaaS Owner vs Tenant/Customer Admin authorization, hidden/stale target denial without enumeration, last-owner risk display, provider/outbox fail-closed indicators, audit/work trace/correlation links, frontend secret boundaries, keyboard row activation, focus return, and responsive list/card rendering.
+
+Payloads for the app-owner graph must include selected SaaS Owner `AuthContext`, app-owner scope label, browser-safe account/invitation rows, role options limited to `SAAS_OWNER_ADMIN` and any explicitly safe app-owner auditor/support variants, last-owner-admin risk flags, safe actions, trace refs, correlation id, and redaction metadata. Payloads must not expose raw WorkOS/JWT/provider ids, invitation tokens, hidden app-owner counts, provider secrets, or tenant/customer application data.
 
 Actions include list/search (`saas_owner.admin.list` / `manage-saas-owner-admins`), open invite (`saas_owner.admin.invite`), submit invite (`saas_owner.admin.invite`), open app-owner admin detail (`saas_owner.admin.list`), and manage app-owner admin roles/status (`saas_owner.admin.manage` through role preview or lifecycle confirmation). Denials include missing SaaS Owner context, missing capability, self-removal, last-owner-admin loss, role escalation outside app-owner-safe roles, duplicate/open invite, outbox/provider fail-closed, and hidden/not-found targets.
 
-Surface-description sufficiency review: sufficient for intent-level implementation planning, but downstream realization must add or map concrete detail/role/lifecycle surfaces for app-owner admin rows before claiming runtime completion.
+Surface-description sufficiency review: `surface-user-admin-saas-owner-admins` is sufficiently unambiguous for developers/generators to implement and review the list/search objective without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Downstream runtime realization may still need to add or map concrete app-owner admin detail/role/lifecycle surfaces for row destinations before claiming those separate surfaces fully implemented.
 
 ## Organization Admin surface graph
 

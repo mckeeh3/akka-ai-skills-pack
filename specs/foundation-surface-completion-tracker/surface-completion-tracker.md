@@ -188,7 +188,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: includes `surface-user-admin-saas-owner-admins` identity/type/contract, owning User Admin workstream and `user-admin-agent`, first-level SaaS Owner branch placement, selected SaaS Owner/App Admin `AuthContext` and `saas_owner.admin.list` authority, discovery-only purpose, frontend-safe envelope/summary/row/filter/action payload schema, forbidden/redacted payload boundaries, governed capability/tool action mappings for list/reload, invite-form open, visible admin/invitation row open, audit drilldown, and dashboard return, typed forbidden/hidden/stale/partial/failure states, no-enumeration recovery through `surface-user-admin-system-message`, trace/audit/correlation requirements, accessibility/responsive and keyboard expectations through tests, and a sufficiency-review statement that the list/search objective is implementable without invented fields/actions/states/auth/tenant behavior/trace links/tests/visual semantics. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
