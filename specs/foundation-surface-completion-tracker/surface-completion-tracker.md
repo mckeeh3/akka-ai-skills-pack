@@ -448,7 +448,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-organization-rename` edit-form contract for `user_admin.organization_rename.v1` covering owning User Admin workstream/`user-admin-agent`, Organization Directory/detail branch placement, SaaS Owner/App Admin selected `AuthContext` plus visible Organization/Tenant boundary authorization, frontend-safe edit payload/schema, rename validation policy, change preview, submit/return/audit actions, no-op/idempotent replay, visible/hidden duplicate, stale/conflict, denial/no-enumeration, tenant/customer/provider secret redaction, audit/work-trace/correlation requirements, accessibility/responsive expectations, acceptance/regression/security tests, and sufficiency review. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
