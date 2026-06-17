@@ -1343,7 +1343,7 @@
 
 ### TASK-FSCT-038: Verify or complete runtime implementation for `surface-user-admin-users`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-037]
 - surface id: `surface-user-admin-users`
@@ -1367,13 +1367,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `list-search`
   - surface contract: `user_admin.users.v1`
   - purpose: Scoped searchable directory for users/memberships.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-users`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-users`; surface graph node/action edge for opening or acting on `surface-user-admin-users`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: verified the real runtime implementation for `surface-user-admin-users`: protected WorkstreamEndpoint surface/action APIs, backend-owned `user_admin.users.v1` list-search envelope from `WorkstreamService#listSurface`, scoped `UserDirectoryView`/`InvitationView` rows, backend-authored row activation and branch-return metadata, frontend `ListSearchSurface` directory rendering/action submission, trace/correlation/redaction evidence, and no frontend-only/fixture-only normal runtime path. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/provider/fail-closed coverage included missing-bearer action denial and access-review provider/runtime fail-closed evidence in the same protected smoke path; trace evidence included `trace-surface-user-admin-users` and action correlation ids; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesTenantAdminDashboardRuntimePath,WorkstreamServiceTest#userAdminDashboardAndUsersListAreBackendDerivedAndScoped+userAdminConformancePathCoversBackendAuthoredRoutingTypedResultsAndSafePayloads test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-039: Verify or complete runtime testing for `surface-user-admin-users`
 
