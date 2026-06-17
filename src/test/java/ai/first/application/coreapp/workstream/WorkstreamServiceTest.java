@@ -1244,10 +1244,25 @@ class WorkstreamServiceTest {
     assertEquals("agent_admin.model_ref.v1", model.data().get("surfaceContract"));
     assertTrue(model.toString().contains("[REDACTED]"));
     assertEquals("agent_admin.seed_material.v1", seed.data().get("surfaceContract"));
-    assertTrue(catalog.toString().contains("action-activate-agent-definition"));
-    assertTrue(catalog.toString().contains("action-deactivate-agent-definition"));
-    assertTrue(catalog.toString().contains("action-import-agent-seed-defaults"));
-    assertTrue(catalog.toString().contains("agent.definitions.manage"));
+    assertTrue(catalog.toString().contains("catalogSummary"));
+    assertTrue(catalog.toString().contains("scopeSummary"));
+    assertTrue(catalog.toString().contains("action-agent-admin-refresh-catalog"));
+    assertTrue(catalog.toString().contains("action-agent-admin-search-catalog"));
+    assertTrue(catalog.toString().contains("action-agent-admin-reset-catalog-filters"));
+    assertTrue(catalog.toString().contains("action-agent-admin-catalog-open-trace"));
+    assertFalse(catalog.actions().stream().anyMatch(action -> action.actionId().equals("action-activate-agent-definition") || action.actionId().equals("action-deactivate-agent-definition") || action.actionId().equals("action-import-agent-seed-defaults")));
+
+    var searchCatalog = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-admin-search-catalog", "action-agent-admin-search-catalog", "agent_admin.list_definitions", "agent_admin.list_definitions", Map.of("query", "User Admin"), null, "membership-admin", "surface-agent-admin-catalog", "corr-agent-catalog-search"));
+    assertEquals("accepted", searchCatalog.status());
+    assertEquals("surface-agent-admin-catalog", searchCatalog.resultSurface().surfaceId());
+    assertTrue(searchCatalog.resultSurface().toString().contains("User Admin Agent"));
+    assertFalse(searchCatalog.resultSurface().toString().contains("tenant:tenant-2"));
+
+    var openSelectedDetail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-open-agent-detail", "action-open-agent-detail", "agent_admin.get_definition", "agent_admin.get_definition", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID), null, "membership-admin", "surface-agent-admin-catalog", "corr-agent-catalog-open-row"));
+    assertEquals("accepted", openSelectedDetail.status());
+    assertEquals(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, openSelectedDetail.resultSurface().data().get("recordId"));
     assertTrue(boundary.toString().contains("TOOL_BOUNDARY_DENIED"));
     assertTrue(seed.toString().contains("agent_admin.seed_material.v1"));
     for (var surface : List.of(catalog, detail, prompt, skill, manifest, boundary, model, seed)) {

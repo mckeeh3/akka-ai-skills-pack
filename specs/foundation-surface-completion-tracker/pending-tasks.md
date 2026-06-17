@@ -4735,7 +4735,7 @@
 
 ### TASK-FSCT-134: Verify or complete runtime implementation for `surface-agent-admin-catalog`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-133]
 - surface id: `surface-agent-admin-catalog`
@@ -4766,6 +4766,7 @@
   - purpose: Managed agent catalog.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-catalog`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-catalog`; surface graph node/action edge for opening or acting on `surface-agent-admin-catalog`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented the real runtime path for `surface-agent-admin-catalog`: backend Agent Admin catalog service now emits app-description-aligned `catalogSummary`, `scopeSummary`, backend-validated filters/search/reset state, browser-safe `agents[]`/`rows`, empty-state, redaction/diagnostics, trace/correlation evidence, and tenant-scoped visibility; `WorkstreamService` now exposes catalog refresh/search/reset/open-row/open-trace actions through protected workstream APIs, uses row `agentDefinitionId` context for detail opens, keeps lifecycle/seed mutation actions off the catalog surface, preserves provider/model fail-closed copy, and frontend catalog rendering uses the backend action ids. runtime evidence: readiness level `api-smoked`; checks passed: `mvn -q -Dtest=WorkstreamServiceTest#agentAdminCatalogDetailAndArtifactReadsAreBackendAuthoritativeAndRedacted,WorkstreamServiceTest#agentAdminCatalogIsTenantScoped test`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-135: Verify or complete runtime testing for `surface-agent-admin-catalog`
 

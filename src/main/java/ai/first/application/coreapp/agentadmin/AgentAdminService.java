@@ -15,8 +15,10 @@ import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.identity.ScopeType;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import ai.first.application.foundation.agent.AgentBehaviorRepository;
@@ -45,33 +47,65 @@ public final class AgentAdminService {
   }
 
   public Map<String, Object> catalog(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    return catalog(actor, Map.of(), correlationId);
+  }
+
+  public Map<String, Object> catalog(AuthContextResolver.ResolvedMe actor, Map<String, ?> input, String correlationId) {
     require(actor, LIST_DEFINITIONS, correlationId, "agent_admin.catalog.v1");
-    var rows = repository.agentDefinitions(actor.selectedContext().tenantId()).stream()
-        .map(agent -> mapOf(
-            "id", agent.agentDefinitionId(),
-            "displayName", agent.displayName(),
-            "status", agent.status().name().toLowerCase(),
-            "authorityLevel", agent.authorityLevel().name(),
-            "placement", agent.placement().name(),
-            "functionalAreaId", agent.functionalAreaId(),
-            "modelConfigRefId", agent.modelConfigRefId(),
-            "providerReadiness", providerReadiness(actor, agent),
-            "seedStatus", seedStatus(agent.seedProvenance()),
-            "tracePolicy", agent.traceRequirements(),
-            "traceId", traceId("definition", agent.agentDefinitionId(), correlationId)))
+    var searchText = safeFilter(input, "query", safeFilter(input, "searchText", "")).trim();
+    var lifecycleFilter = safeFilter(input, "lifecycle", "").trim().toLowerCase(Locale.ROOT);
+    var readinessFilter = safeFilter(input, "readiness", "").trim().toLowerCase(Locale.ROOT);
+    var providerFilter = safeFilter(input, "providerReadiness", "").trim().toLowerCase(Locale.ROOT);
+    var authorityFilter = safeFilter(input, "authorityTier", "").trim().toLowerCase(Locale.ROOT);
+    var allRows = repository.agentDefinitions(actor.selectedContext().tenantId()).stream()
+        .sorted(Comparator.comparing(AgentDefinition::displayName))
+        .map(agent -> catalogRow(actor, agent, correlationId))
         .toList();
+    var filteredRows = allRows.stream()
+        .filter(row -> matches(row, searchText))
+        .filter(row -> lifecycleFilter.isBlank() || lifecycleFilter.equals(String.valueOf(row.get("lifecycleState"))))
+        .filter(row -> readinessFilter.isBlank() || readinessFilter.equals(String.valueOf(row.get("readinessState"))))
+        .filter(row -> providerFilter.isBlank() || providerFilter.equals(String.valueOf(row.get("providerModelReadinessCategory"))))
+        .filter(row -> authorityFilter.isBlank() || authorityFilter.equals(String.valueOf(row.get("authorityTier")).toLowerCase(Locale.ROOT)))
+        .toList();
+    var traceId = traceId("catalog", actor.selectedContext().tenantId(), correlationId);
+    var providerSummary = providerReadinessSummary(actor);
+    var readinessCounts = counts(allRows, "readinessState");
+    var lifecycleCounts = counts(allRows, "lifecycleState");
+    var providerCounts = counts(allRows, "providerModelReadinessCategory");
+    var filters = mapOf(
+        "searchText", searchText,
+        "lifecycle", lifecycleFilter,
+        "readiness", readinessFilter,
+        "authorityTier", authorityFilter,
+        "providerReadiness", providerFilter,
+        "seedCustomization", safeFilter(input, "seedCustomization", ""),
+        "sortKey", "displayName",
+        "sortDirection", "asc",
+        "pageCursor", safeFilter(input, "pageCursor", ""),
+        "pageSize", 25,
+        "backendAuthoritative", true);
+    var emptyReason = allRows.isEmpty() ? "empty-no-agents" : filteredRows.isEmpty() ? "empty-no-filter-matches" : null;
     return mapOf(
         "surfaceContract", "agent_admin.catalog.v1",
         "surfaceContractAliases", List.of("surface.agent_admin.catalog.v1"),
-        "query", "tenant:" + actor.selectedContext().tenantId(),
-        "rows", rows,
-        "pageInfo", mapOf("totalKnownCount", rows.size()),
+        "catalogSummary", mapOf("surfaceId", "surface-agent-admin-catalog", "title", "Managed agent catalog", "type", "list-search", "contract", "agent_admin.catalog.v1", "selectedScopeLabel", scopeLabel(actor), "resultCount", filteredRows.size(), "filteredCount", filteredRows.size(), "totalVisibleCount", allRows.size(), "readinessCounts", readinessCounts, "lifecycleCounts", lifecycleCounts, "providerReadinessCounts", providerCounts, "seedCustomizationSummary", seedCustomizationSummary(allRows), "lastRefreshedAt", Instant.now().toString(), "emptyStateReason", emptyReason),
+        "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", actor.selectedContext().tenantId(), "organizationDisplayName", actor.selectedContext().tenantId(), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true),
+        "filters", filters,
+        "query", searchText.isBlank() ? "tenant:" + actor.selectedContext().tenantId() : searchText,
+        "rows", filteredRows,
+        "agents", filteredRows,
+        "emptyState", mapOf("state", emptyReason == null ? "ready" : emptyReason, "reason", emptyReason == null ? "Authorized managed agents are visible." : (allRows.isEmpty() ? "No governed AgentDefinition records are seeded for this selected scope." : "No visible managed agents match the backend-validated filters."), "recoveryActions", emptyReason == null ? List.of() : List.of("action-agent-admin-reset-catalog-filters", "action-agent-admin-refresh-catalog")),
+        "pageInfo", mapOf("totalKnownCount", allRows.size(), "visibleCount", filteredRows.size(), "pageSize", 25, "nextCursor", null),
         "capabilityIds", List.of(LIST_DEFINITIONS, GET_DEFINITION, GET_PROMPT_VERSION, GET_SKILL_VERSION, GET_REFERENCE_VERSION, GET_MANIFEST, GET_MODEL_REF, GET_TOOL_BOUNDARY, LIST_SEED_MATERIAL),
-        "providerReadiness", providerReadinessSummary(actor),
+        "providerReadiness", providerSummary,
         "seedMaterial", seedMaterial(actor, correlationId),
+        "safeRedactionSummary", mapOf("prompts", "omitted", "skills", "omitted", "references", "omitted", "providerCredentials", "omitted", "modelInternals", "omitted", "hiddenScopes", "omitted", "rawTraceEvidence", "role-gated", "privilegedPolicyDiagnostics", "role-gated"),
         "redaction", redactionMetadata(),
-        "traceLinks", List.of(traceId("catalog", actor.selectedContext().tenantId(), correlationId)),
-        "emptyCopy", "Empty when no governed AgentDefinition records are seeded.");
+        "traceLinks", List.of(traceId),
+        "diagnostics", mapOf("capabilityIds", List.of(LIST_DEFINITIONS, GET_DEFINITION), "correlationId", correlationId, "traceIds", List.of(traceId), "filterRequest", filters, "redactionProfile", "agent-admin-catalog-browser-safe"),
+        "systemStates", List.of("loading", "ready", "empty-no-agents", "empty-no-filter-matches", "submitting/searching", "forbidden", "not-found-or-redacted", "stale/reconnect", "partial-data", "provider-fail-closed", "validation-error", "no-op", "failure"),
+        "emptyCopy", "Empty when no governed AgentDefinition records are seeded or match the backend-validated filters.");
   }
 
   public Map<String, Object> definitionDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String correlationId) {
@@ -277,6 +311,44 @@ public final class AgentAdminService {
     return List.copyOf(rows);
   }
 
+  private Map<String, Object> catalogRow(AuthContextResolver.ResolvedMe actor, AgentDefinition agent, String correlationId) {
+    var provider = providerReadiness(actor, agent);
+    var lifecycle = agent.status().name().toLowerCase(Locale.ROOT);
+    var providerStatus = String.valueOf(provider.get("status"));
+    var readiness = "ready".equals(providerStatus) && agent.status() == AgentLifecycleStatus.ACTIVE ? "ready" : "blocked_provider_or_runtime";
+    var seed = seedStatus(agent.seedProvenance());
+    var customized = Boolean.TRUE.equals(seed.get("tenantCustomized"));
+    return mapOf(
+        "id", agent.agentDefinitionId(),
+        "rowType", "AgentDefinition",
+        "displayName", agent.displayName(),
+        "shortPurpose", safe(agent.description()),
+        "lifecycleState", lifecycle,
+        "status", lifecycle,
+        "readinessState", readiness,
+        "readinessSummary", readiness.equals("ready") ? "Provider/model references are active; credentials remain backend-only." : "Provider/model readiness is blocked or partial; no fake success is shown.",
+        "authorityTier", agent.authorityLevel().name(),
+        "authorityLevel", agent.authorityLevel().name(),
+        "providerModelReadinessCategory", providerStatus,
+        "providerStatus", providerStatus,
+        "promptRiskStatus", providerStatus.equals("ready") ? "review-ready" : "deferred_until_provider_runtime_configured",
+        "seedCustomizationState", customized ? "tenant-customized" : "starter-default",
+        "seedStatus", seed,
+        "attentionSummary", providerStatus.equals("ready") ? "No provider blocker surfaced for this catalog row." : "Provider/model readiness requires governed configuration before runtime claims.",
+        "lastChangedAt", agent.updatedAt() == null ? null : agent.updatedAt().toString(),
+        "lastReviewedAt", agent.updatedAt() == null ? null : agent.updatedAt().toString(),
+        "redactionNote", "Raw prompts, skills, references, provider credentials, loader-tool inputs, hidden scopes, and full traces are omitted.",
+        "openActionId", "action-open-agent-detail",
+        "targetSurfaceId", "surface-agent-admin-detail",
+        "safeActionContext", mapOf("agentDefinitionId", agent.agentDefinitionId(), "rowTraceId", traceId("definition", agent.agentDefinitionId(), correlationId)),
+        "placement", agent.placement().name(),
+        "functionalAreaId", agent.functionalAreaId(),
+        "modelConfigRefId", agent.modelConfigRefId(),
+        "providerReadiness", provider,
+        "tracePolicy", agent.traceRequirements(),
+        "traceId", traceId("definition", agent.agentDefinitionId(), correlationId));
+  }
+
   private Map<String, Object> seedRow(String kind, String id, AgentLifecycleStatus status, SeedProvenance provenance, String correlationId) {
     return mapOf("artifactKind", kind, "artifactId", id, "status", status.name().toLowerCase(), "seedStatus", seedStatus(provenance), "traceId", traceId("seed", id, correlationId));
   }
@@ -301,7 +373,38 @@ public final class AgentAdminService {
   }
 
   private Map<String, Object> redactionMetadata() {
-    return mapOf("browserSafe", true, "omittedFieldKeys", List.of("rawPromptBody", "rawSkillBody", "rawReferenceBody", "rawProviderCredential", "providerCredentialValue", "rawJwt"), "previewLimitChars", PREVIEW_CHARS);
+    return mapOf("browserSafe", true, "omittedFieldKeys", List.of("rawPromptBody", "rawSkillBody", "rawReferenceBody", "rawProviderCredential", "providerCredentialValue", "rawProviderError", "rawJwt", "hiddenTenantId", "hiddenCustomerId", "loaderToolInput", "fullTraceDocument"), "previewLimitChars", PREVIEW_CHARS);
+  }
+
+  private Map<String, Long> counts(List<Map<String, Object>> rows, String key) {
+    var counts = new LinkedHashMap<String, Long>();
+    for (var row : rows) {
+      var value = String.valueOf(row.get(key));
+      counts.put(value, counts.getOrDefault(value, 0L) + 1L);
+    }
+    return counts;
+  }
+
+  private Map<String, Object> seedCustomizationSummary(List<Map<String, Object>> rows) {
+    var customized = rows.stream().filter(row -> "tenant-customized".equals(row.get("seedCustomizationState"))).count();
+    return mapOf("tenantCustomizedCount", customized, "starterDefaultCount", rows.size() - customized, "rawSeedContentVisible", false);
+  }
+
+  private boolean matches(Map<String, Object> row, String searchText) {
+    if (searchText == null || searchText.isBlank()) return true;
+    var needle = searchText.toLowerCase(Locale.ROOT);
+    return String.valueOf(row.get("displayName")).toLowerCase(Locale.ROOT).contains(needle)
+        || String.valueOf(row.get("shortPurpose")).toLowerCase(Locale.ROOT).contains(needle)
+        || String.valueOf(row.get("functionalAreaId")).toLowerCase(Locale.ROOT).contains(needle);
+  }
+
+  private String safeFilter(Map<String, ?> input, String key, String fallback) {
+    if (input == null || !input.containsKey(key) || input.get(key) == null) return fallback;
+    return safe(String.valueOf(input.get(key)));
+  }
+
+  private String scopeLabel(AuthContextResolver.ResolvedMe actor) {
+    return actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT).replace('_', '-') + ":" + actor.selectedContext().tenantId();
   }
 
   private Map<String, Object> toolGrant(ToolPermissionBoundary.ToolGrant grant) {

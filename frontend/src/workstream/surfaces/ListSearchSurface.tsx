@@ -135,8 +135,10 @@ function seedMaterialSummary(row: ListSearchSurfaceData['rows'][number]) {
 function AgentAdminCatalogView({ envelope, onAction }: ListSearchSurfaceProps) {
   const rows = envelope.data.rows;
   const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
-  const refreshAction = actionById.get('action-display-agent-catalog');
-  const traceAction = actionById.get('action-open-agent-trace');
+  const refreshAction = actionById.get('action-agent-admin-refresh-catalog') ?? actionById.get('action-display-agent-catalog');
+  const searchAction = actionById.get('action-agent-admin-search-catalog') ?? refreshAction;
+  const resetAction = actionById.get('action-agent-admin-reset-catalog-filters');
+  const traceAction = actionById.get('action-agent-admin-catalog-open-trace') ?? actionById.get('action-open-agent-trace');
   return (
     <section className="user-admin-users-surface agent-admin-catalog-surface" aria-label="Agent Admin managed agent catalog">
       <div className="user-admin-users-header">
@@ -147,13 +149,14 @@ function AgentAdminCatalogView({ envelope, onAction }: ListSearchSurfaceProps) {
         </div>
         <div className="user-admin-users-header-actions">
           {refreshAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(refreshAction, envelope.surfaceId, safeDirectoryInput(envelope))}>Refresh catalog</button>}
+          {resetAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(resetAction, envelope.surfaceId)}>Reset filters</button>}
           {traceAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(traceAction, envelope.surfaceId)}>Open traces</button>}
         </div>
       </div>
-      <form className="surface-search-form user-admin-clean-search" role="search" onSubmit={(event) => { event.preventDefault(); const query = new FormData(event.currentTarget).get('query'); if (refreshAction) onAction?.(refreshAction, envelope.surfaceId, stringRecord({ ...safeDirectoryInput(envelope), query: typeof query === 'string' ? query : '' })); }}>
+      <form className="surface-search-form user-admin-clean-search" role="search" onSubmit={(event) => { event.preventDefault(); const query = new FormData(event.currentTarget).get('query'); if (searchAction) onAction?.(searchAction, envelope.surfaceId, stringRecord({ ...safeDirectoryInput(envelope), query: typeof query === 'string' ? query : '' })); }}>
         <label htmlFor={`${envelope.surfaceId}-query`}>Search managed agents</label>
-        <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" defaultValue={typeof envelope.data.query === 'string' ? envelope.data.query : ''} />
-        <button type="submit" className="surface-action-link secondary" disabled={!refreshAction}>Search</button>
+        <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-query`} name="query" defaultValue={agentCatalogQuery(envelope)} />
+        <button type="submit" className="surface-action-link secondary" disabled={!searchAction}>Search</button>
       </form>
       {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial results: unauthorized or redacted agent evidence is omitted.</p>}
       {envelope.data.redaction && <details className="dashboard-evidence-drawer"><summary>Catalog redaction and diagnostics</summary><p>{renderSurfaceValue(envelope.data.redaction)}</p></details>}
@@ -167,10 +170,17 @@ function AgentAdminCatalogView({ envelope, onAction }: ListSearchSurfaceProps) {
   );
 }
 
+function agentCatalogQuery(envelope: SurfaceEnvelope<ListSearchSurfaceData>) {
+  const filters = envelope.data.filters as { searchText?: unknown } | undefined;
+  if (typeof filters?.searchText === 'string') return filters.searchText;
+  const query = envelope.data.query;
+  return typeof query === 'string' && !query.startsWith('tenant:') ? query : '';
+}
+
 function AgentAdminCatalogRow({ row, actions, surfaceId, onAction }: { row: ListSearchSurfaceData['rows'][number]; actions: SurfaceAction[]; surfaceId: string; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
   const action = userAdminRowAction(row, actions);
   const label = String(row.displayName ?? row.id ?? 'Managed agent');
-  const status = String(row.providerStatus ?? row.status ?? 'ready');
+  const status = String(row.providerModelReadinessCategory ?? row.providerStatus ?? row.readinessState ?? row.status ?? 'ready');
   return (
     <button type="button" role="listitem" className="user-admin-clean-row agent-admin-agent-row" disabled={!action || Boolean(action.disabled)} onClick={() => action && onAction?.(action, surfaceId, backendRowInput(row))} aria-label={`Open readiness inspection for ${label}`}>
       <span className="user-admin-person"><strong>{label}</strong><small>{String(row.readinessSummary ?? 'Backend-authored readiness summary')}</small></span>
