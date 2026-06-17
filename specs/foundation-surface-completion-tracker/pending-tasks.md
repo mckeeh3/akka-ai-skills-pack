@@ -1908,7 +1908,7 @@
 
 ### TASK-FSCT-054: Verify or complete runtime testing for `surface-user-admin-invitation-revoke-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-053]
 - surface id: `surface-user-admin-invitation-revoke-confirmation`
@@ -1933,15 +1933,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
   - surface type: `destructive-lifecycle-confirmation`
   - surface contract: `user_admin.invitation_revoke_confirmation.v1`
   - purpose: Single-purpose invitation revoke confirmation.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-revoke-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-revoke-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added dedicated protected Akka-hosted invitation revoke-confirmation runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminInvitationRevokeConfirmationRuntimePath`: missing-bearer direct surface/action rejection, JWT plus selected tenant-admin AuthContext, backend-owned `user_admin.invitation_revoke_confirmation.v1` direct and action-open paths, invitation summary/revoke eligibility/consequence/confirmation/idempotency/noFakeSuccess/noDirectMutation/trace/correlation assertions, successful revoke result routing to invitation detail, terminal revoke no-op replay, hidden invitation no-enumeration denial, regular-member denial, and browser-safe token/provider/JWT/email-body redaction. runtime evidence: readiness level `runtime-ready` for the revoke-confirmation testing scope; role/AuthContext/tenant setup covered tenant admin and tenant employee in `tenant-starter`; denial/provider/fail-closed/trace coverage included missing bearer, hidden invitation denial, terminal no-op revoke, trace refs, correlation ids, and provider/token/email-body redaction; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminInvitationRevokeConfirmationRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-055: Verify or complete app-description specification for `surface-user-admin-membership-status-confirmation`
 
