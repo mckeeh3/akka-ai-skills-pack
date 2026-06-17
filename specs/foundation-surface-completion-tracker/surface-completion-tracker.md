@@ -591,7 +591,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-customer-reactivate-confirmation` lifecycle-confirmation contract for `user_admin.customer_reactivate_confirmation.v1` covering User Admin/`user-admin-agent` ownership, Customer Directory branch placement and detail result routing, selected Organization/Tenant Admin `AuthContext` plus active tenant membership and `tenant.customer.reactivate` authorization, browser-safe payload fields for `confirmation`, `reactivationEligibility`, authorized actions, validation states, redaction boundaries, idempotent/no-op/stale/policy-blocked outcomes, audit/work trace and correlation requirements, accessibility/responsive/style expectations, and acceptance/security/observability tests. Sufficiency review says the reactivation confirmation is implementable without invented fields/actions/states/auth/traces/tests. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
