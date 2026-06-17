@@ -1131,7 +1131,7 @@
 
 ### TASK-FSCT-032: Verify or complete runtime implementation for `surface-user-admin-saas-owner-admins`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-031]
 - surface id: `surface-user-admin-saas-owner-admins`
@@ -1155,13 +1155,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation gap remains in this task)
 - notes:
   - surface type: `list-search`
   - surface contract: `user_admin.saas_owner_admins.v1`
   - purpose: SaaS Owner scoped directory for app-owner/admin users and invitations.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-saas-owner-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-saas-owner-admins`; surface graph node/action edge for opening or acting on `surface-user-admin-saas-owner-admins`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: completed and verified the real runtime implementation for `surface-user-admin-saas-owner-admins`: backend-owned `user_admin.saas_owner_admins.v1` list-search envelope with SaaS Owner scope, branch metadata, backend-authored filters/sort/page state, summary counts, admin membership and app-owner invitation rows, visible row target actions, invite-form/audit actions, trace/correlation, no-enumeration redaction, and boundary copy; protected workstream surface/action paths route through `WorkstreamEndpoint` and `WorkstreamService`, while `UserDirectoryView`/`InvitationView` supply browser-safe rows and `UserAdminScopedAdminSurface` renders/submits governed actions without frontend authority. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/scope setup covered SaaS Owner Admin plus tenant-admin denial; denial/fail-closed coverage included tenant-admin `CAPABILITY_FORBIDDEN` and browser-safe raw WorkOS/JWT/provider/invitation-token redaction; trace evidence included list/action trace refs and correlation ids; commands passed: `mvn -q -Dtest=WorkstreamServiceTest#saasOwnerUserAdminDashboardExposesOrganizationAdminSurface test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`
 
 ### TASK-FSCT-033: Verify or complete runtime testing for `surface-user-admin-saas-owner-admins`
 

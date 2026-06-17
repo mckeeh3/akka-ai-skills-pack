@@ -1532,12 +1532,42 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope saasOwnerAdminsSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), SAAS_OWNER_USER_MANAGE_CAPABILITY);
-    var rows = userDirectoryView.list(actor, ScopeType.SAAS_OWNER, actor.selectedContext().tenantId(), null).stream()
-        .map(user -> mapOf("id", user.membershipId(), "accountId", user.accountId(), "membershipId", user.membershipId(), "rowType", "saas-owner-admin", "targetObjectType", "saas-owner-admin", "targetSurfaceId", "surface-user-admin-user-detail", "targetSurfaceType", "show-inspection", "openActionId", "action-display-user-detail", "displayName", user.displayName(), "email", user.accountId(), "role", roleLabels(user.roles()), "status", user.membershipStatus().name().toLowerCase(Locale.ROOT), "traceRefs", List.of("trace-saas-owner-admin-" + stableSuffix(user.membershipId())), "redactionState", "visible"))
+    var adminRows = userDirectoryView.list(actor, ScopeType.SAAS_OWNER, actor.selectedContext().tenantId(), null).stream()
+        .map(user -> mapOf("id", user.membershipId(), "rowId", user.membershipId(), "recordKind", "admin_membership", "accountId", user.accountId(), "membershipId", user.membershipId(), "rowType", "saas-owner-admin", "targetObjectType", "saas-owner-admin", "targetSurfaceId", "surface-user-admin-user-detail", "targetSurfaceType", "show-inspection", "targetActionId", "action-display-user-detail", "openActionId", "action-display-user-detail", "displayName", user.displayName(), "email", user.accountId(), "roles", roleLabels(user.roles()), "role", roleLabels(user.roles()), "status", user.membershipStatus().name().toLowerCase(Locale.ROOT), "attentionBadges", List.of(), "actionAvailability", List.of("open-detail", "open-audit"), "traceRefs", List.of("trace-saas-owner-admin-" + stableSuffix(user.membershipId())), "redactionState", "visible"))
         .toList();
+    var invitationRows = invitationView.list(actor, ScopeType.SAAS_OWNER, null, null).stream()
+        .map(invitation -> mapOf("id", invitation.invitationId(), "rowId", invitation.invitationId(), "recordKind", "admin_invitation", "invitationId", invitation.invitationId(), "rowType", "saas-owner-admin-invitation", "targetObjectType", "saas-owner-admin-invitation", "targetSurfaceId", "surface-user-admin-invitation-detail", "targetSurfaceType", "show-inspection", "targetActionId", "action-display-invitation-detail", "openActionId", "action-display-invitation-detail", "displayName", invitation.targetEmail(), "email", invitation.targetEmail(), "roles", roleLabels(invitation.requestedRoles()), "role", roleLabels(invitation.requestedRoles()), "status", invitation.status().name().toLowerCase(Locale.ROOT), "invitationStatus", invitation.status().name().toLowerCase(Locale.ROOT), "deliveryStatus", invitation.deliveryStatus().name().toLowerCase(Locale.ROOT), "attentionBadges", invitation.canResend() ? List.of("resend-available") : List.of(), "actionAvailability", List.of("open-invitation-detail", "open-audit"), "traceRefs", List.of("trace-saas-owner-admin-invitation-" + stableSuffix(invitation.invitationId())), "redactionState", "invitation-token-redacted"))
+        .toList();
+    var rows = new ArrayList<Map<String, Object>>();
+    rows.addAll(adminRows);
+    rows.addAll(invitationRows);
+    var activeAdminCount = adminRows.stream().filter(row -> "active".equals(row.get("status"))).count();
+    var pendingInvitationCount = invitationRows.stream().filter(row -> "pending".equals(row.get("invitationStatus"))).count();
+    var expiredInvitationCount = invitationRows.stream().filter(row -> "expired".equals(row.get("invitationStatus"))).count();
+    var providerBlockedCount = invitationRows.stream().filter(row -> String.valueOf(row.get("deliveryStatus")).contains("failed") || String.valueOf(row.get("deliveryStatus")).contains("blocked")).count();
     return envelope("surface-user-admin-saas-owner-admins", "list-search", "SaaS Owner Admins", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.saas_owner_admins.v1", "branchNavigation", saasOwnerAdminBranchNavigation(correlationId), "query", "", "rows", rows, "filters", mapOf("scope", "saas-owner", "backendAuthored", true), "pageInfo", mapOf("visibleCount", rows.size()), "redaction", List.of("raw-provider-ids-redacted", "tenant-customer-data-redacted", "hidden-app-owner-counts-redacted"), "emptyMessage", "No SaaS Owner Admin users are visible in this selected scope.", "boundaryNotice", "SaaS Owner Admin management is app-owner scoped and does not grant tenant/customer application-data, support-access, or billing authority."),
-        List.of(showSaasOwnerAdminsAction(), displayDetailAction(), openSaasOwnerAdminInvitationCreateAction(), openAuditAction()));
+        mapOf(
+            "surfaceContract", "user_admin.saas_owner_admins.v1",
+            "scopeLabel", "SaaS Owner scope",
+            "scopeType", "saas_owner",
+            "authorityBasis", "Backend checks selected SaaS Owner AuthContext and saas_owner.admin.list mapped to app-owner user-management capability; browser filters cannot grant authority.",
+            "branchNavigation", saasOwnerAdminBranchNavigation(correlationId),
+            "branchRootSurfaceId", "surface-user-admin-saas-owner-admins",
+            "branchReturnActionId", "action-user-admin-show-saas-owner-admins",
+            "branchReturnLabel", "Back to SaaS Owner Admins",
+            "query", "",
+            "rows", rows,
+            "summary", mapOf("visibleAdminCount", adminRows.size(), "visibleInvitationCount", invitationRows.size(), "activeAdminCount", activeAdminCount, "pendingInvitationCount", pendingInvitationCount, "expiredInvitationCount", expiredInvitationCount, "lastOwnerAdminRiskCount", 0, "outboxBlockedCount", providerBlockedCount, "providerBlockedCount", providerBlockedCount, "reviewNeededCount", 0, "traceRefs", List.of("trace-saas-owner-admins-summary-" + stableSuffix(correlationId))),
+            "filters", mapOf("scope", "saas-owner", "query", "", "status", List.of("active", "pending", "expired", "revoked"), "role", List.of("SAAS_OWNER_ADMIN"), "invitationStatus", List.of("pending", "expired", "accepted", "revoked"), "attentionState", List.of("resend-available", "provider-blocked", "last-owner-risk"), "backendAuthored", true),
+            "sort", mapOf("default", "backend-policy"),
+            "pageInfo", mapOf("visibleCount", rows.size(), "hasMore", false),
+            "authorizedActions", List.of("action-user-admin-show-saas-owner-admins", "action-open-saas-owner-admin-invitation-create", "action-display-user-detail", "action-display-invitation-detail", "action-open-admin-audit"),
+            "systemStates", List.of(rows.isEmpty() ? "empty" : "ready"),
+            "lastResult", mapOf("status", "ready", "message", "SaaS Owner Admin list loaded through backend-authorized workstream runtime path.", "correlationId", correlationId),
+            "redaction", List.of("raw-workos-ids-redacted", "raw-jwt-redacted", "invitation-token-redacted", "provider-payload-redacted", "tenant-customer-data-redacted", "hidden-app-owner-counts-redacted"),
+            "emptyMessage", "No SaaS Owner Admin users or invitations are visible in this selected scope.",
+            "boundaryNotice", "SaaS Owner Admin management is app-owner scoped and does not grant tenant/customer application-data, support-access, billing, provider, or model authority."),
+        List.of(showSaasOwnerAdminsAction(), displayDetailAction(), displayInvitationDetailAction(), openSaasOwnerAdminInvitationCreateAction(), openAuditAction()));
   }
 
   private SurfaceEnvelope saasOwnerAdminInvitationCreateSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {

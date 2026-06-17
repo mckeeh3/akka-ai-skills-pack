@@ -360,6 +360,41 @@ class WorkstreamServiceTest {
     assertTrue(dashboard.toString().contains("saas_owner.tenant.manage"));
     assertTrue(dashboard.toString().contains("navigationTree"));
 
+    var owner = new AuthContextResolver(identityRepository).resolveMe(ownerIdentity(), "membership-owner", "corr-owner-admin-list-seed");
+    invitationService.createInvitation(owner, new InvitationService.CreateInvitationRequest(
+        "invite-saas-owner-admin-list",
+        ScopeType.SAAS_OWNER,
+        null,
+        null,
+        "new-owner-admin@example.test",
+        "New Owner Admin",
+        List.of(FoundationRole.SAAS_OWNER_ADMIN),
+        Instant.now().plusSeconds(3600),
+        "saas-owner-admin-list-smoke",
+        "corr-owner-admin-list-invite"));
+
+    var ownerAdmins = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-saas-owner-admins", "user-admin.show-saas-owner-admins", "manage-saas-owner-admins", "saas_owner.admin.list", null, null, "membership-owner", dashboard.surfaceId(), "corr-owner-admin-list"));
+
+    assertEquals("accepted", ownerAdmins.status());
+    assertEquals("surface-user-admin-saas-owner-admins", ownerAdmins.resultSurface().surfaceId());
+    assertEquals("list-search", ownerAdmins.resultSurface().surfaceType());
+    assertEquals("user_admin.saas_owner_admins.v1", ownerAdmins.resultSurface().data().get("surfaceContract"));
+    assertTrue(ownerAdmins.resultSurface().toString().contains("scopeType=saas_owner"));
+    assertTrue(ownerAdmins.resultSurface().toString().contains("recordKind=admin_membership"));
+    assertTrue(ownerAdmins.resultSurface().toString().contains("recordKind=admin_invitation"));
+    assertTrue(ownerAdmins.resultSurface().toString().contains("targetSurfaceId=surface-user-admin-user-detail"));
+    assertTrue(ownerAdmins.resultSurface().toString().contains("targetSurfaceId=surface-user-admin-invitation-detail"));
+    assertTrue(ownerAdmins.resultSurface().toString().contains("action-open-saas-owner-admin-invitation-create"));
+    assertTrue(ownerAdmins.resultSurface().toString().contains("hidden-app-owner-counts-redacted"));
+    assertFalse(ownerAdmins.resultSurface().toString().contains("invite-token"));
+    assertFalse(ownerAdmins.resultSurface().toString().contains("tokenHash"));
+    assertBrowserPayloadSafe(ownerAdmins.resultSurface());
+
+    var tenantDenied = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-user-admin-show-saas-owner-admins", "user-admin.show-saas-owner-admins", "manage-saas-owner-admins", "saas_owner.admin.list", null, null, "membership-admin", "surface-user-admin-dashboard", "corr-tenant-owner-admin-list-denied")));
+    assertTrue(tenantDenied.reasonCode().contains("CAPABILITY_FORBIDDEN"));
+
     var organization = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
         "action-user-admin-show-organizations", "user-admin.show-organizations", "manage-organizations", "saas_owner.organization.list", null, null, "membership-owner", dashboard.surfaceId(), "corr-open-org-admin"));
 
