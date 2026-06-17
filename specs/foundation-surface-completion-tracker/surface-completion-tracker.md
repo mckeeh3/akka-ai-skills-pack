@@ -487,7 +487,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-customer-directory` list/search contract for `user_admin.customer_directory.v1` covering owning User Admin workstream/`user-admin-agent`, Customer Directory branch placement, Organization/Tenant Admin selected `AuthContext` and `tenant.customer.list` authorization, frontend-safe payload envelope/summary/rows/filters/actions, backend-authored row routing to Customer detail and Customer Admin task entry points, no-enumeration denials for SaaS Owner-only/Customer Admin/cross-scope attempts, redaction/secret boundaries, trace/audit/correlation requirements, accessibility/responsive expectations, acceptance/regression coverage, and sufficiency review. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
