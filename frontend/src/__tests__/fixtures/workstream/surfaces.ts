@@ -1137,6 +1137,115 @@ export const agentAdminSurfaceActions = {
     resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
     audit: { eventType: 'AgentDefinitionDetailDisplayed', traceRequired: true }
   },
+  skillManifestRefresh: {
+    actionId: 'action-agent-skill-manifest-refresh',
+    label: 'Refresh skill manifest diff',
+    intent: 'read',
+    capabilityId: agentManifestReadCapability,
+    governedToolId: agentManifestReadCapability,
+    browserToolId: 'action-agent-skill-manifest-refresh',
+    inputSchemaRef: 'schema.agent-admin.skill-manifest.refresh.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-skill-manifest-diff', openPlacement: 'inline' },
+    audit: { eventType: 'AgentSkillManifestDiffRefreshed', traceRequired: true }
+  },
+  skillManifestSimulate: {
+    actionId: 'action-agent-skill-manifest-simulate',
+    label: 'Run no-side-effect manifest simulation',
+    intent: 'workflow',
+    capabilityId: agentRuntimeTestCapability,
+    governedToolId: agentRuntimeTestCapability,
+    browserToolId: 'action-agent-skill-manifest-simulate',
+    inputSchemaRef: 'schema.agent-admin.skill-manifest.simulate.v1',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-test-console', openPlacement: 'inline' },
+    audit: { eventType: 'AgentSkillManifestSimulationRequested', traceRequired: true }
+  },
+  skillManifestSubmitReview: {
+    actionId: 'action-agent-skill-manifest-submit-review',
+    label: 'Submit manifest diff for review',
+    intent: 'proposal',
+    capabilityId: agentSubmitReviewCapability,
+    governedToolId: agentSubmitReviewCapability,
+    browserToolId: 'action-agent-skill-manifest-submit-review',
+    inputSchemaRef: 'schema.agent-admin.skill-manifest.submit-review.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentSkillManifestSubmitted', traceRequired: true }
+  },
+  skillManifestApprove: {
+    actionId: 'action-agent-skill-manifest-approve',
+    label: 'Approve manifest diff review',
+    intent: 'approval',
+    capabilityId: agentSkillsCapability,
+    governedToolId: agentSkillsCapability,
+    browserToolId: 'action-agent-skill-manifest-approve',
+    inputSchemaRef: 'schema.agent-admin.skill-manifest.approve.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentSkillManifestApproved', traceRequired: true }
+  },
+  skillManifestReject: {
+    actionId: 'action-agent-skill-manifest-reject',
+    label: 'Reject manifest diff review',
+    intent: 'approval',
+    capabilityId: agentRejectCapability,
+    governedToolId: agentRejectCapability,
+    browserToolId: 'action-agent-skill-manifest-reject',
+    inputSchemaRef: 'schema.agent-admin.skill-manifest.reject.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentSkillManifestRejected', traceRequired: true }
+  },
+  skillManifestOpenToolBoundary: {
+    actionId: 'action-agent-skill-manifest-open-tool-boundary',
+    label: 'Open related tool-boundary review',
+    intent: 'read',
+    capabilityId: agentToolBoundariesCapability,
+    governedToolId: agentToolBoundariesCapability,
+    browserToolId: 'action-agent-skill-manifest-open-tool-boundary',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-tool-boundary-diff', openPlacement: 'inline' },
+    audit: { eventType: 'AgentSkillManifestToolBoundaryOpened', traceRequired: true }
+  },
+  skillManifestOpenModelRefs: {
+    actionId: 'action-agent-skill-manifest-open-model-refs',
+    label: 'Open related model references',
+    intent: 'read',
+    capabilityId: agentModelsReadCapability,
+    governedToolId: agentModelsReadCapability,
+    browserToolId: 'action-agent-skill-manifest-open-model-refs',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-model-refs', openPlacement: 'inline' },
+    audit: { eventType: 'AgentSkillManifestModelRefsOpened', traceRequired: true }
+  },
+  skillManifestOpenTrace: {
+    actionId: 'action-agent-skill-manifest-open-trace',
+    label: 'Open manifest diff trace',
+    intent: 'trace',
+    capabilityId: 'audit.trace.read',
+    governedToolId: 'audit.trace.read',
+    browserToolId: 'action-agent-skill-manifest-open-trace',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-trace', openPlacement: 'deep-link' },
+    audit: { eventType: 'AgentSkillManifestTraceOpened', traceRequired: true }
+  },
+  skillManifestBackToDetail: {
+    actionId: 'action-agent-skill-manifest-back-to-detail',
+    label: 'Back to agent detail',
+    intent: 'read',
+    capabilityId: agentDefinitionReadCapability,
+    governedToolId: agentDefinitionReadCapability,
+    browserToolId: 'action-agent-skill-manifest-back-to-detail',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
+    audit: { eventType: 'AgentDefinitionDetailDisplayed', traceRequired: true }
+  },
   approveSkillManifest: {
     actionId: 'action-approve-skill-manifest',
     label: 'Approve manifest review',
@@ -2702,7 +2811,7 @@ export const agentSkillManifestSurface = envelope(
   'Skill/reference manifest and loader review',
   'agent-admin-agent',
   {
-    surfaceContract: 'agent_admin.manifest.v1',
+    surfaceContract: 'agent_admin.skill_manifest_diff.v1',
     proposalId: 'manifest-proposal-agent-admin-001',
     lifecycleState: 'in_review',
     source: 'Compact AgentSkillManifest and AgentReferenceManifest entries only; readSkill/readReferenceDoc load full documents at runtime after ToolPermissionBoundary checks.',
@@ -2719,7 +2828,17 @@ export const agentSkillManifestSurface = envelope(
       { path: 'ToolPermissionBoundary', before: 'readSkill, readReferenceDoc, agentAdminEvidence.read', after: 'unchanged', impact: 'Tool access remains backend-enforced; manifest text cannot grant authority.' }
     ]
   },
-  [agentAdminSurfaceActions.approveSkillManifest, agentAdminSurfaceActions.submitBehaviorChange, agentAdminSurfaceActions.openAgentTrace]
+  [
+    agentAdminSurfaceActions.skillManifestRefresh,
+    agentAdminSurfaceActions.skillManifestSimulate,
+    agentAdminSurfaceActions.skillManifestSubmitReview,
+    agentAdminSurfaceActions.skillManifestApprove,
+    agentAdminSurfaceActions.skillManifestReject,
+    agentAdminSurfaceActions.skillManifestOpenToolBoundary,
+    agentAdminSurfaceActions.skillManifestOpenModelRefs,
+    agentAdminSurfaceActions.skillManifestOpenTrace,
+    agentAdminSurfaceActions.skillManifestBackToDetail
+  ]
 );
 
 export const agentToolBoundarySurface = envelope(

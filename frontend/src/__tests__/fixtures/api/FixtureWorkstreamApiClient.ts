@@ -186,7 +186,21 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
         ? displayAgentDetailActionResult
         : request.actionId === 'action-list-agent-seed-material' || request.capabilityId === 'agent_admin.list_seed_material'
           ? displayAgentSeedMaterialActionResult
-          : request.actionId === 'action-propose-prompt-diff' || request.capabilityId === 'agent_admin.draft_behavior_change'
+          : request.actionId === 'action-agent-skill-manifest-back-to-detail'
+            ? displayAgentDetailActionResult
+            : request.actionId === 'action-agent-skill-manifest-refresh'
+              ? displayAgentManifestActionResult
+              : request.actionId === 'action-agent-skill-manifest-simulate'
+                ? displayAgentTestConsoleActionResult
+                : ['action-agent-skill-manifest-submit-review', 'action-agent-skill-manifest-approve', 'action-agent-skill-manifest-reject'].includes(request.actionId)
+                  ? displayAgentBehaviorProposalActionResult
+                  : request.actionId === 'action-agent-skill-manifest-open-tool-boundary'
+                    ? displayAgentToolBoundaryActionResult
+                    : request.actionId === 'action-agent-skill-manifest-open-model-refs'
+                      ? displayAgentModelRefsActionResult
+                      : request.actionId === 'action-agent-skill-manifest-open-trace'
+                        ? displayAgentAdminTraceActionResult
+                        : request.actionId === 'action-propose-prompt-diff' || request.capabilityId === 'agent_admin.draft_behavior_change'
             ? displayAgentPromptGovernanceActionResult
             : request.actionId === 'action-approve-skill-manifest' || request.capabilityId === 'agent_admin.approve_behavior_change'
               ? displayAgentManifestActionResult

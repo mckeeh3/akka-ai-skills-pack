@@ -579,6 +579,7 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("governance-diff", directSkillManifest.surfaceType());
     assertEquals("agent_admin.skill_manifest_diff.v1", directSkillManifest.data().get("surfaceContract"));
     assertEquals("corr-agent-admin-skill-manifest-direct", directSkillManifest.correlationId());
+    assertTrue(directSkillManifest.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-agent-skill-manifest-diff")));
     var manifestSummary = (Map<String, Object>) directSkillManifest.data().get("manifestDiffSummary");
     assertEquals("agent_admin.skill_manifest_diff.v1", manifestSummary.get("contract"));
     assertEquals("blocked_provider_or_runtime", manifestSummary.get("providerRuntimeReadinessCategory"));
@@ -586,7 +587,11 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var manifestScope = (Map<String, Object>) directSkillManifest.data().get("scopeSummary");
     assertEquals(ADMIN_CONTEXT_ID, manifestScope.get("selectedContextId"));
     assertEquals(Boolean.TRUE, manifestScope.get("governanceAuthorized"));
+    assertEquals("visible", manifestScope.get("visibilityDecision"));
+    assertTrue(directSkillManifest.toString().contains("safeRedactionSummary"));
     assertTrue(directSkillManifest.toString().contains("rawSkillReferenceBodies=omitted"));
+    assertTrue(directSkillManifest.toString().contains("providerCredentials=omitted"));
+    assertTrue(directSkillManifest.toString().contains("blocked_provider_or_runtime"));
     assertTrue(directSkillManifest.toString().contains("noDirectActivation=true"));
     assertBrowserSafe(directSkillManifest);
 
@@ -719,6 +724,8 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "corr-agent-admin-skill-manifest-trace"));
     assertEquals("accepted", skillTrace.status());
     assertEquals("surface-agent-admin-trace", skillTrace.resultSurface().surfaceId());
+    assertTrue(skillTrace.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-skill-manifest-open-trace")));
+    assertTrue(skillTrace.resultSurface().toString().contains("SkillLoadTrace"));
     assertBrowserSafe(skillTrace.resultSurface());
 
     var skillBackToDetail = runAction(new CapabilityActionRequest(
@@ -800,6 +807,13 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "member@example.test",
         "Member User",
         MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin prompt-governance payloads or prompt metadata.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-skill-manifest-diff",
+        "corr-agent-admin-skill-manifest-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin skill-manifest diff payloads or compact manifest metadata.");
 
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-agent-admin-catalog",
@@ -822,6 +836,13 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "customer@example.test",
         "Customer Admin",
         CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin prompt-governance rows or prompt metadata.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-skill-manifest-diff",
+        "corr-agent-admin-skill-manifest-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin skill-manifest diff rows, manifest ids, or reference metadata.");
   }
 
   @Test
