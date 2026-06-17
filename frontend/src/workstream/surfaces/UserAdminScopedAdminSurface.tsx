@@ -157,9 +157,12 @@ function RoleScopedInvitationForm({ envelope, onAction }: Props) {
   const [error, setError] = useState<string>();
   const requiresOrganizationTarget = envelope.data.surfaceContract === 'user_admin.organization_admin_invitation_create.v1';
   const hasOrganizationTarget = Boolean(String(envelope.data.tenantId ?? envelope.data.organizationId ?? '').trim());
+  const requiresCustomerTarget = envelope.data.surfaceContract === 'user_admin.customer_admin_invitation_create.v1';
+  const hasCustomerTarget = Boolean(String(envelope.data.customerId ?? '').trim());
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (requiresOrganizationTarget && !hasOrganizationTarget) return setError('Select an Organization first so the backend can include tenant-scope proof for the Organization Admin invitation.');
+    if (requiresCustomerTarget && !hasCustomerTarget) return setError('Open this form from a Customer detail or Customer Admin list so the backend can include customer-scope proof.');
     if (!email.trim() || !email.includes('@')) return setError('Enter a valid email address before creating an invitation.');
     if (!role) return setError('Backend did not provide an authorized role option for this target scope.');
     setError(undefined);
@@ -176,7 +179,8 @@ function RoleScopedInvitationForm({ envelope, onAction }: Props) {
       <label>Reason<input className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} placeholder="Reason for audit/work trace" /></label>
       {roleOptions.length === 0 && <p className="form-error">No backend-authorized role option is available for this selected scope.</p>}
       {requiresOrganizationTarget && !hasOrganizationTarget && <p className="form-error">Open this form from an Organization detail row before creating the invitation.</p>}
-      <button className="surface-action-link primary" type="submit" disabled={!action || Boolean(action.disabled) || roleOptions.length === 0 || (requiresOrganizationTarget && !hasOrganizationTarget)}>Create invitation</button>
+      {requiresCustomerTarget && !hasCustomerTarget && <p className="form-error">Open this form from a Customer detail row or Customer Admin list before creating the invitation.</p>}
+      <button className="surface-action-link primary" type="submit" disabled={!action || Boolean(action.disabled) || roleOptions.length === 0 || (requiresOrganizationTarget && !hasOrganizationTarget) || (requiresCustomerTarget && !hasCustomerTarget)}>Create invitation</button>
       {action?.disabled && <p className="form-error">{action.disabled.message}</p>}
       <p className="capability-basis">Provider/outbox failures return a typed system message. Raw tokens, email bodies, provider payloads, and secrets are never shown.</p>
     </form>

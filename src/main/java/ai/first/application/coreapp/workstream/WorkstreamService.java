@@ -502,11 +502,16 @@ public final class WorkstreamService {
       result = new CapabilityActionResult("accepted", "Customer Admin invitation/bootstrap surface loaded for the selected Customer.", request.correlationId(), List.of("trace-customer-admin-invite-" + stableSuffix(request.correlationId())), customerAdminInvitationCreateSurface(actor, request.input(), request.correlationId()));
     } else if ("action-customer-admin-invite".equals(request.actionId())) {
       var customer = activeCustomerInviteTargetDetail(actor, request.input(), request.correlationId());
-      var invite = invitationService.createInvitation(actor, new InvitationService.CreateInvitationRequest(
-          request.idempotencyKey(), ScopeType.CUSTOMER, actor.selectedContext().tenantId(), customer.customer().customerId(),
-          stringInput(request.input(), "email", "new-customer-admin@example.test"), stringInput(request.input(), "displayName", "New Customer Admin"),
-          customerAdminRolesInput(request.input()), Instant.now().plus(7, ChronoUnit.DAYS), stringInput(request.input(), "reason", "workstream-customer-admin-invite"), request.correlationId()));
-      result = new CapabilityActionResult("accepted", "Customer Admin invitation queued for the selected Customer by backend-authoritative User Admin capability.", request.correlationId(), List.of("trace-customer-admin-invite-created-" + stableSuffix(invite.invitationId())), customerAdminInvitationDetailSurface(actor, customer, invite, request.correlationId()));
+      var requestedRoles = customerAdminRolesInput(request.input());
+      if (!requestedRoles.equals(List.of(FoundationRole.CUSTOMER_ADMIN))) {
+        result = new CapabilityActionResult("validation-error", "Customer Admin invitations may only request the CUSTOMER_ADMIN role for the selected Customer.", request.correlationId(), List.of("trace-customer-admin-invite-validation-" + stableSuffix(request.correlationId())), customerAdminInvitationCreateSurface(actor, request.input(), request.correlationId()));
+      } else {
+        var invite = invitationService.createInvitation(actor, new InvitationService.CreateInvitationRequest(
+            request.idempotencyKey(), ScopeType.CUSTOMER, actor.selectedContext().tenantId(), customer.customer().customerId(),
+            stringInput(request.input(), "email", "new-customer-admin@example.test"), stringInput(request.input(), "displayName", "New Customer Admin"),
+            requestedRoles, Instant.now().plus(7, ChronoUnit.DAYS), stringInput(request.input(), "reason", "workstream-customer-admin-invite"), request.correlationId()));
+        result = new CapabilityActionResult("accepted", "Customer Admin invitation queued for the selected Customer by backend-authoritative User Admin capability.", request.correlationId(), List.of("trace-customer-admin-invite-created-" + stableSuffix(invite.invitationId())), customerAdminInvitationDetailSurface(actor, customer, invite, request.correlationId()));
+      }
     } else if (List.of("action-customer-create", "action-customer-rename", "action-customer-suspend", "action-customer-reactivate").contains(request.actionId())) {
       var customerResult = runCustomerLifecycleAction(actor, request.actionId(), request.input(), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult(customerResult.status(), customerResult.message(), request.correlationId(), customerResult.traceRefs(), customerDetailSurface(actor, customerResult.customer(), request.correlationId()));
@@ -2336,8 +2341,13 @@ public final class WorkstreamService {
     authContextResolver.requireCapability(actor.selectedContext(), USER_ADMIN_CAPABILITY);
     var detail = activeCustomerInviteTargetDetail(actor, input, correlationId);
     var target = customerTargetMap(actor, detail, correlationId);
+    var traceRefs = detail.traceRefs();
+    var roleOptions = List.of(mapOf("roleId", "CUSTOMER_ADMIN", "label", "CUSTOMER ADMIN"));
+    var form = mapOf("emailDraft", "", "displayNameDraft", "", "reasonDraft", "", "targetRoleOptions", List.of("CUSTOMER_ADMIN"), "selectedTargetRole", "CUSTOMER_ADMIN", "idempotencyKeyHint", "client-generated", "submitLabel", "Create Customer Admin invitation", "cancelActionId", "action-user-admin-show-customer-admins", "submitActionId", "action-customer-admin-invite");
+    var policyContext = mapOf("firstAdminBootstrapEligible", true, "duplicateOpenInvitePolicy", "reuse-visible-open-invite-else-no-enumeration", "approvalRequired", false, "customerLifecycleAllowsInvite", "active".equals(detail.customer().status()), "traceRefs", traceRefs);
+    var deliveryReadiness = mapOf("outboxStatus", "queued-on-submit", "providerStatus", "configured-or-outbox-queued", "retryEligible", true, "failClosedMessage", "Provider/outbox failures return system-message without fake success.", "traceRefs", traceRefs);
     return envelope("surface-user-admin-customer-admin-invitation-create", "create-form", "Invite Customer Admin", actor, correlationId,
-        mapOf("surfaceContract", "user_admin.customer_admin_invitation_create.v1", "branchNavigation", customerBranchNavigation(correlationId), "customerId", detail.customer().customerId(), "customerName", detail.customer().customerName(), "targetScopeProof", target, "targetScope", mapOf("scopeType", ScopeType.CUSTOMER.name(), "tenantId", actor.selectedContext().tenantId(), "customerId", detail.customer().customerId()), "summary", "Bootstrap or invite a CUSTOMER_ADMIN for " + detail.customer().customerName() + ". The workstream submit path always targets ScopeType.CUSTOMER for this Customer.", "recordKind", "customer-admin-invitation", "recordId", detail.customer().customerId(), "recordLabel", detail.customer().customerName(), "draft", mapOf("email", "", "displayName", "", "roles", List.of("CUSTOMER_ADMIN"), "customerId", detail.customer().customerId()), "roleOptions", List.of(mapOf("roleId", "CUSTOMER_ADMIN", "label", "CUSTOMER ADMIN")), "policyOptions", mapOf("roles", List.of(mapOf("roleId", "CUSTOMER_ADMIN", "label", "CUSTOMER ADMIN")), "idempotency", "client-generated", "outboxReadiness", "backend-derived"), "idempotencyKeyHint", "client-generated", "outboxReadiness", "backend-derived", "boundaryNotice", detail.safeBoundaryNotice(), "traceRefs", detail.traceRefs(), "correlationId", correlationId, "redaction", List.of("raw-token-redacted", "provider-payload-redacted", "sibling-customers-redacted")),
+        mapOf("surfaceContract", "user_admin.customer_admin_invitation_create.v1", "scopeLabel", detail.customer().customerName(), "scopeType", "tenant", "tenantId", actor.selectedContext().tenantId(), "customerId", detail.customer().customerId(), "customerName", detail.customer().customerName(), "customerStatus", detail.customer().status(), "authorityBasis", "selected Organization/Tenant Admin AuthContext with tenant.customer_admin.invite", "branchNavigation", customerBranchNavigation(correlationId), "branchRootSurfaceId", "surface-user-admin-customer-directory", "branchReturnActionId", "action-user-admin-show-customers", "branchReturnLabel", "Back to customers", "adminListReturnActionId", "action-user-admin-show-customer-admins", "detailReturnActionId", "action-customer-read", "targetScopeProof", target, "targetScope", mapOf("scopeType", ScopeType.CUSTOMER.name(), "tenantId", actor.selectedContext().tenantId(), "customerId", detail.customer().customerId()), "summary", "Bootstrap or invite a CUSTOMER_ADMIN for " + detail.customer().customerName() + ". The workstream submit path always targets ScopeType.CUSTOMER for this Customer.", "recordKind", "customer-admin-invitation", "recordId", detail.customer().customerId(), "recordLabel", detail.customer().customerName(), "formState", "ready", "validationMessages", List.of(), "systemStates", List.of(), "lastResult", mapOf("status", "ready"), "form", form, "draft", mapOf("email", "", "displayName", "", "roles", List.of("CUSTOMER_ADMIN"), "customerId", detail.customer().customerId()), "roleOptions", roleOptions, "policyContext", policyContext, "policyOptions", mapOf("roles", roleOptions, "idempotency", "client-generated", "outboxReadiness", "backend-derived"), "deliveryReadiness", deliveryReadiness, "authorizedActions", List.of("action-open-customer-admin-invitation-create", "action-customer-admin-invite", "action-user-admin-show-customer-admins", "action-customer-read", "action-user-admin-show-customers", "action-open-audit-trace"), "idempotencyKeyHint", "client-generated", "outboxReadiness", "backend-derived", "boundaryNotice", detail.safeBoundaryNotice(), "traceRefs", traceRefs, "correlationId", correlationId, "redaction", List.of("raw-token-redacted", "provider-payload-redacted", "sibling-customers-redacted")),
         withCustomerBranchReturn(List.of(customerAdminInviteAction(), openAuditAction())));
   }
 
@@ -4278,11 +4288,19 @@ public final class WorkstreamService {
   }
   private static List<FoundationRole> customerAdminRolesInput(Object input) {
     if (input instanceof Map<?, ?> map) {
-      if (map.get("roles") instanceof List<?> roles && !roles.isEmpty()) return roles.stream().map(String::valueOf).map(FoundationRole::valueOf).toList();
-      if (map.get("roles") instanceof String role && !role.isBlank()) return List.of(FoundationRole.valueOf(role));
-      if (map.get("role") instanceof String role && !role.isBlank()) return List.of(FoundationRole.valueOf(role));
+      if (map.get("roles") instanceof List<?> roles && !roles.isEmpty()) return roles.stream().map(String::valueOf).map(WorkstreamService::customerAdminRoleValue).toList();
+      if (map.get("roles") instanceof String role && !role.isBlank()) return List.of(customerAdminRoleValue(role));
+      if (map.get("role") instanceof String role && !role.isBlank()) return List.of(customerAdminRoleValue(role));
     }
     return List.of(FoundationRole.CUSTOMER_ADMIN);
+  }
+
+  private static FoundationRole customerAdminRoleValue(String role) {
+    try {
+      return FoundationRole.valueOf(role);
+    } catch (IllegalArgumentException error) {
+      throw new AuthorizationException(400, "unsupported-role");
+    }
   }
   private static MembershipStatus membershipStatusInput(String value) {
     var normalized = Objects.requireNonNullElse(value, "removed").trim().toUpperCase(Locale.ROOT).replace('-', '_');

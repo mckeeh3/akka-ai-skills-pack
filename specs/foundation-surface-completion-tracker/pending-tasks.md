@@ -3887,7 +3887,7 @@
 
 ### TASK-FSCT-110: Verify or complete runtime implementation for `surface-user-admin-customer-admin-invitation-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-109]
 - surface id: `surface-user-admin-customer-admin-invitation-create`
@@ -3918,6 +3918,7 @@
   - purpose: Bootstrap/invite form for a CUSTOMER_ADMIN.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admin-invitation-create`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-admin-invitation-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: completed and verified the real runtime implementation for `surface-user-admin-customer-admin-invitation-create`: protected WorkstreamEndpoint action APIs open and submit the Customer Admin invite create-form through `WorkstreamService`, backend reauthorizes selected Organization/Tenant Admin AuthContext plus visible active Customer and `tenant.customer_admin.invite`, payload now includes Customer boundary proof, `CUSTOMER_ADMIN`-only form/policy/delivery readiness metadata, branch returns, trace/correlation and redaction evidence; submit creates a `ScopeType.CUSTOMER` invitation through `InvitationService` with idempotency, audit/outbox/provider boundary and invitation-detail routing; unsupported Customer-scope roles validate back to the form without creating invitations; suspended/hidden/cross-scope targets fail closed through system-message/noFakeSuccess; frontend blocks Customer Admin invite submission without backend-provided customer target proof. Checks passed: `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#tenantCustomerBranchUsesDurableCustomerLifecycleState test`, `mvn -Dtest=ai.first.application.coreapp.workstream.UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend run typecheck`, `npm --prefix frontend test -- --run`, focused `rg` evidence, and `git diff --check`. Note: broader `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest test` and isolated `#userAdminStatusActionsDisableReactivateNoOpAndDenyManualSelfDisable` still fail on an existing status-action expectation (`expected accepted but was no-op`) outside this selected Customer Admin invite path.
 
 ### TASK-FSCT-111: Verify or complete runtime testing for `surface-user-admin-customer-admin-invitation-create`
 

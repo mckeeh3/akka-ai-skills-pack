@@ -650,6 +650,12 @@ class WorkstreamServiceTest {
     assertEquals(customerId, customerScopedInvitation.customerId());
     assertEquals(List.of(FoundationRole.CUSTOMER_ADMIN), customerScopedInvitation.requestedRoles());
 
+    var unsupportedCustomerAdminRole = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-customer-admin-invite", "user-admin.invite-customer-admin", "manage-customer-admins", "tenant.customer_admin.invite", Map.of("customerId", customerId, "email", "customer.user@example.test", "displayName", "Customer User", "roles", "CUSTOMER_USER"), "idem-customer-admin-invite-invalid-role", "membership-admin", customerAdminInviteForm.resultSurface().surfaceId(), "corr-customer-admin-invite-invalid-role"));
+    assertEquals("validation-error", unsupportedCustomerAdminRole.status());
+    assertEquals("surface-user-admin-customer-admin-invitation-create", unsupportedCustomerAdminRole.resultSurface().surfaceId());
+    assertFalse(invitationRepository.invitations().stream().anyMatch(invitation -> "customer.user@example.test".equals(invitation.normalizedEmail())));
+
     identityRepository.saveAccount(new Account("existing.customer.admin@example.test", null, "existing.customer.admin@example.test", "existing.customer.admin@example.test", AccountStatus.ACTIVE, "LINKED"));
     identityRepository.putProfile(new UserProfile("existing.customer.admin@example.test", "existing.customer.admin@example.test", "Existing Customer Admin", "Existing", "Customer Admin", null));
     identityRepository.putSettings(new UserSettings("existing.customer.admin@example.test", UserSettings.ThemeId.AURORA_LIGHT));
