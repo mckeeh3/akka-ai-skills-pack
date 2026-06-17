@@ -2264,7 +2264,7 @@
 
 ### TASK-FSCT-064: Verify or complete app-description specification for `surface-user-admin-support-access-revoke-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-support-access-revoke-confirmation`
@@ -2293,6 +2293,7 @@
   - purpose: Support-access revoke confirmation.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-support-access-revoke-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated destructive-lifecycle-confirmation app-description contract for support-access revoke, including identity/owner/placement, selected AuthContext and support revoke authority, frontend-safe payload schema, active support grant and consequence summaries, confirmation/action mappings, approval/policy/no-op/idempotent states, trace/audit/correlation, accessibility/responsive expectations, tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-065: Verify or complete runtime implementation for `surface-user-admin-support-access-revoke-confirmation`
 
