@@ -3781,7 +3781,7 @@
 
 ### TASK-FSCT-107: Verify or complete runtime implementation for `surface-user-admin-customer-admins`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-106]
 - surface id: `surface-user-admin-customer-admins`
@@ -3805,13 +3805,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `list-search`
   - surface contract: `user_admin.customer_admins.v1`
   - purpose: Customer Admin users/invitations for one selected Customer.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admins`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-admins`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: verified existing protected runtime implementation for `surface-user-admin-customer-admins`: `WorkstreamEndpoint` `/api/workstream/actions` routes backend-authored `action-user-admin-show-customer-admins` to `WorkstreamService.customerAdminsSurface`; the service reauthorizes selected Organization/Tenant Admin `AuthContext` and `tenant.customer_admin.list`, resolves the visible active Customer through `TenantCustomerAdminService.requireActiveCustomerForCustomerAdminList`, returns backend-owned `user_admin.customer_admins.v1` list-search payload with target scope proof, admin/invitation rows from `UserAdminService` and `InvitationView`, branch-return/invite/audit actions, trace refs, correlation ids, and browser-safe redaction; generic direct loads fail safe with no-target guidance rather than fixture data; frontend `UserAdminScopedAdminSurface` renders the contract. Runtime evidence: readiness level `api-smoked`; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/fail-closed coverage included hidden/sibling Customer no-enumeration denial and provider/invitation-token redaction from the Customer branch smoke; trace evidence included Customer Admin list trace refs and correlation ids; commands passed: `mvn -q -Dtest=WorkstreamServiceTest#tenantCustomerBranchUsesDurableCustomerLifecycleState test`, `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`.
 
 ### TASK-FSCT-108: Verify or complete runtime testing for `surface-user-admin-customer-admins`
 
