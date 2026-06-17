@@ -88,7 +88,7 @@ export function UserAdminTaskSurface({ envelope, onAction }: Props) {
         <UserAdminTaskValidationMessages envelope={envelope} />
         {isInvitationCreate && <InvitationCreateTask envelope={envelope} onAction={onAction} />}
         {isInvitationResend && <InvitationConfirmationTask envelope={envelope} onAction={onAction} actionId="action-useradmin-resend-invitation" verb="Resend invitation" />}
-        {isInvitationRevoke && <InvitationConfirmationTask envelope={envelope} onAction={onAction} actionId="action-useradmin-revoke-invitation" verb="Revoke invitation" requireReason />}
+        {isInvitationRevoke && <InvitationConfirmationTask envelope={envelope} onAction={onAction} actionId="action-confirm-user-admin-invitation-revoke" fallbackActionId="action-useradmin-revoke-invitation" verb="Revoke invitation" requireReason />}
         {isMembershipStatus && <MembershipStatusTask envelope={envelope} onAction={onAction} />}
         {isSupportGrant && <SupportAccessGrantTask envelope={envelope} onAction={onAction} />}
         {isSupportRevoke && <SupportAccessRevokeTask envelope={envelope} onAction={onAction} />}
@@ -150,8 +150,8 @@ function InvitationCreateTask({ envelope, onAction }: Props) {
   );
 }
 
-function InvitationConfirmationTask({ envelope, onAction, actionId, verb, requireReason = false }: Props & { actionId: string; verb: string; requireReason?: boolean }) {
-  const action = findAction(envelope.actions, actionId);
+function InvitationConfirmationTask({ envelope, onAction, actionId, fallbackActionId, verb, requireReason = false }: Props & { actionId: string; fallbackActionId?: string; verb: string; requireReason?: boolean }) {
+  const action = findAction(envelope.actions, actionId) ?? (fallbackActionId ? findAction(envelope.actions, fallbackActionId) : undefined);
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string>();
   function submit(event: FormEvent<HTMLFormElement>) {

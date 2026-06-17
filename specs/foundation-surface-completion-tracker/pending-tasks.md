@@ -1873,7 +1873,7 @@
 
 ### TASK-FSCT-053: Verify or complete runtime implementation for `surface-user-admin-invitation-revoke-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-052]
 - surface id: `surface-user-admin-invitation-revoke-confirmation`
@@ -1897,13 +1897,14 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `destructive-lifecycle-confirmation`
   - surface contract: `user_admin.invitation_revoke_confirmation.v1`
   - purpose: Single-purpose invitation revoke confirmation.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-revoke-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-revoke-confirmation`; surface graph node/action edge for opening or acting on `surface-user-admin-invitation-revoke-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: completed and verified the real runtime implementation for `surface-user-admin-invitation-revoke-confirmation`: protected WorkstreamEndpoint surface/action paths load the backend-owned `user_admin.invitation_revoke_confirmation.v1` destructive-lifecycle-confirmation surface with backend-derived invitation summary, revoke eligibility, consequence summary, confirmation form, canonical and compatibility action ids, branch return/audit actions, trace/correlation, no-fake-success/no-direct-mutation markers, and browser-safe token/email/provider/JWT/hidden-scope redaction; confirm revoke reauthorizes through `InvitationService`, returns refreshed invitation detail, and repeated terminal revoke returns no-op detail. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/fail-closed/trace coverage included hidden invitation denial, terminal no-op revoke, trace refs, correlation ids, and provider/secret redaction; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminInvitationDetailRuntimePath test`, `mvn -q -Dtest=WorkstreamServiceTest#userAdminInvitationActionsCreateResendRevokeAndReplayThroughDeterministicServices test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-054: Verify or complete runtime testing for `surface-user-admin-invitation-revoke-confirmation`
 
