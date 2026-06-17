@@ -64,6 +64,14 @@ public final class SaasOwnerOrganizationAdminService {
       audit(actor, "ORGANIZATION_CREATE", AdminAuditEvent.Result.DENIED, "idempotency-key-conflict", tenant.tenantId(), correlationId);
       throw new AuthorizationException(409, "idempotency-key-conflict");
     }
+    var duplicateVisibleName = repository.tenantRows().stream()
+        .filter(tenant -> tenant.displayName().equalsIgnoreCase(displayName))
+        .findFirst();
+    if (duplicateVisibleName.isPresent()) {
+      var tenant = duplicateVisibleName.orElseThrow();
+      audit(actor, "ORGANIZATION_CREATE", AdminAuditEvent.Result.NO_OP, "duplicate-visible-organization-name", tenant.tenantId(), correlationId);
+      return action("no-op", "A visible Organization already uses this name; returning its browser-safe detail without creating a second Tenant boundary.", tenant, "create", idempotencyKey, correlationId);
+    }
     var tenant = repository.saveTenant(new Tenant(tenantId, displayName, true));
     audit(actor, "ORGANIZATION_CREATE", AdminAuditEvent.Result.ALLOWED, safeReason(reason, "organization-created"), tenant.tenantId(), correlationId);
     return action("accepted", "Organization created as an active Tenant lifecycle boundary.", tenant, "create", idempotencyKey, correlationId);

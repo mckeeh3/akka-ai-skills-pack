@@ -19,6 +19,8 @@ type OrganizationLike = NonNullable<OrganizationAdminSurfaceData['organizations'
 
 const organizationBranchRootSurfaceId = 'surface-user-admin-organization-directory';
 const organizationBranchReturnActionId = 'action-user-admin-show-organizations';
+const organizationCreateSubmitActionId = 'action-submit-organization-create';
+const legacyOrganizationCreateActionId = 'action-organization-create';
 
 export function OrganizationAdminSurface({ envelope, onAction }: Props) {
   const data = envelope.data;
@@ -150,24 +152,26 @@ function OrganizationDetail({ envelope, organization, onAction }: Props & { orga
 }
 
 function OrganizationCreateForm({ envelope, onAction }: Props) {
-  const [createName, setCreateName] = useState('');
-  const [reason, setReason] = useState('');
+  const form = envelope.data.form;
+  const submitActionId = form?.submitActionId ?? (envelope.actions.some((action) => action.actionId === organizationCreateSubmitActionId) ? organizationCreateSubmitActionId : legacyOrganizationCreateActionId);
+  const [createName, setCreateName] = useState(form?.organizationNameDraft ?? '');
+  const [reason, setReason] = useState(form?.reasonDraft ?? '');
   const [validationError, setValidationError] = useState<string>();
   function submitCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!createName.trim()) return setValidationError('Organization name is required.');
     setValidationError(undefined);
-    run(envelope, onAction, 'action-organization-create', { organizationName: createName.trim(), reason: reason.trim(), idempotencyKey: idempotencyKey('create', createName) });
+    run(envelope, onAction, submitActionId, { organizationName: createName.trim(), reason: reason.trim(), idempotencyKey: idempotencyKey('create', createName) });
   }
   return (
     <form className="organization-admin-command-form" aria-label="Create Organization" onSubmit={submitCreate}>
       <h4>Create Organization</h4>
       {validationError && <p className="surface-state-inline validation-error" role="alert">{validationError}</p>}
-      <p className="surface-empty-copy">This single-purpose surface creates an active Organization/Tenant boundary through the protected Admin API.</p>
+      <p className="surface-empty-copy">This single-purpose surface creates an active Organization/Tenant boundary through the protected workstream API. Organization Admin bootstrap stays in its separate backend-authorized task surface.</p>
       <label>Name<input className="designed-control" value={createName} onChange={(event) => setCreateName(event.currentTarget.value)} required /></label>
       <label>Reason<input className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} placeholder="Reason for audit/work trace" /></label>
       <div className="organization-admin-lifecycle-actions">
-        <button className="surface-action-link primary" type="submit">Create Organization</button>
+        <button className="surface-action-link primary" type="submit">{form?.submitLabel ?? 'Create Organization'}</button>
         <OrganizationBranchReturn envelope={envelope} onAction={onAction} compact />
       </div>
     </form>

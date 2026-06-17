@@ -226,6 +226,17 @@ export type OrganizationAdminSurfaceData = {
     traceRefs?: string[];
     correlationId?: string;
   };
+  form?: {
+    organizationNameDraft?: string;
+    reasonDraft?: string;
+    submitLabel?: string;
+    submitActionId?: string;
+    cancelActionId?: string;
+    idempotencyKeyHint?: string;
+    disabledReason?: string;
+  };
+  validationPolicy?: Record<string, unknown>;
+  creationBoundary?: Record<string, unknown>;
   filters?: Record<string, string | number | boolean | undefined>;
   systemStates?: string[];
   emptyMessage?: string;

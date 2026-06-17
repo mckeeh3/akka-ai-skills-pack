@@ -1770,6 +1770,49 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(directDirectory.toString().contains("trace-organization-list"));
     assertBrowserSafe(directDirectory);
 
+    var createForm = getSurfaceAs("surface-user-admin-organization-create", "corr-org-create-direct", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-organization-create", createForm.surfaceId());
+    assertEquals("create-form", createForm.surfaceType());
+    assertEquals("user_admin.organization_create.v1", createForm.data().get("surfaceContract"));
+    assertTrue(createForm.toString().contains("action-submit-organization-create"));
+    assertTrue(createForm.toString().contains("validationPolicy"));
+    assertTrue(createForm.toString().contains("creationBoundary"));
+    assertTrue(createForm.toString().contains("Organization Admin bootstrap remains a separate"));
+    assertBrowserSafe(createForm);
+
+    var createdOrganization = runActionAs(new CapabilityActionRequest(
+        "action-submit-organization-create",
+        "user-admin.submit-organization-create",
+        "manage-organizations",
+        "saas_owner.tenant.manage",
+        Map.of("organizationName", "Acme Launch Org", "reason", "protected browser smoke create"),
+        "idem-org-create-smoke",
+        "membership-owner",
+        createForm.surfaceId(),
+        "corr-org-create-submit"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", createdOrganization.status());
+    assertEquals("surface-user-admin-organization-detail", createdOrganization.resultSurface().surfaceId());
+    assertTrue(createdOrganization.message().contains("Organization created"));
+    assertTrue(createdOrganization.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-create")));
+    assertTrue(createdOrganization.resultSurface().toString().contains("Acme Launch Org"));
+    assertTrue(createdOrganization.resultSurface().toString().contains("visibleActions=[read, rename, suspend]"));
+    assertBrowserSafe(createdOrganization.resultSurface());
+
+    var createReplay = runActionAs(new CapabilityActionRequest(
+        "action-submit-organization-create",
+        "user-admin.submit-organization-create",
+        "manage-organizations",
+        "saas_owner.tenant.manage",
+        Map.of("organizationName", "Acme Launch Org", "reason", "protected browser smoke replay"),
+        "idem-org-create-smoke",
+        "membership-owner",
+        createForm.surfaceId(),
+        "corr-org-create-replay"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("no-op", createReplay.status());
+    assertEquals("surface-user-admin-organization-detail", createReplay.resultSurface().surfaceId());
+    assertTrue(createReplay.message().contains("replay"));
+    assertBrowserSafe(createReplay.resultSurface());
+
     var filteredEmpty = runActionAs(new CapabilityActionRequest(
         "action-organization-list",
         "action-organization-list",

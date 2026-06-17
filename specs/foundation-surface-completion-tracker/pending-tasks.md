@@ -3145,7 +3145,7 @@
 
 ### TASK-FSCT-089: Verify or complete runtime implementation for `surface-user-admin-organization-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-088]
 - surface id: `surface-user-admin-organization-create`
@@ -3176,6 +3176,7 @@
   - purpose: Organization creation form.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-create`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented and verified the real runtime path for `surface-user-admin-organization-create`: protected direct workstream surface now returns a backend-owned `user_admin.organization_create.v1` create-form payload with form/validation/boundary/branch/trace/redaction data; protected workstream action `action-submit-organization-create` reauthorizes SaaS Owner `AuthContext`, requires idempotency, creates the active Organization/Tenant boundary through `SaasOwnerOrganizationAdminService`, handles idempotent replay and visible duplicate-name no-op, audits/traces the attempt, returns `surface-user-admin-organization-detail`, and keeps Organization Admin bootstrap separate. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered SaaS Owner `membership-owner` in `tenant-starter`; browser-safe frontend form uses backend submit action with legacy fallback; checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-organization-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`
 
 ### TASK-FSCT-090: Verify or complete runtime testing for `surface-user-admin-organization-create`
 
