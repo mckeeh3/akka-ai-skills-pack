@@ -1038,6 +1038,105 @@ export const agentAdminSurfaceActions = {
     resultSurface: { appendSurfaceType: 'workflow-status', openPlacement: 'inline' },
     audit: { eventType: 'AgentRuntimeTestRequested', traceRequired: true }
   },
+  promptGovernanceRefresh: {
+    actionId: 'action-agent-prompt-governance-refresh',
+    label: 'Refresh prompt governance',
+    intent: 'read',
+    capabilityId: agentPromptReadCapability,
+    governedToolId: agentPromptReadCapability,
+    browserToolId: 'action-agent-prompt-governance-refresh',
+    inputSchemaRef: 'schema.agent-admin.prompt-governance.refresh.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-prompt-governance', openPlacement: 'inline' },
+    audit: { eventType: 'AgentPromptGovernanceRefreshed', traceRequired: true }
+  },
+  promptGovernanceSimulate: {
+    actionId: 'action-agent-prompt-governance-simulate',
+    label: 'Run no-side-effect prompt governance simulation',
+    intent: 'workflow',
+    capabilityId: agentRuntimeTestCapability,
+    governedToolId: agentRuntimeTestCapability,
+    browserToolId: 'action-agent-prompt-governance-simulate',
+    inputSchemaRef: 'schema.agent-admin.prompt-governance.simulate.v1',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-test-console', openPlacement: 'inline' },
+    audit: { eventType: 'AgentPromptGovernanceSimulationRequested', traceRequired: true }
+  },
+  promptGovernanceSubmitReview: {
+    actionId: 'action-agent-prompt-governance-submit-review',
+    label: 'Submit prompt governance review',
+    intent: 'proposal',
+    capabilityId: agentSubmitReviewCapability,
+    governedToolId: agentSubmitReviewCapability,
+    browserToolId: 'action-agent-prompt-governance-submit-review',
+    inputSchemaRef: 'schema.agent-admin.prompt-governance.submit-review.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentPromptGovernanceSubmitted', traceRequired: true }
+  },
+  promptGovernanceApprove: {
+    actionId: 'action-agent-prompt-governance-approve',
+    label: 'Approve prompt governance review',
+    intent: 'approval',
+    capabilityId: agentSkillsCapability,
+    governedToolId: agentSkillsCapability,
+    browserToolId: 'action-agent-prompt-governance-approve',
+    inputSchemaRef: 'schema.agent-admin.prompt-governance.approve.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentPromptGovernanceApproved', traceRequired: true }
+  },
+  promptGovernanceReject: {
+    actionId: 'action-agent-prompt-governance-reject',
+    label: 'Reject prompt governance review',
+    intent: 'approval',
+    capabilityId: agentRejectCapability,
+    governedToolId: agentRejectCapability,
+    browserToolId: 'action-agent-prompt-governance-reject',
+    inputSchemaRef: 'schema.agent-admin.prompt-governance.reject.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentPromptGovernanceRejected', traceRequired: true }
+  },
+  promptGovernanceOpenRiskReview: {
+    actionId: 'action-agent-prompt-governance-open-risk-review',
+    label: 'Open prompt-risk review',
+    intent: 'read',
+    capabilityId: agentPromptRiskReadCapability,
+    governedToolId: agentPromptRiskReadCapability,
+    browserToolId: 'action-agent-prompt-governance-open-risk-review',
+    inputSchemaRef: 'schema.agent-admin.prompt-governance.open-risk-review.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentPromptGovernanceRiskReviewOpened', traceRequired: true }
+  },
+  promptGovernanceOpenTrace: {
+    actionId: 'action-agent-prompt-governance-open-trace',
+    label: 'Open prompt governance trace',
+    intent: 'trace',
+    capabilityId: 'audit.trace.read',
+    governedToolId: 'audit.trace.read',
+    browserToolId: 'action-agent-prompt-governance-open-trace',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-trace', openPlacement: 'deep-link' },
+    audit: { eventType: 'AgentPromptGovernanceTraceOpened', traceRequired: true }
+  },
+  promptGovernanceBackToDetail: {
+    actionId: 'action-agent-prompt-governance-back-to-detail',
+    label: 'Back to agent detail',
+    intent: 'read',
+    capabilityId: agentDefinitionReadCapability,
+    governedToolId: agentDefinitionReadCapability,
+    browserToolId: 'action-agent-prompt-governance-back-to-detail',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
+    audit: { eventType: 'AgentDefinitionDetailDisplayed', traceRequired: true }
+  },
   approveSkillManifest: {
     actionId: 'action-approve-skill-manifest',
     label: 'Approve manifest review',
@@ -2533,24 +2632,68 @@ export const agentPromptGovernanceSurface = envelope(
   'Prompt governance review',
   'agent-admin-agent',
   {
-    surfaceContract: 'agent_admin.prompt_version.v1',
+    surfaceContract: 'agent_admin.prompt_governance.v1',
     proposalId: 'proposal-agent-admin-prompt-001',
     lifecycleState: 'draft',
-    source: 'Deterministic AgentAdminService redacted prompt preview plus human-entered proposed change; AgentAdminAgent may draft rationale only.',
-    riskClassification: 'medium',
-    requiredApproval: agentSubmitReviewCapability + ' then ' + agentSkillsCapability + ' before activation',
-    simulationSummary: 'Validation checks secret-like content, authority expansion language, tenant scope, and no-direct-mutation boundaries.',
-    activationStatus: 'not active until separately approved and activated',
-    traceLinks: ['trace-agent-admin-prompt-prompt-agent-admin-system', 'trace-agent-admin-behavior-draft'],
-    beforeSummary: 'Active prompt requires backend authorization, ToolPermissionBoundary enforcement, provider fail-closed behavior, and no direct mutation.',
-    afterSummary: 'Draft adds clearer evidence citation and redaction wording; full prompt body remains hidden with redactedPreview only.',
-    changes: [
-      { path: 'surfaceContract', before: 'agent_admin.prompt_version.v1', after: 'agent_admin.behavior_change_proposal.v1', impact: 'Browser sees redacted prompt metadata and proposal evidence, not raw hidden prompt text.' },
-      { path: 'redactedPreview', before: 'You are AgentAdminAgent. Use governed evidence...', after: 'You are AgentAdminAgent. Cite PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace...', impact: 'Preview is browser-safe and limited; raw prompt body omitted.' },
-      { path: 'lifecycle', before: 'draft', after: 'approval-required then activate_behavior_change', impact: 'Activation remains backend-owned and cannot be performed by model output or frontend state.' }
-    ]
+    source: 'Backend-owned prompt governance evidence; AgentAdminAgent may draft rationale only.',
+    governanceSummary: {
+      surfaceId: 'surface-agent-prompt-governance',
+      contract: 'agent_admin.prompt_governance.v1',
+      managedAgentDisplayName: 'Agent Admin Agent',
+      proposalState: 'draft',
+      reviewState: 'approval-required',
+      riskClass: 'medium',
+      providerModelReadinessCategory: 'blocked_provider_or_runtime',
+      noDirectActivation: true
+    },
+    scopeSummary: { selectedContextId: 'membership-admin', scopeType: 'tenant', governanceAuthorized: true, visibilityDecision: 'visible' },
+    redactedPromptDiff: {
+      beforeSummary: 'Active prompt requires backend authorization, ToolPermissionBoundary enforcement, provider fail-closed behavior, and no direct mutation.',
+      afterSummary: 'Draft adds clearer evidence citation and redaction wording; full prompt body remains hidden with redactedPreview only.',
+      redactedPreview: 'You are AgentAdminAgent. Cite PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace...',
+      omittedSectionCounts: { rawPromptBody: 1, skillReferenceBodies: 0, providerCredentials: 0 },
+      redactionNotes: 'Raw prompt bodies, full skills/references, provider secrets, raw loader inputs, JWTs, and hidden tenant/customer ids are omitted.'
+    },
+    impactSummary: {
+      authorityToolDataBoundaryChanges: 'No authority, tool, or data-boundary expansion is granted by this surface.',
+      providerRuntimeReadiness: 'blocked_provider_or_runtime',
+      simulationOrRiskReviewRequired: true
+    },
+    riskAndEvidence: {
+      promptRiskReviewStatus: 'blocked_provider_or_runtime',
+      safeEvidenceRefs: ['PromptAssemblyTrace', 'SkillLoadTrace', 'ReferenceLoadTrace', 'AgentWorkTrace'],
+      requiredHumanReviewReasons: ['behavior-change', 'prompt-governance', 'authority-boundary']
+    },
+    reviewState: {
+      allowedDecisions: ['submit-review', 'approve-after-review', 'reject-with-reason'],
+      disabledDecisions: ['activate-directly', 'edit-raw-prompt', 'change-provider-config'],
+      rejectionReasonRequired: true,
+      approvalRequired: true,
+      nextRequiredSurface: 'surface-agent-behavior-proposal',
+      noDirectMutation: true
+    },
+    safeRedactionSummary: {
+      rawPromptText: 'omitted',
+      skillReferenceBodies: 'omitted',
+      providerCredentials: 'omitted',
+      hiddenScopes: 'omitted',
+      rawTraceEvidence: 'role-gated',
+      bearerTokens: 'omitted'
+    },
+    traceLinks: ['trace-agent-admin-prompt-prompt-agent-admin-system', 'trace-agent-admin-prompt-governance', 'trace-agent-admin-behavior-draft'],
+    states: ['loading', 'ready', 'submitting', 'simulating', 'approval-required', 'validation-error', 'conflict', 'forbidden', 'not-found-or-redacted', 'stale/reconnect', 'partial-data', 'provider-fail-closed', 'no-op', 'failure'],
+    noDirectActivation: true
   },
-  [agentAdminSurfaceActions.proposePromptDiff, agentAdminSurfaceActions.submitBehaviorChange, agentAdminSurfaceActions.testPrompt, agentAdminSurfaceActions.openAgentTrace]
+  [
+    agentAdminSurfaceActions.promptGovernanceRefresh,
+    agentAdminSurfaceActions.promptGovernanceSimulate,
+    agentAdminSurfaceActions.promptGovernanceSubmitReview,
+    agentAdminSurfaceActions.promptGovernanceApprove,
+    agentAdminSurfaceActions.promptGovernanceReject,
+    agentAdminSurfaceActions.promptGovernanceOpenRiskReview,
+    agentAdminSurfaceActions.promptGovernanceOpenTrace,
+    agentAdminSurfaceActions.promptGovernanceBackToDetail
+  ]
 );
 
 export const agentSkillManifestSurface = envelope(

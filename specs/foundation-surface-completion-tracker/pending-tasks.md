@@ -4982,7 +4982,7 @@
 
 ### TASK-FSCT-141: Verify or complete runtime testing for `surface-agent-prompt-governance`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-140]
 - surface id: `surface-agent-prompt-governance`
@@ -5016,6 +5016,7 @@
   - purpose: Prompt governance and behavior artifact review.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-prompt-governance`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-prompt-governance`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded Agent Admin runtime/API/browser smoke coverage for `surface-agent-prompt-governance` to cover missing-bearer rejection, tenant-admin selected AuthContext direct surface read, detail-to-prompt-governance open, canonical prompt-governance action availability, refresh no-op, no-side-effect simulation, submit-review approval gate, approve-with-separate-activation boundary, reject validation, reject-with-reason, fail-closed prompt-risk route, trace-open, back-to-detail, regular-member denial, customer-scoped denial, trace/correlation evidence, and browser-safe redaction/no-secret boundaries. Frontend contract fixtures/tests now assert `agent_admin.prompt_governance.v1`, canonical prompt-governance action ids, provider/runtime fail-closed markers, no-direct-activation/no-direct-mutation, trace links, and redaction boundaries. Runtime evidence: readiness level `runtime-ready` for the prompt-governance testing scope; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/provider/fail-closed/trace coverage included missing bearer, member/customer denials, `blocked_provider_or_runtime`, trace ids, and correlation ids; commands passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-142: Verify or complete app-description specification for `surface-agent-skill-manifest-diff`
 

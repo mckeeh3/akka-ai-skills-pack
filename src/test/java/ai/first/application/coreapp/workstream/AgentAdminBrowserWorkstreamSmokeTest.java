@@ -212,6 +212,11 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
         .responseBodyAs(String.class)
         .invoke(), "Protected Agent Admin detail must reject missing bearer tokens.");
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-prompt-governance")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin prompt-governance surface must reject missing bearer tokens.");
 
     var seedDefaults = runAction(new CapabilityActionRequest(
         "action-import-agent-seed-defaults",
@@ -387,13 +392,33 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(promptGovernance.resultSurface().toString().contains("governanceSummary"));
     assertTrue(promptGovernance.resultSurface().toString().contains("redactedPromptDiff"));
     assertTrue(promptGovernance.resultSurface().toString().contains("reviewState"));
+    assertTrue(promptGovernance.resultSurface().toString().contains("action-agent-prompt-governance-refresh"));
+    assertTrue(promptGovernance.resultSurface().toString().contains("action-agent-prompt-governance-simulate"));
     assertTrue(promptGovernance.resultSurface().toString().contains("action-agent-prompt-governance-submit-review"));
+    assertTrue(promptGovernance.resultSurface().toString().contains("action-agent-prompt-governance-approve"));
+    assertTrue(promptGovernance.resultSurface().toString().contains("action-agent-prompt-governance-reject"));
     assertTrue(promptGovernance.resultSurface().toString().contains("action-agent-prompt-governance-open-risk-review"));
+    assertTrue(promptGovernance.resultSurface().toString().contains("action-agent-prompt-governance-open-trace"));
+    assertTrue(promptGovernance.resultSurface().toString().contains("action-agent-prompt-governance-back-to-detail"));
 
     var directPromptGovernance = getSurface("surface-agent-prompt-governance", "corr-agent-admin-prompt-governance-direct");
+    assertEquals("surface-agent-prompt-governance", directPromptGovernance.surfaceId());
+    assertEquals("governance-diff", directPromptGovernance.surfaceType());
     assertEquals("agent_admin.prompt_governance.v1", directPromptGovernance.data().get("surfaceContract"));
+    assertEquals("corr-agent-admin-prompt-governance-direct", directPromptGovernance.correlationId());
+    assertTrue(directPromptGovernance.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-agent-prompt-governance")));
+    var promptGovernanceSummary = (Map<String, Object>) directPromptGovernance.data().get("governanceSummary");
+    assertEquals("agent_admin.prompt_governance.v1", promptGovernanceSummary.get("contract"));
+    assertEquals("blocked_provider_or_runtime", promptGovernanceSummary.get("providerModelReadinessCategory"));
+    assertEquals(Boolean.TRUE, promptGovernanceSummary.get("noDirectActivation"));
+    var promptScopeSummary = (Map<String, Object>) directPromptGovernance.data().get("scopeSummary");
+    assertEquals(ADMIN_CONTEXT_ID, promptScopeSummary.get("selectedContextId"));
+    assertEquals(Boolean.TRUE, promptScopeSummary.get("governanceAuthorized"));
+    assertEquals("visible", promptScopeSummary.get("visibilityDecision"));
     assertTrue(directPromptGovernance.toString().contains("safeRedactionSummary"));
+    assertTrue(directPromptGovernance.toString().contains("rawPromptText=omitted"));
     assertTrue(directPromptGovernance.toString().contains("blocked_provider_or_runtime"));
+    assertTrue(directPromptGovernance.toString().contains("noDirectActivation=true"));
     assertBrowserSafe(directPromptGovernance);
 
     var promptRefresh = runAction(new CapabilityActionRequest(
@@ -437,7 +462,53 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "corr-agent-admin-prompt-governance-submit"));
     assertEquals("approval-required", promptSubmit.status());
     assertEquals("surface-agent-behavior-proposal", promptSubmit.resultSurface().surfaceId());
+    assertTrue(promptSubmit.message().contains("active prompt behavior remains unchanged"));
     assertBrowserSafe(promptSubmit.resultSurface());
+
+    var promptApprove = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-governance-approve",
+        "action-agent-prompt-governance-approve",
+        "agent_admin.approve_behavior_change",
+        "agent_admin.approve_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-prompt-governance-approve",
+        ADMIN_CONTEXT_ID,
+        promptGovernance.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-governance-approve"));
+    assertEquals("approval-required", promptApprove.status());
+    assertEquals("surface-agent-behavior-proposal", promptApprove.resultSurface().surfaceId());
+    assertTrue(promptApprove.message().contains("activation remains blocked until a separate confirmation surface"));
+    assertBrowserSafe(promptApprove.resultSurface());
+
+    var promptRejectMissingReason = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-governance-reject",
+        "action-agent-prompt-governance-reject",
+        "agent_admin.reject_behavior_change",
+        "agent_admin.reject_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-prompt-governance-reject-missing-reason",
+        ADMIN_CONTEXT_ID,
+        promptGovernance.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-governance-reject-missing-reason"));
+    assertEquals("validation-error", promptRejectMissingReason.status());
+    assertEquals("surface-agent-prompt-governance", promptRejectMissingReason.resultSurface().surfaceId());
+    assertTrue(promptRejectMissingReason.message().contains("requires a human-readable reason"));
+    assertBrowserSafe(promptRejectMissingReason.resultSurface());
+
+    var promptReject = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-governance-reject",
+        "action-agent-prompt-governance-reject",
+        "agent_admin.reject_behavior_change",
+        "agent_admin.reject_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "reason", "Keep current prompt until human review evidence is complete."),
+        "idem-agent-prompt-governance-reject",
+        ADMIN_CONTEXT_ID,
+        promptGovernance.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-governance-reject"));
+    assertEquals("accepted", promptReject.status());
+    assertEquals("surface-agent-behavior-proposal", promptReject.resultSurface().surfaceId());
+    assertTrue(promptReject.message().contains("active behavior unchanged"));
+    assertBrowserSafe(promptReject.resultSurface());
 
     var promptRiskFromGovernance = runAction(new CapabilityActionRequest(
         "action-agent-prompt-governance-open-risk-review",
@@ -453,6 +524,21 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-agent-admin-prompt-risk-review", promptRiskFromGovernance.resultSurface().surfaceId());
     assertTrue(promptRiskFromGovernance.resultSurface().toString().contains("blocked_provider_or_runtime"));
     assertBrowserSafe(promptRiskFromGovernance.resultSurface());
+
+    var promptTrace = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-governance-open-trace",
+        "action-agent-prompt-governance-open-trace",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("traceId", "trace-agent-admin-prompt-governance"),
+        null,
+        ADMIN_CONTEXT_ID,
+        promptGovernance.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-governance-trace"));
+    assertEquals("accepted", promptTrace.status());
+    assertEquals("surface-agent-admin-trace", promptTrace.resultSurface().surfaceId());
+    assertTrue(promptTrace.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-prompt-governance-open-trace")));
+    assertBrowserSafe(promptTrace.resultSurface());
 
     var promptBackToDetail = runAction(new CapabilityActionRequest(
         "action-agent-prompt-governance-back-to-detail",
@@ -527,6 +613,13 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "member@example.test",
         "Member User",
         MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin detail payloads.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-prompt-governance",
+        "corr-agent-admin-prompt-governance-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin prompt-governance payloads or prompt metadata.");
 
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-agent-admin-catalog",
@@ -542,6 +635,13 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "customer@example.test",
         "Customer Admin",
         CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin detail rows or tenant governance state.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-prompt-governance",
+        "corr-agent-admin-prompt-governance-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin prompt-governance rows or prompt metadata.");
   }
 
   @Test
