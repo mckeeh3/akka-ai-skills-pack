@@ -25,14 +25,39 @@ Durable collection objects in this workstream use the canonical progression: lis
 
 ### `surface-agent-admin-dashboard` — Agent Admin command center
 
-- Type: `dashboard`; role: workstream starting surface.
-- User goal: see what needs governance attention and open the next safe surface.
-- Default-visible payload: readiness summary, provider/model status, approval queue counts, manifest drift, loader-denial state, risky authority-expansion attempts, seed import readiness, prompt-risk review readiness/deferred state, and safe redaction summary.
-- Diagnostics drawer: capability ids, governed tool ids, trace/correlation ids, raw contract names, and idempotency mechanics.
-- Actions: display catalog, open behavior proposals, start/read prompt-risk review readiness, list seed material, open manifest/tool-boundary review, open trace. Every counter/card has an action or is omitted. The default visible dashboard uses tenant/organization scope language; customer-scoped Agent Admin contexts return a safe forbidden/context state rather than implying customer-admin authority.
-- States: loading, empty, ready, forbidden, stale/reconnect, partial-data, provider-fail-closed, failure.
-- Tests: default surface is dashboard; attention section precedes authorized actions; all counters are clickable or explicitly omitted; forbidden targets do not leak hidden counts.
-- Sufficiency review: sufficient for implementation; default view must avoid raw implementation ids except in diagnostics.
+- Identity and ownership: `surface-agent-admin-dashboard`; type `dashboard`; contract `agent_admin.dashboard.v1`; role: workstream starting surface; owning workstream `Agent Admin`; owning functional agent `agent-admin-agent`; primary governed capability `managed-agent-governance`.
+- Placement: default Agent Admin entry surface from the workstream shell, reopenable from backend-owned My Account/Governance/Audit attention links when the selected `AuthContext` is authorized. Customer-scoped Agent Admin contexts return a safe forbidden/context state rather than implying customer-admin authority.
+- Purpose and user goal: show what needs managed-agent governance attention and open the next safe surface for catalog inspection, behavior proposals, prompt/model/tool readiness, seed-material review, and trace investigation.
+- Default-visible payload schema:
+  - `surfaceSummary`: id, title, type, contract, owning workstream/agent labels, selected scope label, readiness state, and last refreshed time.
+  - `scopeSummary`: selected `AuthContext` id, scope type (`saas-owner`, `tenant`, or `organization`), tenant/organization display name, actor role summary, and whether the context is governance-authorized; customer ids/names are omitted unless the actor is already authorized to see that customer through another surface.
+  - `attentionSections[]`: ordered top-to-bottom as things needing attention before things the actor can do; each item has a user label, count/status, severity, reason summary, `actionId`, `targetSurfaceId`, governed capability, and disabled/omitted reason when the target cannot be shown.
+  - `readinessSummary`: managed-agent count by lifecycle/readiness, provider/model readiness category, prompt-risk review readiness/deferred state, and no-fake-success copy when model/provider readiness is blocked.
+  - `approvalQueueCounts`: proposal, high-risk prompt/tool/model change, activation, rollback, and deferred-review counts; every visible count opens a governed review or empty queue surface.
+  - `manifestDrift`: skill/reference/tool-boundary drift summaries with impacted agent display names, drift severity, and review targets.
+  - `loaderDenialState`: recent governed loader-tool denial summaries by safe category, affected agent display names, and recovery target; raw tool inputs, prompt bodies, and evidence documents are excluded.
+  - `authorityExpansionAttempts`: risky authority/tool/data-boundary expansion attempts with approval state, policy-readable reason, and proposal target.
+  - `seedImportReadiness`: seed material import/customization preservation state, blocked reasons, and import task target.
+  - `providerModelStatus`: provider/runtime/model readiness summary, configured/not-configured/degraded categories, fail-closed reason, and link to model-reference review; provider secrets, raw API errors, and credentials are never included.
+  - `safeRedactionSummary`: browser-safe omissions for prompts, skills, references, provider data, hidden tenants/customers, and privileged trace details.
+  - `authorizedActions[]`: dashboard-level actions the backend has authorized for the selected context.
+- Diagnostics drawer payload: role-gated and visually subordinate capability ids, governed browser/tool ids, compact contract names, redacted trace/correlation ids, idempotency keys, and action routing metadata. Diagnostics never include raw provider secrets, raw prompt/skill/reference bodies, hidden tenant/customer identifiers, JWT/session material, or internal stack traces.
+- Governed action mapping:
+  - `action-agent-admin-open-catalog` -> `surface-agent-admin-catalog`; capability `managed-agent-governance`; result opens the catalog list/search surface scoped to the selected context.
+  - `action-agent-admin-open-behavior-proposals` -> `surface-agent-behavior-proposal`; capability `managed-agent-governance`; result opens the next authorized behavior proposal decision or an empty/no-pending system message.
+  - `action-agent-admin-open-prompt-risk-review` -> `surface-agent-admin-prompt-risk-review`; capability `managed-agent-governance`; starts or reads the prompt-risk autonomous review readiness/progress/result and must fail closed when provider/runtime readiness is unavailable.
+  - `action-agent-admin-open-seed-material` -> `surface-agent-seed-material`; capability `managed-agent-governance`; result lists authorized seed material without raw tenant overrides.
+  - `action-agent-admin-open-manifest-drift` -> `surface-agent-skill-manifest-diff`; capability `managed-agent-governance`; result opens the selected manifest/reference diff review.
+  - `action-agent-admin-open-tool-boundary` -> `surface-agent-tool-boundary-diff`; capability `managed-agent-governance`; result opens the selected governed tool-boundary simulation/review.
+  - `action-agent-admin-open-model-refs` -> `surface-agent-model-refs`; capability `managed-agent-governance`; result opens model/provider reference inspection with fail-closed provider readiness.
+  - `action-agent-admin-open-trace` -> `surface-agent-admin-trace`; capability `audit.trace.read` plus Agent Admin trace visibility; result opens redacted trace timeline or a no-enumeration denial.
+  - `action-agent-admin-refresh-dashboard` -> `surface-agent-admin-dashboard`; capability `managed-agent-governance`; idempotent read-only refresh with a new correlation id.
+- Authority and tenant rules: backend resolves JWT identity plus selected `AuthContext`; SaaS Owner/App Admin and tenant/organization admin contexts require `managed-agent-governance`; customer-scoped or hidden/cross-tenant contexts return forbidden/not-found-or-redacted system-message states without hidden counts, missing capability names, or cross-scope identifiers. Browser controls are advisory; backend capability, policy, approval, provider readiness, and tenant/customer scope remain authoritative.
+- Audit/work trace: every dashboard read and action emits a work trace with actor, selected context, capability decision, surface id, action id, result surface id/status, redaction profile, trace refs, correlation id, and idempotency key where applicable. User-visible trace links summarize who/what/why; raw trace detail is available only through role-gated Agent Admin or Audit/Trace drill-ins.
+- States: loading, empty, ready, submitting, forbidden, not-found-or-redacted, stale/reconnect, partial-data, provider-fail-closed, approval-required, validation-error, no-op refresh, and failure. Provider/model/tool/runtime unavailable states must render fail-closed copy and recovery actions rather than fabricated success.
+- Accessibility/responsive/style binding: use the selected web UI style guide, named-theme tokens, dashboard/card/counter/action-bar/diagnostics-drawer component catalog anatomy, keyboard-operable counters/cards, focus order matching the attention-first layout, high-contrast severity labels, and responsive single-column to multi-card layouts without hiding actions behind pointer-only controls.
+- Tests: app-description and realization tests must cover default Agent Admin entry as `surface-agent-admin-dashboard`, backend-authorized selected AuthContext and tenant/organization scoping, customer-scoped/hidden-context denial with no leaked counts, attention before actions, every visible counter/card/action returning a typed target surface, provider/model fail-closed prompt-risk readiness, manifest/tool-boundary/model/seed/proposal trace action routing, redaction of prompts/skills/references/provider secrets/JWTs/hidden ids, audit/work trace and correlation evidence, stale/reconnect/partial/failure states, and responsive keyboard behavior.
+- Sufficiency review: sufficient for implementation; a developer or generator can implement and review the dashboard without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics, and the default view avoids raw implementation ids except in role-gated diagnostics.
 
 ### `surface-agent-admin-catalog` — Managed agent catalog
 

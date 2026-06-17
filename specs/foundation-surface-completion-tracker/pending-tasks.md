@@ -4596,7 +4596,7 @@
 
 ### TASK-FSCT-130: Verify or complete app-description specification for `surface-agent-admin-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-admin-dashboard`
@@ -4625,6 +4625,7 @@
   - purpose: Agent Admin command center.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-admin-dashboard` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: expanded the Agent Admin dashboard app-description with surface identity/ownership/placement, browser-safe payload schema, governed action-to-capability mappings, selected AuthContext tenant/organization authorization and no-enumeration denial behavior, audit/work trace and correlation requirements, fail-closed states, accessibility/responsive/style bindings, tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-131: Verify or complete runtime implementation for `surface-agent-admin-dashboard`
 

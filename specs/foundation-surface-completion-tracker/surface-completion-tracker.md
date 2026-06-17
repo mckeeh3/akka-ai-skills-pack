@@ -619,7 +619,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-admin-dashboard` for `agent_admin.dashboard.v1` with Agent Admin/`agent-admin-agent` ownership, starting-surface placement, selected AuthContext/tenant/organization authorization rules, browser-safe payload schema for `surfaceSummary`, `scopeSummary`, `attentionSections[]`, readiness/provider/model/approval/manifest/tool/seed/redaction summaries, role-gated diagnostics, governed action-to-capability mappings for catalog, behavior proposals, prompt-risk review, seed material, manifest drift, tool-boundary, model refs, trace, and refresh, no-enumeration/customer-scope denial behavior, audit/work trace and correlation requirements, fail-closed provider/runtime states, accessibility/responsive/style bindings, and acceptance/security/observability tests. Sufficiency review says the dashboard is implementable without invented fields/actions/states/auth/traces/tests. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
