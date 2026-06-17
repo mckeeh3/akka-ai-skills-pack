@@ -515,6 +515,175 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesUserAdminIdentityExceptionReviewRuntimePath() throws Exception {
+    var repository = new AkkaIdentityRepository(componentClient);
+    seedIdentity(repository, "identity.case@example.test", "Identity Case", "membership-identity-case", List.of(FoundationRole.TENANT_EMPLOYEE));
+    seedIdentity(repository, "identity.deny@example.test", "Identity Deny", "membership-identity-deny", List.of(FoundationRole.TENANT_EMPLOYEE));
+    var beforeMembership = repository.findMembership("membership-identity-case").orElseThrow();
+    var beforeAccount = repository.findAccountByEmail("identity.case@example.test").orElseThrow();
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-identity-exception-review")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Identity-exception review surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-identity-review-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-useradmin-request-identity-relink",
+            "action-useradmin-request-identity-relink",
+            "user_admin.identity_relink.request",
+            "user_admin.identity_relink.request",
+            Map.of("accountId", "identity.case@example.test", "reason", "missing bearer"),
+            "idem-identity-review-missing-bearer",
+            SELECTED_CONTEXT_ID,
+            "surface-user-admin-identity-exception-review",
+            "corr-identity-review-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Identity recovery action path must reject missing bearer tokens.");
+
+    var direct = getSurface("surface-user-admin-identity-exception-review", "corr-identity-review-direct");
+    assertEquals("surface-user-admin-identity-exception-review", direct.surfaceId());
+    assertEquals("decision-card", direct.surfaceType());
+    assertEquals("user_admin.identity_exception_review.v1", direct.data().get("surfaceContract"));
+    assertEquals("request-required", direct.data().get("status"));
+    assertEquals(true, direct.data().get("noDirectMutation"));
+    assertTrue(direct.toString().contains("provider-boundary"));
+    assertTrue(direct.toString().contains("raw-jwt-redacted"));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-request-identity-relink")));
+    assertBrowserSafe(direct);
+
+    var requested = runAction(new CapabilityActionRequest(
+        "action-useradmin-request-identity-relink",
+        "action-useradmin-request-identity-relink",
+        "user_admin.identity_relink.request",
+        "user_admin.identity_relink.request",
+        Map.of("accountId", "identity.case@example.test", "membershipId", "membership-identity-case", "reason", "provider mismatch browser smoke"),
+        "idem-identity-review-request",
+        SELECTED_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-identity-review-request"));
+    assertEquals("approval-required", requested.status());
+    assertEquals("surface-user-admin-identity-exception-review", requested.resultSurface().surfaceId());
+    assertEquals("needs-review", requested.resultSurface().data().get("lifecycleStatus"));
+    assertEquals("corr-identity-review-request", requested.correlationId());
+    assertTrue(requested.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-identity-relink")));
+    assertTrue(requested.resultSurface().toString().contains("provider-boundary:redacted"));
+    assertEquals(true, requested.resultSurface().data().get("noDirectMutation"));
+    assertBrowserSafe(requested.resultSurface());
+
+    var recoveryId = String.valueOf(requested.resultSurface().data().get("recoveryId"));
+    assertFalse(recoveryId.isBlank());
+
+    var read = runAction(new CapabilityActionRequest(
+        "action-useradmin-read-identity-relink",
+        "action-useradmin-read-identity-relink",
+        "user_admin.identity_relink.review",
+        "user_admin.identity_relink.review",
+        Map.of("recoveryId", recoveryId),
+        null,
+        SELECTED_CONTEXT_ID,
+        requested.resultSurface().surfaceId(),
+        "corr-identity-review-read"));
+    assertEquals("accepted", read.status());
+    assertEquals(recoveryId, read.resultSurface().data().get("recoveryId"));
+    assertEquals("needs-review", read.resultSurface().data().get("lifecycleStatus"));
+    assertTrue(read.resultSurface().toString().contains("trace-useradmin-identity-relink"));
+    assertBrowserSafe(read.resultSurface());
+
+    var approved = runAction(new CapabilityActionRequest(
+        "action-useradmin-approve-identity-relink",
+        "action-useradmin-approve-identity-relink",
+        "user_admin.identity_relink.approve",
+        "user_admin.identity_relink.approve",
+        Map.of("recoveryId", recoveryId, "reason", "reviewed identity evidence", "approvalRef", "approval-identity-review-smoke"),
+        "idem-identity-review-approve",
+        SELECTED_CONTEXT_ID,
+        read.resultSurface().surfaceId(),
+        "corr-identity-review-approve"));
+    assertEquals("approved-for-recovery", approved.status());
+    assertEquals("approved-for-recovery", approved.resultSurface().data().get("lifecycleStatus"));
+    assertTrue(approved.resultSurface().toString().contains("completionAllowedAfterApproval=true"));
+    assertBrowserSafe(approved.resultSurface());
+
+    var replayApprove = runAction(new CapabilityActionRequest(
+        "action-useradmin-approve-identity-relink",
+        "action-useradmin-approve-identity-relink",
+        "user_admin.identity_relink.approve",
+        "user_admin.identity_relink.approve",
+        Map.of("recoveryId", recoveryId, "reason", "idempotent replay", "approvalRef", "approval-identity-review-smoke"),
+        "idem-identity-review-approve-replay",
+        SELECTED_CONTEXT_ID,
+        approved.resultSurface().surfaceId(),
+        "corr-identity-review-approve-replay"));
+    assertEquals("no-op", replayApprove.status());
+    assertEquals("approved-for-recovery", replayApprove.resultSurface().data().get("lifecycleStatus"));
+    assertBrowserSafe(replayApprove.resultSurface());
+
+    var completed = runAction(new CapabilityActionRequest(
+        "action-useradmin-complete-identity-relink",
+        "action-useradmin-complete-identity-relink",
+        "user_admin.identity_relink.complete",
+        "user_admin.identity_relink.complete",
+        Map.of("accountId", "identity.case@example.test", "approvalRef", "approval-identity-review-smoke"),
+        "idem-identity-review-complete",
+        SELECTED_CONTEXT_ID,
+        approved.resultSurface().surfaceId(),
+        "corr-identity-review-complete"));
+    assertEquals("accepted", completed.status());
+    assertEquals("completed", completed.resultSurface().data().get("lifecycleStatus"));
+    assertTrue(completed.message().contains("provider-boundary redaction"));
+    assertBrowserSafe(completed.resultSurface());
+
+    var afterMembership = repository.findMembership("membership-identity-case").orElseThrow();
+    var afterAccount = repository.findAccountByEmail("identity.case@example.test").orElseThrow();
+    assertEquals(beforeMembership.roles(), afterMembership.roles(), "Identity recovery must not mutate roles.");
+    assertEquals(beforeMembership.status(), afterMembership.status(), "Identity recovery must not mutate membership lifecycle.");
+    assertEquals(beforeMembership.supportAccess(), afterMembership.supportAccess(), "Identity recovery must not mutate support access.");
+    assertEquals(beforeAccount.status(), afterAccount.status(), "Identity recovery must not disable or reactivate the account.");
+
+    var denyRequested = runAction(new CapabilityActionRequest(
+        "action-useradmin-request-identity-relink",
+        "action-useradmin-request-identity-relink",
+        "user_admin.identity_relink.request",
+        "user_admin.identity_relink.request",
+        Map.of("accountId", "identity.deny@example.test", "membershipId", "membership-identity-deny", "reason", "provider mismatch deny smoke"),
+        "idem-identity-review-deny-request",
+        SELECTED_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-identity-review-deny-request"));
+    var denied = runAction(new CapabilityActionRequest(
+        "action-useradmin-deny-identity-relink",
+        "action-useradmin-deny-identity-relink",
+        "user_admin.identity_relink.deny",
+        "user_admin.identity_relink.deny",
+        Map.of("recoveryId", String.valueOf(denyRequested.resultSurface().data().get("recoveryId")), "reason", "not enough verified evidence"),
+        "idem-identity-review-deny",
+        SELECTED_CONTEXT_ID,
+        denyRequested.resultSurface().surfaceId(),
+        "corr-identity-review-deny"));
+    assertEquals("denied", denied.status());
+    assertEquals("denied", denied.resultSurface().data().get("lifecycleStatus"));
+    assertTrue(denied.message().contains("not mutated"));
+    assertBrowserSafe(denied.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> runActionAs(new CapabilityActionRequest(
+        "action-useradmin-read-identity-relink",
+        "action-useradmin-read-identity-relink",
+        "user_admin.identity_relink.review",
+        "user_admin.identity_relink.review",
+        Map.of("recoveryId", recoveryId),
+        null,
+        "membership-member",
+        completed.resultSurface().surfaceId(),
+        "corr-identity-review-member-denied"), "workos-member", "member@example.test", "Member User", "membership-member"),
+        "Regular members must not read tenant identity-exception recovery through the protected action API.");
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesUserAdminSupportAccessGrantRuntimePath() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-user-admin-support-access-grant")

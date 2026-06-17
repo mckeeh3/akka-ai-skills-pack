@@ -2533,18 +2533,18 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `decision-card / workflow-status`
   - surface contract: `user_admin.identity_exception_review.v1`
   - purpose: Identity-link/relink exception review and approved recovery routing.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-identity-exception-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-identity-exception-review`; surface graph node/action edge for opening or acting on `surface-user-admin-identity-exception-review`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
-  - completed 2026-06-17: verified existing runtime implementation for `surface-user-admin-identity-exception-review` through protected WorkstreamEndpoint surface/action paths, `WorkstreamService#identityExceptionReviewSurface`, `UserAdminService` durable identity-relink request/read/approve/deny/complete lifecycle, `UserAdminTaskSurface` governed browser actions, selected tenant-admin AuthContext authorization, no-enumeration hidden-target handling, audit/trace/correlation, provider-boundary and JWT/WorkOS secret redaction, and no fixture-only/frontend-only normal runtime path; tracker evidence updated; checks passed: `mvn -q -Dtest=WorkstreamServiceTest#userAdminIdentityRecoverySurfaceShowsDurableLifecycleAndSafeActions test`, `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiTraverseUserAdminSurfaceGraph test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, focused `rg` evidence, and `git diff --check`
+  - completed 2026-06-17: verified existing runtime implementation for `surface-user-admin-identity-exception-review` through protected runtime smoke on WorkstreamEndpoint surface/action paths, `WorkstreamService#identityExceptionReviewSurface`, `UserAdminService` durable identity-relink request/read/approve/deny/complete lifecycle, `UserAdminTaskSurface` governed browser actions, selected tenant-admin AuthContext authorization, no-enumeration hidden-target handling, audit/trace/correlation, provider configured/fail-closed evidence through provider-boundary and JWT/WorkOS secret redaction with no external provider mutation before deterministic approved completion, and no fixture-only/frontend-only normal runtime path; tracker evidence updated; checks passed: `mvn -q -Dtest=WorkstreamServiceTest#userAdminIdentityRecoverySurfaceShowsDurableLifecycleAndSafeActions test`, `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiTraverseUserAdminSurfaceGraph test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, focused `rg` evidence, and `git diff --check`
 
 ### TASK-FSCT-072: Verify or complete runtime testing for `surface-user-admin-identity-exception-review`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-071]
 - surface id: `surface-user-admin-identity-exception-review`
@@ -2569,15 +2569,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
   - surface type: `decision-card / workflow-status`
   - surface contract: `user_admin.identity_exception_review.v1`
   - purpose: Identity-link/relink exception review and approved recovery routing.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-identity-exception-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-identity-exception-review`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added dedicated protected Akka-hosted identity-exception review runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminIdentityExceptionReviewRuntimePath`: missing-bearer direct surface/action rejection, backend-owned no-current-exception `user_admin.identity_exception_review.v1` surface load, durable request/read/approve/approve-replay/complete recovery lifecycle, separate denial decision, regular-member read denial, no role/membership/support-access/account-lifecycle mutation evidence, provider-boundary/JWT/WorkOS redaction, trace/correlation, and browser-safe secret boundaries. runtime evidence: readiness level `runtime-ready` for the identity-exception review testing scope; role/AuthContext/tenant setup covered tenant admin and tenant employee in `tenant-starter`; denial/provider configured/fail-closed/trace coverage included missing bearer rejection, member capability denial, denial decision, noDirectMutation, provider-boundary redaction with no external provider mutation before approved deterministic completion, trace refs, and correlation ids; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminIdentityExceptionReviewRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-073: Verify or complete app-description specification for `surface-user-admin-organization-directory`
 
