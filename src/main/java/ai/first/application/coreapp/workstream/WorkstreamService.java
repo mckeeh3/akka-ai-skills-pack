@@ -791,6 +791,7 @@ public final class WorkstreamService {
         || actionId.startsWith("action-open-organization")
         || actionId.startsWith("action-customer")
         || actionId.startsWith("action-open-customer")
+        || actionId.equals("action-submit-organization-admin-invitation")
         || actionId.equals("action-display-organization-admin"));
   }
 

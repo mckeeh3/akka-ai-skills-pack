@@ -2151,6 +2151,167 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesUserAdminOrganizationAdminInvitationCreateRuntimeTestCoverage() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-organization-admin-invitation-create")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-admin-invite-missing-bearer-direct")
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Admin invitation create surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-admin-invite-missing-bearer-submit")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-submit-organization-admin-invitation",
+            "user-admin.invite-organization-admin",
+            "manage-organization-admins",
+            "saas_owner.organization_admin.invite",
+            Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID, "email", "missing-bearer-org-admin@example.test", "roles", "TENANT_ADMIN"),
+            "idem-org-admin-invite-missing-bearer",
+            "membership-owner",
+            "surface-user-admin-organization-admin-invitation-create",
+            "corr-org-admin-invite-missing-bearer-submit"))
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Admin invitation submit action must reject missing bearer tokens.");
+
+    var directForm = getSurfaceAs("surface-user-admin-organization-admin-invitation-create", "corr-org-admin-invite-direct", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-organization-admin-invitation-create", directForm.surfaceId());
+    assertEquals("create-form", directForm.surfaceType());
+    assertEquals("user_admin.organization_admin_invitation_create.v1", directForm.data().get("surfaceContract"));
+    assertEquals("corr-org-admin-invite-direct", directForm.correlationId());
+    assertTrue(directForm.toString().contains("action-submit-organization-admin-invitation"));
+    assertTrue(directForm.toString().contains("TENANT_ADMIN"));
+    assertTrue(directForm.toString().contains("Provider/outbox failures return system-message without fake success"));
+    assertTrue(directForm.toString().contains("provider-payload-redacted"));
+    assertBrowserSafe(directForm);
+
+    var dashboard = getSurfaceAs("surface-user-admin-dashboard", "corr-org-admin-invite-dashboard", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-saas-owner-dashboard", dashboard.surfaceId());
+    assertBrowserSafe(dashboard);
+
+    var directory = runActionAs(new CapabilityActionRequest(
+        "action-user-admin-show-organizations",
+        "user-admin.show-organizations",
+        "manage-organizations",
+        "saas_owner.organization.list",
+        Map.of("scope", "saas-owner"),
+        null,
+        "membership-owner",
+        dashboard.surfaceId(),
+        "corr-org-admin-invite-directory"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", directory.status());
+    assertEquals("surface-user-admin-organization-directory", directory.resultSurface().surfaceId());
+    assertBrowserSafe(directory.resultSurface());
+
+    var organizationDetail = runActionAs(new CapabilityActionRequest(
+        "action-organization-read",
+        "action-organization-read",
+        "saas_owner.organization.read",
+        "saas_owner.organization.read",
+        Map.of("organizationId", TENANT_ID),
+        null,
+        "membership-owner",
+        directory.resultSurface().surfaceId(),
+        "corr-org-admin-invite-detail"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", organizationDetail.status());
+    assertEquals("surface-user-admin-organization-detail", organizationDetail.resultSurface().surfaceId());
+    assertTrue(organizationDetail.resultSurface().toString().contains("action-open-organization-admin-invitation-create"));
+    assertBrowserSafe(organizationDetail.resultSurface());
+
+    var form = runActionAs(new CapabilityActionRequest(
+        "action-open-organization-admin-invitation-create",
+        "user-admin.open-organization-admin-invite",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.invite",
+        Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID),
+        null,
+        "membership-owner",
+        organizationDetail.resultSurface().surfaceId(),
+        "corr-org-admin-invite-form"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", form.status());
+    assertEquals("surface-user-admin-organization-admin-invitation-create", form.resultSurface().surfaceId());
+    assertEquals(TENANT_ID, form.resultSurface().data().get("organizationId"));
+    assertTrue(form.resultSurface().toString().contains("targetScope"));
+    assertTrue(form.resultSurface().toString().contains("backend-authored-organization-detail"));
+    assertBrowserSafe(form.resultSurface());
+
+    var submitRequest = new CapabilityActionRequest(
+        "action-submit-organization-admin-invitation",
+        "user-admin.invite-organization-admin",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.invite",
+        Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID, "email", "runtime-org-admin@example.test", "displayName", "Runtime Organization Admin", "roles", "TENANT_ADMIN", "reason", "protected runtime smoke"),
+        "idem-org-admin-invite-runtime-smoke",
+        "membership-owner",
+        form.resultSurface().surfaceId(),
+        "corr-org-admin-invite-submit");
+    var submitted = runActionAs(submitRequest, "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", submitted.status(), submitted.message() + " " + submitted.resultSurface().data());
+    assertEquals("corr-org-admin-invite-submit", submitted.correlationId());
+    assertEquals("surface-user-admin-invitation-detail", submitted.resultSurface().surfaceId());
+    assertEquals("organization-admin-invitation", submitted.resultSurface().data().get("recordKind"));
+    assertEquals(TENANT_ID, submitted.resultSurface().data().get("organizationId"));
+    assertTrue(submitted.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-admin-invitation")));
+    assertTrue(submitted.resultSurface().toString().contains("runtime-org-admin@example.test"));
+    assertTrue(submitted.resultSurface().toString().contains("scopeType=TENANT"));
+    assertTrue(submitted.resultSurface().toString().contains("targetScope"));
+    assertTrue(submitted.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-organization-admins"));
+    assertTrue(submitted.resultSurface().toString().contains("provider-payload-redacted"));
+    assertTrue(submitted.resultSurface().toString().contains("tenant-app-data-redacted"));
+    assertBrowserSafe(submitted.resultSurface());
+
+    var repeatedSubmit = runActionAs(submitRequest, "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", repeatedSubmit.status());
+    assertEquals(submitted.resultSurface().data().get("invitationId"), repeatedSubmit.resultSurface().data().get("invitationId"));
+    assertBrowserSafe(repeatedSubmit.resultSurface());
+
+    var invalidRole = runActionAs(new CapabilityActionRequest(
+        "action-submit-organization-admin-invitation",
+        "user-admin.invite-organization-admin",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.invite",
+        Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID, "email", "invalid-role-org-admin@example.test", "displayName", "Invalid Role", "roles", "TENANT_EMPLOYEE", "reason", "invalid role smoke"),
+        "idem-org-admin-invite-invalid-role",
+        "membership-owner",
+        form.resultSurface().surfaceId(),
+        "corr-org-admin-invite-invalid-role"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("validation-error", invalidRole.status());
+    assertEquals("surface-user-admin-organization-admin-invitation-create", invalidRole.resultSurface().surfaceId());
+    assertTrue(invalidRole.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-admin-invite-validation")));
+    assertTrue(invalidRole.message().contains("TENANT_ADMIN"));
+    assertBrowserSafe(invalidRole.resultSurface());
+
+    var hiddenSubmit = runActionAs(new CapabilityActionRequest(
+        "action-submit-organization-admin-invitation",
+        "user-admin.invite-organization-admin",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.invite",
+        Map.of("organizationId", "missing-organization-never-seeded", "tenantId", "missing-organization-never-seeded", "email", "hidden-org-admin@example.test", "displayName", "Hidden Organization Admin", "roles", "TENANT_ADMIN", "reason", "hidden target smoke"),
+        "idem-org-admin-invite-hidden",
+        "membership-owner",
+        form.resultSurface().surfaceId(),
+        "corr-org-admin-invite-hidden"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("denied", hiddenSubmit.status());
+    assertEquals("surface-user-admin-system-message", hiddenSubmit.resultSurface().surfaceId());
+    assertFalse(hiddenSubmit.resultSurface().toString().contains("missing-organization-never-seeded"));
+    assertBrowserSafe(hiddenSubmit.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-open-organization-admin-invitation-create",
+        "user-admin.open-organization-admin-invite",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.invite",
+        Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID),
+        null,
+        SELECTED_CONTEXT_ID,
+        organizationDetail.resultSurface().surfaceId(),
+        "corr-org-admin-invite-tenant-denied")),
+        "Tenant Admin selected contexts must not open SaaS Owner Organization Admin invitation forms.");
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesUserAdminAccessReviewTaskRuntimePath() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-user-admin-access-review-task")
