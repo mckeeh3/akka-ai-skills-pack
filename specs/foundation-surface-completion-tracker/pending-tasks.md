@@ -3498,7 +3498,7 @@
 
 ### TASK-FSCT-099: Verify or complete runtime testing for `surface-user-admin-organization-reactivate-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-098]
 - surface id: `surface-user-admin-organization-reactivate-confirmation`
@@ -3532,6 +3532,7 @@
   - purpose: Organization reactivation confirmation surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-reactivate-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-reactivate-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted User Admin Organization reactivate confirmation runtime smoke coverage for detail-to-reactivate traversal, direct missing-target/no-fake-success state, missing-bearer direct/action rejection, Tenant Admin direct/action denial, reason and `REACTIVATE` confirmation validation, successful Tenant lifecycle reactivation, already-active no-op/idempotent replay recovery, unsupported active-state task-open denial, trace/correlation assertions, browser-safe redaction, and frontend secret-boundary evidence. Runtime evidence: readiness level `runtime-ready`; checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-organization-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-100: Verify or complete app-description specification for `surface-user-admin-customer-directory`
 

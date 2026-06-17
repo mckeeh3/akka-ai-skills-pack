@@ -2237,6 +2237,51 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(directReactivateWithoutTarget.toString().contains("tenant-hidden"));
     assertBrowserSafe(directReactivateWithoutTarget);
 
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-organization-reactivate-confirmation")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-reactivate-missing-bearer-direct")
+        .responseBodyAs(String.class)
+        .invoke(), "Organization reactivate confirmation direct load must reject missing bearer tokens.");
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-user-admin-organization-reactivate-confirmation",
+        "corr-org-reactivate-tenant-direct-denied",
+        "workos-admin",
+        "admin@example.test",
+        "Tenant Admin",
+        SELECTED_CONTEXT_ID),
+        "Tenant Admin selected contexts must not directly load the SaaS Owner Organization reactivate confirmation.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-reactivate-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-organization-reactivate",
+            "action-organization-reactivate",
+            "manage-organizations",
+            "saas_owner.organization.reactivate",
+            Map.of("organizationId", TENANT_ID, "reason", "missing bearer must fail", "confirmationPhrase", "REACTIVATE"),
+            "idem-org-reactivate-missing-bearer",
+            "membership-owner",
+            reactivateTask.resultSurface().surfaceId(),
+            "corr-org-reactivate-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Organization reactivate submit action must reject missing bearer tokens.");
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-organization-reactivate",
+        "action-organization-reactivate",
+        "manage-organizations",
+        "saas_owner.organization.reactivate",
+        Map.of("organizationId", TENANT_ID, "reason", "tenant admin must not reactivate Organizations", "confirmationPhrase", "REACTIVATE"),
+        "idem-org-reactivate-tenant-denied",
+        SELECTED_CONTEXT_ID,
+        reactivateTask.resultSurface().surfaceId(),
+        "corr-org-reactivate-tenant-denied")),
+        "Tenant Admin selected contexts must not submit SaaS Owner Organization reactivation.");
+
     var missingReactivateReason = runActionAs(new CapabilityActionRequest(
         "action-organization-reactivate",
         "action-organization-reactivate",
@@ -2284,6 +2329,39 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(reactivated.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-reactivate")));
     assertTrue(reactivated.resultSurface().toString().contains("status=active"));
     assertBrowserSafe(reactivated.resultSurface());
+
+    var reactivateNoOp = runActionAs(new CapabilityActionRequest(
+        "action-organization-reactivate",
+        "action-organization-reactivate",
+        "manage-organizations",
+        "saas_owner.organization.reactivate",
+        Map.of("organizationId", TENANT_ID, "reason", "protected browser smoke idempotent reactivate replay", "confirmationPhrase", "REACTIVATE"),
+        "idem-org-detail-reactivate-noop",
+        "membership-owner",
+        reactivated.resultSurface().surfaceId(),
+        "corr-org-detail-reactivate-noop"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("no-op", reactivateNoOp.status());
+    assertEquals("surface-user-admin-organization-detail", reactivateNoOp.resultSurface().surfaceId());
+    assertTrue(reactivateNoOp.message().contains("already active"));
+    assertTrue(reactivateNoOp.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-reactivate")));
+    assertTrue(reactivateNoOp.resultSurface().toString().contains("status=active"));
+    assertBrowserSafe(reactivateNoOp.resultSurface());
+
+    var staleReactivate = runActionAs(new CapabilityActionRequest(
+        "action-open-organization-reactivate",
+        "action-open-organization-reactivate",
+        "manage-organizations",
+        "saas_owner.organization.reactivate",
+        Map.of("organizationId", TENANT_ID),
+        null,
+        "membership-owner",
+        reactivated.resultSurface().surfaceId(),
+        "corr-org-detail-stale-reactivate"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("denied", staleReactivate.status());
+    assertTrue(staleReactivate.resultSurface().surfaceId().contains("denied"));
+    assertTrue(staleReactivate.resultSurface().surfaceType().contains("system"));
+    assertFalse(staleReactivate.resultSurface().toString().contains("missing-organization-never-seeded"));
+    assertBrowserSafe(staleReactivate.resultSurface());
 
     var admins = runActionAs(new CapabilityActionRequest(
         "action-user-admin-show-organization-admins",
