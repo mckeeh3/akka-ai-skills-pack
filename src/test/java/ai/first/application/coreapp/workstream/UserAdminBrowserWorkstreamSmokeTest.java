@@ -2014,6 +2014,143 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesUserAdminOrganizationAdminsRuntimeTestCoverage() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-organization-admins")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-admins-missing-bearer-direct")
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Admins surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-org-admins-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-user-admin-show-organization-admins",
+            "user-admin.show-organization-admins",
+            "manage-organization-admins",
+            "saas_owner.organization_admin.list",
+            Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID),
+            null,
+            "membership-owner",
+            "surface-user-admin-organization-detail",
+            "corr-org-admins-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Organization Admins action path must reject missing bearer tokens.");
+
+    var directMissingTarget = getSurfaceAs("surface-user-admin-organization-admins", "corr-org-admins-direct-missing-target", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-organization-admins", directMissingTarget.surfaceId());
+    assertEquals("list-search", directMissingTarget.surfaceType());
+    assertEquals("user_admin.organization_admins.v1", directMissingTarget.data().get("surfaceContract"));
+    assertEquals("corr-org-admins-direct-missing-target", directMissingTarget.correlationId());
+    assertTrue(directMissingTarget.toString().contains("missing-target"));
+    assertTrue(directMissingTarget.toString().contains("Select an Organization before listing Organization Admin users and invitations"));
+    assertTrue(directMissingTarget.toString().contains("trace-organization-admins-missing-target"));
+    assertTrue(directMissingTarget.toString().contains("hidden-organization-admin-counts-redacted"));
+    assertBrowserSafe(directMissingTarget);
+
+    var dashboard = getSurfaceAs("surface-user-admin-dashboard", "corr-org-admins-dashboard", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-saas-owner-dashboard", dashboard.surfaceId());
+    assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-user-admin-show-organizations")));
+    assertBrowserSafe(dashboard);
+
+    var directory = runActionAs(new CapabilityActionRequest(
+        "action-user-admin-show-organizations",
+        "user-admin.show-organizations",
+        "manage-organizations",
+        "saas_owner.organization.list",
+        Map.of("scope", "saas-owner"),
+        null,
+        "membership-owner",
+        dashboard.surfaceId(),
+        "corr-org-admins-directory"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", directory.status());
+    assertEquals("surface-user-admin-organization-directory", directory.resultSurface().surfaceId());
+    assertTrue(directory.resultSurface().toString().contains("targetSurfaceId=surface-user-admin-organization-detail"));
+    assertBrowserSafe(directory.resultSurface());
+
+    var organizationDetail = runActionAs(new CapabilityActionRequest(
+        "action-organization-read",
+        "action-organization-read",
+        "saas_owner.organization.read",
+        "saas_owner.organization.read",
+        Map.of("organizationId", TENANT_ID),
+        null,
+        "membership-owner",
+        directory.resultSurface().surfaceId(),
+        "corr-org-admins-detail"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", organizationDetail.status());
+    assertEquals("surface-user-admin-organization-detail", organizationDetail.resultSurface().surfaceId());
+    assertTrue(organizationDetail.resultSurface().toString().contains("action-user-admin-show-organization-admins"));
+    assertBrowserSafe(organizationDetail.resultSurface());
+
+    var admins = runActionAs(new CapabilityActionRequest(
+        "action-user-admin-show-organization-admins",
+        "user-admin.show-organization-admins",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.list",
+        Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID),
+        null,
+        "membership-owner",
+        organizationDetail.resultSurface().surfaceId(),
+        "corr-org-admins-open"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", admins.status());
+    assertEquals("corr-org-admins-open", admins.correlationId());
+    assertEquals("surface-user-admin-organization-admins", admins.resultSurface().surfaceId());
+    assertEquals("list-search", admins.resultSurface().surfaceType());
+    assertEquals("user_admin.organization_admins.v1", admins.resultSurface().data().get("surfaceContract"));
+    assertEquals(TENANT_ID, admins.resultSurface().data().get("organizationId"));
+    assertEquals(TENANT_ID, admins.resultSurface().data().get("tenantId"));
+    assertTrue(admins.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-admins")));
+    assertTrue(admins.resultSurface().toString().contains("scopeType=TENANT"));
+    assertTrue(admins.resultSurface().toString().contains("backend-authored-organization-detail"));
+    assertTrue(admins.resultSurface().toString().contains("admin@example.test"));
+    assertTrue(admins.resultSurface().toString().contains("TENANT_ADMIN"));
+    assertFalse(admins.resultSurface().toString().contains("member@example.test"));
+    assertTrue(admins.resultSurface().toString().contains("visibleCount=1"));
+    assertTrue(admins.resultSurface().toString().contains("activeAdminCount=1"));
+    assertTrue(admins.resultSurface().toString().contains("lastAdminRiskCount=1"));
+    assertTrue(admins.resultSurface().toString().contains("providerBlockedCount=0"));
+    assertTrue(admins.resultSurface().toString().contains("outboxBlockedCount=0"));
+    assertTrue(admins.resultSurface().toString().contains("action-open-organization-admin-invitation-create"));
+    assertTrue(admins.resultSurface().toString().contains("action-display-user-detail"));
+    assertTrue(admins.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-organizations"));
+    assertTrue(admins.resultSurface().toString().contains("tenant-app-data-redacted"));
+    assertTrue(admins.resultSurface().toString().contains("provider-payload-redacted"));
+    assertBrowserSafe(admins.resultSurface());
+
+    var hiddenAdmins = runActionAs(new CapabilityActionRequest(
+        "action-user-admin-show-organization-admins",
+        "user-admin.show-organization-admins",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.list",
+        Map.of("organizationId", "missing-organization-never-seeded", "tenantId", "missing-organization-never-seeded"),
+        null,
+        "membership-owner",
+        organizationDetail.resultSurface().surfaceId(),
+        "corr-org-admins-hidden"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("denied", hiddenAdmins.status());
+    assertEquals("surface-user-admin-system-message", hiddenAdmins.resultSurface().surfaceId());
+    assertFalse(hiddenAdmins.resultSurface().toString().contains("missing-organization-never-seeded"));
+    assertBrowserSafe(hiddenAdmins.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurface("surface-user-admin-organization-admins", "corr-org-admins-tenant-denied-direct"),
+        "Tenant Admin selected contexts must not direct-load the SaaS Owner Organization Admins surface.");
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-user-admin-show-organization-admins",
+        "user-admin.show-organization-admins",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.list",
+        Map.of("organizationId", TENANT_ID, "tenantId", TENANT_ID),
+        null,
+        SELECTED_CONTEXT_ID,
+        "surface-user-admin-organization-detail",
+        "corr-org-admins-tenant-denied-action")),
+        "Tenant Admin selected contexts must not open Organization Admins through the protected action API.");
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesUserAdminAccessReviewTaskRuntimePath() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-user-admin-access-review-task")

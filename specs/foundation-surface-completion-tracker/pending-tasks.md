@@ -2862,7 +2862,7 @@
 
 ### TASK-FSCT-081: Verify or complete runtime testing for `surface-user-admin-organization-admins`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-080]
 - surface id: `surface-user-admin-organization-admins`
@@ -2896,6 +2896,7 @@
   - purpose: Directory of Organization Admin users/invitations for one selected Organization/Tenant.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admins`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added dedicated protected Akka-hosted runtime smoke coverage for `surface-user-admin-organization-admins` in `UserAdminBrowserWorkstreamSmokeTest`: missing-bearer direct/action rejection, SaaS Owner direct missing-target state, dashboard -> Organization Directory -> Organization Detail -> Organization Admins action traversal, selected `tenant-starter` scope proof, TENANT_ADMIN row/admin summary/action metadata, trace/correlation refs, provider/outbox count evidence, hidden target safe system-message denial, Tenant Admin direct/action denial, and frontend secret-boundary assertions. Tracker updated. Checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationAdminsRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-082: Verify or complete app-description specification for `surface-user-admin-organization-admin-invitation-create`
 
