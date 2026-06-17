@@ -1261,7 +1261,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence (satisfied; no implementation blocker remains in this task)
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.saas_owner_admin_invitation_create.v1`
@@ -1272,7 +1272,7 @@
 
 ### TASK-FSCT-036: Verify or complete runtime testing for `surface-user-admin-saas-owner-admin-invitation-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-035]
 - surface id: `surface-user-admin-saas-owner-admin-invitation-create`
@@ -1299,13 +1299,14 @@
   - focused frontend tests/typecheck when frontend is in scope
   - manual/API/browser smoke evidence or explicit blocker
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.saas_owner_admin_invitation_create.v1`
   - purpose: Invitation form for another SaaS Owner Admin with role validation, idempotency, outbox boundary, and audit.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-saas-owner-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-saas-owner-admin-invitation-create`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted SaaS Owner Admin invitation create runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesSaasOwnerAdminsRuntimePath`: JWT plus selected SaaS Owner AuthContext opens the dashboard/list/create-form path, verifies backend-owned `user_admin.saas_owner_admin_invitation_create.v1` form/delivery-readiness/action/trace/correlation/secret-boundary evidence, submits an app-owner invitation through `/api/workstream/actions`, verifies invitation-detail result routing, exercises duplicate/open-invite behavior with the same idempotency key, validates unsupported-role and missing-idempotency failures, denies tenant-admin SaaS Owner branch access without enumeration, and rejects missing-bearer surface access. runtime evidence: readiness level `runtime-ready` for the create-form testing scope; role/AuthContext/tenant setup covered SaaS Owner Admin `membership-owner` plus tenant-admin denial in `tenant-starter`; denial/provider/fail-closed/trace coverage included missing bearer, unsupported role, missing idempotency key, token/provider/outbox redaction, trace refs, and correlation ids; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesSaasOwnerAdminsRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-037: Verify or complete app-description specification for `surface-user-admin-users`
 

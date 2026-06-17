@@ -354,11 +354,60 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         createForm.resultSurface().surfaceId(),
         "corr-saas-owner-admins-submit"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
     assertTrue(List.of("accepted", "blocked-runtime").contains(submitted.status()));
+    assertEquals("corr-saas-owner-admins-submit", submitted.correlationId());
     assertEquals("surface-user-admin-invitation-detail", submitted.resultSurface().surfaceId());
     assertTrue(submitted.resultSurface().toString().contains("browser-owner-admin@example.test"));
+    assertTrue(submitted.resultSurface().toString().contains("Role"));
+    assertTrue(submitted.resultSurface().toString().contains("trace-"));
     assertFalse(submitted.resultSurface().toString().contains("invite-token"));
     assertFalse(submitted.resultSurface().toString().contains("tokenHash"));
     assertBrowserSafe(submitted.resultSurface());
+
+    var replayedSubmit = runActionAs(new CapabilityActionRequest(
+        "action-submit-saas-owner-admin-invitation",
+        "user-admin.submit-saas-owner-admin-invite",
+        "manage-saas-owner-admins",
+        "saas_owner.admin.invite",
+        Map.of("email", "browser-owner-admin@example.test", "displayName", "Browser Owner Admin", "roles", "SAAS_OWNER_ADMIN", "reason", "browser smoke replay"),
+        "idem-browser-owner-admin",
+        "membership-owner",
+        createForm.resultSurface().surfaceId(),
+        "corr-saas-owner-admins-submit-replay"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertTrue(List.of("accepted", "blocked-runtime").contains(replayedSubmit.status()));
+    assertEquals("corr-saas-owner-admins-submit-replay", replayedSubmit.correlationId());
+    assertEquals(submitted.resultSurface().surfaceId(), replayedSubmit.resultSurface().surfaceId());
+    assertTrue(replayedSubmit.resultSurface().toString().contains("browser-owner-admin@example.test"));
+    assertBrowserSafe(replayedSubmit.resultSurface());
+
+    var unsupportedRole = runActionAs(new CapabilityActionRequest(
+        "action-submit-saas-owner-admin-invitation",
+        "user-admin.submit-saas-owner-admin-invite",
+        "manage-saas-owner-admins",
+        "saas_owner.admin.invite",
+        Map.of("email", "bad-role-owner-admin@example.test", "displayName", "Bad Role", "roles", "TENANT_ADMIN", "reason", "role escalation attempt"),
+        "idem-browser-owner-admin-bad-role",
+        "membership-owner",
+        createForm.resultSurface().surfaceId(),
+        "corr-saas-owner-admins-bad-role"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("validation-error", unsupportedRole.status());
+    assertEquals("surface-user-admin-saas-owner-admin-invitation-create", unsupportedRole.resultSurface().surfaceId());
+    assertTrue(unsupportedRole.message().contains("SAAS_OWNER_ADMIN"));
+    assertFalse(unsupportedRole.resultSurface().toString().contains("bad-role-owner-admin@example.test"));
+    assertBrowserSafe(unsupportedRole.resultSurface());
+
+    var missingIdempotency = runActionAs(new CapabilityActionRequest(
+        "action-submit-saas-owner-admin-invitation",
+        "user-admin.submit-saas-owner-admin-invite",
+        "manage-saas-owner-admins",
+        "saas_owner.admin.invite",
+        Map.of("email", "missing-idempotency-owner-admin@example.test", "displayName", "Missing Idempotency", "roles", "SAAS_OWNER_ADMIN", "reason", "missing idempotency"),
+        null,
+        "membership-owner",
+        createForm.resultSurface().surfaceId(),
+        "corr-saas-owner-admins-missing-idempotency"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("validation-error", missingIdempotency.status());
+    assertTrue(missingIdempotency.message().contains("idempotency key"));
+    assertEquals("corr-saas-owner-admins-missing-idempotency", missingIdempotency.correlationId());
 
     var directList = getSurfaceAs("surface-user-admin-saas-owner-admins", "corr-saas-owner-admins-direct", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
     assertEquals("surface-user-admin-saas-owner-admins", directList.surfaceId());
