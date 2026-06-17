@@ -3922,7 +3922,7 @@
 
 ### TASK-FSCT-111: Verify or complete runtime testing for `surface-user-admin-customer-admin-invitation-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-110]
 - surface id: `surface-user-admin-customer-admin-invitation-create`
@@ -3956,6 +3956,7 @@
   - purpose: Bootstrap/invite form for a CUSTOMER_ADMIN.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admin-invitation-create`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage` to cover the protected Akka-hosted Customer Admin invitation create-form/action path: missing-bearer open/submit denials, direct protected create-form browser-safe no-target behavior, Customer-detail-to-create-form traversal with backend-authored Customer boundary and `CUSTOMER_ADMIN` role metadata, successful protected `/api/workstream/actions` submission creating a durable `ScopeType.CUSTOMER` invitation with idempotency/correlation and local/Resend outbox boundary, idempotent replay without duplicate invitation creation, unsupported-role validation returning the form without mutation, hidden Customer denial without enumeration, Customer Admin selected-context denial, trace/correlation assertions, and browser secret-boundary checks. Tracker updated to `runtime-ready` for this testing objective. Checks passed: `mvn -Dtest=ai.first.application.coreapp.workstream.UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence for surface/action/auth/traces/secret-boundary coverage, and `git diff --check`.
 
 ### TASK-FSCT-112: Verify or complete app-description specification for `surface-user-admin-customer-admin-detail`
 

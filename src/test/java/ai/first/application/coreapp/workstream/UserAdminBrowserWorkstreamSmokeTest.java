@@ -13,6 +13,8 @@ import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActio
 import ai.first.application.coreapp.workstream.WorkstreamService.SurfaceEnvelope;
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamBootstrapResponse;
 import ai.first.application.foundation.identity.AkkaIdentityRepository;
+import ai.first.application.foundation.invitation.AkkaInvitationRepository;
+import ai.first.domain.foundation.email.EmailDeliveryStatus;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.identity.Customer;
@@ -23,6 +25,7 @@ import ai.first.domain.foundation.identity.ScopeType;
 import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.identity.UserProfile;
 import ai.first.domain.foundation.identity.UserSettings;
+import ai.first.domain.foundation.invitation.InvitationStatus;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -2907,6 +2910,40 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .responseBodyAs(String.class)
         .invoke(), "Customer Admin list action path must reject missing bearer tokens.");
 
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-admin-invite-open-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-open-customer-admin-invitation-create",
+            "user-admin.open-customer-admin-invite",
+            "manage-customer-admins",
+            "tenant.customer_admin.invite",
+            Map.of("customerId", "cust-alpha"),
+            null,
+            SELECTED_CONTEXT_ID,
+            "surface-user-admin-customer-detail",
+            "corr-customer-admin-invite-open-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Customer Admin invite create-form action path must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-customer-admin-invite-submit-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-customer-admin-invite",
+            "user-admin.invite-customer-admin",
+            "manage-customer-admins",
+            "tenant.customer_admin.invite",
+            Map.of("customerId", "cust-alpha", "email", "missing.bearer.customer.admin@example.test", "displayName", "Missing Bearer", "roles", "CUSTOMER_ADMIN"),
+            "idem-customer-admin-invite-missing-bearer",
+            SELECTED_CONTEXT_ID,
+            "surface-user-admin-customer-admin-invitation-create",
+            "corr-customer-admin-invite-submit-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Customer Admin invite submit action path must reject missing bearer tokens.");
+
     var direct = getSurface("surface-user-admin-customer-directory", "corr-customer-directory-direct");
     assertEquals("surface-user-admin-customer-directory", direct.surfaceId());
     assertEquals("list-search", direct.surfaceType());
@@ -3011,6 +3048,17 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(directCustomerAdmins.toString().contains("customer-admin@example.test"));
     assertBrowserSafe(directCustomerAdmins);
 
+    var directInviteForm = getSurface("surface-user-admin-customer-admin-invitation-create", "corr-customer-admin-invite-direct-no-target");
+    assertEquals("surface-user-admin-customer-admin-invitation-create", directInviteForm.surfaceId());
+    assertEquals("create-form", directInviteForm.surfaceType());
+    assertEquals("user_admin.customer_admin_invitation_create.v1", directInviteForm.data().get("surfaceContract"));
+    assertTrue(directInviteForm.toString().contains("Open this form from Customer detail"));
+    assertTrue(directInviteForm.toString().contains("Provider/outbox failures return system-message without fake success"));
+    assertTrue(directInviteForm.toString().contains("action-customer-admin-invite"));
+    assertFalse(directInviteForm.toString().contains("Alpha Customer"));
+    assertFalse(directInviteForm.toString().contains("customer-admin@example.test"));
+    assertBrowserSafe(directInviteForm);
+
     var customerAdmins = runAction(new CapabilityActionRequest(
         "action-user-admin-show-customer-admins",
         "user-admin.show-customer-admins",
@@ -3062,6 +3110,109 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(inviteForm.resultSurface().toString().contains("provider-payload-redacted"));
     assertTrue(inviteForm.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-customers"));
     assertBrowserSafe(inviteForm.resultSurface());
+
+    var customerAdminInvite = runAction(new CapabilityActionRequest(
+        "action-customer-admin-invite",
+        "user-admin.invite-customer-admin",
+        "manage-customer-admins",
+        "tenant.customer_admin.invite",
+        Map.of("customerId", "cust-alpha", "email", "new.customer.admin@example.test", "displayName", "New Customer Admin", "roles", "CUSTOMER_ADMIN", "reason", "browser smoke customer admin bootstrap"),
+        "idem-customer-admin-invite-browser-smoke",
+        SELECTED_CONTEXT_ID,
+        inviteForm.resultSurface().surfaceId(),
+        "corr-customer-admin-invite-submit"));
+    assertEquals("accepted", customerAdminInvite.status());
+    assertEquals("corr-customer-admin-invite-submit", customerAdminInvite.correlationId());
+    assertEquals("surface-user-admin-invitation-detail", customerAdminInvite.resultSurface().surfaceId());
+    assertEquals("user_admin.invitation_detail.v1", customerAdminInvite.resultSurface().data().get("surfaceContract"));
+    assertTrue(customerAdminInvite.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-admin-invite-created")));
+    assertTrue(customerAdminInvite.resultSurface().toString().contains("recordKind=customer-admin-invitation"));
+    assertTrue(customerAdminInvite.resultSurface().toString().contains("new.customer.admin@example.test"));
+    assertTrue(customerAdminInvite.resultSurface().toString().contains("scopeType=CUSTOMER"));
+    assertTrue(customerAdminInvite.resultSurface().toString().contains("customerId=cust-alpha"));
+    assertTrue(customerAdminInvite.resultSurface().toString().contains("status=sent"));
+    assertTrue(customerAdminInvite.resultSurface().toString().contains("invitation-token-redacted"));
+    assertBrowserSafe(customerAdminInvite.resultSurface());
+
+    var invitationRepository = new AkkaInvitationRepository(componentClient);
+    var savedCustomerAdminInvite = invitationRepository.findByIdempotencyKey("idem-customer-admin-invite-browser-smoke").orElseThrow();
+    assertEquals(ScopeType.CUSTOMER, savedCustomerAdminInvite.scopeType());
+    assertEquals(TENANT_ID, savedCustomerAdminInvite.tenantId());
+    assertEquals("cust-alpha", savedCustomerAdminInvite.customerId());
+    assertEquals(List.of(FoundationRole.CUSTOMER_ADMIN), savedCustomerAdminInvite.requestedRoles());
+    assertEquals(InvitationStatus.SENT, savedCustomerAdminInvite.status());
+    assertTrue(List.of(EmailDeliveryStatus.SENT, EmailDeliveryStatus.CAPTURED).contains(savedCustomerAdminInvite.deliveryStatus()));
+    assertEquals("corr-customer-admin-invite-submit", savedCustomerAdminInvite.correlationId());
+    assertTrue(invitationRepository.queuedEmails().stream().anyMatch(message -> message.invitationId().equals(savedCustomerAdminInvite.invitationId()) && message.scopeType() == ScopeType.CUSTOMER && "cust-alpha".equals(message.customerId()) && message.correlationId().equals("corr-customer-admin-invite-submit")));
+
+    var replayedCustomerAdminInvite = runAction(new CapabilityActionRequest(
+        "action-customer-admin-invite",
+        "user-admin.invite-customer-admin",
+        "manage-customer-admins",
+        "tenant.customer_admin.invite",
+        Map.of("customerId", "cust-alpha", "email", "new.customer.admin@example.test", "displayName", "New Customer Admin", "roles", "CUSTOMER_ADMIN", "reason", "browser smoke customer admin bootstrap replay"),
+        "idem-customer-admin-invite-browser-smoke",
+        SELECTED_CONTEXT_ID,
+        inviteForm.resultSurface().surfaceId(),
+        "corr-customer-admin-invite-submit-replay"));
+    assertEquals("accepted", replayedCustomerAdminInvite.status());
+    assertEquals("surface-user-admin-invitation-detail", replayedCustomerAdminInvite.resultSurface().surfaceId());
+    assertTrue(replayedCustomerAdminInvite.resultSurface().toString().contains(savedCustomerAdminInvite.invitationId()));
+    assertEquals(1, invitationRepository.invitations().stream().filter(invitation -> "new.customer.admin@example.test".equals(invitation.normalizedEmail()) && ScopeType.CUSTOMER == invitation.scopeType() && "cust-alpha".equals(invitation.customerId())).count());
+    assertBrowserSafe(replayedCustomerAdminInvite.resultSurface());
+
+    var unsupportedCustomerAdminRole = runAction(new CapabilityActionRequest(
+        "action-customer-admin-invite",
+        "user-admin.invite-customer-admin",
+        "manage-customer-admins",
+        "tenant.customer_admin.invite",
+        Map.of("customerId", "cust-alpha", "email", "customer.user.invalid@example.test", "displayName", "Customer User", "roles", "CUSTOMER_USER"),
+        "idem-customer-admin-invite-invalid-role-browser-smoke",
+        SELECTED_CONTEXT_ID,
+        inviteForm.resultSurface().surfaceId(),
+        "corr-customer-admin-invite-invalid-role"));
+    assertEquals("validation-error", unsupportedCustomerAdminRole.status());
+    assertEquals("surface-user-admin-customer-admin-invitation-create", unsupportedCustomerAdminRole.resultSurface().surfaceId());
+    assertTrue(unsupportedCustomerAdminRole.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-customer-admin-invite-validation")));
+    assertTrue(unsupportedCustomerAdminRole.resultSurface().toString().contains("CUSTOMER_ADMIN"));
+    assertFalse(invitationRepository.invitations().stream().anyMatch(invitation -> "customer.user.invalid@example.test".equals(invitation.normalizedEmail())));
+    assertBrowserSafe(unsupportedCustomerAdminRole.resultSurface());
+
+    var hiddenCustomerAdminInvite = runActionAs(new CapabilityActionRequest(
+        "action-customer-admin-invite",
+        "user-admin.invite-customer-admin",
+        "manage-customer-admins",
+        "tenant.customer_admin.invite",
+        Map.of("customerId", "cust-hidden", "email", "hidden.customer.admin@example.test", "displayName", "Hidden Customer Admin", "roles", "CUSTOMER_ADMIN"),
+        "idem-customer-admin-invite-hidden-browser-smoke",
+        SELECTED_CONTEXT_ID,
+        inviteForm.resultSurface().surfaceId(),
+        "corr-customer-admin-invite-hidden-submit"), "workos-admin", "admin@example.test", "Tenant Admin", SELECTED_CONTEXT_ID);
+    assertEquals("denied", hiddenCustomerAdminInvite.status());
+    assertEquals("surface-user-admin-system-message", hiddenCustomerAdminInvite.resultSurface().surfaceId());
+    assertTrue(hiddenCustomerAdminInvite.resultSurface().toString().contains("target-not-found-or-forbidden"));
+    assertFalse(hiddenCustomerAdminInvite.resultSurface().toString().contains("Hidden Customer"));
+    assertFalse(hiddenCustomerAdminInvite.resultSurface().toString().contains("hidden.customer.admin@example.test"));
+    assertFalse(invitationRepository.invitations().stream().anyMatch(invitation -> "hidden.customer.admin@example.test".equals(invitation.normalizedEmail())));
+    assertBrowserSafe(hiddenCustomerAdminInvite.resultSurface());
+
+    var customerAdminInviteDenied = runActionAs(new CapabilityActionRequest(
+        "action-customer-admin-invite",
+        "user-admin.invite-customer-admin",
+        "manage-customer-admins",
+        "tenant.customer_admin.invite",
+        Map.of("customerId", "cust-alpha", "email", "peer.customer.admin@example.test", "displayName", "Peer Customer Admin", "roles", "CUSTOMER_ADMIN"),
+        "idem-customer-admin-invite-customer-admin-denied",
+        "membership-customer-admin",
+        inviteForm.resultSurface().surfaceId(),
+        "corr-customer-admin-invite-customer-admin-denied"), "workos-customer-admin", "customer-admin@example.test", "Customer Admin", "membership-customer-admin");
+    assertEquals("denied", customerAdminInviteDenied.status());
+    assertEquals("surface-user-admin-system-message", customerAdminInviteDenied.resultSurface().surfaceId());
+    assertTrue(customerAdminInviteDenied.resultSurface().toString().contains("scope-forbidden"));
+    assertFalse(customerAdminInviteDenied.resultSurface().toString().contains("Alpha Customer"));
+    assertFalse(customerAdminInviteDenied.resultSurface().toString().contains("peer.customer.admin@example.test"));
+    assertFalse(invitationRepository.invitations().stream().anyMatch(invitation -> "peer.customer.admin@example.test".equals(invitation.normalizedEmail())));
+    assertBrowserSafe(customerAdminInviteDenied.resultSurface());
 
     var hiddenRead = runActionAs(new CapabilityActionRequest(
         "action-customer-read",
