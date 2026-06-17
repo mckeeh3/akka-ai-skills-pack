@@ -1484,7 +1484,7 @@
 
 ### TASK-FSCT-042: Verify or complete runtime testing for `surface-user-admin-user-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-041]
 - surface id: `surface-user-admin-user-detail`
@@ -1509,15 +1509,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - notes:
   - surface type: `show-inspection`
   - surface contract: `user_admin.user_detail.v1`
   - purpose: Scoped account, membership, invitation, support-access, access-review, identity, and audit inspection.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-user-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-user-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: expanded protected Akka-hosted User Admin user-detail runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiTraverseUserAdminSurfaceGraph`: verifies `/ui`, protected direct user-detail no-bearer rejection, direct user-detail load, users-list row activation through `/api/workstream/actions`, backend-owned `user_admin.user_detail.v1` show-inspection payload, `canMutateInline=false`, branch-return metadata, membership/support/identity/access-review task entry actions, dedicated membership-status task surface routing, hidden user task denial without target enumeration, trace/correlation evidence, provider/runtime fail-closed access-review evidence, and browser-safe token/provider/secret boundaries. runtime evidence: readiness level `runtime-ready` for the user-detail testing scope; role/AuthContext/tenant setup covered tenant admin in `tenant-starter`; denial/provider/fail-closed/trace coverage included no-bearer rejection, hidden target denial, access-review provider/runtime fail-closed result, `noDirectMutation`, trace refs, and correlation ids; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiTraverseUserAdminSurfaceGraph test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-043: Verify or complete app-description specification for `surface-user-admin-invitation-create`
 

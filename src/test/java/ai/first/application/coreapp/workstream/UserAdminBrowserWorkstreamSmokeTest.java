@@ -70,6 +70,12 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .responseBodyAs(String.class)
         .invoke(), "Protected users directory surface must reject missing bearer tokens.");
 
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-user-detail")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected user detail surface must reject missing bearer tokens.");
+
     var bootstrap = httpClient
         .GET("/api/workstream/bootstrap")
         .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
@@ -106,6 +112,21 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(directUsers.toString().contains("action-open-useradmin-invitation-create"));
     assertTrue(directUsers.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-user-admin-users")));
     assertBrowserSafe(directUsers);
+
+    var directUserDetail = getSurface("surface-user-admin-user-detail", "corr-browser-smoke-detail-direct");
+    assertEquals("surface-user-admin-user-detail", directUserDetail.surfaceId());
+    assertEquals("show-inspection", directUserDetail.surfaceType());
+    assertEquals("user_admin.user_detail.v1", directUserDetail.data().get("surfaceContract"));
+    assertEquals("corr-browser-smoke-detail-direct", directUserDetail.correlationId());
+    assertTrue(directUserDetail.toString().contains("recordLabel=Tenant Admin"));
+    assertTrue(directUserDetail.toString().contains("membershipId=membership-admin"));
+    assertTrue(directUserDetail.toString().contains("canMutateInline=false"));
+    assertTrue(directUserDetail.toString().contains("branchReturnActionId=action-user-admin-show-users"));
+    assertTrue(directUserDetail.toString().contains("trace-user-admin-detail"));
+    assertTrue(directUserDetail.actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-membership-status-confirmation")));
+    assertTrue(directUserDetail.actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-support-access-grant")));
+    assertTrue(directUserDetail.actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-read-access-review")));
+    assertBrowserSafe(directUserDetail);
 
     var accessReviewBlocked = runAction(new CapabilityActionRequest(
         "action-useradmin-start-access-review",
@@ -181,9 +202,58 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("accepted", detail.status());
     assertEquals("surface-user-admin-user-detail", detail.resultSurface().surfaceId());
     assertEquals("show-inspection", detail.resultSurface().surfaceType());
+    assertEquals("user_admin.user_detail.v1", detail.resultSurface().data().get("surfaceContract"));
+    assertEquals("corr-browser-smoke-detail", detail.resultSurface().correlationId());
+    assertTrue(detail.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-user-admin-detail")));
+    assertTrue(detail.resultSurface().toString().contains("recordLabel=Member User"));
+    assertTrue(detail.resultSurface().toString().contains("membershipId=membership-member"));
     assertTrue(detail.resultSurface().toString().contains("canMutateInline=false"));
+    assertTrue(detail.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-users"));
+    assertTrue(detail.resultSurface().toString().contains("access-review"));
+    assertTrue(detail.resultSurface().toString().contains("supportAccess"));
+    assertTrue(detail.resultSurface().toString().contains("trace-useradmin-status-action"));
     assertTrue(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-membership-status-confirmation")));
+    assertTrue(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-support-access-grant")));
+    assertTrue(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-support-access-revoke-confirmation")));
+    assertTrue(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-open-useradmin-identity-exception-review")));
+    assertTrue(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-read-access-review")));
+    assertFalse(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-change-member-roles")), "User detail must route role changes through the preview task surface, not inline mutation.");
+    assertFalse(detail.resultSurface().toString().contains("recordLabel=Tenant Admin"));
     assertBrowserSafe(detail.resultSurface());
+
+    var membershipTask = runAction(new CapabilityActionRequest(
+        "action-open-useradmin-membership-status-confirmation",
+        "action-open-useradmin-membership-status-confirmation",
+        "USERADMIN_UPDATE_MEMBER_STATUS",
+        "USERADMIN_UPDATE_MEMBER_STATUS",
+        Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "removed"),
+        null,
+        SELECTED_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-browser-smoke-detail-membership-task"));
+    assertEquals("accepted", membershipTask.status());
+    assertEquals("surface-user-admin-membership-status-confirmation", membershipTask.resultSurface().surfaceId());
+    assertEquals("user_admin.membership_status_confirmation.v1", membershipTask.resultSurface().data().get("surfaceContract"));
+    assertTrue(membershipTask.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-users"));
+    assertTrue(membershipTask.resultSurface().toString().contains("last-admin-denied"));
+    assertBrowserSafe(membershipTask.resultSurface());
+
+    var hiddenUserTask = runAction(new CapabilityActionRequest(
+        "action-open-useradmin-membership-status-confirmation",
+        "action-open-useradmin-membership-status-confirmation",
+        "USERADMIN_UPDATE_MEMBER_STATUS",
+        "USERADMIN_UPDATE_MEMBER_STATUS",
+        Map.of("accountId", "hidden@example.test", "membershipId", "membership-hidden"),
+        null,
+        SELECTED_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-browser-smoke-detail-hidden-user-task"));
+    assertEquals("denied", hiddenUserTask.status());
+    assertTrue(hiddenUserTask.resultSurface().surfaceId().contains("denied"));
+    assertEquals("system_message", hiddenUserTask.resultSurface().surfaceType());
+    assertFalse(hiddenUserTask.resultSurface().toString().contains("hidden@example.test"));
+    assertFalse(hiddenUserTask.resultSurface().toString().contains("membership-hidden"));
+    assertBrowserSafe(hiddenUserTask.resultSurface());
 
     var task = runAction(new CapabilityActionRequest(
         "action-open-useradmin-invitation-create",
