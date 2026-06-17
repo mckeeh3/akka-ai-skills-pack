@@ -565,7 +565,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-customer-rename` edit-form contract for `user_admin.customer_rename.v1` covering User Admin/`user-admin-agent` ownership, Customer Directory branch placement and result routing to Customer detail, selected Organization/Tenant Admin `AuthContext` plus active tenant membership, visible Customer, and `tenant.customer.rename` authority, browser-safe payload schema for current/proposed Customer name fields, validation policy, change preview, authorized actions, redaction/forbidden payload boundaries for sibling Customers, tenant app data, hidden duplicates, provider secrets, raw trace/correlation/idempotency internals, governed action-to-capability/tool mappings for open/submit/detail/list/audit/dashboard, typed loading/ready/validation/submitting/success/no-op/duplicate/forbidden/stale/failure states, audit/work trace and correlation requirements, accessibility/responsive/style bindings, and acceptance/security/observability regression coverage. Sufficiency review says the edit-form objective is implementable without invented payload fields/actions/states/auth/tenant/customer behavior/trace links/tests/visual semantics. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
