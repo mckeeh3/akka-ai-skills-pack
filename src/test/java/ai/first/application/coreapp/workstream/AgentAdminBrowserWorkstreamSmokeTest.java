@@ -217,6 +217,11 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
         .responseBodyAs(String.class)
         .invoke(), "Protected Agent Admin prompt-governance surface must reject missing bearer tokens.");
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-skill-manifest-diff")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin skill-manifest surface must reject missing bearer tokens.");
 
     var seedDefaults = runAction(new CapabilityActionRequest(
         "action-import-agent-seed-defaults",
@@ -554,7 +559,182 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-agent-admin-detail", promptBackToDetail.resultSurface().surfaceId());
     assertBrowserSafe(promptBackToDetail.resultSurface());
 
-    assertDetailActionRoutes("action-agent-detail-open-skill-manifest", "agent_admin.get_manifest", "surface-agent-skill-manifest-diff", "accepted", "corr-agent-admin-detail-skill-manifest");
+    var skillManifest = assertDetailActionRoutes("action-agent-detail-open-skill-manifest", "agent_admin.get_manifest", "surface-agent-skill-manifest-diff", "accepted", "corr-agent-admin-detail-skill-manifest");
+    assertEquals("agent_admin.skill_manifest_diff.v1", skillManifest.resultSurface().data().get("surfaceContract"));
+    assertTrue(skillManifest.resultSurface().toString().contains("manifestDiffSummary"));
+    assertTrue(skillManifest.resultSurface().toString().contains("redactedManifestDiff"));
+    assertTrue(skillManifest.resultSurface().toString().contains("reviewState"));
+    assertTrue(skillManifest.resultSurface().toString().contains("action-agent-skill-manifest-refresh"));
+    assertTrue(skillManifest.resultSurface().toString().contains("action-agent-skill-manifest-simulate"));
+    assertTrue(skillManifest.resultSurface().toString().contains("action-agent-skill-manifest-submit-review"));
+    assertTrue(skillManifest.resultSurface().toString().contains("action-agent-skill-manifest-approve"));
+    assertTrue(skillManifest.resultSurface().toString().contains("action-agent-skill-manifest-reject"));
+    assertTrue(skillManifest.resultSurface().toString().contains("action-agent-skill-manifest-open-tool-boundary"));
+    assertTrue(skillManifest.resultSurface().toString().contains("action-agent-skill-manifest-open-model-refs"));
+    assertTrue(skillManifest.resultSurface().toString().contains("action-agent-skill-manifest-open-trace"));
+    assertTrue(skillManifest.resultSurface().toString().contains("action-agent-skill-manifest-back-to-detail"));
+
+    var directSkillManifest = getSurface("surface-agent-skill-manifest-diff", "corr-agent-admin-skill-manifest-direct");
+    assertEquals("surface-agent-skill-manifest-diff", directSkillManifest.surfaceId());
+    assertEquals("governance-diff", directSkillManifest.surfaceType());
+    assertEquals("agent_admin.skill_manifest_diff.v1", directSkillManifest.data().get("surfaceContract"));
+    assertEquals("corr-agent-admin-skill-manifest-direct", directSkillManifest.correlationId());
+    var manifestSummary = (Map<String, Object>) directSkillManifest.data().get("manifestDiffSummary");
+    assertEquals("agent_admin.skill_manifest_diff.v1", manifestSummary.get("contract"));
+    assertEquals("blocked_provider_or_runtime", manifestSummary.get("providerRuntimeReadinessCategory"));
+    assertEquals(Boolean.TRUE, manifestSummary.get("noDirectActivation"));
+    var manifestScope = (Map<String, Object>) directSkillManifest.data().get("scopeSummary");
+    assertEquals(ADMIN_CONTEXT_ID, manifestScope.get("selectedContextId"));
+    assertEquals(Boolean.TRUE, manifestScope.get("governanceAuthorized"));
+    assertTrue(directSkillManifest.toString().contains("rawSkillReferenceBodies=omitted"));
+    assertTrue(directSkillManifest.toString().contains("noDirectActivation=true"));
+    assertBrowserSafe(directSkillManifest);
+
+    var skillRefresh = runAction(new CapabilityActionRequest(
+        "action-agent-skill-manifest-refresh",
+        "action-agent-skill-manifest-refresh",
+        "agent_admin.get_manifest",
+        "agent_admin.get_manifest",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        skillManifest.resultSurface().surfaceId(),
+        "corr-agent-admin-skill-manifest-refresh"));
+    assertEquals("no-op", skillRefresh.status());
+    assertEquals("surface-agent-skill-manifest-diff", skillRefresh.resultSurface().surfaceId());
+    assertBrowserSafe(skillRefresh.resultSurface());
+
+    var skillSimulation = runAction(new CapabilityActionRequest(
+        "action-agent-skill-manifest-simulate",
+        "action-agent-skill-manifest-simulate",
+        "agent_admin.draft_behavior_change",
+        "agent_admin.draft_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-skill-manifest-simulate",
+        ADMIN_CONTEXT_ID,
+        skillManifest.resultSurface().surfaceId(),
+        "corr-agent-admin-skill-manifest-simulate"));
+    assertEquals("accepted", skillSimulation.status());
+    assertEquals("surface-agent-test-console", skillSimulation.resultSurface().surfaceId());
+    assertTrue(skillSimulation.resultSurface().toString().contains("noProductionSideEffects=true"));
+    assertBrowserSafe(skillSimulation.resultSurface());
+
+    var skillSubmit = runAction(new CapabilityActionRequest(
+        "action-agent-skill-manifest-submit-review",
+        "action-agent-skill-manifest-submit-review",
+        "agent_admin.submit_behavior_change_for_review",
+        "agent_admin.submit_behavior_change_for_review",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-skill-manifest-submit",
+        ADMIN_CONTEXT_ID,
+        skillManifest.resultSurface().surfaceId(),
+        "corr-agent-admin-skill-manifest-submit"));
+    assertEquals("approval-required", skillSubmit.status());
+    assertEquals("surface-agent-behavior-proposal", skillSubmit.resultSurface().surfaceId());
+    assertTrue(skillSubmit.message().contains("active manifest and reference behavior remain unchanged"));
+    assertBrowserSafe(skillSubmit.resultSurface());
+
+    var skillApprove = runAction(new CapabilityActionRequest(
+        "action-agent-skill-manifest-approve",
+        "action-agent-skill-manifest-approve",
+        "agent_admin.approve_behavior_change",
+        "agent_admin.approve_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-skill-manifest-approve",
+        ADMIN_CONTEXT_ID,
+        skillManifest.resultSurface().surfaceId(),
+        "corr-agent-admin-skill-manifest-approve"));
+    assertEquals("approval-required", skillApprove.status());
+    assertEquals("surface-agent-behavior-proposal", skillApprove.resultSurface().surfaceId());
+    assertTrue(skillApprove.message().contains("activation remains blocked until a separate confirmation surface"));
+    assertBrowserSafe(skillApprove.resultSurface());
+
+    var skillRejectMissingReason = runAction(new CapabilityActionRequest(
+        "action-agent-skill-manifest-reject",
+        "action-agent-skill-manifest-reject",
+        "agent_admin.reject_behavior_change",
+        "agent_admin.reject_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-skill-manifest-reject-missing-reason",
+        ADMIN_CONTEXT_ID,
+        skillManifest.resultSurface().surfaceId(),
+        "corr-agent-admin-skill-manifest-reject-missing-reason"));
+    assertEquals("validation-error", skillRejectMissingReason.status());
+    assertEquals("surface-agent-skill-manifest-diff", skillRejectMissingReason.resultSurface().surfaceId());
+    assertTrue(skillRejectMissingReason.message().contains("requires a human-readable reason"));
+    assertBrowserSafe(skillRejectMissingReason.resultSurface());
+
+    var skillReject = runAction(new CapabilityActionRequest(
+        "action-agent-skill-manifest-reject",
+        "action-agent-skill-manifest-reject",
+        "agent_admin.reject_behavior_change",
+        "agent_admin.reject_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "reason", "Keep manifest stable until reference evidence is complete."),
+        "idem-agent-skill-manifest-reject",
+        ADMIN_CONTEXT_ID,
+        skillManifest.resultSurface().surfaceId(),
+        "corr-agent-admin-skill-manifest-reject"));
+    assertEquals("accepted", skillReject.status());
+    assertEquals("surface-agent-behavior-proposal", skillReject.resultSurface().surfaceId());
+    assertTrue(skillReject.message().contains("active manifest and reference behavior unchanged"));
+    assertBrowserSafe(skillReject.resultSurface());
+
+    var skillToolBoundary = runAction(new CapabilityActionRequest(
+        "action-agent-skill-manifest-open-tool-boundary",
+        "action-agent-skill-manifest-open-tool-boundary",
+        "agent_admin.get_tool_boundary",
+        "agent_admin.get_tool_boundary",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        skillManifest.resultSurface().surfaceId(),
+        "corr-agent-admin-skill-manifest-tool-boundary"));
+    assertEquals("accepted", skillToolBoundary.status());
+    assertEquals("surface-agent-tool-boundary-diff", skillToolBoundary.resultSurface().surfaceId());
+    assertBrowserSafe(skillToolBoundary.resultSurface());
+
+    var skillModelRefs = runAction(new CapabilityActionRequest(
+        "action-agent-skill-manifest-open-model-refs",
+        "action-agent-skill-manifest-open-model-refs",
+        "agent_admin.get_model_ref",
+        "agent_admin.get_model_ref",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        skillManifest.resultSurface().surfaceId(),
+        "corr-agent-admin-skill-manifest-model-refs"));
+    assertEquals("accepted", skillModelRefs.status());
+    assertEquals("surface-agent-model-refs", skillModelRefs.resultSurface().surfaceId());
+    assertBrowserSafe(skillModelRefs.resultSurface());
+
+    var skillTrace = runAction(new CapabilityActionRequest(
+        "action-agent-skill-manifest-open-trace",
+        "action-agent-skill-manifest-open-trace",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("traceId", "trace-agent-admin-skill-manifest"),
+        null,
+        ADMIN_CONTEXT_ID,
+        skillManifest.resultSurface().surfaceId(),
+        "corr-agent-admin-skill-manifest-trace"));
+    assertEquals("accepted", skillTrace.status());
+    assertEquals("surface-agent-admin-trace", skillTrace.resultSurface().surfaceId());
+    assertBrowserSafe(skillTrace.resultSurface());
+
+    var skillBackToDetail = runAction(new CapabilityActionRequest(
+        "action-agent-skill-manifest-back-to-detail",
+        "action-agent-skill-manifest-back-to-detail",
+        "agent_admin.get_definition",
+        "agent_admin.get_definition",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        skillManifest.resultSurface().surfaceId(),
+        "corr-agent-admin-skill-manifest-detail-return"));
+    assertEquals("accepted", skillBackToDetail.status());
+    assertEquals("surface-agent-admin-detail", skillBackToDetail.resultSurface().surfaceId());
+    assertBrowserSafe(skillBackToDetail.resultSurface());
+
     assertDetailActionRoutes("action-agent-detail-open-tool-boundary", "agent_admin.get_tool_boundary", "surface-agent-tool-boundary-diff", "accepted", "corr-agent-admin-detail-tool-boundary");
     var noSideEffectTest = assertDetailActionRoutes("action-agent-detail-run-test", "agent_admin.draft_behavior_change", "surface-agent-test-console", "accepted", "corr-agent-admin-detail-run-test");
     assertTrue(noSideEffectTest.resultSurface().toString().contains("noProductionSideEffects=true"));
@@ -711,16 +891,20 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   private CapabilityActionResult runAction(CapabilityActionRequest request) throws Exception {
-    var response = httpClient
-        .POST("/api/workstream/actions")
-        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
-        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
-        .addHeader("X-Correlation-Id", request.correlationId())
-        .withRequestBody(request)
-        .responseBodyAs(CapabilityActionResult.class)
-        .invoke();
-    assertTrue(response.status().isSuccess());
-    return response.body();
+    try {
+      var response = httpClient
+          .POST("/api/workstream/actions")
+          .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
+          .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+          .addHeader("X-Correlation-Id", request.correlationId())
+          .withRequestBody(request)
+          .responseBodyAs(CapabilityActionResult.class)
+          .invoke();
+      assertTrue(response.status().isSuccess());
+      return response.body();
+    } catch (RuntimeException failed) {
+      throw new RuntimeException("Action " + request.actionId() + " failed: " + failed.getMessage(), failed);
+    }
   }
 
   private void seedIdentity(AkkaIdentityRepository repository, String email, String displayName, String membershipId, ScopeType scopeType, String customerId, List<FoundationRole> roles) {

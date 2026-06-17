@@ -5053,7 +5053,7 @@
 
 ### TASK-FSCT-143: Verify or complete runtime implementation for `surface-agent-skill-manifest-diff`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-142]
 - surface id: `surface-agent-skill-manifest-diff`
@@ -5084,6 +5084,7 @@
   - purpose: Skill manifest diff/review.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-skill-manifest-diff`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-skill-manifest-diff`; surface graph node/action edge for opening or acting on `surface-agent-skill-manifest-diff`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented and verified backend-owned `agent_admin.skill_manifest_diff.v1` runtime surface plus canonical skill-manifest action edges for refresh, no-side-effect simulation, submit-review, approve, reject validation, tool-boundary/model-reference routing, trace open, and back-to-detail through protected `/api/workstream/surfaces` and `/api/workstream/actions`. runtime evidence: readiness level `api-smoked`; tenant admin AuthContext in `tenant-starter`; direct surface read and detail/dashboard open paths; approval-gated behavior proposal routing; provider/runtime fail-closed simulation routing; trace/correlation and browser-safe redaction evidence; no fixture-only/frontend-only normal runtime path. Checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, focused `rg` evidence, and `git diff --check`.
 
 ### TASK-FSCT-144: Verify or complete runtime testing for `surface-agent-skill-manifest-diff`
 
