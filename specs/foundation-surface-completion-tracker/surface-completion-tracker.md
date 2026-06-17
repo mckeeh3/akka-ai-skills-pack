@@ -396,7 +396,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-organization-admins` list/search contract for `user_admin.organization_admins.v1` covering owning workstream/agent and Organization branch placement, SaaS Owner/App Admin selected `AuthContext` plus `saas_owner.organization_admin.list` authority, frontend-safe envelope/admin summary/row/filter/action payload schema, discovery-only/no-inline-mutation boundaries, backend-authored actions/result surfaces, safe denial/stale/provider-outbox states, trace/audit requirements, accessibility/responsive expectations, frontend secret boundaries, acceptance/regression tests, and a sufficiency review confirming implementation can proceed without invented fields/actions/states/auth/traces/tests. Validation evidence: `git diff --check` and focused `rg` checks for surface id, payload/actions/auth/traces/tests in app-description. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
