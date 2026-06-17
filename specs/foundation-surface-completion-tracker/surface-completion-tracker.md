@@ -500,7 +500,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-customer-detail` show/inspection contract for `user_admin.customer_detail.v1` covering owning User Admin workstream/`user-admin-agent`, Customer Directory branch placement, Organization/Tenant Admin selected `AuthContext` plus `tenant.customer.read`, frontend-safe envelope/customer detail/admin summary/lifecycle/audit/task-action payloads, governed action/result mappings for read/return/rename/suspend/reactivate/Customer Admin list/invite/audit, loading/ready/limited/validation/forbidden/stale/provider-fail-closed states, tenant/customer redaction and no-enumeration rules, trace/audit/correlation obligations, accessibility/responsive expectations, acceptance/regression coverage, frontend secret boundaries, and sufficiency review. Evidence: focused `rg` for surface id, payload, actions, auth, traces, and tests; `git diff --check`. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
