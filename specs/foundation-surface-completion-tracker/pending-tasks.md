@@ -3854,7 +3854,7 @@
 
 ### TASK-FSCT-109: Verify or complete app-description specification for `surface-user-admin-customer-admin-invitation-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-customer-admin-invitation-create`
@@ -3883,6 +3883,7 @@
   - purpose: Bootstrap/invite form for a CUSTOMER_ADMIN.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-customer-admin-invitation-create` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated Customer Admin invitation create-form app-description contract covering identity/owner/placement, Organization/Tenant Admin `AuthContext`, selected Customer authorization, frontend-safe payload/form/policy/delivery schema, governed actions, denials/no-enumeration, provider/outbox fail-closed behavior, trace/audit/correlation, accessibility/responsive expectations, tests, and sufficiency review. Checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests and `git diff --check`.
 
 ### TASK-FSCT-110: Verify or complete runtime implementation for `surface-user-admin-customer-admin-invitation-create`
 

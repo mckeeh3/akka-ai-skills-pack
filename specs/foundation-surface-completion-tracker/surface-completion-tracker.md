@@ -526,7 +526,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-customer-admin-invitation-create` create-form contract for `user_admin.customer_admin_invitation_create.v1` covering owning User Admin workstream/`user-admin-agent`, Customer Directory branch placement, selected Organization/Tenant Admin `AuthContext`, active tenant membership, visible selected Customer and `tenant.customer_admin.invite` authorization, frontend-safe envelope/form/policy/delivery/action payload schema, redaction and forbidden payload boundaries for sibling Customers, tenant app data, provider secrets, invitations, hidden roles/counts, and raw trace/correlation/idempotency internals, governed action-to-capability/tool mappings, loading/ready/validation/submitting/success/duplicate/provider-blocked/forbidden/stale/failure states, trace/audit/correlation requirements, accessibility/responsive expectations, acceptance/security/observability coverage, and a sufficiency review stating implementation can proceed without invented fields/actions/states/auth/traces/tests. Evidence: focused `rg` for surface id, payload, actions, auth, traces, and tests; `git diff --check`. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
