@@ -665,6 +665,149 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesUserAdminInvitationResendConfirmationRuntimePath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-invitation-resend-confirmation")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Invitation resend confirmation surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-user-invite-resend-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-useradmin-resend-invitation",
+            "action-useradmin-resend-invitation",
+            "USERADMIN_RESEND_INVITATION",
+            "USERADMIN_RESEND_INVITATION",
+            Map.of("invitationId", "hidden-without-bearer"),
+            "idem-user-invite-resend-missing-bearer",
+            SELECTED_CONTEXT_ID,
+            "surface-user-admin-invitation-resend-confirmation",
+            "corr-user-invite-resend-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Invitation resend action must reject missing bearer tokens.");
+
+    var create = getSurface("surface-user-admin-invitation-create", "corr-user-invite-resend-create");
+    var submitted = runAction(new CapabilityActionRequest(
+        "action-submit-user-admin-invitation",
+        "action-submit-user-admin-invitation",
+        "USERADMIN_SEND_INVITATION",
+        "USERADMIN_SEND_INVITATION",
+        Map.of("email", "resend.invitee@example.test", "displayName", "Resend Invitee", "roles", "TENANT_EMPLOYEE", "reason", "runtime invitation resend smoke"),
+        "idem-user-invite-resend-create",
+        SELECTED_CONTEXT_ID,
+        create.surfaceId(),
+        "corr-user-invite-resend-submit"));
+    assertEquals("accepted", submitted.status());
+    assertEquals("surface-user-admin-invitation-detail", submitted.resultSurface().surfaceId());
+    assertBrowserSafe(submitted.resultSurface());
+
+    var actionContext = (Map<?, ?>) submitted.resultSurface().data().get("actionContext");
+    var invitationId = String.valueOf(actionContext.get("invitationId"));
+    assertNotNull(invitationId);
+
+    var directConfirmation = getSurface("surface-user-admin-invitation-resend-confirmation", "corr-user-invite-resend-direct");
+    assertEquals("surface-user-admin-invitation-resend-confirmation", directConfirmation.surfaceId());
+    assertEquals("lifecycle-confirmation", directConfirmation.surfaceType());
+    assertEquals("user_admin.invitation_resend_confirmation.v1", directConfirmation.data().get("surfaceContract"));
+    assertEquals("corr-user-invite-resend-direct", directConfirmation.correlationId());
+    assertTrue(directConfirmation.toString().contains("resend.invitee@example.test"));
+    assertTrue(directConfirmation.toString().contains("invitationSummary"));
+    assertTrue(directConfirmation.toString().contains("resendEligibility"));
+    assertTrue(directConfirmation.toString().contains("deliveryReadiness"));
+    assertTrue(directConfirmation.toString().contains("confirmationForm"));
+    assertTrue(directConfirmation.toString().contains("idempotencyKeyHint=client-generated"));
+    assertTrue(directConfirmation.toString().contains("noFakeSuccess=true"));
+    assertTrue(directConfirmation.toString().contains("noDirectMutation=true"));
+    assertTrue(directConfirmation.toString().contains("trace-useradmin-invitation-resend-confirmation"));
+    assertTrue(directConfirmation.actions().stream().anyMatch(action -> action.actionId().equals("action-useradmin-resend-invitation")));
+    assertTrue(directConfirmation.actions().stream().anyMatch(action -> action.actionId().equals("action-display-invitation-detail")));
+    assertBrowserSafe(directConfirmation);
+
+    var openedConfirmation = runAction(new CapabilityActionRequest(
+        "action-open-useradmin-invitation-resend-confirmation",
+        "action-open-useradmin-invitation-resend-confirmation",
+        "USERADMIN_RESEND_INVITATION",
+        "USERADMIN_RESEND_INVITATION",
+        Map.of("invitationId", invitationId),
+        null,
+        SELECTED_CONTEXT_ID,
+        submitted.resultSurface().surfaceId(),
+        "corr-user-invite-resend-open"));
+    assertEquals("accepted", openedConfirmation.status());
+    assertEquals("surface-user-admin-invitation-resend-confirmation", openedConfirmation.resultSurface().surfaceId());
+    assertEquals("corr-user-invite-resend-open", openedConfirmation.resultSurface().correlationId());
+    assertTrue(openedConfirmation.resultSurface().toString().contains("resend.invitee@example.test"));
+    assertTrue(openedConfirmation.resultSurface().toString().contains("branchReturnActionId=action-user-admin-show-users"));
+    assertBrowserSafe(openedConfirmation.resultSurface());
+
+    var resent = runAction(new CapabilityActionRequest(
+        "action-useradmin-resend-invitation",
+        "action-useradmin-resend-invitation",
+        "USERADMIN_RESEND_INVITATION",
+        "USERADMIN_RESEND_INVITATION",
+        Map.of("invitationId", invitationId, "reason", "runtime resend confirmation smoke"),
+        "idem-user-invite-resend-confirmation",
+        SELECTED_CONTEXT_ID,
+        openedConfirmation.resultSurface().surfaceId(),
+        "corr-user-invite-resend-confirm"));
+    assertEquals("accepted", resent.status());
+    assertEquals("surface-user-admin-invitation-detail", resent.resultSurface().surfaceId());
+    assertEquals("corr-user-invite-resend-confirm", resent.resultSurface().correlationId());
+    assertTrue(resent.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-invitation")));
+    assertTrue(resent.resultSurface().toString().contains("resendCount=1"));
+    assertTrue(resent.resultSurface().toString().contains("recoverySurfaceId=surface-user-admin-invitation-resend-confirmation"));
+    assertFalse(resent.resultSurface().toString().contains("invite-token"));
+    assertFalse(resent.resultSurface().toString().contains("tokenHash"));
+    assertFalse(resent.resultSurface().toString().contains("providerMessageId"));
+    assertBrowserSafe(resent.resultSurface());
+
+    var replayed = runAction(new CapabilityActionRequest(
+        "action-useradmin-resend-invitation",
+        "action-useradmin-resend-invitation",
+        "USERADMIN_RESEND_INVITATION",
+        "USERADMIN_RESEND_INVITATION",
+        Map.of("invitationId", invitationId, "reason", "runtime resend confirmation replay"),
+        "idem-user-invite-resend-confirmation",
+        SELECTED_CONTEXT_ID,
+        openedConfirmation.resultSurface().surfaceId(),
+        "corr-user-invite-resend-replay"));
+    assertEquals("accepted", replayed.status());
+    assertEquals("surface-user-admin-invitation-detail", replayed.resultSurface().surfaceId());
+    assertTrue(replayed.resultSurface().toString().contains("resend.invitee@example.test"));
+    assertBrowserSafe(replayed.resultSurface());
+
+    var hiddenOpen = runAction(new CapabilityActionRequest(
+        "action-open-useradmin-invitation-resend-confirmation",
+        "action-open-useradmin-invitation-resend-confirmation",
+        "USERADMIN_RESEND_INVITATION",
+        "USERADMIN_RESEND_INVITATION",
+        Map.of("invitationId", "invitation-hidden-cross-scope"),
+        null,
+        SELECTED_CONTEXT_ID,
+        submitted.resultSurface().surfaceId(),
+        "corr-user-invite-resend-hidden-open"));
+    assertEquals("denied", hiddenOpen.status());
+    assertTrue(hiddenOpen.resultSurface().surfaceId().contains("denied"));
+    assertFalse(hiddenOpen.resultSurface().toString().contains("invitation-hidden-cross-scope"));
+    assertBrowserSafe(hiddenOpen.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> runActionAs(new CapabilityActionRequest(
+        "action-open-useradmin-invitation-resend-confirmation",
+        "action-open-useradmin-invitation-resend-confirmation",
+        "USERADMIN_RESEND_INVITATION",
+        "USERADMIN_RESEND_INVITATION",
+        Map.of("invitationId", invitationId),
+        null,
+        "membership-member",
+        submitted.resultSurface().surfaceId(),
+        "corr-user-invite-resend-member-denied"), "workos-member", "member@example.test", "Member User", "membership-member"),
+        "Regular members must not open invitation resend confirmation through the protected action API.");
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesSaasOwnerAdminsRuntimePath() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-user-admin-saas-owner-admins")
