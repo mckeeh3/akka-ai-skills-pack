@@ -671,7 +671,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-skill-manifest-diff` for `agent_admin.skill_manifest_diff.v1` with Agent Admin/`agent-admin-agent` ownership, dashboard/detail/proposal placement, browser-safe `manifestDiffSummary`, `scopeSummary`, `redactedManifestDiff`, `impactSummary`, `riskAndEvidence`, `reviewState`, `authorizedActions[]`, diagnostics, and redaction payload schemas; governed refresh, simulation, submit/approve/reject, tool-boundary/model-reference, trace, and detail-return actions; backend AuthContext/tenant-scope authorization and no-enumeration denial semantics; audit/work trace and correlation/idempotency expectations; fail-closed/stale/conflict/approval states; accessibility/responsive binding; mutation constraints; and realization/security/negative/observability tests. Sufficiency review says a developer/generator can implement without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

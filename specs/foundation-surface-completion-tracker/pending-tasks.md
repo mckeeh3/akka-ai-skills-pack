@@ -5020,7 +5020,7 @@
 
 ### TASK-FSCT-142: Verify or complete app-description specification for `surface-agent-skill-manifest-diff`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-skill-manifest-diff`
@@ -5049,6 +5049,7 @@
   - purpose: Skill manifest diff/review.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-skill-manifest-diff` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: expanded `surface-agent-skill-manifest-diff` app-description with payload/action/auth/tenant/trace/state/accessibility/mutation/test/sufficiency detail; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-143: Verify or complete runtime implementation for `surface-agent-skill-manifest-diff`
 
