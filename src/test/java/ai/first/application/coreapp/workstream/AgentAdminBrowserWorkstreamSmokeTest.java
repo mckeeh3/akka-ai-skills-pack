@@ -696,7 +696,136 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "corr-agent-admin-skill-manifest-tool-boundary"));
     assertEquals("accepted", skillToolBoundary.status());
     assertEquals("surface-agent-tool-boundary-diff", skillToolBoundary.resultSurface().surfaceId());
+    assertEquals("agent_admin.tool_boundary_diff.v1", skillToolBoundary.resultSurface().data().get("surfaceContract"));
+    assertTrue(skillToolBoundary.resultSurface().toString().contains("toolBoundarySummary"));
+    assertTrue(skillToolBoundary.resultSurface().toString().contains("redactedToolBoundaryDiff"));
+    assertTrue(skillToolBoundary.resultSurface().toString().contains("ToolPermissionBoundary"));
+    assertTrue(skillToolBoundary.resultSurface().toString().contains("action-agent-tool-boundary-simulate"));
+    assertTrue(skillToolBoundary.resultSurface().toString().contains("action-agent-tool-boundary-submit-review"));
+    assertTrue(skillToolBoundary.resultSurface().toString().contains("action-agent-tool-boundary-open-model-refs"));
     assertBrowserSafe(skillToolBoundary.resultSurface());
+
+    var directToolBoundary = getSurface("surface-agent-tool-boundary-diff", "corr-agent-admin-tool-boundary-direct");
+    assertEquals("surface-agent-tool-boundary-diff", directToolBoundary.surfaceId());
+    assertEquals("governance-diff", directToolBoundary.surfaceType());
+    assertEquals("agent_admin.tool_boundary_diff.v1", directToolBoundary.data().get("surfaceContract"));
+    assertEquals("corr-agent-admin-tool-boundary-direct", directToolBoundary.correlationId());
+    assertTrue(directToolBoundary.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-agent-tool-boundary-diff")));
+    var toolBoundarySummary = (Map<String, Object>) directToolBoundary.data().get("toolBoundarySummary");
+    assertEquals("agent_admin.tool_boundary_diff.v1", toolBoundarySummary.get("contract"));
+    assertEquals("blocked_provider_or_runtime", toolBoundarySummary.get("providerRuntimeReadinessCategory"));
+    assertEquals(Boolean.TRUE, toolBoundarySummary.get("noDirectActivation"));
+    var toolBoundaryScope = (Map<String, Object>) directToolBoundary.data().get("scopeSummary");
+    assertEquals(ADMIN_CONTEXT_ID, toolBoundaryScope.get("selectedContextId"));
+    assertEquals(Boolean.TRUE, toolBoundaryScope.get("governanceAuthorized"));
+    assertEquals("visible", toolBoundaryScope.get("visibilityDecision"));
+    assertTrue(directToolBoundary.toString().contains("rawToolInputsOutputs=omitted"));
+    assertTrue(directToolBoundary.toString().contains("providerCredentials=omitted"));
+    assertTrue(directToolBoundary.toString().contains("tool-boundary-denied"));
+    assertTrue(directToolBoundary.toString().contains("noDirectActivation=true"));
+    assertBrowserSafe(directToolBoundary);
+
+    var toolBoundaryRefresh = runAction(new CapabilityActionRequest(
+        "action-agent-tool-boundary-refresh",
+        "action-agent-tool-boundary-refresh",
+        "agent_admin.get_tool_boundary",
+        "agent_admin.get_tool_boundary",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        directToolBoundary.surfaceId(),
+        "corr-agent-admin-tool-boundary-refresh"));
+    assertEquals("no-op", toolBoundaryRefresh.status());
+    assertEquals("surface-agent-tool-boundary-diff", toolBoundaryRefresh.resultSurface().surfaceId());
+    assertBrowserSafe(toolBoundaryRefresh.resultSurface());
+
+    var toolBoundarySimulation = runAction(new CapabilityActionRequest(
+        "action-agent-tool-boundary-simulate",
+        "action-agent-tool-boundary-simulate",
+        "agent_admin.simulate_tool_boundary",
+        "agent_admin.simulate_tool_boundary",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-tool-boundary-simulate",
+        ADMIN_CONTEXT_ID,
+        directToolBoundary.surfaceId(),
+        "corr-agent-admin-tool-boundary-simulate"));
+    assertEquals("accepted", toolBoundarySimulation.status());
+    assertEquals("surface-agent-test-console", toolBoundarySimulation.resultSurface().surfaceId());
+    assertTrue(toolBoundarySimulation.resultSurface().toString().contains("noProductionSideEffects=true"));
+    assertBrowserSafe(toolBoundarySimulation.resultSurface());
+
+    var toolBoundarySubmit = runAction(new CapabilityActionRequest(
+        "action-agent-tool-boundary-submit-review",
+        "action-agent-tool-boundary-submit-review",
+        "agent_admin.submit_behavior_change_for_review",
+        "agent_admin.submit_behavior_change_for_review",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-tool-boundary-submit",
+        ADMIN_CONTEXT_ID,
+        directToolBoundary.surfaceId(),
+        "corr-agent-admin-tool-boundary-submit"));
+    assertTrue(toolBoundarySubmit.status().equals("approval-required") || toolBoundarySubmit.status().equals("denied"));
+    assertEquals("surface-agent-behavior-proposal", toolBoundarySubmit.resultSurface().surfaceId());
+    assertTrue(toolBoundarySubmit.message().contains("active ToolPermissionBoundary grants remain unchanged"));
+    assertBrowserSafe(toolBoundarySubmit.resultSurface());
+
+    var toolBoundaryRejectMissingReason = runAction(new CapabilityActionRequest(
+        "action-agent-tool-boundary-reject",
+        "action-agent-tool-boundary-reject",
+        "agent_admin.reject_behavior_change",
+        "agent_admin.reject_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-tool-boundary-reject-missing-reason",
+        ADMIN_CONTEXT_ID,
+        directToolBoundary.surfaceId(),
+        "corr-agent-admin-tool-boundary-reject-missing-reason"));
+    assertEquals("validation-error", toolBoundaryRejectMissingReason.status());
+    assertEquals("surface-agent-tool-boundary-diff", toolBoundaryRejectMissingReason.resultSurface().surfaceId());
+    assertTrue(toolBoundaryRejectMissingReason.message().contains("requires a human-readable reason"));
+    assertBrowserSafe(toolBoundaryRejectMissingReason.resultSurface());
+
+    var toolBoundaryModelRefs = runAction(new CapabilityActionRequest(
+        "action-agent-tool-boundary-open-model-refs",
+        "action-agent-tool-boundary-open-model-refs",
+        "agent_admin.get_model_ref",
+        "agent_admin.get_model_ref",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        directToolBoundary.surfaceId(),
+        "corr-agent-admin-tool-boundary-model-refs"));
+    assertEquals("accepted", toolBoundaryModelRefs.status());
+    assertEquals("surface-agent-model-refs", toolBoundaryModelRefs.resultSurface().surfaceId());
+    assertBrowserSafe(toolBoundaryModelRefs.resultSurface());
+
+    var toolBoundaryTrace = runAction(new CapabilityActionRequest(
+        "action-agent-tool-boundary-open-trace",
+        "action-agent-tool-boundary-open-trace",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("traceId", "trace-agent-admin-tool-boundary"),
+        null,
+        ADMIN_CONTEXT_ID,
+        directToolBoundary.surfaceId(),
+        "corr-agent-admin-tool-boundary-trace"));
+    assertEquals("accepted", toolBoundaryTrace.status());
+    assertEquals("surface-agent-admin-trace", toolBoundaryTrace.resultSurface().surfaceId());
+    assertTrue(toolBoundaryTrace.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-tool-boundary-open-trace")));
+    assertBrowserSafe(toolBoundaryTrace.resultSurface());
+
+    var toolBoundaryBackToDetail = runAction(new CapabilityActionRequest(
+        "action-agent-tool-boundary-back-to-detail",
+        "action-agent-tool-boundary-back-to-detail",
+        "agent_admin.get_definition",
+        "agent_admin.get_definition",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        directToolBoundary.surfaceId(),
+        "corr-agent-admin-tool-boundary-detail-return"));
+    assertEquals("accepted", toolBoundaryBackToDetail.status());
+    assertEquals("surface-agent-admin-detail", toolBoundaryBackToDetail.resultSurface().surfaceId());
+    assertBrowserSafe(toolBoundaryBackToDetail.resultSurface());
 
     var skillModelRefs = runAction(new CapabilityActionRequest(
         "action-agent-skill-manifest-open-model-refs",

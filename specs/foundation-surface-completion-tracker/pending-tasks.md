@@ -5159,7 +5159,7 @@
 
 ### TASK-FSCT-146: Verify or complete runtime implementation for `surface-agent-tool-boundary-diff`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-145]
 - surface id: `surface-agent-tool-boundary-diff`
@@ -5190,6 +5190,7 @@
   - purpose: Tool-boundary simulation and review.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-tool-boundary-diff`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-tool-boundary-diff`; surface graph node/action edge for opening or acting on `surface-agent-tool-boundary-diff`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented and verified the real runtime path for `surface-agent-tool-boundary-diff`: protected WorkstreamEndpoint surface/action APIs, backend-owned `agent_admin.tool_boundary_diff.v1` surface payload, canonical refresh/simulate/submit-review/approve/reject/model-refs/trace/back-to-detail action routing, no-side-effect simulation handoff to `surface-agent-test-console`, behavior-proposal review routing without activation, `ToolPermissionBoundary` denial/fail-closed copy, trace/correlation evidence, selected tenant-admin AuthContext authorization, and browser-safe redaction of raw tool inputs/outputs, provider credentials, bearer tokens, and hidden scope data. runtime evidence: readiness level `api-smoked` for implementation verification; commands passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, focused `rg` evidence for surface id/contract/actions/traces/redaction, and `git diff --check`
 
 ### TASK-FSCT-147: Verify or complete runtime testing for `surface-agent-tool-boundary-diff`
 
