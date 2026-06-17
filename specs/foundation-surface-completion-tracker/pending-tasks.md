@@ -1590,7 +1590,7 @@
 
 ### TASK-FSCT-045: Verify or complete runtime testing for `surface-user-admin-invitation-create`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-044]
 - surface id: `surface-user-admin-invitation-create`
@@ -1615,15 +1615,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.invitation_create.v1`
   - purpose: Single-purpose invitation creation form.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-invitation-create`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added dedicated protected Akka-hosted invitation-create runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminInvitationCreateRuntimePath` and repaired direct surface authorization so `surface-user-admin-invitation-create` requires the User Admin invitation capability before returning the create-form payload. runtime evidence: readiness level `runtime-ready` for the invitation-create testing scope; role/AuthContext/tenant setup covered tenant admin and regular member in `tenant-starter`; success path covered protected direct surface load plus dashboard/users-to-create traversal and `action-submit-user-admin-invitation`; denial/provider/fail-closed/trace coverage included missing-bearer rejection, regular-member capability denial, idempotent replay, duplicate-open-invite reuse, outbox/provider `noFakeSuccess` delivery-readiness metadata, trace refs, correlation ids, and browser-safe invitation-token/token-hash/provider/raw-JWT redaction; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminInvitationCreateRuntimePath,WorkstreamServiceTest#userAdminDedicatedUserBranchTaskSurfacesOpenWithBackendReturnMetadata test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, `git diff --check`, and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
 
 ### TASK-FSCT-046: Verify or complete app-description specification for `surface-user-admin-invitation-detail`
 

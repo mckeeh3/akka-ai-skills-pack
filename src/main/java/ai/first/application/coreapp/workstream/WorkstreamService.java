@@ -1997,6 +1997,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope invitationCreateSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    if (!isActionCapabilityVisible(actor, USERADMIN_SEND_INVITATION)) throw new AuthorizationException(403, "CAPABILITY_FORBIDDEN");
     authContextResolver.appendProtectedReadTrace(actor, USERADMIN_SEND_INVITATION, "user_admin.invitation_create.v1", correlationId);
     var roles = rolesInput(input).stream().map(FoundationRole::name).toList();
     var roleOptions = roleOptionsForSelectedContext(actor);

@@ -375,6 +375,123 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void protectedWorkstreamApiExercisesUserAdminInvitationCreateRuntimePath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-invitation-create")
+        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Invitation create surface must reject missing bearer tokens.");
+
+    var directCreate = getSurface("surface-user-admin-invitation-create", "corr-user-invite-create-direct");
+    assertEquals("surface-user-admin-invitation-create", directCreate.surfaceId());
+    assertEquals("create-form", directCreate.surfaceType());
+    assertEquals("user_admin.invitation_create.v1", directCreate.data().get("surfaceContract"));
+    assertEquals("corr-user-invite-create-direct", directCreate.correlationId());
+    assertTrue(directCreate.toString().contains("branchReturnActionId=action-user-admin-show-users"));
+    assertTrue(directCreate.toString().contains("scopeSummary"));
+    assertTrue(directCreate.toString().contains("roleOptions"));
+    assertTrue(directCreate.toString().contains("expiryOptions"));
+    assertTrue(directCreate.toString().contains("deliveryReadiness"));
+    assertTrue(directCreate.toString().contains("noFakeSuccess=true"));
+    assertTrue(directCreate.actions().stream().anyMatch(action -> action.actionId().equals("action-submit-user-admin-invitation")));
+    assertBrowserSafe(directCreate);
+
+    var dashboard = getSurface("surface-user-admin-dashboard", "corr-user-invite-create-dashboard");
+    var users = runAction(new CapabilityActionRequest(
+        "action-user-admin-show-users",
+        "user-admin.show-users",
+        "search-user-directory",
+        "USERADMIN_LIST_MEMBERS",
+        null,
+        null,
+        SELECTED_CONTEXT_ID,
+        dashboard.surfaceId(),
+        "corr-user-invite-create-users"));
+    assertEquals("accepted", users.status());
+    assertEquals("surface-user-admin-users", users.resultSurface().surfaceId());
+
+    var opened = runAction(new CapabilityActionRequest(
+        "action-open-user-admin-invitation-create",
+        "action-open-user-admin-invitation-create",
+        "USERADMIN_SEND_INVITATION",
+        "USERADMIN_SEND_INVITATION",
+        Map.of("email", "draft.invitee@example.test", "displayName", "Draft Invitee", "roles", "TENANT_EMPLOYEE", "reason", "draft smoke"),
+        null,
+        SELECTED_CONTEXT_ID,
+        users.resultSurface().surfaceId(),
+        "corr-user-invite-create-open"));
+    assertEquals("accepted", opened.status());
+    assertEquals("surface-user-admin-invitation-create", opened.resultSurface().surfaceId());
+    assertEquals("user_admin.invitation_create.v1", opened.resultSurface().data().get("surfaceContract"));
+    assertTrue(opened.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-invitation-create")));
+    assertTrue(opened.resultSurface().toString().contains("draft.invitee@example.test"));
+    assertTrue(opened.resultSurface().toString().contains("TENANT_EMPLOYEE"));
+    assertTrue(opened.resultSurface().toString().contains("action-submit-user-admin-invitation"));
+    assertBrowserSafe(opened.resultSurface());
+
+    var submitted = runAction(new CapabilityActionRequest(
+        "action-submit-user-admin-invitation",
+        "action-submit-user-admin-invitation",
+        "USERADMIN_SEND_INVITATION",
+        "USERADMIN_SEND_INVITATION",
+        Map.of("email", "runtime.invitee@example.test", "displayName", "Runtime Invitee", "roles", "TENANT_EMPLOYEE", "reason", "runtime invitation create smoke"),
+        "idem-user-invite-create-runtime",
+        SELECTED_CONTEXT_ID,
+        opened.resultSurface().surfaceId(),
+        "corr-user-invite-create-submit"));
+    assertEquals("accepted", submitted.status());
+    assertEquals("corr-user-invite-create-submit", submitted.correlationId());
+    assertEquals("surface-user-admin-invitation-detail", submitted.resultSurface().surfaceId());
+    assertEquals("user_admin.invitation_detail.v1", submitted.resultSurface().data().get("surfaceContract"));
+    assertTrue(submitted.resultSurface().toString().contains("runtime.invitee@example.test"));
+    assertTrue(submitted.resultSurface().toString().contains("deliveryState"));
+    assertTrue(submitted.resultSurface().toString().contains("providerReadiness=ready_or_captured"));
+    assertTrue(submitted.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-useradmin-invitation")));
+    assertFalse(submitted.resultSurface().toString().contains("invite-token"));
+    assertFalse(submitted.resultSurface().toString().contains("tokenHash"));
+    assertBrowserSafe(submitted.resultSurface());
+
+    var replayed = runAction(new CapabilityActionRequest(
+        "action-submit-user-admin-invitation",
+        "action-submit-user-admin-invitation",
+        "USERADMIN_SEND_INVITATION",
+        "USERADMIN_SEND_INVITATION",
+        Map.of("email", "runtime.invitee@example.test", "displayName", "Runtime Invitee", "roles", "TENANT_EMPLOYEE", "reason", "runtime invitation replay"),
+        "idem-user-invite-create-runtime",
+        SELECTED_CONTEXT_ID,
+        opened.resultSurface().surfaceId(),
+        "corr-user-invite-create-replay"));
+    assertEquals("accepted", replayed.status());
+    assertEquals("surface-user-admin-invitation-detail", replayed.resultSurface().surfaceId());
+    assertTrue(replayed.resultSurface().toString().contains("runtime.invitee@example.test"));
+    assertBrowserSafe(replayed.resultSurface());
+
+    var duplicateDifferentKey = runAction(new CapabilityActionRequest(
+        "action-submit-user-admin-invitation",
+        "action-submit-user-admin-invitation",
+        "USERADMIN_SEND_INVITATION",
+        "USERADMIN_SEND_INVITATION",
+        Map.of("email", "runtime.invitee@example.test", "displayName", "Runtime Invitee", "roles", "TENANT_EMPLOYEE", "reason", "runtime invitation duplicate"),
+        "idem-user-invite-create-runtime-duplicate",
+        SELECTED_CONTEXT_ID,
+        opened.resultSurface().surfaceId(),
+        "corr-user-invite-create-duplicate"));
+    assertEquals("accepted", duplicateDifferentKey.status());
+    assertEquals("surface-user-admin-invitation-detail", duplicateDifferentKey.resultSurface().surfaceId());
+    assertTrue(duplicateDifferentKey.resultSurface().toString().contains("runtime.invitee@example.test"));
+    assertFalse(duplicateDifferentKey.resultSurface().toString().contains("invite-token"));
+    assertBrowserSafe(duplicateDifferentKey.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-user-admin-invitation-create",
+        "corr-user-invite-create-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        "membership-member"), "Regular members must not load the invitation create surface.");
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesSaasOwnerAdminsRuntimePath() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-user-admin-saas-owner-admins")
