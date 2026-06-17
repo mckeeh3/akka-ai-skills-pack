@@ -39,6 +39,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     repository.saveTenant(new Tenant(TENANT_ID, "Starter Tenant", true));
     seedIdentity(repository, "admin@example.test", "Tenant Admin", SELECTED_CONTEXT_ID, List.of(FoundationRole.TENANT_ADMIN, FoundationRole.AUDITOR));
     seedIdentity(repository, "member@example.test", "Member User", "membership-member", List.of(FoundationRole.TENANT_EMPLOYEE));
+    seedSaasOwnerIdentity(repository, "owner@example.test", "SaaS Owner", "membership-owner");
   }
 
   @Test
@@ -276,11 +277,82 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertBrowserSafe(denied.resultSurface());
   }
 
+  @Test
+  void protectedWorkstreamApiExercisesSaasOwnerAdminsRuntimePath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-user-admin-saas-owner-admins")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .responseBodyAs(String.class)
+        .invoke(), "SaaS Owner Admins surface must reject missing bearer tokens.");
+
+    var bootstrap = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "SaaS Owner"))
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-saas-owner-admins-bootstrap")
+        .responseBodyAs(WorkstreamBootstrapResponse.class)
+        .invoke();
+    assertTrue(bootstrap.status().isSuccess());
+    assertEquals("membership-owner", bootstrap.body().me().selectedAuthContext().selectedContextId());
+    assertBrowserSafe(bootstrap.body());
+
+    var dashboard = getSurfaceAs("surface-user-admin-dashboard", "corr-saas-owner-admins-dashboard", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-saas-owner-dashboard", dashboard.surfaceId());
+    assertEquals("user_admin.saas_owner_dashboard.v1", dashboard.data().get("surfaceContract"));
+    assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-user-admin-show-saas-owner-admins")));
+    assertBrowserSafe(dashboard);
+
+    var list = runActionAs(new CapabilityActionRequest(
+        "action-user-admin-show-saas-owner-admins",
+        "user-admin.show-saas-owner-admins",
+        "manage-saas-owner-admins",
+        "saas_owner.admin.list",
+        Map.of("scope", "saas-owner"),
+        null,
+        "membership-owner",
+        dashboard.surfaceId(),
+        "corr-saas-owner-admins-list"), "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("accepted", list.status());
+    assertEquals("corr-saas-owner-admins-list", list.correlationId());
+    assertEquals("surface-user-admin-saas-owner-admins", list.resultSurface().surfaceId());
+    assertEquals("list-search", list.resultSurface().surfaceType());
+    assertEquals("user_admin.saas_owner_admins.v1", list.resultSurface().data().get("surfaceContract"));
+    assertEquals("saas_owner", list.resultSurface().data().get("scopeType"));
+    assertEquals("surface-user-admin-saas-owner-admins", list.resultSurface().data().get("branchRootSurfaceId"));
+    assertTrue(String.valueOf(list.resultSurface().data().get("summary")).contains("visibleAdminCount="));
+    assertTrue(list.resultSurface().toString().contains("owner@example.test"));
+    assertTrue(list.resultSurface().toString().contains("targetSurfaceId=surface-user-admin-user-detail"));
+    assertTrue(list.resultSurface().toString().contains("action-open-saas-owner-admin-invitation-create"));
+    assertTrue(list.resultSurface().toString().contains("trace-saas-owner-admin"));
+    assertBrowserSafe(list.resultSurface());
+
+    var directList = getSurfaceAs("surface-user-admin-saas-owner-admins", "corr-saas-owner-admins-direct", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
+    assertEquals("surface-user-admin-saas-owner-admins", directList.surfaceId());
+    assertEquals("corr-saas-owner-admins-direct", directList.correlationId());
+    assertBrowserSafe(directList);
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-user-admin-show-saas-owner-admins",
+        "user-admin.show-saas-owner-admins",
+        "manage-saas-owner-admins",
+        "saas_owner.admin.list",
+        Map.of("scope", "saas-owner"),
+        null,
+        SELECTED_CONTEXT_ID,
+        "surface-user-admin-dashboard",
+        "corr-saas-owner-admins-tenant-denied")),
+        "Tenant Admin selected contexts must not open the SaaS Owner Admins branch through the protected action API.");
+  }
+
   private SurfaceEnvelope getSurface(String surfaceId, String correlationId) throws Exception {
+    return getSurfaceAs(surfaceId, correlationId, "workos-admin", "admin@example.test", "Tenant Admin", SELECTED_CONTEXT_ID);
+  }
+
+  private SurfaceEnvelope getSurfaceAs(String surfaceId, String correlationId, String subject, String email, String name, String selectedContextId) throws Exception {
     var response = httpClient
         .GET("/api/workstream/surfaces/" + surfaceId)
-        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
-        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("Authorization", "Bearer " + bearerToken(subject, email, name))
+        .addHeader("X-Selected-Context-Id", selectedContextId)
         .addHeader("X-Correlation-Id", correlationId)
         .responseBodyAs(SurfaceEnvelope.class)
         .invoke();
@@ -289,10 +361,14 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   private CapabilityActionResult runAction(CapabilityActionRequest request) throws Exception {
+    return runActionAs(request, "workos-admin", "admin@example.test", "Tenant Admin", SELECTED_CONTEXT_ID);
+  }
+
+  private CapabilityActionResult runActionAs(CapabilityActionRequest request, String subject, String email, String name, String selectedContextId) throws Exception {
     var response = httpClient
         .POST("/api/workstream/actions")
-        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
-        .addHeader("X-Selected-Context-Id", SELECTED_CONTEXT_ID)
+        .addHeader("Authorization", "Bearer " + bearerToken(subject, email, name))
+        .addHeader("X-Selected-Context-Id", selectedContextId)
         .addHeader("X-Correlation-Id", request.correlationId())
         .withRequestBody(request)
         .responseBodyAs(CapabilityActionResult.class)
@@ -306,6 +382,13 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     repository.saveProfile(new UserProfile(email, email, displayName, null, null, null));
     repository.saveSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
     repository.saveMembership(new Membership(membershipId, email, ScopeType.TENANT, TENANT_ID, null, roles, MembershipStatus.ACTIVE, false, null));
+  }
+
+  private void seedSaasOwnerIdentity(AkkaIdentityRepository repository, String email, String displayName, String membershipId) {
+    repository.saveAccount(new Account(email, null, email, email, AccountStatus.ACTIVE, "UNLINKED"));
+    repository.saveProfile(new UserProfile(email, email, displayName, null, null, null));
+    repository.saveSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
+    repository.saveMembership(new Membership(membershipId, email, ScopeType.SAAS_OWNER, null, null, List.of(FoundationRole.SAAS_OWNER_ADMIN), MembershipStatus.ACTIVE, false, null));
   }
 
   private String bearerToken(String subject, String email, String name) throws Exception {

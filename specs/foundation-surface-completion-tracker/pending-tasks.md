@@ -1166,7 +1166,7 @@
 
 ### TASK-FSCT-033: Verify or complete runtime testing for `surface-user-admin-saas-owner-admins`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-032]
 - surface id: `surface-user-admin-saas-owner-admins`
@@ -1200,6 +1200,7 @@
   - purpose: SaaS Owner scoped directory for app-owner/admin users and invitations.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-saas-owner-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-saas-owner-admins`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added protected Akka-hosted User Admin SaaS Owner Admins runtime smoke coverage in `UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesSaasOwnerAdminsRuntimePath`: JWT plus selected SaaS Owner `AuthContext` bootstraps `/api/workstream/bootstrap`, traverses the SaaS Owner dashboard to `surface-user-admin-saas-owner-admins` through `/api/workstream/actions`, verifies backend-owned `user_admin.saas_owner_admins.v1` list-search scope/branch metadata/summary/row/action/trace/correlation/redaction payload, loads the direct protected surface path, rejects missing-bearer access, and verifies Tenant Admin selected contexts are forbidden from opening the SaaS Owner branch. runtime evidence: readiness level `runtime-ready` for the list testing scope; role/AuthContext setup covered SaaS Owner Admin and Tenant Admin; denial/provider/fail-closed/trace coverage included missing bearer, `CAPABILITY_FORBIDDEN`, trace refs, correlation ids, and browser-safe WorkOS/JWT/provider/invitation-token redaction; commands passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesSaasOwnerAdminsRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`; live provider smoke remains outside named scope for this list-only surface because provider/outbox delivery is exercised by dedicated invitation tasks
 
 ### TASK-FSCT-034: Verify or complete app-description specification for `surface-user-admin-saas-owner-admin-invitation-create`
 
