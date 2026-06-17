@@ -253,7 +253,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-invitation-detail` show-inspection/workflow-status contract covering identity/owner/placement, branch-return variants, selected AuthContext and invitation-read authority, frontend-safe envelope/invitationSummary/deliveryStatus/lifecycleStatus/eligibility/action payload schema, resend/revoke/accepted-user/return/audit action mappings, forbidden token/provider/JWT/email-body and hidden-population boundaries, no-enumeration authorization behavior, terminal/no-op/stale/conflict and provider/outbox fail-closed `noFakeSuccess` states, trace/audit/correlation contract, accessibility/responsive expectations, acceptance/security/observability regression coverage, and sufficiency review. Checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description, and `git diff --check`. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

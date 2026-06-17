@@ -1628,7 +1628,7 @@
 
 ### TASK-FSCT-046: Verify or complete app-description specification for `surface-user-admin-invitation-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-invitation-detail`
@@ -1657,6 +1657,7 @@
   - purpose: Lifecycle-aware invitation inspection.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-invitation-detail` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: added a dedicated show-inspection/workflow-status app-description contract for `surface-user-admin-invitation-detail`, including identity/owner/placement, branch-return variants, selected AuthContext and invitation-read authority, frontend-safe invitation/delivery/lifecycle/eligibility payload schema, resend/revoke/accepted-user/return/audit action mappings, token/provider/JWT/email-body redaction boundaries, no-enumeration authorization, terminal/no-op/stale/conflict/provider-outbox fail-closed `noFakeSuccess` states, trace/audit/correlation requirements, accessibility/responsive expectations, tests, and sufficiency review; tracker evidence updated; checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests and `git diff --check`
 
 ### TASK-FSCT-047: Verify or complete runtime implementation for `surface-user-admin-invitation-detail`
 
