@@ -279,7 +279,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-invitation-revoke-confirmation` destructive-lifecycle-confirmation contract covering identity/owner/placement, selected AuthContext and invitation-revoke authority, frontend-safe envelope/invitationSummary/revokeEligibility/consequenceSummary/confirmationForm/action payload schema, confirm/cancel/return/audit action mappings, forbidden token/provider/JWT/email-body and hidden-population boundaries, no-enumeration authorization behavior, accepted/already-revoked/stale/last-admin-risk/idempotent replay states, trace/audit/correlation contract, accessibility/responsive expectations, acceptance/security/observability regression coverage, and sufficiency review. Checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description, and `git diff --check`. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
