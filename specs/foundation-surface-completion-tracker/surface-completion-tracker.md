@@ -645,7 +645,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-admin-detail` for `agent_admin.detail.v1` with Agent Admin/`agent-admin-agent` ownership, catalog/deep-link placement, browser-safe `detailSummary`, `scopeSummary`, `readinessNarrative`, `behaviorArtifactCards[]`, `taskEntryPoints[]`, redaction, diagnostics, and `authorizedActions[]` payload schemas; governed refresh, prompt, skill-manifest, tool-boundary, model-ref, no-side-effect test, prompt-risk, activation/deactivation/rollback, trace, and catalog-return action mappings; backend AuthContext/tenant visibility and stale-row denial rules; audit/work trace and correlation expectations; fail-closed/provider, approval, stale, partial, validation, no-op, and failure states; accessibility/style binding; read-only/no-inline-mutation semantics; and app-description/realization test expectations. Validation: `git diff --check` plus focused `rg` evidence for surface id, payload/actions/auth/traces/tests. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

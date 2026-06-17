@@ -4808,7 +4808,7 @@
 
 ### TASK-FSCT-136: Verify or complete app-description specification for `surface-agent-admin-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-admin-detail`
@@ -4837,6 +4837,7 @@
   - purpose: Agent readiness/behavior inspection.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-admin-detail` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: expanded `surface-agent-admin-detail` for `agent_admin.detail.v1` with Agent Admin/`agent-admin-agent` ownership, catalog/deep-link placement, browser-safe detail/readiness/artifact/task-entry/redaction payload schemas, governed task/lifecycle/trace/catalog-return action mappings, AuthContext/tenant visibility and stale-row denial rules, audit/work trace and correlation expectations, explicit states, accessibility/style binding, read-only/no-inline-mutation semantics, tests, and sufficiency-review evidence. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in the Agent Admin app-description.
 
 ### TASK-FSCT-137: Verify or complete runtime implementation for `surface-agent-admin-detail`
 
