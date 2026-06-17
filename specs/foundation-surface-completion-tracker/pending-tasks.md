@@ -992,7 +992,7 @@
 
 ### TASK-FSCT-028: Verify or complete app-description specification for `surface-user-admin-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-user-admin-dashboard`
@@ -1021,6 +1021,7 @@
   - purpose: Attention-first User Admin command center for SaaS Owner Admin, Organization, Organization Admin, directory, invitation, role, support, review, provider, and audit health.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: User Admin `surface-user-admin-dashboard` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: verified existing User Admin dashboard app-description as implementation-ready: identity/owner/placement/purpose, selected AuthContext/admin-level authority, dashboard trunk/branch actions, payload schema, forbidden/redacted boundaries, governed action-to-capability/tool mappings, safe system-message denial recovery, trace/audit/correlation, rendering states, keyboard/responsive/test expectations, and sufficiency-review statements are present. Checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description and `git diff --check`
 
 ### TASK-FSCT-029: Verify or complete runtime implementation for `surface-user-admin-dashboard`
 

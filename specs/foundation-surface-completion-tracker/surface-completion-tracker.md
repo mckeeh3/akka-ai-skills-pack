@@ -175,7 +175,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract verified in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: includes the `surface-user-admin-dashboard` identity/type/contract, owning User Admin workstream and `user-admin-agent`, selected AuthContext/admin-level/authority requirements, backend-authored trunk and branch navigation, attention-first UX model, frontend-safe payload fields (`hero`, `attentionCounts[]`, `administeredPopulations[]`, `summaryCards[]`, `authorizedActions[]`, `recentActivity[]`), forbidden/redacted payload boundaries, governed capability/tool action mappings, direct-denial recovery through `surface-user-admin-system-message`, trace/correlation/audit requirements, rendering states, keyboard/responsive expectations through the User Admin graph tests, and sufficiency-review statements that the dashboard/tree contract is implementable without inventing surface ids, actions, states, auth/tenant behavior, trace links, tests, or visual semantics. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
