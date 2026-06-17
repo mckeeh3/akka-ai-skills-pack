@@ -513,7 +513,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`: added a dedicated `surface-user-admin-customer-admins` list/search contract for `user_admin.customer_admins.v1` covering owning User Admin workstream/`user-admin-agent`, Customer Directory branch placement, selected Organization/Tenant Admin `AuthContext`, active tenant membership, visible selected Customer and `tenant.customer_admin.list` authorization, frontend-safe envelope/admin summary/row/filter/action payload schema, redaction and forbidden payload boundaries for sibling Customers, tenant app data, provider secrets, invitations, hidden roles/counts, and raw trace/correlation internals, governed action-to-capability/tool mappings, loading/empty/ready/searching/validation/forbidden/stale/provider-blocked/no-op states, trace/audit/correlation requirements, accessibility/responsive expectations, acceptance/security/observability coverage, and a sufficiency review stating implementation can proceed without invented fields/actions/states/auth/traces/tests. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
