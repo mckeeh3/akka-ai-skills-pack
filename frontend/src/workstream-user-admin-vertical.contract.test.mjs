@@ -299,6 +299,7 @@ test('User Admin scoped admin surfaces cover SaaS Owner, Organization Admin, Cus
   assert.match(userAdminScopedAdminSurface, /user_admin\.customer_admin_detail\.v1/);
   assert.match(userAdminScopedAdminSurface, /function RoleScopedInvitationForm/);
   assert.match(userAdminScopedAdminSurface, /candidate\.actionId === 'action-submit-saas-owner-admin-invitation'/);
+  assert.match(userAdminScopedAdminSurface, /candidate\.actionId === 'action-submit-organization-admin-invitation'/);
   assert.match(userAdminScopedAdminSurface, /candidate\.actionId === 'action-customer-admin-invite'/);
   assert.match(userAdminScopedAdminSurface, /No backend-authorized role option is available for this selected scope/);
   assert.match(userAdminScopedAdminSurface, /The browser does not infer hidden targets, role eligibility, or authority from labels/);
@@ -308,6 +309,9 @@ test('User Admin scoped admin surfaces cover SaaS Owner, Organization Admin, Cus
   assert.match(userAdminScopedAdminSurface, /customerName: String\(envelope\.data\.customerName/);
   assert.match(userAdminScopedAdminSurface, /query: String\(envelope\.data\.query/);
   assert.match(userAdminScopedAdminSurface, /status: String\(envelope\.data\.status/);
+  assert.match(workstreamService, /action-submit-organization-admin-invitation/);
+  assert.match(workstreamService, /SAAS_OWNER_ORGANIZATION_ADMIN_INVITE_CAPABILITY/);
+  assert.match(workstreamService, /ScopeType\.TENANT, organization\.organizationId\(\), null/);
   assert.match(workstreamService, /action-customer-admin-invite/);
   assert.match(workstreamService, /ScopeType\.CUSTOMER, actor\.selectedContext\(\)\.tenantId\(\), customer\.customer\(\)\.customerId\(\)/);
   assert.match(workstreamService, /targetScopeProof/);

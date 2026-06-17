@@ -508,11 +508,16 @@ class WorkstreamServiceTest {
     assertEquals("surface-user-admin-organization-admin-invitation-create", orgAdminInviteForm.resultSurface().surfaceId());
     assertEquals("tenant-starter", orgAdminInviteForm.resultSurface().data().get("tenantId"));
     assertTrue(orgAdminInviteForm.resultSurface().toString().contains("targetScope"));
+    assertTrue(orgAdminInviteForm.resultSurface().toString().contains("action-submit-organization-admin-invitation"));
     assertBrowserPayloadSafe(orgAdminInviteForm.resultSurface());
 
     var orgAdminInvite = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
-        "action-invite-user", "action-invite-user", "USERADMIN_SEND_INVITATION", "USERADMIN_SEND_INVITATION", Map.of("tenantId", "tenant-starter", "organizationId", "tenant-starter", "email", "org.admin@example.test", "displayName", "Organization Admin", "roles", "TENANT_ADMIN", "reason", "bootstrap-org-admin"), "idem-org-admin-invite", "membership-owner", orgAdminInviteForm.resultSurface().surfaceId(), "corr-tree-org-admin-invite"));
+        "action-submit-organization-admin-invitation", "user-admin.invite-organization-admin", "manage-organization-admins", "saas_owner.organization_admin.invite", Map.of("tenantId", "tenant-starter", "organizationId", "tenant-starter", "email", "org.admin@example.test", "displayName", "Organization Admin", "roles", "TENANT_ADMIN", "reason", "bootstrap-org-admin"), "idem-org-admin-invite", "membership-owner", orgAdminInviteForm.resultSurface().surfaceId(), "corr-tree-org-admin-invite"));
     assertEquals("accepted", orgAdminInvite.status(), orgAdminInvite.message() + " " + orgAdminInvite.resultSurface().data());
+    assertEquals("surface-user-admin-invitation-detail", orgAdminInvite.resultSurface().surfaceId());
+    assertEquals("tenant-starter", orgAdminInvite.resultSurface().data().get("organizationId"));
+    assertEquals("organization-admin-invitation", orgAdminInvite.resultSurface().data().get("recordKind"));
+    assertTrue(orgAdminInvite.resultSurface().toString().contains("action-user-admin-show-organization-admins"));
     var tenantScopedInvitation = invitationRepository.invitations().stream()
         .filter(invitation -> "org.admin@example.test".equals(invitation.normalizedEmail()))
         .findFirst()
