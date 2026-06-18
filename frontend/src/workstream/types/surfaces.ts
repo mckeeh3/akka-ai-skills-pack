@@ -581,7 +581,17 @@ export type OutcomeSurfaceData = {
   noDirectMutation?: boolean;
   safety?: string;
   decisionState?: string;
-  metrics?: Array<{ metricId: string; label: string; current: number; target: number; unit?: string }>;
+  proposalId?: string;
+  proposalDisplayRef?: string;
+  proposalTitle?: string;
+  outcomeSummary?: Record<string, unknown>;
+  noteForm?: Record<string, unknown>;
+  noteHistory?: string[];
+  authorizedActions?: Array<Record<string, unknown>>;
+  disabledActions?: Array<Record<string, unknown>>;
+  readiness?: Record<string, unknown>;
+  noFakeSuccess?: boolean;
+  metrics?: Array<{ metricId: string; label: string; current: number; target: number; unit?: string; summary?: string }>;
 };
 
 export type RegionState<T> =

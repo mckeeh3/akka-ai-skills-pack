@@ -1147,7 +1147,11 @@ public final class WorkstreamService {
     } else if ("action-governance-policy-list".equals(request.actionId())) {
       result = governancePolicyReadResult(actor, "Governance/Policy inventory loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyInventorySurface(actor, request.input(), request.correlationId()));
     } else if ("action-governance-policy-read".equals(request.actionId())) {
-      result = governancePolicyReadResult(actor, "Governance/Policy policy detail loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyDetailSurface(actor, request.input(), request.correlationId()));
+      if ("surface-governance-policy-outcome".equals(request.surfaceId()) || "surface-governance-policy-outcome".equals(stringInput(request.input(), "targetSurfaceId", stringInput(request.input(), "surfaceId", "")))) {
+        result = governancePolicyReadResult(actor, "Governance/Policy outcome panel loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyOutcomeSurface(actor, request.input(), request.correlationId()));
+      } else {
+        result = governancePolicyReadResult(actor, "Governance/Policy policy detail loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyDetailSurface(actor, request.input(), request.correlationId()));
+      }
     } else if ("action-governance-policy-draft-proposal".equals(request.actionId())) {
       var draft = governancePolicyService.draftProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult(draft.status(), draft.message(), request.correlationId(), draft.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), draft.surface(), governanceProposalActions(actor)));
@@ -1168,7 +1172,7 @@ public final class WorkstreamService {
       result = new CapabilityActionResult(rollback.status(), rollback.message(), request.correlationId(), rollback.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), rollback.surface(), governanceDecisionActions(actor)));
     } else if ("action-governance-policy-outcome-note".equals(request.actionId()) || "action-govpol-add-outcome-note".equals(request.actionId())) {
       var outcome = governancePolicyService.recordOutcomeNote(actor, request.input(), request.idempotencyKey(), request.correlationId());
-      result = new CapabilityActionResult(outcome.status(), outcome.message(), request.correlationId(), outcome.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), outcome.surface(), List.of(governanceOutcomeNoteAction(), openAuditAction())));
+      result = new CapabilityActionResult(outcome.status(), outcome.message(), request.correlationId(), outcome.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), outcome.surface(), governanceOutcomeActions(actor)));
     } else if ("action-governance-policy-start-impact-analysis".equals(request.actionId()) || "action-govpol-start-impact-analysis".equals(request.actionId())) {
       result = startGovernancePolicyImpactAnalysis(actor, request);
     } else if ("action-governance-policy-read-impact-analysis".equals(request.actionId()) || "action-govpol-read-impact-analysis".equals(request.actionId())) {
@@ -3934,6 +3938,23 @@ public final class WorkstreamService {
     return governancePolicyEnvelope(actor, correlationId, governancePolicyService.readDecision(actor, input, correlationId), governanceDecisionActions(actor));
   }
 
+  private List<SurfaceAction> governanceOutcomeActions(AuthContextResolver.ResolvedMe actor) {
+    var actions = new java.util.ArrayList<SurfaceAction>();
+    actions.add(governanceReadPolicyAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_OUTCOMES_RECORD_CAPABILITY)) actions.add(governanceOutcomeNoteAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_SIMULATE_CAPABILITY)) actions.add(governanceSimulateProposalAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_APPROVE_CAPABILITY)) actions.add(governanceDecideProposalAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_START_CAPABILITY)) actions.add(governanceStartImpactAnalysisAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY)) actions.add(governanceReadImpactAnalysisAction());
+    if (actor.selectedContext().capabilities().contains(AUDIT_TRACE_READ_CAPABILITY)) actions.add(openAuditAction());
+    return List.copyOf(actions);
+  }
+
+  private SurfaceEnvelope governancePolicyOutcomeSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    validateGovernancePolicyInputScope(actor, input, correlationId);
+    return governancePolicyEnvelope(actor, correlationId, governancePolicyService.readOutcome(actor, input, correlationId), governanceOutcomeActions(actor));
+  }
+
   private SurfaceEnvelope governancePolicyActivationBlockedSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     return envelope("surface-governance-policy-activation-blocked", "decision", "Policy activation blocked", actor, correlationId,
         mapOf("status", "approval-required", "requiredCapabilityId", GOVERNANCE_POLICY_ACTIVATE_CAPABILITY, "safeReason", "Approved proposal, current version, activation target, rollback reference, and backend authority are required.", "sideEffect", "none", "traceLinks", List.of("trace-governance-policy-activation-blocked-" + stableSuffix(correlationId))),
@@ -5155,6 +5176,7 @@ public final class WorkstreamService {
       case "surface-governance-policy-proposal" -> governancePolicyProposalSurface(actor, correlationId, "draft", "Draft proposal is inert until review, simulation, approval, and activation.");
       case "surface-governance-policy-simulation" -> governancePolicySimulationSurface(actor, null, correlationId);
       case "surface-governance-policy-decision" -> governancePolicyDecisionSurface(actor, null, correlationId);
+      case "surface-governance-policy-outcome" -> governancePolicyOutcomeSurface(actor, null, correlationId);
       case "surface-governance-policy-activation-blocked" -> governancePolicyActivationBlockedSurface(actor, correlationId);
       case "surface-governance-policy-rollback-blocked" -> governancePolicyRollbackBlockedSurface(actor, correlationId);
       case "surface-governance-policy-impact-analysis-task" -> governancePolicyImpactAnalysisBlockedSurface(actor, correlationId);

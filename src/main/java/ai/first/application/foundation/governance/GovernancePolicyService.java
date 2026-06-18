@@ -305,6 +305,19 @@ public final class GovernancePolicyService {
     return decision(actor, proposal, correlationId);
   }
 
+  public SurfaceData readOutcome(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    validateScope(actor, input, correlationId);
+    requireRead(actor, READ_CAPABILITY, correlationId);
+    var proposal = findScopedProposal(actor, input);
+    if (proposal == null) {
+      if (stringInput(input, "proposalId", null) != null || stringInput(input, "outcomeId", null) != null) {
+        return validation("proposalId", "No authorized proposal or outcome evidence was found for the selected Governance/Policy AuthContext.", correlationId).surface();
+      }
+      return emptyOutcome(actor, correlationId);
+    }
+    return outcome(actor, proposal, correlationId);
+  }
+
   public ActionResult decideProposal(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {
     validateScope(actor, input, correlationId);
     requireVisible(actor, APPROVE_CAPABILITY, correlationId);
@@ -362,6 +375,7 @@ public final class GovernancePolicyService {
     if (idempotencyKey == null || idempotencyKey.isBlank()) return validation("idempotencyKey", "Outcome notes require a client-generated idempotency key.", correlationId);
     var proposal = findScopedProposal(actor, input);
     if (proposal == null) return validation("proposalId", "Outcome note requires a tenant-scoped governance proposal.", correlationId);
+    if (proposal.status() == GovernancePolicyProposal.Status.DRAFT || proposal.status() == GovernancePolicyProposal.Status.BLOCKED) return validation("lifecycle", "Outcome notes require a submitted, review, decided, activated, or rolled-back proposal lifecycle state.", correlationId);
     var noted = repository.saveProposal(proposal.withOutcomeNote(safe(stringInput(input, "note", "Manual outcome note recorded for governance review.")), correlationId, Instant.now(clock)));
     authContextResolver.appendProtectedReadTrace(actor, OUTCOMES_RECORD_CAPABILITY, "governance outcome note", correlationId);
     return action("accepted", "Governance/Policy outcome note recorded with retained human authority and no direct authority change.", outcome(actor, noted, correlationId), List.of(trace("outcome-note", correlationId)));
@@ -612,24 +626,99 @@ public final class GovernancePolicyService {
         "noFakeSuccess", true));
   }
 
-  private SurfaceData outcome(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
+  private SurfaceData emptyOutcome(AuthContextResolver.ResolvedMe actor, String correlationId) {
     return surface("surface-governance-policy-outcome", "outcome-panel", "Governance outcome", correlationId, mapOf(
         "surfaceContract", "governance.policy.outcome.v1",
+        "ownerFunctionalAgentId", "governance-policy-agent",
+        "outcomeId", "outcome-empty-" + stableSuffix(correlationId),
+        "status", "empty/no-outcomes",
+        "summary", "No visible Governance/Policy proposal outcome is selected for this backend-resolved AuthContext.",
+        "outcomeSummary", mapOf("outcomeStatus", "empty/no-outcomes", "freshnessState", "ready", "recoveryCopy", "Open an authorized proposal, decision, inventory row, or outcome note action to inspect outcome evidence."),
+        "metrics", List.of(),
+        "recommendations", List.of(mapOf("recommendationId", "select-visible-proposal", "label", "Select an authorized proposal", "summary", "Hidden or cross-tenant proposals are not enumerated from the outcome panel.")),
+        "evidenceRefs", List.of(),
+        "noteForm", mapOf("editable", actor.selectedContext().capabilities().contains(OUTCOMES_RECORD_CAPABILITY), "idempotencyRequired", true, "validationMessages", List.of("Choose a visible proposal before recording outcome evidence.")),
+        "authorizedActions", outcomeAuthorizedActions(actor, null),
+        "disabledActions", List.of(mapOf("actionId", "action-governance-policy-outcome-note", "reason", "missing_visible_proposal")),
+        "traceLinks", List.of(mapOf("traceId", trace("outcome-empty", correlationId), "label", "Governance/Policy outcome empty read", "correlationId", correlationId, "redaction", "hidden proposals are not enumerated")),
+        "traceRefs", List.of(trace("outcome-empty", correlationId)),
+        "redaction", outcomeRedaction(),
+        "readiness", mapOf("simulation", "not-required", "impactAnalysis", "blocked_provider_or_runtime", "providerRuntime", "blocked_provider_or_runtime", "noFakeSuccess", true),
+        "systemStates", List.of("loading", "empty/no-outcomes", "ready", "recording-note", "success/note-recorded", "validation-error", "forbidden/system-message", "conflict/stale", "partial-data", "blocked-provider-or-runtime", "read-only", "failure"),
+        "noDirectMutation", true,
+        "noFakeSuccess", true,
+        "actor", actor.account().accountId()));
+  }
+
+  private SurfaceData outcome(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
+    var status = proposal.status().name().toLowerCase().replace('_', '-');
+    var noteCount = proposal.outcomeNotes().size();
+    var latestObservation = noteCount == 0 ? "No outcome note has been recorded for this visible proposal." : proposal.outcomeNotes().get(noteCount - 1);
+    var canRecord = actor.selectedContext().capabilities().contains(OUTCOMES_RECORD_CAPABILITY);
+    var canSimulate = actor.selectedContext().capabilities().contains(SIMULATE_CAPABILITY);
+    var noteLifecycleEligible = proposal.status() != GovernancePolicyProposal.Status.DRAFT && proposal.status() != GovernancePolicyProposal.Status.BLOCKED;
+    return surface("surface-governance-policy-outcome", "outcome-panel", "Governance outcome", correlationId, mapOf(
+        "surfaceContract", "governance.policy.outcome.v1",
+        "ownerFunctionalAgentId", "governance-policy-agent",
         "outcomeId", "outcome-" + stableSuffix(proposal.proposalId() + ":" + correlationId),
         "proposalId", proposal.proposalId(),
-        "status", proposal.status().name().toLowerCase(),
-        "summary", "Outcome note recorded for Governance/Policy proposal " + proposal.proposalId() + "; source policy lifecycle remains backend-authoritative.",
-        "decisionState", proposal.status().name().toLowerCase(),
+        "proposalDisplayRef", proposal.proposalId(),
+        "proposalTitle", proposal.title(),
+        "status", status,
+        "summary", (noteCount == 0 ? "Outcome panel opened" : "Outcome note recorded") + " for Governance/Policy proposal " + proposal.proposalId() + "; source policy lifecycle remains backend-authoritative.",
+        "decisionState", status,
+        "outcomeSummary", mapOf("outcomeDisplayRef", "outcome-" + stableSuffix(proposal.proposalId()), "proposalDisplayRef", proposal.proposalId(), "proposalTitle", proposal.title(), "decisionState", status, "activationOrRollbackState", proposal.rollbackReference() == null ? "not-activated" : proposal.rollbackReference(), "outcomeStatus", noteCount == 0 ? "empty/no-outcomes" : "ready", "latestObservationSummary", latestObservation, "actorDisplaySummary", "backend-selected Governance/Policy actor", "freshnessState", "ready", "successOrRecoveryCopy", noteCount == 0 ? "Record an authorized outcome note when follow-up evidence is available." : "Outcome evidence is retained as feedback only; authority state is unchanged."),
         "metrics", List.of(
-            mapOf("metricId", "outcome-notes", "label", "Outcome notes", "current", proposal.outcomeNotes().size(), "target", 1, "unit", "notes"),
-            mapOf("metricId", "affected-capabilities", "label", "Affected capabilities", "current", proposal.affectedCapabilityIds().size(), "target", Math.max(1, proposal.affectedCapabilityIds().size()), "unit", "capabilities")),
-        "recommendations", List.of(mapOf("recommendationId", "review-outcomes", "label", "Review observed outcomes", "summary", "Use outcome notes to decide whether follow-up simulation, rollback, or a new proposal is needed.")),
-        "evidenceRefs", List.of(mapOf("refId", proposal.proposalId(), "label", proposal.title(), "summary", String.join("; ", proposal.outcomeNotes()), "traceId", trace("outcome-note", correlationId))),
-        "traceRefs", List.of(trace("outcome-note", correlationId)),
-        "noDirectMutation", true,
-        "redaction", "browser-safe outcome note; secrets, hidden authority, raw prompts, and cross-tenant evidence omitted",
+            mapOf("metricId", "outcome-notes", "label", "Outcome notes", "current", noteCount, "target", 1, "unit", "notes", "summary", "Human-authored outcome observations retained on the proposal."),
+            mapOf("metricId", "affected-capabilities", "label", "Affected capabilities", "current", proposal.affectedCapabilityIds().size(), "target", Math.max(1, proposal.affectedCapabilityIds().size()), "unit", "capabilities", "summary", "Capability summaries are browser-safe labels only."),
+            mapOf("metricId", "provider-runtime-readiness", "label", "Provider/runtime readiness", "current", 0, "target", 1, "unit", "ready", "summary", "Impact-analysis provider/runtime remains blocked_provider_or_runtime until configured; no fake success is shown.")),
+        "recommendations", List.of(
+            mapOf("recommendationId", "review-outcomes", "label", "Review observed outcomes", "summary", "Use outcome notes to decide whether follow-up simulation, rollback, or a new proposal is needed."),
+            mapOf("recommendationId", "advisory-evidence", "label", "Keep advisory evidence separate", "summary", "Outcome recommendations cannot approve, activate, roll back, weaken policy, or accept impact-analysis results.")),
+        "evidenceRefs", List.of(
+            mapOf("refId", proposal.proposalId(), "label", proposal.title(), "summary", latestObservation, "traceId", trace("outcome-note", correlationId)),
+            mapOf("refId", firstNonBlank(proposal.decisionCorrelationId(), "decision-not-recorded"), "label", "Decision evidence", "summary", firstNonBlank(proposal.decisionRationale(), "No decision rationale is recorded yet."), "traceId", trace("policy-decision", correlationId)),
+            mapOf("refId", firstNonBlank(proposal.activationCorrelationId(), proposal.rollbackCorrelationId(), "activation-not-recorded"), "label", "Activation or rollback evidence", "summary", firstNonBlank(proposal.rollbackReference(), "No activation rollback metadata is available."), "traceId", trace("admin-audit", correlationId))),
+        "noteHistory", proposal.outcomeNotes(),
+        "noteForm", mapOf("editable", canRecord && noteLifecycleEligible, "fields", List.of("observation", "outcomeCategory", "recommendation", "metricOrEvidenceReference", "reason"), "currentVersionFreshnessToken", "role-gated", "idempotencyRequired", true, "validationMessages", canRecord ? (noteLifecycleEligible ? List.of() : List.of("Outcome notes require a submitted, review, decided, activated, or rolled-back proposal lifecycle state.")) : List.of("Missing governance.outcomes.record capability.")),
+        "authorizedActions", outcomeAuthorizedActions(actor, proposal),
+        "disabledActions", outcomeDisabledActions(actor, proposal),
+        "traceLinks", List.of(mapOf("traceId", trace("outcome-note", correlationId), "label", "Governance/Policy outcome note trace", "targetSurfaceId", "surface-audit-trace-detail", "correlationId", correlationId, "redaction", "raw ids, provider output, prompts, tool payloads, and secrets are role-gated"), mapOf("traceId", trace("workstream-log", correlationId), "label", "Workstream correlation evidence", "targetSurfaceId", "surface-audit-trace-detail", "correlationId", correlationId, "redaction", "browser-safe trace summary only")),
+        "traceRefs", List.of(trace("outcome-note", correlationId), trace("workstream-log", correlationId), trace("admin-audit", correlationId), trace("policy-decision", correlationId)),
+        "redaction", outcomeRedaction(),
+        "readiness", mapOf("simulation", canSimulate ? "ready_for_deterministic_advisory_evidence" : "capability-gated", "impactAnalysis", "blocked_provider_or_runtime", "providerRuntime", "blocked_provider_or_runtime", "noFakeSuccess", true),
+        "systemStates", List.of("loading", "empty/no-outcomes", "ready", "recording-note", "success/note-recorded", "validation-error", "forbidden/system-message", "conflict/stale", "partial-data", "blocked-provider-or-runtime", "read-only", "failure"),
+        "visibilitySplit", mapOf("defaultUserVisible", List.of("proposal title", "decision or activation status", "metric summaries", "latest observation", "safe recommendations", "authorized next actions"), "onDemandDrilldown", List.of("outcome ids", "note history", "lifecycle history", "advisory evidence summaries", "redacted trace summaries"), "adminSupportAuditorOnly", List.of("capability ids", "policy-decision/admin-audit/workstream/agent-work refs", "denial/failure evidence"), "internalOnly", OMITTED_FIELDS),
         "capabilityId", OUTCOMES_RECORD_CAPABILITY,
+        "capabilityIds", List.of(READ_CAPABILITY, OUTCOMES_RECORD_CAPABILITY, SIMULATE_CAPABILITY, APPROVE_CAPABILITY, "governance.policy.impact_analysis.start", "governance.policy.impact_analysis.read"),
+        "noDirectMutation", true,
+        "noFakeSuccess", true,
         "actor", actor.account().accountId()));
+  }
+
+  private List<Map<String, Object>> outcomeAuthorizedActions(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal) {
+    var visibleCapabilities = actor.selectedContext().capabilities();
+    var actions = new java.util.ArrayList<Map<String, Object>>();
+    actions.add(proposalAction("action-governance-policy-read", "Open outcome panel or refresh evidence", READ_CAPABILITY, "list-policy-proposals", "surface-governance-policy-outcome", false));
+    if (proposal != null && visibleCapabilities.contains(OUTCOMES_RECORD_CAPABILITY)) actions.add(proposalAction("action-governance-policy-outcome-note", "Record outcome note", OUTCOMES_RECORD_CAPABILITY, "record-policy-outcome-note", "surface-governance-policy-outcome", true));
+    if (proposal != null && visibleCapabilities.contains(SIMULATE_CAPABILITY)) actions.add(proposalAction("action-governance-policy-simulate", "Open advisory simulation evidence", SIMULATE_CAPABILITY, "simulate-policy-change", "surface-governance-policy-simulation", false));
+    if (proposal != null && visibleCapabilities.contains(APPROVE_CAPABILITY)) actions.add(proposalAction("action-governance-policy-decide", "Open decision/activation/rollback work", APPROVE_CAPABILITY, "approve-activate-or-rollback-policy", "surface-governance-policy-decision", true));
+    if (proposal != null && visibleCapabilities.contains("governance.policy.impact_analysis.start")) actions.add(proposalAction("action-governance-policy-start-impact-analysis", "Start impact analysis evidence", "governance.policy.impact_analysis.start", "start-policy-impact-analysis", "surface-governance-policy-impact-analysis-task", true));
+    if (proposal != null && visibleCapabilities.contains("governance.policy.impact_analysis.read")) actions.add(proposalAction("action-governance-policy-read-impact-analysis", "Read impact analysis evidence", "governance.policy.impact_analysis.read", "read-policy-impact-analysis", "surface-governance-policy-impact-analysis-task", false));
+    return List.copyOf(actions);
+  }
+
+  private List<Map<String, Object>> outcomeDisabledActions(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal) {
+    var disabled = new java.util.ArrayList<Map<String, Object>>();
+    if (proposal == null) disabled.add(mapOf("actionId", "action-governance-policy-outcome-note", "reason", "missing_visible_proposal"));
+    if (!actor.selectedContext().capabilities().contains(OUTCOMES_RECORD_CAPABILITY)) disabled.add(mapOf("actionId", "action-governance-policy-outcome-note", "reason", "missing outcome capability"));
+    if (proposal != null && (proposal.status() == GovernancePolicyProposal.Status.DRAFT || proposal.status() == GovernancePolicyProposal.Status.BLOCKED)) disabled.add(mapOf("actionId", "action-governance-policy-outcome-note", "reason", "lifecycle_not_ready_for_outcome_note"));
+    disabled.add(mapOf("actionId", "action-governance-policy-start-impact-analysis", "reason", "provider/runtime blocked_provider_or_runtime until configured"));
+    return List.copyOf(disabled);
+  }
+
+  private Map<String, Object> outcomeRedaction() {
+    return mapOf("browserSafe", true, "omittedFieldKeys", OMITTED_FIELDS, "hiddenCrossTenantEvidence", true, "privilegedPolicyClauses", "omitted", "hiddenAuthorityState", "omitted", "rawProviderModelData", "omitted", "rawPrompts", "omitted", "rawToolPayloads", "omitted", "rawMetricImplementationDetails", "omitted", "jwtSecrets", "omitted", "correlationIds", "role-gated", "idempotencyKeys", "role-gated");
   }
 
   private List<Map<String, Object>> simulationTransitions(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal) {
