@@ -209,6 +209,244 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  void hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyProposalRuntimePath() throws Exception {
+    var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
+    assertTrue(shell.status().isSuccess(), "Hosted /ui shell must load before the proposal surface is exercised through browser API paths.");
+    assertTrue(shell.body().contains("<div id=\"root\"></div>"));
+    assertTrue(shell.body().contains("/assets/"));
+    assertBrowserSafe(shell.body());
+
+    var bootstrap = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-governance-admin", "governance-admin@example.test", "Governance Admin"))
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-governance-proposal-bootstrap")
+        .responseBodyAs(WorkstreamBootstrapResponse.class)
+        .invoke();
+    assertTrue(bootstrap.status().isSuccess());
+    assertEquals(ADMIN_CONTEXT_ID, bootstrap.body().me().selectedAuthContext().selectedContextId());
+    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-governance-policy") && agent.availability().equals("visible")));
+    assertBrowserSafe(bootstrap.body());
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-governance-policy-proposal")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy proposal must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-governance-proposal-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-governance-policy-draft-proposal",
+            "action-governance-policy-draft-proposal",
+            "governance.policy.propose",
+            "governance.policy.propose",
+            Map.of("title", "Missing bearer proposal"),
+            "idem-governance-proposal-missing-bearer",
+            ADMIN_CONTEXT_ID,
+            "surface-governance-policy-proposal",
+            "corr-governance-proposal-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy proposal action path must reject missing bearer tokens.");
+
+    var direct = getSurface("surface-governance-policy-proposal", "corr-governance-proposal-direct-new-draft");
+    assertEquals("surface-governance-policy-proposal", direct.surfaceId());
+    assertEquals("governance-diff", direct.surfaceType());
+    assertEquals("governance.policy.proposal.v1", direct.data().get("surfaceContract"));
+    assertEquals("empty/new-draft", direct.data().get("state"));
+    assertEquals(true, direct.data().get("noDirectMutation"));
+    assertEquals(true, direct.data().get("noFakeSuccess"));
+    assertTrue(direct.toString().contains("proposalSummary"));
+    assertTrue(direct.toString().contains("changeSet"));
+    assertTrue(direct.toString().contains("draftFields"));
+    assertTrue(direct.toString().contains("lifecycleGate"));
+    assertTrue(direct.toString().contains("availableTransitions"));
+    assertTrue(direct.toString().contains("blocked_provider_or_runtime"));
+    assertTrue(direct.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-proposal")));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-draft-proposal") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-proposal")));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-submit-proposal") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-proposal")));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-start-impact-analysis") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-impact-analysis-task")));
+    assertBrowserSafe(direct);
+
+    var missingIdempotency = runAction(new CapabilityActionRequest(
+        "action-governance-policy-draft-proposal",
+        "action-governance-policy-draft-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("title", "Missing idempotency proposal", "rationale", "verify validation state"),
+        null,
+        ADMIN_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-governance-proposal-missing-idempotency"));
+    assertEquals("denied", missingIdempotency.status());
+    assertEquals("surface-governance-policy-system-message", missingIdempotency.resultSurface().surfaceId());
+    assertEquals(true, missingIdempotency.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, missingIdempotency.resultSurface().data().get("noDirectMutation"));
+    assertTrue(missingIdempotency.resultSurface().toString().contains("idempotency-key-required"));
+    assertBrowserSafe(missingIdempotency.resultSurface());
+
+    var draft = runAction(new CapabilityActionRequest(
+        "action-governance-policy-draft-proposal",
+        "action-governance-policy-draft-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of(
+            "title", "Proposal smoke authority boundary",
+            "rationale", "exercise proposal governance-diff runtime path",
+            "proposedContent", "Require backend authorization, human approval, simulation evidence, rollback metadata, and trace evidence before authority changes."),
+        "idem-governance-proposal-draft",
+        ADMIN_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-governance-proposal-draft"));
+    assertEquals("accepted", draft.status());
+    assertEquals("surface-governance-policy-proposal", draft.resultSurface().surfaceId());
+    assertEquals("governance.policy.proposal.v1", draft.resultSurface().data().get("surfaceContract"));
+    assertEquals("draft", draft.resultSurface().data().get("state"));
+    assertEquals(true, draft.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, draft.resultSurface().data().get("noFakeSuccess"));
+    assertTrue(draft.resultSurface().toString().contains("No authority changes before approval."));
+    assertTrue(draft.resultSurface().toString().contains("policy-decision"));
+    assertTrue(draft.resultSurface().toString().contains("admin-audit"));
+    assertTrue(draft.resultSurface().toString().contains("workstream-log"));
+    assertTrue(draft.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-proposal-draft")));
+    assertBrowserSafe(draft.resultSurface());
+
+    var duplicateDraft = runAction(new CapabilityActionRequest(
+        "action-governance-policy-draft-proposal",
+        "action-governance-policy-draft-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("title", "Duplicate ignored", "proposedContent", "This replay must not create another proposal."),
+        "idem-governance-proposal-draft",
+        ADMIN_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-governance-proposal-draft-replay"));
+    assertEquals("no-op", duplicateDraft.status());
+    assertEquals(draft.resultSurface().data().get("proposalId"), duplicateDraft.resultSurface().data().get("proposalId"));
+    assertBrowserSafe(duplicateDraft.resultSurface());
+
+    var proposalId = String.valueOf(draft.resultSurface().data().get("proposalId"));
+    var unknownSubmit = runAction(new CapabilityActionRequest(
+        "action-governance-policy-submit-proposal",
+        "action-governance-policy-submit-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("proposalId", "proposal-not-visible"),
+        "idem-governance-proposal-submit-missing",
+        ADMIN_CONTEXT_ID,
+        draft.resultSurface().surfaceId(),
+        "corr-governance-proposal-submit-missing"));
+    assertEquals("validation-error", unknownSubmit.status());
+    assertEquals("surface-governance-policy-validation-error", unknownSubmit.resultSurface().surfaceId());
+    assertEquals("proposalId", unknownSubmit.resultSurface().data().get("field"));
+    assertBrowserSafe(unknownSubmit.resultSurface());
+
+    var submitted = runAction(new CapabilityActionRequest(
+        "action-governance-policy-submit-proposal",
+        "action-governance-policy-submit-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("proposalId", proposalId, "freshnessToken", "browser-hint-only"),
+        "idem-governance-proposal-submit",
+        ADMIN_CONTEXT_ID,
+        draft.resultSurface().surfaceId(),
+        "corr-governance-proposal-submit"));
+    assertEquals("accepted", submitted.status());
+    assertEquals("surface-governance-policy-proposal", submitted.resultSurface().surfaceId());
+    assertEquals("in_review", submitted.resultSurface().data().get("state"));
+    assertEquals(true, submitted.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, submitted.resultSurface().data().get("noFakeSuccess"));
+    assertTrue(submitted.resultSurface().toString().contains("human approval"));
+    assertTrue(submitted.resultSurface().toString().contains("simulation evidence"));
+    assertTrue(submitted.resultSurface().toString().contains("rollback metadata"));
+    assertTrue(submitted.resultSurface().toString().contains("action-governance-policy-decide"));
+    assertTrue(submitted.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-proposal-submit")));
+    assertBrowserSafe(submitted.resultSurface());
+
+    var duplicateSubmit = runAction(new CapabilityActionRequest(
+        "action-governance-policy-submit-proposal",
+        "action-governance-policy-submit-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("proposalId", proposalId),
+        "idem-governance-proposal-submit",
+        ADMIN_CONTEXT_ID,
+        submitted.resultSurface().surfaceId(),
+        "corr-governance-proposal-submit-replay"));
+    assertEquals("no-op", duplicateSubmit.status());
+    assertEquals("in_review", duplicateSubmit.resultSurface().data().get("state"));
+    assertEquals(proposalId, duplicateSubmit.resultSurface().data().get("proposalId"));
+    assertBrowserSafe(duplicateSubmit.resultSurface());
+
+    var impact = runAction(new CapabilityActionRequest(
+        "action-governance-policy-start-impact-analysis",
+        "action-governance-policy-start-impact-analysis",
+        "governance.policy.impact_analysis.start",
+        "governance.policy.impact_analysis.start",
+        Map.of("proposalId", proposalId, "scope", "proposal-smoke", "reason", "verify proposal surface provider/runtime fail-closed path"),
+        "idem-governance-proposal-impact",
+        ADMIN_CONTEXT_ID,
+        submitted.resultSurface().surfaceId(),
+        "corr-governance-proposal-impact"));
+    assertEquals("blocked_provider_or_runtime", impact.status());
+    assertEquals("surface-governance-policy-impact-analysis-task", impact.resultSurface().surfaceId());
+    assertEquals("workflow-status", impact.resultSurface().surfaceType());
+    assertEquals("blocked_provider_or_runtime", impact.resultSurface().data().get("status"));
+    assertEquals(true, impact.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, impact.resultSurface().data().get("activationBlockedUntilHumanDecision"));
+    assertTrue(impact.resultSurface().toString().contains("AutonomousAgent"));
+    assertFalse(impact.resultSurface().toString().contains("impact_ready"));
+    assertBrowserSafe(impact.resultSurface());
+
+    var memberDenied = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-draft-proposal",
+        "action-governance-policy-draft-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("title", "Member denied proposal"),
+        "idem-governance-proposal-member-denied",
+        MEMBER_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-governance-proposal-member-denied"),
+        "workos-governance-member",
+        "governance-member@example.test",
+        "Governance Member",
+        MEMBER_CONTEXT_ID);
+    assertEquals("denied", memberDenied.status());
+    assertEquals("surface-governance-policy-system-message", memberDenied.resultSurface().surfaceId());
+    assertEquals(true, memberDenied.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, memberDenied.resultSurface().data().get("noDirectMutation"));
+    assertTrue(memberDenied.resultSurface().toString().contains("CAPABILITY_FORBIDDEN"));
+    assertBrowserSafe(memberDenied.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-governance-policy-proposal",
+        "corr-governance-proposal-member-direct-denied",
+        "workos-governance-member",
+        "governance-member@example.test",
+        "Governance Member",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read the Governance/Policy proposal surface.");
+
+    var crossTenant = runAction(new CapabilityActionRequest(
+        "action-governance-policy-simulate",
+        "action-governance-policy-simulate",
+        "governance.policy.simulate",
+        "governance.policy.simulate",
+        Map.of("proposalId", proposalId, "tenantId", "tenant-other"),
+        null,
+        ADMIN_CONTEXT_ID,
+        submitted.resultSurface().surfaceId(),
+        "corr-governance-proposal-cross-tenant-denied"));
+    assertEquals("denied", crossTenant.status());
+    assertEquals("surface-governance-policy-system-message", crossTenant.resultSurface().surfaceId());
+    assertEquals("governance.policy.system_message.v1", crossTenant.resultSurface().data().get("surfaceContract"));
+    assertTrue(crossTenant.resultSurface().toString().contains("GOVERNANCE_POLICY_TENANT_FORBIDDEN"));
+    assertBrowserSafe(crossTenant.resultSurface());
+  }
+
+  @Test
   @SuppressWarnings("unchecked")
   void hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyDashboardRuntimePath() throws Exception {
     var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();

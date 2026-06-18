@@ -7526,7 +7526,7 @@
 
 ### TASK-FSCT-213: Verify or complete runtime testing for `surface-governance-policy-proposal`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-212]
 - surface id: `surface-governance-policy-proposal`
@@ -7560,6 +7560,7 @@
   - purpose: Policy proposal lifecycle/diff surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-proposal`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-proposal`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added `hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyProposalRuntimePath` to the Akka-hosted Governance/Policy browser/API smoke suite. Coverage includes `/ui`, protected `/api/workstream/bootstrap`, direct `/api/workstream/surfaces/surface-governance-policy-proposal`, missing-bearer rejections, backend-authored empty/new-draft governance-diff surface, required idempotency safe denial, draft save/idempotent replay, missing proposal validation, submit/idempotent no-op, provider/runtime fail-closed impact-analysis transition, tenant-member capability denial and direct surface denial, cross-tenant hint denial through the proposal transition graph, trace/correlation evidence, no-direct-mutation/no-fake-success, and browser-safe secret boundaries. Runtime evidence: readiness level `runtime-ready` for proposal testing scope. Checks passed: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyProposalRuntimePath -DtrimStackTrace=false test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-214: Verify or complete app-description specification for `surface-governance-policy-simulation`
 
