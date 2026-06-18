@@ -5689,7 +5689,7 @@
 
 ### TASK-FSCT-161: Verify or complete runtime implementation for `surface-agent-rollback-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-160]
 - surface id: `surface-agent-rollback-confirmation`
@@ -5720,6 +5720,7 @@
   - purpose: Rollback confirmation surface.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-rollback-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-rollback-confirmation`; surface graph node/action edge for opening or acting on `surface-agent-rollback-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented and verified backend-owned rollback confirmation runtime path for `surface-agent-rollback-confirmation`: protected Workstream API surface/action path emits `agent_admin.rollback_confirmation.v1` payload with rollback summary, target-version/policy/evidence/redaction/trace state, canonical refresh/confirm/cancel/open-proposal/open-trace actions, required `ROLLBACK` acknowledgement and reason validation, fail-closed missing activated-proposal metadata behavior, and `AgentRuntimeService#rollbackProposal` execution only for authorized tenant/AuthContext-visible activated proposals with rollback metadata. Updated frontend task surface routing to recognize `action-agent-rollback-confirm` as the canonical rollback confirmation action. runtime evidence: readiness level `api-smoked` for implementation verification, with protected API/surface/action path, tenant admin selected AuthContext, no-direct-mutation/no-fake-success missing-metadata behavior, trace/correlation evidence, browser-safe redaction, and no fixture-only/frontend-only normal runtime path. checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`.
 
 ### TASK-FSCT-162: Verify or complete runtime testing for `surface-agent-rollback-confirmation`
 
