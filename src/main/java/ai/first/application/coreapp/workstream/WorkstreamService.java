@@ -4283,6 +4283,8 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope agentRollbackConfirmationSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), AGENT_ADMIN_ROLLBACK_CAPABILITY);
+    authContextResolver.appendProtectedReadTrace(actor, AGENT_ADMIN_ROLLBACK_CAPABILITY, "agent_admin.rollback_confirmation.v1", correlationId);
     var requestedAgentId = stringInput(input, "agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID);
     var candidate = rollbackCandidate(actor, input);
     var proposalId = candidate == null ? "" : candidate.proposalId();

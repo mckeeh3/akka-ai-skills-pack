@@ -13,10 +13,13 @@ import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActio
 import ai.first.application.coreapp.workstream.WorkstreamService.SurfaceEnvelope;
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamBootstrapResponse;
 import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
+import ai.first.application.foundation.agent.AgentRuntimeService;
 import ai.first.application.foundation.agent.AkkaAgentBehaviorRepository;
 import ai.first.application.foundation.identity.AkkaIdentityRepository;
+import ai.first.application.foundation.identity.StarterSecurityComponents;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
+import ai.first.domain.foundation.agent.BehaviorChangeProposal;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.identity.Customer;
@@ -27,6 +30,7 @@ import ai.first.domain.foundation.identity.ScopeType;
 import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.identity.UserProfile;
 import ai.first.domain.foundation.identity.UserSettings;
+import ai.first.domain.foundation.identity.WorkosIdentity;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -1734,6 +1738,295 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
           .filter(agent -> agent.status() == AgentLifecycleStatus.DISABLED)
           .ifPresent(agent -> agentRepository.saveAgentDefinition(agentWithStatus(agent, AgentLifecycleStatus.ACTIVE)));
     }
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiExercisesAgentRollbackConfirmationRuntimeTestingPath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-rollback-confirmation")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin rollback confirmation must reject missing bearer tokens.");
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-agent-rollback-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-agent-rollback-confirm",
+            "action-agent-rollback-confirm",
+            "agent_admin.rollback_behavior_change",
+            "agent_admin.rollback_behavior_change",
+            Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "ROLLBACK", "reason", "Rollback unsafe behavior"),
+            "idem-agent-rollback-missing-bearer",
+            ADMIN_CONTEXT_ID,
+            "surface-agent-rollback-confirmation",
+            "corr-agent-rollback-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin rollback confirmation action path must reject missing bearer tokens.");
+
+    var directRollback = getSurface("surface-agent-rollback-confirmation", "corr-agent-rollback-direct");
+    assertEquals("surface-agent-rollback-confirmation", directRollback.surfaceId());
+    assertEquals("lifecycle-confirmation", directRollback.surfaceType());
+    assertEquals("agent_admin.rollback_confirmation.v1", directRollback.data().get("surfaceContract"));
+    assertEquals("corr-agent-rollback-direct", directRollback.correlationId());
+    assertEquals(Boolean.TRUE, directRollback.data().get("noDirectMutation"));
+    assertEquals(Boolean.TRUE, directRollback.data().get("noFakeSuccess"));
+    assertEquals("approval-required", directRollback.data().get("currentStatus"));
+    assertFalse(directRollback.traceIds().isEmpty());
+    assertTrue(directRollback.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-agent-rollback-confirmation")));
+    assertTrue(directRollback.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-rollback-refresh") && action.resultSurface().updateSurfaceId().equals("surface-agent-rollback-confirmation")));
+    assertTrue(directRollback.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-rollback-confirm") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail") && action.disabled() != null));
+    assertTrue(directRollback.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-rollback-cancel") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail")));
+    assertTrue(directRollback.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-rollback-open-proposal") && action.resultSurface().updateSurfaceId().equals("surface-agent-behavior-proposal")));
+    assertTrue(directRollback.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-rollback-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+
+    var rollbackSummary = (Map<String, Object>) directRollback.data().get("rollbackSummary");
+    assertEquals("surface-agent-rollback-confirmation", rollbackSummary.get("surfaceId"));
+    assertEquals("agent_admin.rollback_confirmation.v1", rollbackSummary.get("contract"));
+    assertEquals("approval-required", rollbackSummary.get("currentLifecycleState"));
+    assertEquals("prior approved version unavailable", rollbackSummary.get("proposedRollbackTargetLabel"));
+    var scopeSummary = (Map<String, Object>) directRollback.data().get("scopeSummary");
+    assertEquals(ADMIN_CONTEXT_ID, scopeSummary.get("selectedAuthContextId"));
+    assertEquals("tenant", scopeSummary.get("scopeType"));
+    assertEquals(Boolean.TRUE, scopeSummary.get("governanceAuthorized"));
+    assertEquals("no-activated-proposal", scopeSummary.get("visibilityDecision"));
+    var targetVersionSummary = (Map<String, Object>) directRollback.data().get("targetVersionSummary");
+    assertEquals("missing-activated-proposal", targetVersionSummary.get("approvalStatus"));
+    assertEquals("not_applicable_no_provider_call", targetVersionSummary.get("providerModelReadiness"));
+    var policyAndApprovalSummary = (Map<String, Object>) directRollback.data().get("policyAndApprovalSummary");
+    assertEquals("approval-required", policyAndApprovalSummary.get("humanApprovalStatus"));
+    assertEquals("not_applicable_no_provider_success_claim", policyAndApprovalSummary.get("providerRuntimeReadiness"));
+    assertEquals(Boolean.TRUE, policyAndApprovalSummary.get("noFakeSuccess"));
+    var confirmationState = (Map<String, Object>) directRollback.data().get("confirmationState");
+    assertEquals(Boolean.TRUE, confirmationState.get("acknowledgementRequired"));
+    assertEquals(Boolean.TRUE, confirmationState.get("reasonRequired"));
+    assertEquals("ROLLBACK", confirmationState.get("requiredAcknowledgementText"));
+    assertTrue(((List<String>) confirmationState.get("disabledActions")).contains("confirm"));
+    assertTrue(directRollback.toString().contains("rawPromptText=omitted"));
+    assertTrue(directRollback.toString().contains("rawSkillReferenceBodies=omitted"));
+    assertTrue(directRollback.toString().contains("providerCredentials=omitted"));
+    assertTrue(directRollback.toString().contains("bearerTokens=omitted"));
+    assertBrowserSafe(directRollback);
+
+    var rollbackFromDetail = assertDetailActionRoutes(
+        "action-agent-detail-open-rollback",
+        "agent_admin.rollback_behavior_change",
+        "surface-agent-rollback-confirmation",
+        "approval-required",
+        "corr-agent-rollback-from-detail");
+    assertTrue(rollbackFromDetail.resultSurface().toString().contains("agent_admin.rollback_confirmation.v1"));
+    assertTrue(rollbackFromDetail.resultSurface().toString().contains("noDirectMutation=true"));
+    assertTrue(rollbackFromDetail.resultSurface().toString().contains("noFakeSuccess=true"));
+
+    var refresh = runAction(new CapabilityActionRequest(
+        "action-agent-rollback-refresh",
+        "action-agent-rollback-refresh",
+        "agent_admin.rollback_behavior_change",
+        "agent_admin.rollback_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        directRollback.surfaceId(),
+        "corr-agent-rollback-refresh"));
+    assertEquals("no-op", refresh.status());
+    assertEquals("surface-agent-rollback-confirmation", refresh.resultSurface().surfaceId());
+    assertEquals("corr-agent-rollback-refresh", refresh.correlationId());
+    assertTrue(refresh.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-rollback-refresh")));
+    assertTrue(refresh.message().contains("no lifecycle or artifact mutation occurred"));
+    assertBrowserSafe(refresh.resultSurface());
+
+    var missingAck = runAction(new CapabilityActionRequest(
+        "action-agent-rollback-confirm",
+        "action-agent-rollback-confirm",
+        "agent_admin.rollback_behavior_change",
+        "agent_admin.rollback_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "reason", "Rollback unsafe behavior"),
+        "idem-agent-rollback-missing-ack",
+        ADMIN_CONTEXT_ID,
+        directRollback.surfaceId(),
+        "corr-agent-rollback-missing-ack"));
+    assertEquals("validation-error", missingAck.status());
+    assertEquals("surface-agent-rollback-confirmation", missingAck.resultSurface().surfaceId());
+    assertTrue(missingAck.message().contains("requires the explicit ROLLBACK acknowledgement"));
+    assertTrue(missingAck.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-rollback-acknowledgement-required")));
+    assertBrowserSafe(missingAck.resultSurface());
+
+    var missingReason = runAction(new CapabilityActionRequest(
+        "action-agent-rollback-confirm",
+        "action-agent-rollback-confirm",
+        "agent_admin.rollback_behavior_change",
+        "agent_admin.rollback_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "ROLLBACK"),
+        "idem-agent-rollback-missing-reason",
+        ADMIN_CONTEXT_ID,
+        directRollback.surfaceId(),
+        "corr-agent-rollback-missing-reason"));
+    assertEquals("validation-error", missingReason.status());
+    assertEquals("surface-agent-rollback-confirmation", missingReason.resultSurface().surfaceId());
+    assertTrue(missingReason.message().contains("requires a browser-safe admin reason"));
+    assertTrue(missingReason.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-rollback-reason-required")));
+    assertBrowserSafe(missingReason.resultSurface());
+
+    var metadataMissing = runAction(new CapabilityActionRequest(
+        "action-agent-rollback-confirm",
+        "action-agent-rollback-confirm",
+        "agent_admin.rollback_behavior_change",
+        "agent_admin.rollback_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "ROLLBACK", "reason", "Rollback unsafe behavior"),
+        "idem-agent-rollback-metadata-missing",
+        ADMIN_CONTEXT_ID,
+        directRollback.surfaceId(),
+        "corr-agent-rollback-metadata-missing"));
+    assertEquals("approval-required", metadataMissing.status());
+    assertEquals("surface-agent-rollback-confirmation", metadataMissing.resultSurface().surfaceId());
+    assertTrue(metadataMissing.message().contains("failed closed with no artifact mutation"));
+    assertTrue(metadataMissing.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-rollback-metadata-missing")));
+    assertBrowserSafe(metadataMissing.resultSurface());
+
+    var proposal = runAction(new CapabilityActionRequest(
+        "action-agent-rollback-open-proposal",
+        "action-agent-rollback-open-proposal",
+        "agent_admin.rollback_behavior_change",
+        "agent_admin.rollback_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "proposalId", "proposal-agent-admin-rollback-required"),
+        null,
+        ADMIN_CONTEXT_ID,
+        directRollback.surfaceId(),
+        "corr-agent-rollback-proposal"));
+    assertEquals("accepted", proposal.status());
+    assertEquals("surface-agent-behavior-proposal", proposal.resultSurface().surfaceId());
+    assertBrowserSafe(proposal.resultSurface());
+
+    var trace = runAction(new CapabilityActionRequest(
+        "action-agent-rollback-open-trace",
+        "action-agent-rollback-open-trace",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("traceId", "trace-agent-definition-rollback-confirmation"),
+        null,
+        ADMIN_CONTEXT_ID,
+        directRollback.surfaceId(),
+        "corr-agent-rollback-trace"));
+    assertEquals("accepted", trace.status());
+    assertEquals("surface-agent-admin-trace", trace.resultSurface().surfaceId());
+    assertTrue(trace.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-rollback-open-trace")));
+    assertBrowserSafe(trace.resultSurface());
+
+    var cancel = runAction(new CapabilityActionRequest(
+        "action-agent-rollback-cancel",
+        "action-agent-rollback-cancel",
+        "agent_admin.rollback_behavior_change",
+        "agent_admin.rollback_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-rollback-cancel",
+        ADMIN_CONTEXT_ID,
+        directRollback.surfaceId(),
+        "corr-agent-rollback-cancel"));
+    assertEquals("accepted", cancel.status());
+    assertEquals("surface-agent-admin-detail", cancel.resultSurface().surfaceId());
+    assertTrue(cancel.message().contains("source artifacts were not changed"));
+    assertTrue(cancel.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-rollback-cancel")));
+    assertBrowserSafe(cancel.resultSurface());
+
+    var agentRepository = new AkkaAgentBehaviorRepository(componentClient);
+    var runtimeService = StarterSecurityComponents.agentRuntimeService();
+    var adminContext = StarterSecurityComponents.authContextResolver()
+        .resolveMe(new WorkosIdentity("workos-admin", "admin@example.test", "Tenant Admin"), ADMIN_CONTEXT_ID, "corr-agent-rollback-seed-context")
+        .selectedContext();
+    var agent = agentRepository.agentDefinition(TENANT_ID, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow();
+    var promptBefore = agentRepository.promptDocument(TENANT_ID, agent.promptDocumentId()).orElseThrow();
+    String activatedProposalId = null;
+    try {
+      var draft = runtimeService.proposeBehaviorChange(new AgentRuntimeService.BehaviorChangeRequest(
+          TENANT_ID,
+          AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
+          adminContext,
+          BehaviorChangeProposal.TargetArtifact.PROMPT,
+          promptBefore.contentBody() + "\n\nRollback confirmation smoke temporary prompt change.",
+          List.of(),
+          "Exercise rollback confirmation through protected browser API path.",
+          "corr-agent-rollback-seed-draft"));
+      var submitted = runtimeService.submitProposalForReview(adminContext, TENANT_ID, draft.proposalId(), "corr-agent-rollback-seed-submit");
+      var approved = runtimeService.approveProposal(adminContext, TENANT_ID, submitted.proposalId(), "corr-agent-rollback-seed-approve");
+      var activated = runtimeService.activateProposal(adminContext, TENANT_ID, approved.proposalId(), "corr-agent-rollback-seed-activate");
+      activatedProposalId = activated.proposalId();
+      assertEquals(BehaviorChangeProposal.Status.ACTIVATED, activated.status());
+      assertTrue(agentRepository.promptDocument(TENANT_ID, agent.promptDocumentId()).orElseThrow().contentBody().contains("Rollback confirmation smoke temporary prompt change."));
+
+      var workstreamService = StarterSecurityComponents.workstreamService();
+      var adminIdentity = new WorkosIdentity("workos-admin", "admin@example.test", "Tenant Admin");
+      var readyRollback = workstreamService.surface(adminIdentity, ADMIN_CONTEXT_ID, "surface-agent-rollback-confirmation", "corr-agent-rollback-ready");
+      assertEquals("surface-agent-rollback-confirmation", readyRollback.surfaceId());
+      assertEquals("activated_proposal", readyRollback.data().get("currentStatus"));
+      var readyState = (Map<String, Object>) readyRollback.data().get("confirmationState");
+      assertTrue(((List<String>) readyState.get("disabledActions")).isEmpty());
+      var readyPolicy = (Map<String, Object>) readyRollback.data().get("policyAndApprovalSummary");
+      assertEquals("activated-proposal-visible", readyPolicy.get("humanApprovalStatus"));
+      assertEquals("backend rollback snapshot recorded", readyPolicy.get("targetVersionValidity"));
+      assertTrue(readyRollback.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-rollback-confirm") && action.disabled() == null));
+      assertBrowserSafe(readyRollback);
+
+      var confirmed = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+          "action-agent-rollback-confirm",
+          "action-agent-rollback-confirm",
+          "agent_admin.rollback_behavior_change",
+          "agent_admin.rollback_behavior_change",
+          Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "proposalId", activatedProposalId, "acknowledgement", "ROLLBACK", "reason", "Rollback smoke proposal after API confirmation"),
+          "idem-agent-rollback-confirm",
+          ADMIN_CONTEXT_ID,
+          readyRollback.surfaceId(),
+          "corr-agent-rollback-confirm"));
+      assertEquals("accepted", confirmed.status());
+      assertEquals("surface-agent-admin-detail", confirmed.resultSurface().surfaceId());
+      assertTrue(confirmed.message().contains("rolled back by the backend"));
+      assertTrue(confirmed.message().contains("no prompt, skill, reference, provider credential, source artifact, or tenant override was deleted"));
+      assertTrue(confirmed.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-rollback-confirm")));
+      assertEquals(promptBefore.contentBody(), agentRepository.promptDocument(TENANT_ID, agent.promptDocumentId()).orElseThrow().contentBody());
+      assertBrowserSafe(confirmed.resultSurface());
+
+      var repeated = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+          "action-agent-rollback-confirm",
+          "action-agent-rollback-confirm",
+          "agent_admin.rollback_behavior_change",
+          "agent_admin.rollback_behavior_change",
+          Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "proposalId", activatedProposalId, "acknowledgement", "ROLLBACK", "reason", "Rollback smoke proposal after API confirmation"),
+          "idem-agent-rollback-confirm-repeat",
+          ADMIN_CONTEXT_ID,
+          readyRollback.surfaceId(),
+          "corr-agent-rollback-confirm-repeat"));
+      assertEquals("no-op", repeated.status());
+      assertEquals("surface-agent-admin-detail", repeated.resultSurface().surfaceId());
+      assertTrue(repeated.message().contains("already rolled back"));
+      assertBrowserSafe(repeated.resultSurface());
+
+      var alreadyRolledBack = workstreamService.surface(adminIdentity, ADMIN_CONTEXT_ID, "surface-agent-rollback-confirmation", "corr-agent-rollback-already-rolled-back");
+      assertEquals("surface-agent-rollback-confirmation", alreadyRolledBack.surfaceId());
+      assertEquals("already-rolled-back/no-op", alreadyRolledBack.data().get("currentStatus"));
+      var alreadyState = (Map<String, Object>) alreadyRolledBack.data().get("confirmationState");
+      assertTrue(((List<String>) alreadyState.get("disabledActions")).contains("confirm"));
+      assertTrue(alreadyRolledBack.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-rollback-confirm") && action.disabled() != null));
+      assertBrowserSafe(alreadyRolledBack);
+    } finally {
+      if (!promptBefore.equals(agentRepository.promptDocument(TENANT_ID, agent.promptDocumentId()).orElseThrow())) {
+        agentRepository.savePromptDocument(promptBefore);
+      }
+    }
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-rollback-confirmation",
+        "corr-agent-rollback-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin rollback confirmation or lifecycle rollback metadata.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-rollback-confirmation",
+        "corr-agent-rollback-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin rollback confirmation, hidden proposal ids, or tenant governance state.");
   }
 
   @Test

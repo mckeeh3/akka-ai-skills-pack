@@ -5724,7 +5724,7 @@
 
 ### TASK-FSCT-162: Verify or complete runtime testing for `surface-agent-rollback-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-161]
 - surface id: `surface-agent-rollback-confirmation`
@@ -5758,6 +5758,7 @@
   - purpose: Rollback confirmation surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-rollback-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-rollback-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added `AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentRollbackConfirmationRuntimeTestingPath` coverage for protected API missing-bearer denials, tenant-admin rollback-confirmation payload/schema/actions, refresh/cancel/proposal/trace routing, missing acknowledgement/reason validation, fail-closed missing activated-proposal metadata, seeded activated-proposal rollback success/no-op through `WorkstreamService`/`AgentRuntimeService#rollbackProposal`, prompt restoration, trace/correlation evidence, browser-safe redaction, and tenant-member/customer-scope denial after backend capability enforcement was added to the rollback surface. runtime evidence: readiness level `runtime-ready` for this testing scope; commands passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentRollbackConfirmationRuntimeTestingPath test` and `git diff --check`; next runnable task: `TASK-FSCT-163`.
 
 ### TASK-FSCT-163: Verify or complete app-description specification for `surface-agent-behavior-proposal`
 
