@@ -7882,7 +7882,7 @@
 
 ### TASK-FSCT-223: Verify or complete app-description specification for `surface-governance-policy-impact-analysis-task`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-governance-policy-impact-analysis-task`
@@ -7911,6 +7911,7 @@
   - purpose: Impact-analysis task progress/status.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-impact-analysis-task` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded the Governance/Policy impact-analysis task app-description with ownership/placement, autonomous-task workflow-status role, backend-resolved selected AuthContext data source, frontend-safe task/progress/blocker/evidence/action/readiness/redaction payload schema, lifecycle/status/idempotency rules, start/read/cancel action contracts, authorization and tenant isolation, trace/audit/work evidence, accessibility/responsive guidance, provider/runtime fail-closed behavior, negative tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests.
 
 ### TASK-FSCT-224: Verify or complete runtime implementation for `surface-governance-policy-impact-analysis-task`
 

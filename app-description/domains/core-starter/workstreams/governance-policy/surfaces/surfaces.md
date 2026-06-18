@@ -581,9 +581,102 @@ Surface-description sufficiency review: this definition is sufficiently unambigu
 
 Pattern: `workflow-status`.
 
-Required payload: task id, optional autonomous-agent task id, proposal id, status, progress, blockers, evidence refs, trace ids, provider/runtime failures, authorized actions, activation-blocked flag, redaction, and `noDirectMutation=true`.
+Owning workstream: Governance/Policy. Owning functional agent: `governance-policy-agent`. Reusable placements: opened from dashboard impact-analysis queues, inventory row actions, proposal/detail lifecycle gates, simulation/decision/outcome evidence follow-ups, result disposition breadcrumbs, and audit/trace drilldowns only when the selected `AuthContext` grants Governance/Policy read or impact-analysis authority. Purpose: start, monitor, cancel, and recover a durable advisory policy-impact analysis task without approving, activating, rolling back, weakening policy, or fabricating model-backed evidence in the browser.
+
+Collection-object progression role: this is the domain-specific autonomous-task workflow/status surface for a visible policy proposal. It follows proposal discovery or proposal lifecycle review and precedes the human impact-analysis result review surface when the task completes with reviewable evidence. It does not embed list/search, proposal editing, policy decisions, activation, rollback, outcome notes, result disposition, or destructive lifecycle behavior.
+
+User goal: understand whether advisory impact analysis for a policy proposal is queued, running, blocked, failed, cancelled, or ready for human review; see safe progress, blockers, evidence summaries, and authorized next actions; and recover from provider/runtime, authorization, stale task, or tenant/customer scope failures without exposing raw provider/model output or hidden policy internals.
+
+Data source and backend authority: the payload is produced by the protected Governance/Policy impact-analysis task projection for the backend-resolved tenant/customer/workspace scope. Browser-provided proposal ids, task ids, scope hints, reason text, tenant/customer hints, correlation keys, and idempotency keys are untrusted request metadata; the backend re-resolves selected `AuthContext`, proposal visibility, impact-analysis capabilities, autonomous-agent/provider readiness, task lifecycle state, trace visibility, redaction, and allowed actions before returning this workflow-status surface or a safe system message.
+
+Required payload schema (frontend-safe):
+
+- `taskSummary`: impact task display ref, proposal display ref, proposal title, task status, lifecycle label, requested analysis scope summary, requested-by display summary, started/updated age bucket, freshness/conflict state, and safe success/recovery copy.
+- `progress`: ordered workflow stages such as requested, queued, provider/runtime-check, running-analysis, awaiting-evidence, completed-review-required, cancelled, failed, accepted, rejected-result, and request-changes; each stage includes label, current/completed/error state, progress percentage or unknown marker, and user-facing blocker copy.
+- `blockers`: provider unavailable, autonomous-agent runtime unavailable, missing model/tool configuration, missing proposal evidence, stale proposal version, missing capability, tenant/customer scope denial, task cancellation, task failure, duplicate idempotency replay, or partial-data conditions with safe recovery instructions.
+- `evidenceRefs`: simulation summary, source proposal summary, policy decision prerequisite summary, task output summary when reviewable, evidence freshness, result-surface target, and redaction markers; raw provider/model output, prompts, raw governed-tool payloads, and hidden policy clauses are omitted from ordinary payloads.
+- `authorizedActions`: only backend-authorized actions valid for the selected actor and lifecycle, including `action-governance-policy-start-impact-analysis`, `action-governance-policy-read-impact-analysis`, `action-governance-policy-cancel-impact-analysis`, `action-governance-policy-read`, and follow-up `action-governance-policy-simulate`, `action-governance-policy-decide`, or result-disposition actions only when the backend says the proposal state permits them.
+- `disabledActions`: useful but unavailable actions with safe reasons such as missing impact-analysis capability, missing read capability, provider/runtime blocked, stale task/proposal version, already-cancelled task, already-dispositioned result, pending human review, tenant/customer scope denial, or read-only selected context.
+- `traceLinks`: user-readable trace summaries plus role-gated references to policy-decision trace, admin-audit event, workstream-log trace, agent-work trace, autonomous-agent task events, provider/runtime failure events, result-review trace, and denial/failure traces.
+- `redaction`: field-level indicators for hidden cross-tenant/customer evidence, privileged policy clauses, hidden authority state, raw provider/model output, raw prompts, raw governed-tool payloads, JWTs, secrets, raw correlation ids, and idempotency keys.
+- `readiness`: provider/runtime/configuration state for the autonomous impact-analysis path represented as ready, queued, running, blocked, unknown, failed, or not-required summaries; unavailable providers or autonomous-agent runtime are never rendered as successful analysis.
+- `activationBlocked`: always present as a user-facing boolean and reason summary while impact analysis is required or pending review; this task surface cannot approve, activate, roll back, or clear activation gates client-side.
+- `noDirectMutation`: always `true`; the browser renders backend-authored task state and submits governed start/read/cancel actions only. The frontend and agents cannot approve, activate, roll back, weaken security, expand authority, accept/reject results, or fabricate evidence locally.
+
+Visibility split:
+
+- Default user-visible fields: proposal title/display ref, task status label, progress stages, safe blocker/recovery copy, evidence availability summary, activation-blocked reason, authorized next actions, and result-review availability.
+- On-demand drilldown fields: task display ids, detailed lifecycle history, evidence summaries, redacted trace summaries, provider/runtime readiness explanations, idempotency replay status, and scoped source artifact details.
+- Admin/support/auditor-only fields: capability ids, policy-decision trace refs, admin-audit refs, workstream-log refs, agent-work/autonomous-task refs, provider/runtime failure evidence, denial/failure evidence, redaction reasons, and diagnostic idempotency/correlation status.
+- Internal-only metadata never rendered in ordinary browser payloads: raw provider/model data, prompts, governed-tool payloads, backend component names, raw policy clauses, hidden role policy state, database ids/cursors, cross-tenant identifiers, JWTs/secrets, correlation ids, and idempotency implementation details.
+
+Allowed lifecycle and task rules: starting an impact-analysis task requires a visible proposal, `governance.policy.impact_analysis.start`, required reason/scope, valid proposal lifecycle state, provider/runtime readiness, current proposal version/freshness token, and idempotency key. Reading a task requires `governance.policy.impact_analysis.read` or Governance/Policy read authority for a visible task in the selected scope. Cancelling requires `governance.policy.impact_analysis.cancel`, a queued or running task, non-stale task version, and idempotency key. Completed analysis enters `completed-review-required` and routes to `surface-governance-policy-impact-analysis-result`; completion does not approve, activate, roll back, or change authority. Invalid, stale, duplicate, unauthorized, provider-blocked, or prerequisite-missing requests return validation/conflict/blocked/system-message results with `noFakeSuccess=true` and never imply successful analysis.
 
 Allowed statuses include queued, running, blocked_provider_or_runtime, completed-review-required, cancelled, failed, accepted, rejected_result, and request_changes. Missing provider/runtime returns blocked_provider_or_runtime with no fake success.
+
+Required states: loading, empty/no-task, ready, starting, running, cancelling, success/started, success/cancelled, completed-review-required, validation-error, forbidden/system-message, conflict/stale, partial-data, blocked-provider-or-runtime, read-only, failure, accepted, rejected-result, and request-changes.
+
+State semantics:
+
+- `loading`: workstream shell has selected Governance/Policy and is fetching the protected impact-analysis task projection.
+- `empty/no-task`: actor is authorized, but no task exists for the visible proposal; show backend-authorized start action when permitted and safe explanation when not.
+- `ready`: task summary, progress, blockers, evidence, traces, activation-blocked status, and authorized actions are backed by the protected task projection for the selected `AuthContext`.
+- `starting`: a governed `start-policy-impact-analysis` command is in flight with proposal display ref, requested scope, reason, freshness token, idempotency key, and correlation key; repeat submissions are idempotent and must not duplicate tasks or audit events.
+- `running`: backend task projection indicates queued or running autonomous-agent work; show progress and trace summary without raw provider/model payloads.
+- `cancelling`: a governed cancel request is in flight for a queued/running task; repeat submissions are idempotent and cannot cancel hidden or completed tasks.
+- `success/started`: rendered only after the backend confirms a task was created or an idempotent replay returned the original task; success copy includes refreshed progress, activation-blocked status, and trace summary.
+- `success/cancelled`: rendered only after the backend confirms cancellation; success copy preserves proposal authority state and safe next actions.
+- `completed-review-required`: task has reviewable advisory evidence and must route to `surface-governance-policy-impact-analysis-result` for human disposition before any downstream activation gate treats the evidence as accepted.
+- `validation-error`: missing reason/scope, unsupported lifecycle state, missing proposal evidence, stale idempotency key, invalid task transition, or unsupported cancel request returns field-level/user-safe copy without changing authority.
+- `forbidden/system-message`: missing bearer token, missing selected context, missing read/start/cancel capability, hidden proposal/task, or tenant/customer scope denial returns `surface-governance-policy-system-message` with `noFakeSuccess=true`, `noDirectMutation=true`, and no hidden proposal/task enumeration.
+- `conflict/stale`: proposal version, task version, lifecycle state, evidence state, or trace freshness changed since the actor opened the surface; disable start/cancel and side-effecting follow-ups until refresh.
+- `partial-data`: some progress details, evidence summaries, trace summaries, or readiness details are omitted; visible sections identify what was omitted and why.
+- `blocked-provider-or-runtime`: provider/model configuration or autonomous-agent runtime required for advisory impact analysis is unavailable; show blocked status and recovery, not fabricated analysis.
+- `read-only`: actor can inspect visible task status but cannot start or cancel tasks; denied actions are omitted or shown as safe disabled explanations only when useful.
+- `failure`: unexpected read or command failure returns a safe system message with trace/audit reference and no raw exception, token, provider, policy-engine, storage, model, prompt, or component details.
+- `accepted`, `rejected-result`, and `request-changes`: result disposition has already been recorded on the result surface; task status remains evidence history and cannot re-accept/reject inline.
+
+Action contract:
+
+| Visible action / target | Browser action id | Governed tool | Capability | Request payload | Result surface | Notes |
+|---|---|---|---|---|---|---|
+| Open/read impact-analysis task | `action-governance-policy-read-impact-analysis` | `read-policy-impact-analysis` | `governance.policy.impact_analysis.read` | proposal display ref, task display ref when present, refresh reason, correlation key generated by client or backend | `surface-governance-policy-impact-analysis-task` or `surface-governance-policy-system-message` | Read-only projection; backend reauthorizes task/proposal visibility, trace visibility, and selected scope. |
+| Start impact-analysis task | `action-governance-policy-start-impact-analysis` | `start-policy-impact-analysis` | `governance.policy.impact_analysis.start` | proposal display ref, requested scope, reason, current proposal version/freshness token, idempotency key, correlation key | `surface-governance-policy-impact-analysis-task` or `surface-governance-policy-system-message` | Starts durable advisory autonomous-agent work only; provider/runtime unavailable returns blocked_provider_or_runtime with no fake success. |
+| Cancel impact-analysis task | `action-governance-policy-cancel-impact-analysis` | `cancel-policy-impact-analysis` | `governance.policy.impact_analysis.cancel` | proposal display ref, task display ref, current task version/freshness token, reason when required, idempotency key, correlation key | `surface-governance-policy-impact-analysis-task` or `surface-governance-policy-system-message` | Cancels queued/running work only; proposal state and authority remain unchanged. |
+| Open source proposal or detail | `action-governance-policy-read` | `list-policy-proposals` | `governance.policy.read` | proposal display ref, optional source task ref, correlation key | `surface-governance-policy-proposal`, `surface-governance-policy-detail`, or `surface-governance-policy-system-message` | Opens scoped proposal evidence; backend reauthorizes visibility and redacts hidden policy internals. |
+| Open completed result review | `action-governance-policy-read-impact-analysis` | `read-policy-impact-analysis` | `governance.policy.impact_analysis.read` | proposal display ref, task display ref, open result intent, correlation key | `surface-governance-policy-impact-analysis-result` or `surface-governance-policy-system-message` | Available only when status is `completed-review-required`, accepted, rejected_result, or request_changes and backend exposes the result surface. |
+
+Hidden or denied actions: approval, activation, rollback, result acceptance/rejection/request-changes, outcome-note mutation, raw policy-clause edits, tenant/customer scope expansion, hidden proposal/task access, direct provider/model prompts, client-side progress fabrication, and evidence fabrication are not performed by this task surface. Direct/deep-link attempts without authority return `surface-governance-policy-system-message`, are audit/trace recorded, and must not reveal whether hidden proposals, tasks, policies, capabilities, provider outputs, or cross-tenant/customer evidence exists.
+
+Authorization and tenant scope:
+
+- `governance.policy.impact_analysis.read` or Governance/Policy read authority is required to open a visible task projection; `governance.policy.impact_analysis.start` is required to start a task; `governance.policy.impact_analysis.cancel` is required to cancel queued/running work.
+- The backend resolves tenant/customer/workspace authority from selected `AuthContext`; browser tenant/customer, proposal, task, scope, correlation, and idempotency fields cannot expand scope, enumerate hidden tasks, or bypass lifecycle prerequisites.
+- Impact-analysis actions are exposed only as backend-authorized actions for visible proposals/tasks and valid lifecycle states; denied or invalid actions are omitted or returned with safe disabled reasons/system messages.
+- Cross-tenant/customer proposal evidence, privileged policy clauses, hidden authority state, raw provider/model content, prompts, raw tool payloads, JWTs, secrets, raw task implementation details, and implementation correlation/idempotency details are redacted or omitted.
+- Direct proposal/task ids, hidden rows, missing capability, stale version, unsupported lifecycle, provider/runtime failure, or hidden evidence references return safe no-enumeration denial, blocked, or validation states with trace refs, `noFakeSuccess=true`, and `noDirectMutation=true`.
+
+Trace, audit, and work evidence:
+
+- Task reads, starts, cancels, refreshes, denials, stale/conflict results, provider/runtime readiness checks, task failures, and result-ready transitions produce workstream-log/correlation evidence.
+- Consequential start/cancel commands produce admin-audit and impact-analysis task trace evidence with idempotency outcome and selected `AuthContext`; autonomous-agent work links `agent-work-trace` and provider/runtime failure traces without copying raw provider/model data into the browser payload.
+- Default trace copy is human-readable; raw ids/details are visible only through role-gated audit/support drilldowns.
+- Provider/runtime failures are traceable and fail closed; no task surface state may imply successful model-backed analysis, result acceptance, approval, activation, or rollback when the backend path did not run.
+
+Accessibility, responsive, and UI realization:
+
+- Use the selected web UI style guide, named-theme contract, and component-catalog workflow-status, progress-stepper, blocker-callout, evidence-list, action-group, system-message, and trace-link anatomy.
+- Progress steps, blocker callouts, evidence links, disabled-action reasons, start/cancel controls, result-review links, and trace summaries are keyboard-operable, have accessible names that include proposal/task status, preserve focus after refresh/start/cancel results, and announce queued, running, cancelled, completed-review-required, forbidden, stale, failed, and blocked-provider-or-runtime states.
+- Responsive layouts preserve task-summary-before-actions ordering, keep activation-blocked and provider/runtime recovery information visible, and do not hide required denial, redaction, trace-summary, or evidence-readiness information.
+
+Required tests:
+
+- App-description/contract tests prove the impact-analysis task contract includes payload schema, lifecycle/status rules, action mapping, auth/tenant rules, idempotency, provider/runtime fail-closed states, traces, redaction, no-direct-mutation semantics, and sufficiency review.
+- Frontend tests prove workflow-status rendering for empty/ready/running/read-only/partial/stale/completed-review-required/cancelled/failed/blocked-provider-or-runtime/system-message states, authorized action visibility, disabled-action reasons, secret-boundary redaction, keyboard start/cancel/result-review flow, and no client-side authority mutation or evidence fabrication.
+- Backend/API tests prove selected AuthContext scoping, missing-bearer and missing-capability denials, no-enumeration hidden proposal/task access, start/cancel lifecycle validation, idempotency/replay behavior, provider/runtime fail-closed task state, trace/audit/work evidence, result-ready routing, and no authority mutation from task actions.
+- Negative tests prove the browser and agents cannot approve, activate, roll back, weaken policy, expand tenant/customer scope, expose hidden policy internals, fabricate provider-backed analysis, accept/reject impact results inline, or duplicate/cancel tasks on repeated submissions.
+
+Surface-description sufficiency review: this definition is sufficiently unambiguous for a developer or generator to implement and review `surface-governance-policy-impact-analysis-task` without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. The default view avoids internal implementation details that do not help the target SaaS user, and no additional description pass is required before scoped implementation work for this workflow-status surface.
 
 ### `surface-governance-policy-impact-analysis-result` (`governance.policy.impact_analysis.result.v1`)
 

@@ -1026,7 +1026,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | 2026-06-18 app-description specification completed in `app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md`: expanded `surface-governance-policy-impact-analysis-task` / `governance.policy.impact_analysis.task.v1` with Governance/Policy ownership, `governance-policy-agent` placement, autonomous-task workflow-status role, backend-resolved selected AuthContext data source, frontend-safe task/progress/blocker/evidence/action/readiness/redaction payload schema, lifecycle/status/idempotency rules, start/read/cancel action contracts, authorization and tenant isolation, trace/audit/work evidence, accessibility/responsive guidance, provider/runtime fail-closed behavior, negative tests, and a sufficiency review that requires no additional description pass. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
