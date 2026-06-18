@@ -920,7 +920,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`: added detailed `surface-audit-trace-summary-progress` / `audit.trace.summaryProgress.v1` workflow-status contract covering Audit/Trace ownership and `audit-trace-agent` placement, selected AuthContext tenant/customer/support-access authorization, governed model-backed summary worker start/read/review/fail-closed action semantics, browser-safe payload schema, default/drilldown/internal-only field boundaries, provider/runtime/tool-boundary blockers, states, audit/work traces, accessibility/responsive expectations, required acceptance/security/negative/idempotency/observability/UX tests, and sufficiency review. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

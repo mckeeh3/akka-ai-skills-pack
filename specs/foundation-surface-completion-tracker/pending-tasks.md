@@ -7034,7 +7034,7 @@
 
 ### TASK-FSCT-199: Verify or complete app-description specification for `surface-audit-trace-summary-progress`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-audit-trace-summary-progress`
@@ -7063,6 +7063,7 @@
   - purpose: Audit summary worker progress or fail-closed blocker.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-summary-progress` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: added detailed `audit.trace.summaryProgress.v1` workflow-status app-description covering owner/agent placement, selected AuthContext tenant/customer/support-access authorization, governed model-backed summary worker start/read/review and fail-closed action semantics, browser-safe payload/internal-only boundaries, provider/runtime/tool-boundary blockers, states, audit/work traces, accessibility/responsive expectations, test obligations, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
 
 ### TASK-FSCT-200: Verify or complete runtime implementation for `surface-audit-trace-summary-progress`
 
