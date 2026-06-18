@@ -697,7 +697,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-model-refs` for `agent_admin.model_refs.v1` with Agent Admin/`agent-admin-agent` ownership, dashboard/detail/skill-manifest/tool-boundary/proposal placement, browser-safe `modelReferenceSummary`, `scopeSummary`, `redactedModelReferenceDiff`, `providerReadiness`, `impactSummary`, `riskAndEvidence`, `reviewState`, `authorizedActions[]`, diagnostics, stable governed action mappings, backend AuthContext/tenant authorization rules, audit/work trace and correlation requirements, fail-closed provider/runtime states, accessibility/style binding, mutation boundaries, and realization tests. | 2026-06-17 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

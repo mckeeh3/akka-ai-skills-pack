@@ -5232,7 +5232,7 @@
 
 ### TASK-FSCT-148: Verify or complete app-description specification for `surface-agent-model-refs`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-model-refs`
@@ -5261,6 +5261,7 @@
   - purpose: Model reference proposal/review.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-model-refs` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-17: expanded Agent Admin `surface-agent-model-refs` app-description to a sufficient `agent_admin.model_refs.v1` governance-diff/show-inspection contract with ownership, placements, browser-safe payload schema, diagnostics, governed actions, AuthContext/tenant authorization, audit/work trace and correlation requirements, fail-closed provider/runtime states, accessibility/style binding, mutation boundaries, and app-description/realization tests; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-149: Verify or complete runtime implementation for `surface-agent-model-refs`
 
