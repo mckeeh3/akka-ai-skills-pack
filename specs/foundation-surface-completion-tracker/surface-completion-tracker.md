@@ -842,7 +842,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`: added detailed `surface-audit-trace-detail` / `audit.trace.detail.v1` read-only evidence contract covering Audit/Trace ownership and `audit-trace-agent` placement, reusable trace-reference entry points, selected AuthContext tenant/customer/support-access authorization, backend-owned retained evidence data source, browser-safe detail/evidence/authorization/related-event/redaction payload schema, immutable evidence boundary, governed detail/timeline/failure/guidance/export/note/search/dashboard action mappings, hidden-id/non-enumeration behavior, retention/partial/stale/denied states, audit/work trace obligations, UI style/component/theme bindings, and acceptance/security/negative/idempotency/observability/UX tests. Readiness result: `ready` for the fully-specified docs-only objective; no runtime implementation is claimed. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

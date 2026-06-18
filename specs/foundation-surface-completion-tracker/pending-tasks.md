@@ -6398,7 +6398,7 @@
 
 ### TASK-FSCT-181: Verify or complete app-description specification for `surface-audit-trace-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-audit-trace-detail`
@@ -6427,6 +6427,7 @@
   - purpose: Browser-safe trace/event evidence detail.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-detail` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: added detailed `surface-audit-trace-detail` / `audit.trace.detail.v1` read-only evidence app-description covering owner/functional-agent placement, trace-reference entry points, selected AuthContext tenant/customer/support-access authorization, backend-owned retained evidence data source, browser-safe detail/evidence/authorization/related-event/redaction payload schema, immutable evidence boundary, governed detail/timeline/failure/guidance/export/note/search/dashboard actions, hidden-id/non-enumeration behavior, states, audit/work traces, UI bindings, and required tests. Readiness result: `ready` for the fully-specified docs-only objective; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description.
 
 ### TASK-FSCT-182: Verify or complete runtime implementation for `surface-audit-trace-detail`
 
