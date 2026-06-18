@@ -6007,7 +6007,7 @@
 
 ### TASK-FSCT-170: Verify or complete runtime implementation for `surface-agent-admin-trace`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-169]
 - surface id: `surface-agent-admin-trace`
@@ -6038,6 +6038,7 @@
   - purpose: Agent Admin trace timeline.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-trace`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-trace`; surface graph node/action edge for opening or acting on `surface-agent-admin-trace`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented the backend-owned `agent_admin.trace.v1` audit-timeline runtime path in `WorkstreamService` for protected direct surface reads and governed trace actions, with `audit.trace.read` AuthContext authorization, protected-read trace append, browser-safe trace summary/scope/timeline/redaction/export/escalation/diagnostics payloads, correlation/trace ids, disabled export/escalation blockers, and refresh/drill-down/source-return action routing; existing frontend `AuditTimelineSurface` renders the envelope through the protected workstream API path without fixture-only or static-resource changes. Runtime evidence: readiness level `api-smoked`; checks passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-surfaces.contract.test.mjs`, focused `rg` evidence for `agent_admin.trace.v1` and `action-agent-admin-trace-refresh`, and `git diff --check`.
 
 ### TASK-FSCT-171: Verify or complete runtime testing for `surface-agent-admin-trace`
 
