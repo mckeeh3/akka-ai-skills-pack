@@ -5444,7 +5444,7 @@
 
 ### TASK-FSCT-154: Verify or complete app-description specification for `surface-agent-activation-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-activation-confirmation`
@@ -5473,6 +5473,7 @@
   - purpose: Activation confirmation surface.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-activation-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded the Agent Admin app-description for `surface-agent-activation-confirmation` with identity/ownership, detail and behavior-proposal placement, browser-safe payload schema, diagnostics/redaction boundaries, governed action mappings, AuthContext/tenant/organization authorization rules, audit/work trace/correlation requirements, explicit lifecycle/provider/conflict/idempotency states, accessibility/responsive/style binding, mutation boundaries, tests, and sufficiency review; tracker evidence updated. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description
 
 ### TASK-FSCT-155: Verify or complete runtime implementation for `surface-agent-activation-confirmation`
 

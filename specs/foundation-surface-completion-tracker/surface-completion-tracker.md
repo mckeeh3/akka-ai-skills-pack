@@ -723,7 +723,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-activation-confirmation` for `agent_admin.activation_confirmation.v1` with Agent Admin/`agent-admin-agent` ownership, detail/behavior-proposal placement, browser-safe `activationSummary`, `scopeSummary`, `approvalSummary`, `impactSummary`, `safeEvidenceSummary`, `confirmationState`, `authorizedActions[]`, diagnostics/redaction boundaries, governed refresh/confirm/cancel/open-proposal/open-trace action mappings, selected AuthContext/tenant/organization authorization and no-enumeration denial rules, audit/work trace and correlation requirements, explicit lifecycle/provider/conflict/idempotency states, accessibility/responsive/style bindings, mutation boundaries, and acceptance/security/observability tests. Sufficiency review says the activation confirmation surface is implementable without invented fields/actions/states/auth/traces/tests while keeping raw prompts/skills/references/provider data and privileged evidence out of the normal browser payload. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
