@@ -7670,7 +7670,7 @@
 
 ### TASK-FSCT-217: Verify or complete app-description specification for `surface-governance-policy-decision`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-governance-policy-decision`
@@ -7699,6 +7699,7 @@
   - purpose: Policy decision/activation/rollback card.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-decision` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded `surface-governance-policy-decision` with ownership/placement, lifecycle-aware decision/destructive-recovery role, selected AuthContext data source, frontend-safe decision/evidence/command/readiness payload, visibility split, decide/activate/rollback lifecycle rules, states, capability-backed action contract, hidden/denied actions, tenant/customer authorization, trace/audit/work evidence, accessibility, required tests, and sufficiency review; tracker updated. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description.
 
 ### TASK-FSCT-218: Verify or complete runtime implementation for `surface-governance-policy-decision`
 

@@ -1000,7 +1000,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | 2026-06-18 app-description specification completed in `app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md`: expanded `surface-governance-policy-decision` / `governance.policy.decision.v1` with Governance/Policy ownership, `governance-policy-agent` placement, lifecycle-aware decision/destructive-recovery role, backend-resolved selected AuthContext data source, frontend-safe decision summary/risk/evidence/command/readiness/redaction payload, visibility split, decide/activate/rollback lifecycle rules, required states, capability-backed action contract, hidden/denied actions, tenant/customer authorization, trace/audit/work evidence, accessibility expectations, required tests, and sufficiency review. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
