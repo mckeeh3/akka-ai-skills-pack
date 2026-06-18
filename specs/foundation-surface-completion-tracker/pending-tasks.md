@@ -7776,7 +7776,7 @@
 
 ### TASK-FSCT-220: Verify or complete app-description specification for `surface-governance-policy-outcome`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-governance-policy-outcome`
@@ -7805,6 +7805,7 @@
   - purpose: Policy outcome notes/metrics/evidence.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-outcome` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded `surface-governance-policy-outcome` app-description with ownership/placement, outcome/evidence role, backend-resolved AuthContext data source, frontend-safe payload schema, visibility splits, outcome-note action contract, auth/tenant rules, trace/audit/work evidence, state semantics, provider/runtime fail-closed behavior, accessibility/responsive expectations, required tests, no-direct-mutation/secret-boundary constraints, and sufficiency review; tracker evidence updated. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description.
 
 ### TASK-FSCT-221: Verify or complete runtime implementation for `surface-governance-policy-outcome`
 

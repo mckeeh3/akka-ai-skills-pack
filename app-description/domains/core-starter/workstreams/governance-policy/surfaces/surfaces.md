@@ -487,7 +487,95 @@ Surface-description sufficiency review: this definition is sufficiently unambigu
 
 Pattern: `outcome-panel`.
 
-Required payload: outcome id, proposal id, decision state, summary, metrics, recommendations, evidence refs, trace refs, redaction, actor, and `noDirectMutation=true`. Outcome notes link observations back to the policy decision and simulation evidence without changing authority.
+Owning workstream: Governance/Policy. Owning functional agent: `governance-policy-agent`. Reusable placements: opened from dashboard outcome follow-up queues, inventory row actions, proposal/detail breadcrumbs, simulation and decision follow-ups, impact-analysis result disposition summaries, and audit/trace drilldowns only when the selected `AuthContext` grants Governance/Policy read or outcome authority. Purpose: inspect and record policy outcome observations, metrics, recommendations, and evidence after proposal decisions or activation without approving, activating, rolling back, or changing authority from the browser.
+
+Collection-object progression role: this is the lifecycle-aware outcome/evidence surface for policy proposals. It follows inventory/detail/proposal discovery and decision/activation work, and it can append governed outcome notes for visible proposals. It does not embed list/search, policy editing, decision approval, activation, rollback, simulation execution, impact-result disposition, or destructive lifecycle behavior.
+
+User goal: understand what happened after a policy decision or activation, see outcome metrics and evidence in safe product language, add an authorized observation or recommendation when appropriate, and recover safely from missing authority, stale lifecycle state, missing evidence, provider/runtime blockers, or tenant/customer scope denial.
+
+Data source and backend authority: the payload is produced by the protected Governance/Policy outcome projection for the backend-resolved tenant/customer/workspace scope. Browser-provided proposal ids, outcome ids, observation text, tenant/customer hints, correlation keys, and idempotency keys are untrusted request metadata; the backend re-resolves selected `AuthContext`, proposal visibility, lifecycle state, outcome-note capability, evidence visibility, trace visibility, redaction, and allowed actions before returning the outcome panel or safe system message.
+
+Required payload schema (frontend-safe):
+
+- `outcomeSummary`: outcome display ref, proposal display ref, proposal title, decision state, activation or rollback state when applicable, outcome status, latest observation summary, actor display summary, freshness/conflict state, and user-facing success or recovery copy.
+- `metrics`: safe outcome measures such as affected-user count summary, access-change summary, policy effectiveness signal, incident or exception counts, follow-up due/age bucket, confidence label, trend direction, and metric freshness; raw analytics queries, cross-tenant/customer identifiers, and implementation counters are omitted from ordinary payloads.
+- `recommendations`: human-readable follow-up recommendations, risk warnings, required next review, suggested simulation or impact-analysis refresh, and disabled transition reasons; recommendations are advisory and cannot approve, activate, roll back, or weaken policy.
+- `evidenceRefs`: decision summary, activation/rollback summary, simulation evidence summary, impact-analysis result summary, source proposal trace summary, supporting artifact summaries, outcome-note history, and evidence redaction markers.
+- `noteForm`: backend-authored fields for actors with `governance.outcomes.record`, including observation summary, outcome category, recommendation, metric/evidence reference selector, required reason when configured, validation messages, current version/freshness token, and idempotency requirement for recording notes.
+- `authorizedActions`: only backend-authorized actions valid for the selected actor and lifecycle, including `action-governance-policy-read`, `action-governance-policy-outcome-note`, `action-governance-policy-simulate`, `action-governance-policy-decide`, `action-governance-policy-start-impact-analysis`, and `action-governance-policy-read-impact-analysis` when each corresponding capability and proposal state permits it.
+- `disabledActions`: useful but unavailable actions with safe reasons such as missing outcome capability, missing read capability, missing evidence, provider/runtime blocked, stale proposal version, already-superseded proposal, tenant/customer scope denial, or read-only selected context.
+- `traceLinks`: user-readable trace summaries plus role-gated references to policy-decision trace, admin-audit event, workstream-log trace, agent-work trace, simulation trace, impact-analysis task/result events, outcome-note trace, and denial/failure traces.
+- `redaction`: field-level indicators for hidden cross-tenant/customer evidence, privileged policy clauses, hidden authority state, raw provider/model output, raw prompts, raw governed-tool payloads, JWTs, secrets, raw correlation ids, and idempotency keys.
+- `readiness`: provider/runtime/configuration state for advisory simulation or impact-analysis evidence represented as ready, blocked, unknown, or not-required summaries; unavailable providers or autonomous-agent runtime are never rendered as successful analysis or outcome proof.
+- `noDirectMutation`: always `true`; the browser renders backend-authored outcome state and submits governed outcome-note actions only. The frontend and agents cannot approve, activate, roll back, weaken security, expand authority, or fabricate evidence locally.
+
+Visibility split:
+
+- Default user-visible fields: proposal title/display ref, decision or activation status label, outcome status, metric summaries, latest observation, safe recommendation copy, authorized next actions, and recovery instructions.
+- On-demand drilldown fields: outcome display ids, detailed metric breakdowns, outcome-note history, lifecycle history, advisory evidence summaries, redacted trace summaries, and scoped source artifact details.
+- Admin/support/auditor-only fields: capability ids, policy-decision trace refs, admin-audit refs, workstream-log refs, agent-work refs, simulation and impact-analysis refs, denial/failure evidence, redaction reasons, diagnostic idempotency/correlation status, and metric freshness diagnostics.
+- Internal-only metadata never rendered in ordinary browser payloads: raw policy engine clauses, hidden role policy state, raw provider/model data, prompts, governed-tool payloads, backend component names, database ids/cursors, analytics implementation details, cross-tenant identifiers, JWTs/secrets, correlation ids, and idempotency implementation details.
+
+Allowed lifecycle and note rules: outcome panels may be opened for visible proposals in submitted, in-review, changes-requested, approved, rejected, activated, rollback-candidate, rolled-back, or superseded states when the selected actor has read authority. Recording an outcome note requires `governance.outcomes.record`, a visible proposal, valid outcome category, non-empty observation or recommendation, fresh proposal/outcome version, and idempotency key. Outcome notes are evidence/feedback only; they never approve, activate, roll back, accept/reject impact-analysis results, or change authority. Invalid, stale, duplicate, or prerequisite-missing note submissions return validation/conflict/system-message results and never imply a successful authority change.
+
+Required states: loading, empty/no-outcomes, ready, recording-note, success/note-recorded, validation-error, forbidden/system-message, conflict/stale, partial-data, blocked-provider-or-runtime, read-only, and failure.
+
+State semantics:
+
+- `loading`: workstream shell has selected Governance/Policy and is fetching the protected outcome projection.
+- `empty/no-outcomes`: actor is authorized, but no outcome notes or metrics are available for the visible proposal; show safe explanation and only backend-authorized follow-up actions.
+- `ready`: outcome summary, metrics, recommendations, evidence, traces, blockers, and authorized actions are backed by the protected outcome projection for the selected `AuthContext`.
+- `recording-note`: a governed `record-policy-outcome-note` command is in flight with proposal display ref, observation fields, current version/freshness token, idempotency key, and correlation key; repeat submissions are idempotent and must not duplicate notes or audit events.
+- `success/note-recorded`: rendered only after the backend confirms the outcome note was appended; success copy includes the refreshed outcome summary, safe next action, and trace summary.
+- `validation-error`: missing observation, unsupported category, missing reason, stale idempotency key, hidden evidence reference, lifecycle-precondition failure, or invalid metric reference returns field-level/user-safe copy without changing authority.
+- `forbidden/system-message`: missing bearer token, missing selected context, missing read or outcome-record capability, hidden proposal/outcome, or tenant/customer scope denial returns `surface-governance-policy-system-message` with `noFakeSuccess=true`, `noDirectMutation=true`, and no hidden proposal enumeration.
+- `conflict/stale`: proposal version, outcome metric freshness, lifecycle state, evidence state, or trace freshness changed since the actor opened the panel; disable note submission and side-effecting follow-ups until refresh.
+- `partial-data`: some metrics, evidence, trace summaries, or outcome-note history are omitted; visible sections identify what was omitted and why.
+- `blocked-provider-or-runtime`: advisory simulation or impact-analysis evidence referenced by the outcome cannot be refreshed because provider/autonomous-agent runtime is unavailable; show blocked status and recovery, not fabricated outcome evidence.
+- `read-only`: actor can inspect the outcome panel but cannot record notes; denied actions are omitted or shown as safe disabled explanations only when useful.
+- `failure`: unexpected read or command failure returns a safe system message with trace/audit reference and no raw exception, token, provider, policy-engine, storage, analytics, or component details.
+
+Action contract:
+
+| Visible action / target | Browser action id | Governed tool | Capability | Request payload | Result surface | Notes |
+|---|---|---|---|---|---|---|
+| Open outcome panel or refresh evidence | `action-governance-policy-read` | `list-policy-proposals` | `governance.policy.read` | proposal display ref, optional outcome display ref, refresh reason, correlation key generated by client or backend | `surface-governance-policy-outcome` or `surface-governance-policy-system-message` | Read-only projection; backend reauthorizes proposal/outcome visibility, trace visibility, and selected scope. |
+| Record outcome note | `action-governance-policy-outcome-note` | `record-policy-outcome-note` | `governance.outcomes.record` | proposal display ref, outcome display ref when present, observation summary, outcome category, recommendation or metric/evidence reference, reason when required, current version/freshness token, idempotency key, correlation key | `surface-governance-policy-outcome` or `surface-governance-policy-system-message` | Appends governed feedback/evidence only; does not approve, activate, roll back, accept impact results, or change authority. |
+| Open advisory simulation evidence | `action-governance-policy-simulate` | `simulate-policy-change` | `governance.policy.simulate` | proposal display ref, scenario/scope summary, reason, idempotency key when starting, correlation key | `surface-governance-policy-simulation` or `surface-governance-policy-system-message` | Outcome panel may link to or start advisory evidence when authorized; provider/runtime unavailable returns blocked_provider_or_runtime. |
+| Open decision/activation/rollback work | `action-governance-policy-decide` | `approve-activate-or-rollback-policy` | `governance.policy.approve` | proposal display ref, command mode `decide`, reason when supplied, idempotency key for command submission, correlation key | `surface-governance-policy-decision` | Outcome panel may route to decision work when lifecycle and authority permit; it cannot decide inline. |
+| Start/read impact analysis evidence | `action-governance-policy-start-impact-analysis` / `action-governance-policy-read-impact-analysis` | `start-policy-impact-analysis` / `read-policy-impact-analysis` | `governance.policy.impact_analysis.start` / `governance.policy.impact_analysis.read` | proposal display ref, task id when reading, scope, reason, idempotency key for start, correlation key | `surface-governance-policy-impact-analysis-task` | Durable advisory task path; unavailable provider/runtime returns blocked_provider_or_runtime and no fake success. |
+
+Hidden or denied actions: approval, activation, rollback, impact-result acceptance/rejection/request-changes, raw policy-clause edits, tenant/customer scope expansion, hidden proposal/outcome access, direct provider/model prompts, client-side outcome fabrication, and metric mutation outside the governed outcome-note tool are not performed by this outcome panel. Direct/deep-link attempts without authority return `surface-governance-policy-system-message`, are audit/trace recorded, and must not reveal whether hidden proposals, policies, capabilities, outcomes, or cross-tenant/customer evidence exists.
+
+Authorization and tenant scope:
+
+- `governance.policy.read` is required to open the outcome projection; `governance.outcomes.record` is required to record outcome notes.
+- The backend resolves tenant/customer/workspace authority from selected `AuthContext`; browser tenant/customer, proposal, outcome, metric, evidence, correlation, and idempotency fields cannot expand scope or bypass lifecycle prerequisites.
+- Outcome-note actions are exposed only as backend-authorized actions for visible proposals and valid lifecycle states; denied or invalid actions are omitted or returned with safe disabled reasons/system messages.
+- Cross-tenant/customer proposal evidence, privileged policy clauses, hidden authority state, raw provider/model content, prompts, raw tool payloads, JWTs, secrets, raw metric implementation details, and implementation correlation/idempotency details are redacted or omitted.
+- Direct proposal or outcome ids, hidden rows, missing capability, stale version, unsupported note category, or hidden evidence references return safe no-enumeration denial or validation states with trace refs, `noFakeSuccess=true`, and `noDirectMutation=true`.
+
+Trace, audit, and work evidence:
+
+- Outcome-panel reads, evidence refreshes, outcome-note submissions, denials, stale/conflict results, and prerequisite/provider/runtime failures produce workstream-log/correlation evidence.
+- Consequential outcome-note commands produce admin-audit and outcome-note trace evidence with idempotency outcome and selected `AuthContext`; related decision, activation, simulation, and impact-analysis evidence links preserve their source traces without copying raw provider/model data.
+- Default trace copy is human-readable; raw ids/details are visible only through role-gated audit/support drilldowns.
+- Provider/runtime failures and missing evidence are traceable and fail closed; no outcome panel state may imply successful model-backed evidence, outcome proof, approval, activation, or rollback when the backend path did not run.
+
+Accessibility, responsive, and UI realization:
+
+- Use the selected web UI style guide, named-theme contract, and component-catalog outcome-panel, metric-summary, evidence-list, note-form, validation-summary, action-group, system-message, and trace-link anatomy.
+- Metric summaries, recommendation cards, evidence links, outcome-note history, note fields, disabled-action reasons, and submit controls are keyboard-operable, have accessible names that include the proposal/outcome summary, preserve focus after refresh/note results, and announce empty, success, validation, forbidden, stale, and blocked-provider-or-runtime states.
+- Responsive layouts preserve outcome-summary-before-note-entry ordering, keep evidence redaction and recovery information visible, and do not hide required denial, redaction, trace-summary, or provider/runtime blocker information.
+
+Required tests:
+
+- App-description/contract tests prove the outcome contract includes payload schema, note lifecycle rules, action mapping, auth/tenant rules, idempotency, states, traces, redaction, no-direct-mutation semantics, and sufficiency review.
+- Frontend tests prove outcome-panel rendering for empty/ready/read-only/partial/stale/blocked-provider-or-runtime/system-message states, authorized action visibility, disabled-action reasons, secret-boundary redaction, keyboard note flow, and no client-side authority mutation.
+- Backend/API tests prove selected AuthContext scoping, missing-bearer and missing-capability denials, no-enumeration hidden proposal/outcome access, outcome-note validation, lifecycle/freshness validation, idempotency/replay behavior, trace/audit/work evidence, provider/runtime fail-closed evidence references, and no authority mutation from outcome notes.
+- Negative tests prove the browser and agents cannot approve, activate, roll back, weaken policy, expand tenant/customer scope, expose hidden policy internals, fabricate outcome evidence, mutate metrics directly, or duplicate notes on repeated submissions.
+
+Surface-description sufficiency review: this definition is sufficiently unambiguous for a developer or generator to implement and review `surface-governance-policy-outcome` without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. The default view avoids internal implementation details that do not help the target SaaS user, and no additional description pass is required before scoped implementation work for this outcome surface.
 
 ### `surface-governance-policy-impact-analysis-task` (`governance.policy.impact_analysis.task.v1`)
 
