@@ -48,6 +48,7 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
   const taskTraceIds = accessReview?.traceIds ?? envelope.data.traceIds ?? [];
   const traceLinks = accessReview?.traceLinks ?? envelope.data.modelToolDataPolicyUsage?.traceLinks ?? envelope.data.traceLinks ?? [];
   const isMyAccountDigest = envelope.surfaceId === 'surface-my-account-personal-attention-digest-progress';
+  const isGovernancePolicyImpact = envelope.surfaceId === 'surface-governance-policy-impact-analysis-task' || envelope.data.surfaceContract === 'governance.policy.impact_analysis.task.v1';
   const isAgentAdminPromptRisk = envelope.surfaceId === 'surface-agent-admin-prompt-risk-review' || envelope.data.surfaceContract === 'agent_admin.prompt_risk_review_task.v1';
   return (
     <SurfaceStateFrame envelope={envelope}>
@@ -57,17 +58,18 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
       {isMyAccountDigest && <p role="status">Personal attention digest {envelope.data.digestTaskId ?? envelope.data.workflowId ?? 'request'} is {statusText}.</p>}
       {isUserAdminWorkflow(envelope) && <UserAdminWorkflowBranchReturn envelope={envelope} onAction={onAction} />}
       {envelope.data.summary && <p className="surface-state-inline forbidden">{envelope.data.summary}</p>}
-      {(envelope.data.surfaceContract || envelope.data.taskId || envelope.data.digestTaskId || envelope.data.autonomousAgentTaskId || envelope.data.requiredCapabilityId || envelope.data.initiatingCapabilityId) && (
+      {(envelope.data.surfaceContract || envelope.data.taskId || envelope.data.digestTaskId || envelope.data.impactTaskId || envelope.data.autonomousAgentTaskId || envelope.data.requiredCapabilityId || envelope.data.initiatingCapabilityId) && (
         <details className="dashboard-evidence-drawer">
           <summary>Role-gated runtime diagnostics</summary>
           {envelope.data.surfaceContract && <p className="form-status">Surface contract: {envelope.data.surfaceContract}</p>}
-          {(envelope.data.taskId || envelope.data.digestTaskId || envelope.data.autonomousAgentTaskId) && <p className="form-status">Task id: {envelope.data.taskId ?? envelope.data.digestTaskId ?? envelope.data.autonomousAgentTaskId}</p>}
+          {(envelope.data.taskId || envelope.data.digestTaskId || envelope.data.impactTaskId || envelope.data.autonomousAgentTaskId) && <p className="form-status">Task id: {envelope.data.taskId ?? envelope.data.digestTaskId ?? envelope.data.impactTaskId ?? envelope.data.autonomousAgentTaskId}</p>}
           {envelope.data.requiredCapabilityId && <p className="form-status">Required capability: {envelope.data.requiredCapabilityId}</p>}
           {envelope.data.initiatingCapabilityId && <p className="form-status">Initiating capability: {envelope.data.initiatingCapabilityId}</p>}
         </details>
       )}
       {progressSummary && <p className="form-status">Progress: {progressSummary.percent ?? 0}% · {progressSummary.summary ?? 'No progress summary available'}</p>}
       {envelope.data.resultSummary && <p className="form-status">Result: {envelope.data.resultSummary}</p>}
+      {isGovernancePolicyImpact && <GovernancePolicyImpactTask data={envelope.data} />}
       {accessReview && (
         <section className="access-review-task" aria-label="Access review task details">
           <h4>Access review task</h4>
@@ -136,7 +138,7 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
       ) : (
         <p>No workflow steps are available for this state.</p>
       )}
-      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={digestActionInput(envelope.data)} onAction={onAction} />
+      <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={workflowActionInput(envelope.data)} onAction={onAction} />
     </SurfaceStateFrame>
   );
 }
@@ -168,8 +170,39 @@ function AgentAdminPromptRiskReview({ data }: { data: WorkflowStatusSurfaceData 
   );
 }
 
-function digestActionInput(data: WorkflowStatusSurfaceData): Record<string, string> | undefined {
-  return data.digestTaskId ? { digestTaskId: data.digestTaskId } : undefined;
+function workflowActionInput(data: WorkflowStatusSurfaceData): Record<string, string> | undefined {
+  if (data.digestTaskId) return { digestTaskId: data.digestTaskId };
+  if (data.impactTaskId) {
+    return {
+      impactTaskId: data.impactTaskId,
+      taskId: data.impactTaskId,
+      ...(data.proposalId ? { proposalId: data.proposalId } : {})
+    };
+  }
+  return undefined;
+}
+
+function GovernancePolicyImpactTask({ data }: { data: WorkflowStatusSurfaceData }) {
+  return (
+    <section className="access-review-task" aria-label="Governance Policy impact-analysis task details">
+      <h4>Governance/Policy impact analysis</h4>
+      <p>Status: {formatStatus(data.status)} · proposal: {data.proposalId ?? 'not selected'}</p>
+      {data.activationBlocked || data.activationBlockedUntilHumanDecision ? <p className="surface-state-inline forbidden">Activation remains blocked until backend-governed human review and policy decision paths complete.</p> : null}
+      {data.noDirectMutation && <p className="surface-state-inline forbidden">No direct mutation: this task cannot approve, activate, roll back, weaken policy, expand scope, or fabricate evidence.</p>}
+      {data.noFakeSuccess && <p className="form-status">Provider/runtime status is fail-closed; no model-less successful impact analysis is shown.</p>}
+      {data.readiness && <p className="form-status">Readiness: {renderWorkflowValue(data.readiness)}</p>}
+      {data.disabledActions && data.disabledActions.length > 0 && <p className="form-status">Disabled actions: {renderWorkflowValue(data.disabledActions)}</p>}
+      {data.redaction && <p className="form-status">Redaction: {data.redaction}</p>}
+    </section>
+  );
+}
+
+function renderWorkflowValue(value: unknown): string {
+  if (value == null) return 'n/a';
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (Array.isArray(value)) return value.map(renderWorkflowValue).join(' · ');
+  if (typeof value === 'object') return Object.entries(value as Record<string, unknown>).map(([key, entry]) => `${key}: ${renderWorkflowValue(entry)}`).join(' · ');
+  return String(value);
 }
 
 function UserAdminWorkflowBranchReturn({ envelope, onAction }: { envelope: SurfaceEnvelope<WorkflowStatusSurfaceData>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {

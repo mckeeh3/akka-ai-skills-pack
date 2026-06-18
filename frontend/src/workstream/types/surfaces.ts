@@ -443,6 +443,9 @@ export type WorkflowStatusSurfaceData = {
   surfaceContract?: 'user_admin.access_review_task.v1' | string;
   workflowId?: string;
   digestTaskId?: string;
+  impactTaskId?: string;
+  proposalId?: string;
+  targetPolicyId?: string;
   autonomousAgentTaskId?: string;
   taskId?: string;
   status: 'not_started' | 'queued' | 'running' | 'working' | 'waiting-for-human' | 'waiting-for-provider-runtime' | 'blocked' | 'blocked_provider_or_runtime' | 'completed' | 'completed-review-required' | 'failed' | 'cancelled' | 'accepted' | 'rejected' | string;
@@ -476,6 +479,12 @@ export type WorkflowStatusSurfaceData = {
   phase?: string;
   progressEvents?: Array<string | { eventId?: string; label?: string; status?: string; summary?: string; traceId?: string }>;
   redaction?: string;
+  taskSummary?: Record<string, unknown>;
+  readiness?: Record<string, unknown>;
+  disabledActions?: Array<string | Record<string, unknown>>;
+  activationBlocked?: boolean;
+  activationBlockedUntilHumanDecision?: boolean;
+  noFakeSuccess?: boolean;
   accessReview?: {
     surfaceContract: 'user_admin.access_review_task.v1';
     taskId: string;

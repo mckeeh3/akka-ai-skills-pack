@@ -1177,11 +1177,11 @@ public final class WorkstreamService {
       result = startGovernancePolicyImpactAnalysis(actor, request);
     } else if ("action-governance-policy-read-impact-analysis".equals(request.actionId()) || "action-govpol-read-impact-analysis".equals(request.actionId())) {
       var surface = governancePolicyImpactService.taskSurface(actor, stringInput(request.input(), "impactTaskId", stringInput(request.input(), "taskId", "")), request.correlationId());
-      result = new CapabilityActionResult("accepted", "Governance/Policy impact analysis task loaded from backend lifecycle state.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactTaskActions()));
+      result = new CapabilityActionResult("accepted", "Governance/Policy impact analysis task loaded from backend lifecycle state.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactTaskActions(actor)));
     } else if ("action-governance-policy-cancel-impact-analysis".equals(request.actionId()) || "action-govpol-cancel-impact-analysis".equals(request.actionId())) {
       var task = governancePolicyImpactService.cancel(actor, stringInput(request.input(), "impactTaskId", stringInput(request.input(), "taskId", "")), stringInput(request.input(), "reason", "Cancelled by authorized Governance/Policy reviewer."), request.correlationId());
       var surface = governancePolicyImpactService.taskSurface(actor, task.impactTaskId(), request.correlationId());
-      result = new CapabilityActionResult("accepted", "Governance/Policy impact analysis task cancelled; policy proposal unchanged.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactTaskActions()));
+      result = new CapabilityActionResult("accepted", "Governance/Policy impact analysis task cancelled; policy proposal unchanged.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactTaskActions(actor)));
     } else if ("action-governance-policy-accept-impact-result".equals(request.actionId()) || "action-govpol-accept-impact-result".equals(request.actionId())) {
       result = decideGovernancePolicyImpactResult(actor, request, "accept");
     } else if ("action-governance-policy-reject-impact-result".equals(request.actionId()) || "action-govpol-reject-impact-result".equals(request.actionId())) {
@@ -3788,7 +3788,7 @@ public final class WorkstreamService {
           request.correlationId());
       var surface = governancePolicyImpactService.taskSurface(actor, task.impactTaskId(), request.correlationId());
       var status = task.status().name().toLowerCase(Locale.ROOT);
-      return new CapabilityActionResult(status, "Governance/Policy impact analysis entered backend lifecycle state " + status + "; no policy state was changed.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactTaskActions()));
+      return new CapabilityActionResult(status, "Governance/Policy impact analysis entered backend lifecycle state " + status + "; no policy state was changed.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactTaskActions(actor)));
     } catch (AuthorizationException missingProposal) {
       if (!"governance-policy-proposal-not-found-or-forbidden".equals(missingProposal.reasonCode())) throw missingProposal;
       return new CapabilityActionResult("blocked_provider_or_runtime", "Governance/Policy impact analysis start is backend-governed and fails closed when provider/runtime configuration is missing; no deterministic, simulated, model-less, or fake impact_ready success is returned.", request.correlationId(), List.of("trace-governance-policy-impact-analysis-blocked"), governancePolicyImpactAnalysisBlockedSurface(actor, request.correlationId()));
@@ -3809,8 +3809,12 @@ public final class WorkstreamService {
     return new SurfaceEnvelope(surface.surfaceId(), surface.surfaceType(), "v1", surface.title(), GOVERNANCE_POLICY_AGENT_ID, reusableAgentsForSurface(surface.surfaceId()), mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", actor.selectedContext().capabilities()), correlationId, surface.traceIds(), Instant.now().toString(), null, mapOf("profile", "tenant-admin", "omittedFieldKeys", List.of("rawJwt", "rawProviderCredential", "hiddenPromptText", "rawToolPayload", "providerSecret")), surface.data(), actions, List.of(mapOf("label", "Open surface", "href", "/ui?surfaceId=" + surface.surfaceId(), "rel", "deep-link")));
   }
 
-  private List<SurfaceAction> governanceImpactTaskActions() {
-    return List.of(governanceReadImpactAnalysisAction(), governanceCancelImpactAnalysisAction(), openAuditAction());
+  private List<SurfaceAction> governanceImpactTaskActions(AuthContextResolver.ResolvedMe actor) {
+    var actions = new java.util.ArrayList<SurfaceAction>();
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY)) actions.add(governanceReadImpactAnalysisAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_CANCEL_CAPABILITY)) actions.add(governanceCancelImpactAnalysisAction());
+    if (actor.selectedContext().capabilities().contains(AUDIT_TRACE_READ_CAPABILITY)) actions.add(openAuditAction());
+    return List.copyOf(actions);
   }
 
   private List<SurfaceAction> governanceImpactResultActions() {

@@ -7915,7 +7915,7 @@
 
 ### TASK-FSCT-224: Verify or complete runtime implementation for `surface-governance-policy-impact-analysis-task`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-223]
 - surface id: `surface-governance-policy-impact-analysis-task`
@@ -7946,6 +7946,7 @@
   - purpose: Impact-analysis task progress/status.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-impact-analysis-task`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-impact-analysis-task`; surface graph node/action edge for opening or acting on `surface-governance-policy-impact-analysis-task`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented/enriched the real Governance/Policy impact-analysis task runtime path with backend-owned workflow-status projection data, capability-filtered read/cancel action exposure, selected AuthContext tenant/customer scoping, fail-closed provider/runtime readiness, trace/correlation/redaction evidence, and React workflow-status rendering/action input for `impactTaskId`/`taskId`. Runtime evidence level: `api-smoked`; checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=GovernancePolicyImpactServiceTest test`, `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyInventoryRuntimePath test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-225: Verify or complete runtime testing for `surface-governance-policy-impact-analysis-task`
 

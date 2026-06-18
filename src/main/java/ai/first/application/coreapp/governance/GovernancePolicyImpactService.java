@@ -136,20 +136,36 @@ public final class GovernancePolicyImpactService {
 
   public SurfaceData taskSurface(AuthContextResolver.ResolvedMe actor, String impactTaskId, String correlationId) {
     var task = read(actor, impactTaskId, correlationId);
-    return new SurfaceData("surface-governance-policy-impact-analysis-task", "workflow-status", "Governance/Policy impact analysis task", List.of(trace("impact-task", correlationId)), Map.ofEntries(
+    var status = task.status().name().toLowerCase(java.util.Locale.ROOT);
+    var traceIds = task.traceIds().isEmpty() ? List.of(trace("impact-task", correlationId)) : task.traceIds();
+    return new SurfaceData("surface-governance-policy-impact-analysis-task", "workflow-status", "Governance/Policy impact analysis task", traceIds, Map.ofEntries(
         Map.entry("surfaceContract", "governance.policy.impact_analysis.task.v1"),
+        Map.entry("workflowId", "governance-policy-impact-analysis"),
         Map.entry("impactTaskId", task.impactTaskId()),
+        Map.entry("taskId", task.impactTaskId()),
         Map.entry("autonomousAgentTaskId", safe(task.autonomousAgentTaskId(), "")),
         Map.entry("proposalId", task.proposalId()),
-        Map.entry("status", task.status().name().toLowerCase(java.util.Locale.ROOT)),
+        Map.entry("targetPolicyId", safe(task.targetPolicyId(), "")),
+        Map.entry("status", status),
+        Map.entry("taskSummary", Map.of("impactTaskId", task.impactTaskId(), "proposalId", task.proposalId(), "status", status, "progressPercent", task.progressPercent(), "updatedAt", task.updatedAt().toString(), "safeCopy", safe(task.summary(), "Governance/Policy impact analysis task state is backend-owned."))),
+        Map.entry("progress", Map.of("percent", task.progressPercent(), "summary", safe(task.summary(), "Governance/Policy impact analysis task state is backend-owned."))),
+        Map.entry("steps", taskSteps(task)),
         Map.entry("progressPercent", task.progressPercent()),
         Map.entry("blockerCode", safe(task.blockerCode(), "")),
+        Map.entry("blockers", taskBlockers(task)),
+        Map.entry("providerFailures", providerFailures(task)),
         Map.entry("summary", safe(task.summary(), "")),
         Map.entry("evidenceRefs", task.evidenceRefs()),
-        Map.entry("traceIds", task.traceIds()),
+        Map.entry("findingRefs", task.findingRefs()),
+        Map.entry("traceIds", traceIds),
+        Map.entry("traceLinks", traceLinks(traceIds, correlationId)),
         Map.entry("authorizedActions", List.of(READ_CAPABILITY, CANCEL_CAPABILITY)),
+        Map.entry("disabledActions", disabledActions(task)),
+        Map.entry("readiness", Map.of("state", readinessState(task), "providerRuntime", task.status() == GovernancePolicyImpactTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime" : "backend lifecycle projection", "fakeSuccess", false)),
         Map.entry("noDirectMutation", true),
+        Map.entry("activationBlocked", true),
         Map.entry("activationBlockedUntilHumanDecision", true),
+        Map.entry("noFakeSuccess", true),
         Map.entry("redaction", "browser-safe; raw prompts, provider credentials, JWTs, raw tool payloads, and cross-tenant/customer data omitted")));
   }
 
@@ -210,6 +226,50 @@ public final class GovernancePolicyImpactService {
     };
     publishLifecycleOrAttention(updated, transition, READ_CAPABILITY, null, correlationId);
     return updated;
+  }
+
+  private static List<Map<String, String>> taskSteps(GovernancePolicyImpactTask task) {
+    var status = task.status().name().toLowerCase(java.util.Locale.ROOT);
+    var steps = new java.util.ArrayList<Map<String, String>>();
+    steps.add(Map.of("stepId", "requested", "label", "Requested", "status", "completed"));
+    steps.add(Map.of("stepId", "provider-runtime-check", "label", "Provider/runtime check", "status", task.status() == GovernancePolicyImpactTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "error" : "completed"));
+    steps.add(Map.of("stepId", "analysis", "label", "Autonomous analysis", "status", task.status() == GovernancePolicyImpactTask.Status.QUEUED ? "queued" : task.status() == GovernancePolicyImpactTask.Status.RUNNING ? "running" : task.status() == GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED ? "completed" : status));
+    steps.add(Map.of("stepId", "human-review", "label", "Human impact result review", "status", task.resultDecisionAllowed() ? "waiting-for-human" : status));
+    return List.copyOf(steps);
+  }
+
+  private static List<Map<String, String>> taskBlockers(GovernancePolicyImpactTask task) {
+    if (blank(task.blockerCode())) return List.of();
+    return List.of(Map.of("code", task.blockerCode(), "message", safe(task.summary(), "Governance/Policy impact analysis is blocked; review provider/runtime readiness and trace evidence.")));
+  }
+
+  private static List<String> providerFailures(GovernancePolicyImpactTask task) {
+    if (task.status() != GovernancePolicyImpactTask.Status.BLOCKED_PROVIDER_OR_RUNTIME) return List.of();
+    return List.of(firstNonBlank(task.blockerCode(), "blocked_provider_or_runtime"));
+  }
+
+  private static List<Map<String, String>> traceLinks(List<String> traceIds, String correlationId) {
+    return traceIds.stream()
+        .map(traceId -> Map.of("traceId", traceId, "label", "Impact-analysis trace", "summary", "Browser-safe Governance/Policy impact-analysis lifecycle evidence", "targetSurfaceId", "surface-audit-trace-detail", "correlationId", safe(correlationId, ""), "redaction", "raw provider/model/tool data omitted"))
+        .toList();
+  }
+
+  private static List<String> disabledActions(GovernancePolicyImpactTask task) {
+    if (task.status() == GovernancePolicyImpactTask.Status.CANCELLED) return List.of("cancel disabled: already cancelled");
+    if (task.status() == GovernancePolicyImpactTask.Status.ACCEPTED || task.status() == GovernancePolicyImpactTask.Status.REJECTED_RESULT || task.status() == GovernancePolicyImpactTask.Status.REQUEST_CHANGES) return List.of("result disposition already recorded on the result surface");
+    if (task.status() == GovernancePolicyImpactTask.Status.BLOCKED_PROVIDER_OR_RUNTIME) return List.of("successful impact analysis disabled until provider/runtime is configured");
+    return List.of("approval, activation, rollback, and impact-result disposition are not performed by this task surface");
+  }
+
+  private static String readinessState(GovernancePolicyImpactTask task) {
+    return switch (task.status()) {
+      case QUEUED -> "queued";
+      case RUNNING -> "running";
+      case BLOCKED_PROVIDER_OR_RUNTIME -> "blocked";
+      case FAILED -> "failed";
+      case COMPLETED_REVIEW_REQUIRED -> "ready_for_human_review";
+      default -> task.status().name().toLowerCase(java.util.Locale.ROOT);
+    };
   }
 
   private void publishLifecycleOrAttention(GovernancePolicyImpactTask task, String semanticTransition, String capabilityId, String actorAccountId, String correlationId) {
