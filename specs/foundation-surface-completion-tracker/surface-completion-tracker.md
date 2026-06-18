@@ -881,7 +881,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`: added detailed `surface-audit-trace-investigation-guide` / `audit.trace.investigationGuide.v1` decision-card contract covering Audit/Trace ownership and `audit-trace-agent` placement, reusable entry contexts, selected AuthContext tenant/customer/support-access authorization, backend-owned retained evidence data source, advisory/no-authority-expansion boundary, browser-safe payload fields, allowed/disabled action semantics, governed action map, denial/redaction/fail-closed states, audit/work trace obligations, accessibility/responsive expectations, required acceptance/security/negative/idempotency/observability/UX tests, frontend-safe payload summary, and sufficiency review. Validation: `git diff --check`; focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

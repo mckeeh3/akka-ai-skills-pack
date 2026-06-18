@@ -6716,7 +6716,7 @@
 
 ### TASK-FSCT-190: Verify or complete app-description specification for `surface-audit-trace-investigation-guide`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-audit-trace-investigation-guide`
@@ -6745,6 +6745,7 @@
   - purpose: Human investigation guidance.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-investigation-guide` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: added detailed `surface-audit-trace-investigation-guide` / `audit.trace.investigationGuide.v1` decision-card app-description contract covering Audit/Trace ownership and `audit-trace-agent` placement, reusable entry contexts, selected AuthContext tenant/customer/support-access authorization, backend-owned evidence data source, advisory/no-authority-expansion boundary, browser-safe payload schema, allowed/disabled governed actions, denial/redaction/fail-closed states, audit/work trace obligations, accessibility/responsive expectations, required acceptance/security/negative/idempotency/observability/UX tests, frontend-safe payload summary, and sufficiency review; tracker evidence updated. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description.
 
 ### TASK-FSCT-191: Verify or complete runtime implementation for `surface-audit-trace-investigation-guide`
 
