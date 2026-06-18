@@ -855,7 +855,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`: added detailed `surface-audit-trace-timeline` / `audit.trace.timeline.v1` read-only correlation timeline contract covering Audit/Trace ownership and `audit-trace-agent` placement, reusable trace/correlation entry points, selected AuthContext tenant/customer/support-access authorization, backend-owned retained evidence data source, browser-safe timeline/correlation/event/link/omitted-category payload schema, forbidden raw secret/provider/prompt/cross-scope payload boundaries, governed action-to-capability mappings for timeline/detail/failure/guidance/export/note/search/dashboard flows, denial/redaction/partial/idempotent states, audit/work trace and correlation obligations, accessibility/responsive/style-catalog binding, required acceptance/security/negative/idempotency/observability/UX tests, and a sufficiency review confirming implementation can proceed without invented fields/actions/states/auth/traces/tests. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

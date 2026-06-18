@@ -6504,7 +6504,7 @@
 
 ### TASK-FSCT-184: Verify or complete app-description specification for `surface-audit-trace-timeline`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-audit-trace-timeline`
@@ -6533,6 +6533,7 @@
   - purpose: Correlation timeline.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-timeline` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: added detailed `surface-audit-trace-timeline` / `audit.trace.timeline.v1` app-description contract covering owner/agent placement, reusable correlation entry points, backend-owned data source, browser-safe payload schema, governed action-to-capability mappings, selected AuthContext tenant/customer/support-access authorization, redaction and forbidden payload boundaries, audit/work trace and correlation obligations, UI states, accessibility/style bindings, required tests, and sufficiency review. Checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description and `git diff --check`.
 
 ### TASK-FSCT-185: Verify or complete runtime implementation for `surface-audit-trace-timeline`
 
