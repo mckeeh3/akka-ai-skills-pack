@@ -829,7 +829,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`: added detailed `surface-audit-trace-search` / `audit.trace.search.v1` list-search contract covering Audit/Trace ownership and `audit-trace-agent` placement, reusable cross-workstream trace-reference entry points, selected AuthContext tenant/customer/support-access authorization, backend-owned data source, browser-safe query/filter/result row/page/redaction payload schema, row/detail/timeline/failure/guidance/export/dashboard governed action mappings, hidden-count/non-enumeration behavior, validation/partial/stale/denied states, audit/work trace obligations, UI style/component/theme bindings, and acceptance/security/negative/idempotency/observability/UX tests. Readiness result: `ready` for the fully-specified docs-only objective; no runtime implementation is claimed. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

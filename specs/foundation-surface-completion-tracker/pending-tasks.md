@@ -6292,7 +6292,7 @@
 
 ### TASK-FSCT-178: Verify or complete app-description specification for `surface-audit-trace-search`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-audit-trace-search`
@@ -6321,6 +6321,7 @@
   - purpose: Scoped trace search.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-search` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: added detailed `surface-audit-trace-search` / `audit.trace.search.v1` app-description contract covering Audit/Trace ownership and `audit-trace-agent` placement, scoped backend data source, browser-safe query/filter/row/page/redaction payloads, governed search/detail/timeline/failure/guidance/export/dashboard actions, AuthContext tenant/customer/support-access authorization and no-enumeration behavior, audit/work traces, UI style/catalog/theme bindings, and acceptance/security/negative/idempotency/observability/UX tests; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests.
 
 ### TASK-FSCT-179: Verify or complete runtime implementation for `surface-audit-trace-search`
 
