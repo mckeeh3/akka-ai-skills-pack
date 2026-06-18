@@ -57,7 +57,7 @@ class GovernancePolicyServiceTest {
     assertEquals("surface-governance-policy-dashboard", dashboard.surfaceId());
     assertEquals("governance.policy.dashboard.v1", dashboard.data().get("surfaceContract"));
     assertTrue(dashboard.toString().contains("GovernancePolicyService"));
-    assertTrue(dashboard.toString().contains("governance.policy.proposal.draft"));
+    assertTrue(dashboard.toString().contains("governance.policy.propose"));
     assertTrue(dashboard.toString().contains("governance.proposals.review"));
     assertTrue(dashboard.toString().contains("governance.outcomes.record"));
     assertFalse(dashboard.toString().contains("api_key="));
@@ -109,12 +109,27 @@ class GovernancePolicyServiceTest {
     var submitted = service.submitProposal(actor, Map.of("proposalId", proposalId), "idem-gov-lifecycle-submit", "corr-gov-lifecycle-submit");
     assertEquals("in_review", submitted.surface().data().get("state"));
 
+    var readBeforeSimulation = service.readSimulation(actor, Map.of("proposalId", proposalId), "corr-gov-lifecycle-sim-read-before");
+    assertEquals("surface-governance-policy-simulation", readBeforeSimulation.surfaceId());
+    assertEquals("empty/not-run", readBeforeSimulation.data().get("state"));
+    assertEquals(true, readBeforeSimulation.data().get("noDirectMutation"));
+    assertEquals(true, readBeforeSimulation.data().get("noFakeSuccess"));
+    assertTrue(readBeforeSimulation.toString().contains("simulation_not_run"));
+
     var simulation = service.simulateProposal(actor, Map.of("proposalId", proposalId), "corr-gov-lifecycle-sim");
     assertEquals("accepted", simulation.status());
     assertEquals("surface-governance-policy-simulation", simulation.surface().surfaceId());
     assertTrue(simulation.surface().toString().contains("advisory deterministic simulation evidence record"));
     assertTrue(simulation.surface().toString().contains("model cannot self-approve"));
     assertTrue(simulation.surface().toString().contains("activationGate"));
+    assertTrue(simulation.surface().toString().contains("expectedAccessChanges"));
+    assertTrue(simulation.surface().toString().contains("confidenceAndLimits"));
+    assertEquals(true, simulation.surface().data().get("noDirectMutation"));
+    assertEquals(true, simulation.surface().data().get("noFakeSuccess"));
+
+    var readAfterSimulation = service.readSimulation(actor, Map.of("proposalId", proposalId), "corr-gov-lifecycle-sim-read-after");
+    assertEquals("ready", readAfterSimulation.data().get("state"));
+    assertEquals(simulation.surface().data().get("simulationId"), readAfterSimulation.data().get("simulationId"));
 
     var duplicateSimulation = service.simulateProposal(actor, Map.of("proposalId", proposalId), "idem-gov-lifecycle-sim", "corr-gov-lifecycle-sim-replay");
     assertEquals("accepted", duplicateSimulation.status());

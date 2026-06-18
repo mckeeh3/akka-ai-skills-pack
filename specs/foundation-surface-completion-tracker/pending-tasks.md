@@ -7597,7 +7597,7 @@
 
 ### TASK-FSCT-215: Verify or complete runtime implementation for `surface-governance-policy-simulation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-214]
 - surface id: `surface-governance-policy-simulation`
@@ -7628,6 +7628,7 @@
   - purpose: Advisory simulation surface.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-simulation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-simulation`; surface graph node/action edge for opening or acting on `surface-governance-policy-simulation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented backend-owned simulation evidence read path so protected `/api/workstream/surfaces/surface-governance-policy-simulation` opens empty/not-run or existing ready evidence without mutating records, while governed `/api/workstream/actions` `action-governance-policy-simulate` records advisory evidence idempotently. Added `governance.policy.simulation.v1` empty/ready payload fields for expected access changes, warnings, confidence/limits, activation gate, authorized transitions, trace refs, readiness/no-fake-success, redaction, and `noDirectMutation`; Workstream envelopes now expose simulation follow-up actions by selected AuthContext capability. Runtime evidence: readiness level `api-smoked` with protected surface/action path, tenant admin AuthContext in `tenant-starter`, direct no-mutation read, advisory simulation record, idempotent replay, inherited denial/cross-tenant coverage, trace/correlation evidence, provider/impact-analysis fail-closed readiness, and no frontend-only/fixture-only normal runtime path. Checks passed: `mvn -q -Dtest=GovernancePolicyServiceTest,WorkstreamServiceTest#governancePolicyBackendActionsExposeReadProposalSimulationApprovalAndBlockedRuntimeSurfaces test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-216: Verify or complete runtime testing for `surface-governance-policy-simulation`
 

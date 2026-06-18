@@ -1156,7 +1156,7 @@ public final class WorkstreamService {
       result = new CapabilityActionResult(submit.status(), submit.message(), request.correlationId(), submit.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), submit.surface(), governanceProposalActions(actor)));
     } else if ("action-governance-policy-simulate".equals(request.actionId()) || "action-simulate-policy".equals(request.actionId())) {
       var simulation = governancePolicyService.simulateProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
-      result = new CapabilityActionResult(simulation.status(), simulation.message(), request.correlationId(), simulation.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), simulation.surface(), List.of(governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), openAuditAction())));
+      result = new CapabilityActionResult(simulation.status(), simulation.message(), request.correlationId(), simulation.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), simulation.surface(), governanceSimulationActions(actor)));
     } else if ("action-governance-policy-decide".equals(request.actionId())) {
       var decision = governancePolicyService.decideProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult(decision.status(), decision.message(), request.correlationId(), decision.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), decision.surface(), List.of(governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceOutcomeNoteAction(), openAuditAction())));
@@ -3897,11 +3897,22 @@ public final class WorkstreamService {
     return governancePolicyEnvelope(actor, correlationId, governancePolicyService.readProposal(actor, mapOf("rationale", summary, "title", "Governance policy proposal"), correlationId), governanceProposalActions(actor));
   }
 
+  private List<SurfaceAction> governanceSimulationActions(AuthContextResolver.ResolvedMe actor) {
+    var actions = new java.util.ArrayList<SurfaceAction>();
+    actions.add(governanceReadPolicyAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_SIMULATE_CAPABILITY)) actions.add(governanceSimulateProposalAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_APPROVE_CAPABILITY)) actions.add(governanceDecideProposalAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_START_CAPABILITY)) actions.add(governanceStartImpactAnalysisAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY)) actions.add(governanceReadImpactAnalysisAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_OUTCOMES_RECORD_CAPABILITY)) actions.add(governanceOutcomeNoteAction());
+    if (actor.selectedContext().capabilities().contains(AUDIT_TRACE_READ_CAPABILITY)) actions.add(openAuditAction());
+    return List.copyOf(actions);
+  }
+
   private SurfaceEnvelope governancePolicySimulationSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     validateGovernancePolicyInputScope(actor, input, correlationId);
-    authContextResolver.appendProtectedReadTrace(actor, GOVERNANCE_POLICY_SIMULATE_CAPABILITY, "proposal simulation", correlationId);
-    var simulation = governancePolicyService.simulateProposal(actor, input, "surface-fallback-simulation-" + stableSuffix(correlationId), correlationId);
-    return governancePolicyEnvelope(actor, correlationId, simulation.surface(), List.of(governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), openAuditAction()));
+    authContextResolver.appendProtectedReadTrace(actor, GOVERNANCE_POLICY_READ_CAPABILITY, "proposal simulation evidence read", correlationId);
+    return governancePolicyEnvelope(actor, correlationId, governancePolicyService.readSimulation(actor, input, correlationId), governanceSimulationActions(actor));
   }
 
   private SurfaceEnvelope governancePolicyDecisionSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {

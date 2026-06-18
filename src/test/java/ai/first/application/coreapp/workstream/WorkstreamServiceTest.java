@@ -2236,11 +2236,25 @@ class WorkstreamServiceTest {
     assertEquals("accepted", submitted.status());
     assertTrue(submitted.resultSurface().toString().contains("in_review"));
 
+    var directSimulationBeforeRun = service.surface(identity(), "membership-admin", "surface-governance-policy-simulation", "corr-gov-sim-direct-before");
+    assertEquals("surface-governance-policy-simulation", directSimulationBeforeRun.surfaceId());
+    assertEquals("empty/not-run", directSimulationBeforeRun.data().get("state"));
+    assertEquals(true, directSimulationBeforeRun.data().get("noDirectMutation"));
+    assertEquals(true, directSimulationBeforeRun.data().get("noFakeSuccess"));
+    assertTrue(directSimulationBeforeRun.toString().contains("simulation_not_run"));
+
     var simulation = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-governance-policy-simulate", "action-governance-policy-simulate", "governance.policy.simulate", "governance.policy.simulate", Map.of("proposalId", proposalId), null, "membership-admin", "surface-governance-policy-proposal", "corr-gov-sim"));
     assertEquals("accepted", simulation.status());
     assertTrue(simulation.resultSurface().toString().contains("model cannot self-approve"));
     assertTrue(simulation.resultSurface().toString().contains("advisory deterministic simulation"));
+    assertTrue(simulation.resultSurface().toString().contains("expectedAccessChanges"));
+    assertTrue(simulation.resultSurface().actions().toString().contains("action-governance-policy-simulate"));
+    assertTrue(simulation.resultSurface().actions().toString().contains("action-governance-policy-start-impact-analysis"));
+
+    var directSimulationAfterRun = service.surface(identity(), "membership-admin", "surface-governance-policy-simulation", "corr-gov-sim-direct-after");
+    assertEquals("ready", directSimulationAfterRun.data().get("state"));
+    assertEquals(simulation.resultSurface().data().get("simulationId"), directSimulationAfterRun.data().get("simulationId"));
 
     var decision = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-governance-policy-decide", "action-governance-policy-decide", "governance.proposals.review", "governance.policy.approve", Map.of("proposalId", proposalId, "decision", "approve", "rationale", "bounded starter proof"), "idem-gov-decision", "membership-admin", "surface-governance-policy-simulation", "corr-gov-decision"));

@@ -240,6 +240,23 @@ public final class GovernancePolicyService {
     return systemMessage("surface-governance-policy-system-message", "not_found_or_redacted", "No authorized proposal is visible in the selected AuthContext, and draft authority is not available.", READ_CAPABILITY, correlationId);
   }
 
+  public SurfaceData readSimulation(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    validateScope(actor, input, correlationId);
+    requireRead(actor, READ_CAPABILITY, correlationId);
+    var proposal = findScopedProposal(actor, input);
+    if (proposal == null) {
+      if (stringInput(input, "proposalId", null) != null || stringInput(input, "simulationId", null) != null) {
+        return validation("proposalId", "No authorized proposal or simulation evidence was found for the selected AuthContext.", correlationId).surface();
+      }
+      return emptySimulation(actor, null, correlationId);
+    }
+    var simulationId = stringInput(input, "simulationId", null);
+    var simulation = simulationId == null
+        ? repository.listSimulations(actor.selectedContext().tenantId(), actor.selectedContext().customerId(), proposal.proposalId()).stream().findFirst()
+        : repository.findSimulation(actor.selectedContext().tenantId(), actor.selectedContext().customerId(), simulationId).filter(candidate -> proposal.proposalId().equals(candidate.proposalId()));
+    return simulation.map(result -> simulation(actor, proposal, result, correlationId)).orElseGet(() -> emptySimulation(actor, proposal, correlationId));
+  }
+
   public ActionResult simulateProposal(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     return simulateProposal(actor, input, stringInput(input, "idempotencyKey", null), correlationId);
   }
@@ -426,17 +443,65 @@ public final class GovernancePolicyService {
         "noFakeSuccess", true));
   }
 
-  private SurfaceData simulation(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, GovernancePolicySimulationResult simulation, String correlationId) {
+  private SurfaceData emptySimulation(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
+    var availableTransitions = simulationTransitions(actor, proposal);
     return surface("surface-governance-policy-simulation", "governance-diff", "Policy simulation", correlationId, mapOf(
         "surfaceContract", "governance.policy.simulation.v1",
+        "ownerFunctionalAgentId", "governance-policy-agent",
+        "simulationId", null,
+        "proposalId", proposal == null ? null : proposal.proposalId(),
+        "tenantId", actor.selectedContext().tenantId(),
+        "customerId", actor.selectedContext().customerId(),
+        "state", "empty/not-run",
+        "lifecycleState", proposal == null ? "empty/not-run" : proposal.status().name().toLowerCase(),
+        "simulationStatus", "not_run",
+        "simulationSummary", proposal == null ? "No selected proposal is available for simulation in this selected AuthContext." : "No simulation evidence has been recorded for this visible proposal; running simulation is advisory only.",
+        "simulationSummaryPayload", mapOf("simulationDisplayRef", "not-run", "proposalDisplayRef", proposal == null ? "none-selected" : proposal.proposalId(), "proposalTitle", proposal == null ? "No proposal selected" : proposal.title(), "scenarioName", "default advisory policy-change scenario", "selectedScenarioScopeSummary", "backend-resolved selected AuthContext only", "simulationStatus", "empty/not-run", "freshnessStatus", "not-run", "confidenceLabel", "not-available", "safeEmptyNotRunCopy", "Select a visible proposal and use the governed simulation action to record advisory evidence."),
+        "scenarioInputSummary", "default advisory policy-change scenario; tenant/customer hints from the browser cannot expand scope",
+        "riskClassification", proposal == null ? "none" : proposal.riskClassification(),
+        "requiredApproval", proposal == null ? APPROVE_CAPABILITY : proposal.requiredApprovalCapabilityId(),
+        "activationStatus", "blocked until simulation evidence, human approval, backend authority, idempotency, and rollback metadata are present",
+        "beforeSummary", proposal == null ? "No selected proposal is loaded." : "Active policy remains unchanged; no simulation has run for this proposal in the selected context.",
+        "afterSummary", proposal == null ? "Choose an authorized proposal before running advisory simulation." : "Use the governed simulation action to produce advisory evidence; no approval or activation occurs here.",
+        "changes", proposal == null ? List.of() : List.of(mapOf("path", proposal.targetPolicyId(), "before", "current policy behavior", "after", proposal.proposedContent(), "impact", "Simulation has not run; no authority changed.")),
+        "affectedCapabilities", proposal == null ? List.of() : proposal.affectedCapabilityIds(),
+        "affectedArtifacts", proposal == null ? List.of() : proposal.affectedArtifactRefs(),
+        "expectedAccessChanges", List.of(),
+        "expectedAllows", List.of(),
+        "expectedDenials", List.of(),
+        "warnings", List.of(mapOf("severity", "info", "reasonCode", "simulation_not_run", "message", "Simulation evidence is not recorded yet; approval and activation remain disabled.", "disabledActionReason", "simulation_evidence_missing", "recovery", "Run the governed simulation action for a visible proposal.")),
+        "confidenceAndLimits", mapOf("confidenceLabel", "not-available", "coverageSummary", "No simulation has run.", "knownBlindSpots", List.of("No expected access rows until simulation evidence is recorded."), "providerRuntimeReadiness", "ready_for_deterministic_advisory_evidence", "advisoryOnly", true),
+        "readiness", mapOf("simulation", "ready_for_deterministic_advisory_evidence", "impactAnalysis", "blocked_provider_or_runtime", "status", "not_run", "noFakeSuccess", true),
+        "availableTransitions", availableTransitions,
+        "authorizedActions", availableTransitions,
+        "simulation", mapOf("affectedCapabilities", proposal == null ? List.of() : proposal.affectedCapabilityIds(), "expectedAllows", List.of(), "expectedDenials", List.of(), "warnings", List.of("Simulation not run; no fake success is exposed."), "confidence", "not-available", "evidenceTraceIds", List.of()),
+        "evidenceTraceLinks", List.of(),
+        "activationGate", mapOf("simulationEvidenceRequired", true, "gateState", "blocked", "missingPrerequisites", List.of("simulation evidence", "human approval", "rollback metadata"), "relatedImpactAnalysisStatus", "blocked_provider_or_runtime", "disabledApprovalActivationReasons", List.of("No simulation evidence has been recorded."), "nextAuthorizedTargetSurfaces", availableTransitions.stream().map(action -> action.get("resultSurfaceId")).distinct().toList()),
+        "traceLinks", List.of(trace("simulation-read", correlationId)),
+        "traceRefs", List.of(trace("simulation-read", correlationId), trace("workstream-log", correlationId)),
+        "redaction", mapOf("browserSafe", true, "omittedFieldKeys", OMITTED_FIELDS, "hiddenCrossTenantEvidence", true, "privilegedPolicyClauses", "omitted", "hiddenAuthorityState", "omitted", "rawProviderModelData", "omitted", "rawToolPayloads", "omitted", "correlationIds", "role-gated", "idempotencyKeys", "role-gated"),
+        "visibilitySplit", mapOf("defaultUserVisible", List.of("proposal title", "scenario label", "status", "safe blocker copy", "authorized next actions"), "onDemandDrilldown", List.of("simulation display refs", "redacted evidence summaries", "trace summaries"), "adminSupportAuditorOnly", List.of("capability ids", "denial/failure evidence"), "internalOnly", OMITTED_FIELDS),
+        "noDirectMutation", true,
+        "noFakeSuccess", true));
+  }
+
+  private SurfaceData simulation(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, GovernancePolicySimulationResult simulation, String correlationId) {
+    var availableTransitions = simulationTransitions(actor, proposal);
+    var expectedAccessChanges = new java.util.ArrayList<Map<String, Object>>();
+    simulation.expectedAllows().forEach(allow -> expectedAccessChanges.add(mapOf("expectedOutcome", "allow", "summary", allow, "riskLabel", proposal.riskClassification(), "evidenceStatus", "simulated-advisory", "redaction", "raw policy clauses and hidden role rules omitted")));
+    simulation.expectedDenials().forEach(denial -> expectedAccessChanges.add(mapOf("expectedOutcome", "deny", "summary", denial, "riskLabel", proposal.riskClassification(), "evidenceStatus", "simulated-advisory", "redaction", "raw policy clauses and hidden role rules omitted")));
+    return surface("surface-governance-policy-simulation", "governance-diff", "Policy simulation", correlationId, mapOf(
+        "surfaceContract", "governance.policy.simulation.v1",
+        "ownerFunctionalAgentId", "governance-policy-agent",
         "simulationId", simulation.simulationId(),
         "proposalId", proposal.proposalId(),
         "tenantId", actor.selectedContext().tenantId(),
         "customerId", actor.selectedContext().customerId(),
-        "state", "review_required",
+        "state", "ready",
         "lifecycleState", proposal.status().name().toLowerCase(),
         "simulationStatus", simulation.status().name().toLowerCase(),
         "simulationSummary", "advisory deterministic simulation evidence record; no direct mutation and no model-owned authority",
+        "simulationSummaryPayload", mapOf("simulationDisplayRef", simulation.simulationId(), "proposalDisplayRef", proposal.proposalId(), "proposalTitle", proposal.title(), "lifecycleStatusLabel", proposal.status().name().toLowerCase(), "scenarioName", simulation.scenarioInputSummary(), "selectedScenarioScopeSummary", "backend-resolved selected AuthContext only", "simulationStatus", simulation.status().name().toLowerCase(), "freshnessStatus", "ready", "confidenceLabel", "bounded-starter", "safeEmptyNotRunCopy", "Simulation evidence is present and remains advisory."),
         "scenarioInputSummary", simulation.scenarioInputSummary(),
         "riskClassification", proposal.riskClassification(),
         "requiredApproval", proposal.requiredApprovalCapabilityId(),
@@ -450,16 +515,24 @@ public final class GovernancePolicyService {
         "affectedArtifacts", proposal.affectedArtifactRefs(),
         "riskFindings", simulation.riskFindings(),
         "requiredApprovalCapabilityIds", simulation.requiredApprovalCapabilityIds(),
+        "expectedAccessChanges", List.copyOf(expectedAccessChanges),
         "expectedDenials", simulation.expectedDenials(),
         "expectedAllows", simulation.expectedAllows(),
-        "warnings", simulation.warnings(),
+        "warnings", simulation.warnings().stream().map(warning -> mapOf("severity", "warning", "reasonCode", stableSuffix(warning), "message", warning, "disabledActionReason", warning.toLowerCase().contains("activation") ? "activation_prerequisite_missing" : "advisory_limit", "recovery", "Review proposal, decision, impact-analysis, or outcome follow-up through backend-authorized transitions.")).toList(),
         "confidence", "bounded-starter",
+        "confidenceAndLimits", mapOf("confidenceLabel", "bounded-starter", "coverageSummary", "Deterministic starter simulation covers selected AuthContext, approval gates, tenant isolation, redaction, and activation blockers.", "knownBlindSpots", List.of("No raw provider/model output is produced by this deterministic path.", "Impact analysis remains blocked_provider_or_runtime until model/runtime is configured."), "lastSimulatedAgeBucket", "recent", "providerRuntimeReadiness", "ready_for_deterministic_advisory_evidence", "advisoryOnly", true),
+        "readiness", mapOf("simulation", "ready_for_deterministic_advisory_evidence", "impactAnalysis", "blocked_provider_or_runtime", "status", "ready", "noFakeSuccess", true),
+        "availableTransitions", availableTransitions,
+        "authorizedActions", availableTransitions,
         "simulation", mapOf("affectedCapabilities", proposal.affectedCapabilityIds(), "expectedAllows", simulation.expectedAllows(), "expectedDenials", simulation.expectedDenials(), "warnings", simulation.warnings(), "confidence", "bounded-starter", "evidenceTraceIds", simulation.evidenceRefs()),
         "evidenceTraceLinks", simulation.evidenceRefs(),
-        "activationGate", "blocked until simulation evidence, human approval, backend authority, idempotency, and rollback metadata are present",
+        "activationGate", mapOf("simulationEvidenceRequired", true, "gateState", "blocked_until_human_approval_and_rollback_metadata", "missingPrerequisites", List.of("human approval", "rollback metadata", "activation idempotency key"), "relatedImpactAnalysisStatus", "blocked_provider_or_runtime", "disabledApprovalActivationReasons", List.of("Simulation is advisory evidence only; approval and activation stay on dedicated backend-governed surfaces."), "nextAuthorizedTargetSurfaces", availableTransitions.stream().map(action -> action.get("resultSurfaceId")).distinct().toList()),
         "traceLinks", List.of(trace("simulation", correlationId), simulation.correlationId()),
+        "traceRefs", List.of(trace("simulation", correlationId), trace("workstream-log", correlationId), trace("admin-audit", correlationId), trace("policy-decision", correlationId), simulation.correlationId()),
+        "redaction", mapOf("browserSafe", true, "omittedFieldKeys", OMITTED_FIELDS, "hiddenCrossTenantEvidence", true, "privilegedPolicyClauses", "omitted", "hiddenAuthorityState", "omitted", "rawProviderModelData", "omitted", "rawToolPayloads", "omitted", "correlationIds", "role-gated", "idempotencyKeys", "role-gated"),
+        "visibilitySplit", mapOf("defaultUserVisible", List.of("proposal title", "scenario label", "status", "safe expected allow/deny summaries", "warning and blocker copy", "authorized next actions"), "onDemandDrilldown", List.of("simulation display refs", "scenario inputs", "redacted evidence summaries", "trace summaries"), "adminSupportAuditorOnly", List.of("capability ids", "policy-decision/admin-audit/workstream/agent-work refs", "denial/failure evidence"), "internalOnly", OMITTED_FIELDS),
         "noDirectMutation", true,
-        "redaction", "browser-safe simulation; provider secrets, hidden prompt text, raw tokens, and raw tool payloads omitted"));
+        "noFakeSuccess", true));
   }
 
   private SurfaceData decision(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
@@ -523,6 +596,18 @@ public final class GovernancePolicyService {
         "actor", actor.account().accountId()));
   }
 
+  private List<Map<String, Object>> simulationTransitions(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal) {
+    var visibleCapabilities = actor.selectedContext().capabilities();
+    var actions = new java.util.ArrayList<Map<String, Object>>();
+    actions.add(proposalAction("action-governance-policy-read", "Open proposal lifecycle evidence", READ_CAPABILITY, "list-policy-proposals", proposal == null ? "surface-governance-policy-inventory" : "surface-governance-policy-proposal", false));
+    if (visibleCapabilities.contains(SIMULATE_CAPABILITY) && proposal != null) actions.add(proposalAction("action-governance-policy-simulate", "Run or rerun advisory simulation", SIMULATE_CAPABILITY, "simulate-policy-change", "surface-governance-policy-simulation", true));
+    if (visibleCapabilities.contains(APPROVE_CAPABILITY) && proposal != null) actions.add(proposalAction("action-governance-policy-decide", "Open decision review", APPROVE_CAPABILITY, "approve-activate-or-rollback-policy", "surface-governance-policy-decision", true));
+    if (visibleCapabilities.contains("governance.policy.impact_analysis.start") && proposal != null) actions.add(proposalAction("action-governance-policy-start-impact-analysis", "Start impact analysis", "governance.policy.impact_analysis.start", "start-policy-impact-analysis", "surface-governance-policy-impact-analysis-task", true));
+    if (visibleCapabilities.contains("governance.policy.impact_analysis.read") && proposal != null) actions.add(proposalAction("action-governance-policy-read-impact-analysis", "Read impact analysis", "governance.policy.impact_analysis.read", "read-policy-impact-analysis", "surface-governance-policy-impact-analysis-task", false));
+    if (visibleCapabilities.contains(OUTCOMES_RECORD_CAPABILITY) && proposal != null) actions.add(proposalAction("action-governance-policy-outcome-note", "Open outcome note", OUTCOMES_RECORD_CAPABILITY, "record-policy-outcome-note", "surface-governance-policy-outcome", true));
+    return List.copyOf(actions);
+  }
+
   private Map<String, Object> proposalAction(String actionId, String label, String capabilityId, String governedToolId, String resultSurfaceId, boolean idempotencyRequired) {
     return mapOf("actionId", actionId, "label", label, "capabilityId", capabilityId, "governedToolId", governedToolId, "resultSurfaceId", resultSurfaceId, "idempotencyRequired", idempotencyRequired, "redaction", "browser-safe action metadata; raw idempotency/correlation values omitted");
   }
@@ -578,7 +663,7 @@ public final class GovernancePolicyService {
   }
 
   private ActionResult validation(String field, String message, String correlationId) {
-    return action("validation-error", message, new SurfaceData("surface-governance-policy-validation-error", "system_message", "Governance/Policy validation", List.of(trace("validation", correlationId)), mapOf("surfaceContract", "governance.policy.system_message.v1", "status", "validation-error", "field", field, "message", message, "severity", "warning", "system_message", true, "traceLinks", List.of(trace("validation", correlationId)), "redaction", "browser-safe validation only")), List.of(trace("validation", correlationId)));
+    return action("validation-error", message, new SurfaceData("surface-governance-policy-validation-error", "system_message", "Governance/Policy validation", List.of(trace("validation", correlationId)), mapOf("surfaceContract", "governance.policy.system_message.v1", "status", "validation-error", "field", field, "message", message, "severity", "warning", "system_message", true, "sideEffect", "none", "traceLinks", List.of(trace("validation", correlationId)), "redaction", "browser-safe validation only", "noDirectMutation", true, "noFakeSuccess", true)), List.of(trace("validation", correlationId)));
   }
 
   private ActionResult action(String status, String message, SurfaceData surface, List<String> traceIds) {
