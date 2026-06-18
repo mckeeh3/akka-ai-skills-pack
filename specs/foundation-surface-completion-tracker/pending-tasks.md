@@ -7140,7 +7140,7 @@
 
 ### TASK-FSCT-202: Verify or complete app-description specification for `surface-audit-trace-summary-review`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-audit-trace-summary-review`
@@ -7169,6 +7169,7 @@
   - purpose: Human review of redacted advisory summary.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-summary-review` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: added the `surface-audit-trace-summary-review` / `audit.trace.summaryReview.v1` decision-card app-description contract with owner/placement, browser-safe payload schema, selected AuthContext tenant/customer/support-access authorization, real model-backed advisory-only review boundary, accept/reject/read/follow-up action-to-capability mappings, redaction/omission and forbidden payload boundaries, backend-owned data source, audit/work trace/correlation expectations, UI/accessibility/style semantics, required tests, and sufficiency-review evidence. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests.
 
 ### TASK-FSCT-203: Verify or complete runtime implementation for `surface-audit-trace-summary-review`
 
