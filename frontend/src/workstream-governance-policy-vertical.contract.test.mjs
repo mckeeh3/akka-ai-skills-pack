@@ -9,6 +9,7 @@ const fixtures = read('./__tests__/fixtures/workstream/surfaces.ts');
 const me = read('./__tests__/fixtures/workstream/me.ts');
 const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 const diff = read('./workstream/surfaces/GovernanceDiffSurface.tsx');
+const decision = read('./workstream/surfaces/DecisionSurface.tsx');
 const listSearch = read('./workstream/surfaces/ListSearchSurface.tsx');
 const types = read('./workstream/types/surfaces.ts');
 const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
@@ -91,6 +92,40 @@ test('Governance/Policy proposal and simulation rendering is accessible and brow
   assert.match(diff, /Deterministic simulation evidence/);
   assert.match(diff, /Trace refs:/);
   assert.doesNotMatch(diff, /dangerouslySetInnerHTML|innerHTML\s*=/);
+});
+
+test('Governance/Policy decision-card renderer keeps command authority, disabled actions, traces, and browser safety backend-authored', () => {
+  for (const marker of [
+    'decisionSummary',
+    'riskAndImpact',
+    'decisionEvidence',
+    'commandForm',
+    'allowedActions',
+    'disabledActions',
+    'blocked_provider_or_runtime',
+    'action-governance-policy-decide',
+    'action-governance-policy-activate',
+    'action-governance-policy-rollback',
+    'noDirectMutation',
+    'noFakeSuccess',
+    'trace-govpol-decision',
+    'trace-govpol-impact-analysis-blocked'
+  ]) {
+    assert.match(fixtures, new RegExp(escapeRegExp(marker)));
+  }
+  for (const marker of [
+    'DecisionSurface',
+    'disabledById',
+    'Backend-authorized investigation actions',
+    'Disabled or deferred investigation actions',
+    'Role-gated action diagnostics',
+    'Investigation guidance trace links',
+    'SurfaceActionBar actions={guardedActions}',
+    'Advisory output cannot directly mutate prompts, skills, references, model refs, tool boundaries, activation, rollback, provider configuration, retained evidence, policy, authorization, or export delivery.'
+  ]) {
+    assert.match(decision, new RegExp(escapeRegExp(marker)));
+  }
+  assert.doesNotMatch(decision, /localStorage\.getItem\(['"](?:token|jwt|apiKey)|Authorization\s*=|dangerouslySetInnerHTML|innerHTML\s*=/);
 });
 
 test('Governance/Policy inventory renderer keeps row actions backend-scoped, trace-linked, and browser-safe', () => {

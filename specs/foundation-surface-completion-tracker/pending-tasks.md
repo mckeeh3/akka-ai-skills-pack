@@ -7738,7 +7738,7 @@
 
 ### TASK-FSCT-219: Verify or complete runtime testing for `surface-governance-policy-decision`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-218]
 - surface id: `surface-governance-policy-decision`
@@ -7772,6 +7772,7 @@
   - purpose: Policy decision/activation/rollback card.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-decision`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-decision`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: extended backend/API/browser smoke and frontend contract tests for `surface-governance-policy-decision`; runtime evidence covers Akka-hosted `/ui`, protected surface/action API paths, tenant admin success, member missing-capability denial, cross-tenant denial, required idempotency denial, no-op replay preserving approved state, provider/runtime fail-closed readiness, activation prerequisite blocking, activation with rollback metadata, rollback, trace/correlation evidence, and browser-safe/no-direct-mutation/no-fake-success boundaries. Checks passed: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicyDecisionRuntimePath test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-220: Verify or complete app-description specification for `surface-governance-policy-outcome`
 

@@ -989,9 +989,66 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(directDecision.toString().contains("decisionSummary"));
     assertTrue(directDecision.toString().contains("riskAndImpact"));
     assertTrue(directDecision.toString().contains("decisionEvidence"));
+    assertTrue(directDecision.toString().contains("blocked_provider_or_runtime"), "Decision evidence must keep advisory provider/runtime readiness fail-closed instead of fabricating impact analysis.");
     assertTrue(directDecision.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-decide") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-decision")));
     assertTrue(directDecision.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-activate") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-decision")));
     assertBrowserSafe(directDecision);
+
+    var missingIdempotency = runAction(new CapabilityActionRequest(
+        "action-governance-policy-decide",
+        "action-governance-policy-decide",
+        "governance.proposals.review",
+        "governance.policy.approve",
+        Map.of("proposalId", proposalId, "decision", "approve", "rationale", "missing idempotency should not mutate"),
+        null,
+        ADMIN_CONTEXT_ID,
+        directDecision.surfaceId(),
+        "corr-governance-decision-missing-idempotency"));
+    assertEquals("denied", missingIdempotency.status());
+    assertEquals("surface-governance-policy-system-message", missingIdempotency.resultSurface().surfaceId());
+    assertEquals(true, missingIdempotency.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, missingIdempotency.resultSurface().data().get("noFakeSuccess"));
+    assertTrue(missingIdempotency.resultSurface().toString().contains("idempotency"));
+    assertBrowserSafe(missingIdempotency.resultSurface());
+
+    var missingCapability = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-decide",
+        "action-governance-policy-decide",
+        "governance.proposals.review",
+        "governance.policy.approve",
+        Map.of("proposalId", proposalId, "decision", "approve", "rationale", "member context must be denied"),
+        "idem-governance-decision-member-denied",
+        MEMBER_CONTEXT_ID,
+        directDecision.surfaceId(),
+        "corr-governance-decision-member-denied"),
+        "workos-governance-member",
+        "governance-member@example.test",
+        "Governance Member",
+        MEMBER_CONTEXT_ID);
+    assertEquals("denied", missingCapability.status());
+    assertEquals("surface-governance-policy-system-message", missingCapability.resultSurface().surfaceId());
+    assertTrue(missingCapability.resultSurface().toString().contains("CAPABILITY_FORBIDDEN"));
+    assertEquals(true, missingCapability.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, missingCapability.resultSurface().data().get("noFakeSuccess"));
+    assertBrowserSafe(missingCapability.resultSurface());
+
+    var crossTenantDecision = runAction(new CapabilityActionRequest(
+        "action-governance-policy-decide",
+        "action-governance-policy-decide",
+        "governance.proposals.review",
+        "governance.policy.approve",
+        Map.of("tenantId", "tenant-other", "proposalId", proposalId, "decision", "approve", "rationale", "cross tenant decision must be denied"),
+        "idem-governance-decision-cross-tenant",
+        ADMIN_CONTEXT_ID,
+        directDecision.surfaceId(),
+        "corr-governance-decision-cross-tenant"));
+    assertEquals("denied", crossTenantDecision.status());
+    assertEquals("surface-governance-policy-system-message", crossTenantDecision.resultSurface().surfaceId());
+    assertTrue(crossTenantDecision.resultSurface().toString().contains("GOVERNANCE_POLICY_TENANT_FORBIDDEN"));
+    assertTrue(crossTenantDecision.resultSurface().toString().contains("protected data omitted"));
+    assertEquals(true, crossTenantDecision.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, crossTenantDecision.resultSurface().data().get("noFakeSuccess"));
+    assertBrowserSafe(crossTenantDecision.resultSurface());
 
     var decision = runAction(new CapabilityActionRequest(
         "action-governance-policy-decide",
@@ -1009,6 +1066,20 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(decision.resultSurface().toString().contains("disabledActions"));
     assertTrue(decision.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-decision")));
     assertBrowserSafe(decision.resultSurface());
+
+    var decisionReplay = runAction(new CapabilityActionRequest(
+        "action-governance-policy-decide",
+        "action-governance-policy-decide",
+        "governance.proposals.review",
+        "governance.policy.approve",
+        Map.of("proposalId", proposalId, "decision", "reject", "rationale", "replay must not alter approved state"),
+        "idem-governance-decision-approve",
+        ADMIN_CONTEXT_ID,
+        directDecision.surfaceId(),
+        "corr-governance-decision-approve-replay"));
+    assertEquals("no-op", decisionReplay.status());
+    assertEquals("approved", decisionReplay.resultSurface().data().get("status"), "Decision replay must preserve the already-approved state instead of committing a second lifecycle transition.");
+    assertBrowserSafe(decisionReplay.resultSurface());
 
     var activationBlocked = runAction(new CapabilityActionRequest(
         "action-governance-policy-activate",
