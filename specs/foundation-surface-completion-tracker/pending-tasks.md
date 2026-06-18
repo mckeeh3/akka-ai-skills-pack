@@ -7491,7 +7491,7 @@
 
 ### TASK-FSCT-212: Verify or complete runtime implementation for `surface-governance-policy-proposal`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-211]
 - surface id: `surface-governance-policy-proposal`
@@ -7522,6 +7522,7 @@
   - purpose: Policy proposal lifecycle/diff surface.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-proposal`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-proposal`; surface graph node/action edge for opening or acting on `surface-governance-policy-proposal`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented and verified the real runtime path for `surface-governance-policy-proposal`: protected `/api/workstream/surfaces/surface-governance-policy-proposal` returns a backend-owned empty/new-draft or scoped proposal projection without read-time mutation; `/api/workstream/actions` draft and submit routes persist inert proposals idempotently through `GovernancePolicyService`; `GovernanceDiffSurface` renders proposal summary, change set, draft fields, lifecycle gate, authorized transitions, fail-closed provider/runtime readiness, trace refs, and browser-safe action input. Runtime evidence: readiness level `api-smoked`; tenant admin selected AuthContext in `tenant-governance-smoke`; no direct mutation/no fake success; trace/admin-audit/work refs; provider/runtime impact-analysis fail-closed; member/cross-tenant denials retained by Governance/Policy paths. Checks passed: `mvn -q compile`; `mvn -q -Dtest=GovernancePolicyServiceTest#proposalDraftSubmitReadLifecycleIsIdempotentAndDoesNotMutateAuthority,GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyDashboardRuntimePath -DtrimStackTrace=false test` (after initial compile-required retry); `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`; `npm --prefix frontend run typecheck`; focused `rg` evidence; `git diff --check`.
 
 ### TASK-FSCT-213: Verify or complete runtime testing for `surface-governance-policy-proposal`
 

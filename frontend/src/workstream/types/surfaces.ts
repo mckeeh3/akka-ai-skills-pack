@@ -495,17 +495,25 @@ export type WorkflowStatusSurfaceData = {
 };
 
 export type GovernanceDiffSurfaceData = {
-  proposalId: string;
-  lifecycleState?: 'draft' | 'in_review' | 'approved' | 'rejected' | 'activated' | 'rolled_back' | 'blocked';
+  proposalId?: string;
+  lifecycleState?: 'empty/new-draft' | 'draft' | 'submitted' | 'in_review' | 'changes_requested' | 'approved' | 'rejected' | 'activated' | 'rolled_back' | 'blocked' | string;
   source?: string;
-  riskClassification?: 'low' | 'medium' | 'high' | 'critical';
+  riskClassification?: 'low' | 'medium' | 'high' | 'critical' | string;
   requiredApproval?: string;
   simulationSummary?: string;
   activationStatus?: string;
   traceLinks?: string[];
+  traceRefs?: string[];
+  proposalSummary?: { proposalRef?: string; title?: string; purpose?: string; lifecycleState?: string; sourceSummary?: string; ownerReviewerDisplaySummary?: string; riskClassification?: string; affectedCapabilitySummary?: string[]; freshnessStatus?: string; safeEmptyNewDraftCopy?: string };
+  changeSet?: { beforeSummary?: string; afterSummary?: string; changedPolicyAreas?: string[]; capabilityEffects?: string[]; diffRows?: Array<{ path: string; before?: string; after?: string; impact: string; riskLabel?: string; redaction?: string }>; validationMessages?: string[]; rowRedactionMarkers?: string[] };
+  draftFields?: { editable?: boolean; draftIntent?: string; rationale?: string; sourceArtifactReference?: string; requestedEffectiveScopeSummary?: string; riskJustification?: string; reviewerNote?: string; validationErrors?: string[] };
+  lifecycleGate?: { requiredApprovals?: string[]; simulationEvidenceStatus?: string; impactAnalysisStatus?: string; activationRollbackGateSummary?: string; disabledTransitionReasons?: string[]; blockedProviderOrRuntimeStatus?: string };
+  availableTransitions?: Array<{ actionId: string; label?: string; capabilityId?: string; governedToolId?: string; resultSurfaceId?: string; idempotencyRequired?: boolean; redaction?: string }>;
+  authorizedActions?: Array<{ actionId: string; label?: string; capabilityId?: string; governedToolId?: string; resultSurfaceId?: string; idempotencyRequired?: boolean; redaction?: string }>;
+  readiness?: Record<string, unknown>;
   beforeSummary: string;
   afterSummary: string;
-  changes: Array<{ path: string; before?: string; after?: string; impact: string }>;
+  changes: Array<{ path: string; before?: string; after?: string; impact: string; riskLabel?: string; redaction?: string }>;
   simulation?: {
     affectedCapabilities: string[];
     expectedAllows: string[];

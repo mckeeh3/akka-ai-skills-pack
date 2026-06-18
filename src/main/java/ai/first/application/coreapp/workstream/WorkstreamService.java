@@ -1150,10 +1150,10 @@ public final class WorkstreamService {
       result = governancePolicyReadResult(actor, "Governance/Policy policy detail loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyDetailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-governance-policy-draft-proposal".equals(request.actionId())) {
       var draft = governancePolicyService.draftProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
-      result = new CapabilityActionResult(draft.status(), draft.message(), request.correlationId(), draft.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), draft.surface(), List.of(governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), openAuditAction())));
+      result = new CapabilityActionResult(draft.status(), draft.message(), request.correlationId(), draft.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), draft.surface(), governanceProposalActions(actor)));
     } else if ("action-governance-policy-submit-proposal".equals(request.actionId())) {
       var submit = governancePolicyService.submitProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
-      result = new CapabilityActionResult(submit.status(), submit.message(), request.correlationId(), submit.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), submit.surface(), List.of(governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), openAuditAction())));
+      result = new CapabilityActionResult(submit.status(), submit.message(), request.correlationId(), submit.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), submit.surface(), governanceProposalActions(actor)));
     } else if ("action-governance-policy-simulate".equals(request.actionId()) || "action-simulate-policy".equals(request.actionId())) {
       var simulation = governancePolicyService.simulateProposal(actor, request.input(), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult(simulation.status(), simulation.message(), request.correlationId(), simulation.traceIds(), governancePolicyEnvelope(actor, request.correlationId(), simulation.surface(), List.of(governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), openAuditAction())));
@@ -3878,9 +3878,23 @@ public final class WorkstreamService {
     return governancePolicyEnvelope(actor, correlationId, governancePolicyService.detail(actor, input, correlationId), List.of(governanceListPoliciesAction(), governanceDraftProposalAction(), governanceSimulateProposalAction(), openAuditAction()));
   }
 
+  private List<SurfaceAction> governanceProposalActions(AuthContextResolver.ResolvedMe actor) {
+    var actions = new java.util.ArrayList<SurfaceAction>();
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_PROPOSE_CAPABILITY)) {
+      actions.add(governanceDraftProposalAction());
+      actions.add(governanceSubmitProposalAction());
+    }
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_SIMULATE_CAPABILITY)) actions.add(governanceSimulateProposalAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_APPROVE_CAPABILITY)) actions.add(governanceDecideProposalAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_START_CAPABILITY)) actions.add(governanceStartImpactAnalysisAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY)) actions.add(governanceReadImpactAnalysisAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_OUTCOMES_RECORD_CAPABILITY)) actions.add(governanceOutcomeNoteAction());
+    if (actor.selectedContext().capabilities().contains(AUDIT_TRACE_READ_CAPABILITY)) actions.add(openAuditAction());
+    return List.copyOf(actions);
+  }
+
   private SurfaceEnvelope governancePolicyProposalSurface(AuthContextResolver.ResolvedMe actor, String correlationId, String state, String summary) {
-    var draft = governancePolicyService.draftProposal(actor, mapOf("rationale", summary, "title", "Governance policy proposal"), "surface-fallback-" + stableSuffix(correlationId + state), correlationId);
-    return governancePolicyEnvelope(actor, correlationId, draft.surface(), List.of(governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), openAuditAction()));
+    return governancePolicyEnvelope(actor, correlationId, governancePolicyService.readProposal(actor, mapOf("rationale", summary, "title", "Governance policy proposal"), correlationId), governanceProposalActions(actor));
   }
 
   private SurfaceEnvelope governancePolicySimulationSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {

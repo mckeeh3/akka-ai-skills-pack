@@ -304,6 +304,20 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(inventory.resultSurface().toString().contains("ToolPermissionBoundary"));
     assertBrowserSafe(inventory.resultSurface());
 
+    var proposalPreview = getSurface("surface-governance-policy-proposal", "corr-governance-dashboard-proposal-preview");
+    assertEquals("surface-governance-policy-proposal", proposalPreview.surfaceId());
+    assertEquals("governance-diff", proposalPreview.surfaceType());
+    assertEquals("governance.policy.proposal.v1", proposalPreview.data().get("surfaceContract"));
+    assertEquals("empty/new-draft", proposalPreview.data().get("state"));
+    assertEquals(true, proposalPreview.data().get("noDirectMutation"));
+    assertEquals(true, proposalPreview.data().get("noFakeSuccess"));
+    assertTrue(proposalPreview.toString().contains("proposalSummary"));
+    assertTrue(proposalPreview.toString().contains("draftFields"));
+    assertTrue(proposalPreview.toString().contains("lifecycleGate"));
+    assertTrue(proposalPreview.toString().contains("availableTransitions"));
+    assertTrue(proposalPreview.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-draft-proposal") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-proposal")));
+    assertBrowserSafe(proposalPreview);
+
     var draft = runAction(new CapabilityActionRequest(
         "action-governance-policy-draft-proposal",
         "action-governance-policy-draft-proposal",
@@ -318,6 +332,11 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-governance-policy-proposal", draft.resultSurface().surfaceId());
     assertEquals("governance.policy.proposal.v1", draft.resultSurface().data().get("surfaceContract"));
     assertEquals(true, draft.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, draft.resultSurface().data().get("noFakeSuccess"));
+    assertTrue(draft.resultSurface().toString().contains("proposalSummary"));
+    assertTrue(draft.resultSurface().toString().contains("changeSet"));
+    assertTrue(draft.resultSurface().toString().contains("availableTransitions"));
+    assertTrue(draft.resultSurface().toString().contains("blocked_provider_or_runtime"));
     assertBrowserSafe(draft.resultSurface());
 
     var duplicateDraft = runAction(new CapabilityActionRequest(
@@ -335,6 +354,23 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertBrowserSafe(duplicateDraft.resultSurface());
 
     var proposalId = String.valueOf(draft.resultSurface().data().get("proposalId"));
+    var submitted = runAction(new CapabilityActionRequest(
+        "action-governance-policy-submit-proposal",
+        "action-governance-policy-submit-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("proposalId", proposalId),
+        "idem-governance-dashboard-submit",
+        ADMIN_CONTEXT_ID,
+        draft.resultSurface().surfaceId(),
+        "corr-governance-dashboard-submit"));
+    assertEquals("accepted", submitted.status());
+    assertEquals("surface-governance-policy-proposal", submitted.resultSurface().surfaceId());
+    assertEquals("in_review", submitted.resultSurface().data().get("state"));
+    assertTrue(submitted.resultSurface().toString().contains("policy-decision"));
+    assertTrue(submitted.resultSurface().toString().contains("admin-audit"));
+    assertBrowserSafe(submitted.resultSurface());
+
     var impact = runAction(new CapabilityActionRequest(
         "action-governance-policy-start-impact-analysis",
         "action-governance-policy-start-impact-analysis",

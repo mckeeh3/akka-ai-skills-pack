@@ -76,12 +76,20 @@ test('Governance/Policy UI states preserve backend authority, denials, approval 
 
 test('Governance/Policy proposal and simulation rendering is accessible and browser-safe', () => {
   assert.match(types, /riskClassification\?:/);
+  assert.match(types, /proposalSummary\?:/);
+  assert.match(types, /draftFields\?:/);
+  assert.match(types, /lifecycleGate\?:/);
+  assert.match(types, /availableTransitions\?:/);
   assert.match(types, /simulation\?:/);
   assert.match(types, /taskKind\?: 'workflow' \| 'autonomous-agent-analysis'/);
   assert.match(diff, /aria-label="Policy proposal summary"/);
   assert.match(diff, /Policy proposal governance metadata/);
+  assert.match(diff, /Backend-authored proposal draft fields/);
+  assert.match(diff, /Proposal lifecycle gate and provider readiness/);
+  assert.match(diff, /Backend-authorized proposal transitions/);
+  assert.match(diff, /actionInput=\{envelope\.data\.proposalId/);
   assert.match(diff, /Deterministic simulation evidence/);
-  assert.match(diff, /Trace links:/);
+  assert.match(diff, /Trace refs:/);
   assert.doesNotMatch(diff, /dangerouslySetInnerHTML|innerHTML\s*=/);
 });
 

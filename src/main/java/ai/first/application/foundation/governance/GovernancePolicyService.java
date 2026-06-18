@@ -234,7 +234,10 @@ public final class GovernancePolicyService {
     validateScope(actor, input, correlationId);
     requireRead(actor, PROPOSAL_READ_CAPABILITY, correlationId);
     var proposal = findScopedProposal(actor, input);
-    return proposal == null ? validation("proposalId", "No authorized proposal found for selected AuthContext.", correlationId).surface() : proposal(actor, proposal, correlationId);
+    if (proposal != null) return proposal(actor, proposal, correlationId);
+    if (stringInput(input, "proposalId", null) != null) return validation("proposalId", "No authorized proposal found for selected AuthContext.", correlationId).surface();
+    if (actor.selectedContext().capabilities().contains(LEGACY_PROPOSE_CAPABILITY)) return newDraftProposalSurface(actor, input, correlationId);
+    return systemMessage("surface-governance-policy-system-message", "not_found_or_redacted", "No authorized proposal is visible in the selected AuthContext, and draft authority is not available.", READ_CAPABILITY, correlationId);
   }
 
   public ActionResult simulateProposal(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
@@ -334,32 +337,93 @@ public final class GovernancePolicyService {
     return action("accepted", "Governance/Policy outcome note recorded with retained human authority and no direct authority change.", outcome(actor, noted, correlationId), List.of(trace("outcome-note", correlationId)));
   }
 
+  private SurfaceData newDraftProposalSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var proposedContent = stringInput(input, "proposedContent", "Draft Governance/Policy policy clarification. Preserve backend authorization, human approval, idempotency, tenant isolation, and trace requirements.");
+    var rationale = stringInput(input, "rationale", "Governance/Policy workstream draft proposal");
+    var draftPreview = new GovernancePolicyProposal(
+        "new-draft-preview-" + stableSuffix(actor.selectedContext().tenantId() + ":" + actor.account().accountId() + ":" + correlationId),
+        actor.selectedContext().tenantId(), actor.selectedContext().customerId(), actor.account().accountId(), GovernancePolicyProposal.Status.DRAFT,
+        stringInput(input, "policyId", "policy-human-approval"),
+        stringInput(input, "title", "Governance policy proposal"),
+        safe(rationale),
+        safe(proposedContent),
+        classifyRisk(proposedContent),
+        List.of(READ_CAPABILITY, SIMULATE_CAPABILITY, APPROVE_CAPABILITY, ACTIVATE_CAPABILITY),
+        List.of("governance-policy-workstream", "ToolPermissionBoundary", "AgentDefinition"),
+        APPROVE_CAPABILITY,
+        "rollback metadata required before activation; no direct mutation in preview, draft, or submit",
+        null,
+        correlationId,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        List.of(),
+        Instant.now(clock),
+        Instant.now(clock));
+    var surface = proposal(actor, draftPreview, correlationId);
+    var data = new LinkedHashMap<>(surface.data());
+    data.put("state", "empty/new-draft");
+    data.put("lifecycleState", "empty/new-draft");
+    data.put("proposalId", null);
+    data.put("proposalSummary", mapOf("proposalRef", "new draft", "title", draftPreview.title(), "purpose", draftPreview.rationale(), "lifecycleState", "empty/new-draft", "sourceSummary", "backend-authored draft defaults; save action required before persistence", "ownerReviewerDisplaySummary", "Tenant governance actor", "riskClassification", draftPreview.riskClassification(), "affectedCapabilitySummary", draftPreview.affectedCapabilityIds(), "freshnessStatus", "new-draft", "safeEmptyNewDraftCopy", "Complete draft fields and use the governed draft action with an idempotency key to persist an inert proposal."));
+    return new SurfaceData(surface.surfaceId(), surface.surfaceType(), surface.title(), surface.traceIds(), data);
+  }
+
   private SurfaceData proposal(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
+    var lifecycleState = proposal.status().name().toLowerCase();
+    var visibleCapabilities = actor.selectedContext().capabilities();
+    var availableTransitions = new java.util.ArrayList<Map<String, Object>>();
+    if (visibleCapabilities.contains(LEGACY_PROPOSE_CAPABILITY) && (proposal.status() == GovernancePolicyProposal.Status.DRAFT || proposal.status() == GovernancePolicyProposal.Status.CHANGES_REQUESTED)) availableTransitions.add(proposalAction("action-governance-policy-draft-proposal", "Save inert draft", LEGACY_PROPOSE_CAPABILITY, "draft-policy-proposal", "surface-governance-policy-proposal", true));
+    if (visibleCapabilities.contains(LEGACY_PROPOSE_CAPABILITY) && proposal.status() == GovernancePolicyProposal.Status.DRAFT) availableTransitions.add(proposalAction("action-governance-policy-submit-proposal", "Submit draft for review", LEGACY_PROPOSE_CAPABILITY, "draft-policy-proposal", "surface-governance-policy-proposal", true));
+    if (visibleCapabilities.contains(SIMULATE_CAPABILITY)) availableTransitions.add(proposalAction("action-governance-policy-simulate", "Open/start simulation", SIMULATE_CAPABILITY, "simulate-policy-change", "surface-governance-policy-simulation", false));
+    if (visibleCapabilities.contains(APPROVE_CAPABILITY) && proposal.status() == GovernancePolicyProposal.Status.IN_REVIEW) availableTransitions.add(proposalAction("action-governance-policy-decide", "Open decision review", APPROVE_CAPABILITY, "approve-activate-or-rollback-policy", "surface-governance-policy-decision", true));
+    if (visibleCapabilities.contains("governance.policy.impact_analysis.start")) availableTransitions.add(proposalAction("action-governance-policy-start-impact-analysis", "Start/read impact analysis", "governance.policy.impact_analysis.start", "start-policy-impact-analysis", "surface-governance-policy-impact-analysis-task", true));
+    if (visibleCapabilities.contains("governance.policy.impact_analysis.read")) availableTransitions.add(proposalAction("action-governance-policy-read-impact-analysis", "Read impact analysis", "governance.policy.impact_analysis.read", "read-policy-impact-analysis", "surface-governance-policy-impact-analysis-task", false));
+    if (visibleCapabilities.contains(OUTCOMES_RECORD_CAPABILITY)) availableTransitions.add(proposalAction("action-governance-policy-outcome-note", "Open outcome note", OUTCOMES_RECORD_CAPABILITY, "record-policy-outcome-note", "surface-governance-policy-outcome", true));
+    var changeRows = List.of(mapOf("path", proposal.targetPolicyId(), "before", "active policy unchanged", "after", proposal.proposedContent(), "impact", "No authority changes before approval.", "riskLabel", proposal.riskClassification(), "redaction", "raw policy clauses and hidden role rules omitted"));
     return surface("surface-governance-policy-proposal", "governance-diff", "Policy proposal", correlationId, mapOf(
         "surfaceContract", "governance.policy.proposal.v1",
         "canonicalSurfaceId", "surface.governance.proposal_queue.v1",
         "proposalId", proposal.proposalId(),
         "tenantId", proposal.tenantId(),
         "customerId", proposal.customerId(),
-        "state", proposal.status().name().toLowerCase(),
-        "proposal lifecycle", proposal.status().name().toLowerCase(),
+        "state", lifecycleState,
+        "lifecycleState", lifecycleState,
+        "proposal lifecycle", lifecycleState,
         "summary", proposal.rationale(),
         "source", "GovernancePolicyService deterministic proposal lifecycle",
         "risk", proposal.riskClassification(),
+        "riskClassification", proposal.riskClassification(),
         "requiredApproval", proposal.requiredApprovalCapabilityId(),
         "capabilityId", REVIEW_CAPABILITY,
         "capabilityClass", "approval/governance",
         "affectedCapabilityIds", proposal.affectedCapabilityIds(),
         "affectedArtifacts", proposal.affectedArtifactRefs(),
+        "proposalSummary", mapOf("proposalRef", proposal.proposalId(), "title", proposal.title(), "purpose", proposal.rationale(), "lifecycleState", lifecycleState, "sourceSummary", "GovernancePolicyService deterministic proposal lifecycle", "ownerReviewerDisplaySummary", "Tenant governance actor / backend-selected reviewer", "riskClassification", proposal.riskClassification(), "affectedCapabilitySummary", proposal.affectedCapabilityIds(), "freshnessStatus", "ready", "safeEmptyNewDraftCopy", "Use a governed draft action with an idempotency key for new proposals."),
+        "changeSet", mapOf("beforeSummary", "Active policy remains unchanged.", "afterSummary", "Proposed governance change stays inert until simulation, human approval, activation, and rollback metadata checks.", "changedPolicyAreas", List.of(proposal.targetPolicyId()), "capabilityEffects", proposal.affectedCapabilityIds(), "diffRows", changeRows, "validationMessages", List.of(), "rowRedactionMarkers", List.of("privileged policy clauses omitted", "hidden authority state omitted")),
+        "draftFields", mapOf("editable", visibleCapabilities.contains(LEGACY_PROPOSE_CAPABILITY) && (proposal.status() == GovernancePolicyProposal.Status.DRAFT || proposal.status() == GovernancePolicyProposal.Status.CHANGES_REQUESTED), "draftIntent", proposal.title(), "rationale", proposal.rationale(), "sourceArtifactReference", proposal.targetPolicyId(), "requestedEffectiveScopeSummary", "selected AuthContext only; browser tenant/customer hints cannot expand scope", "riskJustification", proposal.riskClassification(), "reviewerNote", proposal.decisionRationale(), "validationErrors", List.of()),
+        "lifecycleGate", mapOf("requiredApprovals", List.of(proposal.requiredApprovalCapabilityId()), "simulationEvidenceStatus", "advisory evidence required before activation", "impactAnalysisStatus", "blocked_provider_or_runtime_until_provider_configured", "activationRollbackGateSummary", proposal.rollbackReference() == null ? "rollback metadata required before activation" : proposal.rollbackReference(), "disabledTransitionReasons", List.of("approval, activation, rollback, and evidence disposition stay on dedicated backend-governed surfaces"), "blockedProviderOrRuntimeStatus", "blocked_provider_or_runtime"),
+        "availableTransitions", List.copyOf(availableTransitions),
+        "decisionMetadata", mapOf("recommendation", proposal.decision(), "decisionState", lifecycleState, "reviewerDisplayLabel", "backend-selected governance reviewer", "decisionSummary", proposal.decisionRationale(), "outcomeNoteSummaries", proposal.outcomeNotes(), "activationRollbackPrerequisites", "simulation evidence, human approval, backend authority, idempotency, and rollback metadata"),
+        "authorizedActions", List.copyOf(availableTransitions),
         "beforeSummary", "Active policy remains unchanged.",
         "afterSummary", "Proposed governance change stays inert until simulation, human approval, activation, and rollback metadata checks.",
-        "changes", List.of(mapOf("path", proposal.targetPolicyId(), "before", "active policy unchanged", "after", proposal.proposedContent(), "impact", "No authority changes before approval.")),
-        "idempotency", mapOf("draftIdempotencyKey", proposal.idempotencyKey(), "submitIsNoOpWhenAlreadyInReview", true, "decisionActivationRollbackNoOp", true),
+        "changes", changeRows,
+        "idempotency", mapOf("draftIdempotencyKey", proposal.idempotencyKey() == null ? "client-generated-required-on-save" : "role-gated", "submitIsNoOpWhenAlreadyInReview", true, "decisionActivationRollbackNoOp", true, "rawIdempotencyKey", "omitted"),
         "decision", mapOf("decision", proposal.decision(), "rationale", proposal.decisionRationale(), "decisionTraceId", proposal.decisionCorrelationId(), "activationTraceId", proposal.activationCorrelationId(), "rollbackReference", proposal.rollbackReference(), "rollbackTraceId", proposal.rollbackCorrelationId()),
         "outcomeNotes", proposal.outcomeNotes(),
         "traceLinks", List.of(trace("proposal", correlationId)),
-        "redaction", mapOf("omittedFieldKeys", OMITTED_FIELDS, "browserSafe", true),
-        "noDirectMutation", true));
+        "traceRefs", List.of(trace("proposal", correlationId), trace("workstream-log", correlationId), trace("admin-audit", correlationId), trace("policy-decision", correlationId)),
+        "readiness", mapOf("simulation", "ready_for_deterministic_advisory_evidence", "impactAnalysis", "blocked_provider_or_runtime", "providerRuntime", "blocked_provider_or_runtime", "noFakeSuccess", true),
+        "systemStates", List.of("loading", "empty/new-draft", "ready", "editing-draft", "submitting", "validation-error", "forbidden/system-message", "conflict/stale", "partial-data", "blocked-provider-or-runtime", "read-only", "success/submitted", "failure"),
+        "redaction", mapOf("omittedFieldKeys", OMITTED_FIELDS, "browserSafe", true, "hiddenCrossTenantEvidence", true, "privilegedPolicyClauses", "omitted", "hiddenAuthorityState", "omitted", "rawProviderModelData", "omitted", "rawToolPayloads", "omitted", "correlationIds", "role-gated", "idempotencyKeys", "role-gated"),
+        "visibilitySplit", mapOf("defaultUserVisible", List.of("proposal title", "lifecycle/status label", "safe source/risk summaries", "before/after summary", "validation and blocker copy", "authorized next actions"), "onDemandDrilldown", List.of("proposal display ids", "detailed diff rows", "lifecycle history", "redacted source artifact details", "trace summaries"), "adminSupportAuditorOnly", List.of("capability ids", "policy-decision/admin-audit/workstream/agent-work refs", "denial/failure evidence"), "internalOnly", OMITTED_FIELDS),
+        "noDirectMutation", true,
+        "noFakeSuccess", true));
   }
 
   private SurfaceData simulation(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, GovernancePolicySimulationResult simulation, String correlationId) {
@@ -457,6 +521,10 @@ public final class GovernancePolicyService {
         "redaction", "browser-safe outcome note; secrets, hidden authority, raw prompts, and cross-tenant evidence omitted",
         "capabilityId", OUTCOMES_RECORD_CAPABILITY,
         "actor", actor.account().accountId()));
+  }
+
+  private Map<String, Object> proposalAction(String actionId, String label, String capabilityId, String governedToolId, String resultSurfaceId, boolean idempotencyRequired) {
+    return mapOf("actionId", actionId, "label", label, "capabilityId", capabilityId, "governedToolId", governedToolId, "resultSurfaceId", resultSurfaceId, "idempotencyRequired", idempotencyRequired, "redaction", "browser-safe action metadata; raw idempotency/correlation values omitted");
   }
 
   private SurfaceData activationBlocked(String correlationId, String reason) {
