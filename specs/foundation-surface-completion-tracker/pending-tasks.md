@@ -6678,7 +6678,7 @@
 
 ### TASK-FSCT-189: Verify or complete runtime testing for `surface-audit-trace-failure-evidence`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-188]
 - surface id: `surface-audit-trace-failure-evidence`
@@ -6712,6 +6712,7 @@
   - purpose: Denial/provider/tool/model/runtime failure evidence.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-failure-evidence`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-failure-evidence`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added dedicated protected Akka-hosted Audit/Trace failure-evidence runtime smoke coverage in `AuditTraceBrowserWorkstreamSmokeTest`, covering missing bearer rejection, authorized direct surface and governed action retrieval for `audit.trace.failureEvidence.v1`, selected auditor AuthContext, validation-error handling, follow-up detail/timeline/guidance/export/note/search/dashboard actions, policy-gated export, immutable note annotation, customer-scoped visibility, member/disabled/cross-tenant denials, provider/runtime/tool fail-closed recovery copy, trace/correlation refs, and browser-safe secret boundaries. Runtime readiness level: `runtime-ready`; checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceFailureEvidenceCoversDirectRefreshFollowUpDenialsFailClosedAndSecretBoundaries test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-190: Verify or complete app-description specification for `surface-audit-trace-investigation-guide`
 

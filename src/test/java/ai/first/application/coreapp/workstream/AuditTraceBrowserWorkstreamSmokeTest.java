@@ -891,6 +891,237 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  void protectedAuditTraceFailureEvidenceCoversDirectRefreshFollowUpDenialsFailClosedAndSecretBoundaries() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-audit-trace-failure-evidence")
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Audit/Trace failure evidence must reject missing bearer tokens.");
+
+    var direct = getSurface("surface-audit-trace-failure-evidence", "corr-audit-failure-direct");
+    assertEquals("surface-audit-trace-failure-evidence", direct.surfaceId());
+    assertEquals("detail-edit", direct.surfaceType());
+    assertEquals("audit.trace.failureEvidence.v1", direct.data().get("surfaceContract"));
+    assertEquals("corr-audit-failure-direct", direct.correlationId());
+    assertTrue(direct.traceIds().stream().anyMatch(trace -> trace.contains("trace-audit-failure")));
+    assertTrue(direct.data().containsKey("selectedScope"));
+    assertTrue(direct.data().containsKey("authorizationBasis"));
+    assertTrue(direct.data().containsKey("failureClassification"));
+    assertTrue(direct.data().containsKey("evidence"));
+    assertTrue(String.valueOf(direct.data().get("recovery")).contains("fail closed"));
+    assertTrue(String.valueOf(direct.data().get("redaction")).contains("non-enumerating"));
+    assertTrue(String.valueOf(direct.data().get("redactedDetails")).contains("[REDACTED]"));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-detail") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-detail")));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-timeline") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-timeline")));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-investigation-guide") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-investigation-guide")));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-request-redacted-export") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-export-request")));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-append-investigation-note") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-investigation-note")));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-search") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-search")));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-dashboard") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-dashboard")));
+    assertBrowserSafe(direct);
+
+    var seedSearch = runAction(new CapabilityActionRequest(
+        "action-audit-trace-search",
+        "action-audit-trace-search",
+        "audit.trace.search",
+        "audit.trace.search",
+        Map.of("filter", "AUTH_CONTEXT_RESOLVE", "pageSize", 2),
+        null,
+        AUDITOR_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-audit-failure-provider"));
+    assertEquals("accepted", seedSearch.status());
+    assertEquals("surface-audit-trace-search", seedSearch.resultSurface().surfaceId());
+    assertBrowserSafe(seedSearch.resultSurface());
+
+    var failure = runAction(new CapabilityActionRequest(
+        "action-audit-trace-failure-evidence",
+        "action-audit-trace-failure-evidence",
+        "audit.trace.failureEvidence.read",
+        "audit.trace.failureEvidence.read",
+        Map.of("failureCategory", "AUTH_CONTEXT_RESOLVE"),
+        null,
+        AUDITOR_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-audit-failure-provider"));
+    assertEquals("accepted", failure.status());
+    assertEquals("surface-audit-trace-failure-evidence", failure.resultSurface().surfaceId());
+    assertEquals("audit.trace.failureEvidence.v1", failure.resultSurface().data().get("surfaceContract"));
+    assertEquals("AUTH_CONTEXT_RESOLVE", failure.resultSurface().data().get("category"));
+    assertEquals("corr-audit-failure-provider", failure.resultSurface().data().get("correlationId"));
+    assertTrue(failure.traceIds().stream().anyMatch(trace -> trace.contains("trace-audit-failure")));
+    assertTrue(String.valueOf(failure.resultSurface().data().get("evidence")).contains("fail-closed when provider/runtime/tool-boundary configuration is unavailable"));
+    assertTrue(String.valueOf(failure.resultSurface().data().get("evidence")).contains("no source records are mutated"));
+    assertTrue(String.valueOf(failure.resultSurface().data().get("policyRefs")).contains("audit.trace.failureEvidence.read"));
+    assertBrowserSafe(failure.resultSurface());
+
+    var relatedEvents = (List<Map<String, Object>>) failure.resultSurface().data().get("relatedEvents");
+    assertFalse(relatedEvents.isEmpty(), "Failure evidence should expose redacted related events for the selected authorized failure category.");
+    var relatedTraceId = String.valueOf(relatedEvents.get(0).get("traceId"));
+
+    var invalidFailure = runAction(new CapabilityActionRequest(
+        "action-audit-trace-failure-evidence",
+        "action-audit-trace-failure-evidence",
+        "audit.trace.failureEvidence.read",
+        "audit.trace.failureEvidence.read",
+        Map.of("failureCategory", "x".repeat(121)),
+        null,
+        AUDITOR_CONTEXT_ID,
+        failure.resultSurface().surfaceId(),
+        "corr-audit-failure-invalid"));
+    assertEquals("validation-error", invalidFailure.status());
+    assertEquals("surface-audit-trace-validation-error", invalidFailure.resultSurface().surfaceId());
+    assertEquals("failureCategory", invalidFailure.resultSurface().data().get("field"));
+    assertTrue(invalidFailure.traceIds().stream().anyMatch(trace -> trace.contains("trace-audit-validation")));
+    assertBrowserSafe(invalidFailure.resultSurface());
+
+    var detail = runAction(new CapabilityActionRequest(
+        "action-audit-trace-detail",
+        "action-audit-trace-detail",
+        "audit.trace.detail.read",
+        "audit.trace.detail.read",
+        Map.of("traceId", relatedTraceId),
+        null,
+        AUDITOR_CONTEXT_ID,
+        failure.resultSurface().surfaceId(),
+        "corr-audit-failure-detail"));
+    assertEquals("accepted", detail.status());
+    assertEquals("surface-audit-trace-detail", detail.resultSurface().surfaceId());
+    assertEquals(relatedTraceId, detail.resultSurface().data().get("traceId"));
+    assertBrowserSafe(detail.resultSurface());
+
+    var timeline = runAction(new CapabilityActionRequest(
+        "action-audit-trace-timeline",
+        "action-audit-trace-timeline",
+        "audit.trace.timeline.read",
+        "audit.trace.timeline.read",
+        Map.of("correlationId", "corr-audit-failure-provider"),
+        null,
+        AUDITOR_CONTEXT_ID,
+        failure.resultSurface().surfaceId(),
+        "corr-audit-failure-timeline"));
+    assertEquals("accepted", timeline.status());
+    assertEquals("surface-audit-trace-timeline", timeline.resultSurface().surfaceId());
+    assertEquals("audit.trace.timeline.v1", timeline.resultSurface().data().get("surfaceContract"));
+    assertTrue(timeline.resultSurface().toString().contains("Unauthorized tenant/customer evidence is omitted"));
+    assertBrowserSafe(timeline.resultSurface());
+
+    var guide = runAction(new CapabilityActionRequest(
+        "action-audit-trace-investigation-guide",
+        "action-audit-trace-investigation-guide",
+        "audit.trace.investigationGuide.read",
+        "audit.trace.investigationGuide.read",
+        Map.of("traceId", relatedTraceId),
+        null,
+        AUDITOR_CONTEXT_ID,
+        failure.resultSurface().surfaceId(),
+        "corr-audit-failure-guide"));
+    assertEquals("accepted", guide.status());
+    assertEquals("surface-audit-trace-investigation-guide", guide.resultSurface().surfaceId());
+    assertTrue(guide.resultSurface().toString().contains("Continue only with backend-authorized"));
+    assertBrowserSafe(guide.resultSurface());
+
+    var export = runAction(new CapabilityActionRequest(
+        "action-audit-trace-request-redacted-export",
+        "action-audit-trace-request-redacted-export",
+        "audit.trace.export.request",
+        "audit.trace.export.request",
+        Map.of("format", "jsonl-redacted", "reason", "Failure evidence smoke export for visible redacted failure rows only."),
+        "idem-audit-failure-export",
+        AUDITOR_CONTEXT_ID,
+        failure.resultSurface().surfaceId(),
+        "corr-audit-failure-export"));
+    assertEquals("accepted", export.status());
+    assertEquals("surface-audit-trace-export-request", export.resultSurface().surfaceId());
+    assertEquals("approval_required", export.resultSurface().data().get("status"));
+    assertTrue(export.resultSurface().toString().contains("Unredacted export is not a default browser action"));
+    assertBrowserSafe(export.resultSurface());
+
+    var note = runAction(new CapabilityActionRequest(
+        "action-audit-trace-append-investigation-note",
+        "action-audit-trace-append-investigation-note",
+        "audit.trace.investigation_note.append",
+        "audit.trace.investigation_note.append",
+        Map.of("traceId", relatedTraceId, "note", "Failure evidence note confirms api_key=secret stays redacted."),
+        "idem-audit-failure-note",
+        AUDITOR_CONTEXT_ID,
+        failure.resultSurface().surfaceId(),
+        "corr-audit-failure-note"));
+    assertEquals("recorded", note.status());
+    assertEquals("surface-audit-trace-investigation-note", note.resultSurface().surfaceId());
+    assertEquals("recorded", note.resultSurface().data().get("status"));
+    assertTrue(note.resultSurface().toString().contains("do not mutate source traces"));
+    assertBrowserSafe(note.resultSurface());
+
+    var searchReturn = runAction(new CapabilityActionRequest(
+        "action-audit-trace-search",
+        "action-audit-trace-search",
+        "audit.trace.search",
+        "audit.trace.search",
+        Map.of("filter", "AUTH_CONTEXT_RESOLVE", "pageSize", 5),
+        null,
+        AUDITOR_CONTEXT_ID,
+        failure.resultSurface().surfaceId(),
+        "corr-audit-failure-search-return"));
+    assertEquals("accepted", searchReturn.status());
+    assertEquals("surface-audit-trace-search", searchReturn.resultSurface().surfaceId());
+    assertBrowserSafe(searchReturn.resultSurface());
+
+    var dashboardReturn = runAction(new CapabilityActionRequest(
+        "action-audit-trace-dashboard",
+        "action-audit-trace-dashboard",
+        "audit.trace.dashboard.read",
+        "audit.trace.dashboard.read",
+        null,
+        null,
+        AUDITOR_CONTEXT_ID,
+        failure.resultSurface().surfaceId(),
+        "corr-audit-failure-dashboard-return"));
+    assertEquals("accepted", dashboardReturn.status());
+    assertEquals("surface-audit-trace-dashboard", dashboardReturn.resultSurface().surfaceId());
+    assertBrowserSafe(dashboardReturn.resultSurface());
+
+    var customerFailure = getSurfaceAs(
+        "surface-audit-trace-failure-evidence",
+        "corr-audit-failure-customer-scoped",
+        "workos-audit-customer",
+        "customer-audit@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID);
+    assertEquals("surface-audit-trace-failure-evidence", customerFailure.surfaceId());
+    assertTrue(customerFailure.toString().contains("customerScopeRestricted=true"));
+    assertBrowserSafe(customerFailure);
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-audit-trace-failure-evidence",
+        "action-audit-trace-failure-evidence",
+        "audit.trace.failureEvidence.read",
+        "audit.trace.failureEvidence.read",
+        Map.of("tenantId", "tenant-other", "failureCategory", "provider_blocked"),
+        null,
+        AUDITOR_CONTEXT_ID,
+        failure.resultSurface().surfaceId(),
+        "corr-audit-failure-cross-tenant-denied")), "Cross-tenant Audit/Trace failure evidence must fail closed without hidden failure enumeration.");
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-audit-trace-failure-evidence",
+        "corr-audit-failure-member-denied",
+        "workos-audit-member",
+        "member-audit@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Audit/Trace failure evidence.");
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-audit-trace-failure-evidence",
+        "corr-audit-failure-disabled-denied",
+        "workos-audit-disabled",
+        "disabled-audit@example.test",
+        "Disabled Auditor",
+        DISABLED_CONTEXT_ID), "Disabled accounts must not resolve an Audit/Trace failure-evidence AuthContext.");
+  }
+
+  @Test
   void protectedAuditTraceDashboardDeniesUnauthorizedAndDisabledContextsSafelyWhileScopingCustomers() throws Exception {
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-audit-trace-dashboard",
