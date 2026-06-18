@@ -6360,7 +6360,7 @@
 
 ### TASK-FSCT-180: Verify or complete runtime testing for `surface-audit-trace-search`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-179]
 - surface id: `surface-audit-trace-search`
@@ -6394,6 +6394,7 @@
   - purpose: Scoped trace search.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-search`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-search`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added dedicated Audit/Trace search runtime smoke coverage for protected direct surface load, backend action search/filter/page/empty/validation states, row detail/timeline actions, investigation guidance, redacted export approval and idempotency validation, dashboard return, cross-tenant denial, trace/correlation refs, and browser-safe/no-secret assertions; updated frontend contract coverage for Audit/Trace search controls. runtime evidence: readiness level `runtime-ready` for the search testing scope; checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-181: Verify or complete app-description specification for `surface-audit-trace-detail`
 

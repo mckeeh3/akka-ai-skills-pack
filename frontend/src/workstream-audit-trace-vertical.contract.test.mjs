@@ -43,6 +43,10 @@ test('Audit/Trace surfaces preserve trace links, denial/provider evidence, redac
   assert.match(decision, /Backend-authorized investigation actions/);
   assert.match(decision, /Disabled or deferred investigation actions/);
   assert.match(list, /JSON\.stringify\(envelope\.data\.query\)/);
+  assert.match(list, /Search scoped traces/);
+  assert.match(list, /Return to dashboard/);
+  assert.match(list, /Request redacted export/);
+  assert.match(list, /Open detail/);
   assert.match(list, /Partial results/);
   assert.match(dashboard, /Audit\/Trace attention items/);
   assert.match(dashboard, /AuditTraceCommandCenter/);

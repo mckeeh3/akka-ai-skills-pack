@@ -225,6 +225,189 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  void protectedAuditTraceSearchCoversFiltersValidationRowActionsExportDenialsAndSecretBoundaries() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-audit-trace-search")
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Audit/Trace search must reject missing bearer tokens.");
+
+    var defaultSearch = getSurface("surface-audit-trace-search", "corr-audit-search-direct");
+    assertEquals("surface-audit-trace-search", defaultSearch.surfaceId());
+    assertEquals("list-search", defaultSearch.surfaceType());
+    assertEquals("audit.trace.search.v1", defaultSearch.data().get("surfaceContract"));
+    assertEquals("corr-audit-search-direct", defaultSearch.correlationId());
+    assertTrue(defaultSearch.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-audit-search")));
+    assertTrue(defaultSearch.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-search") && action.capabilityId().equals("audit.trace.search")));
+    assertTrue(defaultSearch.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-detail") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-detail")));
+    assertTrue(defaultSearch.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-request-redacted-export") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-export-request")));
+    assertTrue(defaultSearch.toString().contains("selectedContextId=" + AUDITOR_CONTEXT_ID));
+    assertTrue(defaultSearch.toString().contains("non-enumerating"));
+    assertBrowserSafe(defaultSearch);
+
+    var directRows = (List<Map<String, Object>>) defaultSearch.data().get("rows");
+    assertFalse(directRows.isEmpty(), "Direct protected search should expose authorized trace rows only.");
+    var directPageInfo = (Map<String, Object>) defaultSearch.data().get("pageInfo");
+    assertEquals(10, directPageInfo.get("pageSize"));
+    assertEquals(directRows.size(), directPageInfo.get("totalKnownCount"));
+
+    var filteredSearch = runAction(new CapabilityActionRequest(
+        "action-audit-trace-search",
+        "action-audit-trace-search",
+        "audit.trace.search",
+        "audit.trace.search",
+        Map.of("filter", "AUTH_CONTEXT_RESOLVE", "pageSize", "1"),
+        null,
+        AUDITOR_CONTEXT_ID,
+        defaultSearch.surfaceId(),
+        "corr-audit-search-filtered"));
+    assertEquals("accepted", filteredSearch.status());
+    assertEquals("surface-audit-trace-search", filteredSearch.resultSurface().surfaceId());
+    assertEquals("audit.trace.search.v1", filteredSearch.resultSurface().data().get("surfaceContract"));
+    var filteredRows = (List<Map<String, Object>>) filteredSearch.resultSurface().data().get("rows");
+    assertEquals(1, filteredRows.size(), "Browser string page size must be parsed server-side and cap rows.");
+    assertTrue(String.valueOf(filteredRows.get(0).get("eventKind")).contains("AUTH_CONTEXT_RESOLVE"));
+    assertTrue(((List<String>) filteredRows.get(0).get("availableRowActionIds")).containsAll(List.of("action-audit-trace-detail", "action-audit-trace-timeline", "action-audit-trace-failure-evidence", "action-audit-trace-investigation-guide")));
+    assertTrue(filteredSearch.resultSurface().toString().contains("corr-audit-search-filtered"));
+    assertBrowserSafe(filteredSearch.resultSurface());
+
+    var emptySearch = runAction(new CapabilityActionRequest(
+        "action-audit-trace-search",
+        "action-audit-trace-search",
+        "audit.trace.search",
+        "audit.trace.search",
+        Map.of("filter", "definitely-no-authorized-row", "pageSize", 5),
+        null,
+        AUDITOR_CONTEXT_ID,
+        defaultSearch.surfaceId(),
+        "corr-audit-search-empty"));
+    assertEquals("accepted", emptySearch.status());
+    assertEquals(List.of(), emptySearch.resultSurface().data().get("rows"));
+    var emptyState = (Map<String, Object>) emptySearch.resultSurface().data().get("emptyState");
+    assertEquals("empty", emptyState.get("status"));
+    assertTrue(String.valueOf(emptyState.get("recovery")).contains("Clear filters"));
+    assertBrowserSafe(emptySearch.resultSurface());
+
+    var invalidSearch = runAction(new CapabilityActionRequest(
+        "action-audit-trace-search",
+        "action-audit-trace-search",
+        "audit.trace.search",
+        "audit.trace.search",
+        Map.of("pageSize", 0),
+        null,
+        AUDITOR_CONTEXT_ID,
+        defaultSearch.surfaceId(),
+        "corr-audit-search-invalid-page"));
+    assertEquals("validation-error", invalidSearch.status());
+    assertEquals("surface-audit-trace-validation-error", invalidSearch.resultSurface().surfaceId());
+    assertEquals("pageSize", invalidSearch.resultSurface().data().get("field"));
+    assertTrue(invalidSearch.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-audit-validation")));
+    assertBrowserSafe(invalidSearch.resultSurface());
+
+    var traceId = String.valueOf(filteredRows.get(0).get("traceId"));
+    var rowDetail = runAction(new CapabilityActionRequest(
+        "action-audit-trace-detail",
+        "action-audit-trace-detail",
+        "audit.trace.detail.read",
+        "audit.trace.detail.read",
+        Map.of("traceId", traceId),
+        null,
+        AUDITOR_CONTEXT_ID,
+        filteredSearch.resultSurface().surfaceId(),
+        "corr-audit-search-row-detail"));
+    assertEquals("accepted", rowDetail.status());
+    assertEquals("surface-audit-trace-detail", rowDetail.resultSurface().surfaceId());
+    assertEquals(traceId, rowDetail.resultSurface().data().get("traceId"));
+    assertBrowserSafe(rowDetail.resultSurface());
+
+    var rowTimeline = runAction(new CapabilityActionRequest(
+        "action-audit-trace-timeline",
+        "action-audit-trace-timeline",
+        "audit.trace.timeline.read",
+        "audit.trace.timeline.read",
+        Map.of("correlationId", filteredRows.get(0).get("correlationId")),
+        null,
+        AUDITOR_CONTEXT_ID,
+        filteredSearch.resultSurface().surfaceId(),
+        "corr-audit-search-row-timeline"));
+    assertEquals("accepted", rowTimeline.status());
+    assertEquals("surface-audit-trace-timeline", rowTimeline.resultSurface().surfaceId());
+    assertEquals("audit.trace.timeline.v1", rowTimeline.resultSurface().data().get("surfaceContract"));
+    assertBrowserSafe(rowTimeline.resultSurface());
+
+    var guide = runAction(new CapabilityActionRequest(
+        "action-audit-trace-investigation-guide",
+        "action-audit-trace-investigation-guide",
+        "audit.trace.investigationGuide.read",
+        "audit.trace.investigationGuide.read",
+        Map.of("traceId", traceId),
+        null,
+        AUDITOR_CONTEXT_ID,
+        filteredSearch.resultSurface().surfaceId(),
+        "corr-audit-search-guide"));
+    assertEquals("accepted", guide.status());
+    assertEquals("surface-audit-trace-investigation-guide", guide.resultSurface().surfaceId());
+    assertTrue(guide.resultSurface().toString().contains("Continue only with backend-authorized"));
+    assertBrowserSafe(guide.resultSurface());
+
+    var export = runAction(new CapabilityActionRequest(
+        "action-audit-trace-request-redacted-export",
+        "action-audit-trace-request-redacted-export",
+        "audit.trace.export.request",
+        "audit.trace.export.request",
+        Map.of("format", "jsonl-redacted", "reason", "Runtime smoke export request for visible search rows only."),
+        "idem-audit-search-export",
+        AUDITOR_CONTEXT_ID,
+        filteredSearch.resultSurface().surfaceId(),
+        "corr-audit-search-export"));
+    assertEquals("accepted", export.status());
+    assertEquals("surface-audit-trace-export-request", export.resultSurface().surfaceId());
+    assertEquals("approval_required", export.resultSurface().data().get("status"));
+    assertTrue(export.resultSurface().toString().contains("Unredacted export is not a default browser action"));
+    assertBrowserSafe(export.resultSurface());
+
+    var exportWithoutIdempotency = runAction(new CapabilityActionRequest(
+        "action-audit-trace-request-redacted-export",
+        "action-audit-trace-request-redacted-export",
+        "audit.trace.export.request",
+        "audit.trace.export.request",
+        Map.of("reason", "Missing idempotency should be safely rejected."),
+        null,
+        AUDITOR_CONTEXT_ID,
+        filteredSearch.resultSurface().surfaceId(),
+        "corr-audit-search-export-missing-idempotency"));
+    assertEquals("validation-error", exportWithoutIdempotency.status());
+    assertNotNull(exportWithoutIdempotency.traceIds());
+    assertBrowserSafe(exportWithoutIdempotency);
+
+    var returnToDashboard = runAction(new CapabilityActionRequest(
+        "action-audit-trace-dashboard",
+        "action-audit-trace-dashboard",
+        "audit.trace.dashboard.read",
+        "audit.trace.dashboard.read",
+        null,
+        null,
+        AUDITOR_CONTEXT_ID,
+        filteredSearch.resultSurface().surfaceId(),
+        "corr-audit-search-dashboard-return"));
+    assertEquals("accepted", returnToDashboard.status());
+    assertEquals("surface-audit-trace-dashboard", returnToDashboard.resultSurface().surfaceId());
+    assertBrowserSafe(returnToDashboard.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-audit-trace-search",
+        "action-audit-trace-search",
+        "audit.trace.search",
+        "audit.trace.search",
+        Map.of("tenantId", "tenant-other", "filter", "recent"),
+        null,
+        AUDITOR_CONTEXT_ID,
+        defaultSearch.surfaceId(),
+        "corr-audit-search-cross-tenant-denied")), "Cross-tenant Audit/Trace search must fail closed without row/count enumeration.");
+  }
+
+  @Test
   void protectedAuditTraceDashboardDeniesUnauthorizedAndDisabledContextsSafelyWhileScopingCustomers() throws Exception {
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-audit-trace-dashboard",
