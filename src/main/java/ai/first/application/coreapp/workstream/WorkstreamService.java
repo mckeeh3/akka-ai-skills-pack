@@ -3491,7 +3491,7 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope auditTraceInvestigationGuideSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     var surface = auditTraceService.investigationGuide(actor, input, correlationId);
-    return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceSearchAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceExportRequestAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSummaryTaskBlockedAction()));
+    return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceExportRequestAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSearchAction(), auditTraceDashboardAction(), auditTraceSummaryTaskBlockedAction()));
   }
 
   private SurfaceEnvelope auditTraceExportRequestSurface(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {

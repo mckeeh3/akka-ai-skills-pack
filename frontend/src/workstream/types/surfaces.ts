@@ -399,8 +399,10 @@ export type DecisionSurfaceData = {
   confidenceScore?: number | string;
   evidence?: Array<{ evidenceId: string; label: string; summary: string }>;
   evidenceSummary?: Array<{ evidenceId: string; label: string; summary: string; status?: string; redactionNote?: string; noFakeSuccess?: boolean; traceRefs?: string[] }>;
-  allowedActions?: Array<{ actionId: string; label: string; browserToolId: string; governedToolId: string; capabilityId: string }>;
-  disabledActions?: Array<{ actionId: string; label?: string; reason: string }>;
+  recommendedPath?: Array<{ stepId: string; label: string; rationale?: string; expectedUserOutcome?: string; requiredCapabilityLabel?: string; targetActionId?: string; targetSurfaceId?: string; approvalRequirement?: string; recovery?: string }>;
+  allowedActions?: Array<{ actionId: string; label: string; browserToolId: string; governedToolId: string; capabilityId: string; resultSurfaceId?: string; reason?: string; approvalRequirement?: string; idempotency?: string }>;
+  disabledActions?: Array<{ actionId: string; label?: string; reason: string; recovery?: string; auditOnlyDenialCategory?: string }>;
+  recovery?: string | { steps?: string[]; failClosed?: string };
   risk?: string;
   impact?: string;
   alternatives?: string[];

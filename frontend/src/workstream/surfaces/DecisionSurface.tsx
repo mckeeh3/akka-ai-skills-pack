@@ -13,6 +13,7 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
     : envelope.data.recommendation?.rationale ?? envelope.data.recommendation?.outcome;
   const evidence = envelope.data.evidence ?? [];
   const evidenceSummary = envelope.data.evidenceSummary ?? [];
+  const recommendedPath = envelope.data.recommendedPath ?? [];
   const disabledById = new Map((envelope.data.disabledActions ?? []).map((action) => [action.actionId, action.reason]));
   const guardedActions = envelope.actions.map((action) => disabledById.has(action.actionId)
     ? { ...action, disabled: action.disabled ?? { reasonCode: 'BACKEND_PREREQUISITE_REQUIRED', message: disabledById.get(action.actionId)! } }
@@ -31,6 +32,15 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
         </dl>
         {envelope.data.activationBlocker && <p className="surface-state-inline forbidden" role="status">Activation blocker: {envelope.data.activationBlocker}</p>}
         {envelope.data.noDirectMutation && <p className="surface-state-inline forbidden">Advisory output cannot directly mutate prompts, skills, references, model refs, tool boundaries, activation, rollback, or provider configuration.</p>}
+        {recommendedPath.length > 0 && (
+          <section aria-label="Recommended investigation path">
+            <h4>Recommended path</h4>
+            <ol>{recommendedPath.map((step) => <li key={step.stepId}><strong>{step.label}</strong>{step.rationale ? ` — ${step.rationale}` : ''}{step.targetActionId ? <span className="trace-link-list"> Target: {step.targetActionId}</span> : null}</li>)}</ol>
+          </section>
+        )}
+        {envelope.data.recovery && typeof envelope.data.recovery !== 'string' && envelope.data.recovery.steps && (
+          <section aria-label="Safe recovery path"><h4>Safe recovery</h4><ul>{envelope.data.recovery.steps.map((step) => <li key={step}>{step}</li>)}</ul>{envelope.data.recovery.failClosed && <p>{envelope.data.recovery.failClosed}</p>}</section>
+        )}
         {envelope.data.alternatives && envelope.data.alternatives.length > 0 && <section aria-label="Decision alternatives"><h4>Alternatives</h4><ul>{envelope.data.alternatives.map((item) => <li key={item}>{item}</li>)}</ul></section>}
         {evidence.length > 0 && (
           <>
@@ -47,7 +57,7 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
         {envelope.data.allowedActions && (
           <section aria-label="Backend-authorized investigation actions">
             <h4>Allowed actions</h4>
-            <ul>{envelope.data.allowedActions.map((action) => <li key={action.actionId}>{action.label}</li>)}</ul>
+            <ul>{envelope.data.allowedActions.map((action) => <li key={action.actionId}>{action.label}{action.reason ? ` — ${action.reason}` : ''}</li>)}</ul>
             <details className="dashboard-evidence-drawer">
               <summary>Role-gated action diagnostics</summary>
               <ul>{envelope.data.allowedActions.map((action) => <li key={`${action.actionId}-diagnostics`}>{action.browserToolId} · {action.governedToolId} · {action.capabilityId}</li>)}</ul>
@@ -57,7 +67,7 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
         {envelope.data.disabledActions && (
           <section aria-label="Disabled or deferred investigation actions">
             <h4>Unavailable actions</h4>
-            <ul>{envelope.data.disabledActions.map((action) => <li key={action.actionId}>{action.label ?? 'Action unavailable'}: {action.reason}</li>)}</ul>
+            <ul>{envelope.data.disabledActions.map((action) => <li key={action.actionId}>{action.label ?? 'Action unavailable'}: {action.reason}{action.recovery ? ` Recovery: ${action.recovery}` : ''}</li>)}</ul>
             <details className="dashboard-evidence-drawer"><summary>Role-gated disabled action diagnostics</summary><ul>{envelope.data.disabledActions.map((action) => <li key={`${action.actionId}-diagnostics`}>{action.actionId}</li>)}</ul></details>
           </section>
         )}

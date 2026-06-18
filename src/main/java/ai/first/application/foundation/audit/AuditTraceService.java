@@ -259,16 +259,69 @@ public final class AuditTraceService {
   }
 
   public SurfaceData investigationGuide(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
-    validateScope(actor, input, correlationId);
-    authContextResolver.appendProtectedReadTrace(actor, INVESTIGATION_GUIDE_CAPABILITY, "investigation guidance", correlationId);
-    return new SurfaceData("surface-audit-trace-investigation-guide", "decision", "Investigation guidance", List.of("trace-audit-guide-" + stableSuffix(correlationId)), mapOf(
+    authContextResolver.requireCapability(actor.selectedContext(), INVESTIGATION_GUIDE_CAPABILITY);
+    var scope = validateScope(actor, input, correlationId);
+    var requestedCorrelation = stringInput(input, "correlationId", correlationId);
+    var requestedTraceId = stringInput(input, "traceId", null);
+    if (requestedCorrelation == null || requestedCorrelation.isBlank() || requestedCorrelation.length() > 128) return validation(actor, correlationId, "correlationId", "Correlation id is required and must be at most 128 characters.");
+    if (requestedTraceId != null && requestedTraceId.length() > 160) return validation(actor, correlationId, "traceId", "Trace id must be at most 160 characters.");
+    var traceId = "trace-audit-guide-" + stableSuffix(correlationId);
+    authContextResolver.appendProtectedReadTrace(actor, INVESTIGATION_GUIDE_CAPABILITY, "investigation guidance context:" + (requestedTraceId == null ? requestedCorrelation : requestedTraceId), correlationId);
+    var relatedEvents = sortedEvents(actor, correlationId).stream()
+        .filter(event -> requestedTraceId == null ? requestedCorrelation.equals(event.correlationId()) : requestedTraceId.equals(event.traceId()) || requestedCorrelation.equals(event.correlationId()))
+        .limit(5)
+        .toList();
+    var evidenceSummary = relatedEvents.stream()
+        .map(event -> mapOf(
+            "evidenceId", event.traceId(),
+            "label", event.eventKind(),
+            "summary", redacted(event.summary()),
+            "status", event.status(),
+            "redactionNote", "Browser-safe summary only; raw payloads, prompts, credentials, tokens, hidden ids, and cross-scope evidence are omitted.",
+            "traceRefs", List.of(event.traceId(), event.correlationId())))
+        .toList();
+    var contextType = requestedTraceId == null ? "correlation_timeline" : "trace_detail";
+    var readiness = evidenceSummary.isEmpty() ? "empty/no-authorized-guidance" : "ready";
+    return new SurfaceData("surface-audit-trace-investigation-guide", "decision", "Investigation guidance", List.of(traceId), mapOf(
         "surfaceContract", "audit.trace.investigationGuide.v1",
-        "recommendation", "Continue only with backend-authorized, tenant-scoped evidence.",
-        "allowedActions", List.of(mapOf("actionId", "action-audit-trace-search", "label", "Refine search", "browserToolId", "action-audit-trace-search", "governedToolId", SEARCH_CAPABILITY, "capabilityId", SEARCH_CAPABILITY), mapOf("actionId", "action-audit-trace-timeline", "label", "Open timeline", "browserToolId", "action-audit-trace-timeline", "governedToolId", TIMELINE_CAPABILITY, "capabilityId", TIMELINE_CAPABILITY), mapOf("actionId", "action-audit-trace-summary-task-start", "label", "Start bounded audit summary task", "browserToolId", "action-audit-trace-summary-task-start", "governedToolId", "audit.trace.summaryTask.start", "capabilityId", AuditTraceSummaryService.START_CAPABILITY, "resultSurfaceId", "surface-audit-trace-summary-progress")),
-        "disabledActions", List.of(mapOf("actionId", "action-audit-trace-summary-task-start-scheduled", "capabilityId", AuditTraceSummaryService.START_CAPABILITY, "reason", "Scheduled audit summary cadence remains future work; manual backend-governed start is wired.")),
-        "risk", "low",
-        "traceLinks", List.of(correlationId),
-        "redaction", "no secrets, hidden prompts, raw payloads, or cross-tenant evidence"));
+        "surfaceId", "surface-audit-trace-investigation-guide",
+        "generatedAt", Instant.now().toString(),
+        "selectedScope", mapOf("tenantLabel", "Selected tenant", "customerLabel", actor.selectedContext().customerId() == null ? null : "Selected customer", "scopeKind", actor.selectedContext().customerId() == null ? "tenant" : "customer", "supportAccess", "selected AuthContext"),
+        "authContextSummary", mapOf("selectedContextId", actor.selectedContext().membershipId(), "actor", actor.profile().displayName(), "roleLabels", actor.selectedContext().roles().stream().map(Enum::name).toList(), "capabilityCount", actor.selectedContext().capabilities().size()),
+        "capabilityIds", List.of(INVESTIGATION_GUIDE_CAPABILITY, DETAIL_CAPABILITY, TIMELINE_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, EXPORT_REQUEST_CAPABILITY, INVESTIGATION_NOTE_CAPABILITY, SEARCH_CAPABILITY, DASHBOARD_CAPABILITY, AuditTraceSummaryService.START_CAPABILITY),
+        "correlationId", requestedCorrelation,
+        "traceRefs", List.of(traceId, requestedCorrelation),
+        "readiness", readiness,
+        "guideKey", mapOf("displayHandle", requestedTraceId == null ? requestedCorrelation : requestedTraceId, "diagnosticCorrelationLabel", requestedCorrelation, "sourceSurfaceActionLabel", stringInput(input, "sourceSurfaceId", "Audit/Trace investigation"), "retentionStatus", "retained-redacted", "staleOrPurgedStatus", evidenceSummary.isEmpty() ? "empty-authorized" : "current"),
+        "investigationContext", mapOf("contextType", contextType, "sourceWorkstream", "Audit/Trace", "sourceSurface", stringInput(input, "sourceSurfaceId", "surface-audit-trace-investigation-guide"), "sourceAction", "action-audit-trace-investigation-guide", "selectedScope", scope, "visibleStatus", readiness, "severity", relatedEvents.stream().anyMatch(event -> "warning".equals(event.severity())) ? "warning" : "info", "question", "What should I do next, why is it safe, and what evidence can I open?", "redactionLimits", "Hidden traces, raw provider/model/tool payloads, prompts, credentials, policy internals, and cross-scope evidence are omitted without enumeration."),
+        "authorizationBasis", mapOf("selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", List.of(INVESTIGATION_GUIDE_CAPABILITY), "customerScopeRestricted", actor.selectedContext().customerId() != null, "redactionExplanation", "Selected AuthContext, tenant/customer scope, and investigation-guide capability are rechecked server-side; guidance is advisory and cannot expand authority."),
+        "riskSummary", mapOf("severity", relatedEvents.stream().anyMatch(event -> "warning".equals(event.severity())) ? "warning" : "info", "confidence", evidenceSummary.isEmpty() ? "limited-authorized-evidence" : "authorized-redacted-evidence", "affectedEvidenceCategories", relatedEvents.stream().map(TraceEvent::eventKind).distinct().toList(), "retentionStatus", "retained-redacted", "providerModelToolRuntimeReadiness", "fail-closed when provider/runtime/tool-boundary configuration is unavailable", "approvalRequirement", "Redacted exports, notes, policy review, and summary worker paths remain separate governed actions."),
+        "recommendedPath", List.of(
+            mapOf("stepId", "step-review-authorized-evidence", "label", "Review authorized evidence context", "rationale", "Start from the selected AuthContext and redaction basis before opening more evidence.", "expectedUserOutcome", "Understand what is visible and what was omitted.", "requiredCapabilityLabel", INVESTIGATION_GUIDE_CAPABILITY, "targetActionId", "action-audit-trace-detail", "targetSurfaceId", "surface-audit-trace-detail", "approvalRequirement", "none", "recovery", "If the detail is hidden, use search or dashboard return without enumerating hidden ids."),
+            mapOf("stepId", "step-open-timeline-or-failure", "label", "Open timeline or failure evidence", "rationale", "Reauthorize the related chronology or failure category before deciding on export, note, or provider follow-up.", "expectedUserOutcome", "See browser-safe chronology/failure evidence with trace refs.", "requiredCapabilityLabel", TIMELINE_CAPABILITY + " / " + FAILURE_EVIDENCE_CAPABILITY, "targetActionId", "action-audit-trace-timeline", "targetSurfaceId", "surface-audit-trace-timeline", "approvalRequirement", "none", "recovery", "If no authorized events remain, refine search or return to the command center."),
+            mapOf("stepId", "step-record-or-export-only-when-governed", "label", "Record a note or request redacted export only through governed actions", "rationale", "Guidance is advisory and never mutates traces, policy, authorization, provider settings, or retained evidence.", "expectedUserOutcome", "A separate policy-gated export request or immutable note annotation is created when authorized.", "requiredCapabilityLabel", EXPORT_REQUEST_CAPABILITY + " / " + INVESTIGATION_NOTE_CAPABILITY, "targetActionId", "action-audit-trace-request-redacted-export", "targetSurfaceId", "surface-audit-trace-export-request", "approvalRequirement", "export requires policy gate; note requires idempotency", "recovery", "Use search/dashboard return when export or note is not appropriate.")),
+        "allowedActions", List.of(
+            mapOf("actionId", "action-audit-trace-detail", "label", "Open source trace detail", "browserToolId", "action-audit-trace-detail", "governedToolId", DETAIL_CAPABILITY, "capabilityId", DETAIL_CAPABILITY, "resultSurfaceId", "surface-audit-trace-detail", "reason", "Reauthorizes source evidence before showing detail."),
+            mapOf("actionId", "action-audit-trace-timeline", "label", "Open correlation timeline", "browserToolId", "action-audit-trace-timeline", "governedToolId", TIMELINE_CAPABILITY, "capabilityId", TIMELINE_CAPABILITY, "resultSurfaceId", "surface-audit-trace-timeline", "reason", "Shows an authorized ordered timeline with omissions explained."),
+            mapOf("actionId", "action-audit-trace-failure-evidence", "label", "Open failure evidence", "browserToolId", "action-audit-trace-failure-evidence", "governedToolId", FAILURE_EVIDENCE_CAPABILITY, "capabilityId", FAILURE_EVIDENCE_CAPABILITY, "resultSurfaceId", "surface-audit-trace-failure-evidence", "reason", "Shows redacted denial/provider/tool/model/runtime evidence."),
+            mapOf("actionId", "action-audit-trace-search", "label", "Refine search", "browserToolId", "action-audit-trace-search", "governedToolId", SEARCH_CAPABILITY, "capabilityId", SEARCH_CAPABILITY, "resultSurfaceId", "surface-audit-trace-search", "reason", "Re-runs backend-scoped search instead of trusting browser state."),
+            mapOf("actionId", "action-audit-trace-dashboard", "label", "Return to investigation command center", "browserToolId", "action-audit-trace-dashboard", "governedToolId", DASHBOARD_CAPABILITY, "capabilityId", DASHBOARD_CAPABILITY, "resultSurfaceId", "surface-audit-trace-dashboard", "reason", "Recomputes scoped dashboard counters server-side."),
+            mapOf("actionId", "action-audit-trace-request-redacted-export", "label", "Request redacted export", "browserToolId", "action-audit-trace-request-redacted-export", "governedToolId", EXPORT_REQUEST_CAPABILITY, "capabilityId", EXPORT_REQUEST_CAPABILITY, "resultSurfaceId", "surface-audit-trace-export-request", "approvalRequirement", "policy-gated", "reason", "Creates a separate redacted export decision surface; unredacted browser export is forbidden."),
+            mapOf("actionId", "action-audit-trace-append-investigation-note", "label", "Append investigation note", "browserToolId", "action-audit-trace-append-investigation-note", "governedToolId", INVESTIGATION_NOTE_CAPABILITY, "capabilityId", INVESTIGATION_NOTE_CAPABILITY, "resultSurfaceId", "surface-audit-trace-investigation-note", "idempotency", "client-generated", "reason", "Annotates a trace without mutating source evidence, policy, or authorization."),
+            mapOf("actionId", "action-audit-trace-summary-task-start", "label", "Start bounded audit summary task", "browserToolId", "action-audit-trace-summary-task-start", "governedToolId", "audit.trace.summaryTask.start", "capabilityId", AuditTraceSummaryService.START_CAPABILITY, "resultSurfaceId", "surface-audit-trace-summary-progress", "reason", "Opens a fail-closed provider/runtime readiness surface unless a real model-backed worker is configured.")),
+        "disabledActions", List.of(
+            mapOf("actionId", "action-audit-trace-unredacted-export", "label", "Unredacted browser export", "reason", "export_forbidden: unredacted browser export is not available by default and requires a separate policy exception.", "recovery", "Use the governed redacted export request.", "auditOnlyDenialCategory", "export_forbidden"),
+            mapOf("actionId", "action-audit-trace-guidance-authority-expansion", "label", "Use guidance as authorization", "reason", "not_applicable: investigation guidance is advisory and cannot grant roles, scopes, or evidence access.", "recovery", "Open each follow-up surface through its backend-governed action.", "auditOnlyDenialCategory", "authority_expansion_forbidden")),
+        "evidenceSummary", evidenceSummary,
+        "policyRefs", List.of(READ_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY, TIMELINE_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, EXPORT_REQUEST_CAPABILITY),
+        "recovery", mapOf("steps", List.of("Reconfirm selected AuthContext and customer scope.", "Open detail, timeline, failure evidence, search, or dashboard through backend actions.", "Use idempotent note/export actions only when policy and context allow."), "failClosed", "Provider/model/tool/runtime blockers remain blocked-provider-or-runtime; this guide never fabricates model-backed success."),
+        "emptyState", evidenceSummary.isEmpty() ? mapOf("status", "empty/no-authorized-guidance", "message", "No authorized retained evidence matched this guidance context.", "recovery", "Refine search or return to the Audit/Trace dashboard; hidden contexts are not enumerated.") : null,
+        "validationErrors", List.of(),
+        "recommendation", "Continue only with backend-authorized, tenant-scoped evidence; this guide is advisory and cannot expand authority or mutate retained traces.",
+        "risk", relatedEvents.stream().anyMatch(event -> "warning".equals(event.severity())) ? "medium" : "low",
+        "noDirectMutation", true,
+        "traceLinks", List.of(requestedCorrelation, traceId),
+        "redaction", mapOf("browserSafe", true, "omittedFieldKeys", DEFAULT_OMITTED_FIELDS, "hiddenCountPolicy", "non-enumerating", "safeExplanation", "No secrets, hidden prompts, raw provider/model/tool payloads, raw JWT/session data, policy internals, storage keys, or cross-tenant/customer evidence are returned.", "traceRefs", List.of(traceId))));
   }
 
   public SurfaceData requestRedactedExport(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {

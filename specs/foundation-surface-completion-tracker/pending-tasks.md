@@ -6749,7 +6749,7 @@
 
 ### TASK-FSCT-191: Verify or complete runtime implementation for `surface-audit-trace-investigation-guide`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-190]
 - surface id: `surface-audit-trace-investigation-guide`
@@ -6780,6 +6780,7 @@
   - purpose: Human investigation guidance.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-investigation-guide`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-investigation-guide`; surface graph node/action edge for opening or acting on `surface-audit-trace-investigation-guide`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: completed backend/frontend runtime implementation for `surface-audit-trace-investigation-guide` / `audit.trace.investigationGuide.v1`; `AuditTraceService#investigationGuide` now requires `audit.trace.investigationGuide.read`, validates tenant/customer scope, records protected-read traces, and returns selected AuthContext, authorization basis, guide key/context, risk summary, recommended path, allowed/disabled governed follow-up actions, fail-closed recovery, redaction metadata, and browser-safe evidence summaries; `WorkstreamService#auditTraceInvestigationGuideSurface` exposes detail/timeline/failure/export/note/search/dashboard/summary-progress action edges; frontend decision surface/types render recommended path, recovery, and action reasons. Runtime evidence: readiness level `api-smoked`; checks passed: `mvn -q -Dtest=WorkstreamServiceTest#auditTraceActionsReturnScopedSearchDetailTimelineFailureAndGuidanceSurfaces test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-192: Verify or complete runtime testing for `surface-audit-trace-investigation-guide`
 
