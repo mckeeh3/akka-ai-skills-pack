@@ -894,7 +894,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`: added detailed `surface-audit-trace-export-request` / `audit.trace.exportRequest.v1` decision-card contract covering Audit/Trace ownership and `audit-trace-agent` placement, reusable entry contexts, selected AuthContext tenant/customer/support-access authorization, backend-owned retained evidence data source, redacted-export-only boundary, idempotent request semantics, browser-safe payload schema, governed action map, denial/approval/fail-closed states, audit/work trace obligations, accessibility/responsive expectations, required acceptance/security/negative/idempotency/observability/UX tests, frontend secret boundaries, and sufficiency review. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
