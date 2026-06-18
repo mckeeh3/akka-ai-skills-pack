@@ -6080,7 +6080,7 @@
 
 ### TASK-FSCT-172: Verify or complete app-description specification for `surface-agent-seed-material`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-seed-material`
@@ -6109,6 +6109,7 @@
   - purpose: Seed material discovery/import workflow surface.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-seed-material` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: added the `agent_admin.seed_material.v1` app-description contract with identity/ownership/placement, browser-safe payload schema for seed discovery/provenance/import workflow, governed action mappings, AuthContext tenant/organization authorization and no-enumeration denials, audit/work trace and correlation requirements, provider/runtime fail-closed import blockers, redaction/mutation boundaries, accessibility/responsive/style bindings, test expectations, and sufficiency review. Checks passed: `git diff --check` and focused `rg` evidence for surface id, contract, payload/actions/auth/traces/tests in the Agent Admin app-description.
 
 ### TASK-FSCT-173: Verify or complete runtime implementation for `surface-agent-seed-material`
 

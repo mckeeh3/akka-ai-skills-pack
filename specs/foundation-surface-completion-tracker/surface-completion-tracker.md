@@ -801,7 +801,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: added `surface-agent-seed-material` for `agent_admin.seed_material.v1` with Agent Admin/`agent-admin-agent` ownership, dashboard/catalog/detail/proposal/deep-link placement, browser-safe seed discovery/provenance/import workflow payloads, customization-preservation and forbidden raw override boundaries, governed action mappings for refresh/search/provenance/prepare-import/start-import/cancel/source/detail/trace, selected AuthContext and tenant/organization authorization rules, customer/hidden/cross-tenant no-enumeration denials, audit/work trace and correlation requirements, provider/runtime fail-closed import blockers, accessibility/responsive/style bindings, mutation exclusions, app-description/realization test expectations, and sufficiency review confirming implementation can proceed without invented fields/actions/states/auth/traces/tests. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
