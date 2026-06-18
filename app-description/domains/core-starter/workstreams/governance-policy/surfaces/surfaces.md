@@ -29,9 +29,86 @@ All Governance/Policy browser actions use the canonical `action-governance-polic
 
 Pattern: `workstream-dashboard`.
 
-Required payload: `cards`, `attentionQueues`, `authorizedActions`, `recentActivity`, `attentionItems`, `proposalLifecycle`, `capabilityIds`, `traceLinks`, `redaction`, `readiness`.
+Owning workstream: Governance/Policy. Owning functional agent: `governance-policy-agent`. Reusable placements: foundation workstream shell and audit/trace drilldowns may deep-link to this dashboard only when the selected `AuthContext` grants Governance/Policy read authority. Purpose: action router for policy governance attention, proposal lifecycle work, simulation/review blockers, and impact-analysis tasks.
+
+User goal: understand what governance policy work needs attention, open the appropriate scoped inventory/proposal/decision/task surface, and recover from missing provider/runtime or authorization states without exposing sensitive policy internals.
+
+Dashboard ordering and surface graph: ready content is ordered top-to-bottom as **things that need my attention** followed by **things I can do**. Every visible card, counter, queue row, lifecycle segment, recent-activity item, or shortcut is keyboard-operable and declares the target surface/action it opens. Passive FYI-only metrics are omitted unless they open a scoped queue, explanation, setup, or history surface. Forbidden targets are omitted for ordinary users and returned as a safe `surface-governance-policy-system-message` for direct/deep-link attempts.
+
+Required payload schema (frontend-safe):
+
+- `cards`: actionable dashboard cards with `cardId`, label, count/status, severity, target surface id, target action id when protected, and safe empty-state explanation.
+- `attentionQueues`: queues for submitted proposals awaiting review, simulations required/blocked, activation or rollback prerequisites, provider/runtime blockers, outcome notes needing follow-up, and impact-analysis tasks requiring human disposition; each queue item includes proposal/task display title, lifecycle/status, safe risk summary, target surface, authorized action ids, and redaction marker.
+- `attentionItems`: high-priority flattened items derived from the queues with reason code, due/age bucket when available, target surface/action, and safe recovery copy.
+- `authorizedActions`: only backend-authorized read/open/start actions available for the selected actor, including `action-governance-policy-dashboard`, `action-governance-policy-list`, `action-governance-policy-draft-proposal`, `action-governance-policy-simulate`, `action-governance-policy-decide`, and `action-governance-policy-start-impact-analysis` when the selected `AuthContext` permits the corresponding capability.
+- `recentActivity`: redacted policy/proposal activity with user-safe titles, lifecycle labels, actor display summary, trace summary link, and target detail/proposal/outcome surface.
+- `proposalLifecycle`: clickable lifecycle counts for `draft`, `submitted`, `simulation-required`, `in-review`, `changes-requested`, `approved`, `rejected`, `activated`, `rollback-candidate`, `rolled-back`, and `superseded`; each segment opens `surface-governance-policy-inventory` with a scoped filter.
+- `capabilityIds`: diagnostic-only capability summaries visible to governance admins/auditors/support; ordinary users see human-readable authority labels instead of raw ids.
+- `traceLinks`: user-readable trace summaries plus role-gated drilldowns to policy-decision, admin-audit, workstream-log, agent-work, impact-analysis task, and denial/failure traces.
+- `redaction`: field-level indicators for hidden cross-tenant/customer details, privileged evidence, raw provider/model output, raw tool payloads, prompts, JWTs, secrets, correlation ids, and idempotency keys.
+- `readiness`: provider/runtime/configuration status for dashboard-backed advisory features; blocked model/provider/autonomous-agent dependencies are represented as blocked states and never as successful analysis.
+
+Visibility split:
+
+- Default user-visible fields: queue/card labels, counts, lifecycle/status labels, safe risk or blocker summaries, recovery instructions, and available next actions.
+- On-demand drilldown fields: proposal/task ids as diagnostic metadata, evidence summaries, redacted trace summaries, lifecycle history, and scoped activity details.
+- Admin/support/auditor-only fields: capability ids, trace ids, policy-decision trace refs, admin-audit refs, workstream-log refs, agent-work refs, impact-analysis task refs, and denial/failure evidence.
+- Internal-only metadata never rendered in ordinary browser payloads: backend component names, raw provider/model data, raw prompts, raw governed-tool payloads, hidden role policy state, cross-tenant identifiers, JWTs/secrets, and correlation/idempotency implementation details.
 
 Required states: loading, empty, ready, forbidden/system-message, stale/reconnect, partial-data, blocked-provider-or-runtime.
+
+State semantics:
+
+- `loading`: shell has selected workstream and is fetching the protected dashboard projection.
+- `empty`: actor is authorized, but no visible proposals, queues, tasks, or recent activity exist; render setup/start actions the backend authorizes.
+- `ready`: all visible cards, queues, lifecycle segments, and actions are backed by the protected Governance/Policy read projection.
+- `forbidden/system-message`: missing bearer token, missing selected context, missing `governance.policy.read`, or tenant/customer scope denial returns `surface-governance-policy-system-message` with `noFakeSuccess=true` and `noDirectMutation=true`.
+- `stale/reconnect`: projection or trace link freshness cannot be confirmed; disable side-effecting shortcuts until refreshed.
+- `partial-data`: some queues or trace summaries are unavailable; visible sections must identify omitted data and link to safe recovery.
+- `blocked-provider-or-runtime`: provider/autonomous-agent runtime needed for advisory impact analysis or simulation summaries is unavailable; show blocked queues/recovery and do not fabricate analysis.
+
+Action contract:
+
+| Visible action / target | Browser action id | Governed tool | Capability | Request payload | Result surface | Notes |
+|---|---|---|---|---|---|---|
+| Refresh/open dashboard | `action-governance-policy-dashboard` | `list-policy-proposals` | `governance.policy.read` | selected workstream/context, optional queue filter, correlation key generated by client or backend | `surface-governance-policy-dashboard` | Read-only; never trusts tenant/customer ids from the browser. |
+| Open proposal inventory or lifecycle segment | `action-governance-policy-list` | `list-policy-proposals` | `governance.policy.read` | lifecycle/status filter, search/sort/page hints, correlation key | `surface-governance-policy-inventory` | Segment `0` states open an empty filtered inventory with recovery copy. |
+| Open selected proposal/detail evidence | `action-governance-policy-read` | `list-policy-proposals` | `governance.policy.read` | proposal id/display ref, correlation key | `surface-governance-policy-detail` | Detail content is redacted by backend scope. |
+| Draft a proposal from dashboard shortcut | `action-governance-policy-draft-proposal` | `draft-policy-proposal` | `governance.policy.propose` | draft intent/source, idempotency key, reason/rationale when present, correlation key | `surface-governance-policy-proposal` | Inert draft only; no authority changes. |
+| Open/start simulation attention item | `action-governance-policy-simulate` | `simulate-policy-change` | `governance.policy.simulate` | proposal id, scenario/scope, idempotency key for start, correlation key | `surface-governance-policy-simulation` | Advisory; cannot grant authority. |
+| Open decision/activation/rollback attention item | `action-governance-policy-decide` | `approve-activate-or-rollback-policy` | `governance.policy.approve` | proposal id, command mode `decide`, reason, idempotency key when command submitted, correlation key | `surface-governance-policy-decision` | Dashboard may route to the decision card but cannot approve, activate, or roll back client-side. |
+| Start or open impact analysis task | `action-governance-policy-start-impact-analysis` / `action-governance-policy-read-impact-analysis` | `start-policy-impact-analysis` / `read-policy-impact-analysis` | `governance.policy.impact_analysis.start` / `governance.policy.impact_analysis.read` | proposal id, task id when reading, scope, reason, idempotency key for start, correlation key | `surface-governance-policy-impact-analysis-task` | Fail closed with blocked_provider_or_runtime when provider/runtime is unavailable. |
+
+Hidden or denied actions: proposal approval, activation, rollback, impact-result acceptance/rejection/request-changes, and outcome-note recording are not performed directly by dashboard cards. The dashboard may open their dedicated authorized surfaces only when backend projection exposes those actions. Direct attempts without authority return `surface-governance-policy-system-message` and are audit/trace recorded.
+
+Authorization and tenant scope:
+
+- Backend resolves tenant/customer/workspace authority from the selected `AuthContext`; browser-provided tenant/customer ids are treated only as display/filter hints and cannot expand scope.
+- `governance.policy.read` is required for dashboard reads. Proposal, simulation, approval, activation, rollback, outcome, and impact-analysis capabilities are exposed only as authorized actions returned by the backend projection.
+- Cross-tenant/customer proposal evidence, hidden authority state, raw policy internals, provider secrets, JWTs, prompts, raw tool payloads, and correlation/idempotency implementation details are redacted or omitted.
+- Direct/deep-link denials must include a safe reason code, recovery-oriented message, trace refs, `noFakeSuccess=true`, and `noDirectMutation=true`.
+
+Trace, audit, and work evidence:
+
+- Required trace refs: `policy-decision-trace`, `admin-audit-event`, `workstream-log-trace`, `agent-work-trace`, `impact-analysis worker/task events`, plus denial/failure traces.
+- Read/open actions produce workstream-log/correlation evidence; side-effecting shortcuts produce idempotency and admin-audit evidence where applicable.
+- Trace links are summarized in user language by default and expose raw ids/details only through role-gated drilldowns.
+- Provider/runtime failures are traceable and fail closed; no dashboard state may imply successful model-backed simulation or impact analysis when the provider/runtime path did not run.
+
+Accessibility, responsive, and UI realization:
+
+- Use the selected web UI style guide, named-theme contract, and component-catalog anatomy for workstream dashboards; this surface contract owns semantics and authority, while frontend realization owns layout/styling.
+- Cards, lifecycle counters, queue rows, and shortcuts are keyboard-operable, have accessible names describing the target work, preserve focus after refresh/action results, and expose safe empty/forbidden/error copy.
+- Responsive layouts preserve the attention-first ordering and do not hide required recovery or denial information.
+
+Required tests:
+
+- App-description/contract tests prove the dashboard contract includes payload, actions, auth/tenant rules, states, traces, redaction, and sufficiency review.
+- Frontend tests prove attention-first rendering, empty/ready/partial/stale/blocked-provider-or-runtime/system-message states, authorized action visibility, forbidden target omission, secret-boundary redaction, and keyboard navigation to target surfaces.
+- Backend/API tests prove scoped dashboard reads, selected AuthContext tenant/customer isolation, missing-bearer and missing-capability denials, authorized action filtering, lifecycle queue filters, trace/audit/work evidence, and provider/runtime fail-closed status for advisory queues.
+- Negative/idempotency tests prove dashboard shortcuts do not approve, activate, roll back, mutate authority client-side, or duplicate side effects on repeated start/draft requests.
+
+Surface-description sufficiency review: this definition is sufficiently unambiguous for a developer or generator to implement and review `surface-governance-policy-dashboard` without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. No additional description pass is required before scoped implementation work for this dashboard.
 
 ### `surface-governance-policy-inventory` (`governance.policy.inventory.v1`)
 

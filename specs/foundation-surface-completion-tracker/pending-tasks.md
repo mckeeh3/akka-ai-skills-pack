@@ -7246,7 +7246,7 @@
 
 ### TASK-FSCT-205: Verify or complete app-description specification for `surface-governance-policy-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-governance-policy-dashboard`
@@ -7275,6 +7275,7 @@
   - purpose: Governance/Policy dashboard.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-dashboard` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded Governance/Policy dashboard app-description with ownership/agent placement, attention-first graph semantics, payload and visibility split, authorized action/capability mappings, explicit states, AuthContext tenant/customer authorization, redaction/secret boundaries, trace/audit/work evidence, provider/runtime fail-closed behavior, accessibility/responsive expectations, required tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-206: Verify or complete runtime implementation for `surface-governance-policy-dashboard`
 

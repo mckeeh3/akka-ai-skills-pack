@@ -948,7 +948,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | 2026-06-18 app-description specification completed in `app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md`: expanded `surface-governance-policy-dashboard` / `governance.policy.dashboard.v1` with Governance/Policy ownership, `governance-policy-agent` placement, attention-first dashboard graph semantics, browser-safe payload and visibility split, authorized action/capability mappings, explicit states, selected AuthContext tenant/customer authorization, redaction and secret boundaries, trace/audit/work evidence, provider/runtime fail-closed behavior, accessibility/responsive expectations, required tests, and sufficiency review. Validation: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
