@@ -6961,7 +6961,7 @@
 
 ### TASK-FSCT-197: Verify or complete runtime implementation for `surface-audit-trace-investigation-note`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-196]
 - surface id: `surface-audit-trace-investigation-note`
@@ -6992,6 +6992,7 @@
   - purpose: Human investigation note append result.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-investigation-note`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-investigation-note`; surface graph node/action edge for opening or acting on `surface-audit-trace-investigation-note`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented and verified the protected Audit/Trace investigation-note runtime path. `AuditTraceService#appendInvestigationNote` now requires `audit.trace.investigation_note.append`, enforces selected AuthContext tenant/customer scope, emits browser-safe `audit.trace.investigationNote.v1` system-message payloads with `noteResult`, target evidence, authorization basis, note policy, sanitized annotation, governed follow-up actions, redaction, trace/correlation refs, and `noDirectMutation`; direct refresh returns safe `not_found_or_redacted` without recording a fabricated note; `WorkstreamService` persists only recorded/no-op note results with stable idempotent item ids and exposes detail/timeline/failure/guidance/export/search/dashboard action edges. Runtime evidence: readiness level `api-smoked`; focused backend test covers direct refresh/no-mutation, note action, durable workstream item, trace/correlation, and secret redaction; focused authorization denial evidence covers member `CAPABILITY_FORBIDDEN` for Audit/Trace actions and hidden/direct note-target non-enumeration through `not_found_or_redacted`; focused frontend contract verifies generic Audit/Trace system-message/action rendering. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#auditTraceActionsReturnScopedSearchDetailTimelineFailureAndGuidanceSurfaces test`, `mvn -q -Dtest=WorkstreamServiceTest#auditTraceCapabilitiesAreForbiddenForMemberWithoutAuditAuthority test`, `node --test frontend/src/workstream-audit-trace-vertical.contract.test.mjs`, focused `rg` evidence, and `git diff --check`.
 
 ### TASK-FSCT-198: Verify or complete runtime testing for `surface-audit-trace-investigation-note`
 

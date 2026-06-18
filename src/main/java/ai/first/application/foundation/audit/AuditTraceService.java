@@ -397,19 +397,71 @@ public final class AuditTraceService {
   }
 
   public SurfaceData appendInvestigationNote(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {
-    validateScope(actor, input, correlationId);
-    var note = stringInput(input, "note", "Investigation note recorded without sensitive evidence.");
-    if (note == null || note.isBlank() || note.length() > 500) return validation(actor, correlationId, "note", "Investigation note is required and must be at most 500 characters.");
+    authContextResolver.requireCapability(actor.selectedContext(), INVESTIGATION_NOTE_CAPABILITY);
+    var scope = validateScope(actor, input, correlationId);
     var traceId = stringInput(input, "traceId", "trace-auth-context-" + stableSuffix(correlationId));
+    if (!(input instanceof Map<?, ?>)) {
+      authContextResolver.appendProtectedReadTrace(actor, INVESTIGATION_NOTE_CAPABILITY, "investigation note result refresh without append target", correlationId);
+      return investigationNoteResult(actor, scope, correlationId, idempotencyKey, traceId, "not_found_or_redacted", "Investigation note result", "No note append target was provided or persisted for this direct refresh; no annotation was recorded and hidden targets were not enumerated.", "", null, null, List.of(mapOf("actionCategory", "append-note", "reason", "validation_required", "recoveryPath", "Submit a note from an authorized trace, timeline, failure, guidance, export, or summary context.", "auditOnlyDenialCategory", "missing_note_target")));
+    }
+    var note = stringInput(input, "note", null);
+    if (note == null || note.isBlank() || note.length() > 500) {
+      authContextResolver.appendDeniedTrace(actor, "AUDIT_TRACE_NOTE_VALIDATION", "note:Investigation note is required and must be at most 500 characters.", correlationId);
+      return investigationNoteResult(actor, scope, correlationId, idempotencyKey, traceId, "validation-error", "Investigation note validation", "Investigation note is required and must be at most 500 characters; no annotation was recorded.", "", "note", "Investigation note is required and must be at most 500 characters.", List.of(mapOf("actionCategory", "append-note", "reason", "note_body_rejected", "recoveryPath", "Provide a concise browser-safe note and retry with a client-generated idempotency key.", "auditOnlyDenialCategory", "note_validation")));
+    }
+    if (traceId == null || traceId.isBlank() || traceId.length() > 160) {
+      authContextResolver.appendDeniedTrace(actor, "AUDIT_TRACE_NOTE_VALIDATION", "traceId:Trace id is required and must be at most 160 characters.", correlationId);
+      return investigationNoteResult(actor, scope, correlationId, idempotencyKey, "trace-redacted", "validation-error", "Investigation note validation", "Trace context is required and must be at most 160 characters; no annotation was recorded.", "", "traceId", "Trace id is required and must be at most 160 characters.", List.of(mapOf("actionCategory", "append-note", "reason", "missing_scope", "recoveryPath", "Open an authorized trace or timeline before appending a note.", "auditOnlyDenialCategory", "trace_validation")));
+    }
     authContextResolver.appendProtectedReadTrace(actor, INVESTIGATION_NOTE_CAPABILITY, "append investigation note trace:" + traceId, correlationId);
-    return new SurfaceData("surface-audit-trace-investigation-note", "system-message", "Investigation note recorded", List.of("trace-audit-note-" + stableSuffix(Objects.toString(idempotencyKey, correlationId))), mapOf(
+    return investigationNoteResult(actor, scope, correlationId, idempotencyKey, traceId, "recorded", "Investigation note recorded", "Investigation note appended as an auditable, tenant-scoped annotation; source traces remain immutable.", redacted(note), null, null, List.of());
+  }
+
+  private SurfaceData investigationNoteResult(AuthContextResolver.ResolvedMe actor, Map<String, Object> scope, String correlationId, String idempotencyKey, String traceId, String status, String title, String message, String noteSummary, String validationField, String validationMessage, List<Map<String, Object>> disabledActions) {
+    var traceRef = "trace-audit-note-" + stableSuffix(Objects.toString(idempotencyKey, correlationId));
+    var recorded = "recorded".equals(status);
+    var safeNoteHandle = recorded ? "note-" + stableSuffix(actor.selectedContext().tenantId() + ":" + actor.selectedContext().membershipId() + ":" + Objects.toString(idempotencyKey, correlationId)) : null;
+    var noteResultStatus = status.replace('-', '_');
+    var allowedActions = List.of(
+        mapOf("actionId", "action-audit-trace-detail", "label", "Open source trace detail", "capabilityId", DETAIL_CAPABILITY, "targetSurfaceId", "surface-audit-trace-detail", "safeReason", "Reauthorizes source evidence before showing detail."),
+        mapOf("actionId", "action-audit-trace-timeline", "label", "Open related timeline", "capabilityId", TIMELINE_CAPABILITY, "targetSurfaceId", "surface-audit-trace-timeline", "safeReason", "Shows authorized correlation events only."),
+        mapOf("actionId", "action-audit-trace-failure-evidence", "label", "Open failure evidence", "capabilityId", FAILURE_EVIDENCE_CAPABILITY, "targetSurfaceId", "surface-audit-trace-failure-evidence", "safeReason", "Inspects authorized failure categories without raw provider/tool payloads."),
+        mapOf("actionId", "action-audit-trace-investigation-guide", "label", "Open investigation guidance", "capabilityId", INVESTIGATION_GUIDE_CAPABILITY, "targetSurfaceId", "surface-audit-trace-investigation-guide", "safeReason", "Guidance is advisory and cannot alter note or evidence records."),
+        mapOf("actionId", "action-audit-trace-request-redacted-export", "label", "Request redacted export", "capabilityId", EXPORT_REQUEST_CAPABILITY, "targetSurfaceId", "surface-audit-trace-export-request", "approvalRequirement", "policy-gated", "safeReason", "Exports remain redacted and policy-gated."),
+        mapOf("actionId", "action-audit-trace-search", "label", "Return to scoped search", "capabilityId", SEARCH_CAPABILITY, "targetSurfaceId", "surface-audit-trace-search", "safeReason", "Reruns backend-scoped search instead of trusting browser state."),
+        mapOf("actionId", "action-audit-trace-dashboard", "label", "Return to investigation command center", "capabilityId", DASHBOARD_CAPABILITY, "targetSurfaceId", "surface-audit-trace-dashboard", "safeReason", "Recomputes scoped dashboard counters server-side."));
+    return new SurfaceData("surface-audit-trace-investigation-note", "system-message", title, List.of(traceRef), mapOf(
         "surfaceContract", "audit.trace.investigationNote.v1",
-        "status", "recorded",
+        "surfaceId", "surface-audit-trace-investigation-note",
+        "generatedAt", Instant.now().toString(),
+        "selectedScope", scope,
+        "authContextSummary", mapOf("selectedContextId", actor.selectedContext().membershipId(), "actor", actor.profile().displayName(), "roleLabels", actor.selectedContext().roles().stream().map(Enum::name).toList(), "capabilityCount", actor.selectedContext().capabilities().size()),
+        "capabilityIds", List.of(INVESTIGATION_NOTE_CAPABILITY, DETAIL_CAPABILITY, TIMELINE_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY, EXPORT_REQUEST_CAPABILITY, SEARCH_CAPABILITY, DASHBOARD_CAPABILITY),
+        "correlationId", correlationId,
+        "traceRefs", List.of(traceRef),
+        "readiness", recorded ? "ready" : status,
+        "status", status,
+        "message", message,
+        "summary", message,
+        "noteResult", mapOf("safeNoteHandle", safeNoteHandle, "status", noteResultStatus, "submitterLabel", actor.profile().displayName(), "recordedAt", recorded ? Instant.now().toString() : null, "sourceWorkstream", "Audit/Trace", "sourceSurfaceActionLabel", "action-audit-trace-append-investigation-note", "idempotencyReplayIndicator", idempotencyKey == null || idempotencyKey.isBlank() ? "none" : "client-generated-key-present-redacted", "resultSummary", message),
+        "targetEvidence", mapOf("safeTraceRefLabel", traceId, "evidenceCategory", "audit-trace", "sourceWorkstream", "Audit/Trace", "sourceSurfaceLabel", "authorized trace context", "retentionStatus", "retained-redacted", "visibleStatus", recorded ? "annotated" : status, "immutableTargetStatement", "Source traces, policy, authorization, retained evidence, export decisions, summaries, and source workstream records are unchanged."),
+        "authorizationBasis", mapOf("selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", List.of(INVESTIGATION_NOTE_CAPABILITY), "customerScopeRestricted", actor.selectedContext().customerId() != null, "redactionExplanation", "Notes are scoped to the selected AuthContext; hidden or cross-scope targets are not enumerated."),
+        "notePolicy", mapOf("maxLength", 500, "acceptedCategories", List.of("investigation-note"), "sanitization", "browser-safe preview redacts tokens, provider credentials, hidden prompts, and raw tool payloads", "retentionLabel", "audit-trace-annotation", "immutableAnnotation", true, "rejectionReason", validationMessage),
+        "annotation", mapOf("sanitizedNotePreview", noteSummary, "authorDisplayLabel", actor.profile().displayName(), "noteCategory", "investigation-note", "retentionLabel", "audit-trace-annotation", "redactedFieldCategories", DEFAULT_OMITTED_FIELDS, "sourceUnchanged", true),
+        "allowedActions", allowedActions,
+        "disabledActions", disabledActions,
+        "evidenceSummary", mapOf("redactedSupportingFacts", recorded ? "A browser-safe investigation note was recorded for the authorized trace context." : message, "visibleTraceLabel", traceId, "correlationLabel", correlationId, "relatedEventCategories", List.of("audit-trace", "investigation-note"), "omittedFieldCategories", DEFAULT_OMITTED_FIELDS, "nextUsefulEvidenceSurface", "surface-audit-trace-detail"),
+        "recoverySteps", recorded ? List.of("Open the source trace detail to reauthorize evidence before reviewing more context.", "Open the related timeline or guidance for next steps.", "Request a redacted export only through the policy-gated export action when needed.") : List.of("Return to an authorized Audit/Trace surface.", "Open a visible trace, timeline, failure evidence, guidance, or export context.", "Submit a concise browser-safe note with a client-generated idempotency key."),
+        "recovery", recorded ? "Continue through governed follow-up actions; this annotation did not mutate source evidence." : "Submit the note from an authorized target context; hidden targets are not enumerated.",
+        "emptyState", recorded ? null : mapOf("status", status, "message", message, "recovery", "Open an authorized target before appending a note."),
+        "validationErrors", validationField == null ? List.of() : List.of(mapOf("field", validationField, "message", validationMessage)),
+        "noteSummary", noteSummary,
         "traceId", traceId,
-        "noteSummary", redacted(note),
-        "idempotencyKey", idempotencyKey,
         "retainedAuthority", "Human-authored investigation notes annotate traces only; they do not mutate source traces, policy, authorization, or retained evidence.",
-        "redactionMetadata", mapOf("omittedFieldKeys", DEFAULT_OMITTED_FIELDS, "nonEnumerating", false)));
+        "redaction", mapOf("browserSafe", true, "omittedFieldKeys", DEFAULT_OMITTED_FIELDS, "hiddenCountPolicy", "non-enumerating", "safeExplanation", "Raw note bodies before sanitization, raw prompts, provider/model/tool payloads, credentials, bearer tokens, hidden ids, and cross-scope evidence are omitted.", "traceRefs", List.of(traceRef)),
+        "redactionMetadata", mapOf("omittedFieldKeys", DEFAULT_OMITTED_FIELDS, "nonEnumerating", !recorded),
+        "noDirectMutation", true,
+        "safety", mapOf("redactionNote", "Provider secrets, raw JWTs, hidden prompts, invitation tokens, raw note input, and unauthorized tenant/customer evidence are not shown.")));
   }
 
   private SurfaceData validation(AuthContextResolver.ResolvedMe actor, String correlationId, String field, String message) {

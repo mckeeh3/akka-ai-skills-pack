@@ -2126,12 +2126,27 @@ class WorkstreamServiceTest {
     assertTrue(export.resultSurface().toString().contains("Unredacted export"));
     assertFalse(export.resultSurface().toString().contains("hidden-token"));
 
+    var directNote = service.surface(identity(), "membership-admin", "surface-audit-trace-investigation-note", "corr-audit-note-direct");
+    assertEquals("surface-audit-trace-investigation-note", directNote.surfaceId());
+    assertEquals("audit.trace.investigationNote.v1", directNote.data().get("surfaceContract"));
+    assertEquals("not_found_or_redacted", directNote.data().get("status"));
+    assertTrue(directNote.toString().contains("no annotation was recorded"));
+    assertTrue(directNote.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-search")));
+    assertFalse(service.items(identity(), "membership-admin", "agent-audit-trace", "corr-audit-note-direct-read").stream().anyMatch(item -> "surface-audit-trace-investigation-note".equals(item.surfaceId())));
+
     var note = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-audit-trace-append-investigation-note", "action-audit-trace-append-investigation-note", "audit.trace.investigation_note.append", "audit.trace.investigation_note.append", Map.of("traceId", "trace-provider-blocked-002", "note", "Follow up without sk-test-secret or bearer hidden-token"), "idem-audit-note", "membership-admin", "surface-audit-trace-investigation-guide", "corr-audit-note"));
     assertEquals("recorded", note.status());
     assertEquals("surface-audit-trace-investigation-note", note.resultSurface().surfaceId());
     assertEquals("audit.trace.investigationNote.v1", note.resultSurface().data().get("surfaceContract"));
+    assertTrue(note.resultSurface().data().containsKey("noteResult"));
+    assertTrue(note.resultSurface().data().containsKey("targetEvidence"));
+    assertTrue(note.resultSurface().data().containsKey("authorizationBasis"));
+    assertTrue(note.resultSurface().data().containsKey("allowedActions"));
     assertTrue(note.resultSurface().toString().contains("do not mutate source traces"));
+    assertTrue(note.resultSurface().toString().contains("sourceUnchanged"));
+    assertTrue(note.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-request-redacted-export")));
+    assertTrue(note.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-dashboard")));
     assertFalse(note.resultSurface().toString().contains("sk-test-secret"));
     assertFalse(note.resultSurface().toString().contains("hidden-token"));
     assertTrue(service.items(identity(), "membership-admin", "agent-audit-trace", "corr-audit-note-read").stream().anyMatch(item -> "surface-audit-trace-investigation-note".equals(item.surfaceId()) && "recorded".equals(item.status())));

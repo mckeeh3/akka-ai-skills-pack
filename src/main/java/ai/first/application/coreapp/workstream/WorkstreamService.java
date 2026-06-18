@@ -1103,9 +1103,14 @@ public final class WorkstreamService {
       result = new CapabilityActionResult("blocked_provider_or_runtime", "Audit summary worker start is wired to backend-governed progress/review surfaces but fails closed when provider/runtime/tool-boundary configuration is unavailable; no deterministic summary success was fabricated.", request.correlationId(), List.of("trace-audit-summary-worker-blocked"), auditTraceSummaryTaskBlockedSurface(actor, request.correlationId()));
     } else if ("action-audit-trace-append-investigation-note".equals(request.actionId())) {
       var surface = auditTraceInvestigationNoteSurface(actor, request.input(), request.idempotencyKey(), request.correlationId());
-      var item = new WorkstreamItem("item-audit-trace-note-" + AuditTraceService.stableSuffix(request.correlationId()), AUDIT_TRACE_AGENT_ID, "system_message", Instant.now().toString(), request.correlationId(), surface.traceIds(), surface.surfaceId(), "Audit/Trace investigation note", "Human-authored investigation note recorded with browser-safe redaction.", "recorded");
-      workstreamLogRepository.appendSystemEntry(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), item, surface);
-      result = new CapabilityActionResult("recorded", "Investigation note appended as an auditable, tenant-scoped workstream annotation; source traces remain immutable.", request.correlationId(), surface.traceIds(), surface);
+      var noteStatus = Objects.toString(surface.data().get("status"), "recorded");
+      var recorded = "recorded".equals(noteStatus) || "no_op_idempotent_replay".equals(noteStatus);
+      if (recorded) {
+        var item = new WorkstreamItem("item-audit-trace-note-" + AuditTraceService.stableSuffix(request.idempotencyKey() == null || request.idempotencyKey().isBlank() ? request.correlationId() : request.idempotencyKey()), AUDIT_TRACE_AGENT_ID, "system_message", Instant.now().toString(), request.correlationId(), surface.traceIds(), surface.surfaceId(), "Audit/Trace investigation note", "Human-authored investigation note recorded with browser-safe redaction.", "recorded");
+        workstreamLogRepository.appendSystemEntry(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), item, surface);
+      }
+      var message = recorded ? "Investigation note appended as an auditable, tenant-scoped workstream annotation; source traces remain immutable." : Objects.toString(surface.data().get("message"), "Investigation note request did not record an annotation.");
+      result = new CapabilityActionResult(noteStatus, message, request.correlationId(), surface.traceIds(), surface);
     } else if ("action-governance-policy-dashboard".equals(request.actionId())) {
       result = governancePolicyReadResult(actor, "Governance/Policy dashboard loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyDashboardSurface(actor, request.correlationId()));
     } else if ("action-governance-policy-list".equals(request.actionId())) {
@@ -3501,7 +3506,7 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope auditTraceInvestigationNoteSurface(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {
     var surface = auditTraceService.appendInvestigationNote(actor, input, idempotencyKey, correlationId);
-    return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceInvestigationGuideAction()));
+    return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceExportRequestAction(), auditTraceSearchAction(), auditTraceDashboardAction()));
   }
 
   private SurfaceEnvelope auditTraceSummaryTaskBlockedSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
