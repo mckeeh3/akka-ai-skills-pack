@@ -11,11 +11,12 @@ export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps
   const isUserAdmin = envelope.surfaceId === 'surface-user-admin-users' || envelope.data.surfaceContract === 'user_admin.users.v1' || envelope.data.surfaceContracts?.some((contract) => contract.startsWith('user_admin.'));
   const isAgentAdminCatalog = envelope.surfaceId === 'surface-agent-admin-catalog' || envelope.data.surfaceContract === 'agent_admin.catalog.v1';
   const isAuditTraceSearch = envelope.surfaceId === 'surface-audit-trace-search' || envelope.data.surfaceContract === 'audit.trace.search.v1';
+  const isGovernancePolicyInventory = envelope.surfaceId === 'surface-governance-policy-inventory' || envelope.data.surfaceContract === 'governance.policy.inventory.v1';
   const columns = Array.from(new Set(envelope.data.rows.flatMap((row) => Object.keys(row))));
   const queryValue = typeof envelope.data.query === 'string' ? envelope.data.query : JSON.stringify(envelope.data.query);
   return (
     <SurfaceStateFrame envelope={envelope}>
-      {isAuditTraceSearch ? <AuditTraceSearchView envelope={envelope} onAction={onAction} /> : isAgentAdminCatalog ? <AgentAdminCatalogView envelope={envelope} onAction={onAction} /> : isAgentAdminSeedMaterial(envelope) ? <AgentAdminSeedMaterialView envelope={envelope} onAction={onAction} /> : isUserAdmin ? <UserAdminUsersView envelope={envelope} onAction={onAction} /> : (
+      {isGovernancePolicyInventory ? <GovernancePolicyInventoryView envelope={envelope} onAction={onAction} /> : isAuditTraceSearch ? <AuditTraceSearchView envelope={envelope} onAction={onAction} /> : isAgentAdminCatalog ? <AgentAdminCatalogView envelope={envelope} onAction={onAction} /> : isAgentAdminSeedMaterial(envelope) ? <AgentAdminSeedMaterialView envelope={envelope} onAction={onAction} /> : isUserAdmin ? <UserAdminUsersView envelope={envelope} onAction={onAction} /> : (
         <>
           <form className="surface-search-form" role="search">
             <label htmlFor={`${envelope.surfaceId}-query`}>Search</label>
@@ -35,6 +36,77 @@ export function ListSearchSurface({ envelope, onAction }: ListSearchSurfaceProps
       )}
     </SurfaceStateFrame>
   );
+}
+
+function GovernancePolicyInventoryView({ envelope, onAction }: ListSearchSurfaceProps) {
+  const rows = envelope.data.rows;
+  const actionById = new Map(envelope.actions.map((action) => [action.actionId, action]));
+  const refreshAction = actionById.get('action-governance-policy-list');
+  const draftAction = actionById.get('action-governance-policy-draft-proposal');
+  const auditAction = actionById.get('action-open-audit-trace');
+  const query = typeof envelope.data.query === 'object' && envelope.data.query ? envelope.data.query as Record<string, unknown> : {};
+  const search = typeof query.search === 'string' ? query.search : '';
+  const lifecycle = typeof query.lifecycle === 'string' ? query.lifecycle : '';
+  const inventorySummary = (envelope.data as { inventorySummary?: unknown }).inventorySummary;
+  const readiness = (envelope.data as { readiness?: unknown }).readiness;
+  return (
+    <section className="user-admin-users-surface governance-policy-inventory-surface" aria-label="Governance/Policy policy and proposal inventory">
+      <div className="user-admin-users-header">
+        <div>
+          <p className="eyebrow">Governance/Policy · backend-scoped inventory</p>
+          <h3>Policy/proposal inventory</h3>
+          <p>Rows open backend-authorized evidence or lifecycle surfaces. Filters are hints only; selected AuthContext, row visibility, redaction, and action availability are rechecked server-side.</p>
+        </div>
+        <div className="user-admin-users-header-actions">
+          {refreshAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(refreshAction, envelope.surfaceId, safeDirectoryInput(envelope))}>Refresh inventory</button>}
+          {draftAction && <button type="button" className="surface-action-link primary" onClick={() => onAction?.(draftAction, envelope.surfaceId, { rationale: 'Draft from Governance/Policy inventory', proposedContent: 'Policy proposal drafted from authorized inventory surface.' })}>Draft proposal</button>}
+          {auditAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(auditAction, envelope.surfaceId)}>Open traces</button>}
+        </div>
+      </div>
+      <form className="surface-search-form user-admin-clean-search" role="search" onSubmit={(event) => { event.preventDefault(); const data = new FormData(event.currentTarget); if (refreshAction) onAction?.(refreshAction, envelope.surfaceId, stringRecord({ search: data.get('search'), lifecycle: data.get('lifecycle') })); }}>
+        <label htmlFor={`${envelope.surfaceId}-search`}>Search visible policies and proposals</label>
+        <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-search`} name="search" placeholder="Title, policy id, proposal id, capability, or source" defaultValue={search} />
+        <label htmlFor={`${envelope.surfaceId}-lifecycle`}>Lifecycle/status</label>
+        <select className="designed-control" id={`${envelope.surfaceId}-lifecycle`} name="lifecycle" defaultValue={lifecycle || 'all'}>
+          {['all', 'active', 'draft', 'submitted', 'in-review', 'changes-requested', 'approved', 'rejected', 'activated', 'rolled-back', 'blocked'].map((state) => <option key={state} value={state}>{formatStatus(state)}</option>)}
+        </select>
+        <button type="submit" className="surface-action-link secondary" disabled={!refreshAction}>Apply filters</button>
+      </form>
+      {inventorySummary != null ? <p className="surface-state-inline" role="status">{renderSurfaceValue(inventorySummary)}</p> : null}
+      {readiness != null ? <p className="surface-state-inline partial" role="status">Readiness: {renderSurfaceValue(readiness)}</p> : null}
+      {envelope.data.redaction && <details className="dashboard-evidence-drawer"><summary>Inventory redaction and diagnostics</summary><p>{renderSurfaceValue(envelope.data.redaction)}</p><p>Trace links: {renderSurfaceValue((envelope.data as { traceLinks?: unknown }).traceLinks) ?? 'role-gated'}</p></details>}
+      {rows.length === 0 ? <p className="surface-empty-copy">{envelope.data.emptyMessage ?? 'No authorized policy/proposal rows match this selected scope or filter.'}</p> : (
+        <div className="user-admin-clean-list governance-policy-inventory-list" role="list" aria-label="Authorized policy and proposal rows">
+          {rows.map((row, index) => <GovernancePolicyInventoryRow key={String(row.proposalId ?? row.policyId ?? index)} row={row} actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />)}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function GovernancePolicyInventoryRow({ row, actions, surfaceId, onAction }: { row: ListSearchSurfaceData['rows'][number]; actions: SurfaceAction[]; surfaceId: string; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
+  const action = governancePolicyRowAction(row, actions);
+  const title = String(row.title ?? row.name ?? row.proposalRef ?? row.policyId ?? 'Policy/proposal row');
+  const status = String(row.lifecycle ?? row.status ?? 'ready');
+  const targetSurfaceId = String(row.targetSurfaceId ?? action?.resultSurface?.updateSurfaceId ?? 'surface-governance-policy-detail');
+  return (
+    <button type="button" role="listitem" className="user-admin-clean-row governance-policy-inventory-row" disabled={!action || Boolean(action.disabled)} onClick={() => action && onAction?.(action, surfaceId, backendRowInput(row))} aria-label={`Open ${title} through backend-authorized ${String(row.openActionId ?? action?.actionId ?? 'row action')} to ${targetSurfaceId}`}>
+      <span className="user-admin-person"><strong>{title}</strong><small>{String(row.sourceArtifactSummary ?? row.sourceArtifact ?? 'Backend-owned governance row')}</small></span>
+      <span className="user-admin-role">{formatRole(row.type ?? row.riskClassification ?? 'governance')}</span>
+      <span className={`status-pill ${statusTone(status)}`}>{formatStatus(status)}</span>
+      <span className="status-pill info">{String(row.riskClassification ?? 'browser-safe')}</span>
+      <span className="status-pill info">{String(row.openActionId ?? action?.actionId ?? 'no action')}</span>
+      <small>{String(row.safeTraceSummary ?? row.rowRedaction ?? 'Trace and row evidence are redacted for browser safety.')}</small>
+    </button>
+  );
+}
+
+function governancePolicyRowAction(row: ListSearchSurfaceData['rows'][number], actions: SurfaceAction[]): SurfaceAction | undefined {
+  const explicitActionId = typeof row.openActionId === 'string' ? row.openActionId : typeof row.rowActionId === 'string' ? row.rowActionId : undefined;
+  if (explicitActionId) return actions.find((action) => action.actionId === explicitActionId);
+  const targetSurfaceId = typeof row.targetSurfaceId === 'string' ? row.targetSurfaceId : undefined;
+  if (targetSurfaceId) return actions.find((action) => action.resultSurface?.updateSurfaceId === targetSurfaceId);
+  return actions.find((action) => action.actionId === 'action-governance-policy-read');
 }
 
 

@@ -1145,7 +1145,7 @@ public final class WorkstreamService {
     } else if ("action-governance-policy-dashboard".equals(request.actionId())) {
       result = governancePolicyReadResult(actor, "Governance/Policy dashboard loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyDashboardSurface(actor, request.correlationId()));
     } else if ("action-governance-policy-list".equals(request.actionId())) {
-      result = governancePolicyReadResult(actor, "Governance/Policy inventory loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyInventorySurface(actor, request.correlationId()));
+      result = governancePolicyReadResult(actor, "Governance/Policy inventory loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyInventorySurface(actor, request.input(), request.correlationId()));
     } else if ("action-governance-policy-read".equals(request.actionId())) {
       result = governancePolicyReadResult(actor, "Governance/Policy policy detail loaded from GovernancePolicyService for the selected AuthContext.", request.correlationId(), governancePolicyDetailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-governance-policy-draft-proposal".equals(request.actionId())) {
@@ -3853,7 +3853,21 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope governancePolicyInventorySurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return governancePolicyEnvelope(actor, correlationId, governancePolicyService.inventory(actor, correlationId), List.of(governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSimulateProposalAction(), openAuditAction()));
+    return governancePolicyInventorySurface(actor, Map.of(), correlationId);
+  }
+
+  private SurfaceEnvelope governancePolicyInventorySurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var actions = new java.util.ArrayList<SurfaceAction>();
+    actions.add(governanceListPoliciesAction());
+    actions.add(governanceReadPolicyAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_PROPOSE_CAPABILITY)) actions.add(governanceDraftProposalAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_SIMULATE_CAPABILITY)) actions.add(governanceSimulateProposalAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_APPROVE_CAPABILITY)) actions.add(governanceDecideProposalAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_START_CAPABILITY)) actions.add(governanceStartImpactAnalysisAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY)) actions.add(governanceReadImpactAnalysisAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_OUTCOMES_RECORD_CAPABILITY)) actions.add(governanceOutcomeNoteAction());
+    if (actor.selectedContext().capabilities().contains(AUDIT_TRACE_READ_CAPABILITY)) actions.add(openAuditAction());
+    return governancePolicyEnvelope(actor, correlationId, governancePolicyService.inventory(actor, input, correlationId), List.copyOf(actions));
   }
 
   private Map<String, Object> governancePolicyRow(String id, String name, String status, String source, List<String> capabilityIds, String traceId) {

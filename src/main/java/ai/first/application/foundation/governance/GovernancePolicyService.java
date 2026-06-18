@@ -116,18 +116,49 @@ public final class GovernancePolicyService {
   }
 
   public SurfaceData inventory(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    return inventory(actor, Map.of(), correlationId);
+  }
+
+  public SurfaceData inventory(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    validateScope(actor, input, correlationId);
     requireRead(actor, LIST_CAPABILITY, correlationId);
-    var rows = new java.util.ArrayList<Map<String, Object>>();
-    rows.addAll(policies());
-    rows.addAll(repository.listProposals(actor.selectedContext().tenantId(), actor.selectedContext().customerId()).stream().map(this::proposalRow).toList());
+    var allRows = new java.util.ArrayList<Map<String, Object>>();
+    allRows.addAll(policies());
+    allRows.addAll(repository.listProposals(actor.selectedContext().tenantId(), actor.selectedContext().customerId()).stream().map(proposal -> proposalRow(actor, proposal)).toList());
+    var search = stringInput(input, "search", stringInput(input, "query", ""));
+    var lifecycle = stringInput(input, "lifecycle", stringInput(input, "status", stringInput(input, "filter", "")));
+    var rows = allRows.stream().filter(row -> matchesInventoryFilter(row, search, lifecycle)).toList();
+    var visibleCapabilities = actor.selectedContext().capabilities();
+    var authorizedActions = new java.util.ArrayList<Map<String, Object>>();
+    authorizedActions.add(inventoryAction("action-governance-policy-list", "Refresh/open inventory", READ_CAPABILITY, "list-policy-proposals", "surface-governance-policy-inventory", false));
+    authorizedActions.add(inventoryAction("action-governance-policy-read", "Open row detail/evidence", READ_CAPABILITY, "list-policy-proposals", "surface-governance-policy-detail", false));
+    if (visibleCapabilities.contains(LEGACY_PROPOSE_CAPABILITY)) authorizedActions.add(inventoryAction("action-governance-policy-draft-proposal", "Draft new proposal", LEGACY_PROPOSE_CAPABILITY, "draft-policy-proposal", "surface-governance-policy-proposal", true));
+    if (visibleCapabilities.contains(SIMULATE_CAPABILITY)) authorizedActions.add(inventoryAction("action-governance-policy-simulate", "Open simulation task", SIMULATE_CAPABILITY, "simulate-policy-change", "surface-governance-policy-simulation", false));
+    if (visibleCapabilities.contains(APPROVE_CAPABILITY)) authorizedActions.add(inventoryAction("action-governance-policy-decide", "Open decision/activation/rollback work", APPROVE_CAPABILITY, "approve-activate-or-rollback-policy", "surface-governance-policy-decision", true));
+    if (visibleCapabilities.contains("governance.policy.impact_analysis.start")) authorizedActions.add(inventoryAction("action-governance-policy-start-impact-analysis", "Start impact analysis", "governance.policy.impact_analysis.start", "start-policy-impact-analysis", "surface-governance-policy-impact-analysis-task", true));
+    if (visibleCapabilities.contains("governance.policy.impact_analysis.read")) authorizedActions.add(inventoryAction("action-governance-policy-read-impact-analysis", "Read impact analysis", "governance.policy.impact_analysis.read", "read-policy-impact-analysis", "surface-governance-policy-impact-analysis-task", false));
+    if (visibleCapabilities.contains(OUTCOMES_RECORD_CAPABILITY)) authorizedActions.add(inventoryAction("action-governance-policy-outcome-note", "Record/open outcome note", OUTCOMES_RECORD_CAPABILITY, "record-policy-outcome-note", "surface-governance-policy-outcome", true));
+    var totalVisible = allRows.size();
+    var filteredCount = rows.size();
     return surface("surface-governance-policy-inventory", "list-search", "Policy inventory", correlationId, mapOf(
         "surfaceContract", "governance.policy.inventory.v1",
-        "query", mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "capabilityId", LIST_CAPABILITY, "includes", "active policy concepts and scoped policy proposals"),
+        "ownerFunctionalAgentId", "governance-policy-agent",
+        "inventorySummary", mapOf("selectedWorkstream", "Governance/Policy", "scopeLabel", contextLabel(actor), "totalVisibleCount", totalVisible, "filteredCount", filteredCount, "lifecycleBucketCounts", lifecycleCounts(allRows), "blockedProviderRuntimeCount", 1, "selectedFiltersSummary", selectedFiltersSummary(search, lifecycle), "freshnessState", "ready", "emptyStateCopy", "No active policy concepts or policy proposals are visible in this selected AuthContext."),
+        "query", mapOf("selectedContextId", actor.selectedContext().membershipId(), "capabilityId", LIST_CAPABILITY, "search", search, "lifecycle", lifecycle, "includes", "active policy concepts and scoped policy proposals", "tenantCustomerScope", "backend-resolved selected AuthContext"),
+        "filters", mapOf("searchText", search, "lifecycle", lifecycle, "allowedLifecycleValues", List.of("active", "draft", "submitted", "in-review", "changes-requested", "approved", "rejected", "activated", "rolled-back", "blocked"), "sourceArtifactOptions", List.of("GovernancePolicyService", "ToolPermissionBoundary", "AgentDefinition", "GovernancePolicyProposal"), "validationMessages", List.of()),
+        "sortAndPage", mapOf("allowedSortKeys", List.of("lastActivity", "status", "risk", "title"), "currentSort", "lastActivity", "pageSize", rows.size(), "hasNextCursor", false, "hasPreviousCursor", false, "staleCursorRecoveryCopy", "Refresh inventory; raw database cursors are never exposed."),
         "rows", rows,
-        "pageInfo", mapOf("totalKnownCount", rows.size()),
-        "emptyMessage", "No active policy concepts or policy proposals are visible in this selected AuthContext.",
-        "systemStates", List.of("loading", "empty", "ready", "forbidden", "validation-error", "no-op", "system_message", "partial-data", "stale"),
-        "redaction", "policy and proposal rows are browser-safe summaries; secrets, raw prompts, hidden prompt text, raw tool payloads, and cross-tenant evidence omitted"));
+        "pageInfo", mapOf("totalKnownCount", totalVisible, "filteredCount", filteredCount),
+        "emptyStates", mapOf("noVisibleProposals", "No active policy concepts or policy proposals are visible in this selected AuthContext.", "filterMatchedZero", "No authorized rows match the current filters; hidden rows are not enumerated.", "staleCursor", "Refresh inventory; stale cursor details are omitted.", "deniedDirectProposal", "The requested proposal is unavailable or redacted in this selected context.", "providerRuntimeBlocked", "Advisory simulation or impact-analysis status is blocked until provider/runtime configuration is available.", "partialDataOmission", "Some row evidence or trace details may be role-gated."),
+        "emptyMessage", filteredCount == 0 ? "No authorized policy/proposal rows match this selected scope or filter." : "No active policy concepts or policy proposals are visible in this selected AuthContext.",
+        "authorizedActions", List.copyOf(authorizedActions),
+        "traceLinks", List.of(mapOf("traceId", trace("inventory", correlationId), "label", "Governance/Policy inventory protected read", "targetSurfaceId", "surface-audit-trace-detail", "correlationId", correlationId, "redaction", "raw ids and provider/tool payloads role-gated")),
+        "traceRefs", List.of(trace("inventory", correlationId)),
+        "redaction", mapOf("browserSafe", true, "omittedFieldKeys", OMITTED_FIELDS, "hiddenCrossTenantEvidence", true, "hiddenAuthorityState", true, "rawProviderModelData", "omitted", "rawToolPayloads", "omitted", "rawDatabaseCursors", "omitted", "correlationIds", "role-gated", "idempotencyKeys", "role-gated"),
+        "readiness", mapOf("simulation", "ready_for_deterministic_advisory_evidence", "impactAnalysis", "blocked_provider_or_runtime", "noFakeSuccess", true),
+        "systemStates", List.of("loading", "empty", "ready", "filter-validation-error", "forbidden/system-message", "stale/reconnect", "partial-data", "blocked-provider-or-runtime", "failure"),
+        "noDirectMutation", true,
+        "noFakeSuccess", true));
   }
 
   public SurfaceData detail(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
@@ -490,21 +521,93 @@ public final class GovernancePolicyService {
     return new SurfaceData(id, type, title, List.of(trace(id.replace("surface-governance-policy-", ""), correlationId)), data);
   }
 
-  private Map<String, Object> proposalRow(GovernancePolicyProposal proposal) {
+  private Map<String, Object> proposalRow(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal) {
+    var status = proposal.status().name().toLowerCase().replace('_', '-');
+    var authorizedRowActions = new java.util.ArrayList<String>();
+    authorizedRowActions.add("action-governance-policy-read");
+    if (actor.selectedContext().capabilities().contains(SIMULATE_CAPABILITY)) authorizedRowActions.add("action-governance-policy-simulate");
+    if (actor.selectedContext().capabilities().contains(APPROVE_CAPABILITY) && proposal.status() == GovernancePolicyProposal.Status.IN_REVIEW) authorizedRowActions.add("action-governance-policy-decide");
+    if (actor.selectedContext().capabilities().contains("governance.policy.impact_analysis.start")) authorizedRowActions.add("action-governance-policy-start-impact-analysis");
+    if (actor.selectedContext().capabilities().contains(OUTCOMES_RECORD_CAPABILITY) && (proposal.status() == GovernancePolicyProposal.Status.ACTIVATED || proposal.status() == GovernancePolicyProposal.Status.ROLLED_BACK)) authorizedRowActions.add("action-governance-policy-outcome-note");
     return mapOf(
         "policyId", proposal.targetPolicyId(),
+        "proposalRef", proposal.proposalId(),
         "proposalId", proposal.proposalId(),
+        "title", proposal.title(),
         "name", proposal.title(),
         "type", "proposal",
-        "status", proposal.status().name().toLowerCase(),
-        "affectedCapabilityIds", proposal.affectedCapabilityIds(),
-        "sourceArtifact", "GovernancePolicyProposal",
-        "lastChangeTraceId", firstNonBlank(proposal.activationCorrelationId(), proposal.decisionCorrelationId(), proposal.createdCorrelationId()),
-        "version", 1,
-        "owner", proposal.createdByAccountId(),
+        "lifecycle", status,
+        "status", status,
         "riskClassification", proposal.riskClassification(),
+        "affectedCapabilityIds", proposal.affectedCapabilityIds(),
+        "affectedCapabilitySummaries", proposal.affectedCapabilityIds(),
+        "sourceArtifact", "GovernancePolicyProposal",
+        "sourceArtifactSummary", "Backend-owned policy proposal lifecycle record",
+        "owner", proposal.createdByAccountId(),
+        "ownerDisplay", "Tenant governance actor",
+        "simulationEvidenceStatus", "advisory-required-before-activation",
+        "approvalReadiness", proposal.status() == GovernancePolicyProposal.Status.IN_REVIEW ? "human-review-required" : status,
+        "activationReadiness", proposal.status() == GovernancePolicyProposal.Status.APPROVED ? "blocked-until-simulation-and-rollback-metadata" : "not-ready",
+        "outcomeImpactAnalysisSummary", "Impact analysis is fail-closed until provider/runtime is configured; no fake success is exposed.",
+        "lastActivityAge", "recent backend lifecycle activity",
+        "safeTraceSummary", "Trace refs are browser-safe summaries; raw ids are role-gated.",
+        "lastChangeTraceId", firstNonBlank(proposal.activationCorrelationId(), proposal.decisionCorrelationId(), proposal.submittedCorrelationId(), proposal.createdCorrelationId()),
+        "rowRedaction", "cross-tenant evidence, hidden authority state, raw prompts, raw tool payloads, JWTs, secrets, correlation ids, and idempotency keys omitted",
+        "targetSurfaceId", "surface-governance-policy-detail",
+        "openActionId", "action-governance-policy-read",
+        "rowActionId", "action-governance-policy-read",
+        "authorizedActionIds", List.copyOf(authorizedRowActions),
+        "safeActionContext", mapOf("proposalId", proposal.proposalId(), "policyId", proposal.targetPolicyId()),
+        "version", 1,
         "requiredApproval", proposal.requiredApprovalCapabilityId(),
         "redacted", true);
+  }
+
+  private static boolean matchesInventoryFilter(Map<String, Object> row, String search, String lifecycle) {
+    var normalizedSearch = search == null ? "" : search.toLowerCase().trim();
+    var normalizedLifecycle = lifecycle == null ? "" : lifecycle.toLowerCase().trim().replace('_', '-');
+    if (!normalizedLifecycle.isBlank() && !"all".equals(normalizedLifecycle)) {
+      var status = Objects.toString(row.get("status"), "").toLowerCase().replace('_', '-');
+      var rowLifecycle = Objects.toString(row.get("lifecycle"), status).toLowerCase().replace('_', '-');
+      if (!status.contains(normalizedLifecycle) && !rowLifecycle.contains(normalizedLifecycle)) return false;
+    }
+    if (normalizedSearch.isBlank()) return true;
+    var haystack = String.join(" ", Objects.toString(row.get("policyId"), ""), Objects.toString(row.get("proposalId"), ""), Objects.toString(row.get("name"), ""), Objects.toString(row.get("title"), ""), Objects.toString(row.get("type"), ""), Objects.toString(row.get("sourceArtifact"), ""), Objects.toString(row.get("affectedCapabilityIds"), "")).toLowerCase();
+    return haystack.contains(normalizedSearch);
+  }
+
+  private static Map<String, Object> inventoryAction(String actionId, String label, String capabilityId, String governedToolId, String resultSurfaceId, boolean idempotencyRequired) {
+    return mapOf("actionId", actionId, "label", label, "capabilityId", capabilityId, "governedToolId", governedToolId, "resultSurfaceId", resultSurfaceId, "idempotencyRequired", idempotencyRequired);
+  }
+
+  private static Map<String, Object> lifecycleCounts(List<Map<String, Object>> rows) {
+    return mapOf(
+        "active", countRows(rows, "active"),
+        "draft", countRows(rows, "draft"),
+        "submitted", countRows(rows, "submitted"),
+        "in-review", countRows(rows, "in-review"),
+        "changes-requested", countRows(rows, "changes-requested"),
+        "approved", countRows(rows, "approved"),
+        "rejected", countRows(rows, "rejected"),
+        "activated", countRows(rows, "activated"),
+        "rolled-back", countRows(rows, "rolled-back"),
+        "blocked", countRows(rows, "blocked"));
+  }
+
+  private static long countRows(List<Map<String, Object>> rows, String state) {
+    return rows.stream().filter(row -> Objects.toString(row.get("status"), "").toLowerCase().replace('_', '-').equals(state)).count();
+  }
+
+  private static String selectedFiltersSummary(String search, String lifecycle) {
+    var selected = new java.util.ArrayList<String>();
+    if (search != null && !search.isBlank()) selected.add("search=" + safe(search));
+    if (lifecycle != null && !lifecycle.isBlank() && !"all".equalsIgnoreCase(lifecycle)) selected.add("lifecycle=" + safe(lifecycle));
+    return selected.isEmpty() ? "all authorized policy/proposal rows" : String.join(", ", selected);
+  }
+
+  private static String contextLabel(AuthContextResolver.ResolvedMe actor) {
+    var selected = actor.selectedContext();
+    return selected.scopeType().name().toLowerCase().replace('_', '-') + " " + selected.tenantId() + (selected.customerId() == null ? "" : " / " + selected.customerId());
   }
 
   private static String decisionRecommendation(GovernancePolicyProposal proposal) {
@@ -534,7 +637,36 @@ public final class GovernancePolicyService {
   }
 
   private Map<String, Object> policy(String id, String name, String status, String source, List<String> capabilityIds, String traceId) {
-    return mapOf("policyId", id, "name", name, "type", "governance", "status", status, "affectedCapabilityIds", capabilityIds, "sourceArtifact", source, "lastChangeTraceId", traceId, "version", 1, "owner", "Governance/Policy", "redacted", true);
+    return mapOf(
+        "policyId", id,
+        "proposalRef", id,
+        "title", name,
+        "name", name,
+        "type", "governance",
+        "lifecycle", status,
+        "status", status,
+        "riskClassification", "baseline",
+        "affectedCapabilityIds", capabilityIds,
+        "affectedCapabilitySummaries", capabilityIds,
+        "sourceArtifact", source,
+        "sourceArtifactSummary", "Starter policy concept projected by GovernancePolicyService",
+        "owner", "Governance/Policy",
+        "ownerDisplay", "Governance/Policy",
+        "simulationEvidenceStatus", "not-required-for-active-baseline-policy",
+        "approvalReadiness", "active-read-only",
+        "activationReadiness", "already-active-policy-concept",
+        "outcomeImpactAnalysisSummary", "Read-only concept row; impact analysis only applies to proposal rows and fails closed until provider/runtime is configured.",
+        "lastActivityAge", "starter baseline",
+        "safeTraceSummary", "Trace refs are browser-safe summaries; raw ids are role-gated.",
+        "lastChangeTraceId", traceId,
+        "rowRedaction", "raw policy internals, prompts, tool payloads, JWTs, secrets, hidden scopes, and correlation/idempotency details omitted",
+        "targetSurfaceId", "surface-governance-policy-detail",
+        "openActionId", "action-governance-policy-read",
+        "rowActionId", "action-governance-policy-read",
+        "authorizedActionIds", List.of("action-governance-policy-read"),
+        "safeActionContext", mapOf("policyId", id),
+        "version", 1,
+        "redacted", true);
   }
 
   private static String classifyRisk(String content) {

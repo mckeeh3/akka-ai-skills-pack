@@ -7385,7 +7385,7 @@
 
 ### TASK-FSCT-209: Verify or complete runtime implementation for `surface-governance-policy-inventory`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-208]
 - surface id: `surface-governance-policy-inventory`
@@ -7416,6 +7416,7 @@
   - purpose: Policy/proposal inventory and queue.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-inventory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-inventory`; surface graph node/action edge for opening or acting on `surface-governance-policy-inventory`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented the real Governance/Policy inventory runtime path through protected Workstream API/action routing, backend `GovernancePolicyService#inventory` selected-AuthContext scoping, read authorization, browser-safe list/search payload, filter/sort/page/row action metadata, trace/redaction/readiness/no-fake-success evidence, and a Governance/Policy-specific React list-search renderer with backend-declared row action routing. Runtime evidence: readiness level `runtime-ready` for implementation scope. Checks passed: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyDashboardRuntimePath -DtrimStackTrace=false test`, `mvn -q -Dtest=WorkstreamServiceTest#governancePolicyBackendActionsExposeReadProposalSimulationApprovalAndBlockedRuntimeSurfaces test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-210: Verify or complete runtime testing for `surface-governance-policy-inventory`
 
