@@ -107,9 +107,26 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(dashboard.toString().contains("trace-agent-admin-dashboard"));
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-open-catalog") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-catalog")));
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-open-prompt-risk-review") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-prompt-risk-review")));
+    assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-open-tool-boundary") && action.resultSurface().updateSurfaceId().equals("surface-agent-tool-boundary-diff")));
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-open-model-refs") && action.resultSurface().updateSurfaceId().equals("surface-agent-model-refs")));
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
     assertBrowserSafe(dashboard);
+
+    var dashboardToolBoundary = runAction(new CapabilityActionRequest(
+        "action-agent-admin-open-tool-boundary",
+        "action-agent-admin-open-tool-boundary",
+        "agent_admin.get_tool_boundary",
+        "agent_admin.get_tool_boundary",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        dashboard.surfaceId(),
+        "corr-agent-admin-dashboard-tool-boundary"));
+    assertEquals("accepted", dashboardToolBoundary.status());
+    assertEquals("surface-agent-tool-boundary-diff", dashboardToolBoundary.resultSurface().surfaceId());
+    assertEquals("agent_admin.tool_boundary_diff.v1", dashboardToolBoundary.resultSurface().data().get("surfaceContract"));
+    assertTrue(dashboardToolBoundary.resultSurface().toString().contains("ToolPermissionBoundary"));
+    assertBrowserSafe(dashboardToolBoundary.resultSurface());
 
     var refreshed = runAction(new CapabilityActionRequest(
         "action-agent-admin-refresh-dashboard",
@@ -222,6 +239,11 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
         .responseBodyAs(String.class)
         .invoke(), "Protected Agent Admin skill-manifest surface must reject missing bearer tokens.");
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-tool-boundary-diff")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin tool-boundary diff surface must reject missing bearer tokens.");
 
     var seedDefaults = runAction(new CapabilityActionRequest(
         "action-import-agent-seed-defaults",
@@ -723,6 +745,14 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(directToolBoundary.toString().contains("providerCredentials=omitted"));
     assertTrue(directToolBoundary.toString().contains("tool-boundary-denied"));
     assertTrue(directToolBoundary.toString().contains("noDirectActivation=true"));
+    assertTrue(directToolBoundary.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-tool-boundary-refresh")));
+    assertTrue(directToolBoundary.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-tool-boundary-simulate") && action.resultSurface().updateSurfaceId().equals("surface-agent-test-console")));
+    assertTrue(directToolBoundary.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-tool-boundary-submit-review") && action.resultSurface().updateSurfaceId().equals("surface-agent-behavior-proposal")));
+    assertTrue(directToolBoundary.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-tool-boundary-approve") && action.resultSurface().updateSurfaceId().equals("surface-agent-behavior-proposal")));
+    assertTrue(directToolBoundary.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-tool-boundary-reject") && action.resultSurface().updateSurfaceId().equals("surface-agent-behavior-proposal")));
+    assertTrue(directToolBoundary.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-tool-boundary-open-model-refs") && action.resultSurface().updateSurfaceId().equals("surface-agent-model-refs")));
+    assertTrue(directToolBoundary.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-tool-boundary-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+    assertTrue(directToolBoundary.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-tool-boundary-back-to-detail") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail")));
     assertBrowserSafe(directToolBoundary);
 
     var toolBoundaryRefresh = runAction(new CapabilityActionRequest(
@@ -769,6 +799,36 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(toolBoundarySubmit.message().contains("active ToolPermissionBoundary grants remain unchanged"));
     assertBrowserSafe(toolBoundarySubmit.resultSurface());
 
+    var toolBoundaryRepeatedSubmit = runAction(new CapabilityActionRequest(
+        "action-agent-tool-boundary-submit-review",
+        "action-agent-tool-boundary-submit-review",
+        "agent_admin.submit_behavior_change_for_review",
+        "agent_admin.submit_behavior_change_for_review",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-tool-boundary-submit",
+        ADMIN_CONTEXT_ID,
+        directToolBoundary.surfaceId(),
+        "corr-agent-admin-tool-boundary-submit-repeat"));
+    assertTrue(toolBoundaryRepeatedSubmit.status().equals("approval-required") || toolBoundaryRepeatedSubmit.status().equals("denied"));
+    assertEquals("surface-agent-behavior-proposal", toolBoundaryRepeatedSubmit.resultSurface().surfaceId());
+    assertTrue(toolBoundaryRepeatedSubmit.message().contains("active ToolPermissionBoundary grants remain unchanged"));
+    assertBrowserSafe(toolBoundaryRepeatedSubmit.resultSurface());
+
+    var toolBoundaryApprove = runAction(new CapabilityActionRequest(
+        "action-agent-tool-boundary-approve",
+        "action-agent-tool-boundary-approve",
+        "agent_admin.approve_behavior_change",
+        "agent_admin.approve_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-tool-boundary-approve",
+        ADMIN_CONTEXT_ID,
+        directToolBoundary.surfaceId(),
+        "corr-agent-admin-tool-boundary-approve"));
+    assertTrue(toolBoundaryApprove.status().equals("approval-required") || toolBoundaryApprove.status().equals("denied"));
+    assertEquals("surface-agent-behavior-proposal", toolBoundaryApprove.resultSurface().surfaceId());
+    assertTrue(toolBoundaryApprove.message().contains("activation remains blocked until a separate confirmation surface"));
+    assertBrowserSafe(toolBoundaryApprove.resultSurface());
+
     var toolBoundaryRejectMissingReason = runAction(new CapabilityActionRequest(
         "action-agent-tool-boundary-reject",
         "action-agent-tool-boundary-reject",
@@ -783,6 +843,21 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-agent-tool-boundary-diff", toolBoundaryRejectMissingReason.resultSurface().surfaceId());
     assertTrue(toolBoundaryRejectMissingReason.message().contains("requires a human-readable reason"));
     assertBrowserSafe(toolBoundaryRejectMissingReason.resultSurface());
+
+    var toolBoundaryReject = runAction(new CapabilityActionRequest(
+        "action-agent-tool-boundary-reject",
+        "action-agent-tool-boundary-reject",
+        "agent_admin.reject_behavior_change",
+        "agent_admin.reject_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "reason", "Keep side-effecting grants disabled until provider and policy evidence is complete."),
+        "idem-agent-tool-boundary-reject",
+        ADMIN_CONTEXT_ID,
+        directToolBoundary.surfaceId(),
+        "corr-agent-admin-tool-boundary-reject"));
+    assertTrue(toolBoundaryReject.status().equals("accepted") || toolBoundaryReject.status().equals("denied"));
+    assertEquals("surface-agent-behavior-proposal", toolBoundaryReject.resultSurface().surfaceId());
+    assertTrue(toolBoundaryReject.message().contains("active ToolPermissionBoundary grants and tenant scope remain unchanged"));
+    assertBrowserSafe(toolBoundaryReject.resultSurface());
 
     var toolBoundaryModelRefs = runAction(new CapabilityActionRequest(
         "action-agent-tool-boundary-open-model-refs",
@@ -943,6 +1018,13 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "member@example.test",
         "Member User",
         MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin skill-manifest diff payloads or compact manifest metadata.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-tool-boundary-diff",
+        "corr-agent-admin-tool-boundary-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin tool-boundary payloads, grant metadata, or denial counts.");
 
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-agent-admin-catalog",
@@ -972,6 +1054,13 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "customer@example.test",
         "Customer Admin",
         CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin skill-manifest diff rows, manifest ids, or reference metadata.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-tool-boundary-diff",
+        "corr-agent-admin-tool-boundary-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin tool-boundary rows, grants, hidden ids, or tenant governance state.");
   }
 
   @Test

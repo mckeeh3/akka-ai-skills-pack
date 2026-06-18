@@ -5194,7 +5194,7 @@
 
 ### TASK-FSCT-147: Verify or complete runtime testing for `surface-agent-tool-boundary-diff`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-146]
 - surface id: `surface-agent-tool-boundary-diff`
@@ -5228,6 +5228,7 @@
   - purpose: Tool-boundary simulation and review.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-tool-boundary-diff`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-tool-boundary-diff`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added backend Akka-hosted UI/API smoke and frontend contract/fixture coverage for `surface-agent-tool-boundary-diff`: missing-bearer protected API denial; dashboard/detail/skill-manifest/direct opens; canonical refresh/simulate/submit-review/approve/reject/model-refs/trace/back-to-detail action results; repeated submit/idempotency evidence; rejection reason validation; tenant-admin success plus regular-member and customer-scoped denials; provider/runtime fail-closed and `ToolPermissionBoundary` denied states; trace/correlation evidence; and browser-safe redaction of raw tool inputs/outputs, provider credentials, bearer tokens, and hidden scope data. runtime evidence: readiness level `runtime-ready` for testing scope; checks passed: `mvn -q clean compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`
 
 ### TASK-FSCT-148: Verify or complete app-description specification for `surface-agent-model-refs`
 

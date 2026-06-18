@@ -931,6 +931,7 @@ const agentPromptReadCapability = 'agent_admin.get_prompt_version';
 const agentSkillReadCapability = 'agent_admin.get_skill_version';
 const agentReferenceReadCapability = 'agent_admin.get_reference_version';
 const agentManifestReadCapability = 'agent_admin.get_manifest';
+const agentToolBoundaryReadCapability = 'agent_admin.get_tool_boundary';
 const agentPromptsCapability = 'agent_admin.draft_behavior_change';
 const agentSubmitReviewCapability = 'agent_admin.submit_behavior_change_for_review';
 const agentSkillsCapability = 'agent_admin.approve_behavior_change';
@@ -1338,6 +1339,105 @@ export const agentAdminSurfaceActions = {
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-agent-tool-boundary-diff', openPlacement: 'inline' },
     audit: { eventType: 'ToolBoundarySimulationRequested', traceRequired: true }
+  },
+  toolBoundaryRefresh: {
+    actionId: 'action-agent-tool-boundary-refresh',
+    label: 'Refresh tool-boundary review',
+    intent: 'read',
+    capabilityId: agentToolBoundaryReadCapability,
+    governedToolId: agentToolBoundaryReadCapability,
+    browserToolId: 'action-agent-tool-boundary-refresh',
+    inputSchemaRef: 'schema.agent-admin.tool-boundary.refresh.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-tool-boundary-diff', openPlacement: 'inline' },
+    audit: { eventType: 'AgentToolBoundaryReviewRead', traceRequired: true }
+  },
+  toolBoundarySimulate: {
+    actionId: 'action-agent-tool-boundary-simulate',
+    label: 'Run no-side-effect tool-boundary simulation',
+    intent: 'workflow',
+    capabilityId: agentToolBoundariesCapability,
+    governedToolId: agentToolBoundariesCapability,
+    browserToolId: 'action-agent-tool-boundary-simulate',
+    inputSchemaRef: 'schema.agent-admin.tool-boundary.simulate.v1',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-test-console', openPlacement: 'inline' },
+    audit: { eventType: 'AgentToolBoundarySimulationOpened', traceRequired: true }
+  },
+  toolBoundarySubmitReview: {
+    actionId: 'action-agent-tool-boundary-submit-review',
+    label: 'Submit tool-boundary change for review',
+    intent: 'proposal',
+    capabilityId: agentSubmitReviewCapability,
+    governedToolId: agentSubmitReviewCapability,
+    browserToolId: 'action-agent-tool-boundary-submit-review',
+    inputSchemaRef: 'schema.agent-admin.tool-boundary.submit-review.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentToolBoundaryReviewSubmitted', traceRequired: true }
+  },
+  toolBoundaryApprove: {
+    actionId: 'action-agent-tool-boundary-approve',
+    label: 'Approve tool-boundary review',
+    intent: 'approval',
+    capabilityId: agentSkillsCapability,
+    governedToolId: agentSkillsCapability,
+    browserToolId: 'action-agent-tool-boundary-approve',
+    inputSchemaRef: 'schema.agent-admin.tool-boundary.approve.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentToolBoundaryReviewApproved', traceRequired: true }
+  },
+  toolBoundaryReject: {
+    actionId: 'action-agent-tool-boundary-reject',
+    label: 'Reject tool-boundary review',
+    intent: 'approval',
+    capabilityId: agentRejectCapability,
+    governedToolId: agentRejectCapability,
+    browserToolId: 'action-agent-tool-boundary-reject',
+    inputSchemaRef: 'schema.agent-admin.tool-boundary.reject.v1',
+    requiresConfirmation: true,
+    requiresApproval: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentToolBoundaryReviewRejected', traceRequired: true }
+  },
+  toolBoundaryOpenModelRefs: {
+    actionId: 'action-agent-tool-boundary-open-model-refs',
+    label: 'Open related model references',
+    intent: 'read',
+    capabilityId: agentModelsReadCapability,
+    governedToolId: agentModelsReadCapability,
+    browserToolId: 'action-agent-tool-boundary-open-model-refs',
+    inputSchemaRef: 'schema.agent-admin.tool-boundary.open-model-refs.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-model-refs', openPlacement: 'inline' },
+    audit: { eventType: 'AgentToolBoundaryModelRefsOpened', traceRequired: true }
+  },
+  toolBoundaryOpenTrace: {
+    actionId: 'action-agent-tool-boundary-open-trace',
+    label: 'Open tool-boundary review trace',
+    intent: 'trace',
+    capabilityId: 'audit.trace.read',
+    governedToolId: 'audit.trace.read',
+    browserToolId: 'action-agent-tool-boundary-open-trace',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-trace', openPlacement: 'deep-link' },
+    audit: { eventType: 'AgentToolBoundaryTraceOpened', traceRequired: true }
+  },
+  toolBoundaryBackToDetail: {
+    actionId: 'action-agent-tool-boundary-back-to-detail',
+    label: 'Back to agent detail',
+    intent: 'read',
+    capabilityId: agentDefinitionReadCapability,
+    governedToolId: agentDefinitionReadCapability,
+    browserToolId: 'action-agent-tool-boundary-back-to-detail',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
+    audit: { eventType: 'AgentDefinitionDetailDisplayed', traceRequired: true }
   },
   manageModelRef: {
     actionId: 'action-manage-model-ref',
@@ -2847,7 +2947,7 @@ export const agentToolBoundarySurface = envelope(
   'Tool boundary simulation review',
   'agent-admin-agent',
   {
-    surfaceContract: 'agent_admin.tool_boundary.v1',
+    surfaceContract: 'agent_admin.tool_boundary_diff.v1',
     proposalId: 'tool-boundary-proposal-agent-admin-001',
     lifecycleState: 'blocked',
     source: 'Deterministic ToolPermissionBoundary simulation; AgentAdminAgent can explain denials but cannot grant tools.',
@@ -2864,7 +2964,16 @@ export const agentToolBoundarySurface = envelope(
       { path: 'simulation.result', before: 'not run', after: 'TOOL_BOUNDARY_DENIED', impact: 'Frontend renders blocked state and cannot bypass backend denial.' }
     ]
   },
-  [agentAdminSurfaceActions.simulateToolBoundary, agentAdminSurfaceActions.submitBehaviorChange, agentAdminSurfaceActions.openAgentTrace]
+  [
+    agentAdminSurfaceActions.toolBoundaryRefresh,
+    agentAdminSurfaceActions.toolBoundarySimulate,
+    agentAdminSurfaceActions.toolBoundarySubmitReview,
+    agentAdminSurfaceActions.toolBoundaryApprove,
+    agentAdminSurfaceActions.toolBoundaryReject,
+    agentAdminSurfaceActions.toolBoundaryOpenModelRefs,
+    agentAdminSurfaceActions.toolBoundaryOpenTrace,
+    agentAdminSurfaceActions.toolBoundaryBackToDetail
+  ]
 );
 
 export const agentModelRefsSurface = envelope(
