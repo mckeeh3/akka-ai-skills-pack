@@ -412,6 +412,13 @@ export type DecisionSurfaceData = {
   activationBlocker?: string;
   noDirectMutation?: boolean;
   traceLinks?: string[];
+  exportRequest?: Record<string, unknown>;
+  exportScope?: Record<string, unknown>;
+  authorizationBasis?: Record<string, unknown>;
+  policyDecision?: string | Record<string, unknown>;
+  bundleMetadata?: Record<string, unknown>;
+  approval?: Record<string, unknown>;
+  delivery?: Record<string, unknown>;
 };
 
 export type AuditTimelineSurfaceData = {

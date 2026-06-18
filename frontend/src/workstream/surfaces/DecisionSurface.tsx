@@ -1,6 +1,24 @@
+import { Fragment } from 'react';
 import type { DecisionSurfaceData, SurfaceAction, SurfaceEnvelope } from '../types';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
+
+function displayValue(value: unknown): string {
+  if (value === null || value === undefined) return 'Not provided';
+  if (Array.isArray(value)) return value.map(displayValue).join(', ');
+  if (typeof value === 'object') return Object.entries(value as Record<string, unknown>).map(([key, nested]) => `${key}: ${displayValue(nested)}`).join('; ');
+  return String(value);
+}
+
+function DecisionMetadataSection({ title, data }: { title: string; data?: Record<string, unknown> }) {
+  if (!data) return null;
+  return (
+    <section aria-label={title}>
+      <h4>{title}</h4>
+      <dl>{Object.entries(data).map(([key, value]) => <Fragment key={key}><dt>{key}</dt><dd>{displayValue(value)}</dd></Fragment>)}</dl>
+    </section>
+  );
+}
 
 type DecisionSurfaceProps = {
   envelope: SurfaceEnvelope<DecisionSurfaceData>;
@@ -31,7 +49,14 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
           {envelope.data.idempotencyKeySource && <><dt>Idempotency</dt><dd>{envelope.data.idempotencyKeySource}</dd></>}
         </dl>
         {envelope.data.activationBlocker && <p className="surface-state-inline forbidden" role="status">Activation blocker: {envelope.data.activationBlocker}</p>}
-        {envelope.data.noDirectMutation && <p className="surface-state-inline forbidden">Advisory output cannot directly mutate prompts, skills, references, model refs, tool boundaries, activation, rollback, or provider configuration.</p>}
+        {envelope.data.noDirectMutation && <p className="surface-state-inline forbidden">Advisory output cannot directly mutate prompts, skills, references, model refs, tool boundaries, activation, rollback, provider configuration, retained evidence, policy, authorization, or export delivery.</p>}
+        <DecisionMetadataSection title="Export request" data={envelope.data.exportRequest} />
+        <DecisionMetadataSection title="Export scope" data={envelope.data.exportScope} />
+        <DecisionMetadataSection title="Authorization basis" data={envelope.data.authorizationBasis} />
+        {typeof envelope.data.policyDecision === 'object' && <DecisionMetadataSection title="Policy decision" data={envelope.data.policyDecision} />}
+        <DecisionMetadataSection title="Bundle metadata" data={envelope.data.bundleMetadata} />
+        <DecisionMetadataSection title="Approval" data={envelope.data.approval} />
+        <DecisionMetadataSection title="Delivery" data={envelope.data.delivery} />
         {recommendedPath.length > 0 && (
           <section aria-label="Recommended investigation path">
             <h4>Recommended path</h4>

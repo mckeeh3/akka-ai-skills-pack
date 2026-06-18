@@ -325,27 +325,75 @@ public final class AuditTraceService {
   }
 
   public SurfaceData requestRedactedExport(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {
-    validateScope(actor, input, correlationId);
+    authContextResolver.requireCapability(actor.selectedContext(), EXPORT_REQUEST_CAPABILITY);
+    var scope = validateScope(actor, input, correlationId);
     if (idempotencyKey == null || idempotencyKey.isBlank()) return validation(actor, correlationId, "idempotencyKey", "A client-generated idempotency key is required for export requests.");
     var requestedFormat = stringInput(input, "format", "jsonl-redacted");
+    if (requestedFormat == null || requestedFormat.isBlank() || requestedFormat.length() > 64) return validation(actor, correlationId, "format", "A redacted export format is required and must be at most 64 characters.");
+    var normalizedFormat = requestedFormat.trim().toLowerCase();
     var reason = stringInput(input, "reason", "Audit investigation export requested.");
     if (reason == null || reason.isBlank() || reason.length() > 300) return validation(actor, correlationId, "reason", "Export reason is required and must be at most 300 characters.");
-    authContextResolver.appendProtectedReadTrace(actor, EXPORT_REQUEST_CAPABILITY, "redacted-export-request:policy-gated", correlationId);
+    var traceId = "trace-audit-export-" + stableSuffix(correlationId + ":" + idempotencyKey);
+    var unredactedRequested = normalizedFormat.contains("unredacted") || !normalizedFormat.contains("redacted");
+    authContextResolver.appendProtectedReadTrace(actor, EXPORT_REQUEST_CAPABILITY, unredactedRequested ? "redacted-export-request:unredacted-forbidden" : "redacted-export-request:policy-gated", correlationId);
     var exportId = "audit-export-" + stableSuffix(actor.selectedContext().tenantId() + ":" + idempotencyKey);
-    return new SurfaceData("surface-audit-trace-export-request", "decision", "Redacted audit export request", List.of("trace-audit-export-" + stableSuffix(correlationId + ":" + idempotencyKey)), mapOf(
+    var relatedEvents = sortedEvents(actor, correlationId).stream().limit(5).toList();
+    var evidenceSummary = relatedEvents.stream()
+        .map(event -> mapOf(
+            "evidenceId", event.traceId(),
+            "label", event.eventKind(),
+            "summary", redacted(event.summary()),
+            "status", event.status(),
+            "redactionNote", "Browser-safe export scope only; raw evidence bodies, prompts, provider/tool payloads, tokens, hidden ids, and cross-scope evidence are omitted.",
+            "traceRefs", List.of(event.traceId(), event.correlationId())))
+        .toList();
+    var status = unredactedRequested ? "denied" : "approval_required";
+    var policyClassification = unredactedRequested ? "unredacted_export_forbidden" : "approval_required";
+    var policyReason = unredactedRequested
+        ? "Unredacted browser export is forbidden by default; request a redacted format and keep delivery backend-governed."
+        : "Redacted export requests require a policy/approval gate before backend bundle assembly or delivery.";
+    return new SurfaceData("surface-audit-trace-export-request", "decision", "Redacted audit export request", List.of(traceId), mapOf(
         "surfaceContract", "audit.trace.exportRequest.v1",
+        "surfaceId", "surface-audit-trace-export-request",
+        "generatedAt", Instant.now().toString(),
+        "selectedScope", mapOf("tenantLabel", "Selected tenant", "customerLabel", actor.selectedContext().customerId() == null ? null : "Selected customer", "scopeKind", actor.selectedContext().customerId() == null ? "tenant" : "customer", "supportAccess", "selected AuthContext"),
+        "authContextSummary", mapOf("selectedContextId", actor.selectedContext().membershipId(), "actor", actor.profile().displayName(), "roleLabels", actor.selectedContext().roles().stream().map(Enum::name).toList(), "capabilityCount", actor.selectedContext().capabilities().size()),
+        "capabilityIds", List.of(EXPORT_REQUEST_CAPABILITY, DETAIL_CAPABILITY, TIMELINE_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY, INVESTIGATION_NOTE_CAPABILITY, SEARCH_CAPABILITY, DASHBOARD_CAPABILITY),
+        "correlationId", correlationId,
+        "traceRefs", List.of(traceId, correlationId),
+        "readiness", status,
         "exportId", exportId,
-        "status", "approval_required",
-        "requestedFormat", requestedFormat,
+        "status", status,
+        "requestedFormat", normalizedFormat,
         "reasonSummary", redacted(reason),
-        "policyDecision", "redacted_export_requires_policy_gate",
-        "recommendation", "Approve only scoped redacted export bundles; unredacted export remains forbidden by default.",
-        "risk", "medium",
-        "allowedActions", List.of(mapOf("actionId", "action-audit-trace-timeline", "label", "Review correlation timeline", "capabilityId", TIMELINE_CAPABILITY), mapOf("actionId", "action-audit-trace-search", "label", "Refine scoped evidence", "capabilityId", SEARCH_CAPABILITY)),
-        "disabledActions", List.of(mapOf("actionId", "action-audit-trace-unredacted-export", "reason", "Unredacted export is not a default browser action and requires a separate policy exception.")),
-        "bundleMetadata", mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "redactionProfile", "browser-safe", "omittedFieldKeys", DEFAULT_OMITTED_FIELDS),
-        "traceLinks", List.of(correlationId),
-        "redaction", "Export request stores scoped metadata only; raw evidence, tokens, provider secrets, hidden prompts, and cross-tenant facts are omitted."));
+        "exportRequest", mapOf("displayHandle", exportId, "status", status, "requestedFormatLabel", normalizedFormat, "requestedPurposeSummary", redacted(reason), "submitterLabel", actor.profile().displayName(), "submittedAt", Instant.now().toString(), "sourceWorkstream", "Audit/Trace", "sourceSurface", stringInput(input, "sourceSurfaceId", "surface-audit-trace-export-request"), "sourceAction", "action-audit-trace-request-redacted-export", "idempotencyReplay", false),
+        "exportScope", mapOf("selectedScope", scope, "timeWindow", "recent authorized evidence", "evidenceCategories", relatedEvents.stream().map(TraceEvent::eventKind).distinct().toList(), "sourceWorkstreamLabels", relatedEvents.stream().map(TraceEvent::workstream).distinct().toList(), "visibleCount", relatedEvents.size(), "includedRedactedCategories", List.of("audit events", "work traces", "policy decisions", "provider/tool/model failure categories"), "omittedCategories", DEFAULT_OMITTED_FIELDS, "retentionStatus", relatedEvents.isEmpty() ? "empty-authorized" : "retained-redacted"),
+        "authorizationBasis", mapOf("selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", List.of(EXPORT_REQUEST_CAPABILITY), "customerScopeRestricted", actor.selectedContext().customerId() != null, "approvalGateLabels", List.of("redacted-export-policy-gate"), "redactionExplanation", "Selected AuthContext, tenant/customer scope, export-request capability, redaction, and approval requirements are rechecked server-side."),
+        "policyDecision", mapOf("classification", policyClassification, "reason", policyReason, "approvalRequired", !unredactedRequested, "recoveryPath", unredactedRequested ? "Use format jsonl-redacted and submit through the governed export request action." : "Wait for backend policy approval; no raw browser bundle or download URL is returned.", "auditOnlyDenialCategory", unredactedRequested ? "unredacted_export_forbidden" : "approval_required"),
+        "bundleMetadata", mapOf("bundleLabel", "Redacted Audit/Trace bundle", "requestedFormat", normalizedFormat, "estimatedAvailability", unredactedRequested ? "not_available" : "after_policy_approval", "retentionLabel", "backend-governed retained export decision", "redactionProfile", "browser-safe", "includedEvidenceCategoryLabels", relatedEvents.stream().map(TraceEvent::eventKind).distinct().toList(), "omittedFieldCategories", DEFAULT_OMITTED_FIELDS, "manifestAvailability", "available only after backend approval", "rawDownloadUrl", null),
+        "approval", mapOf("status", unredactedRequested ? "denied" : "approval_required", "approverRoleLabel", "Authorized Audit/Trace reviewer", "requiredApprovalCapabilityLabel", EXPORT_REQUEST_CAPABILITY, "safeDueOrExpiry", "policy controlled", "guidance", unredactedRequested ? "Unredacted browser export is not retryable from this surface." : "Approval is required before bundle assembly or handoff."),
+        "allowedActions", List.of(
+            mapOf("actionId", "action-audit-trace-request-redacted-export", "label", unredactedRequested ? "Retry with redacted format" : "Submit or retry redacted export request", "browserToolId", "action-audit-trace-request-redacted-export", "governedToolId", EXPORT_REQUEST_CAPABILITY, "capabilityId", EXPORT_REQUEST_CAPABILITY, "resultSurfaceId", "surface-audit-trace-export-request", "approvalRequirement", "policy-gated", "idempotency", "client-generated", "reason", "Rechecks selected scope, redaction, policy, and idempotency server-side."),
+            mapOf("actionId", "action-audit-trace-detail", "label", "Open source trace detail", "browserToolId", "action-audit-trace-detail", "governedToolId", DETAIL_CAPABILITY, "capabilityId", DETAIL_CAPABILITY, "resultSurfaceId", "surface-audit-trace-detail", "reason", "Reauthorizes source evidence before any detail is shown."),
+            mapOf("actionId", "action-audit-trace-timeline", "label", "Review correlation timeline", "browserToolId", "action-audit-trace-timeline", "governedToolId", TIMELINE_CAPABILITY, "capabilityId", TIMELINE_CAPABILITY, "resultSurfaceId", "surface-audit-trace-timeline", "reason", "Reviews browser-safe chronology before export approval."),
+            mapOf("actionId", "action-audit-trace-failure-evidence", "label", "Open failure evidence", "browserToolId", "action-audit-trace-failure-evidence", "governedToolId", FAILURE_EVIDENCE_CAPABILITY, "capabilityId", FAILURE_EVIDENCE_CAPABILITY, "resultSurfaceId", "surface-audit-trace-failure-evidence", "reason", "Inspects authorized failure categories without raw provider/tool payloads."),
+            mapOf("actionId", "action-audit-trace-investigation-guide", "label", "Open investigation guidance", "browserToolId", "action-audit-trace-investigation-guide", "governedToolId", INVESTIGATION_GUIDE_CAPABILITY, "capabilityId", INVESTIGATION_GUIDE_CAPABILITY, "resultSurfaceId", "surface-audit-trace-investigation-guide", "reason", "Guidance is advisory and cannot approve or deliver exports."),
+            mapOf("actionId", "action-audit-trace-append-investigation-note", "label", "Append investigation note", "browserToolId", "action-audit-trace-append-investigation-note", "governedToolId", INVESTIGATION_NOTE_CAPABILITY, "capabilityId", INVESTIGATION_NOTE_CAPABILITY, "resultSurfaceId", "surface-audit-trace-investigation-note", "idempotency", "client-generated", "reason", "Annotates traces only; retained evidence and policy are immutable."),
+            mapOf("actionId", "action-audit-trace-search", "label", "Return to scoped search", "browserToolId", "action-audit-trace-search", "governedToolId", SEARCH_CAPABILITY, "capabilityId", SEARCH_CAPABILITY, "resultSurfaceId", "surface-audit-trace-search", "reason", "Reruns backend-scoped search instead of trusting browser state."),
+            mapOf("actionId", "action-audit-trace-dashboard", "label", "Return to investigation command center", "browserToolId", "action-audit-trace-dashboard", "governedToolId", DASHBOARD_CAPABILITY, "capabilityId", DASHBOARD_CAPABILITY, "resultSurfaceId", "surface-audit-trace-dashboard", "reason", "Recomputes scoped dashboard counters server-side.")),
+        "disabledActions", List.of(
+            mapOf("actionId", "action-audit-trace-unredacted-export", "label", "Unredacted export", "reason", "Unredacted export is not a default browser action; no raw download URL is returned.", "recovery", "Use a redacted export format and backend-governed approval.", "auditOnlyDenialCategory", "unredacted_export_forbidden"),
+            mapOf("actionId", "action-audit-trace-export-raw-download", "label", "Direct raw download", "reason", "not_authorized: delivery and handoff require a later backend-governed surface after approval.", "recovery", "Wait for approved redacted delivery status.", "auditOnlyDenialCategory", "raw_download_forbidden")),
+        "evidenceSummary", evidenceSummary,
+        "delivery", mapOf("status", unredactedRequested ? "not_available" : "not_started_pending_approval", "handoff", "No raw browser download URL is exposed from this decision surface.", "rawDownloadUrl", null),
+        "recovery", mapOf("steps", List.of("Confirm selected AuthContext and customer scope.", "Use only redacted formats and a human-readable purpose.", "Open detail, timeline, failure evidence, guidance, note, search, or dashboard through backend-governed actions."), "failClosed", "Provider/model/tool/runtime or policy blockers fail closed; the browser cannot bypass approval, redaction, hidden ids, or delivery controls."),
+        "emptyState", relatedEvents.isEmpty() ? mapOf("status", "empty/no-authorized-evidence", "message", "No authorized evidence was found for this export scope.", "recovery", "Refine search or return to the Audit/Trace dashboard; hidden evidence is not enumerated.") : null,
+        "validationErrors", List.of(),
+        "recommendation", policyReason,
+        "risk", unredactedRequested ? "high" : "medium",
+        "noDirectMutation", true,
+        "traceLinks", List.of(correlationId, traceId),
+        "redaction", mapOf("browserSafe", true, "omittedFieldKeys", DEFAULT_OMITTED_FIELDS, "hiddenCountPolicy", "non-enumerating", "safeExplanation", "Export request stores scoped metadata only; raw evidence bodies, prompts, model outputs, provider/tool payloads, credentials, tokens, hidden policy internals, storage keys, download URLs, and cross-tenant/customer facts are omitted.", "traceRefs", List.of(traceId))));
   }
 
   public SurfaceData appendInvestigationNote(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {

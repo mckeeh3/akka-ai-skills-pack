@@ -6855,7 +6855,7 @@
 
 ### TASK-FSCT-194: Verify or complete runtime implementation for `surface-audit-trace-export-request`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-193]
 - surface id: `surface-audit-trace-export-request`
@@ -6886,6 +6886,7 @@
   - purpose: Policy-gated scoped redacted export request.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-export-request`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-export-request`; surface graph node/action edge for opening or acting on `surface-audit-trace-export-request`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented and verified the protected Workstream API/runtime path for `surface-audit-trace-export-request` / `audit.trace.exportRequest.v1`: explicit `audit.trace.export.request` authorization, role capability grants, idempotency/purpose/format validation, tenant/customer scope preservation, approval-required and unredacted-export-forbidden decision states, browser-safe export scope/policy/bundle/approval/delivery metadata, trace/correlation/redaction/no-direct-mutation evidence, backend-governed follow-up actions, and DecisionSurface rendering for export metadata. Runtime readiness level: `api-smoked`; checks passed: `mvn -q -Dtest=WorkstreamServiceTest#auditTraceActionsReturnScopedSearchDetailTimelineFailureAndGuidanceSurfaces test`, `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceSearchCoversFiltersValidationRowActionsExportDenialsAndSecretBoundaries test`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-195: Verify or complete runtime testing for `surface-audit-trace-export-request`
 
