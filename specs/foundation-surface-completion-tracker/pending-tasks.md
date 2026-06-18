@@ -5300,7 +5300,7 @@
 
 ### TASK-FSCT-150: Verify or complete runtime testing for `surface-agent-model-refs`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-149]
 - surface id: `surface-agent-model-refs`
@@ -5334,6 +5334,7 @@
   - purpose: Model reference proposal/review.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-model-refs`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-model-refs`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-17: added runtime/API/browser smoke coverage for `surface-agent-model-refs` in `AgentAdminBrowserWorkstreamSmokeTest` and aligned frontend fixture/contract evidence; verified protected `/ui`, `/api/workstream/surfaces/surface-agent-model-refs`, and `/api/workstream/actions` paths with tenant-admin AuthContext, dashboard/detail/skill-manifest/tool-boundary/direct entry, model-reference refresh/run-test/submit/repeated-submit/approve/reject/prompt/tool/trace/back-to-detail actions, missing-bearer rejection, regular-member and customer-scoped denials, validation error for missing rejection reason, provider configured-or-fail-closed/no-fake-success semantics, trace/correlation evidence, and browser-safe provider credential/raw response/JWT/hidden-scope redaction. runtime evidence: readiness level `runtime-ready` for the model-reference testing scope; commands passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-151: Verify or complete app-description specification for `surface-agent-test-console`
 

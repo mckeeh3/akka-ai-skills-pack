@@ -1439,6 +1439,106 @@ export const agentAdminSurfaceActions = {
     resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
     audit: { eventType: 'AgentDefinitionDetailDisplayed', traceRequired: true }
   },
+  modelRefsRefresh: {
+    actionId: 'action-agent-model-refs-refresh',
+    label: 'Refresh model-reference review',
+    intent: 'read',
+    capabilityId: agentModelsReadCapability,
+    governedToolId: agentModelsReadCapability,
+    browserToolId: 'action-agent-model-refs-refresh',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-model-refs', openPlacement: 'inline' },
+    audit: { eventType: 'AgentModelRefsRefreshed', traceRequired: true }
+  },
+  modelRefsRunTest: {
+    actionId: 'action-agent-model-refs-run-test',
+    label: 'Run no-side-effect model readiness test',
+    intent: 'workflow',
+    capabilityId: agentRuntimeTestCapability,
+    governedToolId: agentRuntimeTestCapability,
+    browserToolId: 'action-agent-model-refs-run-test',
+    disabled: { reasonCode: 'blocked_provider_or_runtime', message: 'Provider/runtime readiness is not configured; no fixture/model-less success is claimed.' },
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-test-console', openPlacement: 'inline' },
+    audit: { eventType: 'AgentModelRefsReadinessTestRequested', traceRequired: true }
+  },
+  modelRefsSubmitReview: {
+    actionId: 'action-agent-model-refs-submit-review',
+    label: 'Submit model-reference change for review',
+    intent: 'proposal',
+    capabilityId: agentSubmitReviewCapability,
+    governedToolId: agentSubmitReviewCapability,
+    browserToolId: 'action-agent-model-refs-submit-review',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentModelRefsReviewSubmitted', traceRequired: true }
+  },
+  modelRefsApprove: {
+    actionId: 'action-agent-model-refs-approve',
+    label: 'Approve model-reference review',
+    intent: 'approval',
+    capabilityId: agentSkillsCapability,
+    governedToolId: agentSkillsCapability,
+    browserToolId: 'action-agent-model-refs-approve',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentModelRefsApproved', traceRequired: true }
+  },
+  modelRefsReject: {
+    actionId: 'action-agent-model-refs-reject',
+    label: 'Reject model-reference review',
+    intent: 'approval',
+    capabilityId: agentRejectCapability,
+    governedToolId: agentRejectCapability,
+    browserToolId: 'action-agent-model-refs-reject',
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-behavior-proposal', openPlacement: 'inline' },
+    audit: { eventType: 'AgentModelRefsRejected', traceRequired: true }
+  },
+  modelRefsOpenPromptGovernance: {
+    actionId: 'action-agent-model-refs-open-prompt-governance',
+    label: 'Open related prompt governance',
+    intent: 'read',
+    capabilityId: agentPromptReadCapability,
+    governedToolId: agentPromptReadCapability,
+    browserToolId: 'action-agent-model-refs-open-prompt-governance',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-prompt-governance', openPlacement: 'inline' },
+    audit: { eventType: 'AgentModelRefsPromptGovernanceOpened', traceRequired: true }
+  },
+  modelRefsOpenToolBoundary: {
+    actionId: 'action-agent-model-refs-open-tool-boundary',
+    label: 'Open related tool-boundary review',
+    intent: 'read',
+    capabilityId: agentToolBoundariesCapability,
+    governedToolId: agentToolBoundariesCapability,
+    browserToolId: 'action-agent-model-refs-open-tool-boundary',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-tool-boundary-diff', openPlacement: 'inline' },
+    audit: { eventType: 'AgentModelRefsToolBoundaryOpened', traceRequired: true }
+  },
+  modelRefsOpenTrace: {
+    actionId: 'action-agent-model-refs-open-trace',
+    label: 'Open model-reference trace',
+    intent: 'trace',
+    capabilityId: 'audit.trace.read',
+    governedToolId: 'audit.trace.read',
+    browserToolId: 'action-agent-model-refs-open-trace',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-trace', openPlacement: 'deep-link' },
+    audit: { eventType: 'AgentModelRefsTraceOpened', traceRequired: true }
+  },
+  modelRefsBackToDetail: {
+    actionId: 'action-agent-model-refs-back-to-detail',
+    label: 'Back to agent detail',
+    intent: 'read',
+    capabilityId: agentDefinitionReadCapability,
+    governedToolId: agentDefinitionReadCapability,
+    browserToolId: 'action-agent-model-refs-back-to-detail',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
+    audit: { eventType: 'AgentDefinitionDetailDisplayed', traceRequired: true }
+  },
   manageModelRef: {
     actionId: 'action-manage-model-ref',
     label: 'Request model ref change',
@@ -2978,29 +3078,63 @@ export const agentToolBoundarySurface = envelope(
 
 export const agentModelRefsSurface = envelope(
   'surface-agent-model-refs',
-  'show-inspection',
-  'Agent model refs',
+  'governance-diff',
+  'Model reference proposal/review',
   'agent-admin-agent',
   {
-    surfaceContract: 'agent_admin.model_ref.v1',
-    recordId: 'model-safe-default',
-    recordLabel: 'Approved primary model alias',
-    recordKind: 'ModelConfigRef',
-    summary: 'Browser-safe model reference details. Provider alias and readiness are visible; credentials and provider secret values are redacted.',
-    fields: [
-      { fieldId: 'displayName', label: 'Display name', value: 'Approved primary model alias', editable: false, inputType: 'text' },
-      { fieldId: 'providerAlias', label: 'Provider alias', value: 'approved-primary', editable: false, inputType: 'text' },
-      { fieldId: 'providerCredential', label: 'Provider credential', value: '[REDACTED]', editable: false, inputType: 'text', disabledReason: 'Provider credentials are backend-only and never browser-visible.' },
-      { fieldId: 'status', label: 'Status', value: 'active', editable: false, inputType: 'text' },
-      { fieldId: 'allowedModes', label: 'Allowed modes', value: 'reasoning, tool-use', editable: false, inputType: 'text' }
-    ],
-    providerReadiness: { status: 'ready', safeReason: 'Provider alias is configured; credentials remain backend-only.', secretVisibility: 'redacted' },
-    permissionState: { canEdit: false, reason: 'Model changes are behavior-changing proposals and require review/activation.', authoritativeCapabilityId: agentModelsReadCapability },
-    audit: { lastEventType: 'AgentModelRefDisplayed', lastActor: 'Tenant Admin', traceIds: ['trace-agent-admin-model-ref-model-safe-default'] },
-    redactionMetadata: { omittedFieldKeys: ['providerCredentialValue', 'rawProviderCredential'], browserSafe: true },
+    surfaceContract: 'agent_admin.model_refs.v1',
+    modelReferenceSummary: {
+      surfaceId: 'surface-agent-model-refs',
+      title: 'Model reference proposal/review',
+      type: 'governance-diff / show-inspection',
+      contract: 'agent_admin.model_refs.v1',
+      selectedManagedAgent: 'Agent Admin Agent',
+      activeModelReferenceLabel: 'Approved primary model alias',
+      proposedModelReferenceLabel: 'review-required',
+      providerReadinessCategory: 'blocked_provider_or_runtime',
+      runtimeReadinessCategory: 'blocked_provider_or_runtime',
+      proposalState: 'approval-required',
+      reviewState: 'pending-human-review',
+      riskClass: 'high',
+      approvalRequired: true,
+      noDirectActivation: true
+    },
+    scopeSummary: { selectedAuthContextId: 'membership-agent-admin', scopeType: 'tenant', tenantId: 'tenant-starter', actorRoleSummary: ['TENANT_ADMIN', 'AUDITOR'], governanceAuthorized: true },
+    redactedModelReferenceDiff: {
+      modelAliasBefore: 'Approved primary model alias',
+      modelAliasAfter: 'reviewed-provider-alias',
+      providerCategory: 'browser-safe-alias-only',
+      routingProfile: 'tenant-scoped managed-agent runtime',
+      temperatureLimitClass: 'policy-controlled',
+      retrievalReferenceImplications: 'Prompt/skill/reference bodies remain omitted.',
+      toolCompatibilityNotes: 'ToolPermissionBoundary remains backend-authoritative.',
+      dataBoundaryEffects: 'No cross-tenant/customer visibility.',
+      fallbackDegradationBehavior: 'provider-fail-closed',
+      omittedSectionCount: 8,
+      redactionNotes: ['provider credentials omitted', 'raw provider errors omitted', 'raw prompt/skill/reference bodies omitted', 'hidden scopes omitted'],
+      conflictState: 'none'
+    },
+    providerReadiness: {
+      category: 'blocked_provider_or_runtime',
+      configuredState: 'blocked_provider_or_runtime',
+      failClosedReason: 'Provider/runtime readiness is unavailable in fixtures, so no model-backed success is claimed.',
+      runtimeDependencyStatus: 'blocked_provider_or_runtime',
+      modelAvailabilityStatus: 'blocked_provider_or_runtime',
+      recoveryRoutes: ['action-agent-model-refs-run-test', 'action-agent-model-refs-open-trace', 'action-agent-model-refs-back-to-detail'],
+      noFakeSuccess: true,
+      secretVisibility: 'redacted'
+    },
+    impactSummary: { downstreamProposalLifecycleBlockers: ['approval-required', 'provider-readiness', 'activation-separate-surface'], simulationPromptRiskToolBoundaryOrHumanApprovalRequired: true },
+    riskAndEvidence: { riskClass: 'high', safeEvidenceRefs: ['ModelConfigRef', 'AgentDefinition', 'AgentWorkTrace'], requiredHumanReviewReasons: ['model-provider-routing', 'runtime-readiness', 'tenant-scope-impact'] },
+    reviewState: { allowedDecisions: ['refresh', 'submit-review', 'approve-after-review', 'reject-with-reason', 'open-prompt-governance', 'open-tool-boundary', 'open-trace', 'back-to-detail'], disabledDecisions: ['activate-directly', 'edit-provider-credentials', 'raw-model-config-edit', 'provider-secret-entry', 'cross-scope-routing'], approvalRequired: true, rejectionReasonRequired: true, providerRuntimeBlockedState: 'blocked_provider_or_runtime', nextRequiredSurface: 'surface-agent-behavior-proposal', noDirectMutation: true },
+    safeRedactionSummary: { providerCredentials: 'omitted', rawProviderModelResponses: 'omitted', rawPromptText: 'omitted', skillReferenceBodies: 'omitted', hiddenScopes: 'omitted', rawTraceEvidence: 'role-gated', bearerTokens: 'omitted' },
+    traceLinks: ['trace-agent-admin-model-refs', 'trace-agent-work-88'],
+    states: ['loading', 'ready', 'empty-no-active-model-reference-change', 'submitting', 'testing', 'approval-required', 'review-submitted', 'review-approved', 'review-rejected', 'validation-error', 'conflict', 'forbidden', 'not-found-or-redacted', 'stale/reconnect', 'partial-data', 'provider-fail-closed', 'no-op', 'failure'],
+    noFakeSuccess: true,
+    noDirectActivation: true,
     noDirectMutation: true
   },
-  [agentAdminSurfaceActions.manageModelRef, agentAdminSurfaceActions.openAgentTrace]
+  [agentAdminSurfaceActions.modelRefsRefresh, agentAdminSurfaceActions.modelRefsRunTest, agentAdminSurfaceActions.modelRefsSubmitReview, agentAdminSurfaceActions.modelRefsApprove, agentAdminSurfaceActions.modelRefsReject, agentAdminSurfaceActions.modelRefsOpenPromptGovernance, agentAdminSurfaceActions.modelRefsOpenToolBoundary, agentAdminSurfaceActions.modelRefsOpenTrace, agentAdminSurfaceActions.modelRefsBackToDetail]
 );
 
 export const agentSeedMaterialSurface = envelope(
@@ -3882,10 +4016,10 @@ export const displayAgentToolBoundaryActionResult: CapabilityActionResult = {
 };
 
 export const displayAgentModelRefsActionResult: CapabilityActionResult = {
-  status: 'denied',
-  message: 'Model ref change request was denied safely; provider aliases are browser-safe and provider credentials remain redacted.',
+  status: 'blocked_provider_or_runtime',
+  message: 'Model-reference readiness failed closed; provider aliases are browser-safe, credentials remain redacted, and no fixture/model-less success is claimed.',
   correlationId: 'corr-display-agent-model-refs',
-  traceIds: ['trace-agent-admin-model-ref-model-safe-default'],
+  traceIds: ['trace-agent-admin-model-refs', 'trace-agent-work-88'],
   resultSurface: agentModelRefsSurface
 };
 

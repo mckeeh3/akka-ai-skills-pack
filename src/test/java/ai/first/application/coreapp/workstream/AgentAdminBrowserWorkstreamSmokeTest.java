@@ -248,6 +248,11 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
         .responseBodyAs(String.class)
         .invoke(), "Protected Agent Admin tool-boundary diff surface must reject missing bearer tokens.");
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-model-refs")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin model-reference surface must reject missing bearer tokens.");
 
     var seedDefaults = runAction(new CapabilityActionRequest(
         "action-import-agent-seed-defaults",
@@ -921,6 +926,206 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-agent-model-refs", skillModelRefs.resultSurface().surfaceId());
     assertBrowserSafe(skillModelRefs.resultSurface());
 
+    var directModelRefs = getSurface("surface-agent-model-refs", "corr-agent-admin-model-refs-direct");
+    assertEquals("surface-agent-model-refs", directModelRefs.surfaceId());
+    assertEquals("governance-diff", directModelRefs.surfaceType());
+    assertEquals("agent_admin.model_refs.v1", directModelRefs.data().get("surfaceContract"));
+    assertEquals("corr-agent-admin-model-refs-direct", directModelRefs.correlationId());
+    assertTrue(directModelRefs.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-agent-model-refs")));
+    var modelReferenceSummary = (Map<String, Object>) directModelRefs.data().get("modelReferenceSummary");
+    assertEquals("agent_admin.model_refs.v1", modelReferenceSummary.get("contract"));
+    var modelProviderCategory = String.valueOf(modelReferenceSummary.get("providerReadinessCategory"));
+    assertTrue(modelProviderCategory.equals("ready") || modelProviderCategory.equals("blocked_provider_or_runtime"));
+    assertEquals(Boolean.TRUE, modelReferenceSummary.get("approvalRequired"));
+    assertEquals(Boolean.TRUE, modelReferenceSummary.get("noDirectActivation"));
+    var modelScope = (Map<String, Object>) directModelRefs.data().get("scopeSummary");
+    assertEquals(ADMIN_CONTEXT_ID, modelScope.get("selectedAuthContextId"));
+    assertEquals(Boolean.TRUE, modelScope.get("governanceAuthorized"));
+    var providerReadiness = (Map<String, Object>) directModelRefs.data().get("providerReadiness");
+    assertEquals(modelProviderCategory, providerReadiness.get("category"));
+    assertEquals(Boolean.valueOf(!"ready".equals(modelProviderCategory)), providerReadiness.get("noFakeSuccess"));
+    var reviewState = (Map<String, Object>) directModelRefs.data().get("reviewState");
+    assertEquals(Boolean.TRUE, reviewState.get("approvalRequired"));
+    assertEquals(Boolean.TRUE, reviewState.get("rejectionReasonRequired"));
+    assertEquals(Boolean.TRUE, reviewState.get("noDirectMutation"));
+    assertTrue(directModelRefs.toString().contains("redactedModelReferenceDiff"));
+    assertTrue(directModelRefs.toString().contains("provider credentials omitted"));
+    assertTrue(directModelRefs.toString().contains("rawProviderModelResponses=omitted"));
+    assertTrue(directModelRefs.toString().contains("noFakeSuccess="));
+    assertTrue(directModelRefs.toString().contains("noDirectActivation=true"));
+    assertTrue(directModelRefs.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-model-refs-refresh") && action.resultSurface().updateSurfaceId().equals("surface-agent-model-refs")));
+    assertTrue(directModelRefs.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-model-refs-run-test") && action.resultSurface().updateSurfaceId().equals("surface-agent-test-console")));
+    assertTrue(directModelRefs.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-model-refs-submit-review") && action.resultSurface().updateSurfaceId().equals("surface-agent-behavior-proposal")));
+    assertTrue(directModelRefs.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-model-refs-approve") && action.resultSurface().updateSurfaceId().equals("surface-agent-behavior-proposal")));
+    assertTrue(directModelRefs.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-model-refs-reject") && action.resultSurface().updateSurfaceId().equals("surface-agent-behavior-proposal")));
+    assertTrue(directModelRefs.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-model-refs-open-prompt-governance") && action.resultSurface().updateSurfaceId().equals("surface-agent-prompt-governance")));
+    assertTrue(directModelRefs.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-model-refs-open-tool-boundary") && action.resultSurface().updateSurfaceId().equals("surface-agent-tool-boundary-diff")));
+    assertTrue(directModelRefs.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-model-refs-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+    assertTrue(directModelRefs.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-model-refs-back-to-detail") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail")));
+    assertBrowserSafe(directModelRefs);
+
+    var modelRefsRefresh = runAction(new CapabilityActionRequest(
+        "action-agent-model-refs-refresh",
+        "action-agent-model-refs-refresh",
+        "agent_admin.get_model_ref",
+        "agent_admin.get_model_ref",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        directModelRefs.surfaceId(),
+        "corr-agent-admin-model-refs-refresh"));
+    assertEquals("no-op", modelRefsRefresh.status());
+    assertEquals("surface-agent-model-refs", modelRefsRefresh.resultSurface().surfaceId());
+    assertBrowserSafe(modelRefsRefresh.resultSurface());
+
+    var modelRefsRunTest = runAction(new CapabilityActionRequest(
+        "action-agent-model-refs-run-test",
+        "action-agent-model-refs-run-test",
+        "agent_admin.draft_behavior_change",
+        "agent_admin.draft_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-model-refs-run-test",
+        ADMIN_CONTEXT_ID,
+        directModelRefs.surfaceId(),
+        "corr-agent-admin-model-refs-run-test"));
+    assertEquals("blocked_provider_or_runtime", modelRefsRunTest.status());
+    assertEquals("surface-agent-model-refs", modelRefsRunTest.resultSurface().surfaceId());
+    assertTrue(modelRefsRunTest.message().contains("no fixture/model-less success was counted"));
+    assertTrue(modelRefsRunTest.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-model-refs-provider-fail-closed")));
+    assertBrowserSafe(modelRefsRunTest.resultSurface());
+
+    var modelRefsSubmit = runAction(new CapabilityActionRequest(
+        "action-agent-model-refs-submit-review",
+        "action-agent-model-refs-submit-review",
+        "agent_admin.submit_behavior_change_for_review",
+        "agent_admin.submit_behavior_change_for_review",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-model-refs-submit",
+        ADMIN_CONTEXT_ID,
+        directModelRefs.surfaceId(),
+        "corr-agent-admin-model-refs-submit"));
+    assertTrue(modelRefsSubmit.status().equals("approval-required") || modelRefsSubmit.status().equals("denied"));
+    assertEquals("surface-agent-behavior-proposal", modelRefsSubmit.resultSurface().surfaceId());
+    assertTrue(modelRefsSubmit.message().contains("active model/provider routing remains unchanged"));
+    assertBrowserSafe(modelRefsSubmit.resultSurface());
+
+    var modelRefsRepeatedSubmit = runAction(new CapabilityActionRequest(
+        "action-agent-model-refs-submit-review",
+        "action-agent-model-refs-submit-review",
+        "agent_admin.submit_behavior_change_for_review",
+        "agent_admin.submit_behavior_change_for_review",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-model-refs-submit",
+        ADMIN_CONTEXT_ID,
+        directModelRefs.surfaceId(),
+        "corr-agent-admin-model-refs-submit-repeat"));
+    assertTrue(modelRefsRepeatedSubmit.status().equals("approval-required") || modelRefsRepeatedSubmit.status().equals("denied"));
+    assertEquals("surface-agent-behavior-proposal", modelRefsRepeatedSubmit.resultSurface().surfaceId());
+    assertTrue(modelRefsRepeatedSubmit.message().contains("active model/provider routing remains unchanged"));
+    assertBrowserSafe(modelRefsRepeatedSubmit.resultSurface());
+
+    var modelRefsApprove = runAction(new CapabilityActionRequest(
+        "action-agent-model-refs-approve",
+        "action-agent-model-refs-approve",
+        "agent_admin.approve_behavior_change",
+        "agent_admin.approve_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-model-refs-approve",
+        ADMIN_CONTEXT_ID,
+        directModelRefs.surfaceId(),
+        "corr-agent-admin-model-refs-approve"));
+    assertTrue(modelRefsApprove.status().equals("approval-required") || modelRefsApprove.status().equals("denied"));
+    assertEquals("surface-agent-behavior-proposal", modelRefsApprove.resultSurface().surfaceId());
+    assertTrue(modelRefsApprove.message().contains("activation remains blocked until a separate confirmation surface"));
+    assertBrowserSafe(modelRefsApprove.resultSurface());
+
+    var modelRefsRejectMissingReason = runAction(new CapabilityActionRequest(
+        "action-agent-model-refs-reject",
+        "action-agent-model-refs-reject",
+        "agent_admin.reject_behavior_change",
+        "agent_admin.reject_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-model-refs-reject-missing-reason",
+        ADMIN_CONTEXT_ID,
+        directModelRefs.surfaceId(),
+        "corr-agent-admin-model-refs-reject-missing-reason"));
+    assertEquals("validation-error", modelRefsRejectMissingReason.status());
+    assertEquals("surface-agent-model-refs", modelRefsRejectMissingReason.resultSurface().surfaceId());
+    assertTrue(modelRefsRejectMissingReason.message().contains("requires a human-readable reason"));
+    assertBrowserSafe(modelRefsRejectMissingReason.resultSurface());
+
+    var modelRefsReject = runAction(new CapabilityActionRequest(
+        "action-agent-model-refs-reject",
+        "action-agent-model-refs-reject",
+        "agent_admin.reject_behavior_change",
+        "agent_admin.reject_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "reason", "Keep provider routing stable until real provider readiness evidence is complete."),
+        "idem-agent-model-refs-reject",
+        ADMIN_CONTEXT_ID,
+        directModelRefs.surfaceId(),
+        "corr-agent-admin-model-refs-reject"));
+    assertTrue(modelRefsReject.status().equals("accepted") || modelRefsReject.status().equals("denied"));
+    assertEquals("surface-agent-behavior-proposal", modelRefsReject.resultSurface().surfaceId());
+    assertTrue(modelRefsReject.message().contains("active model/provider routing remains unchanged"));
+    assertBrowserSafe(modelRefsReject.resultSurface());
+
+    var modelRefsPromptGovernance = runAction(new CapabilityActionRequest(
+        "action-agent-model-refs-open-prompt-governance",
+        "action-agent-model-refs-open-prompt-governance",
+        "agent_admin.get_prompt_version",
+        "agent_admin.get_prompt_version",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        directModelRefs.surfaceId(),
+        "corr-agent-admin-model-refs-prompt-governance"));
+    assertEquals("accepted", modelRefsPromptGovernance.status());
+    assertEquals("surface-agent-prompt-governance", modelRefsPromptGovernance.resultSurface().surfaceId());
+    assertBrowserSafe(modelRefsPromptGovernance.resultSurface());
+
+    var modelRefsToolBoundary = runAction(new CapabilityActionRequest(
+        "action-agent-model-refs-open-tool-boundary",
+        "action-agent-model-refs-open-tool-boundary",
+        "agent_admin.get_tool_boundary",
+        "agent_admin.get_tool_boundary",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        directModelRefs.surfaceId(),
+        "corr-agent-admin-model-refs-tool-boundary"));
+    assertEquals("accepted", modelRefsToolBoundary.status());
+    assertEquals("surface-agent-tool-boundary-diff", modelRefsToolBoundary.resultSurface().surfaceId());
+    assertBrowserSafe(modelRefsToolBoundary.resultSurface());
+
+    var modelRefsTrace = runAction(new CapabilityActionRequest(
+        "action-agent-model-refs-open-trace",
+        "action-agent-model-refs-open-trace",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("traceId", "trace-agent-admin-model-refs"),
+        null,
+        ADMIN_CONTEXT_ID,
+        directModelRefs.surfaceId(),
+        "corr-agent-admin-model-refs-trace"));
+    assertEquals("accepted", modelRefsTrace.status());
+    assertEquals("surface-agent-admin-trace", modelRefsTrace.resultSurface().surfaceId());
+    assertTrue(modelRefsTrace.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-model-refs-open-trace")));
+    assertBrowserSafe(modelRefsTrace.resultSurface());
+
+    var modelRefsBackToDetail = runAction(new CapabilityActionRequest(
+        "action-agent-model-refs-back-to-detail",
+        "action-agent-model-refs-back-to-detail",
+        "agent_admin.get_definition",
+        "agent_admin.get_definition",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        directModelRefs.surfaceId(),
+        "corr-agent-admin-model-refs-detail-return"));
+    assertEquals("accepted", modelRefsBackToDetail.status());
+    assertEquals("surface-agent-admin-detail", modelRefsBackToDetail.resultSurface().surfaceId());
+    assertBrowserSafe(modelRefsBackToDetail.resultSurface());
+
     var skillTrace = runAction(new CapabilityActionRequest(
         "action-agent-skill-manifest-open-trace",
         "action-agent-skill-manifest-open-trace",
@@ -1030,6 +1235,13 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "member@example.test",
         "Member User",
         MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin tool-boundary payloads, grant metadata, or denial counts.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-model-refs",
+        "corr-agent-admin-model-refs-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin model-reference payloads, provider aliases, or readiness details.");
 
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-agent-admin-catalog",
@@ -1066,6 +1278,13 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "customer@example.test",
         "Customer Admin",
         CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin tool-boundary rows, grants, hidden ids, or tenant governance state.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-model-refs",
+        "corr-agent-admin-model-refs-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin model-reference rows, provider aliases, hidden ids, or tenant governance state.");
   }
 
   @Test

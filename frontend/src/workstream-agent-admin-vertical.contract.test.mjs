@@ -110,7 +110,7 @@ test('Agent Admin surfaces preserve required UI states, approval gates, validati
     'agent_admin.prompt_governance.v1',
     'agent_admin.skill_manifest_diff.v1',
     'agent_admin.tool_boundary_diff.v1',
-    'agent_admin.model_ref.v1',
+    'agent_admin.model_refs.v1',
     'agent_admin.seed_material.v1',
     'agent_admin.behavior_change_proposal.v1',
     'PromptAssemblyTrace',
@@ -134,6 +134,9 @@ test('Agent Admin surfaces preserve required UI states, approval gates, validati
     assert.match(surfaces, new RegExp(marker.replace(/[()]/g, '\\$&')));
   }
   assert.match(surfaces, /requiresApproval: true/);
+  assert.match(surfaces, /modelReferenceSummary/);
+  assert.match(surfaces, /redactedModelReferenceDiff/);
+  assert.match(surfaces, /noFakeSuccess: true/);
   assert.match(surfaces, /secretVisibility: 'redacted'/);
   assert.match(surfaces, /trace-prompt-assembly-42/);
   assert.match(surfaces, /trace-skill-load-17/);
@@ -188,6 +191,15 @@ test('Agent Admin actions and fixture client return structured surfaces instead 
     'action-agent-tool-boundary-open-model-refs',
     'action-agent-tool-boundary-open-trace',
     'action-agent-tool-boundary-back-to-detail',
+    'action-agent-model-refs-refresh',
+    'action-agent-model-refs-run-test',
+    'action-agent-model-refs-submit-review',
+    'action-agent-model-refs-approve',
+    'action-agent-model-refs-reject',
+    'action-agent-model-refs-open-prompt-governance',
+    'action-agent-model-refs-open-tool-boundary',
+    'action-agent-model-refs-open-trace',
+    'action-agent-model-refs-back-to-detail',
     'action-activate-agent-definition',
     'action-deactivate-agent-definition',
     'action-propose-prompt-diff',
@@ -236,6 +248,7 @@ test('Agent Admin starts without bootstrap markdown and keeps structured governa
     'surface-agent-admin-detail',
     'surface-agent-prompt-governance',
     'surface-agent-tool-boundary-diff',
+    'surface-agent-model-refs',
     'surface-agent-test-console',
     'surface-agent-admin-prompt-risk-review'
   ]) {
