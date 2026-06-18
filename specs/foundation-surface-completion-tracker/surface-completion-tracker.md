@@ -749,7 +749,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-rollback-confirmation` for `agent_admin.rollback_confirmation.v1` with Agent Admin/`agent-admin-agent` ownership, lifecycle-confirmation placement, backend-visible activated-proposal and target-version prerequisites, browser-safe `rollbackSummary`, `scopeSummary`, `targetVersionSummary`, `impactSummary`, `policyAndApprovalSummary`, `safeEvidenceSummary`, `confirmationState`, `authorizedActions[]`, diagnostics/redaction boundaries, governed refresh/confirm/cancel/open-proposal/open-trace actions, AuthContext/tenant/customer no-enumeration rules, audit/work trace obligations, lifecycle/provider/fail-closed states, accessibility/component binding, mutation boundaries, and app-description/realization test expectations. Sufficiency review says the surface is ready for implementation without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual semantics. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

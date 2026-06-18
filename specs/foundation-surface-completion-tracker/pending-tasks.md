@@ -5656,7 +5656,7 @@
 
 ### TASK-FSCT-160: Verify or complete app-description specification for `surface-agent-rollback-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-rollback-confirmation`
@@ -5685,6 +5685,7 @@
   - purpose: Rollback confirmation surface.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-rollback-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded the Agent Admin rollback-confirmation app-description with identity/ownership, lifecycle placement, browser-safe payload schema, governed actions, AuthContext/tenant/customer no-enumeration rules, audit/work trace obligations, fail-closed/lifecycle states, accessibility/component binding, mutation boundaries, test expectations, and sufficiency-review evidence; tracker updated. checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests.
 
 ### TASK-FSCT-161: Verify or complete runtime implementation for `surface-agent-rollback-confirmation`
 
