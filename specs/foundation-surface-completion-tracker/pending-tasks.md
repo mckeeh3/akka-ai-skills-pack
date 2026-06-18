@@ -7208,7 +7208,7 @@
 
 ### TASK-FSCT-204: Verify or complete runtime testing for `surface-audit-trace-summary-review`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-203]
 - surface id: `surface-audit-trace-summary-review`
@@ -7242,6 +7242,7 @@
   - purpose: Human review of redacted advisory summary.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-summary-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-summary-review`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added `protectedAuditTraceSummaryReviewCoversReviewAcceptRejectDenialsAndSecretBoundaries` to the Akka-hosted Audit/Trace browser/API smoke suite. Coverage includes `/ui`, protected direct summary-review refresh, missing bearer rejection, backend-retained completed model-backed summary review via `/api/workstream/actions`, accept/idempotent replay, reject validation and success, conflict denial, member/customer-scope denial, trace/correlation presence, advisory-only/no-source-mutation boundaries, no-fake-success not-ready behavior, and browser-safe redaction/secret assertions. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceSummaryReviewCoversReviewAcceptRejectDenialsAndSecretBoundaries -DtrimStackTrace=false test`, `node --test frontend/src/workstream-audit-trace-vertical.contract.test.mjs`, and `git diff --check`.
 
 ### TASK-FSCT-205: Verify or complete app-description specification for `surface-governance-policy-dashboard`
 

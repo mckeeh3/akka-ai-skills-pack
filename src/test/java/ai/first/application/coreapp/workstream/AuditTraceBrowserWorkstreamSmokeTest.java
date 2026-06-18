@@ -14,6 +14,8 @@ import ai.first.application.coreapp.workstream.WorkstreamService.SurfaceEnvelope
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamBootstrapResponse;
 import ai.first.application.foundation.audit.AuditTraceService;
 import ai.first.application.foundation.identity.AkkaIdentityRepository;
+import ai.first.application.coreapp.audit.AkkaAuditTraceSummaryTaskRepository;
+import ai.first.domain.coreapp.audit.AuditTraceSummaryTask;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.identity.Customer;
@@ -24,6 +26,7 @@ import ai.first.domain.foundation.identity.ScopeType;
 import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.identity.UserProfile;
 import ai.first.domain.foundation.identity.UserSettings;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -386,6 +389,196 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
         "customer-audit@example.test",
         "Customer Admin",
         CUSTOMER_CONTEXT_ID), "Customer-scoped actors must not enumerate tenant-scoped summary worker tasks.");
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void protectedAuditTraceSummaryReviewCoversReviewAcceptRejectDenialsAndSecretBoundaries() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-audit-trace-summary-review")
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Audit/Trace summary review must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-audit-summary-review-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-audit-trace-summary-review",
+            "action-audit-trace-summary-review",
+            "audit.trace.summary_task.review",
+            "audit.trace.summary_task.review",
+            Map.of("summaryTaskId", "audit-summary-review-missing-bearer"),
+            null,
+            AUDITOR_CONTEXT_ID,
+            "surface-audit-trace-summary-progress",
+            "corr-audit-summary-review-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Audit/Trace summary review action path must reject missing bearer tokens.");
+
+    var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
+    assertTrue(shell.status().isSuccess());
+    assertTrue(shell.body().contains("<div id=\"root\"></div>"));
+    assertBrowserSafe(shell.body());
+
+    var direct = getSurface("surface-audit-trace-summary-review", "corr-audit-summary-review-direct-not-ready");
+    assertEquals("surface-audit-trace-summary-review", direct.surfaceId());
+    assertEquals("decision-card", direct.surfaceType());
+    assertEquals("audit.trace.summaryReview.v1", direct.data().get("surfaceContract"));
+    assertEquals("review_not_ready", direct.data().get("status"));
+    assertEquals("review-not-ready", direct.data().get("readiness"));
+    assertEquals(true, direct.data().get("noDirectMutation"));
+    assertEquals(true, direct.data().get("noFakeSuccess"));
+    assertTrue(String.valueOf(direct.data().get("advisorySummary")).contains("no cached, fixture, provider-bypassed, or model-less summary is accepted"));
+    assertTrue(String.valueOf(direct.data().get("disabledActions")).contains("review_not_ready"));
+    assertFalse(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-summary-accept")), "Direct not-ready review must not expose accept as a fake-success action.");
+    assertBrowserSafe(direct);
+
+    var repository = new AkkaAuditTraceSummaryTaskRepository(componentClient);
+    var reviewableTask = completedSummaryTask("audit-summary-review-runtime-smoke", "idem-audit-summary-review-runtime-smoke", "trace-audit-summary-review-model-backed");
+    repository.save(reviewableTask);
+
+    var review = runAction(new CapabilityActionRequest(
+        "action-audit-trace-summary-review",
+        "action-audit-trace-summary-review",
+        "audit.trace.summary_task.review",
+        "audit.trace.summary_task.review",
+        Map.of("summaryTaskId", reviewableTask.taskId()),
+        null,
+        AUDITOR_CONTEXT_ID,
+        "surface-audit-trace-summary-progress",
+        "corr-audit-summary-review-open"));
+    assertEquals("ready_for_review", review.status());
+    assertEquals("surface-audit-trace-summary-review", review.resultSurface().surfaceId());
+    assertEquals("audit.trace.summaryReview.v1", review.resultSurface().data().get("surfaceContract"));
+    assertEquals("ready_for_review", review.resultSurface().data().get("status"));
+    assertEquals("ready_for_review", review.resultSurface().data().get("readiness"));
+    assertEquals(reviewableTask.taskId(), review.resultSurface().data().get("summaryTaskId"));
+    assertTrue(String.valueOf(review.resultSurface().data().get("reviewState")).contains("unreviewed"));
+    assertTrue(String.valueOf(review.resultSurface().data().get("advisorySummary")).contains("redacted advisory summary"));
+    assertTrue(String.valueOf(review.resultSurface().data().get("evidenceSummary")).contains("auditTraceSummaryEvidence.read"));
+    assertTrue(String.valueOf(review.resultSurface().data().get("omissions")).contains("rawPrompt"));
+    assertTrue(String.valueOf(review.resultSurface().data().get("qualityNotes")).contains("modelBackedRequired=true"));
+    assertTrue(String.valueOf(review.resultSurface().data().get("decisionForm")).contains("noSourceMutation=true"));
+    assertEquals(true, review.resultSurface().data().get("noDirectMutation"));
+    assertEquals(false, review.resultSurface().data().get("noFakeSuccess"));
+    assertFalse(review.resultSurface().traceIds().isEmpty());
+    assertTrue(review.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-summary-accept") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-summary-review")));
+    assertTrue(review.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-summary-reject") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-summary-review")));
+    assertTrue(review.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-detail") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-detail")));
+    assertTrue(review.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-timeline") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-timeline")));
+    assertTrue(review.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-failure-evidence") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-failure-evidence")));
+    assertTrue(review.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-investigation-guide") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-investigation-guide")));
+    assertTrue(review.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-request-redacted-export") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-export-request")));
+    assertTrue(review.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-append-investigation-note") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-investigation-note")));
+    assertBrowserSafe(review.resultSurface());
+
+    var accepted = runAction(new CapabilityActionRequest(
+        "action-audit-trace-summary-accept",
+        "action-audit-trace-summary-accept",
+        "audit.trace.summary_task.accept",
+        "audit.trace.summary_task.accept",
+        Map.of("summaryTaskId", reviewableTask.taskId(), "reason", "Retain the redacted advisory summary as review evidence only; no source mutation."),
+        "idem-audit-summary-review-accept",
+        AUDITOR_CONTEXT_ID,
+        review.resultSurface().surfaceId(),
+        "corr-audit-summary-review-accept"));
+    assertEquals("accepted", accepted.status());
+    assertEquals("accepted", accepted.resultSurface().data().get("status"));
+    assertTrue(String.valueOf(accepted.resultSurface().data().get("reviewState")).contains("accepted"));
+    assertTrue(String.valueOf(accepted.resultSurface().data().get("reviewState")).contains("source mutation"));
+    assertTrue(String.valueOf(accepted.message()).contains("advisory review evidence only"));
+    assertFalse(accepted.resultSurface().traceIds().isEmpty());
+    assertFalse(accepted.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-summary-accept")), "Accepted review must not expose another consequential accept action.");
+    assertBrowserSafe(accepted.resultSurface());
+
+    var acceptedReplay = runAction(new CapabilityActionRequest(
+        "action-audit-trace-summary-accept",
+        "action-audit-trace-summary-accept",
+        "audit.trace.summary_task.accept",
+        "audit.trace.summary_task.accept",
+        Map.of("summaryTaskId", reviewableTask.taskId(), "reason", "Idempotent replay should keep review evidence only."),
+        "idem-audit-summary-review-accept-replay",
+        AUDITOR_CONTEXT_ID,
+        accepted.resultSurface().surfaceId(),
+        "corr-audit-summary-review-accept-replay"));
+    assertEquals("accepted", acceptedReplay.status());
+    assertEquals(accepted.resultSurface().data().get("summaryTaskId"), acceptedReplay.resultSurface().data().get("summaryTaskId"));
+    assertBrowserSafe(acceptedReplay.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-audit-trace-summary-reject",
+        "action-audit-trace-summary-reject",
+        "audit.trace.summary_task.reject",
+        "audit.trace.summary_task.reject",
+        Map.of("summaryTaskId", reviewableTask.taskId(), "reason", "Conflicting decision must fail closed."),
+        "idem-audit-summary-review-conflict",
+        AUDITOR_CONTEXT_ID,
+        accepted.resultSurface().surfaceId(),
+        "corr-audit-summary-review-conflict")), "Conflicting accept/reject decisions must fail closed instead of mutating retained review evidence.");
+
+    var rejectableTask = completedSummaryTask("audit-summary-review-runtime-reject", "idem-audit-summary-review-runtime-reject", "trace-audit-summary-review-model-backed-reject");
+    repository.save(rejectableTask);
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-audit-trace-summary-reject",
+        "action-audit-trace-summary-reject",
+        "audit.trace.summary_task.reject",
+        "audit.trace.summary_task.reject",
+        Map.of("summaryTaskId", rejectableTask.taskId(), "reason", ""),
+        "idem-audit-summary-review-reject-validation",
+        AUDITOR_CONTEXT_ID,
+        "surface-audit-trace-summary-review",
+        "corr-audit-summary-review-reject-validation")), "Rejecting a summary without a safe reason must return backend validation failure.");
+
+    var rejected = runAction(new CapabilityActionRequest(
+        "action-audit-trace-summary-reject",
+        "action-audit-trace-summary-reject",
+        "audit.trace.summary_task.reject",
+        "audit.trace.summary_task.reject",
+        Map.of("summaryTaskId", rejectableTask.taskId(), "reason", "Reject because the advisory summary omitted required retained evidence categories; source evidence remains unchanged."),
+        "idem-audit-summary-review-reject",
+        AUDITOR_CONTEXT_ID,
+        "surface-audit-trace-summary-review",
+        "corr-audit-summary-review-reject"));
+    assertEquals("rejected", rejected.status());
+    assertEquals("rejected", rejected.resultSurface().data().get("status"));
+    assertTrue(String.valueOf(rejected.resultSurface().data().get("reviewState")).contains("rejected"));
+    assertTrue(String.valueOf(rejected.message()).contains("advisory review evidence only"));
+    assertFalse(rejected.resultSurface().traceIds().isEmpty());
+    assertBrowserSafe(rejected.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> runActionAs(
+        new CapabilityActionRequest(
+            "action-audit-trace-summary-review",
+            "action-audit-trace-summary-review",
+            "audit.trace.summary_task.review",
+            "audit.trace.summary_task.review",
+            Map.of("summaryTaskId", rejectableTask.taskId()),
+            null,
+            MEMBER_CONTEXT_ID,
+            "surface-audit-trace-summary-progress",
+            "corr-audit-summary-review-member-denied"),
+        "workos-audit-member",
+        "member-audit@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not review Audit/Trace summaries.");
+
+    assertThrows(RuntimeException.class, () -> runActionAs(
+        new CapabilityActionRequest(
+            "action-audit-trace-summary-review",
+            "action-audit-trace-summary-review",
+            "audit.trace.summary_task.review",
+            "audit.trace.summary_task.review",
+            Map.of("summaryTaskId", rejectableTask.taskId()),
+            null,
+            CUSTOMER_CONTEXT_ID,
+            "surface-audit-trace-summary-progress",
+            "corr-audit-summary-review-customer-denied"),
+        "workos-audit-customer",
+        "customer-audit@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped actors must not enumerate tenant-scoped Audit/Trace summaries.");
   }
 
   @Test
@@ -1943,6 +2136,33 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
     repository.saveProfile(new UserProfile(email, email, displayName, null, null, null));
     repository.saveSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
     repository.saveMembership(new Membership(membershipId, email, scopeType, TENANT_ID, customerId, roles, MembershipStatus.ACTIVE, false, null));
+  }
+
+  private AuditTraceSummaryTask completedSummaryTask(String taskId, String idempotencyKey, String traceId) {
+    var createdAt = Instant.parse("2026-05-25T10:15:30Z");
+    return new AuditTraceSummaryTask(
+        taskId,
+        "akka-task-" + taskId,
+        TENANT_ID,
+        null,
+        AUDITOR_CONTEXT_ID,
+        "auditor@example.test",
+        AUDITOR_CONTEXT_ID,
+        idempotencyKey,
+        Instant.parse("2026-05-20T00:00:00Z"),
+        Instant.parse("2026-05-25T00:00:00Z"),
+        List.of("admin_audit", "authorization_denial", "provider_readiness", "agent_work"),
+        AuditTraceSummaryTask.Status.COMPLETED_REVIEW_REQUIRED,
+        100,
+        "Model-backed redacted advisory summary completed through the governed AuditTraceSummaryAutonomousAgent; human review decides whether to retain it as evidence only.",
+        null,
+        null,
+        null,
+        List.of("auditTraceSummaryEvidence.read", "auditTraceEvidence.read", "readSkill:audit-trace-summary-review", "readReferenceDoc:audit-trace-summary-review"),
+        List.of("audit_trace_summary_finding:provider_readiness", "audit_trace_summary_finding:authorization_denial"),
+        List.of(traceId, "trace-audit-summary-review-correlation"),
+        createdAt,
+        createdAt);
   }
 
   private String bearerToken(String subject, String email, String name) throws Exception {
