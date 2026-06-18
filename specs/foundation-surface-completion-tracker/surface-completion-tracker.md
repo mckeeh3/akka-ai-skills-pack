@@ -1052,6 +1052,6 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | 2026-06-18 app-description specification completed in `app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md`: expanded `surface-governance-policy-system-message` / `governance.policy.system_message.v1` with Governance/Policy ownership, `governance-policy-agent` placement, terminal/recovery surface role, backend-resolved selected AuthContext data source, frontend-safe payload schema, visibility split, recovery action mappings, explicit denial/validation/conflict/provider-blocked states, tenant/customer authorization and no-enumeration rules, trace/audit/work evidence, redaction/secret boundaries, provider/runtime fail-closed behavior, accessibility/UI realization notes, required app-description/frontend/backend/negative tests, and sufficiency review. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |

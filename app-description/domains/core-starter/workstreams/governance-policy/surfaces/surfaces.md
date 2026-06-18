@@ -781,7 +781,90 @@ Surface-description sufficiency review: this definition is sufficiently unambigu
 
 Pattern: `system-message`.
 
-Used for authorization denials, missing selected context, missing proposal/task ids, validation errors, conflict/stale states, provider/runtime blockers, and unsupported authority expansion. Payload must include status, severity, safe reason code, recovery-oriented message, trace refs, redaction, `noFakeSuccess=true`, and `noDirectMutation=true`.
+Owning workstream: Governance/Policy. Owning functional agent: `governance-policy-agent`. Reusable placements: returned by the Governance/Policy dashboard, inventory, detail, proposal, simulation, decision, outcome, impact-analysis task, and impact-analysis result surfaces whenever a request cannot produce the requested governed surface safely. Purpose: communicate authorization denials, missing selected context, missing or hidden proposal/task/result references, validation errors, conflict/stale states, provider/runtime blockers, unsupported authority expansion, and unexpected failures without leaking hidden policy internals or implying a successful policy action.
+
+Collection-object progression role: this is a safe terminal/recovery result surface, not a policy/proposal list, proposal editor, policy decision, activation/rollback command, outcome note, autonomous task runner, or impact-result disposition surface. It may offer backend-authorized recovery links back to the relevant Governance/Policy surface, but it never performs a mutation or changes authority itself.
+
+User goal: understand why the requested Governance/Policy work is unavailable, forbidden, stale, blocked, or failed; see what can be tried next; and give an administrator, auditor, or support actor enough safe trace context to investigate without exposing raw policy clauses, provider/model output, prompts, tool payloads, secrets, cross-tenant/customer evidence, or hidden authority state.
+
+Data source and backend authority: the payload is produced by the protected Governance/Policy workstream endpoint or service that rejected, blocked, or failed the original surface/action request after resolving the selected `AuthContext`. Browser-provided tenant/customer/workspace ids, proposal ids, task ids, result ids, action ids, correlation keys, and idempotency keys are untrusted request metadata; the backend re-resolves scope, capability, lifecycle, trace visibility, and redaction before returning this surface.
+
+Required payload schema (frontend-safe):
+
+- `messageSummary`: message id/display ref, originating surface id when safe, original browser action id when safe, status (`forbidden`, `missing-context`, `validation-error`, `conflict-stale`, `blocked-provider-or-runtime`, `not-found-or-hidden`, or `failure`), severity, safe title, safe reason code, and recovery-oriented user message.
+- `contextSummary`: selected workstream label, selected `AuthContext` display label when available, requested proposal/task/result display ref only when visible, lifecycle/readiness summary when safe, and an omission reason for hidden or redacted context.
+- `recoveryOptions`: backend-authorized recovery links such as select/switch context, retry read/refresh, return to `surface-governance-policy-dashboard`, open scoped inventory, open the relevant proposal/task/result surface after refresh, or ask an organization administrator; each option includes target surface, optional reused action id, disabled reason, and no side-effect guarantee.
+- `validationMessages`: field-level or request-level safe validation copy for missing reason/rationale, stale freshness, unsupported lifecycle command, missing idempotency key, unsupported filter/page hints, hidden proposal/task/result references, or provider/runtime prerequisites.
+- `authorizedActions`: only backend-authorized, safe recovery/read actions for the selected actor; system-message recovery actions reuse existing Governance/Policy action ids such as `action-governance-policy-dashboard`, `action-governance-policy-list`, `action-governance-policy-read`, `action-governance-policy-read-impact-analysis`, or the original retry action when the backend confirms it is still safe and authorized.
+- `traceLinks`: user-readable trace summaries plus role-gated references to policy-decision trace, admin-audit event, workstream-log trace, agent-work/autonomous-task trace, impact-analysis worker/task events, provider/runtime failure trace, and denial/failure trace.
+- `redaction`: field-level indicators for hidden cross-tenant/customer evidence, hidden proposal/task/result existence, privileged policy clauses, raw provider/model output, raw prompts, raw governed-tool payloads, JWTs, secrets, raw correlation ids, idempotency keys, and backend component details.
+- `readiness`: provider/model/autonomous-agent/runtime/configuration state represented as ready, blocked, unavailable, stale, unknown, or not-applicable; unavailable runtime dependencies must be rendered as blocked recovery states and never as successful analysis, simulation, or evidence generation.
+- `noFakeSuccess`: always `true`; this surface must never claim that a denied, blocked, failed, stale, or invalid action succeeded.
+- `noDirectMutation`: always `true`; the browser renders backend-authored recovery state and can only invoke separate governed actions that the backend authorizes.
+
+Visibility split:
+
+- Default user-visible fields: safe title, reason code in user language, recovery guidance, selected-context label when available, visible target display ref when safe, disabled-action explanation, and safe next action labels.
+- On-demand drilldown fields: redacted lifecycle context, validation detail, readiness detail, trace summaries, prior action/result summary, and scoped proposal/task/result display metadata.
+- Admin/support/auditor-only fields: capability ids, policy-decision trace refs, admin-audit refs, workstream-log refs, agent-work/autonomous-task refs, impact-analysis worker/task refs, provider/runtime failure evidence, denial/failure evidence, redaction reasons, and diagnostic idempotency/correlation status.
+- Internal-only metadata never rendered in ordinary browser payloads: raw policy clauses, hidden role policy state, raw provider/model data, prompts, raw governed-tool payloads, backend component names, database ids/cursors, hidden cross-tenant/customer identifiers, JWTs/secrets, raw correlation ids, idempotency keys, and stack traces.
+
+Required states: loading, forbidden, missing-context, validation-error, conflict/stale, blocked-provider-or-runtime, not-found-or-hidden, partial-data, retryable-failure, terminal-failure, and ready/recovery.
+
+State semantics:
+
+- `loading`: the workstream shell is waiting for the protected endpoint to classify the denial, validation, conflict, blocked, or failure result.
+- `forbidden`: missing bearer token, missing selected context authority, missing required Governance/Policy capability, tenant/customer scope denial, or hidden policy evidence returns safe denial copy with no hidden proposal/task/result enumeration.
+- `missing-context`: no selected `AuthContext`, no visible Governance/Policy workstream binding, or missing required proposal/task/result display ref returns context-selection or safe navigation recovery.
+- `validation-error`: malformed filter/page/action payloads, missing reason/rationale, missing idempotency key for side-effecting retry, unsupported command mode, or lifecycle-precondition failures return field-level/user-safe copy with no authority mutation.
+- `conflict/stale`: proposal, task, result, lifecycle state, freshness token, provider readiness, or trace freshness changed since the actor opened the source surface; disable side-effecting retry until refresh.
+- `blocked-provider-or-runtime`: model/provider configuration, policy simulator, autonomous-agent runtime, or impact-analysis worker is unavailable; show blocked recovery and do not fabricate simulation, impact analysis, evidence, approval, activation, or rollback success.
+- `not-found-or-hidden`: hidden proposal/task/result, cross-tenant/customer evidence, or no-enumeration direct access returns safe recovery without confirming whether the object exists.
+- `partial-data`: some trace, readiness, validation, or context detail is omitted; visible copy identifies what was omitted and why.
+- `retryable-failure`: an unexpected read or action failure can be retried safely through a backend-authorized read/refresh option; raw exception, provider, token, storage, and policy-engine details remain hidden.
+- `terminal-failure`: an unexpected failure requires administrator/support investigation; expose only safe trace summaries and role-gated diagnostic links.
+- `ready/recovery`: the system message has enough backend-authored recovery options for the selected actor to continue safely.
+
+Action contract:
+
+| Visible action / target | Browser action id | Governed tool | Capability | Request payload | Result surface | Notes |
+|---|---|---|---|---|---|---|
+| Return to Governance/Policy dashboard | `action-governance-policy-dashboard` | `list-policy-proposals` | `governance.policy.read` | selected context/workstream, optional recovery reason, correlation key generated by client or backend | `surface-governance-policy-dashboard` or `surface-governance-policy-system-message` | Read-only recovery; backend reauthorizes selected `AuthContext` and never trusts tenant/customer ids from the browser. |
+| Open scoped policy inventory | `action-governance-policy-list` | `list-policy-proposals` | `governance.policy.read` | selected context/workstream, safe filter hints, recovery reason, correlation key | `surface-governance-policy-inventory` or `surface-governance-policy-system-message` | Read-only recovery; no hidden proposal enumeration. |
+| Retry/open visible proposal evidence | `action-governance-policy-read` | `list-policy-proposals` | `governance.policy.read` | visible proposal display ref or safe recovery source ref, refresh reason, correlation key | `surface-governance-policy-detail`, `surface-governance-policy-proposal`, or `surface-governance-policy-system-message` | Backend reauthorizes proposal visibility and redacts hidden policy internals. |
+| Retry/open visible impact-analysis task/result | `action-governance-policy-read-impact-analysis` | `read-policy-impact-analysis` | `governance.policy.impact_analysis.read` | visible proposal/task/result display refs when safe, refresh reason, correlation key | `surface-governance-policy-impact-analysis-task`, `surface-governance-policy-impact-analysis-result`, or `surface-governance-policy-system-message` | Read-only recovery for advisory task/result state; provider/runtime failures remain blocked states with no fake success. |
+| Retry original governed action after refresh | original `action-governance-policy-*` id | original governed tool | original backend capability | refreshed backend-authored payload, required reason/freshness/idempotency when side-effecting, correlation key | original result surface or `surface-governance-policy-system-message` | Offered only when the backend confirms the selected actor, lifecycle, idempotency, and provider/runtime state make the retry safe. The system message itself performs no mutation. |
+
+Hidden or denied actions: approval, activation, rollback, proposal mutation, simulation run, outcome-note mutation, impact-analysis start/cancel, impact-result disposition, raw provider/model prompt access, raw policy-clause edits, tenant/customer scope expansion, hidden-object lookup, and diagnostic trace disclosure are not performed by this system-message surface. Direct attempts without authority return another safe system message, are audit/trace recorded, and must not reveal whether hidden proposals, policies, tasks, results, capabilities, or cross-tenant/customer evidence exists.
+
+Authorization and tenant scope:
+
+- Every system-message payload is scoped to the backend-resolved selected `AuthContext`; browser tenant/customer/workspace hints cannot expand scope, enumerate hidden objects, or change recovery options.
+- Recovery actions are included only when the backend authorizes the underlying Governance/Policy capability for the selected actor and target lifecycle state.
+- Missing bearer token, missing selected context, missing capability, tenant/customer denial, hidden proposal/task/result, stale freshness, unsupported lifecycle, and provider/runtime blockers return safe reason codes, recovery copy, trace refs, `noFakeSuccess=true`, and `noDirectMutation=true`.
+- Redaction must hide cross-tenant/customer evidence, hidden policy authority state, privileged policy clauses, raw provider/model content, prompts, raw tool payloads, JWTs, secrets, stack traces, and implementation correlation/idempotency details from ordinary browser payloads.
+
+Trace, audit, and work evidence:
+
+- System-message creation records workstream-log/correlation evidence for the original request and its safe result classification.
+- Denials, validation failures, stale/conflict outcomes, provider/runtime blockers, unexpected failures, and any offered retry/follow-up action link to denial/failure traces; consequential denied or failed actions also link admin-audit and policy-decision trace evidence where applicable.
+- Autonomous-agent or impact-analysis blocker messages link agent-work/autonomous-task and impact-analysis worker/task events without copying raw provider/model output, prompts, or tool payloads into the browser payload.
+- Default trace copy is human-readable; raw ids/details are exposed only through role-gated audit/support drilldowns.
+
+Accessibility, responsive, and UI realization:
+
+- Use the selected web UI style guide, named-theme contract, and component-catalog system-message, alert, validation-summary, recovery-action, trace-summary, and support-detail anatomy.
+- Message title, reason, recovery actions, validation items, trace summaries, and disabled-action explanations are keyboard-operable or screen-reader reachable as appropriate; focus moves to the message heading after a failed/denied action and returns to the triggering control after a safe retry.
+- Responsive layouts preserve reason-before-recovery ordering, keep `noFakeSuccess`/blocked-provider-or-runtime recovery copy visible, and do not hide denial, redaction, or trace-summary information.
+
+Required tests:
+
+- App-description/contract tests prove the system-message contract includes payload schema, state taxonomy, recovery action mapping, auth/tenant rules, redaction, trace/audit/work evidence, provider/runtime fail-closed semantics, `noFakeSuccess`, `noDirectMutation`, and sufficiency review.
+- Frontend tests prove forbidden/missing-context/validation/conflict/blocked-provider-or-runtime/not-found-or-hidden/partial/retryable-failure/terminal-failure states, safe recovery rendering, backend-authorized action visibility, focus management, keyboard navigation, and secret-boundary redaction.
+- Backend/API tests prove selected AuthContext scoping, missing-bearer and missing-capability denials, no-enumeration hidden proposal/task/result access, stale/freshness and validation errors, provider/runtime fail-closed blocker messages, trace/audit/work evidence, and safe retry/action reauthorization.
+- Negative/idempotency tests prove system messages never approve, activate, roll back, weaken policy, expand tenant/customer scope, expose hidden policy internals, fabricate provider-backed analysis, mutate proposal/task/result state, or duplicate side effects on repeated recovery attempts.
+
+Surface-description sufficiency review: this definition is sufficiently unambiguous for a developer or generator to implement and review `surface-governance-policy-system-message` without inventing payload fields, recovery actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. The default view avoids internal implementation details that do not help the target SaaS user, and no additional description pass is required before scoped implementation work for this system-message surface.
 
 ## State and action rules
 

@@ -8094,7 +8094,7 @@
 
 ### TASK-FSCT-229: Verify or complete app-description specification for `surface-governance-policy-system-message`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-governance-policy-system-message`
@@ -8123,6 +8123,7 @@
   - purpose: Governance/Policy safe system message.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-system-message` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded the Governance/Policy safe system-message app-description with terminal/recovery role, backend-resolved selected AuthContext data source, frontend-safe payload, visibility split, recovery action mappings, denial/validation/conflict/provider-blocked states, tenant/customer authorization and no-enumeration rules, trace/audit/work evidence, redaction/secret boundaries, provider/runtime fail-closed behavior, accessibility/UI realization notes, required tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-230: Verify or complete runtime implementation for `surface-governance-policy-system-message`
 
