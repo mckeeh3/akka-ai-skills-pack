@@ -25,6 +25,7 @@ import ai.first.application.foundation.agent.FailClosedWorkstreamAgentRuntimeInv
 import ai.first.application.foundation.agent.ModelProviderClient;
 import ai.first.application.foundation.agent.OpenAiModelProviderClient;
 import ai.first.domain.coreapp.useradmin.AccessReviewTask;
+import ai.first.domain.coreapp.agentadmin.PromptRiskReviewTask;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
 import ai.first.domain.foundation.attention.AttentionItem;
@@ -83,6 +84,9 @@ import ai.first.application.coreapp.governance.AkkaGovernancePolicyImpactTaskRep
 import ai.first.application.coreapp.governance.GovernancePolicyImpactTaskRepository;
 import ai.first.application.coreapp.governance.InMemoryGovernancePolicyImpactTaskRepository;
 import ai.first.application.coreapp.myaccount.AkkaMyAccountPersonalAttentionDigestTaskRepository;
+import ai.first.application.coreapp.agentadmin.AkkaPromptRiskReviewTaskRepository;
+import ai.first.application.coreapp.agentadmin.ComponentClientPromptRiskAutonomousAgentRuntime;
+import ai.first.application.coreapp.agentadmin.PromptRiskReviewTaskRepository;
 import ai.first.application.coreapp.myaccount.DigestExportService;
 import ai.first.application.coreapp.useradmin.FailClosedAccessReviewAutonomousAgentRuntime;
 import ai.first.application.coreapp.myaccount.MyAccountPersonalAttentionDigestService;
@@ -116,6 +120,7 @@ public final class StarterSecurityComponents {
   private static volatile InvitationService invitationService = new InvitationService(identityRepository, invitationRepository, CLOCK);
   private static volatile InvitationView invitationView = new InvitationView(invitationService);
   private static volatile AccessReviewTaskRepository accessReviewTaskRepository = new UnboundAccessReviewTaskRepository();
+  private static volatile PromptRiskReviewTaskRepository promptRiskReviewTaskRepository = new UnboundPromptRiskReviewTaskRepository();
   private static volatile GovernancePolicyRepository governancePolicyRepository = new UnboundGovernancePolicyRepository();
   private static volatile GovernancePolicyImpactTaskRepository governancePolicyImpactTaskRepository = new InMemoryGovernancePolicyImpactTaskRepository();
   private static volatile AuditTraceService auditTraceService = new AuditTraceService(authContextResolver, auditTraceRepository());
@@ -164,6 +169,7 @@ public final class StarterSecurityComponents {
     BootstrapAdminSeeder.seedConfiguredAdmins(durableIdentity, System.getenv("ADMIN_USERS"));
     var durableWorkstreamLog = new AkkaWorkstreamLogRepository(componentClient);
     var durableAccessReviews = new AkkaAccessReviewTaskRepository(componentClient);
+    var durablePromptRiskReviews = new AkkaPromptRiskReviewTaskRepository(componentClient);
     var durableGovernancePolicy = new AkkaGovernancePolicyRepository(componentClient);
     var durableGovernancePolicyImpactTasks = new AkkaGovernancePolicyImpactTaskRepository(componentClient);
     var durableAttention = new AkkaAttentionRepository(componentClient);
@@ -177,6 +183,7 @@ public final class StarterSecurityComponents {
     agentRuntimeService = durableRuntime;
     agentRuntimeToolResolver = new AgentRuntimeToolResolver(durableAgentBehavior, durableRuntime);
     accessReviewTaskRepository = durableAccessReviews;
+    promptRiskReviewTaskRepository = durablePromptRiskReviews;
     governancePolicyRepository = durableGovernancePolicy;
     governancePolicyImpactTaskRepository = durableGovernancePolicyImpactTasks;
     attentionRepository = durableAttention;
@@ -196,7 +203,7 @@ public final class StarterSecurityComponents {
     invitationView = new InvitationView(invitationService);
     auditTraceService = new AuditTraceService(authContextResolver, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog));
     governancePolicyService = new GovernancePolicyService(durableGovernancePolicy, authContextResolver, CLOCK, attentionProducerService);
-    workstreamService = new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), durableWorkstreamLog, durableAccessReviews, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog), durableGovernancePolicy, attentionService, attentionProducerService, workstreamEventPublisher, workstreamEventRepository, new ComponentClientAccessReviewAutonomousAgentRuntime(componentClient, agentRuntimeService, agentRuntimeToolResolver), notificationService);
+    workstreamService = new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), durableWorkstreamLog, durableAccessReviews, new AkkaAuditTraceRepository(componentClient, durableWorkstreamLog), durableGovernancePolicy, attentionService, attentionProducerService, workstreamEventPublisher, workstreamEventRepository, new ComponentClientAccessReviewAutonomousAgentRuntime(componentClient, agentRuntimeService, agentRuntimeToolResolver), durablePromptRiskReviews, new ComponentClientPromptRiskAutonomousAgentRuntime(componentClient, agentRuntimeService, agentRuntimeToolResolver), notificationService);
   }
 
   public static AuthContextResolver authContextResolver() {
@@ -213,7 +220,7 @@ public final class StarterSecurityComponents {
 
   public static WorkstreamService workstreamService(ComponentClient componentClient, WorkstreamLogRepository workstreamLogRepository) {
     bindAkkaRuntime(componentClient);
-    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), workstreamLogRepository, accessReviewTaskRepository(), new AkkaAuditTraceRepository(componentClient, workstreamLogRepository), governancePolicyRepository(), attentionService(), attentionProducerService, workstreamEventPublisher, workstreamEventRepository, new ComponentClientAccessReviewAutonomousAgentRuntime(componentClient, agentRuntimeService, agentRuntimeToolResolver), notificationService);
+    return new WorkstreamService(meService, authContextResolver, new UserDirectoryView(userAdminService), invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, new DefaultWorkstreamAgentRuntimeInvoker(agentRuntimeService, componentClient), workstreamLogRepository, accessReviewTaskRepository(), new AkkaAuditTraceRepository(componentClient, workstreamLogRepository), governancePolicyRepository(), attentionService(), attentionProducerService, workstreamEventPublisher, workstreamEventRepository, new ComponentClientAccessReviewAutonomousAgentRuntime(componentClient, agentRuntimeService, agentRuntimeToolResolver), promptRiskReviewTaskRepository(), new ComponentClientPromptRiskAutonomousAgentRuntime(componentClient, agentRuntimeService, agentRuntimeToolResolver), notificationService);
   }
 
   public static GovernancePolicyImpactTaskRepository governancePolicyImpactTaskRepository() {
@@ -272,6 +279,7 @@ public final class StarterSecurityComponents {
     invitationService = new InvitationService(testRepository, invitationRepository, CLOCK, attentionProducerService);
     invitationView = new InvitationView(invitationService);
     accessReviewTaskRepository = new UnboundAccessReviewTaskRepository();
+    promptRiskReviewTaskRepository = new UnboundPromptRiskReviewTaskRepository();
     governancePolicyRepository = new UnboundGovernancePolicyRepository();
     auditTraceService = new AuditTraceService(authContextResolver, auditTraceRepository());
     governancePolicyService = new GovernancePolicyService(governancePolicyRepository, authContextResolver, CLOCK);
@@ -446,6 +454,10 @@ public final class StarterSecurityComponents {
     return accessReviewTaskRepository;
   }
 
+  private static PromptRiskReviewTaskRepository promptRiskReviewTaskRepository() {
+    return promptRiskReviewTaskRepository;
+  }
+
   private static AuditTraceRepository auditTraceRepository() {
     return new UnboundAuditTraceRepository();
   }
@@ -524,6 +536,16 @@ public final class StarterSecurityComponents {
     public Optional<AccessReviewTask> find(String taskId) { throw unavailable(); }
     public Optional<AccessReviewTask> findByIdempotencyKey(String tenantId, String accountId, String idempotencyKey) { throw unavailable(); }
     public AccessReviewTask save(AccessReviewTask task) { throw unavailable(); }
+  }
+
+  private static final class UnboundPromptRiskReviewTaskRepository implements PromptRiskReviewTaskRepository {
+    private IllegalStateException unavailable() {
+      return FailClosedFoundationRuntime.unavailable("PromptRiskReviewTaskRepository");
+    }
+
+    public Optional<PromptRiskReviewTask> find(String taskId) { throw unavailable(); }
+    public Optional<PromptRiskReviewTask> findByIdempotencyKey(String tenantId, String accountId, String idempotencyKey) { throw unavailable(); }
+    public PromptRiskReviewTask save(PromptRiskReviewTask task) { throw unavailable(); }
   }
 
   private static final class UnboundMyAccountPersonalAttentionDigestTaskRepository implements MyAccountPersonalAttentionDigestTaskRepository {

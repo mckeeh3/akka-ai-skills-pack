@@ -5901,7 +5901,7 @@
 
 ### TASK-FSCT-167: Verify or complete runtime implementation for `surface-agent-admin-prompt-risk-review`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-166]
 - surface id: `surface-agent-admin-prompt-risk-review`
@@ -5932,6 +5932,7 @@
   - purpose: Prompt-risk autonomous review result.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-prompt-risk-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-prompt-risk-review`; surface graph node/action edge for opening or acting on `surface-agent-admin-prompt-risk-review`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented the real protected WorkstreamEndpoint/WorkstreamService prompt-risk workflow-status runtime for `agent_admin.prompt_risk_review.v1`; added app-description action ids for start/read/cancel/accept/reject/open-source/open-trace with legacy aliases retained; accept/reject now hand off to human behavior-proposal review; normal Akka endpoint binding uses `AkkaPromptRiskReviewTaskRepository` plus `ComponentClientPromptRiskAutonomousAgentRuntime`; payload includes review summary, selected AuthContext scope, fail-closed readiness blocker, progress events, gated model-backed findings, recommendations, decision state, diagnostics, trace/correlation, safe redaction, no-direct-mutation, and no-fake-success provider/runtime behavior. Evidence level: `api-smoked`/implementation-ready. Checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminPromptRiskReviewServiceTest test`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`. Note: combined `mvn -q -Dtest=AgentAdminPromptRiskReviewServiceTest,DurablePromptRiskReviewTaskRepositoryEntityTest test` showed all selected test methods passing in surefire reports but the fork ended with an Akka TestKit shutdown error; durable repository wiring was still compile-verified and evidenced by existing Akka repository tests/source, and deeper end-to-end test updates remain for `TASK-FSCT-168`.
 
 ### TASK-FSCT-168: Verify or complete runtime testing for `surface-agent-admin-prompt-risk-review`
 
