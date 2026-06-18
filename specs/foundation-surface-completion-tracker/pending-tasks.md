@@ -8309,7 +8309,7 @@
 
 ### TASK-FSCT-234: Re-run foundation surface completion terminal verification
 
-- status: pending
+- status: done
 - source: TASK-FSCT-232 terminal verification follow-up
 - depends on: [TASK-FSCT-233]
 - required reads:
@@ -8335,3 +8335,4 @@
   - no material runtime-readiness gaps remain for the stated mini-project scope, or any remaining gaps have accepted follow-up tasks plus a later terminal verification task
 - notes:
   - vertical contract: non-runtime verification task; foundation scope: all tracked surfaces; local validation: `git diff --check`, tracker/queue consistency searches, and runtime evidence validator.
+  - completed 2026-06-18: re-ran terminal verification after TASK-FSCT-233. Focused tracker search found 231 tracked objective rows and all are `done`; no tracked objective remains `pending`, `in-progress`, or `blocked`. Queue search found no remaining `pending` tasks and no `in-progress` tasks after this task was marked done; the single historical `blocked` task is TASK-FSCT-232 and its blockers were remediated by TASK-FSCT-233/re-verified here. Runtime evidence validator passed for 154 done runtime tasks. No material runtime-readiness gaps remain for the foundation surface completion tracker scope. Checks passed: focused tracker/queue status searches, `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`, and `git diff --check`.
