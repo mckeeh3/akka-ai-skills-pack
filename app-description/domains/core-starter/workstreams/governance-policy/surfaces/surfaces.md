@@ -682,7 +682,100 @@ Surface-description sufficiency review: this definition is sufficiently unambigu
 
 Pattern: `decision-card`.
 
-Required payload: impact task id, proposal id, overall risk, review state, summary, findings, evidence refs, trace ids, required human decisions, allowed result-disposition actions, disabled activation/rollback actions, activation-blocked flag, redaction, and `noDirectMutation=true`.
+Owning workstream: Governance/Policy. Owning functional agent: `governance-policy-agent`. Reusable placements: opened from `surface-governance-policy-impact-analysis-task` when an impact-analysis task reaches `completed-review-required`, from proposal/detail/decision/activation gates that need human disposition of advisory impact evidence, from outcome/evidence follow-ups, and from audit/trace drilldowns only when the selected `AuthContext` grants the required Governance/Policy impact-result authority. Purpose: review completed advisory impact-analysis evidence, record the human disposition, and keep policy approval/activation/rollback blocked until the result is explicitly accepted or sent back, without treating model/provider output as an automatic policy decision.
+
+Collection-object progression role: this is a domain-specific single-action decision surface for the policy impact-analysis task lifecycle. It is not the autonomous task runner, proposal editor, policy approval card, activation/rollback command, or outcome-note surface. Selection and breadcrumbs return to the scoped impact-analysis task, proposal, detail, decision, or inventory surface; downstream approval/activation remains on dedicated decision surfaces after backend prerequisites are satisfied.
+
+User goal: understand the completed advisory impact analysis, inspect findings, omissions, confidence limits, trace/evidence summaries, and activation blockers, then accept the result, reject it, or request changes when authorized without exposing hidden policy internals, raw provider/model output, prompts, tool payloads, secrets, or cross-tenant/customer evidence.
+
+Data source and backend authority: the payload is produced by the protected Governance/Policy impact-analysis result projection for the backend-resolved tenant/customer/workspace scope. Browser-provided proposal ids, task ids, result ids, disposition commands, reasons, tenant/customer hints, correlation keys, and idempotency keys are untrusted request metadata; the backend re-resolves selected `AuthContext`, task/proposal visibility, lifecycle state, result-disposition capability, trace visibility, redaction, and idempotency before returning this surface or a safe system message.
+
+Required payload schema (frontend-safe):
+
+- `resultSummary`: impact task display ref, proposal display ref, proposal title, policy area, task lifecycle/status label, review state (`completed-review-required`, `accepted`, `rejected_result`, or `request_changes`), overall risk label, confidence label, freshness/conflict status, completed age bucket, and safe empty/no-result copy.
+- `advisorySummary`: user-facing analysis narrative, decision-relevant recommendation summary, expected business/security impact, known limitations, confidence and coverage notes, omitted/hidden evidence summary, and explicit advisory-only copy stating that the result does not approve, activate, roll back, or change authority.
+- `findings`: ordered findings with finding id/display label, severity, affected capability or policy area summary, affected actor/resource/customer/workspace summary when safe, expected allow/deny/change outcome, evidence status, reviewer attention reason, and row redaction markers.
+- `evidenceRefs`: source proposal/task refs, redacted simulation refs, policy-decision evidence refs, agent-work/autonomous-task event summaries, supporting workstream-log/admin-audit summaries, provider/runtime readiness summary, and role-gated drilldown targets; raw provider/model output, prompts, raw tool payloads, hidden role clauses, and implementation ids are omitted from the default view.
+- `humanDecision`: required reviewer decision, allowed disposition values, required reason rules for reject/request-changes, reviewer note draft state, prior disposition summary when present, disabled disposition reasons, and idempotency/replay-safe status copy.
+- `activationGate`: whether accepted impact evidence is required before approval/activation, current gate state, missing prerequisites, disabled approval/activation/rollback reasons, related simulation/outcome/decision target surfaces, and confirmation that result disposition alone cannot activate or roll back policy.
+- `authorizedActions`: only backend-authorized result actions for the selected actor and lifecycle state, including `action-governance-policy-read-impact-analysis`, `action-governance-policy-accept-impact-result`, `action-governance-policy-reject-impact-result`, `action-governance-policy-request-impact-changes`, `action-governance-policy-read`, `action-governance-policy-decide`, and `action-governance-policy-outcome-note` when each corresponding capability and lifecycle rule is satisfied.
+- `traceLinks`: user-readable trace summaries plus role-gated references to policy-decision trace, admin-audit event, workstream-log trace, agent-work/autonomous-task events, impact-analysis worker/task events, provider/runtime failure traces, and denial/failure traces.
+- `redaction`: field-level indicators for hidden cross-tenant/customer evidence, privileged policy clauses, hidden authority state, raw provider/model output, raw prompts, raw governed-tool payloads, JWTs, secrets, raw correlation ids, and idempotency keys.
+- `readiness`: provider/runtime/configuration state that produced the result or blocked evidence sections, represented as completed, partial, stale, blocked, unknown, or not-required summaries; unavailable or failed provider/runtime paths are never rendered as successful analysis.
+- `noDirectMutation`: always `true`; the browser renders backend-authored state and sends governed disposition actions only. It cannot approve, activate, roll back, weaken security, expand authority, mutate proposal scope, or fabricate evidence locally.
+
+Visibility split:
+
+- Default user-visible fields: proposal title/display ref, task/review status, overall risk/confidence, advisory summary, finding summaries, omitted-evidence copy, activation-blocked state, authorized next actions, required reason guidance, and recovery instructions.
+- On-demand drilldown fields: task/proposal display ids, detailed finding evidence, redacted lifecycle history, reviewer disposition history, evidence/source summaries, trace summaries, and scoped source artifact details.
+- Admin/support/auditor-only fields: capability ids, policy-decision trace refs, admin-audit refs, workstream-log refs, agent-work/autonomous-task refs, impact-analysis worker/task refs, provider/runtime failure evidence, denial/failure evidence, redaction reasons, and diagnostic idempotency/correlation status.
+- Internal-only metadata never rendered in ordinary browser payloads: raw provider/model data, prompts, raw governed-tool payloads, backend component names, raw policy clauses, hidden role policy state, database ids/cursors, cross-tenant identifiers, JWTs/secrets, correlation ids, and idempotency implementation details.
+
+Allowed lifecycle and disposition rules: reading a result requires a visible proposal/task and `governance.policy.impact_analysis.read` or a backend-authorized read edge for the selected scope. Accepting a result requires `governance.policy.impact_analysis.accept_result`, a completed-review-required result, current result/task freshness, and an idempotency key; it records advisory evidence disposition only and may unblock a downstream activation prerequisite, but does not approve or activate policy. Rejecting or requesting changes requires the corresponding `governance.policy.impact_analysis.reject_result` or `governance.policy.impact_analysis.request_changes` capability, a non-empty reason, current freshness, and an idempotency key; it records disposition and keeps approval/activation blocked until replacement evidence is produced. Repeating the same terminal disposition is idempotent or returns the original result; conflicting terminal dispositions, stale freshness, hidden tasks, and unsupported lifecycle states return safe validation/conflict/system-message results with no authority mutation.
+
+Required states: loading, empty/no-result, ready, reviewing, submitting-disposition, accepted, rejected-result, request-changes, validation-error, forbidden/system-message, conflict/stale, partial-data, blocked-provider-or-runtime, read-only, and failure.
+
+State semantics:
+
+- `loading`: workstream shell has selected Governance/Policy and is fetching the protected result projection.
+- `empty/no-result`: actor is authorized to read the result surface, but no task/result id or completed result is selected; render safe recovery actions back to task, proposal, dashboard, or inventory without enumerating hidden tasks.
+- `ready`: result summary, findings, evidence refs, activation gate, traces, and authorized disposition actions are backed by the protected result projection for the selected `AuthContext`.
+- `reviewing`: reviewer is reading completed advisory evidence; no side effect occurs until a governed disposition action succeeds.
+- `submitting-disposition`: accept/reject/request-changes action is in flight with task display ref, proposal display ref, current freshness token, reason when required, idempotency key, and correlation key; repeated submissions cannot duplicate disposition/audit effects.
+- `accepted`: backend recorded advisory result acceptance and returns the refreshed result surface with activation gate status; approval/activation actions still require dedicated policy decision/activation surfaces.
+- `rejected-result`: backend recorded rejection with reviewer reason and keeps activation blocked; source proposal authority remains unchanged.
+- `request-changes`: backend recorded requested changes with reviewer reason and keeps activation blocked until replacement analysis is started/completed.
+- `validation-error`: missing reason, missing/stale idempotency key, unsupported lifecycle state, missing result evidence, invalid task/proposal freshness, or conflicting disposition returns field-level/user-safe copy without changing authority.
+- `forbidden/system-message`: missing bearer token, missing selected context, missing impact-result capability, hidden proposal/task/result, or tenant/customer scope denial returns `surface-governance-policy-system-message` with `noFakeSuccess=true`, `noDirectMutation=true`, and no hidden proposal/task/result enumeration.
+- `conflict/stale`: result version, task lifecycle, proposal version, evidence state, or trace freshness changed since the actor opened the surface; disable side-effecting disposition actions until refresh.
+- `partial-data`: some findings, evidence, trace summaries, or readiness details are omitted; visible sections identify what was omitted and why.
+- `blocked-provider-or-runtime`: provider/model configuration or autonomous-agent runtime prevented complete evidence generation; show blocked/partial status and recovery, not fabricated analysis.
+- `read-only`: actor may inspect the result but cannot record disposition; denied disposition actions are omitted or shown as safe disabled explanations only when useful.
+- `failure`: unexpected read or disposition failure returns a safe system message with trace/audit reference and no raw exception, token, provider, storage, or policy-engine details.
+
+Action contract:
+
+| Visible action / target | Browser action id | Governed tool | Capability | Request payload | Result surface | Notes |
+|---|---|---|---|---|---|---|
+| Open/read impact-analysis result | `action-governance-policy-read-impact-analysis` | `read-policy-impact-analysis` | `governance.policy.impact_analysis.read` | proposal display ref, task display ref, open result intent, refresh reason, correlation key generated by client or backend | `surface-governance-policy-impact-analysis-result` or `surface-governance-policy-system-message` | Read-only projection; backend reauthorizes task/proposal/result visibility, trace visibility, and selected scope. |
+| Accept advisory result | `action-governance-policy-accept-impact-result` | `accept-policy-impact-result` | `governance.policy.impact_analysis.accept_result` | proposal display ref, task display ref, current result/task freshness token, reviewer acknowledgement, idempotency key, correlation key | `surface-governance-policy-impact-analysis-result` or `surface-governance-policy-system-message` | Records advisory evidence disposition only; no policy approval, activation, rollback, or authority change. |
+| Reject advisory result | `action-governance-policy-reject-impact-result` | `reject-policy-impact-result` | `governance.policy.impact_analysis.reject_result` | proposal display ref, task display ref, required reason, current result/task freshness token, idempotency key, correlation key | `surface-governance-policy-impact-analysis-result` or `surface-governance-policy-system-message` | Requires user-safe reason; keeps activation blocked and leaves proposal authority unchanged. |
+| Request impact-analysis changes | `action-governance-policy-request-impact-changes` | `request-policy-impact-changes` | `governance.policy.impact_analysis.request_changes` | proposal display ref, task display ref, required reason/change request summary, current result/task freshness token, idempotency key, correlation key | `surface-governance-policy-impact-analysis-result` or `surface-governance-policy-system-message` | Records requested changes and routes follow-up to task/proposal surfaces; no authority mutation. |
+| Open source proposal/detail | `action-governance-policy-read` | `list-policy-proposals` | `governance.policy.read` | proposal display ref, optional source result/task ref, correlation key | `surface-governance-policy-proposal`, `surface-governance-policy-detail`, or `surface-governance-policy-system-message` | Opens scoped proposal evidence; backend reauthorizes visibility and redacts hidden policy internals. |
+| Open downstream decision work | `action-governance-policy-decide` | `approve-activate-or-rollback-policy` | `governance.policy.approve` | proposal display ref, command mode `decide`, source result/task ref, reason when supplied, correlation key | `surface-governance-policy-decision` or `surface-governance-policy-system-message` | Result surface may route to decision review only when backend prerequisites and capabilities are satisfied; it cannot approve inline. |
+| Open outcome note | `action-governance-policy-outcome-note` | `record-policy-outcome-note` | `governance.outcomes.record` | proposal display ref, source result/task ref, observation/open intent, idempotency key when recording, correlation key | `surface-governance-policy-outcome` or `surface-governance-policy-system-message` | Outcome observations do not change authority or result disposition. |
+
+Hidden or denied actions: proposal approval, activation, rollback, task start/cancel, raw provider/model prompt access, raw policy-clause edits, outcome-note mutation without capability, tenant/customer scope expansion, hidden proposal/task/result access, client-side disposition, authority mutation, and evidence fabrication are not performed by this result surface. Direct/deep-link attempts without authority return `surface-governance-policy-system-message`, are audit/trace recorded, and must not reveal whether hidden proposals, policies, tasks, results, capabilities, or cross-tenant/customer evidence exists.
+
+Authorization and tenant scope:
+
+- `governance.policy.impact_analysis.read` is required to open/read a visible result unless the backend exposes an equivalent read edge for the selected Governance/Policy scope.
+- `governance.policy.impact_analysis.accept_result`, `governance.policy.impact_analysis.reject_result`, and `governance.policy.impact_analysis.request_changes` are exposed only as backend-authorized actions for the selected actor, visible result, and valid lifecycle state.
+- The backend resolves tenant/customer/workspace authority from selected `AuthContext`; browser fields cannot expand scope, enumerate hidden proposals/tasks/results, or request raw authority state.
+- Disposition requests must be idempotent and freshness-aware so repeat or stale submissions cannot duplicate audit/disposition effects or skip lifecycle gates.
+- Result findings, evidence refs, trace drilldowns, and source artifact details redact hidden cross-tenant/customer evidence, privileged policy clauses, raw provider/model content, prompts, raw tool payloads, JWTs, secrets, and implementation correlation/idempotency details.
+
+Trace, audit, and work evidence:
+
+- Result reads, disposition attempts, validation/conflict outcomes, denials, stale refreshes, and routed follow-up actions produce workstream-log/correlation evidence.
+- Accept/reject/request-changes commands produce admin-audit and policy-decision trace evidence even when validation fails; impact-analysis evidence links agent-work/autonomous-task events; denials/provider/runtime failures link failure traces.
+- Default trace copy is human-readable; raw ids/details are visible only through role-gated audit/support drilldowns.
+- Repeated disposition commands require idempotency evidence and must return the original outcome or a safe conflict message.
+
+Accessibility, responsive, and UI realization:
+
+- Use the selected web UI style guide, named-theme contract, and component-catalog decision-card, evidence-list, badge, validation-summary, system-message, action-bar, trace-summary, and confirmation anatomy.
+- Findings, evidence sections, required decisions, disposition controls, disabled activation blockers, breadcrumbs, and trace links are keyboard-operable, announce risk/review/action targets, preserve focus after disposition results, and provide accessible names for affected policy areas and consequence copy.
+- Responsive layouts may stack summary, findings, evidence, and decision panels but must preserve backend-authored actions, redaction markers, validation states, trace summaries, and recovery guidance.
+
+Required tests:
+
+- App-description/contract tests prove the result contract includes payload schema, lifecycle/disposition states, action mappings, auth/tenant rules, idempotency, no-direct-mutation semantics, traces, redaction, provider/runtime fail-closed behavior, and sufficiency review.
+- Frontend tests prove decision-card rendering, no-result/ready/submitting/accepted/rejected/request-changes/validation/conflict/partial/blocked-provider-or-runtime/read-only/system-message states, backend-authorized action visibility, required reason handling, keyboard navigation, focus preservation, and secret-boundary redaction.
+- Backend/API tests prove selected AuthContext scoping, missing-bearer and missing-capability denials, no-enumeration hidden proposal/task/result access, result read routing from completed task, accept/reject/request-changes idempotency, stale/conflicting disposition handling, trace/audit/work evidence, activation-gate semantics, and provider/runtime fail-closed advisory statuses.
+- Negative tests prove the browser and agents cannot approve, activate, roll back, weaken policy, expand tenant/customer scope, expose hidden policy internals, fabricate provider-backed analysis, mutate proposal authority, or duplicate/conflict disposition side effects.
+
+Surface-description sufficiency review: this definition is sufficiently unambiguous for a developer or generator to implement and review `surface-governance-policy-impact-analysis-result` without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. The default view avoids internal implementation details that do not help the target SaaS user, and no additional description pass is required before scoped implementation work for this decision-card surface.
 
 ### `surface-governance-policy-system-message` (`governance.policy.system_message.v1`)
 
