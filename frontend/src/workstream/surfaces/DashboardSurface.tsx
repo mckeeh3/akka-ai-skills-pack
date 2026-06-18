@@ -131,7 +131,11 @@ function AuditTraceCommandCenter({ envelope, onAction }: DashboardSurfaceProps) 
       <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-cards-heading`}>
         <div className="surface-section-heading"><div><p className="eyebrow">Investigation overview</p><h4 id={`${envelope.surfaceId}-cards-heading`}>Scoped audit and failure counters</h4></div><p>Cards are summaries only. Open search, timeline, or failure evidence to reauthorize and inspect backend-provided evidence.</p></div>
         <div className="surface-dashboard-grid my-account-workstream-grid" aria-label="Audit/Trace scoped counters">
-          {data.cards.map((card) => <article key={card.cardId} className={`ds-card dashboard-card ${card.severity ?? 'info'}`}><p>{card.label}</p><strong>{card.value}</strong>{card.status && <span>{card.status}</span>}</article>)}
+          {data.cards.map((card) => {
+            const action = card.actionId ? actionById.get(card.actionId) : undefined;
+            const body = <><p>{card.label}</p><strong>{card.value}</strong>{card.status && <span>{card.status}</span>}</>;
+            return action ? <button key={card.cardId} type="button" className={`ds-card dashboard-card clickable ${card.severity ?? 'info'}`} disabled={Boolean(action.disabled)} onClick={() => !action.disabled && onAction?.(action, envelope.surfaceId, defaultAuditTraceInput(action, envelope))} aria-label={`Open ${card.label}: ${card.value}`}>{body}</button> : <article key={card.cardId} className={`ds-card dashboard-card ${card.severity ?? 'info'}`}>{body}</article>;
+          })}
         </div>
       </section>
 

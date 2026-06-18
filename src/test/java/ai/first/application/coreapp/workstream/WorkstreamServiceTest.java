@@ -2061,6 +2061,17 @@ class WorkstreamServiceTest {
     service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "agent-audit-trace", "Explain current trace status", "corr-audit-runtime", "idem-audit-runtime"), "corr-header");
 
+    var dashboard = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-audit-trace-dashboard", "action-audit-trace-dashboard", "audit.trace.dashboard.read", "audit.trace.dashboard.read", null, null, "membership-admin", "surface-audit-trace-dashboard", "corr-audit-dashboard"));
+    assertEquals("accepted", dashboard.status());
+    assertEquals("surface-audit-trace-dashboard", dashboard.resultSurface().surfaceId());
+    assertEquals("audit.trace.dashboard.v1", dashboard.resultSurface().data().get("surfaceContract"));
+    assertTrue(dashboard.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-dashboard")));
+    assertTrue(dashboard.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-summary-task-start")));
+    assertTrue(dashboard.resultSurface().toString().contains("selectedScope"));
+    assertTrue(dashboard.resultSurface().toString().contains("targetSurfaceId=surface-audit-trace-search"));
+    assertTrue(dashboard.resultSurface().toString().contains("Raw JWTs") || dashboard.resultSurface().toString().contains("rawJwt"));
+
     var search = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-audit-trace-search", "action-audit-trace-search", "audit.trace.search", "audit.trace.search", Map.of("pageSize", 10, "filter", "runtime"), null, "membership-admin", "surface-audit-trace-dashboard", "corr-audit-search"));
     assertEquals("accepted", search.status());
@@ -2162,6 +2173,9 @@ class WorkstreamServiceTest {
         "action-audit-trace-search", "action-audit-trace-search", "audit.trace.search", "audit.trace.search", Map.of("pageSize", 10), null, "membership-member", "surface-audit-trace-dashboard", "corr-member-audit")));
 
     assertEquals("CAPABILITY_FORBIDDEN", denied.reasonCode());
+
+    var surfaceDenied = assertThrows(AuthorizationException.class, () -> service.surface(memberIdentity(), "membership-member", "surface-audit-trace-dashboard", "corr-member-audit-dashboard"));
+    assertEquals("missing-capability:audit.trace.dashboard.read", surfaceDenied.reasonCode());
   }
 
   @Test

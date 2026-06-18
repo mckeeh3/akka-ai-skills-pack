@@ -46,6 +46,8 @@ test('Audit/Trace surfaces preserve trace links, denial/provider evidence, redac
   assert.match(list, /Partial results/);
   assert.match(dashboard, /Audit\/Trace attention items/);
   assert.match(dashboard, /AuditTraceCommandCenter/);
+  assert.match(dashboard, /dashboard-card clickable/);
+  assert.match(dashboard, /defaultAuditTraceInput\(action, envelope\)/);
   assert.match(dashboard, /Request redacted export/);
   assert.match(dashboard, /Backend capabilities/);
   assert.match(traceLinks, /surface-audit-trace-detail/);

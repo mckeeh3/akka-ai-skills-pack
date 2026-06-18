@@ -6219,7 +6219,7 @@
 
 ### TASK-FSCT-176: Verify or complete runtime implementation for `surface-audit-trace-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-175]
 - surface id: `surface-audit-trace-dashboard`
@@ -6250,6 +6250,7 @@
   - purpose: Investigation command center.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-dashboard`; surface graph node/action edge for opening or acting on `surface-audit-trace-dashboard`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented and verified the Audit/Trace dashboard runtime path. `AuditTraceService#dashboard` now enforces `audit.trace.dashboard.read`, emits protected read traces, and returns backend-owned `audit.trace.dashboard.v1` data with selected scope/AuthContext summaries, actionable cards, ordered sections, trace/correlation evidence, redaction boundaries, and provider/model summary fail-closed recovery. `WorkstreamService` exposes refresh/search/timeline/failure/guidance/export/summary actions through the protected Workstream API action registry, and `DashboardSurface` renders cards as governed keyboard-operable action controls. Runtime readiness level: `api-smoked` for implementation verification with tenant-admin AuthContext, member direct-surface/action denial, protected service/action path evidence, browser-safe secret boundaries, provider/model fail-closed summary entry point, and no fixture-only/frontend-only normal runtime path. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#auditTraceActionsReturnScopedSearchDetailTimelineFailureAndGuidanceSurfaces+auditTraceCapabilitiesAreForbiddenForMemberWithoutAuditAuthority test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`.
 
 ### TASK-FSCT-177: Verify or complete runtime testing for `surface-audit-trace-dashboard`
 

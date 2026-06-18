@@ -34,21 +34,29 @@ public final class AuditTraceService {
   }
 
   public SurfaceData dashboard(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), DASHBOARD_CAPABILITY);
     authContextResolver.appendProtectedReadTrace(actor, DASHBOARD_CAPABILITY, "dashboard scoped to selected AuthContext", correlationId);
     var events = sortedEvents(actor, correlationId);
     var warningCount = events.stream().filter(event -> "warning".equals(event.severity())).count();
     var providerCount = events.stream().filter(event -> containsIgnoreCase(event.summary(), "provider") || containsIgnoreCase(event.eventKind(), "provider")).count();
+    var denialCount = events.stream().filter(event -> containsIgnoreCase(event.status(), "denied") || containsIgnoreCase(event.summary(), "denied")).count();
     return new SurfaceData("surface-audit-trace-dashboard", "dashboard", "Audit/Trace dashboard", List.of("trace-audit-dashboard-" + stableSuffix(correlationId)), mapOf(
         "surfaceContract", "audit.trace.dashboard.v1",
+        "selectedScope", mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "scopeKind", actor.selectedContext().customerId() == null ? "tenant" : "customer", "supportAccess", "selected AuthContext"),
+        "authContextSummary", mapOf("selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityCount", actor.selectedContext().capabilities().size(), "roleLabels", actor.selectedContext().roles().stream().map(Enum::name).toList()),
         "cards", List.of(
-            mapOf("cardId", "card-runtime-traces", "label", "Runtime traces", "value", events.size(), "severity", events.isEmpty() ? "info" : "warning"),
-            mapOf("cardId", "card-provider-tool-model", "label", "Provider/tool/model failures", "value", providerCount, "severity", providerCount == 0 ? "info" : "warning"),
-            mapOf("cardId", "card-selected-context", "label", "Selected context", "value", actor.selectedContext().membershipId(), "severity", "info"),
-            mapOf("cardId", "card-redaction", "label", "Redaction", "value", "browser-safe", "severity", "info")),
-        "attentionItems", List.of(mapOf("itemId", "warnings", "label", "Warnings and denials", "status", warningCount == 0 ? "clear" : "needs_review")),
-        "readiness", "Trace search, details, timeline, failure evidence, and guidance are backend-scoped and redacted for the selected AuthContext.",
+            mapOf("cardId", "card-runtime-traces", "label", "Runtime traces", "value", events.size(), "severity", events.isEmpty() ? "info" : "warning", "actionId", "action-audit-trace-search", "targetSurfaceId", "surface-audit-trace-search", "capabilityId", SEARCH_CAPABILITY, "emptyBehavior", "open authorized empty trace search"),
+            mapOf("cardId", "card-provider-tool-model", "label", "Provider/tool/model failures", "value", providerCount, "severity", providerCount == 0 ? "info" : "warning", "actionId", "action-audit-trace-failure-evidence", "targetSurfaceId", "surface-audit-trace-failure-evidence", "capabilityId", FAILURE_EVIDENCE_CAPABILITY, "emptyBehavior", "open safe failure-evidence explanation"),
+            mapOf("cardId", "card-denials", "label", "Authorization denials", "value", denialCount, "severity", denialCount == 0 ? "info" : "warning", "actionId", "action-audit-trace-timeline", "targetSurfaceId", "surface-audit-trace-timeline", "capabilityId", TIMELINE_CAPABILITY, "emptyBehavior", "open correlation timeline with hidden evidence omitted"),
+            mapOf("cardId", "card-redaction", "label", "Redaction", "value", "browser-safe", "severity", "info", "actionId", "action-audit-trace-investigation-guide", "targetSurfaceId", "surface-audit-trace-investigation-guide", "capabilityId", INVESTIGATION_GUIDE_CAPABILITY, "emptyBehavior", "explain redaction and next safe steps")),
+        "attentionItems", List.of(mapOf("itemId", "warnings", "label", "Warnings and denials", "status", warningCount == 0 ? "clear" : "needs_review", "severity", warningCount == 0 ? "info" : "warning", "actionId", "action-audit-trace-search", "resultSurfaceId", "surface-audit-trace-search", "capabilityId", SEARCH_CAPABILITY, "traceId", "trace-audit-dashboard-" + stableSuffix(correlationId))),
+        "sections", List.of(
+            mapOf("sectionId", "needs-attention", "label", "Needs attention", "summary", "Warnings, denials, provider/tool/model failures, and summary blockers open backend-authorized Audit/Trace surfaces."),
+            mapOf("sectionId", "things-i-can-do", "label", "Things I can do", "summary", "Search, timeline, failure evidence, guidance, redacted export, and summary worker actions recheck capability and scope server-side."),
+            mapOf("sectionId", "readiness-notices", "label", "Readiness notices", "summary", "Audit summary worker start fails closed until provider/runtime/tool-boundary configuration is present; no model-less success is shown.")),
+        "readiness", "Trace search, details, timeline, failure evidence, guidance, redacted export, and summary worker entry points are backend-scoped and redacted for the selected AuthContext.",
         "capabilityIds", List.of(DASHBOARD_CAPABILITY, SEARCH_CAPABILITY, DETAIL_CAPABILITY, TIMELINE_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY, INVESTIGATION_NOTE_CAPABILITY, EXPORT_REQUEST_CAPABILITY, AuditTraceSummaryService.START_CAPABILITY, AuditTraceSummaryService.READ_CAPABILITY),
-        "redaction", "redacted browser-safe evidence; provider credentials, raw tokens, hidden prompts, and raw tool payloads omitted"));
+        "redaction", "redacted browser-safe evidence; provider credentials, raw tokens, hidden prompts, raw tool payloads, invitation tokens, and cross-scope evidence omitted"));
   }
 
   public SurfaceData search(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
