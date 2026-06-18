@@ -94,6 +94,15 @@ class AuditTraceSummaryServiceTest {
     assertTrue(completed.summary().contains("model-backed redacted audit summary"));
     assertTrue(completed.findingRefs().stream().anyMatch(ref -> ref.contains("audit_trace_summary_finding")));
     assertFalse(completed.summary().toLowerCase().contains("api_key"));
+
+    var review = summaries.review(auditor, task.taskId(), "corr-autonomous-review");
+    assertEquals(AuditTraceSummaryTask.Status.COMPLETED_REVIEW_REQUIRED, review.status());
+
+    var accepted = summaries.acceptResult(auditor, task.taskId(), "advisory summary retained as review evidence only", "corr-autonomous-accept");
+    assertEquals(AuditTraceSummaryTask.Status.ACCEPTED, accepted.status());
+    assertEquals("accepted", accepted.decision());
+    assertTrue(accepted.decisionReason().contains("review evidence"));
+    assertTrue(summaries.acceptResult(auditor, task.taskId(), "idempotent replay", "corr-autonomous-accept-replay").traceIds().containsAll(accepted.traceIds()));
   }
 
   @Test

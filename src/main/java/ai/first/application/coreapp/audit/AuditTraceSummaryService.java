@@ -17,7 +17,10 @@ import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 public final class AuditTraceSummaryService {
   public static final String START_CAPABILITY = "audit.trace.summary_task.start";
   public static final String READ_CAPABILITY = "audit.trace.summary_task.read";
+  public static final String REVIEW_CAPABILITY = "audit.trace.summary_task.review";
   public static final String CANCEL_CAPABILITY = "audit.trace.summary_task.cancel";
+  public static final String ACCEPT_CAPABILITY = "audit.trace.summary_task.accept";
+  public static final String REJECT_CAPABILITY = "audit.trace.summary_task.reject";
   public static final String ACCEPT_RESULT_CAPABILITY = "audit.trace.summary_task.accept_result";
   public static final String REJECT_RESULT_CAPABILITY = "audit.trace.summary_task.reject_result";
   public static final String OPEN_EVIDENCE_CAPABILITY = "audit.trace.summary_task.open_evidence";
@@ -51,7 +54,7 @@ public final class AuditTraceSummaryService {
   public AuditTraceSummaryTask start(AuthContextResolver.ResolvedMe actor, StartAuditTraceSummaryCommand command, String correlationId) {
     if (command == null) throw new AuthorizationException(400, "audit-summary-command-required");
     if (blank(command.idempotencyKey())) throw new AuthorizationException(400, "idempotency-key-required");
-    require(actor, START_CAPABILITY, correlationId);
+    require(actor, START_CAPABILITY, correlationId, "audit.trace.summaryProgress.v1");
     var duplicate = repository.findByIdempotencyKey(actor.selectedContext().tenantId(), actor.account().accountId(), command.idempotencyKey());
     if (duplicate.isPresent()) {
       authContextResolver.appendProtectedReadTrace(actor, START_CAPABILITY, "idempotent-audit-trace-summary-replay", correlationId);
@@ -101,15 +104,23 @@ public final class AuditTraceSummaryService {
 
   public AuditTraceSummaryTask read(AuthContextResolver.ResolvedMe actor, String taskId, String correlationId) {
     var task = task(actor, taskId);
-    require(actor, READ_CAPABILITY, correlationId);
+    require(actor, READ_CAPABILITY, correlationId, "audit.trace.summaryProgress.v1");
     var projected = projectAutonomousAgentTask(task, correlationId);
     authContextResolver.appendProtectedReadTrace(actor, READ_CAPABILITY, "browser-safe-audit-trace-summary-read:redacted", correlationId);
     return projected;
   }
 
+  public AuditTraceSummaryTask review(AuthContextResolver.ResolvedMe actor, String taskId, String correlationId) {
+    var task = task(actor, taskId);
+    require(actor, REVIEW_CAPABILITY, correlationId, "audit.trace.summaryReview.v1");
+    var projected = projectAutonomousAgentTask(task, correlationId);
+    authContextResolver.appendProtectedReadTrace(actor, REVIEW_CAPABILITY, "browser-safe-audit-trace-summary-review:redacted:advisory-only", correlationId);
+    return projected;
+  }
+
   public AuditTraceSummaryTask cancel(AuthContextResolver.ResolvedMe actor, String taskId, String reason, String correlationId) {
     var task = task(actor, taskId);
-    require(actor, CANCEL_CAPABILITY, correlationId);
+    require(actor, CANCEL_CAPABILITY, correlationId, "audit.trace.summaryProgress.v1");
     if (task.terminal()) return task;
     autonomousAgentRuntime.cancel(task, reason, correlationId);
     var traceId = "trace-audit-trace-summary-cancel-" + stableSuffix(correlationId + ":" + task.taskId());
@@ -131,13 +142,22 @@ public final class AuditTraceSummaryService {
 
   private AuditTraceSummaryTask decide(AuthContextResolver.ResolvedMe actor, String taskId, AuditTraceSummaryTask.Status status, String decision, String reason, String correlationId) {
     var task = task(actor, taskId);
-    require(actor, status == AuditTraceSummaryTask.Status.ACCEPTED ? ACCEPT_RESULT_CAPABILITY : REJECT_RESULT_CAPABILITY, correlationId);
+    var capabilityId = status == AuditTraceSummaryTask.Status.ACCEPTED ? ACCEPT_CAPABILITY : REJECT_CAPABILITY;
+    var legacyCapabilityId = status == AuditTraceSummaryTask.Status.ACCEPTED ? ACCEPT_RESULT_CAPABILITY : REJECT_RESULT_CAPABILITY;
+    requireAny(actor, List.of(capabilityId, legacyCapabilityId), capabilityId, correlationId, "audit.trace.summaryReview.v1");
+    if (task.terminal()) {
+      if (task.status() == status) {
+        authContextResolver.appendProtectedReadTrace(actor, capabilityId, decision + ":idempotent-review-replay:advisory-only:no direct mutation", correlationId);
+        return task;
+      }
+      throw new AuthorizationException(409, "audit-summary-result-conflict");
+    }
     if (!task.resultDecisionAllowed()) throw new AuthorizationException(409, "audit-summary-result-not-completed");
     var traceId = "trace-audit-trace-summary-" + decision + "-" + stableSuffix(correlationId + ":" + task.taskId());
     var decided = task.withDecision(status, decision, firstNonBlank(reason, "Human Audit/Trace summary decision recorded; traces, policies, users, authorization, and provider config unchanged."), List.of(traceId), Instant.now(clock));
     repository.save(decided);
-    authContextResolver.appendProtectedReadTrace(actor, status == AuditTraceSummaryTask.Status.ACCEPTED ? ACCEPT_RESULT_CAPABILITY : REJECT_RESULT_CAPABILITY, decision + ":advisory-only:no direct mutation", correlationId);
-    publishLifecycleOrAttention(decided, status == AuditTraceSummaryTask.Status.ACCEPTED ? "result_accepted" : "result_rejected", status == AuditTraceSummaryTask.Status.ACCEPTED ? ACCEPT_RESULT_CAPABILITY : REJECT_RESULT_CAPABILITY, actor.account().accountId(), correlationId);
+    authContextResolver.appendProtectedReadTrace(actor, capabilityId, decision + ":advisory-only:no direct mutation", correlationId);
+    publishLifecycleOrAttention(decided, status == AuditTraceSummaryTask.Status.ACCEPTED ? "result_accepted" : "result_rejected", capabilityId, actor.account().accountId(), correlationId);
     return decided;
   }
 
@@ -177,10 +197,16 @@ public final class AuditTraceSummaryService {
     return task;
   }
 
-  private void require(AuthContextResolver.ResolvedMe actor, String capabilityId, String correlationId) {
+  private void require(AuthContextResolver.ResolvedMe actor, String capabilityId, String correlationId, String surfaceContract) {
+    requireAny(actor, List.of(capabilityId), capabilityId, correlationId, surfaceContract);
+  }
+
+  private void requireAny(AuthContextResolver.ResolvedMe actor, List<String> acceptedCapabilityIds, String traceCapabilityId, String correlationId, String surfaceContract) {
     authContextResolver.requireTenant(actor.selectedContext(), actor.selectedContext().tenantId());
-    authContextResolver.requireCapability(actor.selectedContext(), capabilityId);
-    authContextResolver.appendProtectedReadTrace(actor, capabilityId, "audit.trace.summaryProgress.v1", correlationId);
+    if (acceptedCapabilityIds.stream().noneMatch(actor.selectedContext()::hasCapability)) {
+      throw new AuthorizationException(403, "missing-capability:" + acceptedCapabilityIds.get(0));
+    }
+    authContextResolver.appendProtectedReadTrace(actor, traceCapabilityId, surfaceContract, correlationId);
   }
 
   private static List<String> normalizedCategories(List<String> requested) {

@@ -2026,27 +2026,38 @@ export const auditTraceSurfaceActions = {
     resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-progress', openPlacement: 'inline' },
     audit: { eventType: 'AuditTraceSummaryTaskRead', traceRequired: true }
   },
+  reviewSummary: {
+    actionId: 'action-audit-trace-summary-review',
+    label: 'Open summary review',
+    intent: 'read',
+    capabilityId: 'audit.trace.summary_task.review',
+    governedToolId: 'audit.trace.summary_task.review',
+    browserToolId: 'action-audit-trace-summary-review',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-review', openPlacement: 'inline' },
+    audit: { eventType: 'AuditTraceSummaryReviewRead', traceRequired: true }
+  },
   acceptSummaryResult: {
-    actionId: 'action-audit-trace-summary-task-accept-result',
+    actionId: 'action-audit-trace-summary-accept',
     label: 'Accept advisory summary',
     intent: 'approval',
-    capabilityId: 'audit.trace.summary_task.accept_result',
-    governedToolId: 'audit.trace.summaryTask.acceptResult',
-    browserToolId: 'action-audit-trace-summary-task-accept-result',
+    capabilityId: 'audit.trace.summary_task.accept',
+    governedToolId: 'audit.trace.summary_task.accept',
+    browserToolId: 'action-audit-trace-summary-accept',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-review', openPlacement: 'inline' },
-    audit: { eventType: 'AuditTraceSummaryResultAccepted', traceRequired: true }
+    audit: { eventType: 'AuditTraceSummaryAccepted', traceRequired: true }
   },
   rejectSummaryResult: {
-    actionId: 'action-audit-trace-summary-task-reject-result',
+    actionId: 'action-audit-trace-summary-reject',
     label: 'Reject advisory summary',
     intent: 'approval',
-    capabilityId: 'audit.trace.summary_task.reject_result',
-    governedToolId: 'audit.trace.summaryTask.rejectResult',
-    browserToolId: 'action-audit-trace-summary-task-reject-result',
+    capabilityId: 'audit.trace.summary_task.reject',
+    governedToolId: 'audit.trace.summary_task.reject',
+    browserToolId: 'action-audit-trace-summary-reject',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-review', openPlacement: 'inline' },
-    audit: { eventType: 'AuditTraceSummaryResultRejected', traceRequired: true }
+    audit: { eventType: 'AuditTraceSummaryRejected', traceRequired: true }
   },
   openSummaryEvidence: {
     actionId: 'action-audit-trace-summary-task-open-evidence',
@@ -2283,9 +2294,9 @@ export const auditTraceSummaryReviewSurface = envelope(
     agentWorkFindings: ['trace-agent-work-002'],
     omittedEvidenceSummary: 'not_found_or_redacted is used for hidden or unauthorized trace ids.',
     redactionSummary: 'No raw prompts, raw tool payloads, raw JWTs, provider credentials, invitation tokens, or cross-tenant evidence are included.',
-    actions: ['action-audit-trace-summary-task-accept-result', 'action-audit-trace-summary-task-reject-result', 'action-audit-trace-summary-task-open-evidence']
+    actions: ['action-audit-trace-summary-review', 'action-audit-trace-summary-accept', 'action-audit-trace-summary-reject', 'action-audit-trace-summary-task-open-evidence']
   },
-  [auditTraceSurfaceActions.acceptSummaryResult, auditTraceSurfaceActions.rejectSummaryResult, auditTraceSurfaceActions.openSummaryEvidence]
+  [auditTraceSurfaceActions.reviewSummary, auditTraceSurfaceActions.acceptSummaryResult, auditTraceSurfaceActions.rejectSummaryResult, auditTraceSurfaceActions.openSummaryEvidence]
 );
 
 export const auditTraceStructuredSurfaces = [auditTraceDashboardSurface, auditTraceSearchSurface, auditTraceDetailSurface, auditTraceTimelineSurface, auditTraceFailureEvidenceSurface, auditTraceInvestigationGuideSurface, auditTraceExportRequestSurface, auditTraceInvestigationNoteSurface, auditTraceSummaryProgressSurface, auditTraceSummaryReviewSurface];

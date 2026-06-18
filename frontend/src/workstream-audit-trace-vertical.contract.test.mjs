@@ -15,7 +15,7 @@ const traceLinks = read('./workstream/stream/TraceLinkList.tsx');
 const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 
 test('Audit/Trace fixture exposes contract capabilities, surfaces, and backend-authoritative actions', () => {
-  for (const capability of ['audit.trace.dashboard.read', 'audit.trace.search', 'audit.trace.detail.read', 'audit.trace.timeline.read', 'audit.trace.failureEvidence.read', 'audit.trace.investigationGuide.read', 'audit.trace.investigation_note.append', 'audit.trace.export.request', 'audit.trace.summary_task.start', 'audit.trace.summary_task.read', 'audit.trace.summary_task.accept_result', 'audit.trace.summary_task.reject_result', 'audit.trace.summary_task.open_evidence']) {
+  for (const capability of ['audit.trace.dashboard.read', 'audit.trace.search', 'audit.trace.detail.read', 'audit.trace.timeline.read', 'audit.trace.failureEvidence.read', 'audit.trace.investigationGuide.read', 'audit.trace.investigation_note.append', 'audit.trace.export.request', 'audit.trace.summary_task.start', 'audit.trace.summary_task.read', 'audit.trace.summary_task.review', 'audit.trace.summary_task.accept', 'audit.trace.summary_task.reject', 'audit.trace.summary_task.open_evidence']) {
     assert.match(fixtures, new RegExp(capability.replace('.', '\\.')));
   }
   for (const surface of ['auditTraceDashboardSurface', 'auditTraceSearchSurface', 'auditTraceDetailSurface', 'auditTraceTimelineSurface', 'auditTraceFailureEvidenceSurface', 'auditTraceInvestigationGuideSurface', 'auditTraceExportRequestSurface', 'auditTraceInvestigationNoteSurface', 'auditTraceSummaryProgressSurface', 'auditTraceSummaryReviewSurface']) {
