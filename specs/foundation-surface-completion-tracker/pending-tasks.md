@@ -8200,7 +8200,7 @@
 
 ### TASK-FSCT-232: Verify foundation surface completion tracker
 
-- status: pending
+- status: blocked
 - source: terminal verification task for this mini-project
 - depends on: [TASK-FSCT-001, TASK-FSCT-002, TASK-FSCT-003, TASK-FSCT-004, TASK-FSCT-005, TASK-FSCT-006, TASK-FSCT-007, TASK-FSCT-008, TASK-FSCT-009, TASK-FSCT-010, TASK-FSCT-011, TASK-FSCT-012, TASK-FSCT-013, TASK-FSCT-014, TASK-FSCT-015, TASK-FSCT-016, TASK-FSCT-017, TASK-FSCT-018, TASK-FSCT-019, TASK-FSCT-020, TASK-FSCT-021, TASK-FSCT-022, TASK-FSCT-023, TASK-FSCT-024, TASK-FSCT-025, TASK-FSCT-026, TASK-FSCT-027, TASK-FSCT-028, TASK-FSCT-029, TASK-FSCT-030, TASK-FSCT-031, TASK-FSCT-032, TASK-FSCT-033, TASK-FSCT-034, TASK-FSCT-035, TASK-FSCT-036, TASK-FSCT-037, TASK-FSCT-038, TASK-FSCT-039, TASK-FSCT-040, TASK-FSCT-041, TASK-FSCT-042, TASK-FSCT-043, TASK-FSCT-044, TASK-FSCT-045, TASK-FSCT-046, TASK-FSCT-047, TASK-FSCT-048, TASK-FSCT-049, TASK-FSCT-050, TASK-FSCT-051, TASK-FSCT-052, TASK-FSCT-053, TASK-FSCT-054, TASK-FSCT-055, TASK-FSCT-056, TASK-FSCT-057, TASK-FSCT-058, TASK-FSCT-059, TASK-FSCT-060, TASK-FSCT-061, TASK-FSCT-062, TASK-FSCT-063, TASK-FSCT-064, TASK-FSCT-065, TASK-FSCT-066, TASK-FSCT-067, TASK-FSCT-068, TASK-FSCT-069, TASK-FSCT-070, TASK-FSCT-071, TASK-FSCT-072, TASK-FSCT-073, TASK-FSCT-074, TASK-FSCT-075, TASK-FSCT-076, TASK-FSCT-077, TASK-FSCT-078, TASK-FSCT-079, TASK-FSCT-080, TASK-FSCT-081, TASK-FSCT-082, TASK-FSCT-083, TASK-FSCT-084, TASK-FSCT-085, TASK-FSCT-086, TASK-FSCT-087, TASK-FSCT-088, TASK-FSCT-089, TASK-FSCT-090, TASK-FSCT-091, TASK-FSCT-092, TASK-FSCT-093, TASK-FSCT-094, TASK-FSCT-095, TASK-FSCT-096, TASK-FSCT-097, TASK-FSCT-098, TASK-FSCT-099, TASK-FSCT-100, TASK-FSCT-101, TASK-FSCT-102, TASK-FSCT-103, TASK-FSCT-104, TASK-FSCT-105, TASK-FSCT-106, TASK-FSCT-107, TASK-FSCT-108, TASK-FSCT-109, TASK-FSCT-110, TASK-FSCT-111, TASK-FSCT-112, TASK-FSCT-113, TASK-FSCT-114, TASK-FSCT-115, TASK-FSCT-116, TASK-FSCT-117, TASK-FSCT-118, TASK-FSCT-119, TASK-FSCT-120, TASK-FSCT-121, TASK-FSCT-122, TASK-FSCT-123, TASK-FSCT-124, TASK-FSCT-125, TASK-FSCT-126, TASK-FSCT-127, TASK-FSCT-128, TASK-FSCT-129, TASK-FSCT-130, TASK-FSCT-131, TASK-FSCT-132, TASK-FSCT-133, TASK-FSCT-134, TASK-FSCT-135, TASK-FSCT-136, TASK-FSCT-137, TASK-FSCT-138, TASK-FSCT-139, TASK-FSCT-140, TASK-FSCT-141, TASK-FSCT-142, TASK-FSCT-143, TASK-FSCT-144, TASK-FSCT-145, TASK-FSCT-146, TASK-FSCT-147, TASK-FSCT-148, TASK-FSCT-149, TASK-FSCT-150, TASK-FSCT-151, TASK-FSCT-152, TASK-FSCT-153, TASK-FSCT-154, TASK-FSCT-155, TASK-FSCT-156, TASK-FSCT-157, TASK-FSCT-158, TASK-FSCT-159, TASK-FSCT-160, TASK-FSCT-161, TASK-FSCT-162, TASK-FSCT-163, TASK-FSCT-164, TASK-FSCT-165, TASK-FSCT-166, TASK-FSCT-167, TASK-FSCT-168, TASK-FSCT-169, TASK-FSCT-170, TASK-FSCT-171, TASK-FSCT-172, TASK-FSCT-173, TASK-FSCT-174, TASK-FSCT-175, TASK-FSCT-176, TASK-FSCT-177, TASK-FSCT-178, TASK-FSCT-179, TASK-FSCT-180, TASK-FSCT-181, TASK-FSCT-182, TASK-FSCT-183, TASK-FSCT-184, TASK-FSCT-185, TASK-FSCT-186, TASK-FSCT-187, TASK-FSCT-188, TASK-FSCT-189, TASK-FSCT-190, TASK-FSCT-191, TASK-FSCT-192, TASK-FSCT-193, TASK-FSCT-194, TASK-FSCT-195, TASK-FSCT-196, TASK-FSCT-197, TASK-FSCT-198, TASK-FSCT-199, TASK-FSCT-200, TASK-FSCT-201, TASK-FSCT-202, TASK-FSCT-203, TASK-FSCT-204, TASK-FSCT-205, TASK-FSCT-206, TASK-FSCT-207, TASK-FSCT-208, TASK-FSCT-209, TASK-FSCT-210, TASK-FSCT-211, TASK-FSCT-212, TASK-FSCT-213, TASK-FSCT-214, TASK-FSCT-215, TASK-FSCT-216, TASK-FSCT-217, TASK-FSCT-218, TASK-FSCT-219, TASK-FSCT-220, TASK-FSCT-221, TASK-FSCT-222, TASK-FSCT-223, TASK-FSCT-224, TASK-FSCT-225, TASK-FSCT-226, TASK-FSCT-227, TASK-FSCT-228, TASK-FSCT-229, TASK-FSCT-230, TASK-FSCT-231]
 - required reads:
@@ -8225,3 +8225,66 @@
   - no material runtime-readiness gaps remain for the stated mini-project scope, or follow-up tasks plus a new terminal verification task are appended
 - notes:
   - vertical contract: non-runtime verification task; foundation scope: all tracked surfaces; local validation: `git diff --check` and tracker/queue consistency searches; audit/trace expectations are verified through child surface testing tasks
+  - blocked 2026-06-18: terminal verification found the queue/tracker is not yet claimable as complete. Focused status searches show one tracked objective remains blocked: TASK-FSCT-201 / `surface-audit-trace-summary-progress` fully-tested, because protected `action-audit-trace-summary-task-read` returns HTTP 404 for the backend-generated `summaryTaskId` immediately after start. Runtime evidence validator also failed for 99 done feature-bearing tasks whose notes/status are not machine-verifiable as runtime-complete, so completion evidence needs reconciliation before final terminal verification. Commands run: `rg` status/objective searches and `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md` (failed with validator findings).
+
+### TASK-FSCT-233: Remediate foundation tracker terminal verification blockers
+
+- status: pending
+- source: TASK-FSCT-232 terminal verification
+- depends on: [TASK-FSCT-200]
+- surface id: `surface-audit-trace-summary-progress` plus queue evidence reconciliation
+- workstream: Audit Trace / tracker-wide
+- objective: terminal-blocker-remediation
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - specs/foundation-surface-completion-tracker/pending-tasks.md
+  - app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - affected src/main/java/** and src/test/** files if fixing the Audit Trace summary read path
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - specs/foundation-surface-completion-tracker/pending-tasks.md
+- required checks:
+  - `git diff --check`
+  - `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceSummaryProgressCoversStartReadFailClosedDenialsAndSecretBoundaries test`
+  - `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
+- done criteria:
+  - TASK-FSCT-201 is marked `done` with runtime-ready evidence, or remains `blocked` with a narrower exact blocker and a follow-up task
+  - runtime completion evidence validator findings are repaired, explained as accepted false positives in tracker notes, or converted into focused follow-up tasks
+  - no new terminal verification is attempted in the same task beyond recording blocker-remediation evidence
+- notes:
+  - vertical contract: remediate the terminal blocker discovered by TASK-FSCT-232 without broad feature work; preserve history and do not renumber existing tasks.
+
+### TASK-FSCT-234: Re-run foundation surface completion terminal verification
+
+- status: pending
+- source: TASK-FSCT-232 terminal verification follow-up
+- depends on: [TASK-FSCT-233]
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/foundation-surface-completion-tracker/README.md
+  - specs/foundation-surface-completion-tracker/conversation-capture.md
+  - specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - specs/foundation-surface-completion-tracker/pending-tasks.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - updated specs/foundation-surface-completion-tracker/surface-completion-tracker.md
+  - updated specs/foundation-surface-completion-tracker/pending-tasks.md if gaps remain
+  - optional verification notes under specs/foundation-surface-completion-tracker/
+- required checks:
+  - `git diff --check`
+  - focused searches proving no pending tracked objectives remain without accepted blocker/defer/supersede rationale
+  - `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`
+- done criteria:
+  - every tracked surface objective is `done`, `deferred`, or `superseded` with evidence/rationale
+  - no material runtime-readiness gaps remain for the stated mini-project scope, or any remaining gaps have accepted follow-up tasks plus a later terminal verification task
+- notes:
+  - vertical contract: non-runtime verification task; foundation scope: all tracked surfaces; local validation: `git diff --check`, tracker/queue consistency searches, and runtime evidence validator.
