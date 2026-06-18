@@ -6784,7 +6784,7 @@
 
 ### TASK-FSCT-192: Verify or complete runtime testing for `surface-audit-trace-investigation-guide`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-191]
 - surface id: `surface-audit-trace-investigation-guide`
@@ -6818,6 +6818,7 @@
   - purpose: Human investigation guidance.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-investigation-guide`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-investigation-guide`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added dedicated `AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceInvestigationGuideCoversDirectRefreshFollowUpsDenialsFailClosedAndSecretBoundaries` coverage for protected direct surface retrieval and governed action execution of `surface-audit-trace-investigation-guide` / `audit.trace.investigationGuide.v1`, including missing-bearer rejection, selected AuthContext/tenant/customer evidence, trace/correlation refs, recommended path, allowed/disabled action reasons, validation error, detail/timeline/failure/export/note/search/dashboard follow-ups, summary provider/runtime fail-closed behavior with no model-less success, customer-scoped safe payloads, cross-tenant/member/disabled denials, and browser secret-boundary assertions. Runtime readiness level: `runtime-ready` for this testing scope; checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceInvestigationGuideCoversDirectRefreshFollowUpsDenialsFailClosedAndSecretBoundaries test` and `git diff --check`.
 
 ### TASK-FSCT-193: Verify or complete app-description specification for `surface-audit-trace-export-request`
 
