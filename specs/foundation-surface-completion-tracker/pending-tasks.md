@@ -6431,7 +6431,7 @@
 
 ### TASK-FSCT-182: Verify or complete runtime implementation for `surface-audit-trace-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-181]
 - surface id: `surface-audit-trace-detail`
@@ -6462,6 +6462,7 @@
   - purpose: Browser-safe trace/event evidence detail.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-detail`; surface graph node/action edge for opening or acting on `surface-audit-trace-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: verified existing real runtime path for `surface-audit-trace-detail` via protected WorkstreamEndpoint `/api/workstream/surfaces/surface-audit-trace-detail` and `/api/workstream/actions`, backend `WorkstreamService#auditTraceDetailSurface` and `AuditTraceService#detail`, and frontend `DetailEditSurface` rendering. Evidence covers JWT plus selected AuthContext, `audit.trace.detail.read` capability, tenant/customer scope validation, backend-owned retained evidence lookup, search-row-to-detail action, safe `not_found_or_redacted` hidden trace behavior, redacted browser payload, audit/work trace/correlation refs, support/tenant denial, and frontend secret-boundary checks. Readiness level: `api-smoked`; implementation verification is not fixture-only/frontend-only. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, focused `rg` evidence for detail surface/action/capability/redaction/denial paths, and `git diff --check`.
 
 ### TASK-FSCT-183: Verify or complete runtime testing for `surface-audit-trace-detail`
 
