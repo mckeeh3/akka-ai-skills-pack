@@ -43,7 +43,7 @@ export function AuditTimelineSurface({ envelope, onAction }: AuditTimelineSurfac
       {envelope.data.redactionSummary && <p className="redaction-note">{envelope.data.redactionSummary}</p>}
       {envelope.data.omittedCategories && envelope.data.omittedCategories.length > 0 && <p>Omitted categories: {envelope.data.omittedCategories.join(', ')}</p>}
       {timelineEvents.length === 0 ? <p>No authorized timeline events are available for this selected AuthContext.</p> : (
-        <ol className="audit-timeline" aria-label="Audit correlation timeline">
+        <ol className="audit-timeline" aria-label="Audit correlation timeline" data-detail-surface-id="surface-audit-trace-detail">
           {timelineEvents.map((event) => {
             const eventActions = (event.availableEventActionIds ?? ['action-audit-trace-detail'])
               .map((actionId) => actionById.get(actionId))

@@ -6572,7 +6572,7 @@
 
 ### TASK-FSCT-186: Verify or complete runtime testing for `surface-audit-trace-timeline`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-185]
 - surface id: `surface-audit-trace-timeline`
@@ -6606,6 +6606,7 @@
   - purpose: Correlation timeline.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-timeline`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-timeline`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added dedicated Audit/Trace timeline runtime smoke coverage in `AuditTraceBrowserWorkstreamSmokeTest` for protected missing-bearer rejection, authorized JWT plus selected AuthContext direct/action timeline reads, `audit.trace.timeline.v1` payload/trace/correlation/redaction evidence, empty authorized and malformed-correlation validation states, governed detail/failure/guidance/export/note/search/dashboard follow-up actions, customer-scoped browser-safe payloads, member/disabled/cross-tenant denials, and frontend secret boundaries; updated `AuditTimelineSurface` with detail target surface-id evidence; tracker marked `fully-tested` done at readiness level `runtime-ready`. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-187: Verify or complete app-description specification for `surface-audit-trace-failure-evidence`
 
