@@ -1297,6 +1297,209 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
 
   @Test
   @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiExercisesAgentActivationConfirmationRuntimeTestingPath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-activation-confirmation")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin activation confirmation must reject missing bearer tokens.");
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-agent-activation-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-agent-activation-confirm",
+            "action-agent-activation-confirm",
+            "agent_admin.activate_behavior_change",
+            "agent_admin.activate_behavior_change",
+            Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "ACTIVATE"),
+            "idem-agent-activation-missing-bearer",
+            ADMIN_CONTEXT_ID,
+            "surface-agent-activation-confirmation",
+            "corr-agent-activation-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin activation confirmation action path must reject missing bearer tokens.");
+
+    var directActivation = getSurface("surface-agent-activation-confirmation", "corr-agent-activation-direct");
+    assertEquals("surface-agent-activation-confirmation", directActivation.surfaceId());
+    assertEquals("lifecycle-confirmation", directActivation.surfaceType());
+    assertEquals("agent_admin.activation_confirmation.v1", directActivation.data().get("surfaceContract"));
+    assertEquals("corr-agent-activation-direct", directActivation.correlationId());
+    assertEquals(Boolean.TRUE, directActivation.data().get("noDirectMutation"));
+    assertEquals(Boolean.TRUE, directActivation.data().get("noFakeSuccess"));
+    assertFalse(directActivation.traceIds().isEmpty());
+    assertTrue(directActivation.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-agent-activation-confirmation")));
+    assertTrue(directActivation.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-activation-refresh") && action.resultSurface().updateSurfaceId().equals("surface-agent-activation-confirmation")));
+    assertTrue(directActivation.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-activation-confirm") && action.resultSurface().updateSurfaceId().equals("surface-agent-behavior-proposal")));
+    assertTrue(directActivation.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-activation-cancel") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail")));
+    assertTrue(directActivation.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-activation-open-proposal") && action.resultSurface().updateSurfaceId().equals("surface-agent-behavior-proposal")));
+    assertTrue(directActivation.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-activation-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+
+    var activationSummary = (Map<String, Object>) directActivation.data().get("activationSummary");
+    assertEquals("surface-agent-activation-confirmation", activationSummary.get("surfaceId"));
+    assertEquals("agent_admin.activation_confirmation.v1", activationSummary.get("contract"));
+    assertEquals("provider-fail-closed", activationSummary.get("readinessState"));
+    assertEquals("blocked_until_approved_version", activationSummary.get("approvedVersionLabel"));
+    var scopeSummary = (Map<String, Object>) directActivation.data().get("scopeSummary");
+    assertEquals(ADMIN_CONTEXT_ID, scopeSummary.get("selectedAuthContextId"));
+    assertEquals("tenant", scopeSummary.get("scopeType"));
+    assertEquals(Boolean.TRUE, scopeSummary.get("governanceAuthorized"));
+    assertEquals("visible", scopeSummary.get("visibilityDecision"));
+    var approvalSummary = (Map<String, Object>) directActivation.data().get("approvalSummary");
+    assertEquals("missing-approved-candidate", approvalSummary.get("humanApprovalStatus"));
+    assertEquals("blocked_provider_or_runtime", approvalSummary.get("providerRuntimeReadiness"));
+    assertEquals(Boolean.TRUE, approvalSummary.get("noFakeSuccess"));
+    var confirmationState = (Map<String, Object>) directActivation.data().get("confirmationState");
+    assertEquals(Boolean.TRUE, confirmationState.get("acknowledgementRequired"));
+    assertEquals("ACTIVATE", confirmationState.get("requiredAcknowledgementText"));
+    assertEquals("blocked_provider_or_runtime", confirmationState.get("providerFailClosedState"));
+    assertTrue(((List<String>) confirmationState.get("disabledActions")).contains("confirm"));
+    assertTrue(directActivation.toString().contains("rawPromptText=omitted"));
+    assertTrue(directActivation.toString().contains("rawSkillReferenceBodies=omitted"));
+    assertTrue(directActivation.toString().contains("providerCredentials=omitted"));
+    assertTrue(directActivation.toString().contains("bearerTokens=omitted"));
+    assertBrowserSafe(directActivation);
+
+    var activationFromDetail = assertDetailActionRoutes(
+        "action-agent-detail-open-activation",
+        "agent.definitions.manage",
+        "surface-agent-activation-confirmation",
+        "approval-required",
+        "corr-agent-activation-from-detail");
+    assertTrue(activationFromDetail.resultSurface().toString().contains("agent_admin.activation_confirmation.v1"));
+    assertTrue(activationFromDetail.resultSurface().toString().contains("noDirectMutation=true"));
+    assertTrue(activationFromDetail.resultSurface().toString().contains("noFakeSuccess=true"));
+
+    var refresh = runAction(new CapabilityActionRequest(
+        "action-agent-activation-refresh",
+        "action-agent-activation-refresh",
+        "agent.definitions.manage",
+        "agent.definitions.manage",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        directActivation.surfaceId(),
+        "corr-agent-activation-refresh"));
+    assertEquals("no-op", refresh.status());
+    assertEquals("surface-agent-activation-confirmation", refresh.resultSurface().surfaceId());
+    assertEquals("corr-agent-activation-refresh", refresh.correlationId());
+    assertTrue(refresh.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-activation-refresh")));
+    assertTrue(refresh.message().contains("no lifecycle mutation occurred"));
+    assertBrowserSafe(refresh.resultSurface());
+
+    var missingAck = runAction(new CapabilityActionRequest(
+        "action-agent-activation-confirm",
+        "action-agent-activation-confirm",
+        "agent_admin.activate_behavior_change",
+        "agent_admin.activate_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-activation-missing-ack",
+        ADMIN_CONTEXT_ID,
+        directActivation.surfaceId(),
+        "corr-agent-activation-missing-ack"));
+    assertEquals("validation-error", missingAck.status());
+    assertEquals("surface-agent-activation-confirmation", missingAck.resultSurface().surfaceId());
+    assertTrue(missingAck.message().contains("requires the explicit ACTIVATE acknowledgement"));
+    assertTrue(missingAck.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-activation-acknowledgement-required")));
+    assertBrowserSafe(missingAck.resultSurface());
+
+    var providerBlocked = runAction(new CapabilityActionRequest(
+        "action-agent-activation-confirm",
+        "action-agent-activation-confirm",
+        "agent_admin.activate_behavior_change",
+        "agent_admin.activate_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "ACTIVATE"),
+        "idem-agent-activation-confirm",
+        ADMIN_CONTEXT_ID,
+        directActivation.surfaceId(),
+        "corr-agent-activation-confirm"));
+    assertEquals("approval-required", providerBlocked.status());
+    assertEquals("surface-agent-activation-confirmation", providerBlocked.resultSurface().surfaceId());
+    assertTrue(providerBlocked.message().contains("failed closed with no lifecycle mutation"));
+    assertTrue(providerBlocked.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-activation-provider-fail-closed")));
+    assertTrue(providerBlocked.resultSurface().toString().contains("provider-fail-closed"));
+    assertTrue(providerBlocked.resultSurface().toString().contains("noFakeSuccess=true"));
+    assertTrue(providerBlocked.resultSurface().toString().contains("noDirectMutation=true"));
+    assertBrowserSafe(providerBlocked.resultSurface());
+
+    var repeatedProviderBlocked = runAction(new CapabilityActionRequest(
+        "action-agent-activation-confirm",
+        "action-agent-activation-confirm",
+        "agent_admin.activate_behavior_change",
+        "agent_admin.activate_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "ACTIVATE"),
+        "idem-agent-activation-confirm",
+        ADMIN_CONTEXT_ID,
+        directActivation.surfaceId(),
+        "corr-agent-activation-confirm-repeat"));
+    assertEquals("approval-required", repeatedProviderBlocked.status());
+    assertEquals("surface-agent-activation-confirmation", repeatedProviderBlocked.resultSurface().surfaceId());
+    assertTrue(repeatedProviderBlocked.message().contains("failed closed with no lifecycle mutation"));
+    assertBrowserSafe(repeatedProviderBlocked.resultSurface());
+
+    var proposal = runAction(new CapabilityActionRequest(
+        "action-agent-activation-open-proposal",
+        "action-agent-activation-open-proposal",
+        "agent.definitions.manage",
+        "agent.definitions.manage",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "proposalId", "proposal-agent-admin-activation-required"),
+        null,
+        ADMIN_CONTEXT_ID,
+        directActivation.surfaceId(),
+        "corr-agent-activation-proposal"));
+    assertEquals("accepted", proposal.status());
+    assertEquals("surface-agent-behavior-proposal", proposal.resultSurface().surfaceId());
+    assertBrowserSafe(proposal.resultSurface());
+
+    var trace = runAction(new CapabilityActionRequest(
+        "action-agent-activation-open-trace",
+        "action-agent-activation-open-trace",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("traceId", "trace-agent-definition-activate-confirmation"),
+        null,
+        ADMIN_CONTEXT_ID,
+        directActivation.surfaceId(),
+        "corr-agent-activation-trace"));
+    assertEquals("accepted", trace.status());
+    assertEquals("surface-agent-admin-trace", trace.resultSurface().surfaceId());
+    assertTrue(trace.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-activation-open-trace")));
+    assertBrowserSafe(trace.resultSurface());
+
+    var cancel = runAction(new CapabilityActionRequest(
+        "action-agent-activation-cancel",
+        "action-agent-activation-cancel",
+        "agent.definitions.manage",
+        "agent.definitions.manage",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-activation-cancel",
+        ADMIN_CONTEXT_ID,
+        directActivation.surfaceId(),
+        "corr-agent-activation-cancel"));
+    assertEquals("accepted", cancel.status());
+    assertEquals("surface-agent-admin-detail", cancel.resultSurface().surfaceId());
+    assertTrue(cancel.message().contains("lifecycle state was not changed"));
+    assertTrue(cancel.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-activation-cancel")));
+    assertBrowserSafe(cancel.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-activation-confirmation",
+        "corr-agent-activation-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin activation confirmation or lifecycle blockers.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-activation-confirmation",
+        "corr-agent-activation-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin activation confirmation, proposal state, or tenant governance blockers.");
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
   void protectedWorkstreamApiExercisesAgentAdminTestConsoleRuntimeTestingPath() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-agent-test-console")

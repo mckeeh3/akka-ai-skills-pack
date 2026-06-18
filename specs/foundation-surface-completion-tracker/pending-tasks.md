@@ -5512,7 +5512,7 @@
 
 ### TASK-FSCT-156: Verify or complete runtime testing for `surface-agent-activation-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-155]
 - surface id: `surface-agent-activation-confirmation`
@@ -5546,6 +5546,7 @@
   - purpose: Activation confirmation surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-activation-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-activation-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added dedicated protected Akka-hosted `AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentActivationConfirmationRuntimeTestingPath` coverage for direct surface/API reads, missing bearer rejection, tenant-admin AuthContext payload/action assertions, detail-open routing, refresh no-op, acknowledgement validation, provider/runtime fail-closed confirm with no lifecycle mutation, repeated fail-closed confirmation/idempotency evidence, proposal/trace/cancel action routing, member/customer scoped denials, trace/correlation evidence, and browser-safe redaction/no-secret boundaries. Runtime readiness level: `runtime-ready` for the activation-confirmation testing scope. Commands passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentActivationConfirmationRuntimeTestingPath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-157: Verify or complete app-description specification for `surface-agent-deactivation-confirmation`
 
