@@ -6928,7 +6928,7 @@
 
 ### TASK-FSCT-196: Verify or complete app-description specification for `surface-audit-trace-investigation-note`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-audit-trace-investigation-note`
@@ -6957,6 +6957,7 @@
   - purpose: Human investigation note append result.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-investigation-note` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: added detailed `surface-audit-trace-investigation-note` / `audit.trace.investigationNote.v1` system-message app-description covering owner/agent placement, reusable entry contexts, payload schema, append-only/idempotent note boundary, selected AuthContext tenant/customer/support-access authorization, redaction/secret boundaries, governed action map, trace/audit obligations, states, accessibility/responsive expectations, required tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-197: Verify or complete runtime implementation for `surface-audit-trace-investigation-note`
 

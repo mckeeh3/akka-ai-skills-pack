@@ -907,7 +907,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`: added detailed `surface-audit-trace-investigation-note` / `audit.trace.investigationNote.v1` system-message contract covering Audit/Trace ownership and `audit-trace-agent` placement, reusable entry contexts, selected AuthContext tenant/customer/support-access authorization, backend-owned retained evidence and existing note data source, append-only/idempotent note boundary, browser-safe payload schema, governed action map, validation/denial/fail-closed states, audit/work trace obligations, accessibility/responsive expectations, required acceptance/security/negative/idempotency/observability/UX tests, frontend secret boundaries, and sufficiency review. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
