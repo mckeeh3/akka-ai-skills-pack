@@ -6610,7 +6610,7 @@
 
 ### TASK-FSCT-187: Verify or complete app-description specification for `surface-audit-trace-failure-evidence`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-audit-trace-failure-evidence`
@@ -6639,6 +6639,7 @@
   - purpose: Denial/provider/tool/model/runtime failure evidence.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-failure-evidence` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: added detailed `surface-audit-trace-failure-evidence` / `audit.trace.failureEvidence.v1` app-description contract covering ownership, placement, payload schema, redaction/forbidden payloads, backend data source, actions/capabilities, selected AuthContext tenant/customer/support-access authorization, fail-closed/no-enumeration states, audit/work traces, accessibility/responsive style binding, required tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-188: Verify or complete runtime implementation for `surface-audit-trace-failure-evidence`
 

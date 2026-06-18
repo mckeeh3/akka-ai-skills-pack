@@ -868,7 +868,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`: added detailed `surface-audit-trace-failure-evidence` / `audit.trace.failureEvidence.v1` read-only failure-evidence contract covering Audit/Trace ownership and `audit-trace-agent` placement, reusable failure/correlation entry points, selected AuthContext tenant/customer/support-access authorization, backend-owned retained failure data source, browser-safe `failureSummary`, `authorizationBasis`, `failureClassification`, `safeReason`, `recovery`, redacted `evidence`, related events, policy refs, source labels, action schema, forbidden raw provider/model/tool/prompt/secret payloads, governed action/capability mappings, denial/no-enumeration/fail-closed states, audit/work trace refs, accessibility/responsive style/catalog binding, required acceptance/security/negative/idempotency/observability/UX tests, and sufficiency review stating no additional description pass is required for the fully-specified objective. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
