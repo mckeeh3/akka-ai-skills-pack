@@ -2692,6 +2692,141 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiExercisesAgentAdminTraceRuntimeTestingPath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-admin-trace")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin trace surface must reject missing bearer tokens.");
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-admin-trace",
+        "corr-agent-admin-trace-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin trace timelines or discover hidden trace existence.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-admin-trace",
+        "corr-agent-admin-trace-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not read Agent Admin trace timelines or hidden tenant governance evidence.");
+
+    var trace = getSurface("surface-agent-admin-trace", "corr-agent-admin-trace-direct");
+    assertEquals("surface-agent-admin-trace", trace.surfaceId());
+    assertEquals("audit-timeline", trace.surfaceType());
+    assertEquals("agent_admin.trace.v1", trace.data().get("surfaceContract"));
+    assertEquals("corr-agent-admin-trace-direct", trace.correlationId());
+    assertEquals(Boolean.TRUE, trace.data().get("noDirectMutation"));
+    assertEquals(Boolean.TRUE, trace.data().get("partial"));
+    assertFalse(trace.traceIds().isEmpty());
+    assertTrue(String.valueOf(trace.data().get("traceIds")).contains("trace-agent-admin-read"));
+    var traceSummary = (Map<String, Object>) trace.data().get("traceSummary");
+    assertEquals("ready", traceSummary.get("traceStatus"));
+    assertEquals("provider-fail-closed", traceSummary.get("providerRuntimeReadinessCategory"));
+    assertEquals("partial-redacted", traceSummary.get("timelineCompleteness"));
+    assertEquals(5, ((Number) traceSummary.get("eventCount")).intValue());
+    var scopeSummary = (Map<String, Object>) trace.data().get("scopeSummary");
+    assertEquals(ADMIN_CONTEXT_ID, scopeSummary.get("selectedContextId"));
+    assertEquals(Boolean.TRUE, scopeSummary.get("traceReadAuthorized"));
+    var events = (List<Map<String, Object>>) trace.data().get("timelineEvents");
+    assertEquals(5, events.size());
+    assertTrue(events.stream().anyMatch(event -> event.get("eventCategory").equals("read") && event.get("authorizationOutcome").equals("allowed")));
+    assertTrue(events.stream().anyMatch(event -> event.get("eventCategory").equals("provider-readiness") && event.get("resultStatus").equals("provider-fail-closed")));
+    assertTrue(events.stream().anyMatch(event -> event.get("eventCategory").equals("tool-boundary") && event.get("authorizationOutcome").equals("denied")));
+    assertTrue(events.stream().anyMatch(event -> event.get("eventCategory").equals("proposal-decision") && String.valueOf(event.get("safeEvidenceRefs")).contains("PromptAssemblyTrace")));
+    assertTrue(events.stream().anyMatch(event -> event.get("eventCategory").equals("prompt-risk-task") && event.get("resultStatus").equals("blocked_provider_or_runtime")));
+    assertTrue(trace.toString().contains("authorizationNarrative"));
+    assertTrue(trace.toString().contains("redactionAndOmissions"));
+    assertTrue(trace.toString().contains("rawTraceDocuments=role-gated"));
+    assertTrue(trace.toString().contains("providerCredentialsResponses=omitted"));
+    assertTrue(trace.toString().contains("jwtSessionMaterial=omitted"));
+    assertTrue(trace.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-trace-refresh") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+    assertTrue(trace.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-trace-drill-down") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+    assertTrue(trace.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-trace-export") && action.disabled() != null && action.disabled().reasonCode().equals("audit-trace-export-surface-required")));
+    assertTrue(trace.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-trace-escalate") && action.disabled() != null && action.disabled().reasonCode().equals("audit-trace-escalation-workflow-required")));
+    assertTrue(trace.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-trace-back-to-source") && action.resultSurface().updateSurfaceId().equals("surface-agent-prompt-governance")));
+    assertBrowserSafe(trace);
+
+    var refreshed = runAction(new CapabilityActionRequest(
+        "action-agent-admin-trace-refresh",
+        "action-agent-admin-trace-refresh",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("traceId", "trace-agent-admin-read"),
+        null,
+        ADMIN_CONTEXT_ID,
+        trace.surfaceId(),
+        "corr-agent-admin-trace-refresh"));
+    assertEquals("accepted", refreshed.status());
+    assertEquals("surface-agent-admin-trace", refreshed.resultSurface().surfaceId());
+    assertEquals("corr-agent-admin-trace-refresh", refreshed.correlationId());
+    assertBrowserSafe(refreshed.resultSurface());
+
+    var drillDown = runAction(new CapabilityActionRequest(
+        "action-agent-admin-trace-drill-down",
+        "action-agent-admin-trace-drill-down",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("eventId", "agent-admin-provider-readiness", "traceId", "trace-agent-admin-provider-readiness"),
+        null,
+        ADMIN_CONTEXT_ID,
+        trace.surfaceId(),
+        "corr-agent-admin-trace-drill-down"));
+    assertEquals("accepted", drillDown.status());
+    assertEquals("surface-agent-admin-trace", drillDown.resultSurface().surfaceId());
+    assertTrue(drillDown.resultSurface().toString().contains("provider-fail-closed"));
+    assertBrowserSafe(drillDown.resultSurface());
+
+    var export = runAction(new CapabilityActionRequest(
+        "action-agent-admin-trace-export",
+        "action-agent-admin-trace-export",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("acknowledged", true, "traceId", "trace-agent-admin-read"),
+        "idem-agent-admin-trace-export",
+        ADMIN_CONTEXT_ID,
+        trace.surfaceId(),
+        "corr-agent-admin-trace-export"));
+    assertEquals("denied", export.status());
+    assertTrue(export.message().contains("Redacted export requires the Audit/Trace export-request surface"));
+    assertEquals("surface-agent-admin-trace", export.resultSurface().surfaceId());
+    assertBrowserSafe(export.resultSurface());
+
+    var escalation = runAction(new CapabilityActionRequest(
+        "action-agent-admin-trace-escalate",
+        "action-agent-admin-trace-escalate",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("reason", "needs audit investigation", "traceId", "trace-agent-admin-read"),
+        "idem-agent-admin-trace-escalate",
+        ADMIN_CONTEXT_ID,
+        trace.surfaceId(),
+        "corr-agent-admin-trace-escalate"));
+    assertEquals("denied", escalation.status());
+    assertTrue(escalation.message().contains("Escalation requires an Audit/Trace investigation workflow"));
+    assertEquals("surface-agent-admin-trace", escalation.resultSurface().surfaceId());
+    assertBrowserSafe(escalation.resultSurface());
+
+    var backToSource = runAction(new CapabilityActionRequest(
+        "action-agent-admin-trace-back-to-source",
+        "action-agent-admin-trace-back-to-source",
+        "agent_admin.get_prompt_version",
+        "agent_admin.get_prompt_version",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        trace.surfaceId(),
+        "corr-agent-admin-trace-source"));
+    assertEquals("accepted", backToSource.status());
+    assertEquals("surface-agent-prompt-governance", backToSource.resultSurface().surfaceId());
+    assertBrowserSafe(backToSource.resultSurface());
+  }
+
+  @Test
   void protectedAgentAdminDashboardDeniesUnauthorizedAndCustomerScopedContextsSafely() {
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-agent-admin-dashboard",

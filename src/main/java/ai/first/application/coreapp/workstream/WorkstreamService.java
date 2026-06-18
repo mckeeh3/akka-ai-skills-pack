@@ -4665,6 +4665,9 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope agentAdminTraceSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), AUDIT_TRACE_READ_CAPABILITY);
+    if (actor.selectedContext().scopeType() == ScopeType.CUSTOMER) {
+      throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
+    }
     authContextResolver.appendProtectedReadTrace(actor, AUDIT_TRACE_READ_CAPABILITY, "agent_admin.trace.v1", correlationId);
     var now = Instant.now();
     var traceSuffix = stableSuffix(correlationId);

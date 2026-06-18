@@ -6042,7 +6042,7 @@
 
 ### TASK-FSCT-171: Verify or complete runtime testing for `surface-agent-admin-trace`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-170]
 - surface id: `surface-agent-admin-trace`
@@ -6076,6 +6076,7 @@
   - purpose: Agent Admin trace timeline.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-trace`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-trace`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added dedicated protected Akka-hosted smoke coverage for `surface-agent-admin-trace` in `AgentAdminBrowserWorkstreamSmokeTest`, covering missing-bearer rejection, regular-member and customer-scoped denial/no-enumeration, tenant-admin direct `agent_admin.trace.v1` audit-timeline payload, trace/correlation/redaction/noDirectMutation evidence, provider fail-closed and prompt-risk blocked event summaries, disabled export/escalation blockers, refresh/drill-down/source-return action paths, and browser-safe secret boundaries. Runtime repair included denying customer-scoped direct trace reads in `WorkstreamService` so Agent Admin trace visibility matches the app-description. Runtime evidence: readiness level `runtime-ready`; checks passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminTraceRuntimeTestingPath test`, `npm --prefix frontend test -- --run src/workstream-surfaces.contract.test.mjs`, and `npm --prefix frontend run typecheck`.
 
 ### TASK-FSCT-172: Verify or complete app-description specification for `surface-agent-seed-material`
 
