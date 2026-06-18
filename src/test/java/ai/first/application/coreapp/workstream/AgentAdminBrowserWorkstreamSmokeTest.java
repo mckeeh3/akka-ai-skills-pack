@@ -203,7 +203,8 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "corr-agent-admin-prompt-risk"));
     assertEquals("blocked_provider_or_runtime", promptRisk.status());
     assertEquals("surface-agent-admin-prompt-risk-review", promptRisk.resultSurface().surfaceId());
-    assertEquals("agent_admin.prompt_risk_review_task.v1", promptRisk.resultSurface().data().get("surfaceContract"));
+    assertEquals("agent_admin.prompt_risk_review.v1", promptRisk.resultSurface().data().get("surfaceContract"));
+    assertEquals("agent_admin.prompt_risk_review_task.v1", promptRisk.resultSurface().data().get("taskContract"));
     assertEquals("blocked_provider_or_runtime", promptRisk.resultSurface().data().get("status"));
     assertTrue(promptRisk.resultSurface().toString().contains("activationBlockedUntilHumanDecision=true"));
     assertTrue(promptRisk.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-admin-prompt-risk")));
@@ -225,6 +226,171 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(trace.resultSurface().toString().contains("events"));
     assertTrue(trace.resultSurface().toString().contains("PromptAssemblyTrace"));
     assertTrue(trace.resultSurface().toString().contains("AgentWorkTrace"));
+    assertBrowserSafe(trace.resultSurface());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiExercisesAgentAdminPromptRiskReviewRuntimeTestingPath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-admin-prompt-risk-review")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin prompt-risk review surface must reject missing bearer tokens.");
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-admin-prompt-risk-review",
+        "corr-agent-admin-prompt-risk-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read prompt-risk review status or hidden managed-agent metadata.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-admin-prompt-risk-review",
+        "corr-agent-admin-prompt-risk-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not read Agent Admin prompt-risk review status.");
+
+    var directStatus = getSurface("surface-agent-admin-prompt-risk-review", "corr-agent-admin-prompt-risk-direct");
+    assertEquals("surface-agent-admin-prompt-risk-review", directStatus.surfaceId());
+    assertEquals("workflow-status", directStatus.surfaceType());
+    assertEquals("agent_admin.prompt_risk_review.v1", directStatus.data().get("surfaceContract"));
+    assertEquals("agent_admin.prompt_risk_review_task.v1", directStatus.data().get("taskContract"));
+    assertEquals("empty", directStatus.data().get("status"));
+    assertTrue(directStatus.toString().contains("reviewSummary"));
+    assertTrue(directStatus.toString().contains("scopeSummary"));
+    assertTrue(directStatus.toString().contains("readinessBlocker"));
+    assertTrue(directStatus.toString().contains("decisionState"));
+    assertTrue(directStatus.toString().contains("noDirectMutation=true"));
+    assertTrue(directStatus.toString().contains("noFakeSuccess=true"));
+    assertTrue(directStatus.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-prompt-risk-review-start")));
+    assertTrue(directStatus.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-prompt-risk-review-read")));
+    assertTrue(directStatus.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-prompt-risk-review-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+    assertBrowserSafe(directStatus);
+
+    var started = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-risk-review-start",
+        "action-agent-prompt-risk-review-start",
+        "agent_admin.prompt_risk_review.start",
+        "agent_admin.prompt_risk_review.start",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "proposalId", "proposal-agent-admin-prompt-risk-runtime"),
+        "idem-agent-admin-prompt-risk-runtime",
+        ADMIN_CONTEXT_ID,
+        directStatus.surfaceId(),
+        "corr-agent-admin-prompt-risk-runtime-start"));
+    assertEquals("blocked_provider_or_runtime", started.status());
+    assertEquals("surface-agent-admin-prompt-risk-review", started.resultSurface().surfaceId());
+    assertEquals("agent_admin.prompt_risk_review.v1", started.resultSurface().data().get("surfaceContract"));
+    assertEquals("agent_admin.prompt_risk_review_task.v1", started.resultSurface().data().get("taskContract"));
+    assertEquals("blocked_provider_or_runtime", started.resultSurface().data().get("status"));
+    assertTrue(started.message().contains("advisory and cannot activate behavior artifacts"));
+    assertTrue(started.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-admin-prompt-risk-start")));
+    assertTrue(started.resultSurface().toString().contains("activationBlockedUntilHumanDecision=true"));
+    assertTrue(started.resultSurface().toString().contains("artifactDeltas"));
+    assertTrue(((List<?>) started.resultSurface().data().get("riskFindings")).isEmpty(), "blocked provider/runtime reviews must not fabricate model-backed findings");
+    var blocker = (Map<String, Object>) started.resultSurface().data().get("readinessBlocker");
+    assertEquals("blocked_provider_or_runtime", blocker.get("code"));
+    assertEquals(true, blocker.get("noFakeSuccess"));
+    var taskId = (String) started.resultSurface().data().get("taskId");
+    assertNotNull(taskId);
+    assertBrowserSafe(started.resultSurface());
+
+    var repeatedStart = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-risk-review-start",
+        "action-agent-prompt-risk-review-start",
+        "agent_admin.prompt_risk_review.start",
+        "agent_admin.prompt_risk_review.start",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "proposalId", "proposal-agent-admin-prompt-risk-runtime"),
+        "idem-agent-admin-prompt-risk-runtime",
+        ADMIN_CONTEXT_ID,
+        directStatus.surfaceId(),
+        "corr-agent-admin-prompt-risk-runtime-replay"));
+    assertEquals("blocked_provider_or_runtime", repeatedStart.status());
+    assertEquals(taskId, repeatedStart.resultSurface().data().get("taskId"));
+    assertBrowserSafe(repeatedStart.resultSurface());
+
+    var readBack = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-risk-review-read",
+        "action-agent-prompt-risk-review-read",
+        "agent_admin.prompt_risk_review.read",
+        "agent_admin.prompt_risk_review.read",
+        Map.of("taskId", taskId),
+        null,
+        ADMIN_CONTEXT_ID,
+        started.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-risk-runtime-read"));
+    assertEquals("accepted", readBack.status());
+    assertEquals("blocked_provider_or_runtime", readBack.resultSurface().data().get("status"));
+    assertTrue(readBack.resultSurface().toString().contains("PromptAssemblyTrace"));
+    assertBrowserSafe(readBack.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-agent-prompt-risk-review-accept",
+        "action-agent-prompt-risk-review-accept",
+        "agent_admin.prompt_risk_review.accept_result",
+        "agent_admin.prompt_risk_review.accept_result",
+        Map.of("taskId", taskId, "reason", "Cannot accept blocked provider/runtime output."),
+        "idem-agent-admin-prompt-risk-accept-blocked",
+        ADMIN_CONTEXT_ID,
+        started.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-risk-accept-blocked")), "Blocked provider/runtime review output must not be acceptable as completed advisory evidence.");
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-agent-prompt-risk-review-reject",
+        "action-agent-prompt-risk-review-reject",
+        "agent_admin.prompt_risk_review.reject_result",
+        "agent_admin.prompt_risk_review.reject_result",
+        Map.of("taskId", taskId, "reason", "Cannot reject a review that has no completed model-backed evidence."),
+        "idem-agent-admin-prompt-risk-reject-blocked",
+        ADMIN_CONTEXT_ID,
+        started.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-risk-reject-blocked")), "Blocked provider/runtime review output must not be rejected as if completed.");
+
+    var cancelled = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-risk-review-cancel",
+        "action-agent-prompt-risk-review-cancel",
+        "agent_admin.prompt_risk_review.cancel",
+        "agent_admin.prompt_risk_review.cancel",
+        Map.of("taskId", taskId, "reason", "Stop blocked prompt-risk runtime smoke task; no artifact mutation."),
+        "idem-agent-admin-prompt-risk-cancel",
+        ADMIN_CONTEXT_ID,
+        started.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-risk-cancel"));
+    assertEquals("accepted", cancelled.status());
+    assertEquals("cancelled", cancelled.resultSurface().data().get("status"));
+    assertTrue(cancelled.message().contains("behavior artifacts unchanged"));
+    assertTrue(cancelled.resultSurface().toString().contains("noDirectMutation=true"));
+    assertBrowserSafe(cancelled.resultSurface());
+
+    var source = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-risk-review-open-source",
+        "action-agent-prompt-risk-review-open-source",
+        "agent_admin.prompt_risk_review.read",
+        "agent_admin.prompt_risk_review.read",
+        Map.of("taskId", taskId),
+        null,
+        ADMIN_CONTEXT_ID,
+        cancelled.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-risk-source"));
+    assertEquals("accepted", source.status());
+    assertEquals("surface-agent-prompt-governance", source.resultSurface().surfaceId());
+    assertBrowserSafe(source.resultSurface());
+
+    var trace = runAction(new CapabilityActionRequest(
+        "action-agent-prompt-risk-review-open-trace",
+        "action-agent-prompt-risk-review-open-trace",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("taskId", taskId, "traceId", "trace-agent-admin-prompt-risk-status"),
+        null,
+        ADMIN_CONTEXT_ID,
+        cancelled.resultSurface().surfaceId(),
+        "corr-agent-admin-prompt-risk-trace"));
+    assertEquals("accepted", trace.status());
+    assertEquals("surface-agent-admin-trace", trace.resultSurface().surfaceId());
+    assertTrue(trace.message().contains("browser-safe provider/prompt redaction"));
+    assertTrue(trace.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-prompt-risk-review-open-trace")));
     assertBrowserSafe(trace.resultSurface());
   }
 

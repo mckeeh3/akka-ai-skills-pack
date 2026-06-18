@@ -4580,6 +4580,8 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope agentPromptRiskReviewEmptySurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), AgentAdminPromptRiskReviewService.READ_CAPABILITY);
+    authContextResolver.appendProtectedReadTrace(actor, AgentAdminPromptRiskReviewService.READ_CAPABILITY, "agent_admin.prompt_risk_review.v1 empty/status read", correlationId);
     var traceIds = List.of("trace-agent-admin-prompt-risk-status-" + stableSuffix(correlationId));
     return envelope("surface-agent-admin-prompt-risk-review", "workflow-status", "Prompt-risk review status", actor, correlationId,
         promptRiskReviewData(actor, null, "empty", "No prompt-risk review task is selected. Start a governed review from Agent Admin before accepting or rejecting advisory findings.", traceIds, correlationId),

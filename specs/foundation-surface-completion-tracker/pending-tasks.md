@@ -5936,7 +5936,7 @@
 
 ### TASK-FSCT-168: Verify or complete runtime testing for `surface-agent-admin-prompt-risk-review`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-167]
 - surface id: `surface-agent-admin-prompt-risk-review`
@@ -5970,6 +5970,7 @@
   - purpose: Prompt-risk autonomous review result.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-prompt-risk-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-prompt-risk-review`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added and passed prompt-risk runtime testing in `AgentAdminBrowserWorkstreamSmokeTest` plus frontend `WorkflowStatusSurface` contract assertions. Covered protected Akka-hosted direct surface missing-bearer rejection, tenant-admin direct status read, regular-member/customer-scoped denials, backend-owned `agent_admin.prompt_risk_review.v1` and task contract payload, governed start/read/cancel/open-source/open-trace actions, idempotent start replay, provider/runtime fail-closed `blocked_provider_or_runtime` with `noFakeSuccess` and no fabricated findings, blocked accept/reject attempts, advisory-only/no-direct-mutation and activation-blocked flags, trace/correlation evidence, browser-safe redaction, and existing Akka AutonomousAgent model-backed success/fail-closed tests. runtime evidence: readiness level `runtime-ready` for this testing scope with provider-unconfigured fail-closed behavior. checks passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminPromptRiskReviewRuntimeTestingPath test`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `mvn -q -Dtest=AgentAdminPromptRiskReviewServiceTest,AgentAdminPromptRiskAutonomousAgentTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`; next runnable task: `TASK-FSCT-169`.
 
 ### TASK-FSCT-169: Verify or complete app-description specification for `surface-agent-admin-trace`
 

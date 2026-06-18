@@ -12,6 +12,7 @@ const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts')
 const agentAdminTaskSurface = read('./workstream/surfaces/AgentAdminTaskSurface.tsx');
 const decisionSurface = read('./workstream/surfaces/DecisionSurface.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
+const workflowStatusSurface = read('./workstream/surfaces/WorkflowStatusSurface.tsx');
 
 test('Agent Admin functional agent is visible and capability backed for governed runtime', () => {
   assert.match(agents, /label: 'Agent Admin'[\s\S]*defaultSurfaceType: 'dashboard'[\s\S]*defaultSurfaceId: 'surface-agent-admin-dashboard'/);
@@ -150,6 +151,11 @@ test('Agent Admin surfaces preserve required UI states, approval gates, validati
   assert.match(decisionSurface, /recommendation\?\.rationale/);
   assert.match(decisionSurface, /evidenceSummary/);
   assert.match(decisionSurface, /Advisory output cannot directly mutate prompts, skills, references, model refs, tool boundaries, activation, rollback, or provider configuration/);
+  assert.match(workflowStatusSurface, /surface-agent-admin-prompt-risk-review/);
+  assert.match(workflowStatusSurface, /AgentAdminPromptRiskReview/);
+  assert.match(workflowStatusSurface, /Prompt-risk findings/);
+  assert.match(workflowStatusSurface, /noDirectMutation/);
+  assert.match(workflowStatusSurface, /cannot activate or mutate behavior artifacts/);
   assert.doesNotMatch(dashboardSurface, /Opens \$\{entry\.resultSurfaceId/);
 });
 
