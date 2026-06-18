@@ -5795,7 +5795,7 @@
 
 ### TASK-FSCT-164: Verify or complete runtime implementation for `surface-agent-behavior-proposal`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-163]
 - surface id: `surface-agent-behavior-proposal`
@@ -5826,6 +5826,7 @@
   - purpose: Behavior proposal decision card.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-behavior-proposal`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-behavior-proposal`; surface graph node/action edge for opening or acting on `surface-agent-behavior-proposal`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented backend-owned `agent_admin.behavior_proposal.v1` runtime path for `surface-agent-behavior-proposal` with protected Workstream API surface/action routing, browser-safe `proposalSummary`/`scopeSummary`/`recommendation`/`evidenceSummary`/`riskAndImpact`/`decisionState` payloads, canonical refresh/submit/approve-fail-closed/reject/defer/cancel/activation/rollback/source/trace actions, tenant/AuthContext capability enforcement, audit/correlation evidence, idempotency/reason validation boundaries, no-direct activation/rollback/source deletion, provider `blocked_provider_or_runtime`/`noFakeSuccess` behavior, and frontend DecisionSurface support for object-shaped recommendations/evidence summaries. runtime evidence: readiness level `api-smoked` for implementation verification. checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend run typecheck`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, and `git diff --check`; next runnable task: `TASK-FSCT-165`.
 
 ### TASK-FSCT-165: Verify or complete runtime testing for `surface-agent-behavior-proposal`
 

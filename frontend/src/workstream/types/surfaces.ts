@@ -393,11 +393,12 @@ export type DetailEditSurfaceData = {
 
 export type DecisionSurfaceData = {
   decisionId?: string;
-  recommendation?: string;
+  recommendation?: string | { outcome?: string; rationale?: string; requiredReviewerCategory?: string; providerRuntimeReadiness?: string; noFakeSuccess?: boolean; dependsOnProviderRuntimeEvidence?: boolean; confidenceQualityNotes?: string[] };
   summary?: string;
   riskScore?: number | string;
   confidenceScore?: number | string;
   evidence?: Array<{ evidenceId: string; label: string; summary: string }>;
+  evidenceSummary?: Array<{ evidenceId: string; label: string; summary: string; status?: string; redactionNote?: string; noFakeSuccess?: boolean; traceRefs?: string[] }>;
   allowedActions?: Array<{ actionId: string; label: string; browserToolId: string; governedToolId: string; capabilityId: string }>;
   disabledActions?: Array<{ actionId: string; label?: string; reason: string }>;
   risk?: string;

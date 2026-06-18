@@ -8,7 +8,11 @@ type DecisionSurfaceProps = {
 };
 
 export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
+  const recommendation = typeof envelope.data.recommendation === 'string'
+    ? envelope.data.recommendation
+    : envelope.data.recommendation?.rationale ?? envelope.data.recommendation?.outcome;
   const evidence = envelope.data.evidence ?? [];
+  const evidenceSummary = envelope.data.evidenceSummary ?? [];
   const disabledById = new Map((envelope.data.disabledActions ?? []).map((action) => [action.actionId, action.reason]));
   const guardedActions = envelope.actions.map((action) => disabledById.has(action.actionId)
     ? { ...action, disabled: action.disabled ?? { reasonCode: 'BACKEND_PREREQUISITE_REQUIRED', message: disabledById.get(action.actionId)! } }
@@ -16,7 +20,7 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
   return (
     <SurfaceStateFrame envelope={envelope}>
       <article className="decision-card">
-        <p>{envelope.data.recommendation ?? envelope.data.activationBlocker ?? envelope.data.summary ?? 'Backend returned a governed decision state for review.'}</p>
+        <p>{recommendation ?? envelope.data.activationBlocker ?? envelope.data.summary ?? 'Backend returned a governed decision state for review.'}</p>
         <dl>
           <dt>Risk</dt><dd>{envelope.data.riskScore ?? envelope.data.risk ?? 'Not scored'}</dd>
           <dt>Confidence</dt><dd>{envelope.data.confidenceScore ?? 'Not scored'}</dd>
@@ -32,6 +36,12 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
           <>
             <h4>Evidence</h4>
             <ul>{evidence.map((item) => <li key={item.evidenceId}><strong>{item.label}</strong>: {item.summary}</li>)}</ul>
+          </>
+        )}
+        {evidenceSummary.length > 0 && (
+          <>
+            <h4>Evidence summary</h4>
+            <ul>{evidenceSummary.map((item) => <li key={item.evidenceId}><strong>{item.label}</strong>: {item.summary}</li>)}</ul>
           </>
         )}
         {envelope.data.allowedActions && (

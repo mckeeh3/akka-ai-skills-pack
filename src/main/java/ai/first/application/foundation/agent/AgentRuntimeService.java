@@ -304,6 +304,18 @@ public final class AgentRuntimeService {
     return rejected;
   }
 
+  public BehaviorChangeProposal deferProposal(AuthContext actor, String tenantId, String proposalId, String reason, String correlationId) {
+    authContextResolver.requireTenant(actor, tenantId);
+    requireTenantOrganizationAdmin(actor);
+    requireCapabilityOrLegacy(actor, AGENT_ADMIN_CANCEL_BEHAVIOR_CHANGE_CAPABILITY);
+    var proposal = proposal(tenantId, proposalId);
+    if (proposal.status() == BehaviorChangeProposal.Status.DEFERRED) return proposal;
+    if (proposal.status() == BehaviorChangeProposal.Status.ACTIVATED || proposal.status() == BehaviorChangeProposal.Status.ROLLED_BACK || proposal.status() == BehaviorChangeProposal.Status.DENIED) throw new AuthorizationException(409, "proposal-not-deferrable");
+    var deferred = transition(proposal, BehaviorChangeProposal.Status.DEFERRED, actor.accountId(), firstNonBlank(reason, "deferred for follow-up"), null, null, null, null);
+    trace("BEHAVIOR_REVIEW", AgentRuntimeTrace.Decision.APPROVAL_REQUIRED, tenantId, proposal.agentDefinitionId(), correlationId, actor.accountId(), AGENT_ADMIN_CANCEL_BEHAVIOR_CHANGE_CAPABILITY, proposal.proposalId(), "behavior change deferred for follow-up; active behavior unchanged", checksum(proposal.proposalId() + reason));
+    return deferred;
+  }
+
   public BehaviorChangeProposal cancelProposal(AuthContext actor, String tenantId, String proposalId, String reason, String correlationId) {
     authContextResolver.requireTenant(actor, tenantId);
     requireTenantOrganizationAdmin(actor);

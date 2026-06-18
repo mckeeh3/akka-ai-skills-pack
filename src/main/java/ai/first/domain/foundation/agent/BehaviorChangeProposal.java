@@ -45,6 +45,7 @@ public record BehaviorChangeProposal(
     APPROVED,
     ACTIVATED,
     REJECTED,
+    DEFERRED,
     CANCELLED,
     DENIED,
     ROLLED_BACK
