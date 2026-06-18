@@ -47,6 +47,169 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
 
   @Test
   @SuppressWarnings("unchecked")
+  void hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyInventoryRuntimePath() throws Exception {
+    var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
+    assertTrue(shell.status().isSuccess(), "Hosted /ui shell must load before the inventory surface is exercised through browser API paths.");
+    assertTrue(shell.body().contains("<div id=\"root\"></div>"));
+    assertTrue(shell.body().contains("/assets/"));
+    assertBrowserSafe(shell.body());
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-governance-policy-inventory")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy inventory must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-governance-inventory-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-governance-policy-list",
+            "action-governance-policy-list",
+            "governance.policy.read",
+            "governance.policy.read",
+            Map.of("search", "human approval"),
+            null,
+            ADMIN_CONTEXT_ID,
+            "surface-governance-policy-inventory",
+            "corr-governance-inventory-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy inventory action path must reject missing bearer tokens.");
+
+    var inventory = getSurface("surface-governance-policy-inventory", "corr-governance-inventory-direct");
+    assertEquals("surface-governance-policy-inventory", inventory.surfaceId());
+    assertEquals("list-search", inventory.surfaceType());
+    assertEquals("governance.policy.inventory.v1", inventory.data().get("surfaceContract"));
+    assertEquals("corr-governance-inventory-direct", inventory.correlationId());
+    assertTrue(inventory.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-inventory")));
+    assertEquals(true, inventory.data().get("noFakeSuccess"));
+    assertEquals(true, inventory.data().get("noDirectMutation"));
+    assertTrue(inventory.toString().contains("backend-resolved selected AuthContext"));
+    assertTrue(inventory.toString().contains("ToolPermissionBoundary"));
+    assertTrue(inventory.toString().contains("blocked_provider_or_runtime"));
+    assertTrue(inventory.toString().contains("rawDatabaseCursors=omitted"));
+    assertTrue(inventory.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-list") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-inventory")));
+    assertTrue(inventory.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-read") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-detail")));
+    assertTrue(inventory.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-start-impact-analysis") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-impact-analysis-task")));
+    var rows = (List<Map<String, Object>>) inventory.data().get("rows");
+    assertFalse(rows.isEmpty(), "Inventory must return backend-owned visible policy/proposal rows for the selected tenant admin AuthContext.");
+    assertTrue(rows.stream().anyMatch(row -> "policy-human-approval".equals(row.get("policyId")) && "action-governance-policy-read".equals(row.get("openActionId"))));
+    assertBrowserSafe(inventory);
+
+    var detail = runAction(new CapabilityActionRequest(
+        "action-governance-policy-read",
+        "action-governance-policy-read",
+        "governance.policy.read",
+        "governance.policy.read",
+        Map.of("policyId", "policy-human-approval", "tenantId", TENANT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        inventory.surfaceId(),
+        "corr-governance-inventory-read-row"));
+    assertEquals("accepted", detail.status());
+    assertEquals("surface-governance-policy-detail", detail.resultSurface().surfaceId());
+    assertEquals("detail-edit", detail.resultSurface().surfaceType());
+    assertTrue(detail.resultSurface().toString().contains("backend AuthContext"));
+    assertTrue(detail.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-detail")));
+    assertBrowserSafe(detail.resultSurface());
+
+    var draft = runAction(new CapabilityActionRequest(
+        "action-governance-policy-draft-proposal",
+        "action-governance-policy-draft-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("title", "Inventory smoke proposal", "rationale", "exercise inventory list-search action graph", "proposedContent", "Keep Governance/Policy inventory scoped, traced, and browser safe."),
+        "idem-governance-inventory-draft",
+        ADMIN_CONTEXT_ID,
+        inventory.surfaceId(),
+        "corr-governance-inventory-draft"));
+    assertEquals("accepted", draft.status());
+    assertEquals("surface-governance-policy-proposal", draft.resultSurface().surfaceId());
+    var proposalId = String.valueOf(draft.resultSurface().data().get("proposalId"));
+    assertBrowserSafe(draft.resultSurface());
+
+    var filtered = runAction(new CapabilityActionRequest(
+        "action-governance-policy-list",
+        "action-governance-policy-list",
+        "governance.policy.read",
+        "governance.policy.read",
+        Map.of("search", "Inventory smoke", "lifecycle", "draft", "tenantId", TENANT_ID, "customerId", CUSTOMER_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        inventory.surfaceId(),
+        "corr-governance-inventory-filtered"));
+    assertEquals("accepted", filtered.status());
+    assertEquals("surface-governance-policy-inventory", filtered.resultSurface().surfaceId());
+    assertEquals("governance.policy.inventory.v1", filtered.resultSurface().data().get("surfaceContract"));
+    assertTrue(filtered.resultSurface().toString().contains("selectedFiltersSummary"));
+    assertTrue(filtered.resultSurface().toString().contains(proposalId));
+    assertTrue(filtered.resultSurface().toString().contains("No authorized rows match") || filtered.resultSurface().toString().contains("Inventory smoke proposal"));
+    assertBrowserSafe(filtered.resultSurface());
+
+    var impact = runAction(new CapabilityActionRequest(
+        "action-governance-policy-start-impact-analysis",
+        "action-governance-policy-start-impact-analysis",
+        "governance.policy.impact_analysis.start",
+        "governance.policy.impact_analysis.start",
+        Map.of("proposalId", proposalId, "scope", "inventory-smoke", "reason", "verify inventory row provider/runtime fail-closed path"),
+        "idem-governance-inventory-impact",
+        ADMIN_CONTEXT_ID,
+        filtered.resultSurface().surfaceId(),
+        "corr-governance-inventory-impact"));
+    assertEquals("blocked_provider_or_runtime", impact.status());
+    assertEquals("surface-governance-policy-impact-analysis-task", impact.resultSurface().surfaceId());
+    assertEquals("blocked_provider_or_runtime", impact.resultSurface().data().get("status"));
+    assertTrue(impact.resultSurface().toString().contains("AutonomousAgent"));
+    assertFalse(impact.resultSurface().toString().contains("impact_ready"));
+    assertBrowserSafe(impact.resultSurface());
+
+    var memberDenied = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-list",
+        "action-governance-policy-list",
+        "governance.policy.read",
+        "governance.policy.read",
+        Map.of("search", "human approval"),
+        null,
+        MEMBER_CONTEXT_ID,
+        "surface-governance-policy-inventory",
+        "corr-governance-inventory-member-denied"),
+        "workos-governance-member",
+        "governance-member@example.test",
+        "Governance Member",
+        MEMBER_CONTEXT_ID);
+    assertEquals("denied", memberDenied.status());
+    assertEquals("surface-governance-policy-system-message", memberDenied.resultSurface().surfaceId());
+    assertEquals(true, memberDenied.resultSurface().data().get("noFakeSuccess"));
+    assertTrue(memberDenied.resultSurface().toString().contains("CAPABILITY_FORBIDDEN"));
+    assertBrowserSafe(memberDenied.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-governance-policy-inventory",
+        "corr-governance-inventory-member-direct-denied",
+        "workos-governance-member",
+        "governance-member@example.test",
+        "Governance Member",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read the Governance/Policy inventory.");
+
+    var crossTenant = runAction(new CapabilityActionRequest(
+        "action-governance-policy-list",
+        "action-governance-policy-list",
+        "governance.policy.read",
+        "governance.policy.read",
+        Map.of("tenantId", "tenant-other", "search", "Inventory smoke"),
+        null,
+        ADMIN_CONTEXT_ID,
+        inventory.surfaceId(),
+        "corr-governance-inventory-cross-tenant-denied"));
+    assertEquals("denied", crossTenant.status());
+    assertEquals("surface-governance-policy-system-message", crossTenant.resultSurface().surfaceId());
+    assertTrue(crossTenant.resultSurface().toString().contains("GOVERNANCE_POLICY_TENANT_FORBIDDEN"));
+    assertBrowserSafe(crossTenant.resultSurface());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
   void hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyDashboardRuntimePath() throws Exception {
     var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
     assertTrue(shell.status().isSuccess(), "Hosted /ui shell must load from Akka static resources.");

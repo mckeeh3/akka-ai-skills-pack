@@ -3,11 +3,13 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const fixtures = read('./__tests__/fixtures/workstream/surfaces.ts');
 const me = read('./__tests__/fixtures/workstream/me.ts');
 const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 const diff = read('./workstream/surfaces/GovernanceDiffSurface.tsx');
+const listSearch = read('./workstream/surfaces/ListSearchSurface.tsx');
 const types = read('./workstream/types/surfaces.ts');
 const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 
@@ -81,6 +83,26 @@ test('Governance/Policy proposal and simulation rendering is accessible and brow
   assert.match(diff, /Deterministic simulation evidence/);
   assert.match(diff, /Trace links:/);
   assert.doesNotMatch(diff, /dangerouslySetInnerHTML|innerHTML\s*=/);
+});
+
+test('Governance/Policy inventory renderer keeps row actions backend-scoped, trace-linked, and browser-safe', () => {
+  for (const marker of [
+    'GovernancePolicyInventoryView',
+    'Governance/Policy policy and proposal inventory',
+    'Rows open backend-authorized evidence or lifecycle surfaces',
+    'selected AuthContext, row visibility, redaction, and action availability are rechecked server-side',
+    'Search visible policies and proposals',
+    'action-governance-policy-list',
+    'action-governance-policy-read',
+    'action-governance-policy-draft-proposal',
+    'role="list" aria-label="Authorized policy and proposal rows"',
+    'aria-label={`Open ${title} through backend-authorized',
+    'backendRowInput(row)',
+    'Trace and row evidence are redacted for browser safety'
+  ]) {
+    assert.match(listSearch, new RegExp(escapeRegExp(marker)));
+  }
+  assert.doesNotMatch(listSearch, /localStorage\.getItem\(['"](?:token|jwt|apiKey)|Authorization\s*=|dangerouslySetInnerHTML|innerHTML\s*=/);
 });
 
 test('Governance/Policy fixture client returns structured results for dashboard, inventory, and simulation actions', () => {

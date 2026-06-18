@@ -7420,7 +7420,7 @@
 
 ### TASK-FSCT-210: Verify or complete runtime testing for `surface-governance-policy-inventory`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-209]
 - surface id: `surface-governance-policy-inventory`
@@ -7454,6 +7454,7 @@
   - purpose: Policy/proposal inventory and queue.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-inventory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-inventory`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added runtime testing for `surface-governance-policy-inventory` with Akka-hosted `/ui` plus protected `/api/workstream/surfaces/surface-governance-policy-inventory` and `/api/workstream/actions` coverage; exercised missing bearer rejections, tenant admin selected AuthContext success, backend-owned list/search/filter payload, row detail action routing, draft proposal visibility in filtered inventory, provider/runtime fail-closed impact-analysis action, tenant member denial, direct member surface denial, cross-tenant hint denial, trace/correlation evidence, and browser-safe secret boundaries. Added frontend contract assertions for the Governance/Policy inventory renderer's backend-scoped filters, row action routing, trace/redaction copy, and secret-safe rendering constraints. Runtime evidence: readiness level `runtime-ready` for inventory testing scope. Checks passed: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyInventoryRuntimePath -DtrimStackTrace=false test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-211: Verify or complete app-description specification for `surface-governance-policy-proposal`
 
