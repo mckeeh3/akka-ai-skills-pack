@@ -5406,7 +5406,7 @@
 
 ### TASK-FSCT-153: Verify or complete runtime testing for `surface-agent-test-console`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-152]
 - surface id: `surface-agent-test-console`
@@ -5440,6 +5440,7 @@
   - purpose: No-side-effect runtime test surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-test-console`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-test-console`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added protected Akka-hosted API/action smoke coverage for `surface-agent-test-console` in `AgentAdminBrowserWorkstreamSmokeTest` and hardened direct test-console reads to require `agent_admin.draft_behavior_change`; verified missing-bearer rejection, tenant-admin AuthContext success, regular-member/customer-scoped denials, refresh/read no-op behavior, run/resume provider fail-closed `blocked_provider_or_runtime` without fixture/model-less success, disabled proposal route, trace/back-to-detail routing, ToolPermissionBoundary denial evidence, trace/correlation data, no-production-side-effect/no-direct-mutation evidence, and browser-safe redaction. runtime evidence: readiness level `runtime-ready` for the test-console testing scope. commands passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminTestConsoleRuntimeTestingPath test`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `mvn -q -Dtest=WorkstreamServiceTest#agentAdminActionsCreateGovernedResultsAndTraces test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-154: Verify or complete app-description specification for `surface-agent-activation-confirmation`
 

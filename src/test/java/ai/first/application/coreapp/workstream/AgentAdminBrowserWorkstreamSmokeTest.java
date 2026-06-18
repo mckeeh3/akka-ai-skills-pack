@@ -1296,6 +1296,206 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiExercisesAgentAdminTestConsoleRuntimeTestingPath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-test-console")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin test console must reject missing bearer tokens.");
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-agent-test-console-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-agent-test-console-run",
+            "action-agent-test-console-run",
+            "agent_admin.draft_behavior_change",
+            "agent_admin.draft_behavior_change",
+            Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "testCategory", "detail-readiness"),
+            "idem-agent-test-console-missing-bearer",
+            ADMIN_CONTEXT_ID,
+            "surface-agent-test-console",
+            "corr-agent-test-console-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin test-console action path must reject missing bearer tokens.");
+
+    var testConsole = getSurface("surface-agent-test-console", "corr-agent-test-console-direct");
+    assertEquals("surface-agent-test-console", testConsole.surfaceId());
+    assertEquals("workflow-status", testConsole.surfaceType());
+    assertEquals("agent_admin.test_console.v1", testConsole.data().get("surfaceContract"));
+    assertEquals("corr-agent-test-console-direct", testConsole.correlationId());
+    assertEquals(Boolean.TRUE, testConsole.data().get("noProductionSideEffects"));
+    assertEquals(Boolean.TRUE, testConsole.data().get("noDirectMutation"));
+    assertEquals(Boolean.TRUE, testConsole.data().get("noFakeSuccess"));
+    assertFalse(testConsole.traceIds().isEmpty());
+    assertTrue(String.valueOf(testConsole.data().get("traceIds")).contains("trace-agent-work") || testConsole.toString().contains("PromptAssemblyTrace"));
+    assertTrue(testConsole.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-test-console-refresh") && action.resultSurface().updateSurfaceId().equals("surface-agent-test-console")));
+    assertTrue(testConsole.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-test-console-run") && action.resultSurface().updateSurfaceId().equals("surface-agent-test-console")));
+    assertTrue(testConsole.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-test-console-read-result") && action.resultSurface().updateSurfaceId().equals("surface-agent-test-console")));
+    assertTrue(testConsole.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-test-console-open-proposal") && action.resultSurface().updateSurfaceId().equals("surface-agent-behavior-proposal")));
+    assertTrue(testConsole.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-test-console-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+    assertTrue(testConsole.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-test-console-back-to-detail") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail")));
+
+    var testSummary = (Map<String, Object>) testConsole.data().get("testSummary");
+    assertEquals("surface-agent-test-console", testSummary.get("surfaceId"));
+    assertEquals("detail-readiness", testSummary.get("requestedTestCategory"));
+    assertEquals("blocked-provider-or-runtime", testSummary.get("taskStatus"));
+    assertTrue(String.valueOf(testSummary.get("noDirectMutationNotice")).contains("never activates behavior"));
+    var scopeSummary = (Map<String, Object>) testConsole.data().get("scopeSummary");
+    assertEquals(ADMIN_CONTEXT_ID, scopeSummary.get("selectedAuthContextId"));
+    assertEquals("tenant", scopeSummary.get("scopeType"));
+    assertEquals(Boolean.TRUE, scopeSummary.get("governanceAuthorized"));
+    var runtimeReadiness = (Map<String, Object>) testConsole.data().get("runtimeReadiness");
+    assertEquals("blocked_provider_or_runtime", runtimeReadiness.get("providerModelRuntimeConfigurationCategory"));
+    assertEquals(Boolean.TRUE, runtimeReadiness.get("noFakeSuccess"));
+    assertEquals(Boolean.FALSE, runtimeReadiness.get("fixtureModelLessResultsAccepted"));
+    var safeResultSummary = (Map<String, Object>) testConsole.data().get("safeResultSummary");
+    assertEquals("blocked-provider-or-runtime", safeResultSummary.get("advisoryResultOutcome"));
+    assertEquals(Boolean.TRUE, safeResultSummary.get("humanReviewRequired"));
+    assertEquals(Boolean.FALSE, safeResultSummary.get("proposalCanBeDraftedOrUpdated"));
+    var checks = (List<Map<String, Object>>) testConsole.data().get("loaderAndBoundaryChecks");
+    assertTrue(checks.stream().anyMatch(check -> check.get("checkId").equals("prompt-assembly") && check.get("decision").equals("allowed")));
+    assertTrue(checks.stream().anyMatch(check -> check.get("checkId").equals("assigned-skill-load") && check.get("decision").equals("allowed")));
+    assertTrue(checks.stream().anyMatch(check -> check.get("checkId").equals("unassigned-skill-denial") && check.get("decision").equals("denied") && check.get("targetSurfaceId").equals("surface-agent-tool-boundary-diff")));
+    assertTrue(checks.stream().anyMatch(check -> check.get("checkId").equals("provider-model-runtime") && check.get("decision").equals("blocked_provider_or_runtime") && check.get("targetSurfaceId").equals("surface-agent-model-refs")));
+    var proposalRoute = (Map<String, Object>) testConsole.data().get("proposalRoute");
+    assertEquals("surface-agent-behavior-proposal", proposalRoute.get("targetSurfaceId"));
+    assertEquals("disabled", proposalRoute.get("proposalUpdateStatus"));
+    assertEquals("blocked_provider_or_runtime", proposalRoute.get("disabledReason"));
+    assertTrue(testConsole.toString().contains("PromptAssemblyTrace"));
+    assertTrue(testConsole.toString().contains("SkillLoadTrace"));
+    assertTrue(testConsole.toString().contains("ToolPermissionBoundary"));
+    assertTrue(testConsole.toString().contains("providerCredentials=omitted"));
+    assertTrue(testConsole.toString().contains("rawProviderModelResponses=omitted"));
+    assertTrue(testConsole.toString().contains("bearerTokens=omitted"));
+    assertBrowserSafe(testConsole);
+
+    var refresh = runAction(new CapabilityActionRequest(
+        "action-agent-test-console-refresh",
+        "action-agent-test-console-refresh",
+        "agent_admin.draft_behavior_change",
+        "agent_admin.draft_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        testConsole.surfaceId(),
+        "corr-agent-test-console-refresh"));
+    assertEquals("no-op", refresh.status());
+    assertEquals("surface-agent-test-console", refresh.resultSurface().surfaceId());
+    assertEquals(Boolean.TRUE, refresh.resultSurface().data().get("noProductionSideEffects"));
+    assertBrowserSafe(refresh.resultSurface());
+
+    var run = runAction(new CapabilityActionRequest(
+        "action-agent-test-console-run",
+        "action-agent-test-console-run",
+        "agent_admin.draft_behavior_change",
+        "agent_admin.draft_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "testCategory", "detail-readiness"),
+        "idem-agent-test-console-run",
+        ADMIN_CONTEXT_ID,
+        testConsole.surfaceId(),
+        "corr-agent-test-console-run"));
+    assertEquals("blocked_provider_or_runtime", run.status());
+    assertEquals("surface-agent-test-console", run.resultSurface().surfaceId());
+    assertTrue(run.message().contains("no fixture/model-less success was counted"));
+    assertFalse(run.traceIds().isEmpty());
+    assertEquals(Boolean.TRUE, run.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(Boolean.TRUE, run.resultSurface().data().get("noProductionSideEffects"));
+    assertBrowserSafe(run.resultSurface());
+
+    var repeatedRun = runAction(new CapabilityActionRequest(
+        "action-agent-test-console-run",
+        "action-agent-test-console-run",
+        "agent_admin.draft_behavior_change",
+        "agent_admin.draft_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "testCategory", "detail-readiness"),
+        "idem-agent-test-console-run",
+        ADMIN_CONTEXT_ID,
+        testConsole.surfaceId(),
+        "corr-agent-test-console-run-repeat"));
+    assertEquals("blocked_provider_or_runtime", repeatedRun.status());
+    assertEquals("surface-agent-test-console", repeatedRun.resultSurface().surfaceId());
+    assertEquals(Boolean.TRUE, repeatedRun.resultSurface().data().get("noProductionSideEffects"));
+    assertBrowserSafe(repeatedRun.resultSurface());
+
+    var readResult = runAction(new CapabilityActionRequest(
+        "action-agent-test-console-read-result",
+        "action-agent-test-console-read-result",
+        "agent_admin.draft_behavior_change",
+        "agent_admin.draft_behavior_change",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        testConsole.surfaceId(),
+        "corr-agent-test-console-read-result"));
+    assertEquals("no-op", readResult.status());
+    assertEquals("surface-agent-test-console", readResult.resultSurface().surfaceId());
+    assertTrue(readResult.message().contains("without rerunning provider/tool work"));
+    assertBrowserSafe(readResult.resultSurface());
+
+    var proposal = runAction(new CapabilityActionRequest(
+        "action-agent-test-console-open-proposal",
+        "action-agent-test-console-open-proposal",
+        "agent_admin.submit_behavior_change_for_review",
+        "agent_admin.submit_behavior_change_for_review",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        "idem-agent-test-console-proposal",
+        ADMIN_CONTEXT_ID,
+        testConsole.surfaceId(),
+        "corr-agent-test-console-proposal"));
+    assertEquals("denied", proposal.status());
+    assertEquals("surface-agent-test-console", proposal.resultSurface().surfaceId());
+    assertTrue(proposal.message().contains("cannot activate artifacts directly"));
+    assertBrowserSafe(proposal.resultSurface());
+
+    var trace = runAction(new CapabilityActionRequest(
+        "action-agent-test-console-open-trace",
+        "action-agent-test-console-open-trace",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("traceId", "trace-agent-test-console"),
+        null,
+        ADMIN_CONTEXT_ID,
+        testConsole.surfaceId(),
+        "corr-agent-test-console-trace"));
+    assertEquals("accepted", trace.status());
+    assertEquals("surface-agent-admin-trace", trace.resultSurface().surfaceId());
+    assertTrue(trace.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-test-console-open-trace")));
+    assertTrue(trace.resultSurface().toString().contains("AgentWorkTrace"));
+    assertBrowserSafe(trace.resultSurface());
+
+    var backToDetail = runAction(new CapabilityActionRequest(
+        "action-agent-test-console-back-to-detail",
+        "action-agent-test-console-back-to-detail",
+        "agent_admin.get_definition",
+        "agent_admin.get_definition",
+        Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        testConsole.surfaceId(),
+        "corr-agent-test-console-detail"));
+    assertEquals("accepted", backToDetail.status());
+    assertEquals("surface-agent-admin-detail", backToDetail.resultSurface().surfaceId());
+    assertBrowserSafe(backToDetail.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-test-console",
+        "corr-agent-test-console-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin test-console runtime evidence.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-test-console",
+        "corr-agent-test-console-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin test-console runtime evidence or hidden managed-agent metadata.");
+  }
+
+  @Test
   void protectedAgentAdminDashboardDeniesUnauthorizedAndCustomerScopedContextsSafely() {
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-agent-admin-dashboard",

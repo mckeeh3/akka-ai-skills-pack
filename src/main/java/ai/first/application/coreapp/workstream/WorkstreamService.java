@@ -4050,6 +4050,8 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope agentTestConsoleSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY);
+    authContextResolver.appendProtectedReadTrace(actor, AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, "agent_admin.test_console.v1", correlationId);
     var prompt = agentRuntimeService.assemblePrompt(new AgentRuntimeService.PromptAssemblyRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), "test", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, correlationId, "No-side-effect Agent Admin test console"));
     var allowedSkill = agentRuntimeService.readSkill(new AgentRuntimeService.SkillReadRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), "test", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, correlationId, "agent-admin.starter-guidance.v1"));
     var deniedSkill = agentRuntimeService.readSkill(new AgentRuntimeService.SkillReadRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), "test", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, correlationId, "ua.role-recommendation.v1"));
