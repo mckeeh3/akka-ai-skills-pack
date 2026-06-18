@@ -6466,7 +6466,7 @@
 
 ### TASK-FSCT-183: Verify or complete runtime testing for `surface-audit-trace-detail`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-182]
 - surface id: `surface-audit-trace-detail`
@@ -6500,6 +6500,7 @@
   - purpose: Browser-safe trace/event evidence detail.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added dedicated `surface-audit-trace-detail` runtime smoke coverage in `AuditTraceBrowserWorkstreamSmokeTest`; verified protected `/api/workstream/surfaces/surface-audit-trace-detail` and `/api/workstream/actions` with JWT plus selected AuthContext, direct detail read, detail action refresh, hidden `not_found_or_redacted`, invalid trace validation, timeline/failure-evidence/guide/export/note/search/dashboard follow-up actions, idempotent export/note behavior, member/disabled/cross-tenant denials, trace/correlation refs, and browser-safe redaction/secret boundaries. Runtime repair made during testing: direct detail reads now require `audit.trace.detail.read`, and the detail envelope exposes the app-description follow-up action set. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-184: Verify or complete app-description specification for `surface-audit-trace-timeline`
 

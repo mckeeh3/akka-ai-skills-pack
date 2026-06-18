@@ -101,6 +101,7 @@ public final class AuditTraceService {
   }
 
   public SurfaceData detail(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), DETAIL_CAPABILITY);
     validateScope(actor, input, correlationId);
     var traceId = stringInput(input, "traceId", "trace-auth-context-" + stableSuffix(correlationId));
     if (traceId == null || traceId.isBlank() || traceId.length() > 160) return validation(actor, correlationId, "traceId", "Trace id is required and must be at most 160 characters.");

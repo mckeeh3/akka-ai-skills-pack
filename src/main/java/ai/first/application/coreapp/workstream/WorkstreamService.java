@@ -3476,7 +3476,7 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope auditTraceDetailSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     var surface = auditTraceService.detail(actor, input, correlationId);
-    return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction()));
+    return auditTraceEnvelope(actor, correlationId, surface, List.of(auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceExportRequestAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSearchAction(), auditTraceDashboardAction()));
   }
 
   private SurfaceEnvelope auditTraceCorrelationTimelineSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {

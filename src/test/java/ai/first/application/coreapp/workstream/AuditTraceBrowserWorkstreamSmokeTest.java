@@ -408,6 +408,232 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  void protectedAuditTraceDetailCoversDirectRefreshFollowUpActionsDenialsAndSecretBoundaries() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-audit-trace-detail")
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Audit/Trace detail must reject missing bearer tokens.");
+
+    var detail = getSurface("surface-audit-trace-detail", "corr-audit-detail-direct");
+    assertEquals("surface-audit-trace-detail", detail.surfaceId());
+    assertEquals("detail-edit", detail.surfaceType());
+    assertEquals("audit.trace.detail.v1", detail.data().get("surfaceContract"));
+    assertTrue(String.valueOf(detail.data().get("traceId")).startsWith("trace-auth-context-"));
+    assertEquals("AUTH_CONTEXT_RESOLVE", detail.data().get("eventKind"));
+    assertEquals("audit.trace.read", detail.data().get("authorizationBasis"));
+    assertEquals("allowed", detail.data().get("decision"));
+    assertTrue(detail.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-audit-detail")));
+    assertTrue(detail.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-timeline") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-timeline")));
+    assertTrue(detail.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-failure-evidence") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-failure-evidence")));
+    assertTrue(detail.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-investigation-guide") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-investigation-guide")));
+    assertTrue(detail.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-request-redacted-export") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-export-request")));
+    assertTrue(detail.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-append-investigation-note") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-investigation-note")));
+    assertTrue(detail.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-search") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-search")));
+    assertTrue(detail.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-dashboard") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-dashboard")));
+    assertTrue(detail.toString().contains("redactedEvidence"));
+    assertTrue(detail.toString().contains("rawProviderCredential"));
+    assertBrowserSafe(detail);
+
+    var traceId = String.valueOf(detail.data().get("traceId"));
+    var detailAction = runAction(new CapabilityActionRequest(
+        "action-audit-trace-detail",
+        "action-audit-trace-detail",
+        "audit.trace.detail.read",
+        "audit.trace.detail.read",
+        Map.of("traceId", traceId),
+        null,
+        AUDITOR_CONTEXT_ID,
+        detail.surfaceId(),
+        "corr-audit-detail-action-refresh"));
+    assertEquals("accepted", detailAction.status());
+    assertEquals("surface-audit-trace-detail", detailAction.resultSurface().surfaceId());
+    assertEquals(traceId, detailAction.resultSurface().data().get("traceId"));
+    assertBrowserSafe(detailAction.resultSurface());
+
+    var hiddenDetail = runAction(new CapabilityActionRequest(
+        "action-audit-trace-detail",
+        "action-audit-trace-detail",
+        "audit.trace.detail.read",
+        "audit.trace.detail.read",
+        Map.of("traceId", "trace-other-tenant-secret"),
+        null,
+        AUDITOR_CONTEXT_ID,
+        detail.surfaceId(),
+        "corr-audit-detail-hidden"));
+    assertEquals("accepted", hiddenDetail.status());
+    assertEquals("not_found_or_redacted", hiddenDetail.resultSurface().data().get("decision"));
+    var hiddenRedaction = (Map<String, Object>) hiddenDetail.resultSurface().data().get("redactionMetadata");
+    assertEquals(true, hiddenRedaction.get("nonEnumerating"));
+    assertBrowserSafe(hiddenDetail.resultSurface());
+
+    var invalidDetail = runAction(new CapabilityActionRequest(
+        "action-audit-trace-detail",
+        "action-audit-trace-detail",
+        "audit.trace.detail.read",
+        "audit.trace.detail.read",
+        Map.of("traceId", "x".repeat(161)),
+        null,
+        AUDITOR_CONTEXT_ID,
+        detail.surfaceId(),
+        "corr-audit-detail-invalid"));
+    assertEquals("validation-error", invalidDetail.status());
+    assertEquals("surface-audit-trace-validation-error", invalidDetail.resultSurface().surfaceId());
+    assertEquals("traceId", invalidDetail.resultSurface().data().get("field"));
+    assertTrue(invalidDetail.traceIds().stream().anyMatch(trace -> trace.contains("trace-audit-validation")));
+    assertBrowserSafe(invalidDetail.resultSurface());
+
+    var correlationIds = (List<String>) detail.data().get("correlationIds");
+    var timeline = runAction(new CapabilityActionRequest(
+        "action-audit-trace-timeline",
+        "action-audit-trace-timeline",
+        "audit.trace.timeline.read",
+        "audit.trace.timeline.read",
+        Map.of("correlationId", correlationIds.get(0)),
+        null,
+        AUDITOR_CONTEXT_ID,
+        detail.surfaceId(),
+        "corr-audit-detail-timeline"));
+    assertEquals("accepted", timeline.status());
+    assertEquals("surface-audit-trace-timeline", timeline.resultSurface().surfaceId());
+    assertTrue(timeline.resultSurface().toString().contains("Unauthorized tenant/customer evidence is omitted"));
+    assertBrowserSafe(timeline.resultSurface());
+
+    var failureEvidence = runAction(new CapabilityActionRequest(
+        "action-audit-trace-failure-evidence",
+        "action-audit-trace-failure-evidence",
+        "audit.trace.failureEvidence.read",
+        "audit.trace.failureEvidence.read",
+        Map.of("failureCategory", "AUTH_CONTEXT_RESOLVE"),
+        null,
+        AUDITOR_CONTEXT_ID,
+        detail.surfaceId(),
+        "corr-audit-detail-failure"));
+    assertEquals("accepted", failureEvidence.status());
+    assertEquals("surface-audit-trace-failure-evidence", failureEvidence.resultSurface().surfaceId());
+    assertTrue(failureEvidence.resultSurface().toString().contains("[REDACTED]"));
+    assertBrowserSafe(failureEvidence.resultSurface());
+
+    var guide = runAction(new CapabilityActionRequest(
+        "action-audit-trace-investigation-guide",
+        "action-audit-trace-investigation-guide",
+        "audit.trace.investigationGuide.read",
+        "audit.trace.investigationGuide.read",
+        Map.of("traceId", traceId),
+        null,
+        AUDITOR_CONTEXT_ID,
+        detail.surfaceId(),
+        "corr-audit-detail-guide"));
+    assertEquals("accepted", guide.status());
+    assertEquals("surface-audit-trace-investigation-guide", guide.resultSurface().surfaceId());
+    assertTrue(guide.resultSurface().toString().contains("Continue only with backend-authorized"));
+    assertBrowserSafe(guide.resultSurface());
+
+    var export = runAction(new CapabilityActionRequest(
+        "action-audit-trace-request-redacted-export",
+        "action-audit-trace-request-redacted-export",
+        "audit.trace.export.request",
+        "audit.trace.export.request",
+        Map.of("format", "jsonl-redacted", "reason", "Detail runtime smoke export for a visible trace only."),
+        "idem-audit-detail-export",
+        AUDITOR_CONTEXT_ID,
+        detail.surfaceId(),
+        "corr-audit-detail-export"));
+    assertEquals("accepted", export.status());
+    assertEquals("surface-audit-trace-export-request", export.resultSurface().surfaceId());
+    assertEquals("approval_required", export.resultSurface().data().get("status"));
+    assertBrowserSafe(export.resultSurface());
+
+    var note = runAction(new CapabilityActionRequest(
+        "action-audit-trace-append-investigation-note",
+        "action-audit-trace-append-investigation-note",
+        "audit.trace.investigation_note.append",
+        "audit.trace.investigation_note.append",
+        Map.of("traceId", traceId, "note", "Investigated provider api_key=secret without exposing it."),
+        "idem-audit-detail-note",
+        AUDITOR_CONTEXT_ID,
+        detail.surfaceId(),
+        "corr-audit-detail-note"));
+    assertEquals("recorded", note.status());
+    assertEquals("surface-audit-trace-investigation-note", note.resultSurface().surfaceId());
+    assertEquals("recorded", note.resultSurface().data().get("status"));
+    assertTrue(note.resultSurface().toString().contains("do not mutate source traces"));
+    assertBrowserSafe(note.resultSurface());
+
+    var searchReturn = runAction(new CapabilityActionRequest(
+        "action-audit-trace-search",
+        "action-audit-trace-search",
+        "audit.trace.search",
+        "audit.trace.search",
+        Map.of("filter", traceId, "pageSize", 5),
+        null,
+        AUDITOR_CONTEXT_ID,
+        detail.surfaceId(),
+        "corr-audit-detail-search-return"));
+    assertEquals("accepted", searchReturn.status());
+    assertEquals("surface-audit-trace-search", searchReturn.resultSurface().surfaceId());
+    assertBrowserSafe(searchReturn.resultSurface());
+
+    var dashboardReturn = runAction(new CapabilityActionRequest(
+        "action-audit-trace-dashboard",
+        "action-audit-trace-dashboard",
+        "audit.trace.dashboard.read",
+        "audit.trace.dashboard.read",
+        null,
+        null,
+        AUDITOR_CONTEXT_ID,
+        detail.surfaceId(),
+        "corr-audit-detail-dashboard-return"));
+    assertEquals("accepted", dashboardReturn.status());
+    assertEquals("surface-audit-trace-dashboard", dashboardReturn.resultSurface().surfaceId());
+    assertBrowserSafe(dashboardReturn.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-audit-trace-detail",
+        "corr-audit-detail-member-denied",
+        "workos-audit-member",
+        "member-audit@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Audit/Trace detail evidence.");
+
+    assertThrows(RuntimeException.class, () -> runActionAs(
+        new CapabilityActionRequest(
+            "action-audit-trace-detail",
+            "action-audit-trace-detail",
+            "audit.trace.detail.read",
+            "audit.trace.detail.read",
+            Map.of("traceId", traceId),
+            null,
+            MEMBER_CONTEXT_ID,
+            detail.surfaceId(),
+            "corr-audit-detail-member-action-denied"),
+        "workos-audit-member",
+        "member-audit@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not invoke the Audit/Trace detail action.");
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-audit-trace-detail",
+        "action-audit-trace-detail",
+        "audit.trace.detail.read",
+        "audit.trace.detail.read",
+        Map.of("tenantId", "tenant-other", "traceId", traceId),
+        null,
+        AUDITOR_CONTEXT_ID,
+        detail.surfaceId(),
+        "corr-audit-detail-cross-tenant-denied")), "Cross-tenant Audit/Trace detail reads must fail closed without hidden evidence enumeration.");
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-audit-trace-detail",
+        "corr-audit-detail-disabled-denied",
+        "workos-audit-disabled",
+        "disabled-audit@example.test",
+        "Disabled Auditor",
+        DISABLED_CONTEXT_ID), "Disabled accounts must not resolve an Audit/Trace detail AuthContext.");
+  }
+
+  @Test
   void protectedAuditTraceDashboardDeniesUnauthorizedAndDisabledContextsSafelyWhileScopingCustomers() throws Exception {
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-audit-trace-dashboard",
