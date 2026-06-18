@@ -5618,7 +5618,7 @@
 
 ### TASK-FSCT-159: Verify or complete runtime testing for `surface-agent-deactivation-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-158]
 - surface id: `surface-agent-deactivation-confirmation`
@@ -5652,6 +5652,7 @@
   - purpose: Deactivation confirmation surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-deactivation-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-deactivation-confirmation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added `AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentDeactivationConfirmationRuntimeTestingPath` to exercise the Akka-hosted protected `/api/workstream/surfaces/surface-agent-deactivation-confirmation` and `/api/workstream/actions` paths with JWT/selected AuthContext. Coverage includes missing-bearer rejection, tenant-admin deactivation confirmation payload/actions, detail route opening, no-op refresh, acknowledgement and reason validation, cancel/no-mutation, proposal/trace routing, backend lifecycle transition to `AgentLifecycleStatus.DISABLED` without source-artifact/provider/tenant-override deletion, idempotent repeat confirmation, already-deactivated disabled-confirm affordance, regular-member and customer-scoped denials, trace/correlation evidence, provider-success-not-applicable/no-fake-success semantics, and browser-safe redaction. runtime evidence: readiness level `runtime-ready` for testing scope; commands passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentDeactivationConfirmationRuntimeTestingPath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`
 
 ### TASK-FSCT-160: Verify or complete app-description specification for `surface-agent-rollback-confirmation`
 

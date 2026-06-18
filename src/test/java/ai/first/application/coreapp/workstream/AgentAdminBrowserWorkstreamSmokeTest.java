@@ -13,7 +13,10 @@ import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActio
 import ai.first.application.coreapp.workstream.WorkstreamService.SurfaceEnvelope;
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamBootstrapResponse;
 import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
+import ai.first.application.foundation.agent.AkkaAgentBehaviorRepository;
 import ai.first.application.foundation.identity.AkkaIdentityRepository;
+import ai.first.domain.foundation.agent.AgentDefinition;
+import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.identity.Customer;
@@ -1500,6 +1503,241 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
 
   @Test
   @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiExercisesAgentDeactivationConfirmationRuntimeTestingPath() throws Exception {
+    var agentRepository = new AkkaAgentBehaviorRepository(componentClient);
+    try {
+      assertThrows(IllegalArgumentException.class, () -> httpClient
+          .GET("/api/workstream/surfaces/surface-agent-deactivation-confirmation")
+          .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+          .responseBodyAs(String.class)
+          .invoke(), "Protected Agent Admin deactivation confirmation must reject missing bearer tokens.");
+      assertThrows(IllegalArgumentException.class, () -> httpClient
+          .POST("/api/workstream/actions")
+          .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+          .addHeader("X-Correlation-Id", "corr-agent-deactivation-missing-bearer-action")
+          .withRequestBody(new CapabilityActionRequest(
+              "action-agent-deactivation-confirm",
+              "action-agent-deactivation-confirm",
+              "agent.definitions.manage",
+              "agent.definitions.manage",
+              Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "DEACTIVATE", "reason", "Retire unsafe behavior"),
+              "idem-agent-deactivation-missing-bearer",
+              ADMIN_CONTEXT_ID,
+              "surface-agent-deactivation-confirmation",
+              "corr-agent-deactivation-missing-bearer-action"))
+          .responseBodyAs(String.class)
+          .invoke(), "Protected Agent Admin deactivation confirmation action path must reject missing bearer tokens.");
+
+      var directDeactivation = getSurface("surface-agent-deactivation-confirmation", "corr-agent-deactivation-direct");
+      assertEquals("surface-agent-deactivation-confirmation", directDeactivation.surfaceId());
+      assertEquals("lifecycle-confirmation", directDeactivation.surfaceType());
+      assertEquals("agent_admin.deactivation_confirmation.v1", directDeactivation.data().get("surfaceContract"));
+      assertEquals("corr-agent-deactivation-direct", directDeactivation.correlationId());
+      assertEquals(Boolean.TRUE, directDeactivation.data().get("noDirectMutation"));
+      assertEquals(Boolean.TRUE, directDeactivation.data().get("noFakeSuccess"));
+      assertFalse(directDeactivation.traceIds().isEmpty());
+      assertTrue(directDeactivation.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-agent-deactivation-confirmation")));
+      assertTrue(directDeactivation.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-deactivation-refresh") && action.resultSurface().updateSurfaceId().equals("surface-agent-deactivation-confirmation")));
+      assertTrue(directDeactivation.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-deactivation-confirm") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail")));
+      assertTrue(directDeactivation.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-deactivation-cancel") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail")));
+      assertTrue(directDeactivation.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-deactivation-open-proposal") && action.resultSurface().updateSurfaceId().equals("surface-agent-behavior-proposal")));
+      assertTrue(directDeactivation.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-deactivation-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+
+      var deactivationSummary = (Map<String, Object>) directDeactivation.data().get("deactivationSummary");
+      assertEquals("surface-agent-deactivation-confirmation", deactivationSummary.get("surfaceId"));
+      assertEquals("agent_admin.deactivation_confirmation.v1", deactivationSummary.get("contract"));
+      assertEquals("deactivated", deactivationSummary.get("proposedLifecycleState"));
+      assertEquals("current_active_version", deactivationSummary.get("approvedVersionLabel"));
+      var scopeSummary = (Map<String, Object>) directDeactivation.data().get("scopeSummary");
+      assertEquals(ADMIN_CONTEXT_ID, scopeSummary.get("selectedAuthContextId"));
+      assertEquals("tenant", scopeSummary.get("scopeType"));
+      assertEquals(Boolean.TRUE, scopeSummary.get("governanceAuthorized"));
+      assertEquals("visible", scopeSummary.get("visibilityDecision"));
+      var policyAndApprovalSummary = (Map<String, Object>) directDeactivation.data().get("policyAndApprovalSummary");
+      assertEquals("deactivation-allowed-with-confirmation", policyAndApprovalSummary.get("humanApprovalStatus"));
+      assertEquals("not_applicable_no_provider_success_claim", policyAndApprovalSummary.get("providerRuntimeReadiness"));
+      assertEquals(Boolean.TRUE, policyAndApprovalSummary.get("noFakeSuccess"));
+      var confirmationState = (Map<String, Object>) directDeactivation.data().get("confirmationState");
+      assertEquals(Boolean.TRUE, confirmationState.get("acknowledgementRequired"));
+      assertEquals(Boolean.TRUE, confirmationState.get("reasonRequired"));
+      assertEquals("DEACTIVATE", confirmationState.get("requiredAcknowledgementText"));
+      assertEquals("not_applicable", confirmationState.get("providerFailClosedState"));
+      assertTrue(((List<String>) confirmationState.get("disabledActions")).isEmpty());
+      assertTrue(directDeactivation.toString().contains("rawPromptText=omitted"));
+      assertTrue(directDeactivation.toString().contains("rawSkillReferenceBodies=omitted"));
+      assertTrue(directDeactivation.toString().contains("providerCredentials=omitted"));
+      assertTrue(directDeactivation.toString().contains("bearerTokens=omitted"));
+      assertBrowserSafe(directDeactivation);
+
+      var deactivationFromDetail = assertDetailActionRoutes(
+          "action-agent-detail-open-deactivation",
+          "agent.definitions.manage",
+          "surface-agent-deactivation-confirmation",
+          "approval-required",
+          "corr-agent-deactivation-from-detail");
+      assertTrue(deactivationFromDetail.resultSurface().toString().contains("agent_admin.deactivation_confirmation.v1"));
+      assertTrue(deactivationFromDetail.resultSurface().toString().contains("noDirectMutation=true"));
+      assertTrue(deactivationFromDetail.resultSurface().toString().contains("noFakeSuccess=true"));
+
+      var refresh = runAction(new CapabilityActionRequest(
+          "action-agent-deactivation-refresh",
+          "action-agent-deactivation-refresh",
+          "agent.definitions.manage",
+          "agent.definitions.manage",
+          Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+          null,
+          ADMIN_CONTEXT_ID,
+          directDeactivation.surfaceId(),
+          "corr-agent-deactivation-refresh"));
+      assertEquals("no-op", refresh.status());
+      assertEquals("surface-agent-deactivation-confirmation", refresh.resultSurface().surfaceId());
+      assertEquals("corr-agent-deactivation-refresh", refresh.correlationId());
+      assertTrue(refresh.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-deactivation-refresh")));
+      assertTrue(refresh.message().contains("no lifecycle mutation occurred"));
+      assertBrowserSafe(refresh.resultSurface());
+
+      var missingAck = runAction(new CapabilityActionRequest(
+          "action-agent-deactivation-confirm",
+          "action-agent-deactivation-confirm",
+          "agent.definitions.manage",
+          "agent.definitions.manage",
+          Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "reason", "Retire unsafe behavior"),
+          "idem-agent-deactivation-missing-ack",
+          ADMIN_CONTEXT_ID,
+          directDeactivation.surfaceId(),
+          "corr-agent-deactivation-missing-ack"));
+      assertEquals("validation-error", missingAck.status());
+      assertEquals("surface-agent-deactivation-confirmation", missingAck.resultSurface().surfaceId());
+      assertTrue(missingAck.message().contains("requires the explicit DEACTIVATE acknowledgement"));
+      assertTrue(missingAck.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-deactivation-acknowledgement-required")));
+      assertBrowserSafe(missingAck.resultSurface());
+
+      var missingReason = runAction(new CapabilityActionRequest(
+          "action-agent-deactivation-confirm",
+          "action-agent-deactivation-confirm",
+          "agent.definitions.manage",
+          "agent.definitions.manage",
+          Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "DEACTIVATE"),
+          "idem-agent-deactivation-missing-reason",
+          ADMIN_CONTEXT_ID,
+          directDeactivation.surfaceId(),
+          "corr-agent-deactivation-missing-reason"));
+      assertEquals("validation-error", missingReason.status());
+      assertEquals("surface-agent-deactivation-confirmation", missingReason.resultSurface().surfaceId());
+      assertTrue(missingReason.message().contains("requires a browser-safe admin reason"));
+      assertTrue(missingReason.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-deactivation-reason-required")));
+      assertBrowserSafe(missingReason.resultSurface());
+
+      var cancel = runAction(new CapabilityActionRequest(
+          "action-agent-deactivation-cancel",
+          "action-agent-deactivation-cancel",
+          "agent.definitions.manage",
+          "agent.definitions.manage",
+          Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+          "idem-agent-deactivation-cancel",
+          ADMIN_CONTEXT_ID,
+          directDeactivation.surfaceId(),
+          "corr-agent-deactivation-cancel"));
+      assertEquals("accepted", cancel.status());
+      assertEquals("surface-agent-admin-detail", cancel.resultSurface().surfaceId());
+      assertTrue(cancel.message().contains("lifecycle state was not changed"));
+      assertTrue(cancel.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-deactivation-cancel")));
+      assertBrowserSafe(cancel.resultSurface());
+
+      var proposal = runAction(new CapabilityActionRequest(
+          "action-agent-deactivation-open-proposal",
+          "action-agent-deactivation-open-proposal",
+          "agent.definitions.manage",
+          "agent.definitions.manage",
+          Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "proposalId", "proposal-agent-admin-deactivation-required"),
+          null,
+          ADMIN_CONTEXT_ID,
+          directDeactivation.surfaceId(),
+          "corr-agent-deactivation-proposal"));
+      assertEquals("accepted", proposal.status());
+      assertEquals("surface-agent-behavior-proposal", proposal.resultSurface().surfaceId());
+      assertBrowserSafe(proposal.resultSurface());
+
+      var trace = runAction(new CapabilityActionRequest(
+          "action-agent-deactivation-open-trace",
+          "action-agent-deactivation-open-trace",
+          "audit.trace.read",
+          "audit.trace.read",
+          Map.of("traceId", "trace-agent-definition-deactivate-confirmation"),
+          null,
+          ADMIN_CONTEXT_ID,
+          directDeactivation.surfaceId(),
+          "corr-agent-deactivation-trace"));
+      assertEquals("accepted", trace.status());
+      assertEquals("surface-agent-admin-trace", trace.resultSurface().surfaceId());
+      assertTrue(trace.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-deactivation-open-trace")));
+      assertBrowserSafe(trace.resultSurface());
+
+      var confirmed = runAction(new CapabilityActionRequest(
+          "action-agent-deactivation-confirm",
+          "action-agent-deactivation-confirm",
+          "agent.definitions.manage",
+          "agent.definitions.manage",
+          Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "DEACTIVATE", "reason", "Retire unsafe behavior"),
+          "idem-agent-deactivation-confirm",
+          ADMIN_CONTEXT_ID,
+          directDeactivation.surfaceId(),
+          "corr-agent-deactivation-confirm"));
+      assertEquals("accepted", confirmed.status());
+      assertEquals("surface-agent-admin-detail", confirmed.resultSurface().surfaceId());
+      assertTrue(confirmed.message().contains("no prompt, skill, reference, provider, or tenant override artifacts were deleted"));
+      assertTrue(confirmed.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-deactivation-confirm")));
+      assertEquals(AgentLifecycleStatus.DISABLED, agentRepository.agentDefinition(TENANT_ID, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+      assertBrowserSafe(confirmed.resultSurface());
+
+      var repeated = runAction(new CapabilityActionRequest(
+          "action-agent-deactivation-confirm",
+          "action-agent-deactivation-confirm",
+          "agent.definitions.manage",
+          "agent.definitions.manage",
+          Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "DEACTIVATE", "reason", "Retire unsafe behavior"),
+          "idem-agent-deactivation-confirm",
+          ADMIN_CONTEXT_ID,
+          directDeactivation.surfaceId(),
+          "corr-agent-deactivation-confirm-repeat"));
+      assertEquals("no-op", repeated.status());
+      assertEquals("surface-agent-admin-detail", repeated.resultSurface().surfaceId());
+      assertTrue(repeated.message().contains("already deactivated"));
+      assertBrowserSafe(repeated.resultSurface());
+
+      var alreadyDeactivated = getSurface("surface-agent-deactivation-confirmation", "corr-agent-deactivation-already-disabled");
+      assertEquals("surface-agent-deactivation-confirmation", alreadyDeactivated.surfaceId());
+      assertEquals("disabled", alreadyDeactivated.data().get("currentStatus"));
+      var alreadyPolicy = (Map<String, Object>) alreadyDeactivated.data().get("policyAndApprovalSummary");
+      assertEquals("already-deactivated/no-op", alreadyPolicy.get("humanApprovalStatus"));
+      var alreadyState = (Map<String, Object>) alreadyDeactivated.data().get("confirmationState");
+      assertTrue(((List<String>) alreadyState.get("disabledActions")).contains("confirm"));
+      assertTrue(alreadyDeactivated.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-deactivation-confirm") && action.disabled() != null));
+      assertBrowserSafe(alreadyDeactivated);
+
+      assertThrows(RuntimeException.class, () -> getSurfaceAs(
+          "surface-agent-deactivation-confirmation",
+          "corr-agent-deactivation-member-denied",
+          "workos-member",
+          "member@example.test",
+          "Member User",
+          MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin deactivation confirmation or lifecycle state.");
+      assertThrows(RuntimeException.class, () -> getSurfaceAs(
+          "surface-agent-deactivation-confirmation",
+          "corr-agent-deactivation-customer-denied",
+          "workos-customer",
+          "customer@example.test",
+          "Customer Admin",
+          CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin deactivation confirmation, hidden agent ids, or tenant governance state.");
+    } finally {
+      agentRepository.agentDefinition(TENANT_ID, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID)
+          .filter(agent -> agent.status() == AgentLifecycleStatus.DISABLED)
+          .ifPresent(agent -> agentRepository.saveAgentDefinition(agentWithStatus(agent, AgentLifecycleStatus.ACTIVE)));
+    }
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
   void protectedWorkstreamApiExercisesAgentAdminTestConsoleRuntimeTestingPath() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-agent-test-console")
@@ -1719,6 +1957,33 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
 
   private SurfaceEnvelope getSurface(String surfaceId, String correlationId) throws Exception {
     return getSurfaceAs(surfaceId, correlationId, "workos-admin", "admin@example.test", "Tenant Admin", ADMIN_CONTEXT_ID);
+  }
+
+  private AgentDefinition agentWithStatus(AgentDefinition agent, AgentLifecycleStatus status) {
+    return new AgentDefinition(
+        agent.tenantId(),
+        agent.agentDefinitionId(),
+        agent.displayName(),
+        agent.description(),
+        agent.placement(),
+        agent.functionalAreaId(),
+        agent.authorityLevel(),
+        status,
+        agent.promptDocumentId(),
+        agent.activePromptVersion(),
+        agent.skillManifestId(),
+        agent.activeSkillManifestVersion(),
+        agent.referenceManifestId(),
+        agent.activeReferenceManifestVersion(),
+        agent.toolBoundaryId(),
+        agent.activeToolBoundaryVersion(),
+        agent.modelConfigRefId(),
+        agent.modelPolicyRefId(),
+        agent.runtimeClassRef(),
+        agent.traceRequirements(),
+        agent.seedProvenance(),
+        agent.createdAt(),
+        agent.updatedAt());
   }
 
   private CapabilityActionResult assertDetailActionRoutes(String actionId, String capabilityId, String expectedSurfaceId, String expectedStatus, String correlationId) throws Exception {
