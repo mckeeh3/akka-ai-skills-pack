@@ -7950,7 +7950,7 @@
 
 ### TASK-FSCT-225: Verify or complete runtime testing for `surface-governance-policy-impact-analysis-task`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-224]
 - surface id: `surface-governance-policy-impact-analysis-task`
@@ -7984,6 +7984,7 @@
   - purpose: Impact-analysis task progress/status.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-impact-analysis-task`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-impact-analysis-task`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added dedicated protected Akka-hosted Governance/Policy impact-analysis task runtime smoke coverage in `GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicyImpactAnalysisTaskRuntimePath`; evidence covers `/ui`, protected direct surface and action routes, missing-bearer rejection, fail-closed direct readiness, missing-task system-message recovery, tenant-admin start/read/cancel, provider/runtime blocked `noFakeSuccess`/`noDirectMutation`, idempotent start replay, advisory-only repeat cancel, cross-tenant no-enumeration denial, member capability denial, trace/correlation links, browser-safe secret/provider/tool boundaries, and frontend contract/typecheck coverage. Runtime readiness level: `runtime-ready`; commands passed: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicyImpactAnalysisTaskRuntimePath test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-226: Verify or complete app-description specification for `surface-governance-policy-impact-analysis-result`
 

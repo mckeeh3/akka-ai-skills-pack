@@ -907,6 +907,215 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiExercisesGovernancePolicyImpactAnalysisTaskRuntimePath() throws Exception {
+    var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
+    assertTrue(shell.status().isSuccess(), "Hosted /ui shell must load before the impact-analysis task is exercised through browser API paths.");
+    assertTrue(shell.body().contains("<div id=\"root\"></div>"));
+    assertBrowserSafe(shell.body());
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-governance-policy-impact-analysis-task")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy impact-analysis task surface path must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-governance-impact-task-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-governance-policy-start-impact-analysis",
+            "action-governance-policy-start-impact-analysis",
+            "governance.policy.impact_analysis.start",
+            "governance.policy.impact_analysis.start",
+            Map.of("proposalId", "proposal-missing"),
+            "idem-governance-impact-task-missing-bearer",
+            ADMIN_CONTEXT_ID,
+            "surface-governance-policy-impact-analysis-task",
+            "corr-governance-impact-task-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy impact-analysis task action path must reject missing bearer tokens.");
+
+    var directReadiness = getSurface("surface-governance-policy-impact-analysis-task", "corr-governance-impact-task-direct-readiness");
+    assertEquals("surface-governance-policy-impact-analysis-task", directReadiness.surfaceId());
+    assertEquals("workflow-status", directReadiness.surfaceType());
+    assertEquals("governance.policy.impact_analysis.task.v1", directReadiness.data().get("surfaceContract"));
+    assertEquals("blocked_provider_or_runtime", directReadiness.data().get("status"));
+    assertEquals("provider_runtime_blocked_fail_closed", directReadiness.data().get("readinessDecision"));
+    assertEquals(true, directReadiness.data().get("noFakeSuccess"));
+    assertEquals(true, directReadiness.data().get("noDirectMutation"));
+    assertTrue(directReadiness.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-start-impact-analysis") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-impact-analysis-task")));
+    assertBrowserSafe(directReadiness);
+
+    var draft = runAction(new CapabilityActionRequest(
+        "action-governance-policy-draft-proposal",
+        "action-governance-policy-draft-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("title", "Impact task smoke proposal", "rationale", "exercise durable impact-analysis task runtime path", "proposedContent", "Keep impact analysis advisory, traceable, and fail-closed when provider/runtime is unavailable."),
+        "idem-governance-impact-task-draft",
+        ADMIN_CONTEXT_ID,
+        "surface-governance-policy-proposal",
+        "corr-governance-impact-task-draft"));
+    assertEquals("accepted", draft.status());
+    assertBrowserSafe(draft.resultSurface());
+    var proposalId = String.valueOf(draft.resultSurface().data().get("proposalId"));
+
+    var missingTask = runAction(new CapabilityActionRequest(
+        "action-governance-policy-read-impact-analysis",
+        "action-governance-policy-read-impact-analysis",
+        "governance.policy.impact_analysis.read",
+        "governance.policy.impact_analysis.read",
+        Map.of("taskId", "governance-impact-missing"),
+        null,
+        ADMIN_CONTEXT_ID,
+        directReadiness.surfaceId(),
+        "corr-governance-impact-task-missing-read"));
+    assertEquals("denied", missingTask.status());
+    assertEquals("surface-governance-policy-system-message", missingTask.resultSurface().surfaceId());
+    assertEquals(true, missingTask.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, missingTask.resultSurface().data().get("noDirectMutation"));
+    assertBrowserSafe(missingTask.resultSurface());
+
+    var started = runAction(new CapabilityActionRequest(
+        "action-governance-policy-start-impact-analysis",
+        "action-governance-policy-start-impact-analysis",
+        "governance.policy.impact_analysis.start",
+        "governance.policy.impact_analysis.start",
+        Map.of("proposalId", proposalId, "scope", "task-smoke", "reason", "verify task start/read/cancel provider fail-closed path", "evidenceRefs", List.of("evidence:task-smoke")),
+        "idem-governance-impact-task-start",
+        ADMIN_CONTEXT_ID,
+        directReadiness.surfaceId(),
+        "corr-governance-impact-task-start"));
+    assertEquals("blocked_provider_or_runtime", started.status());
+    assertEquals("surface-governance-policy-impact-analysis-task", started.resultSurface().surfaceId());
+    assertEquals("workflow-status", started.resultSurface().surfaceType());
+    assertEquals("governance.policy.impact_analysis.task.v1", started.resultSurface().data().get("surfaceContract"));
+    assertEquals("blocked_provider_or_runtime", started.resultSurface().data().get("status"));
+    assertEquals(true, started.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, started.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, started.resultSurface().data().get("activationBlockedUntilHumanDecision"));
+    assertTrue(started.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-impact")));
+    assertTrue(started.resultSurface().toString().contains("AutonomousAgent"));
+    assertTrue(started.resultSurface().toString().contains("provider/runtime"));
+    assertTrue(started.resultSurface().toString().contains("raw prompts"));
+    assertTrue(started.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-read-impact-analysis") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-impact-analysis-task")));
+    assertTrue(started.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-cancel-impact-analysis") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-impact-analysis-task")));
+    var impactTaskId = String.valueOf(started.resultSurface().data().get("impactTaskId"));
+    assertNotNull(impactTaskId);
+    assertBrowserSafe(started.resultSurface());
+
+    var replay = runAction(new CapabilityActionRequest(
+        "action-governance-policy-start-impact-analysis",
+        "action-governance-policy-start-impact-analysis",
+        "governance.policy.impact_analysis.start",
+        "governance.policy.impact_analysis.start",
+        Map.of("proposalId", proposalId, "scope", "task-smoke-replay", "reason", "idempotent replay must not duplicate impact tasks"),
+        "idem-governance-impact-task-start",
+        ADMIN_CONTEXT_ID,
+        directReadiness.surfaceId(),
+        "corr-governance-impact-task-start-replay"));
+    assertEquals("blocked_provider_or_runtime", replay.status());
+    assertEquals(impactTaskId, replay.resultSurface().data().get("impactTaskId"));
+    assertBrowserSafe(replay.resultSurface());
+
+    var read = runAction(new CapabilityActionRequest(
+        "action-governance-policy-read-impact-analysis",
+        "action-governance-policy-read-impact-analysis",
+        "governance.policy.impact_analysis.read",
+        "governance.policy.impact_analysis.read",
+        Map.of("impactTaskId", impactTaskId),
+        null,
+        ADMIN_CONTEXT_ID,
+        started.resultSurface().surfaceId(),
+        "corr-governance-impact-task-read"));
+    assertEquals("accepted", read.status());
+    assertEquals(impactTaskId, read.resultSurface().data().get("impactTaskId"));
+    assertEquals("blocked_provider_or_runtime", read.resultSurface().data().get("status"));
+    assertTrue(read.resultSurface().toString().contains("traceLinks"));
+    assertBrowserSafe(read.resultSurface());
+
+    var cancel = runAction(new CapabilityActionRequest(
+        "action-governance-policy-cancel-impact-analysis",
+        "action-governance-policy-cancel-impact-analysis",
+        "governance.policy.impact_analysis.cancel",
+        "governance.policy.impact_analysis.cancel",
+        Map.of("impactTaskId", impactTaskId, "reason", "task smoke cancellation verifies advisory-only lifecycle"),
+        "idem-governance-impact-task-cancel",
+        ADMIN_CONTEXT_ID,
+        started.resultSurface().surfaceId(),
+        "corr-governance-impact-task-cancel"));
+    assertEquals("accepted", cancel.status());
+    assertEquals("cancelled", cancel.resultSurface().data().get("status"));
+    assertEquals(true, cancel.resultSurface().data().get("noDirectMutation"));
+    assertTrue(cancel.message().contains("policy proposal unchanged"));
+    assertTrue(cancel.resultSurface().toString().contains("cancelled"));
+    assertBrowserSafe(cancel.resultSurface());
+
+    var repeatCancel = runAction(new CapabilityActionRequest(
+        "action-governance-policy-cancel-impact-analysis",
+        "action-governance-policy-cancel-impact-analysis",
+        "governance.policy.impact_analysis.cancel",
+        "governance.policy.impact_analysis.cancel",
+        Map.of("impactTaskId", impactTaskId, "reason", "repeat cancel must remain idempotent"),
+        "idem-governance-impact-task-cancel-repeat",
+        ADMIN_CONTEXT_ID,
+        cancel.resultSurface().surfaceId(),
+        "corr-governance-impact-task-cancel-repeat"));
+    assertEquals("accepted", repeatCancel.status());
+    assertEquals("cancelled", repeatCancel.resultSurface().data().get("status"));
+    assertBrowserSafe(repeatCancel.resultSurface());
+
+    var repository = new AkkaIdentityRepository(componentClient);
+    repository.saveTenant(new Tenant("tenant-governance-other", "Governance Other Tenant", true));
+    repository.saveCustomer(new Customer("tenant-governance-other", "customer-governance-other", "Governance Other Customer", true));
+    seedIdentity(repository, "governance-other-admin@example.test", "Governance Other Admin", "membership-governance-other-admin", List.of(FoundationRole.TENANT_ADMIN), "tenant-governance-other", "customer-governance-other");
+
+    var crossTenantDenied = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-read-impact-analysis",
+        "action-governance-policy-read-impact-analysis",
+        "governance.policy.impact_analysis.read",
+        "governance.policy.impact_analysis.read",
+        Map.of("impactTaskId", impactTaskId),
+        null,
+        "membership-governance-other-admin",
+        started.resultSurface().surfaceId(),
+        "corr-governance-impact-task-cross-tenant-denied"),
+        "workos-governance-other-admin",
+        "governance-other-admin@example.test",
+        "Governance Other Admin",
+        "membership-governance-other-admin");
+    assertEquals("denied", crossTenantDenied.status());
+    assertEquals("surface-governance-policy-system-message", crossTenantDenied.resultSurface().surfaceId());
+    assertTrue(crossTenantDenied.resultSurface().toString().contains("not-found") || crossTenantDenied.resultSurface().toString().contains("forbidden"));
+    assertEquals(true, crossTenantDenied.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, crossTenantDenied.resultSurface().data().get("noDirectMutation"));
+    assertBrowserSafe(crossTenantDenied.resultSurface());
+
+    var memberDenied = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-read-impact-analysis",
+        "action-governance-policy-read-impact-analysis",
+        "governance.policy.impact_analysis.read",
+        "governance.policy.impact_analysis.read",
+        Map.of("impactTaskId", impactTaskId),
+        null,
+        MEMBER_CONTEXT_ID,
+        started.resultSurface().surfaceId(),
+        "corr-governance-impact-task-member-denied"),
+        "workos-governance-member",
+        "governance-member@example.test",
+        "Governance Member",
+        MEMBER_CONTEXT_ID);
+    assertEquals("denied", memberDenied.status());
+    assertEquals("surface-governance-policy-system-message", memberDenied.resultSurface().surfaceId());
+    assertTrue(memberDenied.resultSurface().toString().contains("CAPABILITY_FORBIDDEN"));
+    assertEquals(true, memberDenied.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, memberDenied.resultSurface().data().get("noDirectMutation"));
+    assertBrowserSafe(memberDenied.resultSurface());
+  }
+
+  @Test
   void protectedWorkstreamApiExercisesGovernancePolicyDecisionRuntimePath() throws Exception {
     var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
     assertTrue(shell.status().isSuccess(), "Hosted /ui shell must load before the decision surface is exercised through browser API paths.");
