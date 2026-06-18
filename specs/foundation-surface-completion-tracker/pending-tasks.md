@@ -5550,7 +5550,7 @@
 
 ### TASK-FSCT-157: Verify or complete app-description specification for `surface-agent-deactivation-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-deactivation-confirmation`
@@ -5579,6 +5579,7 @@
   - purpose: Deactivation confirmation surface.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-deactivation-confirmation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded the Agent Admin deactivation confirmation app-description with identity/ownership/placement, browser-safe payload schema, diagnostics/redaction boundaries, governed action mappings, selected AuthContext and tenant/organization authorization rules, audit/work trace requirements, lifecycle/provider/tool/idempotency states, accessibility/style bindings, mutation boundaries, tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-158: Verify or complete runtime implementation for `surface-agent-deactivation-confirmation`
 
