@@ -17,6 +17,7 @@ import ai.first.application.foundation.agent.AgentRuntimeService;
 import ai.first.application.foundation.agent.AkkaAgentBehaviorRepository;
 import ai.first.application.foundation.identity.AkkaIdentityRepository;
 import ai.first.application.foundation.identity.StarterSecurityComponents;
+import ai.first.application.foundation.workstream.AkkaWorkstreamLogRepository;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.BehaviorChangeProposal;
@@ -1300,6 +1301,301 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "customer@example.test",
         "Customer Admin",
         CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin model-reference rows, provider aliases, hidden ids, or tenant governance state.");
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiExercisesAgentBehaviorProposalRuntimeTestingPath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-behavior-proposal")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin behavior proposal surface must reject missing bearer tokens.");
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-agent-behavior-proposal-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-agent-behavior-proposal-refresh",
+            "action-agent-behavior-proposal-refresh",
+            "agent_admin.submit_behavior_change_for_review",
+            "agent_admin.submit_behavior_change_for_review",
+            null,
+            null,
+            ADMIN_CONTEXT_ID,
+            "surface-agent-behavior-proposal",
+            "corr-agent-behavior-proposal-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin behavior proposal action path must reject missing bearer tokens.");
+
+
+    var workstreamService = StarterSecurityComponents.workstreamService(componentClient, new AkkaWorkstreamLogRepository(componentClient));
+    var adminIdentity = new WorkosIdentity("workos-admin", "admin@example.test", "Tenant Admin");
+    var bindDashboard = workstreamService.surface(adminIdentity, ADMIN_CONTEXT_ID, "surface-agent-admin-dashboard", "corr-agent-behavior-proposal-bind");
+    assertEquals("surface-agent-admin-dashboard", bindDashboard.surfaceId());
+    var runtimeService = StarterSecurityComponents.agentRuntimeService();
+    var adminContext = StarterSecurityComponents.authContextResolver()
+        .resolveMe(new WorkosIdentity("workos-admin", "admin@example.test", "Tenant Admin"), ADMIN_CONTEXT_ID, "corr-agent-behavior-proposal-seed-context")
+        .selectedContext();
+    var draft = runtimeService.proposeBehaviorChange(new AgentRuntimeService.BehaviorChangeRequest(
+        TENANT_ID,
+        AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
+        adminContext,
+        BehaviorChangeProposal.TargetArtifact.PROMPT,
+        "Behavior proposal smoke draft: preserve tenant scope, audit traces, and no direct activation.",
+        List.of(),
+        "Exercise behavior proposal decision card through protected Workstream API path.",
+        "corr-agent-behavior-proposal-seed-draft"));
+    assertEquals(BehaviorChangeProposal.Status.PROPOSED, draft.status());
+    var draftProposalId = draft.proposalId();
+
+    var directProposal = workstreamService.surface(adminIdentity, ADMIN_CONTEXT_ID, "surface-agent-behavior-proposal", "corr-agent-behavior-proposal-direct");
+    assertEquals("surface-agent-behavior-proposal", directProposal.surfaceId());
+    assertEquals("decision-card", directProposal.surfaceType());
+    assertEquals("agent_admin.behavior_proposal.v1", directProposal.data().get("surfaceContract"));
+    assertEquals("corr-agent-behavior-proposal-direct", directProposal.correlationId());
+    assertTrue(directProposal.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-agent-behavior-proposal")));
+    var proposalSummary = (Map<String, Object>) directProposal.data().get("proposalSummary");
+    assertEquals(draftProposalId, proposalSummary.get("proposalLabel"));
+    assertEquals("proposed", proposalSummary.get("proposalStatus"));
+    var scopeSummary = (Map<String, Object>) directProposal.data().get("scopeSummary");
+    assertEquals(ADMIN_CONTEXT_ID, scopeSummary.get("selectedAuthContextId"));
+    assertEquals("tenant", scopeSummary.get("scopeType"));
+    var recommendation = (Map<String, Object>) directProposal.data().get("recommendation");
+    assertEquals("submit_for_review", recommendation.get("outcome"));
+    assertEquals("blocked_provider_or_runtime", recommendation.get("providerRuntimeReadiness"));
+    assertEquals(Boolean.TRUE, recommendation.get("noFakeSuccess"));
+    var evidenceSummary = (List<Map<String, Object>>) directProposal.data().get("evidenceSummary");
+    assertTrue(evidenceSummary.stream().anyMatch(evidence -> "provider-runtime".equals(evidence.get("evidenceId")) && "blocked_provider_or_runtime".equals(evidence.get("status"))));
+    var decisionState = (Map<String, Object>) directProposal.data().get("decisionState");
+    var allowedDecisions = (List<String>) decisionState.get("allowedDecisions");
+    assertTrue(allowedDecisions.contains("action-agent-behavior-proposal-submit"));
+    var disabledActions = (List<Map<String, Object>>) directProposal.data().get("disabledActions");
+    assertTrue(disabledActions.stream().anyMatch(action -> "action-agent-behavior-proposal-approve".equals(action.get("actionId")) && "blocked_provider_or_runtime".equals(action.get("reasonCode"))));
+    assertTrue(directProposal.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-behavior-proposal-refresh") && action.resultSurface().updateSurfaceId().equals("surface-agent-behavior-proposal")));
+    assertTrue(directProposal.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-behavior-proposal-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+    assertTrue(directProposal.toString().contains("rawPromptText=omitted"));
+    assertTrue(directProposal.toString().contains("providerCredentials=omitted"));
+    assertTrue(directProposal.toString().contains("bearerTokens=omitted"));
+    assertBrowserSafe(directProposal);
+
+    var refreshed = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+        "action-agent-behavior-proposal-refresh",
+        "action-agent-behavior-proposal-refresh",
+        "agent_admin.submit_behavior_change_for_review",
+        "agent_admin.submit_behavior_change_for_review",
+        Map.of("proposalId", draftProposalId),
+        null,
+        ADMIN_CONTEXT_ID,
+        directProposal.surfaceId(),
+        "corr-agent-behavior-proposal-refresh"));
+    assertEquals("no-op", refreshed.status());
+    assertEquals("surface-agent-behavior-proposal", refreshed.resultSurface().surfaceId());
+    assertTrue(refreshed.message().contains("no source artifact or lifecycle mutation occurred"));
+    assertTrue(refreshed.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-behavior-proposal-refresh")));
+    assertBrowserSafe(refreshed.resultSurface());
+
+    var submitted = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+        "action-agent-behavior-proposal-submit",
+        "action-agent-behavior-proposal-submit",
+        "agent_admin.submit_behavior_change_for_review",
+        "agent_admin.submit_behavior_change_for_review",
+        Map.of("proposalId", draftProposalId),
+        "idem-agent-behavior-proposal-submit",
+        ADMIN_CONTEXT_ID,
+        directProposal.surfaceId(),
+        "corr-agent-behavior-proposal-submit"));
+    assertEquals("approval-required", submitted.status());
+    assertEquals("surface-agent-behavior-proposal", submitted.resultSurface().surfaceId());
+    assertTrue(submitted.message().contains("active behavior, provider configuration, and lifecycle state remain unchanged"));
+    var submittedSummary = (Map<String, Object>) submitted.resultSurface().data().get("proposalSummary");
+    assertEquals("in_review", submittedSummary.get("proposalStatus"));
+    assertBrowserSafe(submitted.resultSurface());
+
+    var repeatedSubmit = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+        "action-agent-behavior-proposal-submit",
+        "action-agent-behavior-proposal-submit",
+        "agent_admin.submit_behavior_change_for_review",
+        "agent_admin.submit_behavior_change_for_review",
+        Map.of("proposalId", draftProposalId),
+        "idem-agent-behavior-proposal-submit",
+        ADMIN_CONTEXT_ID,
+        submitted.resultSurface().surfaceId(),
+        "corr-agent-behavior-proposal-submit-repeat"));
+    assertTrue(repeatedSubmit.status().equals("no-op") || repeatedSubmit.status().equals("approval-required"));
+    assertEquals("surface-agent-behavior-proposal", repeatedSubmit.resultSurface().surfaceId());
+    assertBrowserSafe(repeatedSubmit.resultSurface());
+
+    var providerBlockedApproval = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+        "action-agent-behavior-proposal-approve",
+        "action-agent-behavior-proposal-approve",
+        "agent_admin.approve_behavior_change",
+        "agent_admin.approve_behavior_change",
+        Map.of("proposalId", draftProposalId),
+        "idem-agent-behavior-proposal-approve",
+        ADMIN_CONTEXT_ID,
+        submitted.resultSurface().surfaceId(),
+        "corr-agent-behavior-proposal-approve"));
+    assertEquals("blocked_provider_or_runtime", providerBlockedApproval.status());
+    assertEquals("surface-agent-behavior-proposal", providerBlockedApproval.resultSurface().surfaceId());
+    assertTrue(providerBlockedApproval.message().contains("no fabricated model success and no activation"));
+    assertTrue(providerBlockedApproval.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-behavior-proposal-approve-provider-blocked")));
+    assertBrowserSafe(providerBlockedApproval.resultSurface());
+
+    var rejectMissingReason = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+        "action-agent-behavior-proposal-reject",
+        "action-agent-behavior-proposal-reject",
+        "agent_admin.reject_behavior_change",
+        "agent_admin.reject_behavior_change",
+        Map.of("proposalId", draftProposalId),
+        "idem-agent-behavior-proposal-reject-missing-reason",
+        ADMIN_CONTEXT_ID,
+        submitted.resultSurface().surfaceId(),
+        "corr-agent-behavior-proposal-reject-missing-reason"));
+    assertEquals("validation-error", rejectMissingReason.status());
+    assertTrue(rejectMissingReason.message().contains("requires a browser-safe human-readable reason"));
+    assertBrowserSafe(rejectMissingReason.resultSurface());
+
+    var rejected = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+        "action-agent-behavior-proposal-reject",
+        "action-agent-behavior-proposal-reject",
+        "agent_admin.reject_behavior_change",
+        "agent_admin.reject_behavior_change",
+        Map.of("proposalId", draftProposalId, "reason", "Keep the current behavior until provider evidence is configured."),
+        "idem-agent-behavior-proposal-reject",
+        ADMIN_CONTEXT_ID,
+        submitted.resultSurface().surfaceId(),
+        "corr-agent-behavior-proposal-reject"));
+    assertEquals("accepted", rejected.status());
+    assertEquals("surface-agent-behavior-proposal", rejected.resultSurface().surfaceId());
+    assertTrue(rejected.message().contains("source artifacts remain unchanged"));
+    assertBrowserSafe(rejected.resultSurface());
+
+    var deferDraft = runtimeService.proposeBehaviorChange(new AgentRuntimeService.BehaviorChangeRequest(
+        TENANT_ID,
+        AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
+        adminContext,
+        BehaviorChangeProposal.TargetArtifact.SKILL_MANIFEST,
+        "Behavior proposal defer smoke draft.",
+        List.of(),
+        "Exercise deferred behavior proposal state.",
+        "corr-agent-behavior-proposal-defer-draft"));
+    assertEquals(BehaviorChangeProposal.Status.PROPOSED, deferDraft.status());
+    var deferProposalId = deferDraft.proposalId();
+    var deferred = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+        "action-agent-behavior-proposal-defer",
+        "action-agent-behavior-proposal-defer",
+        "agent_admin.cancel_behavior_change",
+        "agent_admin.cancel_behavior_change",
+        Map.of("proposalId", deferProposalId, "followUpCategory", "provider-evidence"),
+        "idem-agent-behavior-proposal-defer",
+        ADMIN_CONTEXT_ID,
+        rejected.resultSurface().surfaceId(),
+        "corr-agent-behavior-proposal-defer"));
+    assertEquals("approval-required", deferred.status());
+    assertEquals("surface-agent-behavior-proposal", deferred.resultSurface().surfaceId());
+    assertTrue(deferred.message().contains("no approval, activation, deletion, or provider configuration change occurred"));
+    assertBrowserSafe(deferred.resultSurface());
+
+    var cancelDraft = runtimeService.proposeBehaviorChange(new AgentRuntimeService.BehaviorChangeRequest(
+        TENANT_ID,
+        AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
+        adminContext,
+        BehaviorChangeProposal.TargetArtifact.MODEL_REF,
+        "Behavior proposal cancel smoke draft.",
+        List.of(),
+        "Exercise cancel return to detail without source deletion.",
+        "corr-agent-behavior-proposal-cancel-draft"));
+    assertEquals(BehaviorChangeProposal.Status.PROPOSED, cancelDraft.status());
+    var cancelProposalId = cancelDraft.proposalId();
+    var cancelled = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+        "action-agent-behavior-proposal-cancel",
+        "action-agent-behavior-proposal-cancel",
+        "agent_admin.cancel_behavior_change",
+        "agent_admin.cancel_behavior_change",
+        Map.of("proposalId", cancelProposalId, "reason", "Cancel the smoke proposal without deleting source artifacts."),
+        "idem-agent-behavior-proposal-cancel",
+        ADMIN_CONTEXT_ID,
+        deferred.resultSurface().surfaceId(),
+        "corr-agent-behavior-proposal-cancel"));
+    assertEquals("accepted", cancelled.status());
+    assertEquals("surface-agent-admin-detail", cancelled.resultSurface().surfaceId());
+    assertTrue(cancelled.message().contains("source artifacts and lifecycle state remain unchanged"));
+    assertBrowserSafe(cancelled.resultSurface());
+
+    var activationRoute = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+        "action-agent-behavior-proposal-open-activation",
+        "action-agent-behavior-proposal-open-activation",
+        "agent_admin.activate_behavior_change",
+        "agent_admin.activate_behavior_change",
+        Map.of("proposalId", draftProposalId, "agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        directProposal.surfaceId(),
+        "corr-agent-behavior-proposal-open-activation"));
+    assertEquals("approval-required", activationRoute.status());
+    assertEquals("surface-agent-activation-confirmation", activationRoute.resultSurface().surfaceId());
+    assertTrue(activationRoute.message().contains("no activation occurred"));
+    assertBrowserSafe(activationRoute.resultSurface());
+
+    var rollbackRoute = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+        "action-agent-behavior-proposal-open-rollback",
+        "action-agent-behavior-proposal-open-rollback",
+        "agent_admin.rollback_behavior_change",
+        "agent_admin.rollback_behavior_change",
+        Map.of("proposalId", draftProposalId, "agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        directProposal.surfaceId(),
+        "corr-agent-behavior-proposal-open-rollback"));
+    assertEquals("approval-required", rollbackRoute.status());
+    assertEquals("surface-agent-rollback-confirmation", rollbackRoute.resultSurface().surfaceId());
+    assertTrue(rollbackRoute.message().contains("no rollback occurred"));
+    assertBrowserSafe(rollbackRoute.resultSurface());
+
+    var sourceRoute = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+        "action-agent-behavior-proposal-open-source",
+        "action-agent-behavior-proposal-open-source",
+        "agent_admin.get_prompt_version",
+        "agent_admin.get_prompt_version",
+        Map.of("proposalId", draftProposalId, "agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID),
+        null,
+        ADMIN_CONTEXT_ID,
+        directProposal.surfaceId(),
+        "corr-agent-behavior-proposal-open-source"));
+    assertEquals("accepted", sourceRoute.status());
+    assertEquals("surface-agent-prompt-governance", sourceRoute.resultSurface().surfaceId());
+    assertBrowserSafe(sourceRoute.resultSurface());
+
+    var traceRoute = workstreamService.runAction(adminIdentity, ADMIN_CONTEXT_ID, new CapabilityActionRequest(
+        "action-agent-behavior-proposal-open-trace",
+        "action-agent-behavior-proposal-open-trace",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("traceId", "trace-agent-behavior-proposal"),
+        null,
+        ADMIN_CONTEXT_ID,
+        directProposal.surfaceId(),
+        "corr-agent-behavior-proposal-open-trace"));
+    assertEquals("accepted", traceRoute.status());
+    assertEquals("surface-agent-admin-trace", traceRoute.resultSurface().surfaceId());
+    assertTrue(traceRoute.message().contains("raw prompt, provider, tool, and hidden-scope evidence redacted"));
+    assertBrowserSafe(traceRoute.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-behavior-proposal",
+        "corr-agent-behavior-proposal-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin behavior proposal decisions or hidden proposal ids.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-behavior-proposal",
+        "corr-agent-behavior-proposal-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not expose Agent Admin behavior proposal decisions, proposal ids, or tenant governance state.");
   }
 
   @Test

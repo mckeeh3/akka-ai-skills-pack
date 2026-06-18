@@ -147,6 +147,9 @@ test('Agent Admin surfaces preserve required UI states, approval gates, validati
   assert.match(agentAdminTaskSurface, /BACKEND_PREREQUISITE_REQUIRED/);
   assert.match(decisionSurface, /disabledById/);
   assert.match(decisionSurface, /BACKEND_PREREQUISITE_REQUIRED/);
+  assert.match(decisionSurface, /recommendation\?\.rationale/);
+  assert.match(decisionSurface, /evidenceSummary/);
+  assert.match(decisionSurface, /Advisory output cannot directly mutate prompts, skills, references, model refs, tool boundaries, activation, rollback, or provider configuration/);
   assert.doesNotMatch(dashboardSurface, /Opens \$\{entry\.resultSurfaceId/);
 });
 

@@ -5830,7 +5830,7 @@
 
 ### TASK-FSCT-165: Verify or complete runtime testing for `surface-agent-behavior-proposal`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-164]
 - surface id: `surface-agent-behavior-proposal`
@@ -5864,6 +5864,7 @@
   - purpose: Behavior proposal decision card.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-behavior-proposal`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-behavior-proposal`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added behavior-proposal runtime testing in `AgentAdminBrowserWorkstreamSmokeTest` plus frontend `DecisionSurface` contract assertions. Covered protected missing-bearer API denials, tenant-admin AuthContext read of backend-owned `agent_admin.behavior_proposal.v1`, payload/redaction/trace/correlation evidence, submit/repeated-submit, provider fail-closed approval with `noFakeSuccess`, rejection validation, reject/defer/cancel state transitions, activation/rollback/source/trace handoffs with no direct lifecycle/source/provider mutation, member/customer denials, and browser-safe frontend handling for object recommendations/evidence summaries/disabled prerequisites. runtime evidence: readiness level `runtime-ready` for this testing scope. checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentBehaviorProposalRuntimeTestingPath test`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`; next runnable task: `TASK-FSCT-166`.
 
 ### TASK-FSCT-166: Verify or complete app-description specification for `surface-agent-admin-prompt-risk-review`
 
