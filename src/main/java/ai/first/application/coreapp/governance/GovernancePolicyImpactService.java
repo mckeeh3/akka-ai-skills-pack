@@ -170,6 +170,7 @@ public final class GovernancePolicyImpactService {
   }
 
   public SurfaceData resultSurface(AuthContextResolver.ResolvedMe actor, String impactTaskId, String correlationId) {
+    if (blank(impactTaskId)) return emptyResultSurface(actor, correlationId);
     var task = read(actor, impactTaskId, correlationId);
     if (task.status() != GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED
         && task.status() != GovernancePolicyImpactTask.Status.ACCEPTED
@@ -177,27 +178,56 @@ public final class GovernancePolicyImpactService {
         && task.status() != GovernancePolicyImpactTask.Status.REQUEST_CHANGES) {
       return taskSurface(actor, impactTaskId, correlationId);
     }
-    return new SurfaceData("surface-governance-policy-impact-analysis-result", "decision", "Governance/Policy impact analysis result", List.of(trace("impact-result", correlationId)), Map.ofEntries(
+    var reviewState = surfaceStatus(task.status());
+    var traceIds = resultTraceIds(task, correlationId);
+    var risk = task.findingRefs().stream().anyMatch(ref -> ref.toLowerCase(java.util.Locale.ROOT).contains("critical")) ? "critical" : "high";
+    return new SurfaceData("surface-governance-policy-impact-analysis-result", "decision", "Governance/Policy impact analysis result", traceIds, Map.ofEntries(
         Map.entry("surfaceContract", "governance.policy.impact_analysis.result.v1"),
         Map.entry("impactTaskId", task.impactTaskId()),
+        Map.entry("taskId", task.impactTaskId()),
         Map.entry("proposalId", task.proposalId()),
-        Map.entry("overallRisk", task.findingRefs().stream().anyMatch(ref -> ref.toLowerCase(java.util.Locale.ROOT).contains("critical")) ? "critical" : "high"),
-        Map.entry("reviewState", task.status().name().toLowerCase(java.util.Locale.ROOT)),
+        Map.entry("targetPolicyId", safe(task.targetPolicyId(), "")),
+        Map.entry("decisionId", task.impactTaskId()),
+        Map.entry("reviewState", reviewState),
+        Map.entry("overallRisk", risk),
+        Map.entry("risk", risk),
+        Map.entry("confidenceScore", task.status() == GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED || task.status() == GovernancePolicyImpactTask.Status.ACCEPTED ? "human-review-required" : "disposition-recorded"),
+        Map.entry("resultSummary", Map.of("impactTaskId", task.impactTaskId(), "proposalId", task.proposalId(), "reviewState", reviewState, "overallRisk", risk, "completedAgeBucket", "current-projection", "safeEmptyCopy", "Select a completed impact-analysis task to review advisory evidence.")),
+        Map.entry("recommendation", Map.of("outcome", "Review advisory impact evidence before any separate Governance/Policy approval or activation path.", "rationale", safe(task.summary(), "Governance/Policy impact analysis requires human review."), "providerRuntimeReadiness", readinessState(task), "noFakeSuccess", true)),
         Map.entry("summary", safe(task.summary(), "Governance/Policy impact analysis requires human review.")),
+        Map.entry("advisorySummary", Map.of("narrative", safe(task.summary(), "Governance/Policy impact analysis requires human review."), "advisoryOnly", "This result does not approve, activate, roll back, weaken policy, or mutate authority.", "knownLimitations", List.of("Raw prompts, model output, tool payloads, hidden policy clauses, and cross-tenant/customer evidence are omitted from the browser payload."))),
+        Map.entry("impact", "Advisory evidence disposition only; policy proposal state and authority remain unchanged until separate governed decision/activation commands run."),
+        Map.entry("affectedTarget", firstNonBlank(task.targetPolicyId(), task.proposalId())),
+        Map.entry("policyBasis", "governance.policy.impact_analysis.* capabilities with selected AuthContext tenant/customer scope"),
+        Map.entry("idempotencyKeySource", "surface-item"),
+        Map.entry("activationBlocker", task.status() == GovernancePolicyImpactTask.Status.ACCEPTED ? "Accepted impact evidence is advisory; activation still requires a separate approved Governance/Policy command." : "Activation remains blocked until an authorized human disposition and separate policy decision path complete."),
+        Map.entry("findings", findingSummaries(task)),
         Map.entry("impactFindings", task.findingRefs()),
         Map.entry("evidenceRefs", task.evidenceRefs()),
-        Map.entry("traceIds", task.traceIds()),
-        Map.entry("requiredHumanDecisions", List.of("review advisory impact result", "separately approve/reject proposal", "separately activate approved policy change if still authorized")),
-        Map.entry("authorizedActions", List.of(ACCEPT_RESULT_CAPABILITY, REJECT_RESULT_CAPABILITY, REQUEST_CHANGES_CAPABILITY, READ_CAPABILITY)),
-        Map.entry("disabledActions", List.of("governance.policy.activate is not executed by this worker result surface", "governance.policy.rollback requires a separate approved capability path")),
+        Map.entry("evidenceSummary", evidenceSummary(task, traceIds)),
+        Map.entry("humanDecision", Map.of("reviewState", reviewState, "allowedDispositionValues", List.of("accept", "reject", "request_changes"), "reasonRequiredFor", List.of("reject", "request_changes"), "priorDisposition", safe(task.decision(), ""), "priorReason", safe(task.decisionReason(), ""), "idempotency", "surface-item replay returns original advisory disposition or safe conflict")),
+        Map.entry("activationGate", Map.of("acceptedImpactEvidenceRequired", true, "currentGateState", task.status() == GovernancePolicyImpactTask.Status.ACCEPTED ? "impact-evidence-accepted-but-policy-decision-still-required" : "blocked-pending-human-impact-result-disposition", "separateDecisionSurface", "surface-governance-policy-decision", "noInlineActivation", true)),
+        Map.entry("authorizedActions", allowedResultActions(actor, task)),
+        Map.entry("allowedActions", allowedResultActions(actor, task)),
+        Map.entry("disabledActions", disabledResultActions(task)),
+        Map.entry("readiness", Map.of("state", readinessState(task), "providerRuntime", "backend AutonomousAgent projection produced or preserved advisory evidence", "fakeSuccess", false)),
+        Map.entry("traceIds", traceIds),
+        Map.entry("traceLinks", traceIds),
+        Map.entry("requiredHumanDecisions", List.of("review advisory impact result", "record accept/reject/request-changes disposition when authorized", "separately approve/reject proposal", "separately activate approved policy change if still authorized")),
         Map.entry("noDirectMutation", true),
-        Map.entry("activationBlockedUntilHumanDecision", true),
-        Map.entry("redaction", "browser-safe impact evidence only; raw prompts, hidden prompt text, provider credentials, JWTs, raw tool payloads, and cross-tenant/customer data omitted")));
+        Map.entry("noFakeSuccess", true),
+        Map.entry("activationBlockedUntilHumanDecision", task.status() != GovernancePolicyImpactTask.Status.ACCEPTED),
+        Map.entry("redaction", "browser-safe impact evidence only; raw prompts, hidden prompt text, provider credentials, JWTs, raw tool payloads, hidden role clauses, raw correlation/idempotency keys, and cross-tenant/customer data omitted")));
   }
 
   private GovernancePolicyImpactTask decide(AuthContextResolver.ResolvedMe actor, String impactTaskId, GovernancePolicyImpactTask.Status status, String decision, String capabilityId, String reason, String correlationId) {
     var task = task(actor, impactTaskId);
     require(actor, capabilityId, correlationId);
+    if (task.status() == status && Objects.equals(task.decision(), decision)) {
+      authContextResolver.appendProtectedReadTrace(actor, capabilityId, decision + ":idempotent-result-disposition-replay:no direct policy mutation", correlationId);
+      return task;
+    }
+    if (task.terminal()) throw new AuthorizationException(409, "governance-impact-result-disposition-conflict");
     if (!task.resultDecisionAllowed()) throw new AuthorizationException(409, "governance-impact-result-not-completed");
     var traceId = "trace-governance-policy-impact-" + decision + "-" + stableSuffix(correlationId + ":" + task.impactTaskId());
     var decided = task.withDecision(status, decision, firstNonBlank(reason, "Human Governance/Policy impact result disposition recorded; policy proposal unchanged."), List.of(traceId), Instant.now(clock));
@@ -206,6 +236,82 @@ public final class GovernancePolicyImpactService {
     publishLifecycleOrAttention(decided, decision.equals("accepted") ? "result_accepted" : decision.equals("rejected_result") ? "result_rejected" : "request_changes", capabilityId, actor.account().accountId(), correlationId);
     return decided;
   }
+
+  private SurfaceData emptyResultSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    require(actor, READ_CAPABILITY, correlationId);
+    var traceIds = List.of(trace("impact-result-empty", correlationId));
+    return new SurfaceData("surface-governance-policy-impact-analysis-result", "decision", "Governance/Policy impact analysis result", traceIds, Map.ofEntries(
+        Map.entry("surfaceContract", "governance.policy.impact_analysis.result.v1"),
+        Map.entry("reviewState", "empty/no-result"),
+        Map.entry("summary", "Select a completed Governance/Policy impact-analysis task before reviewing advisory evidence."),
+        Map.entry("resultSummary", Map.of("reviewState", "empty/no-result", "safeEmptyCopy", "No completed impact-analysis task is selected; hidden tasks are not enumerated.")),
+        Map.entry("recommendation", Map.of("outcome", "Open an authorized impact-analysis task or proposal first.", "rationale", "The direct result surface is backend-derived and no-enumeration safe when no task id is selected.", "providerRuntimeReadiness", "not-required", "noFakeSuccess", true)),
+        Map.entry("advisorySummary", Map.of("narrative", "No advisory result is selected.", "advisoryOnly", "No policy approval, activation, rollback, or authority mutation occurs from this empty result surface.")),
+        Map.entry("evidenceSummary", List.of()),
+        Map.entry("findings", List.of()),
+        Map.entry("humanDecision", Map.of("reviewState", "empty/no-result", "allowedDispositionValues", List.of(), "reasonRequiredFor", List.of("reject", "request_changes"))),
+        Map.entry("activationGate", Map.of("currentGateState", "blocked-no-selected-impact-result", "noInlineActivation", true)),
+        Map.entry("authorizedActions", List.of(Map.of("actionId", "action-governance-policy-read-impact-analysis", "label", "Read selected impact result", "capabilityId", READ_CAPABILITY, "browserToolId", "browser-tool:action-governance-policy-read-impact-analysis", "governedToolId", "governed-tool:" + READ_CAPABILITY, "resultSurfaceId", "surface-governance-policy-impact-analysis-result", "reason", "Requires a selected impactTaskId from a visible task."))),
+        Map.entry("allowedActions", List.of(Map.of("actionId", "action-governance-policy-read-impact-analysis", "label", "Read selected impact result", "capabilityId", READ_CAPABILITY, "browserToolId", "browser-tool:action-governance-policy-read-impact-analysis", "governedToolId", "governed-tool:" + READ_CAPABILITY, "resultSurfaceId", "surface-governance-policy-impact-analysis-result", "reason", "Requires a selected impactTaskId from a visible task."))),
+        Map.entry("disabledActions", List.of(Map.of("actionId", "action-governance-policy-accept-impact-result", "label", "Accept advisory impact result", "reason", "No completed impact-analysis result is selected.", "recovery", "Open a visible completed impact-analysis task first."), Map.of("actionId", "action-governance-policy-reject-impact-result", "label", "Reject advisory impact result", "reason", "No completed impact-analysis result is selected.", "recovery", "Open a visible completed impact-analysis task first."), Map.of("actionId", "action-governance-policy-request-impact-changes", "label", "Request impact-analysis changes", "reason", "No completed impact-analysis result is selected.", "recovery", "Open a visible completed impact-analysis task first."))),
+        Map.entry("traceIds", traceIds),
+        Map.entry("traceLinks", traceIds),
+        Map.entry("readiness", Map.of("state", "not-required", "providerRuntime", "no selected task", "fakeSuccess", false)),
+        Map.entry("noDirectMutation", true),
+        Map.entry("noFakeSuccess", true),
+        Map.entry("activationBlockedUntilHumanDecision", true),
+        Map.entry("redaction", "browser-safe no-result recovery; hidden tasks, raw provider/model/tool data, JWTs, secrets, and cross-tenant/customer evidence omitted")));
+  }
+
+  private List<String> resultTraceIds(GovernancePolicyImpactTask task, String correlationId) {
+    var traces = new java.util.ArrayList<String>();
+    traces.addAll(task.traceIds());
+    traces.add(trace("impact-result", correlationId));
+    return List.copyOf(traces.stream().filter(value -> value != null && !value.isBlank()).distinct().toList());
+  }
+
+  private List<Map<String, Object>> evidenceSummary(GovernancePolicyImpactTask task, List<String> traceIds) {
+    var evidence = new java.util.ArrayList<Map<String, Object>>();
+    for (var ref : task.evidenceRefs()) {
+      evidence.add(Map.<String, Object>of("evidenceId", ref, "label", safe(ref, "Evidence"), "summary", "Backend-authorized advisory evidence reference; raw provider/model/tool payload omitted.", "status", "available-redacted", "redactionNote", "browser-safe summary only", "noFakeSuccess", true, "traceRefs", traceIds));
+    }
+    if (evidence.isEmpty()) evidence.add(Map.<String, Object>of("evidenceId", "no-visible-evidence", "label", "No visible evidence", "summary", "No result evidence is visible for this selected context.", "status", "empty", "redactionNote", "hidden or unavailable evidence is not enumerated", "noFakeSuccess", true, "traceRefs", traceIds));
+    return List.copyOf(evidence);
+  }
+
+  private List<Map<String, Object>> findingSummaries(GovernancePolicyImpactTask task) {
+    return task.findingRefs().stream()
+        .map(ref -> Map.<String, Object>of("findingId", ref, "label", safe(ref, "Impact finding"), "severity", ref.toLowerCase(java.util.Locale.ROOT).contains("critical") ? "critical" : "high", "summary", "Review this advisory finding before a separate policy approval or activation path.", "redaction", "raw model/provider/tool evidence omitted"))
+        .toList();
+  }
+
+  private List<Map<String, Object>> allowedResultActions(AuthContextResolver.ResolvedMe actor, GovernancePolicyImpactTask task) {
+    var capabilities = actor.selectedContext().capabilities();
+    var actions = new java.util.ArrayList<Map<String, Object>>();
+    if (capabilities.contains(READ_CAPABILITY)) actions.add(resultAction("action-governance-policy-read-impact-analysis", "Refresh impact result", READ_CAPABILITY, "surface-governance-policy-impact-analysis-result", "Read-only refresh reauthorizes selected AuthContext and task visibility.", "not-required"));
+    if (task.status() == GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED && capabilities.contains(ACCEPT_RESULT_CAPABILITY)) actions.add(resultAction("action-governance-policy-accept-impact-result", "Accept advisory impact result", ACCEPT_RESULT_CAPABILITY, "surface-governance-policy-impact-analysis-result", "Records advisory evidence disposition only; no activation.", "surface-item"));
+    if (task.status() == GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED && capabilities.contains(REJECT_RESULT_CAPABILITY)) actions.add(resultAction("action-governance-policy-reject-impact-result", "Reject advisory impact result", REJECT_RESULT_CAPABILITY, "surface-governance-policy-impact-analysis-result", "Requires reviewer reason; no policy mutation.", "surface-item"));
+    if (task.status() == GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED && capabilities.contains(REQUEST_CHANGES_CAPABILITY)) actions.add(resultAction("action-governance-policy-request-impact-changes", "Request impact-analysis changes", REQUEST_CHANGES_CAPABILITY, "surface-governance-policy-impact-analysis-result", "Requires reviewer reason; replacement evidence remains separate.", "surface-item"));
+    return List.copyOf(actions);
+  }
+
+  private static Map<String, Object> resultAction(String actionId, String label, String capabilityId, String resultSurfaceId, String reason, String idempotency) {
+    return Map.<String, Object>of("actionId", actionId, "label", label, "browserToolId", "browser-tool:" + actionId, "governedToolId", "governed-tool:" + capabilityId, "capabilityId", capabilityId, "resultSurfaceId", resultSurfaceId, "reason", reason, "idempotency", idempotency);
+  }
+
+  private static List<Map<String, Object>> disabledResultActions(GovernancePolicyImpactTask task) {
+    var disabled = new java.util.ArrayList<Map<String, Object>>();
+    disabled.add(Map.<String, Object>of("actionId", "action-governance-policy-activate", "label", "Activate policy", "reason", "governance.policy.activate is not executed by this worker result surface; impact-result disposition never activates policy inline.", "recovery", "Use the separate Governance/Policy decision and activation surfaces after prerequisites pass."));
+    disabled.add(Map.<String, Object>of("actionId", "action-governance-policy-rollback", "label", "Roll back policy", "reason", "Rollback is a separate governed policy command and cannot run from impact-result review.", "recovery", "Open the dedicated policy decision surface when authorized."));
+    if (task.status() != GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED) {
+      disabled.add(Map.<String, Object>of("actionId", "action-governance-policy-accept-impact-result", "label", "Accept advisory impact result", "reason", "Result disposition is already recorded or no longer reviewable.", "recovery", "Review the prior disposition and start replacement analysis if needed."));
+      disabled.add(Map.<String, Object>of("actionId", "action-governance-policy-reject-impact-result", "label", "Reject advisory impact result", "reason", "Result disposition is already recorded or no longer reviewable.", "recovery", "Review the prior disposition and start replacement analysis if needed."));
+      disabled.add(Map.<String, Object>of("actionId", "action-governance-policy-request-impact-changes", "label", "Request impact-analysis changes", "reason", "Result disposition is already recorded or no longer reviewable.", "recovery", "Review the prior disposition and start replacement analysis if needed."));
+    }
+    return List.copyOf(disabled);
+  }
+
+  private static String surfaceStatus(GovernancePolicyImpactTask.Status status) { return status.name().toLowerCase(java.util.Locale.ROOT).replace('_', '-'); }
 
   private GovernancePolicyImpactTask projectAutonomousAgentTask(GovernancePolicyImpactTask task, String correlationId) {
     if (task.terminal() || task.status() == GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED || task.status() == GovernancePolicyImpactTask.Status.BLOCKED_PROVIDER_OR_RUNTIME || task.status() == GovernancePolicyImpactTask.Status.FAILED) return task;

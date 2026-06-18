@@ -1176,8 +1176,9 @@ public final class WorkstreamService {
     } else if ("action-governance-policy-start-impact-analysis".equals(request.actionId()) || "action-govpol-start-impact-analysis".equals(request.actionId())) {
       result = startGovernancePolicyImpactAnalysis(actor, request);
     } else if ("action-governance-policy-read-impact-analysis".equals(request.actionId()) || "action-govpol-read-impact-analysis".equals(request.actionId())) {
-      var surface = governancePolicyImpactService.taskSurface(actor, stringInput(request.input(), "impactTaskId", stringInput(request.input(), "taskId", "")), request.correlationId());
-      result = new CapabilityActionResult("accepted", "Governance/Policy impact analysis task loaded from backend lifecycle state.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactTaskActions(actor)));
+      var surface = governancePolicyImpactService.resultSurface(actor, stringInput(request.input(), "impactTaskId", stringInput(request.input(), "taskId", "")), request.correlationId());
+      var actions = "surface-governance-policy-impact-analysis-result".equals(surface.surfaceId()) ? governanceImpactResultActions(actor) : governanceImpactTaskActions(actor);
+      result = new CapabilityActionResult("accepted", "Governance/Policy impact analysis loaded from backend lifecycle state.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, actions));
     } else if ("action-governance-policy-cancel-impact-analysis".equals(request.actionId()) || "action-govpol-cancel-impact-analysis".equals(request.actionId())) {
       var task = governancePolicyImpactService.cancel(actor, stringInput(request.input(), "impactTaskId", stringInput(request.input(), "taskId", "")), stringInput(request.input(), "reason", "Cancelled by authorized Governance/Policy reviewer."), request.correlationId());
       var surface = governancePolicyImpactService.taskSurface(actor, task.impactTaskId(), request.correlationId());
@@ -3797,12 +3798,21 @@ public final class WorkstreamService {
 
   private CapabilityActionResult decideGovernancePolicyImpactResult(AuthContextResolver.ResolvedMe actor, CapabilityActionRequest request, String decision) {
     var impactTaskId = stringInput(request.input(), "impactTaskId", stringInput(request.input(), "taskId", ""));
-    var reason = stringInput(request.input(), "reason", "Governance/Policy impact result disposition recorded by authorized reviewer.");
-    if ("accept".equals(decision)) governancePolicyImpactService.acceptResult(actor, impactTaskId, reason, request.correlationId());
+    if (impactTaskId == null || impactTaskId.isBlank()) {
+      return governancePolicySystemMessageResult(actor, request.actionId(), "governance-impact-task-required", "Select an authorized tenant-scoped impact-analysis task before recording result disposition.", request.correlationId());
+    }
+    if (firstNonBlank(request.idempotencyKey(), stringInput(request.input(), "idempotencyKey", null)) == null) {
+      return governancePolicySystemMessageResult(actor, request.actionId(), "idempotency-key-required", "This Governance/Policy impact-result disposition requires an idempotency key before audit or lifecycle state can change.", request.correlationId());
+    }
+    var reason = stringInput(request.input(), "reason", stringInput(request.input(), "reviewerAcknowledgement", null));
+    if (("reject".equals(decision) || "request_changes".equals(decision)) && (reason == null || reason.isBlank())) {
+      return governancePolicySystemMessageResult(actor, request.actionId(), "governance-impact-result-reason-required", "Rejecting or requesting changes to an impact-analysis result requires a reviewer reason; no policy state changed.", request.correlationId());
+    }
+    if ("accept".equals(decision)) governancePolicyImpactService.acceptResult(actor, impactTaskId, firstNonBlank(reason, "Accepted as advisory impact evidence by authorized reviewer."), request.correlationId());
     else if ("reject".equals(decision)) governancePolicyImpactService.rejectResult(actor, impactTaskId, reason, request.correlationId());
     else governancePolicyImpactService.requestChanges(actor, impactTaskId, reason, request.correlationId());
     var surface = governancePolicyImpactService.resultSurface(actor, impactTaskId, request.correlationId());
-    return new CapabilityActionResult("approval-required", "Governance/Policy impact result disposition recorded as advisory evidence only; activation remains a separate policy command.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactResultActions()));
+    return new CapabilityActionResult("approval-required", "Governance/Policy impact result disposition recorded as advisory evidence only; activation remains a separate policy command.", request.correlationId(), surface.traceIds(), governancePolicyImpactEnvelope(actor, request.correlationId(), surface, governanceImpactResultActions(actor)));
   }
 
   private SurfaceEnvelope governancePolicyImpactEnvelope(AuthContextResolver.ResolvedMe actor, String correlationId, GovernancePolicyImpactService.SurfaceData surface, List<SurfaceAction> actions) {
@@ -3817,8 +3827,14 @@ public final class WorkstreamService {
     return List.copyOf(actions);
   }
 
-  private List<SurfaceAction> governanceImpactResultActions() {
-    return List.of(governanceAcceptImpactResultAction(), governanceRejectImpactResultAction(), governanceRequestImpactChangesAction(), openAuditAction());
+  private List<SurfaceAction> governanceImpactResultActions(AuthContextResolver.ResolvedMe actor) {
+    var actions = new java.util.ArrayList<SurfaceAction>();
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY)) actions.add(governanceReadImpactResultAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_ACCEPT_CAPABILITY)) actions.add(governanceAcceptImpactResultAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_REJECT_CAPABILITY)) actions.add(governanceRejectImpactResultAction());
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_REQUEST_CHANGES_CAPABILITY)) actions.add(governanceRequestImpactChangesAction());
+    if (actor.selectedContext().capabilities().contains(AUDIT_TRACE_READ_CAPABILITY)) actions.add(openAuditAction());
+    return List.copyOf(actions);
   }
 
   private CapabilityActionResult governancePolicySystemMessageResult(AuthContextResolver.ResolvedMe actor, String actionId, String reasonCode, String message, String correlationId) {
@@ -5184,6 +5200,7 @@ public final class WorkstreamService {
       case "surface-governance-policy-activation-blocked" -> governancePolicyActivationBlockedSurface(actor, correlationId);
       case "surface-governance-policy-rollback-blocked" -> governancePolicyRollbackBlockedSurface(actor, correlationId);
       case "surface-governance-policy-impact-analysis-task" -> governancePolicyImpactAnalysisBlockedSurface(actor, correlationId);
+      case "surface-governance-policy-impact-analysis-result" -> governancePolicyImpactEnvelope(actor, correlationId, governancePolicyImpactService.resultSurface(actor, null, correlationId), governanceImpactResultActions(actor));
       default -> null;
     };
   }
@@ -5869,6 +5886,7 @@ public final class WorkstreamService {
   private SurfaceAction governanceOutcomeNoteAction() { return new SurfaceAction("action-governance-policy-outcome-note", "Add outcome note", "command", browserToolId("action-governance-policy-outcome-note"), governedToolId(GOVERNANCE_OUTCOMES_RECORD_CAPABILITY), GOVERNANCE_OUTCOMES_RECORD_CAPABILITY, "schema.governance-policy.outcome-note.v1", true, false, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-governance-policy-outcome", "inline"), new Audit("GovernancePolicyOutcomeNoteRecorded", true)); }
   private SurfaceAction governanceStartImpactAnalysisAction() { return new SurfaceAction("action-governance-policy-start-impact-analysis", "Start impact analysis", "workflow", browserToolId("action-governance-policy-start-impact-analysis"), governedToolId(GOVERNANCE_POLICY_ANALYSIS_START_CAPABILITY), GOVERNANCE_POLICY_ANALYSIS_START_CAPABILITY, "schema.governance-policy.impact-analysis.start.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-governance-policy-impact-analysis-task", "inline"), new Audit("GovernancePolicyImpactAnalysisStartedOrBlocked", true)); }
   private SurfaceAction governanceReadImpactAnalysisAction() { return new SurfaceAction("action-governance-policy-read-impact-analysis", "Read impact analysis", "read", browserToolId("action-governance-policy-read-impact-analysis"), governedToolId(GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY), GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY, "schema.governance-policy.impact-analysis.read.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-governance-policy-impact-analysis-task", "inline"), new Audit("GovernancePolicyImpactAnalysisRead", true)); }
+  private SurfaceAction governanceReadImpactResultAction() { return new SurfaceAction("action-governance-policy-read-impact-analysis", "Refresh impact result", "read", browserToolId("action-governance-policy-read-impact-analysis"), governedToolId(GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY), GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY, "schema.governance-policy.impact-analysis.read.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-governance-policy-impact-analysis-result", "inline"), new Audit("GovernancePolicyImpactAnalysisResultRead", true)); }
   private SurfaceAction governanceCancelImpactAnalysisAction() { return new SurfaceAction("action-governance-policy-cancel-impact-analysis", "Cancel impact analysis", "command", browserToolId("action-governance-policy-cancel-impact-analysis"), governedToolId(GOVERNANCE_POLICY_ANALYSIS_CANCEL_CAPABILITY), GOVERNANCE_POLICY_ANALYSIS_CANCEL_CAPABILITY, "schema.governance-policy.impact-analysis.cancel.v1", true, false, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-governance-policy-impact-analysis-task", "inline"), new Audit("GovernancePolicyImpactAnalysisCancelled", true)); }
   private SurfaceAction governanceAcceptImpactResultAction() { return new SurfaceAction("action-governance-policy-accept-impact-result", "Accept advisory impact result", "approval", browserToolId("action-governance-policy-accept-impact-result"), governedToolId(GOVERNANCE_POLICY_ANALYSIS_ACCEPT_CAPABILITY), GOVERNANCE_POLICY_ANALYSIS_ACCEPT_CAPABILITY, "schema.governance-policy.impact-analysis.accept.v1", true, true, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-governance-policy-impact-analysis-result", "inline"), new Audit("GovernancePolicyImpactResultAccepted", true)); }
   private SurfaceAction governanceRejectImpactResultAction() { return new SurfaceAction("action-governance-policy-reject-impact-result", "Reject advisory impact result", "approval", browserToolId("action-governance-policy-reject-impact-result"), governedToolId(GOVERNANCE_POLICY_ANALYSIS_REJECT_CAPABILITY), GOVERNANCE_POLICY_ANALYSIS_REJECT_CAPABILITY, "schema.governance-policy.impact-analysis.reject.v1", true, true, null, new Idempotency(true, "surface-item"), new ResultSurface(null, "surface-governance-policy-impact-analysis-result", "inline"), new Audit("GovernancePolicyImpactResultRejected", true)); }

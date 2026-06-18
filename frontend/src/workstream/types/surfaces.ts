@@ -393,6 +393,10 @@ export type DetailEditSurfaceData = {
 
 export type DecisionSurfaceData = {
   decisionId?: string;
+  impactTaskId?: string;
+  taskId?: string;
+  proposalId?: string;
+  reviewState?: string;
   recommendation?: string | { outcome?: string; rationale?: string; requiredReviewerCategory?: string; providerRuntimeReadiness?: string; noFakeSuccess?: boolean; dependsOnProviderRuntimeEvidence?: boolean; confidenceQualityNotes?: string[] };
   summary?: string;
   riskScore?: number | string;
