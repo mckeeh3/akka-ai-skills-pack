@@ -79,6 +79,11 @@ export type SystemMessageData = {
   title?: string;
   summary?: string;
   message?: string;
+  messageSummary?: Record<string, unknown>;
+  contextSummary?: Record<string, unknown>;
+  recoveryOptions?: Array<{ label?: string; targetSurfaceId?: string; actionId?: string; disabledReason?: string; sideEffect?: string }>;
+  validationMessages?: Array<Record<string, unknown>>;
+  authorizedActions?: string[];
   recoverySteps?: string[];
   safeReasonCode?: string;
   blockerCode?: string;

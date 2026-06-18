@@ -27,6 +27,9 @@ function boundaryCopy(envelope: SurfaceEnvelope<SystemMessageData>): string {
   if (envelope.ownerFunctionalAgentId === 'agent-admin-agent' || envelope.surfaceId.startsWith('surface-agent-') || envelope.data.producingAgentId === 'agent-admin-agent') {
     return 'AgentAdminAgent guidance is read-only: no direct mutation of prompts, skills, references, manifests, model refs, tool boundaries, activation, rollback, provider configuration, or authorization state occurred.';
   }
+  if (envelope.ownerFunctionalAgentId === 'governance-policy-agent' || envelope.surfaceId.startsWith('surface-governance-policy')) {
+    return 'Governance/Policy recovery is read-only: no approval, activation, rollback, policy weakening, tenant/customer scope expansion, provider/model prompt access, or hidden-object enumeration occurred.';
+  }
   return 'UserAdminAgent guidance is read-only: no direct mutation of invitations, memberships, roles, capabilities, authorization state, or provider configuration occurred.';
 }
 
@@ -34,7 +37,8 @@ export function SystemMessageSurface({ envelope, onAction }: SystemMessageSurfac
   const data = envelope.data;
   const traceIds = data.trace?.traceIds?.length ? data.trace.traceIds : data.traceRefs?.length ? data.traceRefs : envelope.traceIds;
   const sourceRefs = data.sourceRefs?.filter((ref) => ref.refType === 'trace') ?? [];
-  const recoverySteps = data.recoverySteps?.length ? data.recoverySteps : ['Retry after backend configuration or authorization is restored.'];
+  const recoverySteps = data.recoverySteps?.length ? data.recoverySteps : data.recoveryOptions?.length ? data.recoveryOptions.map((option) => option.label ?? option.targetSurfaceId ?? 'Use backend-authorized recovery.') : ['Retry after backend configuration or authorization is restored.'];
+  const validationMessages = data.validationMessages ?? [];
   const severity = data.severity ?? 'warning';
   const tone = severityTone[severity] ?? 'warning';
 
@@ -53,6 +57,12 @@ export function SystemMessageSurface({ envelope, onAction }: SystemMessageSurfac
             {recoverySteps.map((step) => <li key={step}>{step}</li>)}
           </ol>
         </section>
+        {validationMessages.length > 0 && (
+          <section aria-label="Validation messages">
+            <h4>Validation messages</h4>
+            <ul>{validationMessages.map((item, index) => <li key={`validation-${index}`}>{String(item.message ?? item.reasonCode ?? item.field ?? 'Request was rejected safely.')}</li>)}</ul>
+          </section>
+        )}
         {traceIds.length > 0 && (
           <details className="system-message-traces">
             <summary>Role-gated trace details</summary>

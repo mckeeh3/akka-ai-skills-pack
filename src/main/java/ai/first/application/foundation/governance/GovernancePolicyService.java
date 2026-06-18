@@ -784,7 +784,34 @@ public final class GovernancePolicyService {
   }
 
   private SurfaceData systemMessage(String surfaceId, String status, String message, String capability, String correlationId) {
-    return new SurfaceData(surfaceId, "system_message", "Governance/Policy " + status, List.of(trace(status, correlationId)), mapOf("surfaceContract", "governance.policy.system_message.v1", "status", status, "message", message, "severity", "warning", "requiredCapabilityId", capability, "system_message", true, "sideEffect", "none", "traceLinks", List.of(trace(status, correlationId)), "redaction", "browser-safe", "noDirectMutation", true, "noFakeSuccess", true));
+    var traceId = trace(status, correlationId);
+    var canonicalStatus = switch (Objects.toString(status, "forbidden")) {
+      case "not_found_or_redacted" -> "not-found-or-hidden";
+      case "blocked-runtime", "blocked_provider_or_runtime" -> "blocked-provider-or-runtime";
+      default -> Objects.toString(status, "forbidden");
+    };
+    return new SurfaceData("surface-governance-policy-system-message", "system_message", "Governance/Policy " + canonicalStatus, List.of(traceId), mapOf(
+        "surfaceContract", "governance.policy.system_message.v1",
+        "status", canonicalStatus,
+        "message", message,
+        "summary", message,
+        "severity", canonicalStatus.contains("failure") ? "error" : "warning",
+        "messageSummary", mapOf("messageId", "governance-policy-system-message-" + stableSuffix(correlationId), "originatingSurfaceId", surfaceId, "status", canonicalStatus, "severity", "warning", "safeTitle", "Governance/Policy action blocked", "safeReasonCode", status, "userMessage", message),
+        "contextSummary", mapOf("selectedWorkstream", "Governance/Policy", "omissionReason", "backend-selected AuthContext scope; hidden proposal/task/result and cross-tenant evidence are not enumerated"),
+        "recoveryOptions", List.of(mapOf("label", "Return to Governance/Policy dashboard", "targetSurfaceId", "surface-governance-policy-dashboard", "actionId", "action-governance-policy-dashboard", "sideEffect", "none"), mapOf("label", "Open scoped policy inventory", "targetSurfaceId", "surface-governance-policy-inventory", "actionId", "action-governance-policy-list", "sideEffect", "none")),
+        "recoverySteps", List.of("Return to the Governance/Policy dashboard after refreshing selected context authority.", "Open the scoped policy inventory only when the backend authorizes Governance/Policy read access.", "Retry side-effecting actions only after lifecycle, idempotency, and provider/runtime prerequisites are restored."),
+        "validationMessages", List.of(mapOf("field", "request", "reasonCode", status, "message", message, "sideEffect", "none")),
+        "authorizedActions", List.of("action-governance-policy-dashboard", "action-governance-policy-list"),
+        "requiredCapabilityId", capability,
+        "capabilityId", capability,
+        "system_message", true,
+        "sideEffect", "none",
+        "traceLinks", List.of(mapOf("traceId", traceId, "label", "Governance/Policy denial/failure trace", "redaction", "role-gated raw ids")),
+        "traceRefs", List.of(traceId),
+        "redaction", "browser-safe; hidden policy internals, cross-tenant/customer evidence, provider/model output, prompts, tool payloads, JWTs, secrets, stack traces, correlation ids, and idempotency keys omitted",
+        "readiness", mapOf("provider", canonicalStatus.contains("blocked") ? "blocked" : "not-applicable", "autonomousAgentRuntime", canonicalStatus.contains("blocked") ? "blocked" : "not-applicable", "noFakeSuccess", true),
+        "noDirectMutation", true,
+        "noFakeSuccess", true));
   }
 
   private GovernancePolicyProposal findScopedProposal(AuthContextResolver.ResolvedMe actor, Object input) {
@@ -826,7 +853,11 @@ public final class GovernancePolicyService {
   }
 
   private ActionResult validation(String field, String message, String correlationId) {
-    return action("validation-error", message, new SurfaceData("surface-governance-policy-validation-error", "system_message", "Governance/Policy validation", List.of(trace("validation", correlationId)), mapOf("surfaceContract", "governance.policy.system_message.v1", "status", "validation-error", "field", field, "message", message, "severity", "warning", "system_message", true, "sideEffect", "none", "traceLinks", List.of(trace("validation", correlationId)), "redaction", "browser-safe validation only", "noDirectMutation", true, "noFakeSuccess", true)), List.of(trace("validation", correlationId)));
+    var surface = systemMessage("surface-governance-policy-system-message", "validation-error", message, field, correlationId);
+    var data = new LinkedHashMap<>(surface.data());
+    data.put("field", field);
+    var enriched = new SurfaceData(surface.surfaceId(), surface.surfaceType(), surface.title(), surface.traceIds(), data);
+    return action("validation-error", message, enriched, List.of(trace("validation", correlationId)));
   }
 
   private ActionResult action(String status, String message, SurfaceData surface, List<String> traceIds) {

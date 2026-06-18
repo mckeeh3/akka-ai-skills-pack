@@ -8127,7 +8127,7 @@
 
 ### TASK-FSCT-230: Verify or complete runtime implementation for `surface-governance-policy-system-message`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-229]
 - surface id: `surface-governance-policy-system-message`
@@ -8158,6 +8158,7 @@
   - purpose: Governance/Policy safe system message.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-system-message`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-system-message`; surface graph node/action edge for opening or acting on `surface-governance-policy-system-message`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented the real Governance/Policy safe system-message runtime path. `WorkstreamService#governancePolicySystemMessageSurface` now owns protected action denial/validation and direct surface recovery for `surface-governance-policy-system-message`, emits `governance.policy.system_message.v1` payload fields (`messageSummary`, `contextSummary`, `recoveryOptions`, `validationMessages`, trace refs, readiness, redaction, `noFakeSuccess`, `noDirectMutation`), filters recovery actions by backend-selected AuthContext capabilities, and preserves no-enumeration/secret boundaries. `GovernancePolicyService` canonical system-message/validation results now use the same surface id, and `SystemMessageSurface` renders Governance/Policy boundary/recovery/validation metadata. Checks passed: `mvn -DskipTests compile`; `mvn -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyDashboardRuntimePath test`; `npm --prefix frontend run typecheck`; `cd frontend && node --test src/workstream-surfaces.contract.test.mjs`; `git diff --check`. Note: broader pre-existing unfocused suites still have unrelated failures listed in the run log and were not used as completion gates.
 
 ### TASK-FSCT-231: Verify or complete runtime testing for `surface-governance-policy-system-message`
 

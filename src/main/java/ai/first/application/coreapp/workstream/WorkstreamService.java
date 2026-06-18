@@ -3838,10 +3838,69 @@ public final class WorkstreamService {
   }
 
   private CapabilityActionResult governancePolicySystemMessageResult(AuthContextResolver.ResolvedMe actor, String actionId, String reasonCode, String message, String correlationId) {
-    var surface = envelope("surface-governance-policy-system-message", "system-message", "Governance/Policy action blocked", actor, correlationId,
-        mapOf("surfaceContract", "governance.policy.system_message.v1", "status", "forbidden", "severity", "warning", "title", "Governance/Policy action blocked", "message", message, "safeReasonCode", reasonCode, "capabilityId", actionId, "traceRefs", List.of("trace-governance-policy-denial-" + stableSuffix(correlationId)), "noFakeSuccess", true, "noDirectMutation", true, "redaction", "browser-safe denial; protected data omitted"),
-        List.of(governanceDashboardAction(), openAuditAction()));
+    var status = reasonCode != null && (reasonCode.contains("idempotency") || reasonCode.contains("required") || reasonCode.contains("unsupported")) ? "validation-error"
+        : reasonCode != null && (reasonCode.contains("not-found") || reasonCode.contains("redacted") || reasonCode.contains("hidden")) ? "not-found-or-hidden"
+        : reasonCode != null && (reasonCode.contains("provider") || reasonCode.contains("runtime")) ? "blocked-provider-or-runtime"
+        : "forbidden";
+    var surface = governancePolicySystemMessageSurface(actor, status, reasonCode, message, actionId, correlationId);
     return new CapabilityActionResult("denied", message, correlationId, surface.traceIds(), surface);
+  }
+
+  private SurfaceEnvelope governancePolicySystemMessageSurface(AuthContextResolver.ResolvedMe actor, String status, String reasonCode, String message, String actionId, String correlationId) {
+    var normalizedStatus = firstNonBlank(status, "forbidden");
+    var normalizedReason = firstNonBlank(reasonCode, "GOVERNANCE_POLICY_ACTION_BLOCKED");
+    var safeMessage = firstNonBlank(message, "Backend authorization blocked this Governance/Policy request for the selected context.");
+    var traceId = "trace-governance-policy-denial-" + stableSuffix(correlationId + ":" + normalizedReason);
+    var recoveryOptions = new java.util.ArrayList<Map<String, Object>>();
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_READ_CAPABILITY)) {
+      recoveryOptions.add(mapOf("label", "Return to Governance/Policy dashboard", "targetSurfaceId", "surface-governance-policy-dashboard", "actionId", "action-governance-policy-dashboard", "sideEffect", "none"));
+      recoveryOptions.add(mapOf("label", "Open scoped policy inventory", "targetSurfaceId", "surface-governance-policy-inventory", "actionId", "action-governance-policy-list", "sideEffect", "none"));
+    }
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY)) {
+      recoveryOptions.add(mapOf("label", "Retry/open visible impact-analysis state", "targetSurfaceId", "surface-governance-policy-impact-analysis-task", "actionId", "action-governance-policy-read-impact-analysis", "sideEffect", "none"));
+    }
+    if (actor.selectedContext().capabilities().contains(AUDIT_TRACE_READ_CAPABILITY)) {
+      recoveryOptions.add(mapOf("label", "Open role-gated audit trace search", "targetSurfaceId", "surface-audit-trace-search", "actionId", "action-open-audit-trace", "sideEffect", "none"));
+    }
+    var recoverySteps = recoveryOptions.isEmpty()
+        ? List.of("Select an AuthContext with Governance/Policy authority or ask an organization administrator to review access.", "Retry only after backend authorization, selected context, lifecycle, or provider/runtime prerequisites are restored.")
+        : recoveryOptions.stream().map(option -> Objects.toString(option.get("label"), "Use a backend-authorized recovery action.")).toList();
+    var actions = new java.util.ArrayList<SurfaceAction>();
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_READ_CAPABILITY)) {
+      actions.add(governanceDashboardAction());
+      actions.add(governanceListPoliciesAction());
+    }
+    if (actor.selectedContext().capabilities().contains(GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY)) actions.add(governanceReadImpactAnalysisAction());
+    if (actor.selectedContext().capabilities().contains(AUDIT_TRACE_READ_CAPABILITY)) actions.add(openAuditAction());
+    return envelope("surface-governance-policy-system-message", "system-message", "Governance/Policy action blocked", actor, correlationId,
+        mapOf(
+            "surfaceContract", "governance.policy.system_message.v1",
+            "ownerFunctionalAgentId", GOVERNANCE_POLICY_AGENT_ID,
+            "status", normalizedStatus,
+            "severity", normalizedStatus.contains("failure") ? "error" : "warning",
+            "title", "Governance/Policy action blocked",
+            "message", safeMessage,
+            "summary", safeMessage,
+            "messageSummary", mapOf("messageId", "governance-policy-system-message-" + stableSuffix(correlationId), "originatingSurfaceId", "surface-governance-policy-system-message", "originalActionId", actionId, "status", normalizedStatus, "severity", "warning", "safeTitle", "Governance/Policy action blocked", "safeReasonCode", normalizedReason, "userMessage", safeMessage),
+            "contextSummary", mapOf("selectedWorkstream", "Governance/Policy", "selectedAuthContextId", actor.selectedContext().membershipId(), "selectedContextLabel", actor.profile().displayName() + " · " + actor.account().displayEmail(), "tenantScope", actor.selectedContext().tenantId(), "customerScope", actor.selectedContext().customerId(), "omissionReason", "hidden proposal/task/result and cross-tenant evidence are not enumerated"),
+            "recoveryOptions", List.copyOf(recoveryOptions),
+            "recoverySteps", recoverySteps,
+            "validationMessages", List.of(mapOf("field", "request", "reasonCode", normalizedReason, "message", safeMessage, "sideEffect", "none")),
+            "authorizedActions", recoveryOptions.stream().map(option -> option.get("actionId")).filter(Objects::nonNull).toList(),
+            "traceLinks", List.of(mapOf("traceId", traceId, "label", "Governance/Policy denial/failure trace", "targetSurfaceId", "surface-audit-trace-detail", "redaction", "raw ids, provider/model output, prompts, tool payloads, JWTs, and secrets are role-gated")),
+            "traceRefs", List.of(traceId),
+            "redaction", "browser-safe denial; protected data omitted; hidden policy internals, cross-tenant/customer evidence, raw provider/model output, prompts, tool payloads, JWTs, secrets, stack traces, correlation ids, and idempotency keys omitted",
+            "redactionDetails", mapOf("hiddenCrossTenantEvidence", true, "hiddenObjectExistence", true, "privilegedPolicyClauses", "omitted", "rawProviderModelData", "omitted", "rawPrompts", "omitted", "rawToolPayloads", "omitted", "jwtSecrets", "omitted", "stackTraces", "omitted", "correlationIds", "role-gated", "idempotencyKeys", "role-gated"),
+            "readiness", mapOf("provider", "not-applicable", "model", "not-applicable", "autonomousAgentRuntime", normalizedStatus.contains("blocked") ? "blocked" : "not-applicable", "configuration", normalizedStatus, "noFakeSuccess", true),
+            "requiredStates", List.of("loading", "forbidden", "missing-context", "validation-error", "conflict/stale", "blocked-provider-or-runtime", "not-found-or-hidden", "partial-data", "retryable-failure", "terminal-failure", "ready/recovery"),
+            "safeReasonCode", normalizedReason,
+            "capabilityId", firstNonBlank(actionId, GOVERNANCE_POLICY_READ_CAPABILITY),
+            "noFakeSuccess", true,
+            "noDirectMutation", true,
+            "system_message", true,
+            "sideEffect", "none",
+            "safety", mapOf("sanitized", true, "redactionNote", "Provider secrets, raw JWTs, hidden prompts, raw policy clauses, tool payloads, cross-tenant/customer evidence, stack traces, correlation ids, and idempotency keys are not shown.")),
+        List.copyOf(actions));
   }
 
   private String governancePolicySafeDenialMessage(String reasonCode) {
@@ -5197,6 +5256,7 @@ public final class WorkstreamService {
       case "surface-governance-policy-simulation" -> governancePolicySimulationSurface(actor, null, correlationId);
       case "surface-governance-policy-decision" -> governancePolicyDecisionSurface(actor, null, correlationId);
       case "surface-governance-policy-outcome" -> governancePolicyOutcomeSurface(actor, null, correlationId);
+      case "surface-governance-policy-system-message" -> governancePolicySystemMessageSurface(actor, "ready/recovery", "safe-recovery", "Governance/Policy recovery state is available for the selected context without mutating policy state.", "action-governance-policy-dashboard", correlationId);
       case "surface-governance-policy-activation-blocked" -> governancePolicyActivationBlockedSurface(actor, correlationId);
       case "surface-governance-policy-rollback-blocked" -> governancePolicyRollbackBlockedSurface(actor, correlationId);
       case "surface-governance-policy-impact-analysis-task" -> governancePolicyImpactAnalysisBlockedSurface(actor, correlationId);
