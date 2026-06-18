@@ -7844,7 +7844,7 @@
 
 ### TASK-FSCT-222: Verify or complete runtime testing for `surface-governance-policy-outcome`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-221]
 - surface id: `surface-governance-policy-outcome`
@@ -7878,6 +7878,7 @@
   - purpose: Policy outcome notes/metrics/evidence.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-outcome`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-outcome`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added backend/API/browser smoke coverage for `surface-governance-policy-outcome` and frontend contract assertions for the Governance/Policy outcome renderer. Evidence covers Akka-hosted `/ui`, protected bootstrap/surface/action API paths, tenant admin selected AuthContext success, direct empty/no-enumeration outcome read, submitted proposal outcome open, governed outcome note success with no authority mutation, missing-bearer rejection, required idempotency-key denial, member missing-capability denial, direct member read denial, cross-tenant denial, provider/runtime fail-closed impact-analysis state, trace/correlation/admin-audit/policy-decision/workstream refs, and browser-safe/no-secret boundaries. Checks passed after `mvn -q compile` regenerated Akka component descriptors: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicyOutcomeRuntimePath test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-223: Verify or complete app-description specification for `surface-governance-policy-impact-analysis-task`
 

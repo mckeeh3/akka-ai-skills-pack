@@ -1131,6 +1131,245 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertBrowserSafe(rollback.resultSurface());
   }
 
+  @Test
+  @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiExercisesGovernancePolicyOutcomeRuntimePath() throws Exception {
+    var outcomeTenantId = "tenant-governance-outcome-" + System.nanoTime();
+    var outcomeCustomerId = "customer-governance-outcome-" + System.nanoTime();
+    var outcomeAdminContextId = "membership-governance-outcome-admin-" + System.nanoTime();
+    var outcomeMemberContextId = "membership-governance-outcome-member-" + System.nanoTime();
+    var outcomeAdminSubject = "workos-governance-outcome-admin-" + System.nanoTime();
+    var outcomeMemberSubject = "workos-governance-outcome-member-" + System.nanoTime();
+    var outcomeAdminEmail = outcomeAdminSubject + "@example.test";
+    var outcomeMemberEmail = outcomeMemberSubject + "@example.test";
+    var repository = new AkkaIdentityRepository(componentClient);
+    repository.saveTenant(new Tenant(outcomeTenantId, "Governance Outcome Smoke Tenant", true));
+    repository.saveCustomer(new Customer(outcomeTenantId, outcomeCustomerId, "Governance Outcome Smoke Customer", true));
+    seedIdentity(repository, outcomeAdminEmail, "Governance Outcome Admin", outcomeAdminContextId, List.of(FoundationRole.TENANT_ADMIN), outcomeTenantId, outcomeCustomerId);
+    seedIdentity(repository, outcomeMemberEmail, "Governance Outcome Member", outcomeMemberContextId, List.of(FoundationRole.TENANT_EMPLOYEE), outcomeTenantId, outcomeCustomerId);
+
+    var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
+    assertTrue(shell.status().isSuccess(), "Hosted /ui shell must load before the outcome surface is exercised through browser API paths.");
+    assertTrue(shell.body().contains("<div id=\"root\"></div>"));
+    assertTrue(shell.body().contains("/assets/"));
+    assertBrowserSafe(shell.body());
+
+    var bootstrap = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken(outcomeAdminSubject, outcomeAdminEmail, "Governance Outcome Admin"))
+        .addHeader("X-Selected-Context-Id", outcomeAdminContextId)
+        .addHeader("X-Correlation-Id", "corr-governance-outcome-bootstrap")
+        .responseBodyAs(WorkstreamBootstrapResponse.class)
+        .invoke();
+    assertTrue(bootstrap.status().isSuccess());
+    assertEquals(outcomeAdminContextId, bootstrap.body().me().selectedAuthContext().selectedContextId());
+    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-governance-policy") && agent.availability().equals("visible")));
+    assertBrowserSafe(bootstrap.body());
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-governance-policy-outcome")
+        .addHeader("X-Selected-Context-Id", outcomeAdminContextId)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy outcome surface path must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", outcomeAdminContextId)
+        .addHeader("X-Correlation-Id", "corr-governance-outcome-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-governance-policy-outcome-note",
+            "action-governance-policy-outcome-note",
+            "governance.outcomes.record",
+            "governance.outcomes.record",
+            Map.of("proposalId", "proposal-missing", "note", "missing bearer must be rejected"),
+            "idem-governance-outcome-missing-bearer",
+            outcomeAdminContextId,
+            "surface-governance-policy-outcome",
+            "corr-governance-outcome-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy outcome action path must reject missing bearer tokens.");
+
+    var directEmpty = getSurfaceAs("surface-governance-policy-outcome", "corr-governance-outcome-direct-empty", outcomeAdminSubject, outcomeAdminEmail, "Governance Outcome Admin", outcomeAdminContextId);
+    assertEquals("surface-governance-policy-outcome", directEmpty.surfaceId());
+    assertEquals("outcome-panel", directEmpty.surfaceType());
+    assertEquals("governance.policy.outcome.v1", directEmpty.data().get("surfaceContract"));
+    assertEquals(true, directEmpty.data().get("noDirectMutation"));
+    assertEquals(true, directEmpty.data().get("noFakeSuccess"));
+    assertTrue(directEmpty.toString().contains("missing_visible_proposal") || directEmpty.toString().contains("outcomeSummary"));
+    assertTrue(directEmpty.toString().contains("blocked_provider_or_runtime"));
+    assertTrue(directEmpty.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-outcome")));
+    assertBrowserSafe(directEmpty);
+
+    var draft = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-draft-proposal",
+        "action-governance-policy-draft-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of(
+            "title", "Outcome smoke policy proposal",
+            "rationale", "exercise outcome-panel runtime path",
+            "proposedContent", "Record outcome evidence without approving, activating, rolling back, mutating authority, or exposing secrets."),
+        "idem-governance-outcome-draft",
+        outcomeAdminContextId,
+        "surface-governance-policy-proposal",
+        "corr-governance-outcome-draft"),
+        outcomeAdminSubject, outcomeAdminEmail, "Governance Outcome Admin", outcomeAdminContextId);
+    assertEquals("accepted", draft.status());
+    var proposalId = String.valueOf(draft.resultSurface().data().get("proposalId"));
+    assertBrowserSafe(draft.resultSurface());
+
+    var submitted = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-submit-proposal",
+        "action-governance-policy-submit-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("proposalId", proposalId),
+        "idem-governance-outcome-submit",
+        outcomeAdminContextId,
+        draft.resultSurface().surfaceId(),
+        "corr-governance-outcome-submit"),
+        outcomeAdminSubject, outcomeAdminEmail, "Governance Outcome Admin", outcomeAdminContextId);
+    assertEquals("accepted", submitted.status());
+    assertEquals("in_review", submitted.resultSurface().data().get("state"));
+    assertBrowserSafe(submitted.resultSurface());
+
+    var openedOutcome = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-read",
+        "action-governance-policy-read",
+        "governance.policy.read",
+        "governance.policy.read",
+        Map.of("proposalId", proposalId, "targetSurfaceId", "surface-governance-policy-outcome", "tenantId", outcomeTenantId, "customerId", outcomeCustomerId),
+        null,
+        outcomeAdminContextId,
+        "surface-governance-policy-outcome",
+        "corr-governance-outcome-open"),
+        outcomeAdminSubject, outcomeAdminEmail, "Governance Outcome Admin", outcomeAdminContextId);
+    assertEquals("accepted", openedOutcome.status());
+    assertEquals("surface-governance-policy-outcome", openedOutcome.resultSurface().surfaceId());
+    assertEquals("outcome-panel", openedOutcome.resultSurface().surfaceType());
+    assertEquals("governance.policy.outcome.v1", openedOutcome.resultSurface().data().get("surfaceContract"));
+    assertEquals(proposalId, openedOutcome.resultSurface().data().get("proposalId"));
+    assertEquals(true, openedOutcome.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, openedOutcome.resultSurface().data().get("noFakeSuccess"));
+    assertTrue(openedOutcome.resultSurface().toString().contains("outcomeSummary"));
+    assertTrue(openedOutcome.resultSurface().toString().contains("metrics"));
+    assertTrue(openedOutcome.resultSurface().toString().contains("recommendations"));
+    assertTrue(openedOutcome.resultSurface().toString().contains("evidenceRefs"));
+    assertTrue(openedOutcome.resultSurface().toString().contains("noteForm"));
+    assertTrue(openedOutcome.resultSurface().toString().contains("blocked_provider_or_runtime"));
+    assertTrue(openedOutcome.resultSurface().toString().contains("raw ids, provider output, prompts, tool payloads, and secrets are role-gated"));
+    assertTrue(openedOutcome.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-outcome")));
+    assertTrue(openedOutcome.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-outcome-note") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-outcome")));
+    assertTrue(openedOutcome.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-start-impact-analysis") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-impact-analysis-task")));
+    var metrics = (List<Map<String, Object>>) openedOutcome.resultSurface().data().get("metrics");
+    assertTrue(metrics.stream().anyMatch(metric -> "provider-runtime-readiness".equals(metric.get("metricId")) && String.valueOf(metric.get("summary")).contains("blocked_provider_or_runtime")));
+    assertBrowserSafe(openedOutcome.resultSurface());
+
+    var missingIdempotency = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-outcome-note",
+        "action-governance-policy-outcome-note",
+        "governance.outcomes.record",
+        "governance.outcomes.record",
+        Map.of("proposalId", proposalId, "note", "missing idempotency should not append"),
+        null,
+        outcomeAdminContextId,
+        openedOutcome.resultSurface().surfaceId(),
+        "corr-governance-outcome-missing-idempotency"),
+        outcomeAdminSubject, outcomeAdminEmail, "Governance Outcome Admin", outcomeAdminContextId);
+    assertEquals("denied", missingIdempotency.status());
+    assertEquals("surface-governance-policy-system-message", missingIdempotency.resultSurface().surfaceId());
+    assertTrue(missingIdempotency.resultSurface().toString().contains("idempotency"));
+    assertEquals(true, missingIdempotency.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, missingIdempotency.resultSurface().data().get("noFakeSuccess"));
+    assertBrowserSafe(missingIdempotency.resultSurface());
+
+    var noted = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-outcome-note",
+        "action-governance-policy-outcome-note",
+        "governance.outcomes.record",
+        "governance.outcomes.record",
+        Map.of("proposalId", proposalId, "note", "Human reviewer observed outcome evidence and no authority changed.", "tenantId", outcomeTenantId),
+        "idem-governance-outcome-note",
+        outcomeAdminContextId,
+        openedOutcome.resultSurface().surfaceId(),
+        "corr-governance-outcome-note"),
+        outcomeAdminSubject, outcomeAdminEmail, "Governance Outcome Admin", outcomeAdminContextId);
+    assertEquals("accepted", noted.status());
+    assertEquals("surface-governance-policy-outcome", noted.resultSurface().surfaceId());
+    assertEquals("governance.policy.outcome.v1", noted.resultSurface().data().get("surfaceContract"));
+    assertTrue(noted.message().contains("no direct authority change"));
+    assertTrue(noted.resultSurface().toString().contains("Human reviewer observed outcome evidence"));
+    assertTrue(noted.resultSurface().toString().contains("admin-audit"));
+    assertTrue(noted.resultSurface().toString().contains("policy-decision"));
+    assertTrue(noted.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-outcome-note")));
+    assertBrowserSafe(noted.resultSurface());
+
+    var impact = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-start-impact-analysis",
+        "action-governance-policy-start-impact-analysis",
+        "governance.policy.impact_analysis.start",
+        "governance.policy.impact_analysis.start",
+        Map.of("proposalId", proposalId, "scope", "outcome-smoke", "reason", "verify outcome panel provider/runtime fail-closed path"),
+        "idem-governance-outcome-impact",
+        outcomeAdminContextId,
+        noted.resultSurface().surfaceId(),
+        "corr-governance-outcome-impact"),
+        outcomeAdminSubject, outcomeAdminEmail, "Governance Outcome Admin", outcomeAdminContextId);
+    assertEquals("blocked_provider_or_runtime", impact.status());
+    assertEquals("surface-governance-policy-impact-analysis-task", impact.resultSurface().surfaceId());
+    assertEquals("blocked_provider_or_runtime", impact.resultSurface().data().get("status"));
+    assertTrue(impact.resultSurface().toString().contains("AutonomousAgent"));
+    assertFalse(impact.resultSurface().toString().contains("impact_ready"));
+    assertBrowserSafe(impact.resultSurface());
+
+    var memberDenied = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-outcome-note",
+        "action-governance-policy-outcome-note",
+        "governance.outcomes.record",
+        "governance.outcomes.record",
+        Map.of("proposalId", proposalId, "note", "member context must be denied"),
+        "idem-governance-outcome-member-denied",
+        outcomeMemberContextId,
+        openedOutcome.resultSurface().surfaceId(),
+        "corr-governance-outcome-member-denied"),
+        outcomeMemberSubject,
+        outcomeMemberEmail,
+        "Governance Outcome Member",
+        outcomeMemberContextId);
+    assertEquals("denied", memberDenied.status());
+    assertEquals("surface-governance-policy-system-message", memberDenied.resultSurface().surfaceId());
+    assertTrue(memberDenied.resultSurface().toString().contains("CAPABILITY_FORBIDDEN"));
+    assertEquals(true, memberDenied.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, memberDenied.resultSurface().data().get("noFakeSuccess"));
+    assertBrowserSafe(memberDenied.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-governance-policy-outcome",
+        "corr-governance-outcome-member-direct-denied",
+        outcomeMemberSubject,
+        outcomeMemberEmail,
+        "Governance Outcome Member",
+        outcomeMemberContextId), "Regular tenant members must not read the Governance/Policy outcome surface.");
+
+    var crossTenant = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-outcome-note",
+        "action-governance-policy-outcome-note",
+        "governance.outcomes.record",
+        "governance.outcomes.record",
+        Map.of("proposalId", proposalId, "tenantId", "tenant-other", "note", "cross tenant outcome must be denied"),
+        "idem-governance-outcome-cross-tenant",
+        outcomeAdminContextId,
+        noted.resultSurface().surfaceId(),
+        "corr-governance-outcome-cross-tenant"),
+        outcomeAdminSubject, outcomeAdminEmail, "Governance Outcome Admin", outcomeAdminContextId);
+    assertEquals("denied", crossTenant.status());
+    assertEquals("surface-governance-policy-system-message", crossTenant.resultSurface().surfaceId());
+    assertTrue(crossTenant.resultSurface().toString().contains("GOVERNANCE_POLICY_TENANT_FORBIDDEN"));
+    assertEquals(true, crossTenant.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, crossTenant.resultSurface().data().get("noFakeSuccess"));
+    assertBrowserSafe(crossTenant.resultSurface());
+  }
+
   private SurfaceEnvelope getSurface(String surfaceId, String correlationId) throws Exception {
     return getSurfaceAs(surfaceId, correlationId, "workos-governance-admin", "governance-admin@example.test", "Governance Admin", ADMIN_CONTEXT_ID);
   }

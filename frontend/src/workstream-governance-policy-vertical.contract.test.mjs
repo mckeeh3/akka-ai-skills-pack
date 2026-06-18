@@ -11,6 +11,7 @@ const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
 const diff = read('./workstream/surfaces/GovernanceDiffSurface.tsx');
 const decision = read('./workstream/surfaces/DecisionSurface.tsx');
 const listSearch = read('./workstream/surfaces/ListSearchSurface.tsx');
+const outcome = read('./workstream/surfaces/OutcomeSurface.tsx');
 const types = read('./workstream/types/surfaces.ts');
 const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 
@@ -146,6 +147,34 @@ test('Governance/Policy inventory renderer keeps row actions backend-scoped, tra
     assert.match(listSearch, new RegExp(escapeRegExp(marker)));
   }
   assert.doesNotMatch(listSearch, /localStorage\.getItem\(['"](?:token|jwt|apiKey)|Authorization\s*=|dangerouslySetInnerHTML|innerHTML\s*=/);
+});
+
+test('Governance/Policy outcome-panel renderer keeps notes governed, trace-linked, and browser-safe', () => {
+  for (const marker of [
+    'governance.policy.outcome.v1',
+    'surface-governance-policy-outcome',
+    'GovernancePolicyOutcomePanel',
+    'Governance Policy outcome panel',
+    'Outcome notes append governed feedback only',
+    'cannot approve, activate, roll back, weaken policy, mutate metrics directly, or fabricate advisory evidence',
+    'action-governance-policy-outcome-note',
+    'targetSurfaceId: envelope.surfaceId',
+    'surface-audit-trace-detail',
+    'Browser-safe redaction',
+    'Provider/runtime'
+  ]) {
+    assert.match(outcome, new RegExp(escapeRegExp(marker)));
+  }
+  for (const marker of [
+    'proposalId?: string;',
+    'outcomeSummary?: Record<string, unknown>;',
+    'noteForm?: Record<string, unknown>;',
+    'noteHistory?: string[];',
+    'noFakeSuccess?: boolean;'
+  ]) {
+    assert.match(types, new RegExp(escapeRegExp(marker)));
+  }
+  assert.doesNotMatch(outcome, /localStorage\.getItem\(['"](?:token|jwt|apiKey)|Authorization\s*=|dangerouslySetInnerHTML|innerHTML\s*=/);
 });
 
 test('Governance/Policy fixture client returns structured results for dashboard, inventory, and simulation actions', () => {
