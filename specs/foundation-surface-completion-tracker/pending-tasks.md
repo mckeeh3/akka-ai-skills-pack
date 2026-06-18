@@ -6996,7 +6996,7 @@
 
 ### TASK-FSCT-198: Verify or complete runtime testing for `surface-audit-trace-investigation-note`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-197]
 - surface id: `surface-audit-trace-investigation-note`
@@ -7030,6 +7030,7 @@
   - purpose: Human investigation note append result.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-investigation-note`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-investigation-note`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added dedicated protected Akka-hosted investigation-note runtime smoke coverage in `AuditTraceBrowserWorkstreamSmokeTest` for missing-bearer GET/POST rejection, direct refresh `not_found_or_redacted` no-record behavior, authorized search-to-note append, blank-note validation, browser-safe redaction of secret-like note content, trace/correlation refs, `noteResult`/`targetEvidence`/`notePolicy`/allowed follow-up action payloads, `noDirectMutation`, idempotent durable workstream item persistence, regular-member denial, and cross-customer denial. Frontend Audit/Trace contract smoke also verifies generic system-message/action rendering and secret-boundary assertions. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceInvestigationNoteCoversDirectRefreshAppendValidationDenialsAndSecretBoundaries test`, `node --test frontend/src/workstream-audit-trace-vertical.contract.test.mjs`, and `git diff --check`.
 
 ### TASK-FSCT-199: Verify or complete app-description specification for `surface-audit-trace-summary-progress`
 

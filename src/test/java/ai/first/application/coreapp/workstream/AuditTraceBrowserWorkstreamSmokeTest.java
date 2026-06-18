@@ -12,6 +12,7 @@ import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActio
 import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActionResult;
 import ai.first.application.coreapp.workstream.WorkstreamService.SurfaceEnvelope;
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamBootstrapResponse;
+import ai.first.application.foundation.audit.AuditTraceService;
 import ai.first.application.foundation.identity.AkkaIdentityRepository;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
@@ -1553,6 +1554,161 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  void protectedAuditTraceInvestigationNoteCoversDirectRefreshAppendValidationDenialsAndSecretBoundaries() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-audit-trace-investigation-note")
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Audit/Trace investigation-note result must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-audit-note-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-audit-trace-append-investigation-note",
+            "action-audit-trace-append-investigation-note",
+            "audit.trace.investigation_note.append",
+            "audit.trace.investigation_note.append",
+            Map.of("traceId", "trace-redacted", "note", "missing bearer should not append"),
+            "idem-audit-note-missing-bearer",
+            AUDITOR_CONTEXT_ID,
+            "surface-audit-trace-detail",
+            "corr-audit-note-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Audit/Trace investigation-note action must reject missing bearer tokens.");
+
+    var directRefresh = getSurface("surface-audit-trace-investigation-note", "corr-audit-note-direct-refresh");
+    assertEquals("surface-audit-trace-investigation-note", directRefresh.surfaceId());
+    assertEquals("system-message", directRefresh.surfaceType());
+    assertEquals("audit.trace.investigationNote.v1", directRefresh.data().get("surfaceContract"));
+    assertEquals("not_found_or_redacted", directRefresh.data().get("status"));
+    assertEquals("corr-audit-note-direct-refresh", directRefresh.correlationId());
+    assertTrue(directRefresh.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-audit-note")));
+    assertTrue(String.valueOf(directRefresh.data().get("noteResult")).contains("not_found_or_redacted"));
+    assertTrue(String.valueOf(directRefresh.data().get("disabledActions")).contains("validation_required"));
+    assertTrue(String.valueOf(directRefresh.data().get("targetEvidence")).contains("Source traces, policy, authorization, retained evidence"));
+    assertBrowserSafe(directRefresh);
+
+    var search = runAction(new CapabilityActionRequest(
+        "action-audit-trace-search",
+        "action-audit-trace-search",
+        "audit.trace.search",
+        "audit.trace.search",
+        Map.of("filter", "AUTH_CONTEXT", "pageSize", 5),
+        null,
+        AUDITOR_CONTEXT_ID,
+        "surface-audit-trace-dashboard",
+        "corr-audit-note-search-target"));
+    assertEquals("accepted", search.status());
+    var rows = (List<Map<String, Object>>) search.resultSurface().data().get("rows");
+    assertFalse(rows.isEmpty(), "Investigation note smoke needs an authorized Audit/Trace row as target evidence.");
+    var traceId = String.valueOf(rows.get(0).get("traceId"));
+
+    var validation = runAction(new CapabilityActionRequest(
+        "action-audit-trace-append-investigation-note",
+        "action-audit-trace-append-investigation-note",
+        "audit.trace.investigation_note.append",
+        "audit.trace.investigation_note.append",
+        Map.of("traceId", traceId, "note", ""),
+        "idem-audit-note-validation",
+        AUDITOR_CONTEXT_ID,
+        search.resultSurface().surfaceId(),
+        "corr-audit-note-validation"));
+    assertEquals("validation-error", validation.status());
+    assertEquals("surface-audit-trace-investigation-note", validation.resultSurface().surfaceId());
+    assertEquals("validation-error", validation.resultSurface().data().get("status"));
+    assertTrue(String.valueOf(validation.resultSurface().data().get("validationErrors")).contains("note"));
+    assertTrue(String.valueOf(validation.resultSurface().data().get("disabledActions")).contains("note_body_rejected"));
+    assertBrowserSafe(validation.resultSurface());
+
+    var idempotencyKey = "idem-audit-note-runtime-smoke";
+    var expectedItemId = "item-audit-trace-note-" + AuditTraceService.stableSuffix(idempotencyKey);
+    var note = runAction(new CapabilityActionRequest(
+        "action-audit-trace-append-investigation-note",
+        "action-audit-trace-append-investigation-note",
+        "audit.trace.investigation_note.append",
+        "audit.trace.investigation_note.append",
+        Map.of("traceId", traceId, "note", "Runtime smoke note references api_key=secret and bearer hidden-token for redaction."),
+        idempotencyKey,
+        AUDITOR_CONTEXT_ID,
+        search.resultSurface().surfaceId(),
+        "corr-audit-note-recorded"));
+    assertEquals("recorded", note.status());
+    assertEquals("surface-audit-trace-investigation-note", note.resultSurface().surfaceId());
+    assertEquals("audit.trace.investigationNote.v1", note.resultSurface().data().get("surfaceContract"));
+    assertEquals("recorded", note.resultSurface().data().get("status"));
+    assertEquals("ready", note.resultSurface().data().get("readiness"));
+    assertTrue(note.traceIds().stream().anyMatch(trace -> trace.contains("trace-audit-note")));
+    assertTrue(String.valueOf(note.resultSurface().data().get("noteResult")).contains("client-generated-key-present-redacted"));
+    assertTrue(String.valueOf(note.resultSurface().data().get("annotation")).contains("[REDACTED]"));
+    assertTrue(String.valueOf(note.resultSurface().data().get("allowedActions")).contains("action-audit-trace-detail"));
+    assertTrue(String.valueOf(note.resultSurface().data().get("allowedActions")).contains("action-audit-trace-dashboard"));
+    assertEquals(true, note.resultSurface().data().get("noDirectMutation"));
+    assertTrue(String.valueOf(note.resultSurface().data().get("redaction")).contains("Raw note bodies before sanitization"));
+    assertBrowserSafe(note.resultSurface());
+
+    var replay = runAction(new CapabilityActionRequest(
+        "action-audit-trace-append-investigation-note",
+        "action-audit-trace-append-investigation-note",
+        "audit.trace.investigation_note.append",
+        "audit.trace.investigation_note.append",
+        Map.of("traceId", traceId, "note", "Runtime smoke note references api_key=secret and bearer hidden-token for redaction."),
+        idempotencyKey,
+        AUDITOR_CONTEXT_ID,
+        search.resultSurface().surfaceId(),
+        "corr-audit-note-recorded-replay"));
+    assertEquals("recorded", replay.status());
+    assertEquals(note.resultSurface().data().get("noteSummary"), replay.resultSurface().data().get("noteSummary"));
+    assertBrowserSafe(replay.resultSurface());
+
+    var items = httpClient
+        .GET("/api/workstream/items?functionalAgentId=agent-audit-trace")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-audit-auditor", "auditor@example.test", "Audit Reviewer"))
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-audit-note-items")
+        .responseBodyAs(String.class)
+        .invoke();
+    assertTrue(items.status().isSuccess());
+    assertTrue(items.body().contains(expectedItemId), "Recorded investigation note should create a stable, idempotent workstream item.");
+    assertEquals(1, countOccurrences(items.body(), expectedItemId), "Idempotent replay must not duplicate the durable note workstream item.");
+    assertBrowserSafe(items.body());
+
+    assertThrows(RuntimeException.class, () -> runActionAs(
+        new CapabilityActionRequest(
+            "action-audit-trace-append-investigation-note",
+            "action-audit-trace-append-investigation-note",
+            "audit.trace.investigation_note.append",
+            "audit.trace.investigation_note.append",
+            Map.of("traceId", traceId, "note", "member should not append"),
+            "idem-audit-note-member-denied",
+            MEMBER_CONTEXT_ID,
+            search.resultSurface().surfaceId(),
+            "corr-audit-note-member-denied"),
+        "workos-audit-member",
+        "member-audit@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not append Audit/Trace investigation notes.");
+
+    assertThrows(RuntimeException.class, () -> runActionAs(
+        new CapabilityActionRequest(
+            "action-audit-trace-append-investigation-note",
+            "action-audit-trace-append-investigation-note",
+            "audit.trace.investigation_note.append",
+            "audit.trace.investigation_note.append",
+            Map.of("traceId", traceId, "note", "cross-customer should not append", "customerId", "customer-other"),
+            "idem-audit-note-cross-customer-denied",
+            CUSTOMER_CONTEXT_ID,
+            search.resultSurface().surfaceId(),
+            "corr-audit-note-cross-customer-denied"),
+        "workos-audit-customer",
+        "customer-audit@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped Audit/Trace notes must not enumerate or annotate a different customer scope.");
+  }
+
+  @Test
   void protectedAuditTraceDashboardDeniesUnauthorizedAndDisabledContextsSafelyWhileScopingCustomers() throws Exception {
     assertThrows(RuntimeException.class, () -> getSurfaceAs(
         "surface-audit-trace-dashboard",
@@ -1651,6 +1807,16 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
     var header = Base64.getEncoder().encodeToString("{\"alg\":\"none\"}".getBytes());
     var payload = Base64.getEncoder().encodeToString(JsonSupport.getObjectMapper().writeValueAsBytes(Map.of("sub", subject, "email", email, "name", name)));
     return header + "." + payload;
+  }
+
+  private static int countOccurrences(String haystack, String needle) {
+    var count = 0;
+    var fromIndex = 0;
+    while ((fromIndex = haystack.indexOf(needle, fromIndex)) >= 0) {
+      count++;
+      fromIndex += needle.length();
+    }
+    return count;
   }
 
   private static void assertBrowserSafe(Object payload) {
