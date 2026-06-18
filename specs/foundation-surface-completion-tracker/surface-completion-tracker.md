@@ -987,7 +987,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | 2026-06-18 app-description specification completed in `app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md`: expanded `surface-governance-policy-simulation` / `governance.policy.simulation.v1` with Governance/Policy ownership, `governance-policy-agent` placement, domain-specific advisory evidence role, backend-resolved selected AuthContext data source, frontend-safe simulation summary/expected access/warnings/confidence/activation gate payload, visibility split, loading/empty/running/ready/validation/forbidden/stale/partial/blocked/read-only/success/failure states, protected `action-governance-policy-simulate` and related read/decision/impact/outcome action contract, tenant/customer authorization and no-enumeration denial rules, trace/audit/work evidence, provider/runtime fail-closed behavior, accessibility/responsive requirements, required app-description/frontend/backend/negative tests, and sufficiency review. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

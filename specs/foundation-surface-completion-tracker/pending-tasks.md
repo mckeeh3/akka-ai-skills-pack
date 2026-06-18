@@ -7564,7 +7564,7 @@
 
 ### TASK-FSCT-214: Verify or complete app-description specification for `surface-governance-policy-simulation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-governance-policy-simulation`
@@ -7593,6 +7593,7 @@
   - purpose: Advisory simulation surface.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-simulation` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded `surface-governance-policy-simulation` app-description with ownership, advisory single-action role, backend-resolved AuthContext data source, frontend-safe simulation/expected-access/warning/confidence/activation-gate payload, visibility split, state semantics, action contract, tenant/customer auth and no-enumeration denials, trace/audit/work evidence, provider/runtime fail-closed behavior, accessibility/responsive expectations, required tests, and sufficiency review; tracker evidence updated. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description.
 
 ### TASK-FSCT-215: Verify or complete runtime implementation for `surface-governance-policy-simulation`
 

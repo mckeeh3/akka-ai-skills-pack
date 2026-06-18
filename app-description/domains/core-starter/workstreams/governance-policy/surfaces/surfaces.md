@@ -299,7 +299,95 @@ Surface-description sufficiency review: this definition is sufficiently unambigu
 
 Pattern: `governance-diff`.
 
-Simulation is advisory and cannot grant authority. Required payload includes simulation id, proposal id, scenario summary, expected allows, expected denials, warnings, confidence, evidence trace refs, activation gate summary, and `noDirectMutation=true`.
+Owning workstream: Governance/Policy. Owning functional agent: `governance-policy-agent`. Reusable placements: opened from `surface-governance-policy-dashboard` simulation attention items, `surface-governance-policy-inventory` row actions, `surface-governance-policy-proposal` lifecycle gates, decision/activation prerequisites, impact-analysis evidence follow-ups, and audit/trace drilldowns only when the selected `AuthContext` grants Governance/Policy simulation authority. Purpose: produce and inspect advisory policy-change simulation evidence for a visible proposal without granting, approving, activating, rolling back, or otherwise changing production authority.
+
+Collection-object progression role: this is the domain-specific single-action advisory evidence surface for a policy proposal. It is not the proposal editor, approval card, activation command, rollback command, impact-analysis task, or outcome note surface. Selection and breadcrumbs return to the scoped proposal, detail, or inventory surface; decision and activation work route to their dedicated surfaces after backend prerequisites are satisfied.
+
+User goal: understand the expected access effects, denials, warnings, confidence limits, provider/runtime readiness, and activation blockers for a proposed policy change, then choose the next authorized follow-up without exposing hidden policy internals or raw model/tool output.
+
+Data source and backend authority: the payload is produced by the protected Governance/Policy simulation projection for the backend-resolved tenant/customer/workspace scope. Browser-provided proposal ids, scenario/scope hints, tenant/customer hints, correlation keys, and idempotency keys are treated as untrusted request metadata; the backend re-resolves selected `AuthContext`, proposal visibility, simulation capability, lifecycle prerequisites, redaction, provider/runtime readiness, and trace visibility before returning this surface or a safe system message.
+
+Required payload schema (frontend-safe):
+
+- `simulationSummary`: simulation display ref, proposal display ref, proposal title, lifecycle/status label, scenario name, selected scenario scope summary, requested actor/customer/workspace summary when safe, simulation status, freshness/conflict status, confidence label, and safe empty/not-run copy.
+- `expectedAccessChanges`: user-safe allow/deny/change summaries grouped by affected capability family, actor group, resource type, and customer/workspace scope; each row includes expected outcome, risk label, evidence status, and redaction markers without raw policy clauses or hidden role rules in the default view.
+- `expectedAllows`: expected newly allowed or retained access outcomes with reason summary, scope label, risk classification, and evidence status.
+- `expectedDenials`: expected denied, removed, or blocked access outcomes with safe reason summary, affected role/group label, scope label, and user-facing recovery copy where the denial is unexpected.
+- `warnings`: validation, coverage, stale-data, incomplete-scenario, provider/runtime, hidden-evidence, and activation-prerequisite warnings with severity, disabled-action reason, and safe recovery guidance.
+- `confidenceAndLimits`: confidence label, coverage summary, known blind spots, last simulated time/age bucket, provider/runtime readiness, and statement that advisory evidence is not an approval or activation.
+- `activationGate`: whether simulation evidence is required, current gate state, missing prerequisites, related impact-analysis status, disabled approval/activation reasons, and next authorized target surfaces.
+- `availableTransitions`: backend-authorized follow-up actions valid for the current proposal and simulation state, including rerun simulation, open proposal, open decision, start/read impact analysis, or open outcome note only when the selected actor and lifecycle state permit them.
+- `authorizedActions`: only actions the backend authorizes for the selected actor, including `action-governance-policy-simulate`, `action-governance-policy-read`, `action-governance-policy-decide`, `action-governance-policy-start-impact-analysis`, `action-governance-policy-read-impact-analysis`, and `action-governance-policy-outcome-note` when each corresponding capability and lifecycle rule is satisfied.
+- `traceLinks`: user-readable trace summaries plus role-gated references to policy-decision trace, admin-audit event, workstream-log trace, agent-work trace, simulation/provider failure traces, impact-analysis task events, source artifact trace, and denial traces.
+- `redaction`: field-level indicators for hidden cross-tenant/customer evidence, privileged policy clauses, hidden authority state, raw provider/model output, raw prompts, raw governed-tool payloads, JWTs, secrets, raw correlation ids, and idempotency keys.
+- `readiness`: provider/runtime/configuration state for simulation represented as ready, queued, running, blocked, unknown, or not-required summaries; unavailable providers or autonomous-agent runtime return blocked states and never fabricated successful analysis.
+- `noDirectMutation`: always `true`; the browser renders backend-authored advisory state and sends governed actions only. It cannot approve, activate, roll back, weaken security, expand authority, or fabricate simulation evidence locally.
+
+Visibility split:
+
+- Default user-visible fields: proposal title/display ref, scenario label, lifecycle/status label, safe expected allow/deny/change summaries, warning and blocker copy, confidence/risk summary, authorized next actions, and recovery instructions.
+- On-demand drilldown fields: simulation display refs, scenario inputs, detailed expected-access rows, redacted evidence summaries, lifecycle history, impact-analysis relationship, outcome note summaries, and trace summaries.
+- Admin/support/auditor-only fields: capability ids, policy-decision trace refs, admin-audit refs, workstream-log refs, agent-work refs, simulation/provider failure evidence, impact-analysis task refs, denial evidence, redaction reasons, and diagnostic idempotency/correlation status.
+- Internal-only metadata never rendered in ordinary browser payloads: raw policy engine clauses, raw role policy state, raw provider/model data, prompts, governed-tool payloads, backend component names, database ids/cursors, cross-tenant identifiers, JWTs/secrets, correlation ids, and idempotency implementation details.
+
+Required states: loading, empty/not-run, queued/running, ready, validation-error, forbidden/system-message, conflict/stale, partial-data, blocked-provider-or-runtime, read-only, success/advisory-complete, and failure.
+
+State semantics:
+
+- `loading`: workstream shell has selected Governance/Policy and is fetching the protected simulation projection.
+- `empty/not-run`: actor is authorized to simulate, but no current simulation evidence exists for the visible proposal/scenario; render backend-authored scenario guidance and the authorized run action.
+- `queued/running`: a governed simulation request is accepted or in progress; repeat starts use idempotency and do not duplicate simulation jobs or imply completion.
+- `ready`: expected access changes, warnings, confidence, activation gate, traces, and authorized transitions are backed by the protected simulation projection for the selected `AuthContext`.
+- `validation-error`: missing proposal id, hidden proposal, unsupported scenario/scope, lifecycle-precondition failure, stale idempotency, or invalid request shape returns field-level/user-safe copy with no hidden policy enumeration.
+- `forbidden/system-message`: missing bearer token, missing selected context, missing `governance.policy.simulate`, hidden proposal, or tenant/customer scope denial returns `surface-governance-policy-system-message` with `noFakeSuccess=true`, `noDirectMutation=true`, and no hidden proposal enumeration.
+- `conflict/stale`: proposal version, source artifact, lifecycle state, scenario data, provider readiness, or trace freshness changed since the actor opened the surface; disable side-effecting follow-up actions until refresh or rerun.
+- `partial-data`: some evidence, expected-access rows, trace summaries, or source artifact details are omitted; visible sections identify what was omitted and why.
+- `blocked-provider-or-runtime`: required provider, model, policy simulator, or autonomous-agent runtime is unavailable; show blocked status and recovery, disable success-dependent transitions, and do not fabricate simulation results.
+- `read-only`: actor can inspect existing simulation evidence but cannot start or rerun simulation; denied actions are omitted or shown as safe disabled explanations only when useful.
+- `success/advisory-complete`: backend completed advisory simulation and returns refreshed evidence; approval, activation, rollback, or authority changes are not claimed.
+- `failure`: unexpected read or command failure returns a safe system message with trace/audit reference and no raw exception, token, provider, storage, or policy-engine details.
+
+Action contract:
+
+| Visible action / target | Browser action id | Governed tool | Capability | Request payload | Result surface | Notes |
+|---|---|---|---|---|---|---|
+| Open existing simulation evidence | `action-governance-policy-read` | `list-policy-proposals` | `governance.policy.read` | proposal display ref, optional simulation display ref, refresh reason, correlation key generated by client or backend | `surface-governance-policy-simulation` or `surface-governance-policy-system-message` | Read-only projection; backend reauthorizes proposal visibility, trace visibility, and selected scope. |
+| Run or rerun advisory simulation | `action-governance-policy-simulate` | `simulate-policy-change` | `governance.policy.simulate` | proposal display ref, scenario/scope summary, reason, idempotency key, correlation key | `surface-governance-policy-simulation` or `surface-governance-policy-system-message` | Advisory only; creates/refreshes simulation evidence when provider/runtime is available; no approval, activation, rollback, or authority change. |
+| Open proposal lifecycle surface | `action-governance-policy-read` | `list-policy-proposals` | `governance.policy.read` | proposal display ref, correlation key | `surface-governance-policy-proposal` or `surface-governance-policy-detail` | Used for breadcrumbs and lifecycle review; no simulation mutation. |
+| Open decision/review work | `action-governance-policy-decide` | `approve-activate-or-rollback-policy` | `governance.policy.approve` | proposal display ref, command mode `decide`, reason when supplied, idempotency key for command submission, correlation key | `surface-governance-policy-decision` | Simulation may satisfy one prerequisite, but this surface cannot approve, activate, or roll back inline. |
+| Start/read impact analysis | `action-governance-policy-start-impact-analysis` / `action-governance-policy-read-impact-analysis` | `start-policy-impact-analysis` / `read-policy-impact-analysis` | `governance.policy.impact_analysis.start` / `governance.policy.impact_analysis.read` | proposal display ref, task id when reading, scope, reason, idempotency key for start, correlation key | `surface-governance-policy-impact-analysis-task` | Durable advisory task path; activation remains blocked until backend prerequisites are complete. |
+| Open outcome note | `action-governance-policy-outcome-note` | `record-policy-outcome-note` | `governance.outcomes.record` | proposal display ref, observation/open intent, idempotency key when recording, correlation key | `surface-governance-policy-outcome` | Outcome observations do not change authority or lifecycle state. |
+
+Hidden or denied actions: approval, activation, rollback, impact-result acceptance/rejection/request-changes, outcome-note mutation, raw policy-clause edits, tenant/customer scope expansion, hidden proposal access, and direct provider/model prompts are not performed by this simulation surface. Direct/deep-link attempts without authority return `surface-governance-policy-system-message`, are audit/trace recorded, and must not reveal whether hidden proposals, policies, capabilities, or cross-tenant/customer evidence exists.
+
+Authorization and tenant scope:
+
+- `governance.policy.simulate` is required to start or rerun simulation. `governance.policy.read` is required to open existing proposal/simulation evidence. Decision, impact-analysis, and outcome follow-ups require their own backend-authorized capabilities and lifecycle predicates.
+- The backend resolves tenant/customer/workspace scope from selected `AuthContext`; browser scenario/scope hints cannot expand authority, enumerate hidden policies, or request raw authority state.
+- Cross-tenant/customer proposal evidence, hidden role policy state, raw policy internals, provider secrets, JWTs, prompts, raw tool payloads, raw model responses, and correlation/idempotency implementation details are redacted or omitted.
+- Direct proposal ids, stale simulation ids, unsupported scenario scope, or hidden evidence requests return safe no-enumeration denial/validation states with trace refs.
+
+Trace, audit, and work evidence:
+
+- Simulation open, run/rerun, denial, validation, stale/conflict recovery, provider/runtime failure, and every follow-up action produce workstream-log/correlation evidence.
+- Simulation start/completion/failure produces admin-audit or policy-decision trace evidence as applicable, and links agent-work/provider/task traces when an autonomous or provider-backed path runs.
+- Default trace copy is human-readable; raw ids/details are visible only through role-gated audit/support drilldowns.
+- Repeated run/rerun requests require idempotency evidence; failed or blocked provider/runtime paths are traceable and fail closed without fake success.
+
+Accessibility, responsive, and UI realization:
+
+- Use the selected web UI style guide, named-theme contract, and component-catalog governance-diff, system-message, warning, evidence-summary, action-menu, and trace-link anatomy.
+- Diff rows, expected allow/deny groups, warnings, activation-gate blockers, and follow-up actions are keyboard-operable, announce status/risk/action targets, preserve focus after refresh/action results, and provide accessible names for target surfaces.
+- Responsive layouts may collapse expected access groups into cards, but must preserve the same backend-authored action availability, warning severity, redaction markers, recovery states, and advisory/no-mutation copy.
+
+Required tests:
+
+- App-description/contract tests prove the simulation contract includes payload schema, advisory/no-direct-mutation semantics, scenario/action mapping, auth/tenant rules, states, traces, redaction, provider/runtime fail-closed behavior, and sufficiency review.
+- Frontend tests prove governance-diff rendering for empty/not-run, queued/running, ready, validation-error, stale/conflict, partial-data, blocked-provider-or-runtime, read-only, and system-message states; backend-authorized action visibility; secret-boundary redaction; keyboard navigation; and no client-side approval/activation/rollback claims.
+- Backend/API tests prove selected AuthContext scoping, missing-bearer and missing-capability denials, no-enumeration hidden proposal access, simulation start/read idempotency, lifecycle prerequisite validation, row/action authorization, trace/audit/work evidence, provider/runtime fail-closed statuses, and no authority mutation from simulation.
+- Negative tests prove the browser and agents cannot approve, activate, roll back, weaken policy, expand tenant/customer scope, expose hidden policy internals, fabricate advisory evidence, or duplicate side effects on repeated simulation requests.
+
+Surface-description sufficiency review: this definition is sufficiently unambiguous for a developer or generator to implement and review `surface-governance-policy-simulation` without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. The default view avoids internal implementation details that do not help the target SaaS user, and no additional description pass is required before scoped implementation work for this simulation surface.
 
 ### `surface-governance-policy-decision` (`governance.policy.decision.v1`)
 
