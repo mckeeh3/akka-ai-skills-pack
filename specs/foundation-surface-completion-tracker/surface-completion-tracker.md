@@ -816,7 +816,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`: added detailed `surface-audit-trace-dashboard` / `audit.trace.dashboard.v1` dashboard contract covering Audit/Trace ownership and functional-agent placement, role/AuthContext/tenant/customer/support-access scope, action-router semantics ordered by needs-attention then things-I-can-do, browser-safe payload schema, default/drilldown/internal-only field visibility, governed action mappings, deny/redaction/provider/tool-boundary states, audit/work trace obligations, UI style/component/theme bindings, and acceptance/security/negative/idempotency/observability/UX tests. Readiness result: `ready` for the fully-specified docs-only objective; no runtime implementation is claimed. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

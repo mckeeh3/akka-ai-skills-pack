@@ -6186,7 +6186,7 @@
 
 ### TASK-FSCT-175: Verify or complete app-description specification for `surface-audit-trace-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-audit-trace-dashboard`
@@ -6215,6 +6215,7 @@
   - purpose: Investigation command center.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Audit Trace `surface-audit-trace-dashboard` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded the Audit/Trace app-description dashboard contract with owner/agent placement, role/AuthContext/tenant/customer/support-access scope, actionable dashboard ordering, browser-safe payload schema, default/drilldown/internal-only visibility, governed action map, authorization/redaction/provider/tool-boundary states, audit/work trace obligations, UI style/component/theme bindings, and acceptance/security/negative/idempotency/observability/UX tests. Marked the tracker fully-specified objective done with readiness `ready` for this docs-only objective; no runtime implementation claimed. Checks passed: `git diff --check`; `rg -n "surface-audit-trace-dashboard|audit\\.trace\\.dashboard\\.v1|payload schema|Dashboard action map|AuthContext|audit/work traces|Required app-description tests" app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`.
 
 ### TASK-FSCT-176: Verify or complete runtime implementation for `surface-audit-trace-dashboard`
 
