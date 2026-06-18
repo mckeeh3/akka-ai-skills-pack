@@ -5868,7 +5868,7 @@
 
 ### TASK-FSCT-166: Verify or complete app-description specification for `surface-agent-admin-prompt-risk-review`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-admin-prompt-risk-review`
@@ -5897,6 +5897,7 @@
   - purpose: Prompt-risk autonomous review result.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-admin-prompt-risk-review` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded `surface-agent-admin-prompt-risk-review` app-description with identity/owner/placement/purpose, browser-safe workflow payload schema, governed action mappings, selected AuthContext tenant/organization authorization and no-enumeration denials, audit/work trace and correlation requirements, provider/runtime fail-closed/no-fake-success behavior, UI states, accessibility/responsive/style binding, mutation boundaries, tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-167: Verify or complete runtime implementation for `surface-agent-admin-prompt-risk-review`
 

@@ -775,7 +775,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-admin-prompt-risk-review` for `agent_admin.prompt_risk_review.v1` with Agent Admin/`agent-admin-agent` ownership, dashboard/detail/prompt-governance/behavior-proposal/Governance placement, browser-safe `reviewSummary`, `scopeSummary`, `readinessBlocker`, `progressEvents[]`, `riskFindings[]`, `recommendations`, `decisionState`, `authorizedActions[]`, diagnostics, and redaction payload boundaries; mapped read/start/cancel/accept/reject/source/trace actions to `managed-agent-governance` or `audit.trace.read`; documented selected AuthContext tenant/organization authorization, hidden/cross-tenant/no-enumeration denials, provider/runtime fail-closed and no-fake-success semantics, audit/work trace and correlation requirements, workflow states, accessibility/responsive/style binding, no-direct-mutation constraints, and tests. Sufficiency review says the prompt-risk workflow/status surface is implementable without invented fields/actions/states/auth/traces/tests. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
