@@ -6254,7 +6254,7 @@
 
 ### TASK-FSCT-177: Verify or complete runtime testing for `surface-audit-trace-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-176]
 - surface id: `surface-audit-trace-dashboard`
@@ -6288,6 +6288,7 @@
   - purpose: Investigation command center.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-dashboard`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added `AuditTraceBrowserWorkstreamSmokeTest` covering Akka-hosted `/ui`, protected `/api/workstream/bootstrap`, direct `surface-audit-trace-dashboard`, and `/api/workstream/actions` paths with JWT plus selected AuthContext. Evidence covers missing bearer rejection, tenant-member denial, disabled-account denial, customer-scoped dashboard access with cross-customer action denial, authorized tenant auditor/admin dashboard cards/sections/actions, search/detail/not_found_or_redacted/timeline/failure-evidence surfaces, trace/correlation refs, browser-safe secret boundaries, and summary worker provider/runtime fail-closed `surface-audit-trace-summary-progress` without model-less success. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-178: Verify or complete app-description specification for `surface-audit-trace-search`
 
