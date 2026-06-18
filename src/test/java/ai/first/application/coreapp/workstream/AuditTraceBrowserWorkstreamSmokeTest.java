@@ -347,16 +347,28 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertNotNull(start.resultSurface().data().get("summaryTaskId"));
     var summaryTaskId = String.valueOf(start.resultSurface().data().get("summaryTaskId"));
     assertFalse(summaryTaskId.isBlank());
-    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+    var retainedTask = new AkkaAuditTraceSummaryTaskRepository(componentClient).find(summaryTaskId);
+    assertTrue(retainedTask.isPresent(), "Started summary task must be immediately retained in the Akka-backed repository for protected progress reads.");
+    var read = runAction(new CapabilityActionRequest(
         "action-audit-trace-summary-task-read",
         "action-audit-trace-summary-task-read",
-        "audit.trace.summaryTask.read",
+        "audit.trace.summary_task.read",
         "audit.trace.summary_task.read",
         Map.of("summaryTaskId", summaryTaskId),
         null,
         AUDITOR_CONTEXT_ID,
-        dashboard.surfaceId(),
-        "corr-audit-summary-progress-read")), "BLOCKER: retained summary progress read currently returns HTTP 404 for the backend-generated summaryTaskId, so fully-tested runtime coverage cannot be marked done yet.");
+        start.resultSurface().surfaceId(),
+        "corr-audit-summary-progress-read"));
+    assertEquals("blocked_provider_or_runtime", read.status());
+    assertEquals("surface-audit-trace-summary-progress", read.resultSurface().surfaceId());
+    assertEquals(summaryTaskId, read.resultSurface().data().get("summaryTaskId"));
+    assertEquals("corr-audit-summary-progress-read", read.correlationId());
+    assertEquals(true, read.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, read.resultSurface().data().get("noFakeSuccess"));
+    assertTrue(read.resultSurface().traceIds().stream().anyMatch(trace -> trace.contains("summary") || trace.contains("autonomous_task")));
+    assertTrue(String.valueOf(read.resultSurface().data().get("providerRuntime")).contains("no deterministic or model-less successful worker result"));
+    assertTrue(String.valueOf(read.resultSurface().data().get("authorizationBasis")).contains("audit.trace.summary_task.read"));
+    assertBrowserSafe(read.resultSurface());
 
     assertThrows(RuntimeException.class, () -> runActionAs(
         new CapabilityActionRequest(
@@ -378,7 +390,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
         new CapabilityActionRequest(
             "action-audit-trace-summary-task-read",
             "action-audit-trace-summary-task-read",
-            "audit.trace.summaryTask.read",
+            "audit.trace.summary_task.read",
             "audit.trace.summary_task.read",
             Map.of("summaryTaskId", summaryTaskId),
             null,

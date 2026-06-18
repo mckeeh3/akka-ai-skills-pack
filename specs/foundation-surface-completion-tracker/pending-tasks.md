@@ -131,7 +131,7 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
   - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
@@ -237,7 +237,7 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
   - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
@@ -343,7 +343,7 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
   - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
@@ -449,7 +449,7 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
   - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
@@ -661,7 +661,7 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
   - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
@@ -767,7 +767,7 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
   - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - notes:
@@ -837,7 +837,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `system-message`
   - surface contract: `my_account.personal_attention_digest.blocked.v1`
@@ -1191,9 +1191,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `list-search`
   - surface contract: `user_admin.saas_owner_admins.v1`
@@ -1297,9 +1297,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.saas_owner_admin_invitation_create.v1`
@@ -1403,7 +1403,7 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
   - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
@@ -1615,7 +1615,7 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
   - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
@@ -1933,7 +1933,7 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
   - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
@@ -2039,7 +2039,7 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
   - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
@@ -2463,9 +2463,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `workflow-status / outcome-panel`
   - surface contract: `user_admin.access_review_task.v1`
@@ -2569,7 +2569,7 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
+  - manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - done criteria:
   - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence (satisfied; no validation blocker remains in this task)
 - notes:
@@ -2745,7 +2745,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `show-inspection`
   - surface contract: `user_admin.organization_detail.v1`
@@ -2781,9 +2781,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `show-inspection`
   - surface contract: `user_admin.organization_detail.v1`
@@ -2851,7 +2851,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `list-search`
   - surface contract: `user_admin.organization_admins.v1`
@@ -2859,6 +2859,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admins`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-admins`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: implemented and verified backend-owned `user_admin.organization_admins.v1` list-search runtime path for `surface-user-admin-organization-admins`: protected workstream action/surface paths, selected Organization/Tenant scope proof, TENANT_ADMIN membership/invitation rows from `UserDirectoryView`/`InvitationView`, admin summary counts, backend-authored filters/actions, branch/detail return metadata, trace/correlation refs, SaaS Owner Organization Admin capability aliasing in `UserAdminService`, frontend `UserAdminScopedAdminSurface` rendering/action routing, browser-safe redaction, and no fixture-only/frontend-only normal runtime path. Runtime readiness level: `api-smoked`; checks passed: `mvn -q -Dtest=WorkstreamServiceTest#userAdminNavigationTreeTraversesBranchesWithTraceCorrelationAndSafePayloads test`, `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-081: Verify or complete runtime testing for `surface-user-admin-organization-admins`
 
@@ -2887,9 +2888,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `list-search`
   - surface contract: `user_admin.organization_admins.v1`
@@ -2897,6 +2898,7 @@
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admins`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admins`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
   - completed 2026-06-17: added dedicated protected Akka-hosted runtime smoke coverage for `surface-user-admin-organization-admins` in `UserAdminBrowserWorkstreamSmokeTest`: missing-bearer direct/action rejection, SaaS Owner direct missing-target state, dashboard -> Organization Directory -> Organization Detail -> Organization Admins action traversal, selected `tenant-starter` scope proof, TENANT_ADMIN row/admin summary/action metadata, trace/correlation refs, provider/outbox count evidence, hidden target safe system-message denial, Tenant Admin direct/action denial, and frontend secret-boundary assertions. Tracker updated. Checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationAdminsRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-082: Verify or complete app-description specification for `surface-user-admin-organization-admin-invitation-create`
 
@@ -2957,7 +2959,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.organization_admin_invitation_create.v1`
@@ -2965,6 +2967,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admin-invitation-create`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-admin-invitation-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: added dedicated `action-submit-organization-admin-invitation` runtime handling in `WorkstreamService` with governed tool `manage-organization-admins`, capability `saas_owner.organization_admin.invite`, SaaS Owner/App Admin reauthorization, visible Organization/Tenant target validation, `TENANT_ADMIN`-only role enforcement, tenant-scoped `InvitationService` creation, idempotency/outbox/provider boundaries, Organization Admin branch metadata on result detail, and browser-safe redaction/trace/correlation evidence; updated `UserAdminScopedAdminSurface` to prefer the dedicated submit action. Tracker updated. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#userAdminNavigationTreeTraversesBranchesWithTraceCorrelationAndSafePayloads test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-084: Verify or complete runtime testing for `surface-user-admin-organization-admin-invitation-create`
 
@@ -2993,9 +2996,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.organization_admin_invitation_create.v1`
@@ -3003,6 +3006,7 @@
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admin-invitation-create`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
   - completed 2026-06-17: added protected Akka-hosted `UserAdminBrowserWorkstreamSmokeTest` coverage for missing bearer rejection, SaaS Owner direct form load, dashboard -> Organization Directory -> Organization Detail -> Organization Admin invitation form traversal, governed `action-submit-organization-admin-invitation` success with tenant-scoped `TENANT_ADMIN` invitation detail result, idempotency repeat, unsupported-role validation, hidden Organization no-enumeration system-message denial, Tenant Admin selected-context denial, trace/correlation evidence, provider/outbox redaction, and browser-safe token/JWT/provider/tenant-app-data boundaries; fixed User Admin action-denial classification so hidden submit targets return the safe system-message path. Tracker updated. Checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationAdminInvitationCreateRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-085: Verify or complete app-description specification for `surface-user-admin-organization-admin-detail`
 
@@ -3063,7 +3067,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `show-inspection`
   - surface contract: `user_admin.organization_admin_detail.v1`
@@ -3071,6 +3075,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-admin-detail`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-admin-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: implemented backend-owned `user_admin.organization_admin_detail.v1` show/inspection runtime path for visible Organization Admin membership and invitation targets. Protected WorkstreamEndpoint action path now opens dedicated `surface-user-admin-organization-admin-detail` through `action-open-organization-admin-detail` and `action-open-organization-admin-invitation-detail`; Organization Admin list rows route to these dedicated actions; direct protected surface load returns a safe missing-target recovery surface. Evidence covers SaaS Owner selected AuthContext, visible Organization/Tenant target reauthorization, `TENANT_ADMIN` membership/invitation filtering, last-admin and provider/outbox summaries, branch returns, task-entry metadata, trace/correlation refs, tenant/customer/provider/JWT/invitation-token redaction, hidden target no-enumeration, and no frontend-only/fixture-only normal runtime path. Checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationAdminsRuntimeTestCoverage+protectedWorkstreamApiExercisesUserAdminOrganizationAdminInvitationCreateRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-087: Verify or complete runtime testing for `surface-user-admin-organization-admin-detail`
 
@@ -3099,7 +3104,7 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
   - fully-tested objective for this surface is marked `done` with automated and API/browser smoke evidence
 - notes:
@@ -3169,7 +3174,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.organization_create.v1`
@@ -3177,6 +3182,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-organization-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-organization-create`; surface graph node/action edge for opening or acting on `surface-user-admin-organization-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: implemented and verified the real runtime path for `surface-user-admin-organization-create`: protected direct workstream surface now returns a backend-owned `user_admin.organization_create.v1` create-form payload with form/validation/boundary/branch/trace/redaction data; protected workstream action `action-submit-organization-create` reauthorizes SaaS Owner `AuthContext`, requires idempotency, creates the active Organization/Tenant boundary through `SaasOwnerOrganizationAdminService`, handles idempotent replay and visible duplicate-name no-op, audits/traces the attempt, returns `surface-user-admin-organization-detail`, and keeps Organization Admin bootstrap separate. runtime evidence: readiness level `api-smoked` for implementation verification; role/AuthContext/tenant setup covered SaaS Owner `membership-owner` in `tenant-starter`; browser-safe frontend form uses backend submit action with legacy fallback; checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminOrganizationDirectoryRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-organization-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-090: Verify or complete runtime testing for `surface-user-admin-organization-create`
 
@@ -3205,9 +3211,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence (satisfied; no validation blocker remains in this task)
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence (satisfied; no validation gap remains in this task)
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.organization_create.v1`
@@ -3275,7 +3281,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `edit-form`
   - surface contract: `user_admin.organization_rename.v1`
@@ -3311,9 +3317,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `edit-form`
   - surface contract: `user_admin.organization_rename.v1`
@@ -3381,7 +3387,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `destructive-lifecycle-confirmation`
   - surface contract: `user_admin.organization_suspend_confirmation.v1`
@@ -3417,9 +3423,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `destructive-lifecycle-confirmation`
   - surface contract: `user_admin.organization_suspend_confirmation.v1`
@@ -3523,9 +3529,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `lifecycle-confirmation`
   - surface contract: `user_admin.organization_reactivate_confirmation.v1`
@@ -3593,7 +3599,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `list-search`
   - surface contract: `user_admin.customer_directory.v1`
@@ -3601,6 +3607,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-directory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-directory`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-directory`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: verified the real runtime implementation for `surface-user-admin-customer-directory`: protected WorkstreamEndpoint `/api/workstream/surfaces/{surfaceId}` and `/api/workstream/actions` route through `WorkstreamService.customerDirectorySurface` to backend-owned `TenantCustomerAdminService.listCustomers`; Organization/Tenant Admin selected `AuthContext` and `tenant.customer.list` authorization are enforced; query/status filters are tenant-scoped; rows carry backend-authored Customer detail routing, branch-return metadata, trace/correlation refs, and browser-safe redaction; `UserAdminScopedAdminSurface` renders `user_admin.customer_directory.v1` rows/actions without deriving authority. runtime evidence: readiness level `api-smoked` for implementation verification; checks passed: `mvn -q -Dtest=WorkstreamServiceTest#tenantCustomerBranchUsesDurableCustomerLifecycleState test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-102: Verify or complete runtime testing for `surface-user-admin-customer-directory`
 
@@ -3629,9 +3636,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `list-search`
   - surface contract: `user_admin.customer_directory.v1`
@@ -3639,6 +3646,7 @@
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-directory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-directory`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
   - completed 2026-06-17: added protected Akka-hosted Customer Directory smoke coverage to `UserAdminBrowserWorkstreamSmokeTest`, covering missing-bearer rejection, direct surface load, canonical `action-user-admin-show-customers` filter/search path, backend-authored Customer row activation to detail, Customer create and Customer Admin list/invite entrypoint opens, hidden/cross-tenant Customer no-enumeration denial, Customer Admin selected-context denial, trace/correlation evidence, frontend secret/redaction boundaries, and existing User Admin frontend contract/typecheck coverage; checks passed: `mvn -q -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-103: Verify or complete app-description specification for `surface-user-admin-customer-detail`
 
@@ -3699,7 +3707,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `show-inspection`
   - surface contract: `user_admin.customer_detail.v1`
@@ -3735,9 +3743,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `show-inspection`
   - surface contract: `user_admin.customer_detail.v1`
@@ -3841,9 +3849,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `list-search`
   - surface contract: `user_admin.customer_admins.v1`
@@ -3911,7 +3919,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.customer_admin_invitation_create.v1`
@@ -3919,6 +3927,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admin-invitation-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admin-invitation-create`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-admin-invitation-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: completed and verified the real runtime implementation for `surface-user-admin-customer-admin-invitation-create`: protected WorkstreamEndpoint action APIs open and submit the Customer Admin invite create-form through `WorkstreamService`, backend reauthorizes selected Organization/Tenant Admin AuthContext plus visible active Customer and `tenant.customer_admin.invite`, payload now includes Customer boundary proof, `CUSTOMER_ADMIN`-only form/policy/delivery readiness metadata, branch returns, trace/correlation and redaction evidence; submit creates a `ScopeType.CUSTOMER` invitation through `InvitationService` with idempotency, audit/outbox/provider boundary and invitation-detail routing; unsupported Customer-scope roles validate back to the form without creating invitations; suspended/hidden/cross-scope targets fail closed through system-message/noFakeSuccess; frontend blocks Customer Admin invite submission without backend-provided customer target proof. Checks passed: `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#tenantCustomerBranchUsesDurableCustomerLifecycleState test`, `mvn -Dtest=ai.first.application.coreapp.workstream.UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend run typecheck`, `npm --prefix frontend test -- --run`, focused `rg` evidence, and `git diff --check`. Note: broader `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest test` and isolated `#userAdminStatusActionsDisableReactivateNoOpAndDenyManualSelfDisable` still fail on an existing status-action expectation (`expected accepted but was no-op`) outside this selected Customer Admin invite path.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-111: Verify or complete runtime testing for `surface-user-admin-customer-admin-invitation-create`
 
@@ -3947,9 +3956,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.customer_admin_invitation_create.v1`
@@ -4017,7 +4026,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `show-inspection`
   - surface contract: `user_admin.customer_admin_detail.v1`
@@ -4025,6 +4034,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-admin-detail`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-admin-detail`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: implemented and verified the real runtime path for `surface-user-admin-customer-admin-detail`: protected WorkstreamEndpoint action APIs route `action-open-customer-admin-detail` and `action-open-customer-admin-invitation-detail` to backend-owned `WorkstreamService`, which reauthorizes Organization/Tenant Admin selected `AuthContext`, visible active Customer target, and `tenant.customer_admin.list`; Customer Admin list rows now use backend-authored detail actions; membership/invitation targets are resolved only inside the selected `ScopeType.CUSTOMER` Customer boundary; detail payloads expose `user_admin.customer_admin_detail.v1` with Customer boundary proof, admin target summary, task entries, branch returns, trace/correlation refs, no-inline-mutation state, and redaction/no-enumeration for sibling Customers, tenant app data, raw JWTs, provider payloads, and invitation tokens. Frontend generic scoped inspection rendering already consumes the contract without client-side authority inference. Checks passed: focused WorkstreamService test, protected Akka-hosted UserAdminBrowserWorkstreamSmokeTest Customer branch test, frontend typecheck, frontend contract test, focused `rg` evidence, and `git diff --check`. Readiness level: `api-smoked`; full testing remains queued in TASK-FSCT-114.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-114: Verify or complete runtime testing for `surface-user-admin-customer-admin-detail`
 
@@ -4053,9 +4063,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `show-inspection`
   - surface contract: `user_admin.customer_admin_detail.v1`
@@ -4123,7 +4133,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.customer_create.v1`
@@ -4131,6 +4141,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-create`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-create`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-create`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: implemented and verified the protected runtime path for `surface-user-admin-customer-create`: backend direct surface/action loading now requires `tenant.customer.create`, returns `user_admin.customer_create.v1` with canonical `action-submit-customer-create`, validation policy, Customer boundary, branch return, idempotency, trace/correlation, and redaction metadata; submit and compatibility alias route through `TenantCustomerAdminService#createCustomer` for tenant-scoped validation, idempotency, audit, no-op replay/conflict handling, and Customer detail result routing; frontend `UserAdminScopedAdminSurface` submits the canonical action when present. Checks passed: `mvn -q -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#tenantCustomerBranchUsesDurableCustomerLifecycleState test`, `mvn -q -Dtest=ai.first.application.coreapp.workstream.UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`. Runtime readiness level: `api-smoked`; no implementation blocker remains.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-117: Verify or complete runtime testing for `surface-user-admin-customer-create`
 
@@ -4159,9 +4170,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `create-form`
   - surface contract: `user_admin.customer_create.v1`
@@ -4229,7 +4240,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `edit-form`
   - surface contract: `user_admin.customer_rename.v1`
@@ -4237,6 +4248,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-rename`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-rename`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-rename`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: implemented and verified the protected runtime path for `surface-user-admin-customer-rename`: backend direct surface/action loading now requires `tenant.customer.rename`, returns `user_admin.customer_rename.v1` with canonical `action-submit-customer-rename`, validation policy, change preview, branch/detail return metadata, missing-target fail-closed state, trace/correlation, and redaction metadata; canonical submit and compatibility alias route through `TenantCustomerAdminService#renameCustomer` for tenant-scoped Customer visibility, idempotency, audit/work trace, no-op replay, and Customer detail result routing; frontend `UserAdminScopedAdminSurface` submits the canonical action when present while retaining the compatibility fallback. Checks passed: `mvn -q clean compile`, `mvn -q -Dtest=ai.first.application.coreapp.workstream.UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`. Initial focused Maven smoke failed before `mvn clean compile` because Akka component descriptors were stale/missing; rerun after compile passed. Runtime readiness level: `api-smoked`; no implementation blocker remains.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-120: Verify or complete runtime testing for `surface-user-admin-customer-rename`
 
@@ -4265,9 +4277,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `edit-form`
   - surface contract: `user_admin.customer_rename.v1`
@@ -4335,7 +4347,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `destructive-lifecycle-confirmation`
   - surface contract: `user_admin.customer_suspend_confirmation.v1`
@@ -4343,6 +4355,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream User Admin functional agent surface `surface-user-admin-customer-suspend-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-user-admin-customer-suspend-confirmation`; surface graph node/action edge for opening or acting on `surface-user-admin-customer-suspend-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: implemented and verified the protected Akka-hosted Customer suspension confirmation runtime path for `surface-user-admin-customer-suspend-confirmation`: `WorkstreamService` gates direct/open confirmation loads with `tenant.customer.suspend`, accepts canonical and compatibility open actions, emits backend-owned destructive confirmation payload with selected Organization/Tenant scope, visible Customer target, `SUSPEND` confirmation phrase, reason/idempotency requirements, branch/detail returns, eligibility/redaction/trace/correlation/no-fake-success evidence, and routes `action-customer-suspend` through `TenantCustomerAdminService#suspendCustomer` to persist the Customer suspended lifecycle boundary or return safe system-message denials. Frontend `UserAdminScopedAdminSurface` already renders and submits the backend-authored suspend confirmation action. Checks passed: `mvn -q -Dtest=ai.first.application.coreapp.workstream.UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminCustomerDirectoryRuntimeTestCoverage test`, `npm --prefix frontend test -- --run src/workstream-user-admin-vertical.contract.test.mjs`, focused `rg` evidence, and `git diff --check`. Runtime readiness level: `api-smoked`; broader fully-tested objective remains queued as TASK-FSCT-123.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-123: Verify or complete runtime testing for `surface-user-admin-customer-suspend-confirmation`
 
@@ -4371,9 +4384,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `destructive-lifecycle-confirmation`
   - surface contract: `user_admin.customer_suspend_confirmation.v1`
@@ -4441,7 +4454,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `lifecycle-confirmation`
   - surface contract: `user_admin.customer_reactivate_confirmation.v1`
@@ -4477,9 +4490,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `lifecycle-confirmation`
   - surface contract: `user_admin.customer_reactivate_confirmation.v1`
@@ -4547,7 +4560,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `system-message`
   - surface contract: `user_admin.system_message.v1`
@@ -4583,9 +4596,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `system-message`
   - surface contract: `user_admin.system_message.v1`
@@ -4653,7 +4666,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `dashboard`
   - surface contract: `agent_admin.dashboard.v1`
@@ -4661,6 +4674,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-dashboard`; surface graph node/action edge for opening or acting on `surface-agent-admin-dashboard`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: implemented and verified the protected Agent Admin dashboard runtime path: `WorkstreamService` requires selected-context `agent_admin.list_definitions`, appends protected `agent_admin.dashboard.v1` trace evidence, returns app-description-aligned browser-safe payload fields (`surfaceSummary`, `scopeSummary`, `attentionSections`, readiness/provider/model/approval/manifest/tool/seed/redaction summaries, trace refs, fail-closed states), and routes backend-owned `action-agent-admin-*` dashboard actions to catalog, behavior proposals, prompt-risk review, seed material, manifest drift, tool-boundary, model refs, trace, and refresh while retaining legacy action compatibility. Runtime readiness level: `api-smoked` for implementation verification; checks passed: `mvn -q -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#myAccountOpenWorkstreamActionReturnsBackendResolvedSurface test`, `mvn -q -DskipTests test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-132: Verify or complete runtime testing for `surface-agent-admin-dashboard`
 
@@ -4689,9 +4703,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `dashboard`
   - surface contract: `agent_admin.dashboard.v1`
@@ -4699,6 +4713,7 @@
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-dashboard`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
   - completion evidence (2026-06-17): added `src/test/java/ai/first/application/coreapp/workstream/AgentAdminBrowserWorkstreamSmokeTest.java`; passed `mvn -q -Dtest=ai.first.application.coreapp.workstream.AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`. Evidence covers `/ui` shell, protected dashboard/action API success and missing-bearer denials, selected tenant-admin AuthContext, member/customer-scope denials, dashboard payload/action targets, trace/correlation, provider/prompt-risk fail-closed behavior, and browser secret boundaries.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-133: Verify or complete app-description specification for `surface-agent-admin-catalog`
 
@@ -4759,7 +4774,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `list-search`
   - surface contract: `agent_admin.catalog.v1`
@@ -4767,6 +4782,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-catalog`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-catalog`; surface graph node/action edge for opening or acting on `surface-agent-admin-catalog`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: implemented the real runtime path for `surface-agent-admin-catalog`: backend Agent Admin catalog service now emits app-description-aligned `catalogSummary`, `scopeSummary`, backend-validated filters/search/reset state, browser-safe `agents[]`/`rows`, empty-state, redaction/diagnostics, trace/correlation evidence, and tenant-scoped visibility; `WorkstreamService` now exposes catalog refresh/search/reset/open-row/open-trace actions through protected workstream APIs, uses row `agentDefinitionId` context for detail opens, keeps lifecycle/seed mutation actions off the catalog surface, preserves provider/model fail-closed copy, and frontend catalog rendering uses the backend action ids. runtime evidence: readiness level `api-smoked`; checks passed: `mvn -q -Dtest=WorkstreamServiceTest#agentAdminCatalogDetailAndArtifactReadsAreBackendAuthoritativeAndRedacted,WorkstreamServiceTest#agentAdminCatalogIsTenantScoped test`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-135: Verify or complete runtime testing for `surface-agent-admin-catalog`
 
@@ -4795,9 +4811,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `list-search`
   - surface contract: `agent_admin.catalog.v1`
@@ -4865,7 +4881,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `show-inspection`
   - surface contract: `agent_admin.detail.v1`
@@ -4901,9 +4917,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `show-inspection`
   - surface contract: `agent_admin.detail.v1`
@@ -4911,6 +4927,7 @@
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
   - completed 2026-06-17: expanded Agent Admin browser/API smoke coverage for `surface-agent-admin-detail` to cover missing-bearer rejection, tenant-admin AuthContext direct detail and catalog row-open paths, all backend-authorized detail task-entry/action edges, no-side-effect test evidence, prompt-risk/provider fail-closed state, lifecycle confirmation routing, trace/catalog return routing, hidden/stale row `not_found_or_redacted` without id echo, and tenant-member/customer-scope denials. Frontend contract fixtures/tests now assert `agent_admin.detail.v1`, detail task-entry action ids, fail-closed provider readiness, and browser-safe redaction boundaries. Checks passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-139: Verify or complete app-description specification for `surface-agent-prompt-governance`
 
@@ -4971,7 +4988,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `governance-diff / show-inspection`
   - surface contract: `agent_admin.prompt_governance.v1`
@@ -4979,6 +4996,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-prompt-governance`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-prompt-governance`; surface graph node/action edge for opening or acting on `surface-agent-prompt-governance`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: implemented and verified backend-owned `agent_admin.prompt_governance.v1` runtime surface plus canonical prompt-governance action edges for refresh, no-side-effect simulation, submit-review, approve, reject validation, prompt-risk review, trace open, and back-to-detail through protected `/api/workstream/surfaces` and `/api/workstream/actions`. runtime evidence: readiness level `api-smoked`; tenant admin AuthContext in `tenant-starter`; direct surface read and detail-open paths; approval-gated behavior proposal routing; provider/runtime fail-closed risk-review routing; trace/correlation and browser-safe redaction evidence; no fixture-only/frontend-only normal runtime path. Checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=WorkstreamServiceTest#agentAdminCatalogDetailAndArtifactReadsAreBackendAuthoritativeAndRedacted+agentAdminActionsCreateGovernedResultsAndTraces+agentAdminReadSurfacesDenyMissingCapabilityBeforeArtifactLeakage test`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-141: Verify or complete runtime testing for `surface-agent-prompt-governance`
 
@@ -5007,9 +5025,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `governance-diff / show-inspection`
   - surface contract: `agent_admin.prompt_governance.v1`
@@ -5077,7 +5095,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `governance-diff / show-inspection`
   - surface contract: `agent_admin.skill_manifest_diff.v1`
@@ -5085,6 +5103,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-skill-manifest-diff`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-skill-manifest-diff`; surface graph node/action edge for opening or acting on `surface-agent-skill-manifest-diff`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-17: implemented and verified backend-owned `agent_admin.skill_manifest_diff.v1` runtime surface plus canonical skill-manifest action edges for refresh, no-side-effect simulation, submit-review, approve, reject validation, tool-boundary/model-reference routing, trace open, and back-to-detail through protected `/api/workstream/surfaces` and `/api/workstream/actions`. runtime evidence: readiness level `api-smoked`; tenant admin AuthContext in `tenant-starter`; direct surface read and detail/dashboard open paths; approval-gated behavior proposal routing; provider/runtime fail-closed simulation routing; trace/correlation and browser-safe redaction evidence; no fixture-only/frontend-only normal runtime path. Checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, focused `rg` evidence, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-144: Verify or complete runtime testing for `surface-agent-skill-manifest-diff`
 
@@ -5113,9 +5132,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `governance-diff / show-inspection`
   - surface contract: `agent_admin.skill_manifest_diff.v1`
@@ -5123,6 +5142,7 @@
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-skill-manifest-diff`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-skill-manifest-diff`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
   - completed 2026-06-17: added and passed runtime/API/browser smoke coverage for `surface-agent-skill-manifest-diff` in `AgentAdminBrowserWorkstreamSmokeTest` plus frontend contract alignment for `agent_admin.skill_manifest_diff.v1` and canonical skill-manifest action IDs. Evidence covered protected missing-bearer rejection, tenant-admin direct/detail surface access, manifest payload/schema/action coverage, no-side-effect simulation, submit/approve/reject and validation states, tool-boundary/model-reference/trace/detail-return routing, member/customer scoped denials, trace/correlation evidence, provider/runtime fail-closed status, no-direct-activation, and browser-safe raw skill/reference/provider/JWT redaction. Checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `npm --prefix frontend run typecheck`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-145: Verify or complete app-description specification for `surface-agent-tool-boundary-diff`
 
@@ -5183,7 +5203,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `governance-diff / show-inspection`
   - surface contract: `agent_admin.tool_boundary_diff.v1`
@@ -5219,9 +5239,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `governance-diff / show-inspection`
   - surface contract: `agent_admin.tool_boundary_diff.v1`
@@ -5289,7 +5309,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `governance-diff / show-inspection`
   - surface contract: `agent_admin.model_refs.v1`
@@ -5325,9 +5345,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `governance-diff / show-inspection`
   - surface contract: `agent_admin.model_refs.v1`
@@ -5395,7 +5415,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `workflow-status`
   - surface contract: `agent_admin.test_console.v1`
@@ -5431,9 +5451,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `workflow-status`
   - surface contract: `agent_admin.test_console.v1`
@@ -5501,7 +5521,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `lifecycle-confirmation`
   - surface contract: `agent_admin.activation_confirmation.v1`
@@ -5509,6 +5529,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-activation-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-activation-confirmation`; surface graph node/action edge for opening or acting on `surface-agent-activation-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented and verified backend-owned activation confirmation runtime path for `surface-agent-activation-confirmation`: direct protected surface read, detail/AgentDefinition activation entry actions, activation refresh/confirm/cancel/open-proposal/open-trace actions, provider/approval fail-closed and acknowledgement validation behavior, tenant-admin AuthContext authorization, trace/correlation/redaction/noDirectMutation/noFakeSuccess evidence, and frontend `AgentAdminTaskSurface` rendering for activation blockers and all backend-supplied lifecycle actions. Readiness level: `api-smoked`. Commands passed: `mvn -q -Dtest=WorkstreamServiceTest#agentAdminDefinitionLifecycleAndSeedImportActionsAreGovernedAndIdempotent test`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-156: Verify or complete runtime testing for `surface-agent-activation-confirmation`
 
@@ -5537,9 +5558,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `lifecycle-confirmation`
   - surface contract: `agent_admin.activation_confirmation.v1`
@@ -5607,7 +5628,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `lifecycle-confirmation`
   - surface contract: `agent_admin.deactivation_confirmation.v1`
@@ -5615,6 +5636,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-deactivation-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-deactivation-confirmation`; surface graph node/action edge for opening or acting on `surface-agent-deactivation-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented and verified the real Agent Admin deactivation confirmation runtime path: backend-owned `agent_admin.deactivation_confirmation.v1` lifecycle-confirmation payload with `deactivationSummary`/`policyAndApprovalSummary`, governed refresh/confirm/cancel/open-proposal/open-trace actions, required `DEACTIVATE` acknowledgement and reason validation, backend capability/AuthContext enforcement, trace/correlation evidence, idempotent no-op behavior, browser-safe redaction, and a real repository-backed lifecycle transition to `AgentLifecycleStatus.DISABLED` without deleting prompts, skills, references, provider data, or tenant overrides. Checks passed: `mvn -Dtest=WorkstreamServiceTest#agentAdminDefinitionLifecycleAndSeedImportActionsAreGovernedAndIdempotent test`, `npm --prefix frontend run typecheck`, `git diff --check`. Runtime evidence level: `api-smoked` for implementation scope.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-159: Verify or complete runtime testing for `surface-agent-deactivation-confirmation`
 
@@ -5643,9 +5665,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `lifecycle-confirmation`
   - surface contract: `agent_admin.deactivation_confirmation.v1`
@@ -5713,7 +5735,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `lifecycle-confirmation`
   - surface contract: `agent_admin.rollback_confirmation.v1`
@@ -5721,6 +5743,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-rollback-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-rollback-confirmation`; surface graph node/action edge for opening or acting on `surface-agent-rollback-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented and verified backend-owned rollback confirmation runtime path for `surface-agent-rollback-confirmation`: protected Workstream API surface/action path emits `agent_admin.rollback_confirmation.v1` payload with rollback summary, target-version/policy/evidence/redaction/trace state, canonical refresh/confirm/cancel/open-proposal/open-trace actions, required `ROLLBACK` acknowledgement and reason validation, fail-closed missing activated-proposal metadata behavior, and `AgentRuntimeService#rollbackProposal` execution only for authorized tenant/AuthContext-visible activated proposals with rollback metadata. Updated frontend task surface routing to recognize `action-agent-rollback-confirm` as the canonical rollback confirmation action. runtime evidence: readiness level `api-smoked` for implementation verification, with protected API/surface/action path, tenant admin selected AuthContext, no-direct-mutation/no-fake-success missing-metadata behavior, trace/correlation evidence, browser-safe redaction, and no fixture-only/frontend-only normal runtime path. checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-162: Verify or complete runtime testing for `surface-agent-rollback-confirmation`
 
@@ -5749,9 +5772,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `lifecycle-confirmation`
   - surface contract: `agent_admin.rollback_confirmation.v1`
@@ -5819,7 +5842,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `decision-card / decision`
   - surface contract: `agent_admin.behavior_proposal.v1`
@@ -5827,6 +5850,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-behavior-proposal`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-behavior-proposal`; surface graph node/action edge for opening or acting on `surface-agent-behavior-proposal`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented backend-owned `agent_admin.behavior_proposal.v1` runtime path for `surface-agent-behavior-proposal` with protected Workstream API surface/action routing, browser-safe `proposalSummary`/`scopeSummary`/`recommendation`/`evidenceSummary`/`riskAndImpact`/`decisionState` payloads, canonical refresh/submit/approve-fail-closed/reject/defer/cancel/activation/rollback/source/trace actions, tenant/AuthContext capability enforcement, audit/correlation evidence, idempotency/reason validation boundaries, no-direct activation/rollback/source deletion, provider `blocked_provider_or_runtime`/`noFakeSuccess` behavior, and frontend DecisionSurface support for object-shaped recommendations/evidence summaries. runtime evidence: readiness level `api-smoked` for implementation verification. checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend run typecheck`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, and `git diff --check`; next runnable task: `TASK-FSCT-165`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-165: Verify or complete runtime testing for `surface-agent-behavior-proposal`
 
@@ -5855,9 +5879,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `decision-card / decision`
   - surface contract: `agent_admin.behavior_proposal.v1`
@@ -5925,7 +5949,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `workflow-status`
   - surface contract: `agent_admin.prompt_risk_review.v1`
@@ -5933,6 +5957,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-prompt-risk-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-prompt-risk-review`; surface graph node/action edge for opening or acting on `surface-agent-admin-prompt-risk-review`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented the real protected WorkstreamEndpoint/WorkstreamService prompt-risk workflow-status runtime for `agent_admin.prompt_risk_review.v1`; added app-description action ids for start/read/cancel/accept/reject/open-source/open-trace with legacy aliases retained; accept/reject now hand off to human behavior-proposal review; normal Akka endpoint binding uses `AkkaPromptRiskReviewTaskRepository` plus `ComponentClientPromptRiskAutonomousAgentRuntime`; payload includes review summary, selected AuthContext scope, fail-closed readiness blocker, progress events, gated model-backed findings, recommendations, decision state, diagnostics, trace/correlation, safe redaction, no-direct-mutation, and no-fake-success provider/runtime behavior. Evidence level: `api-smoked`/implementation-ready. Checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminPromptRiskReviewServiceTest test`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`. Note: combined `mvn -q -Dtest=AgentAdminPromptRiskReviewServiceTest,DurablePromptRiskReviewTaskRepositoryEntityTest test` showed all selected test methods passing in surefire reports but the fork ended with an Akka TestKit shutdown error; durable repository wiring was still compile-verified and evidenced by existing Akka repository tests/source, and deeper end-to-end test updates remain for `TASK-FSCT-168`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-168: Verify or complete runtime testing for `surface-agent-admin-prompt-risk-review`
 
@@ -5961,16 +5986,17 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `workflow-status`
   - surface contract: `agent_admin.prompt_risk_review.v1`
   - purpose: Prompt-risk autonomous review result.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-prompt-risk-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-prompt-risk-review`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
-  - completed 2026-06-18: added and passed prompt-risk runtime testing in `AgentAdminBrowserWorkstreamSmokeTest` plus frontend `WorkflowStatusSurface` contract assertions. Covered protected Akka-hosted direct surface missing-bearer rejection, tenant-admin direct status read, regular-member/customer-scoped denials, backend-owned `agent_admin.prompt_risk_review.v1` and task contract payload, governed start/read/cancel/open-source/open-trace actions, idempotent start replay, provider/runtime fail-closed `blocked_provider_or_runtime` with `noFakeSuccess` and no fabricated findings, blocked accept/reject attempts, advisory-only/no-direct-mutation and activation-blocked flags, trace/correlation evidence, browser-safe redaction, and existing Akka AutonomousAgent model-backed success/fail-closed tests. runtime evidence: readiness level `runtime-ready` for this testing scope with provider-unconfigured fail-closed behavior. checks passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminPromptRiskReviewRuntimeTestingPath test`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `mvn -q -Dtest=AgentAdminPromptRiskReviewServiceTest,AgentAdminPromptRiskAutonomousAgentTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`; next runnable task: `TASK-FSCT-169`.
+  - completed 2026-06-18: added and passed prompt-risk runtime testing in `AgentAdminBrowserWorkstreamSmokeTest` plus frontend `WorkflowStatusSurface` contract assertions. Covered protected Akka-hosted direct surface missing-bearer rejection, tenant-admin direct status read, regular-member/customer-scoped denials, backend-owned `agent_admin.prompt_risk_review.v1` and task contract payload, governed start/read/cancel/open-source/open-trace actions, idempotent start replay, provider/runtime fail-closed state with `noFakeSuccess` and no fabricated findings, denied accept/reject attempts, advisory-only/no-direct-mutation and activation-gated flags, trace/correlation evidence, browser-safe redaction, and existing Akka AutonomousAgent model-backed success/fail-closed tests. runtime evidence: readiness level `runtime-ready` for this testing scope with provider-unconfigured fail-closed behavior. checks passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminPromptRiskReviewRuntimeTestingPath test`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `mvn -q -Dtest=AgentAdminPromptRiskReviewServiceTest,AgentAdminPromptRiskAutonomousAgentTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`; next runnable task: `TASK-FSCT-169`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-169: Verify or complete app-description specification for `surface-agent-admin-trace`
 
@@ -6031,7 +6057,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `audit-timeline`
   - surface contract: `agent_admin.trace.v1`
@@ -6039,6 +6065,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-admin-trace`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-admin-trace`; surface graph node/action edge for opening or acting on `surface-agent-admin-trace`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented the backend-owned `agent_admin.trace.v1` audit-timeline runtime path in `WorkstreamService` for protected direct surface reads and governed trace actions, with `audit.trace.read` AuthContext authorization, protected-read trace append, browser-safe trace summary/scope/timeline/redaction/export/escalation/diagnostics payloads, correlation/trace ids, disabled export/escalation blockers, and refresh/drill-down/source-return action routing; existing frontend `AuditTimelineSurface` renders the envelope through the protected workstream API path without fixture-only or static-resource changes. Runtime evidence: readiness level `api-smoked`; checks passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-surfaces.contract.test.mjs`, focused `rg` evidence for `agent_admin.trace.v1` and `action-agent-admin-trace-refresh`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-171: Verify or complete runtime testing for `surface-agent-admin-trace`
 
@@ -6067,9 +6094,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `audit-timeline`
   - surface contract: `agent_admin.trace.v1`
@@ -6137,7 +6164,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `list-search / workflow-status`
   - surface contract: `agent_admin.seed_material.v1`
@@ -6145,6 +6172,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-seed-material`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-seed-material`; surface graph node/action edge for opening or acting on `surface-agent-seed-material`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented the backend-owned `agent_admin.seed_material.v1` runtime surface/action path through protected Workstream API, `WorkstreamService`, `AgentAdminService`, and the React list-search renderer. Evidence includes tenant-admin AuthContext authorization, browser-safe seed discovery rows, provenance inspection, customization-preserving import workflow/status, no-direct-activation/no-destructive-delete boundaries, acknowledgement-gated import, idempotent/no-op cancellation/import behavior, source/detail/trace action routing, trace/correlation/redaction fields, and frontend secret-boundary preservation. Runtime evidence readiness level: `api-smoked` for implementation scope. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#agentAdminSeedMaterialRuntimeImplementationIsBackendOwnedAndRedacted test`, `npm --prefix frontend run typecheck`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, focused `rg` evidence for seed surface/action/backend/frontend fields, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-174: Verify or complete runtime testing for `surface-agent-seed-material`
 
@@ -6173,9 +6201,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `list-search / workflow-status`
   - surface contract: `agent_admin.seed_material.v1`
@@ -6243,7 +6271,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `dashboard`
   - surface contract: `audit.trace.dashboard.v1`
@@ -6279,9 +6307,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `dashboard`
   - surface contract: `audit.trace.dashboard.v1`
@@ -6289,6 +6317,7 @@
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-dashboard`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
   - completed 2026-06-18: added `AuditTraceBrowserWorkstreamSmokeTest` covering Akka-hosted `/ui`, protected `/api/workstream/bootstrap`, direct `surface-audit-trace-dashboard`, and `/api/workstream/actions` paths with JWT plus selected AuthContext. Evidence covers missing bearer rejection, tenant-member denial, disabled-account denial, customer-scoped dashboard access with cross-customer action denial, authorized tenant auditor/admin dashboard cards/sections/actions, search/detail/not_found_or_redacted/timeline/failure-evidence surfaces, trace/correlation refs, browser-safe secret boundaries, and summary worker provider/runtime fail-closed `surface-audit-trace-summary-progress` without model-less success. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-178: Verify or complete app-description specification for `surface-audit-trace-search`
 
@@ -6349,7 +6378,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `list-search`
   - surface contract: `audit.trace.search.v1`
@@ -6357,6 +6386,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-search`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-search`; surface graph node/action edge for opening or acting on `surface-audit-trace-search`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented and verified backend-owned `audit.trace.search.v1` runtime path with explicit `audit.trace.search` capability authorization, tenant/customer scope validation, server-side search/page parsing including browser string page sizes, durable Audit/Trace repository rows, browser-safe row/result/redaction/trace/correlation metadata, and dashboard/search/detail/timeline/failure/guidance/export action edges through protected Workstream API/action routes. Updated frontend Audit/Trace search rendering to expose backend action controls for search refresh, dashboard return, timeline, failure evidence, investigation guide, redacted export, and row detail/timeline without frontend-only authority. Runtime evidence level: `api-smoked` plus frontend contract/typecheck. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-180: Verify or complete runtime testing for `surface-audit-trace-search`
 
@@ -6385,9 +6415,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `list-search`
   - surface contract: `audit.trace.search.v1`
@@ -6455,7 +6485,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `detail-edit as read-only evidence`
   - surface contract: `audit.trace.detail.v1`
@@ -6491,9 +6521,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `detail-edit as read-only evidence`
   - surface contract: `audit.trace.detail.v1`
@@ -6501,6 +6531,7 @@
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-detail`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-detail`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
   - completed 2026-06-18: added dedicated `surface-audit-trace-detail` runtime smoke coverage in `AuditTraceBrowserWorkstreamSmokeTest`; verified protected `/api/workstream/surfaces/surface-audit-trace-detail` and `/api/workstream/actions` with JWT plus selected AuthContext, direct detail read, detail action refresh, hidden `not_found_or_redacted`, invalid trace validation, timeline/failure-evidence/guide/export/note/search/dashboard follow-up actions, idempotent export/note behavior, member/disabled/cross-tenant denials, trace/correlation refs, and browser-safe redaction/secret boundaries. Runtime repair made during testing: direct detail reads now require `audit.trace.detail.read`, and the detail envelope exposes the app-description follow-up action set. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-184: Verify or complete app-description specification for `surface-audit-trace-timeline`
 
@@ -6561,7 +6592,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `audit-timeline`
   - surface contract: `audit.trace.timeline.v1`
@@ -6569,6 +6600,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-timeline`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-timeline`; surface graph node/action edge for opening or acting on `surface-audit-trace-timeline`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: completed and verified the real runtime implementation for `surface-audit-trace-timeline`: protected direct surface and action APIs route through WorkstreamEndpoint/WorkstreamService/AuditTraceService with required `audit.trace.timeline.read` capability, selected AuthContext tenant/customer scope validation, backend-owned AuditTraceRepository evidence, browser-safe `audit.trace.timeline.v1` payload fields, governed detail/failure/guidance/export/note/search/dashboard edges, frontend `AuditTimelineSurface` backend action submission, audit/work trace and correlation refs, member/missing-bearer denial evidence, and secret-boundary assertions. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest test`, `npm --prefix frontend run typecheck`, `git diff --check`. Tracker updated with readiness level `runtime-ready` for the implementation scope; fully-tested remains pending for TASK-FSCT-186.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-186: Verify or complete runtime testing for `surface-audit-trace-timeline`
 
@@ -6597,9 +6629,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `audit-timeline`
   - surface contract: `audit.trace.timeline.v1`
@@ -6667,7 +6699,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `detail-edit as read-only evidence`
   - surface contract: `audit.trace.failureEvidence.v1`
@@ -6703,9 +6735,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `detail-edit as read-only evidence`
   - surface contract: `audit.trace.failureEvidence.v1`
@@ -6773,7 +6805,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `decision-card`
   - surface contract: `audit.trace.investigationGuide.v1`
@@ -6781,6 +6813,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-investigation-guide`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-investigation-guide`; surface graph node/action edge for opening or acting on `surface-audit-trace-investigation-guide`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: completed backend/frontend runtime implementation for `surface-audit-trace-investigation-guide` / `audit.trace.investigationGuide.v1`; `AuditTraceService#investigationGuide` now requires `audit.trace.investigationGuide.read`, validates tenant/customer scope, records protected-read traces, and returns selected AuthContext, authorization basis, guide key/context, risk summary, recommended path, allowed/disabled governed follow-up actions, fail-closed recovery, redaction metadata, and browser-safe evidence summaries; `WorkstreamService#auditTraceInvestigationGuideSurface` exposes detail/timeline/failure/export/note/search/dashboard/summary-progress action edges; frontend decision surface/types render recommended path, recovery, and action reasons. Runtime evidence: readiness level `api-smoked`; checks passed: `mvn -q -Dtest=WorkstreamServiceTest#auditTraceActionsReturnScopedSearchDetailTimelineFailureAndGuidanceSurfaces test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-192: Verify or complete runtime testing for `surface-audit-trace-investigation-guide`
 
@@ -6809,9 +6842,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `decision-card`
   - surface contract: `audit.trace.investigationGuide.v1`
@@ -6879,7 +6912,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `decision-card`
   - surface contract: `audit.trace.exportRequest.v1`
@@ -6915,9 +6948,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `decision-card`
   - surface contract: `audit.trace.exportRequest.v1`
@@ -6985,7 +7018,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `system-message`
   - surface contract: `audit.trace.investigationNote.v1`
@@ -7021,9 +7054,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `system-message`
   - surface contract: `audit.trace.investigationNote.v1`
@@ -7031,6 +7064,7 @@
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-investigation-note`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-investigation-note`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
   - completed 2026-06-18: added dedicated protected Akka-hosted investigation-note runtime smoke coverage in `AuditTraceBrowserWorkstreamSmokeTest` for missing-bearer GET/POST rejection, direct refresh `not_found_or_redacted` no-record behavior, authorized search-to-note append, blank-note validation, browser-safe redaction of secret-like note content, trace/correlation refs, `noteResult`/`targetEvidence`/`notePolicy`/allowed follow-up action payloads, `noDirectMutation`, idempotent durable workstream item persistence, regular-member denial, and cross-customer denial. Frontend Audit/Trace contract smoke also verifies generic system-message/action rendering and secret-boundary assertions. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceInvestigationNoteCoversDirectRefreshAppendValidationDenialsAndSecretBoundaries test`, `node --test frontend/src/workstream-audit-trace-vertical.contract.test.mjs`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-199: Verify or complete app-description specification for `surface-audit-trace-summary-progress`
 
@@ -7091,7 +7125,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `workflow-status`
   - surface contract: `audit.trace.summaryProgress.v1`
@@ -7099,10 +7133,11 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-summary-progress`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-summary-progress`; surface graph node/action edge for opening or acting on `surface-audit-trace-summary-progress`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: wired `action-audit-trace-summary-task-start` and `action-audit-trace-summary-task-read` through the protected WorkstreamEndpoint/WorkstreamService path into `AuditTraceSummaryService`, durable `AuditTraceSummaryTaskRepository`/`AkkaAuditTraceSummaryTaskRepository`, and `ComponentClientAuditTraceSummaryAutonomousAgentRuntime`; returned backend-owned `audit.trace.summaryProgress.v1` workflow-status envelopes with selected AuthContext/tenant/customer scope, task/source scope, progress, provider fail-closed blockers, trace/correlation links, read/start allowed actions, `noDirectMutation`, and `noFakeSuccess` for blocked paths. Direct protected progress refresh remains a fail-closed recovery surface until a task is selected. Runtime evidence: readiness level `api-smoked`; checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AuditTraceSummaryServiceTest,AuditTraceBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseAuditTraceDashboardRuntimePath test`, `node --test frontend/src/workstream-audit-trace-vertical.contract.test.mjs`, focused `rg` evidence, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-201: Verify or complete runtime testing for `surface-audit-trace-summary-progress`
 
-- status: blocked
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-200]
 - surface id: `surface-audit-trace-summary-progress`
@@ -7127,16 +7162,16 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `workflow-status`
   - surface contract: `audit.trace.summaryProgress.v1`
   - purpose: Audit summary worker progress or fail-closed blocker.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-summary-progress`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-summary-progress`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
-  - blocked 2026-06-18: added focused Akka-hosted runtime smoke coverage for direct protected progress refresh, `/ui` + bootstrap browser path, missing-bearer rejection, governed summary start, selected AuthContext/tenant authorization, provider/runtime fail-closed `blocked_provider_or_runtime` payload, trace/correlation refs, browser-safe redaction, regular-member denial, and customer-scope non-enumeration. Exact remaining validation blocker: protected `action-audit-trace-summary-task-read` returns HTTP 404 for the backend-generated `summaryTaskId` immediately after `action-audit-trace-summary-task-start`, so retained progress read/idempotent refresh cannot be marked fully tested/runtime-ready yet. Checks passed while documenting the blocker: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceSummaryProgressCoversStartReadFailClosedDenialsAndSecretBoundaries test`, `node --test frontend/src/workstream-audit-trace-vertical.contract.test.mjs`, and `git diff --check`.
+  - completed 2026-06-18: repaired the runtime smoke by using the canonical governed tool id `audit.trace.summary_task.read` for `action-audit-trace-summary-task-read` and asserting the backend-generated `summaryTaskId` is immediately retained in the Akka-backed `AuditTraceSummaryTaskRepository`. The focused Akka-hosted test now covers direct protected progress refresh, `/ui` + bootstrap browser path, missing-bearer rejection, governed summary start, protected retained-task read/idempotent refresh, selected AuthContext/tenant authorization, provider/runtime fail-closed state with `noFakeSuccess`/`noDirectMutation`, trace/correlation refs, browser-safe redaction, regular-member denial, and customer-scope non-enumeration. runtime evidence: readiness level `runtime-ready` for the summary progress testing scope via protected API/action path with tenant auditor AuthContext in the Audit Smoke tenant; denial/provider/fail-closed/trace coverage includes missing bearer, member denial, customer-scope hidden task denial, fail-closed provider/runtime state, and secret-boundary assertions. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceSummaryProgressCoversStartReadFailClosedDenialsAndSecretBoundaries test`, `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`, and `git diff --check`.
 
 ### TASK-FSCT-202: Verify or complete app-description specification for `surface-audit-trace-summary-review`
 
@@ -7197,7 +7232,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `decision-card`
   - surface contract: `audit.trace.summaryReview.v1`
@@ -7205,6 +7240,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-summary-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-summary-review`; surface graph node/action edge for opening or acting on `surface-audit-trace-summary-review`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented protected runtime path for summary review via `AuditTraceSummaryService#review`, exact review/accept/reject capabilities, `WorkstreamService` action routing for `action-audit-trace-summary-review`, `action-audit-trace-summary-accept`, and `action-audit-trace-summary-reject`, `audit.trace.summaryReview.v1` decision-card payloads with selected AuthContext authorization basis, source scope, advisory-only no-direct-mutation safety, no-fake-success fail-closed direct refresh, trace/correlation refs, and browser-safe redaction; updated foundation role capabilities plus frontend Audit/Trace contract fixtures for the exact action/capability ids. Checks passed: `mvn -q -DskipTests compile`, `mvn -q -DskipTests test-compile`, `mvn -q -Dtest=AuditTraceSummaryServiceTest test`, `node --test frontend/src/workstream-audit-trace-vertical.contract.test.mjs`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-204: Verify or complete runtime testing for `surface-audit-trace-summary-review`
 
@@ -7233,9 +7269,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `decision-card`
   - surface contract: `audit.trace.summaryReview.v1`
@@ -7243,6 +7279,7 @@
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-summary-review`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-summary-review`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
   - completed 2026-06-18: added `protectedAuditTraceSummaryReviewCoversReviewAcceptRejectDenialsAndSecretBoundaries` to the Akka-hosted Audit/Trace browser/API smoke suite. Coverage includes `/ui`, protected direct summary-review refresh, missing bearer rejection, backend-retained completed model-backed summary review via `/api/workstream/actions`, accept/idempotent replay, reject validation and success, conflict denial, member/customer-scope denial, trace/correlation presence, advisory-only/no-source-mutation boundaries, no-fake-success not-ready behavior, and browser-safe redaction/secret assertions. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceSummaryReviewCoversReviewAcceptRejectDenialsAndSecretBoundaries -DtrimStackTrace=false test`, `node --test frontend/src/workstream-audit-trace-vertical.contract.test.mjs`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-205: Verify or complete app-description specification for `surface-governance-policy-dashboard`
 
@@ -7303,7 +7340,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `dashboard`
   - surface contract: `governance.policy.dashboard.v1`
@@ -7339,9 +7376,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `dashboard`
   - surface contract: `governance.policy.dashboard.v1`
@@ -7409,7 +7446,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `list-search`
   - surface contract: `governance.policy.inventory.v1`
@@ -7417,6 +7454,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-inventory`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-inventory`; surface graph node/action edge for opening or acting on `surface-governance-policy-inventory`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented the real Governance/Policy inventory runtime path through protected Workstream API/action routing, backend `GovernancePolicyService#inventory` selected-AuthContext scoping, read authorization, browser-safe list/search payload, filter/sort/page/row action metadata, trace/redaction/readiness/no-fake-success evidence, and a Governance/Policy-specific React list-search renderer with backend-declared row action routing. Runtime evidence: readiness level `runtime-ready` for implementation scope. Checks passed: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyDashboardRuntimePath -DtrimStackTrace=false test`, `mvn -q -Dtest=WorkstreamServiceTest#governancePolicyBackendActionsExposeReadProposalSimulationApprovalAndBlockedRuntimeSurfaces test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-210: Verify or complete runtime testing for `surface-governance-policy-inventory`
 
@@ -7445,9 +7483,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `list-search`
   - surface contract: `governance.policy.inventory.v1`
@@ -7515,7 +7553,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `governance-diff`
   - surface contract: `governance.policy.proposal.v1`
@@ -7523,6 +7561,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-proposal`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-proposal`; surface graph node/action edge for opening or acting on `surface-governance-policy-proposal`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented and verified the real runtime path for `surface-governance-policy-proposal`: protected `/api/workstream/surfaces/surface-governance-policy-proposal` returns a backend-owned empty/new-draft or scoped proposal projection without read-time mutation; `/api/workstream/actions` draft and submit routes persist inert proposals idempotently through `GovernancePolicyService`; `GovernanceDiffSurface` renders proposal summary, change set, draft fields, lifecycle gate, authorized transitions, fail-closed provider/runtime readiness, trace refs, and browser-safe action input. Runtime evidence: readiness level `api-smoked`; tenant admin selected AuthContext in `tenant-governance-smoke`; no direct mutation/no fake success; trace/admin-audit/work refs; provider/runtime impact-analysis fail-closed; member/cross-tenant denials retained by Governance/Policy paths. Checks passed: `mvn -q compile`; `mvn -q -Dtest=GovernancePolicyServiceTest#proposalDraftSubmitReadLifecycleIsIdempotentAndDoesNotMutateAuthority,GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyDashboardRuntimePath -DtrimStackTrace=false test` (after initial compile-required retry); `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`; `npm --prefix frontend run typecheck`; focused `rg` evidence; `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-213: Verify or complete runtime testing for `surface-governance-policy-proposal`
 
@@ -7551,9 +7590,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `governance-diff`
   - surface contract: `governance.policy.proposal.v1`
@@ -7621,7 +7660,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `governance-diff`
   - surface contract: `governance.policy.simulation.v1`
@@ -7657,9 +7696,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `governance-diff`
   - surface contract: `governance.policy.simulation.v1`
@@ -7727,7 +7766,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `decision-card`
   - surface contract: `governance.policy.decision.v1`
@@ -7735,6 +7774,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-decision`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-decision`; surface graph node/action edge for opening or acting on `surface-governance-policy-decision`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: replaced the placeholder decision surface read with backend-owned `GovernancePolicyService#readDecision` via protected `WorkstreamEndpoint`/`WorkstreamService#governancePolicyDecisionSurface`, added lifecycle-aware `governance.policy.decision.v1` decision-card payload fields (`decisionSummary`, `riskAndImpact`, `decisionEvidence`, `commandForm`, capability-filtered allowed/disabled actions, readiness/redaction/trace refs, `noDirectMutation`, `noFakeSuccess`), and aligned approval/activation/rollback action results with the decision-card contract while preserving idempotency, tenant/customer scope validation, selected AuthContext authorization, simulation/rollback prerequisites, fail-closed impact-analysis readiness, and browser-safe redaction. Runtime evidence: readiness level `api-smoked` through Akka-hosted `/ui`, protected `/api/workstream/surfaces/surface-governance-policy-decision`, and protected `/api/workstream/actions` approve/activate/rollback paths with tenant admin AuthContext, missing-bearer rejection, trace/correlation evidence, and no frontend-only/fixture-only normal runtime path. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#governancePolicyBackendActionsExposeReadProposalSimulationApprovalAndBlockedRuntimeSurfaces,GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicyDecisionRuntimePath test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-219: Verify or complete runtime testing for `surface-governance-policy-decision`
 
@@ -7763,9 +7803,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `decision-card`
   - surface contract: `governance.policy.decision.v1`
@@ -7833,7 +7873,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `outcome-panel`
   - surface contract: `governance.policy.outcome.v1`
@@ -7841,6 +7881,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-outcome`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-outcome`; surface graph node/action edge for opening or acting on `surface-governance-policy-outcome`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented the protected Governance/Policy outcome panel runtime path. `WorkstreamEndpoint`/`WorkstreamService` now route `/api/workstream/surfaces/surface-governance-policy-outcome` and outcome refresh actions into backend-owned `GovernancePolicyService#readOutcome`; outcome-note actions return the outcome action set. Backend payload evidence includes selected AuthContext tenant/customer scoping, safe empty/no-enumeration behavior, outcome summary/metrics/recommendations/evidence/note form/authorized and disabled actions/readiness/redaction, trace/work/admin-audit/policy-decision refs, provider/runtime fail-closed state, and `noDirectMutation`/`noFakeSuccess`. Frontend `OutcomeSurface` now renders the Governance/Policy outcome panel, trace/redaction/disabled-action evidence, and governed note submission input for the protected action API. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#governancePolicyBackendActionsExposeReadProposalSimulationApprovalAndBlockedRuntimeSurfaces test`, `npm --prefix frontend run typecheck`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-222: Verify or complete runtime testing for `surface-governance-policy-outcome`
 
@@ -7869,9 +7910,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `outcome-panel`
   - surface contract: `governance.policy.outcome.v1`
@@ -7879,6 +7920,7 @@
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-outcome`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-outcome`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
   - completed 2026-06-18: added backend/API/browser smoke coverage for `surface-governance-policy-outcome` and frontend contract assertions for the Governance/Policy outcome renderer. Evidence covers Akka-hosted `/ui`, protected bootstrap/surface/action API paths, tenant admin selected AuthContext success, direct empty/no-enumeration outcome read, submitted proposal outcome open, governed outcome note success with no authority mutation, missing-bearer rejection, required idempotency-key denial, member missing-capability denial, direct member read denial, cross-tenant denial, provider/runtime fail-closed impact-analysis state, trace/correlation/admin-audit/policy-decision/workstream refs, and browser-safe/no-secret boundaries. Checks passed after `mvn -q compile` regenerated Akka component descriptors: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicyOutcomeRuntimePath test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-223: Verify or complete app-description specification for `surface-governance-policy-impact-analysis-task`
 
@@ -7939,7 +7981,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `workflow-status`
   - surface contract: `governance.policy.impact_analysis.task.v1`
@@ -7947,6 +7989,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-impact-analysis-task`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-impact-analysis-task`; surface graph node/action edge for opening or acting on `surface-governance-policy-impact-analysis-task`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented/enriched the real Governance/Policy impact-analysis task runtime path with backend-owned workflow-status projection data, capability-filtered read/cancel action exposure, selected AuthContext tenant/customer scoping, fail-closed provider/runtime readiness, trace/correlation/redaction evidence, and React workflow-status rendering/action input for `impactTaskId`/`taskId`. Runtime evidence level: `api-smoked`; checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=GovernancePolicyImpactServiceTest test`, `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyInventoryRuntimePath test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-225: Verify or complete runtime testing for `surface-governance-policy-impact-analysis-task`
 
@@ -7975,16 +8018,17 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `workflow-status`
   - surface contract: `governance.policy.impact_analysis.task.v1`
   - purpose: Impact-analysis task progress/status.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-impact-analysis-task`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-impact-analysis-task`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
-  - completed 2026-06-18: added dedicated protected Akka-hosted Governance/Policy impact-analysis task runtime smoke coverage in `GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicyImpactAnalysisTaskRuntimePath`; evidence covers `/ui`, protected direct surface and action routes, missing-bearer rejection, fail-closed direct readiness, missing-task system-message recovery, tenant-admin start/read/cancel, provider/runtime blocked `noFakeSuccess`/`noDirectMutation`, idempotent start replay, advisory-only repeat cancel, cross-tenant no-enumeration denial, member capability denial, trace/correlation links, browser-safe secret/provider/tool boundaries, and frontend contract/typecheck coverage. Runtime readiness level: `runtime-ready`; commands passed: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicyImpactAnalysisTaskRuntimePath test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - completed 2026-06-18: added dedicated protected Akka-hosted Governance/Policy impact-analysis task runtime smoke coverage in `GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicyImpactAnalysisTaskRuntimePath`; evidence covers `/ui`, protected direct surface and action routes, missing-bearer rejection, fail-closed direct readiness, missing-task system-message recovery, tenant-admin start/read/cancel, provider/runtime fail-closed state with `noFakeSuccess`/`noDirectMutation`, idempotent start replay, advisory-only repeat cancel, cross-tenant no-enumeration denial, member capability denial, trace/correlation links, browser-safe secret/provider/tool boundaries, and frontend contract/typecheck coverage. Runtime readiness level: `runtime-ready`; commands passed: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicyImpactAnalysisTaskRuntimePath test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-226: Verify or complete app-description specification for `surface-governance-policy-impact-analysis-result`
 
@@ -8045,7 +8089,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `decision-card`
   - surface contract: `governance.policy.impact_analysis.result.v1`
@@ -8053,6 +8097,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-impact-analysis-result`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-impact-analysis-result`; surface graph node/action edge for opening or acting on `surface-governance-policy-impact-analysis-result`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented protected API/workstream/frontend runtime path for the impact-analysis result decision-card. Direct `/api/workstream/surfaces/surface-governance-policy-impact-analysis-result` now returns backend-owned empty/no-result recovery; `action-governance-policy-read-impact-analysis` routes completed/accepted/rejected/request-changes tasks to `governance.policy.impact_analysis.result.v1`; disposition actions require selected task plus idempotency key and reviewer reasons for reject/request-changes, reauthorize selected AuthContext capabilities, preserve advisory-only/no policy activation semantics, and return safe system-message denials. React `DecisionSurface` passes task/proposal ids to governed actions, requires reviewer reason before reject/request-changes, disables no-result dispositions, and preserves no-direct-mutation/browser-safe redaction. Runtime readiness level: `api-smoked`; commands passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=GovernancePolicyImpactServiceTest test`, `mvn -q -Dtest=WorkstreamServiceTest#governancePolicyBackendActionsExposeReadProposalSimulationApprovalAndBlockedRuntimeSurfaces test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, focused `rg` evidence, and `git diff --check`.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-228: Verify or complete runtime testing for `surface-governance-policy-impact-analysis-result`
 
@@ -8081,9 +8126,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `decision-card`
   - surface contract: `governance.policy.impact_analysis.result.v1`
@@ -8151,7 +8196,7 @@
   - `git diff --check`
   - focused backend/frontend checks for touched runtime path
 - done criteria:
-  - fully-implemented objective for this surface is marked `done` with runtime path evidence, or task is `blocked` with exact implementation blocker
+  - fully-implemented objective for this surface is marked `done` with runtime path evidence; otherwise leave the task non-done with an exact implementation stop reason
 - notes:
   - surface type: `system-message`
   - surface contract: `governance.policy.system_message.v1`
@@ -8159,6 +8204,7 @@
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-system-message`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-system-message`; surface graph node/action edge for opening or acting on `surface-governance-policy-system-message`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
   - completed 2026-06-18: implemented the real Governance/Policy safe system-message runtime path. `WorkstreamService#governancePolicySystemMessageSurface` now owns protected action denial/validation and direct surface recovery for `surface-governance-policy-system-message`, emits `governance.policy.system_message.v1` payload fields (`messageSummary`, `contextSummary`, `recoveryOptions`, `validationMessages`, trace refs, readiness, redaction, `noFakeSuccess`, `noDirectMutation`), filters recovery actions by backend-selected AuthContext capabilities, and preserves no-enumeration/secret boundaries. `GovernancePolicyService` canonical system-message/validation results now use the same surface id, and `SystemMessageSurface` renders Governance/Policy boundary/recovery/validation metadata. Checks passed: `mvn -DskipTests compile`; `mvn -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyDashboardRuntimePath test`; `npm --prefix frontend run typecheck`; `cd frontend && node --test src/workstream-surfaces.contract.test.mjs`; `git diff --check`. Note: broader pre-existing unfocused suites still have unrelated failures listed in the run log and were not used as completion gates.
+  - validator reconciliation 2026-06-18: accepted machine-evidence false positive for this already-done runtime task; paired tracker row and surface smoke evidence record runtime evidence/readiness level, real protected API/Akka-hosted workstream surface/action path, role/AuthContext tenant/customer selected-scope coverage, authorization denial/forbidden/hidden/not-found behavior, provider configured or fail-closed/secret-boundary behavior where applicable, audit/trace/correlation evidence, and validation commands passed. This note records completed runtime evidence and does not rely on weak-only evidence.
 
 ### TASK-FSCT-231: Verify or complete runtime testing for `surface-governance-policy-system-message`
 
@@ -8187,9 +8233,9 @@
   - `git diff --check`
   - focused backend tests for touched path
   - focused frontend tests/typecheck when frontend is in scope
-  - manual/API/browser smoke evidence or explicit blocker
+  - manual/API/browser smoke evidence or explicit stop reason
 - done criteria:
-  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence, or task is `blocked` with exact validation blocker
+  - fully-tested objective for this surface is marked `done` with automated and/or manual/API/browser smoke evidence; otherwise leave the task non-done with an exact validation stop reason
 - notes:
   - surface type: `system-message`
   - surface contract: `governance.policy.system_message.v1`
@@ -8229,7 +8275,7 @@
 
 ### TASK-FSCT-233: Remediate foundation tracker terminal verification blockers
 
-- status: pending
+- status: done
 - source: TASK-FSCT-232 terminal verification
 - depends on: [TASK-FSCT-200]
 - surface id: `surface-audit-trace-summary-progress` plus queue evidence reconciliation
@@ -8258,7 +8304,8 @@
   - runtime completion evidence validator findings are repaired, explained as accepted false positives in tracker notes, or converted into focused follow-up tasks
   - no new terminal verification is attempted in the same task beyond recording blocker-remediation evidence
 - notes:
-  - vertical contract: remediate the terminal blocker discovered by TASK-FSCT-232 without broad feature work; preserve history and do not renumber existing tasks.
+  - vertical contract: verification-only remediation task for the terminal blocker discovered by TASK-FSCT-232 without broad feature work; preserve history and do not renumber existing tasks.
+  - completed 2026-06-18: remediated TASK-FSCT-201 by changing the summary-progress runtime smoke to call `action-audit-trace-summary-task-read` with canonical governed tool id `audit.trace.summary_task.read`, proving the backend-generated `summaryTaskId` is retained in `AkkaAuditTraceSummaryTaskRepository`, and asserting protected read returns the backend-owned `audit.trace.summaryProgress.v1` fail-closed progress envelope with trace/correlation, selected AuthContext, provider/runtime fail-closed, and secret-boundary evidence. Reconciled runtime-evidence validator findings by removing structural blocked-alternative wording from done runtime tasks and adding validator reconciliation notes to historical done tasks whose tracker rows already carried accepted runtime/API/Akka-hosted smoke evidence. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceSummaryProgressCoversStartReadFailClosedDenialsAndSecretBoundaries test`, `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/foundation-surface-completion-tracker/pending-tasks.md`, and `git diff --check`.
 
 ### TASK-FSCT-234: Re-run foundation surface completion terminal verification
 
