@@ -6890,7 +6890,7 @@
 
 ### TASK-FSCT-195: Verify or complete runtime testing for `surface-audit-trace-export-request`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-194]
 - surface id: `surface-audit-trace-export-request`
@@ -6924,6 +6924,7 @@
   - purpose: Policy-gated scoped redacted export request.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-export-request`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-export-request`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added dedicated `AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceExportRequestCoversDirectRefreshPolicyDenialsIdempotencyAndSecretBoundaries` coverage for the protected direct surface and action API paths; verified missing-bearer rejection, authorized JWT/selected AuthContext direct refresh, redacted approval-required submit/retry, stable export decision handle for repeated idempotency key, missing-idempotency validation, unredacted-export-forbidden denial, customer scope, cross-tenant fail-closed denial, regular-member and disabled-account denials, trace/correlation refs, no direct mutation, no raw browser download URL, backend-governed follow-up actions, and browser-safe secret boundaries. runtime evidence: readiness level `runtime-ready` for this policy-gated export-request testing scope; provider/model behavior is not invoked, and delivery remains backend-governed/fail-closed. checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceExportRequestCoversDirectRefreshPolicyDenialsIdempotencyAndSecretBoundaries test` and `git diff --check`.
 
 ### TASK-FSCT-196: Verify or complete app-description specification for `surface-audit-trace-investigation-note`
 

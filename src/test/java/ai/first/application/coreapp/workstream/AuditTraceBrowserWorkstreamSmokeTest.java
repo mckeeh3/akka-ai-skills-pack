@@ -430,6 +430,168 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
 
   @Test
   @SuppressWarnings("unchecked")
+  void protectedAuditTraceExportRequestCoversDirectRefreshPolicyDenialsIdempotencyAndSecretBoundaries() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-audit-trace-export-request")
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Audit/Trace export-request surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-audit-export-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-audit-trace-request-redacted-export",
+            "action-audit-trace-request-redacted-export",
+            "audit.trace.export.request",
+            "audit.trace.export.request",
+            Map.of("format", "jsonl-redacted", "reason", "Missing bearer export request must be rejected."),
+            "idem-audit-export-missing-bearer",
+            AUDITOR_CONTEXT_ID,
+            "surface-audit-trace-search",
+            "corr-audit-export-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Audit/Trace export-request action path must reject missing bearer tokens.");
+
+    var direct = getSurface("surface-audit-trace-export-request", "corr-audit-export-direct");
+    assertEquals("surface-audit-trace-export-request", direct.surfaceId());
+    assertEquals("audit.trace.exportRequest.v1", direct.data().get("surfaceContract"));
+    assertEquals("approval_required", direct.data().get("status"));
+    assertEquals("jsonl-redacted", direct.data().get("requestedFormat"));
+    assertEquals("corr-audit-export-direct", direct.correlationId());
+    assertTrue(direct.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-audit-export")));
+    assertTrue(direct.data().containsKey("exportRequest"));
+    assertTrue(direct.data().containsKey("exportScope"));
+    assertTrue(direct.data().containsKey("authorizationBasis"));
+    assertTrue(direct.data().containsKey("policyDecision"));
+    assertTrue(direct.data().containsKey("bundleMetadata"));
+    assertTrue(direct.data().containsKey("approval"));
+    var directDecision = (Map<String, Object>) direct.data().get("policyDecision");
+    assertEquals("approval_required", directDecision.get("classification"));
+    assertEquals(true, directDecision.get("approvalRequired"));
+    var directAuthorization = (Map<String, Object>) direct.data().get("authorizationBasis");
+    assertEquals(AUDITOR_CONTEXT_ID, directAuthorization.get("selectedContextId"));
+    assertTrue(String.valueOf(directAuthorization.get("visibleCapabilityIds")).contains("audit.trace.export.request"));
+    assertTrue(String.valueOf(direct.data().get("disabledActions")).contains("unredacted_export_forbidden"));
+    assertTrue(String.valueOf(direct.data().get("delivery")).contains("No raw browser download URL"));
+    assertEquals(true, direct.data().get("noDirectMutation"));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-request-redacted-export") && action.capabilityId().equals("audit.trace.export.request") && action.idempotency().required()));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-detail") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-detail")));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-dashboard") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-dashboard")));
+    assertBrowserSafe(direct);
+
+    var submitted = runAction(new CapabilityActionRequest(
+        "action-audit-trace-request-redacted-export",
+        "action-audit-trace-request-redacted-export",
+        "audit.trace.export.request",
+        "audit.trace.export.request",
+        Map.of("format", "jsonl-redacted", "reason", "Dedicated runtime test export request for authorized redacted evidence."),
+        "idem-audit-export-dedicated",
+        AUDITOR_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-audit-export-submit"));
+    assertEquals("accepted", submitted.status());
+    assertEquals("surface-audit-trace-export-request", submitted.resultSurface().surfaceId());
+    assertEquals("approval_required", submitted.resultSurface().data().get("status"));
+    assertEquals("audit.trace.exportRequest.v1", submitted.resultSurface().data().get("surfaceContract"));
+    assertEquals("corr-audit-export-submit", submitted.correlationId());
+    assertTrue(submitted.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-audit-export")));
+    assertTrue(submitted.resultSurface().toString().contains("approval_required"));
+    assertTrue(submitted.resultSurface().toString().contains("No raw browser download URL"));
+    assertBrowserSafe(submitted.resultSurface());
+
+    var retry = runAction(new CapabilityActionRequest(
+        "action-audit-trace-request-redacted-export",
+        "action-audit-trace-request-redacted-export",
+        "audit.trace.export.request",
+        "audit.trace.export.request",
+        Map.of("format", "jsonl-redacted", "reason", "Dedicated runtime test export request retry for the same scoped evidence."),
+        "idem-audit-export-dedicated",
+        AUDITOR_CONTEXT_ID,
+        submitted.resultSurface().surfaceId(),
+        "corr-audit-export-retry"));
+    assertEquals("accepted", retry.status());
+    assertEquals("surface-audit-trace-export-request", retry.resultSurface().surfaceId());
+    assertEquals(submitted.resultSurface().data().get("exportId"), retry.resultSurface().data().get("exportId"), "Same idempotency key must keep the backend export decision handle stable.");
+    assertEquals("approval_required", retry.resultSurface().data().get("status"));
+    assertBrowserSafe(retry.resultSurface());
+
+    var missingIdempotency = runAction(new CapabilityActionRequest(
+        "action-audit-trace-request-redacted-export",
+        "action-audit-trace-request-redacted-export",
+        "audit.trace.export.request",
+        "audit.trace.export.request",
+        Map.of("format", "jsonl-redacted", "reason", "Missing idempotency must be rejected."),
+        null,
+        AUDITOR_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-audit-export-missing-idempotency"));
+    assertEquals("validation-error", missingIdempotency.status());
+    assertNotNull(missingIdempotency.traceIds());
+    assertBrowserSafe(missingIdempotency);
+
+    var unredacted = runAction(new CapabilityActionRequest(
+        "action-audit-trace-request-redacted-export",
+        "action-audit-trace-request-redacted-export",
+        "audit.trace.export.request",
+        "audit.trace.export.request",
+        Map.of("format", "csv-unredacted", "reason", "Attempt unredacted export should be denied by policy."),
+        "idem-audit-export-unredacted-denied",
+        AUDITOR_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-audit-export-unredacted-denied"));
+    assertEquals("accepted", unredacted.status());
+    assertEquals("denied", unredacted.resultSurface().data().get("status"));
+    var unredactedDecision = (Map<String, Object>) unredacted.resultSurface().data().get("policyDecision");
+    assertEquals("unredacted_export_forbidden", unredactedDecision.get("classification"));
+    assertEquals(false, unredactedDecision.get("approvalRequired"));
+    assertTrue(unredacted.resultSurface().toString().contains("Unredacted browser export is forbidden"));
+    assertBrowserSafe(unredacted.resultSurface());
+
+    var customerScoped = getSurfaceAs(
+        "surface-audit-trace-export-request",
+        "corr-audit-export-customer-scoped",
+        "workos-audit-customer",
+        "customer-audit@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID);
+    assertEquals("surface-audit-trace-export-request", customerScoped.surfaceId());
+    var customerAuthorization = (Map<String, Object>) customerScoped.data().get("authorizationBasis");
+    assertEquals(true, customerAuthorization.get("customerScopeRestricted"));
+    assertTrue(customerScoped.toString().contains("scopeKind=customer"));
+    assertBrowserSafe(customerScoped);
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-audit-trace-request-redacted-export",
+        "action-audit-trace-request-redacted-export",
+        "audit.trace.export.request",
+        "audit.trace.export.request",
+        Map.of("tenantId", "tenant-other", "format", "jsonl-redacted", "reason", "Cross-tenant export must be denied."),
+        "idem-audit-export-cross-tenant-denied",
+        AUDITOR_CONTEXT_ID,
+        direct.surfaceId(),
+        "corr-audit-export-cross-tenant-denied")), "Cross-tenant export requests must fail closed without hidden evidence enumeration.");
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-audit-trace-export-request",
+        "corr-audit-export-member-denied",
+        "workos-audit-member",
+        "member-audit@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not open Audit/Trace export-request decisions.");
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-audit-trace-export-request",
+        "corr-audit-export-disabled-denied",
+        "workos-audit-disabled",
+        "disabled-audit@example.test",
+        "Disabled Auditor",
+        DISABLED_CONTEXT_ID), "Disabled accounts must not resolve an Audit/Trace export-request AuthContext.");
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
   void protectedAuditTraceDetailCoversDirectRefreshFollowUpActionsDenialsAndSecretBoundaries() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-audit-trace-detail")
