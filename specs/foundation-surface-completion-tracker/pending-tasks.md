@@ -7067,7 +7067,7 @@
 
 ### TASK-FSCT-200: Verify or complete runtime implementation for `surface-audit-trace-summary-progress`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-199]
 - surface id: `surface-audit-trace-summary-progress`
@@ -7098,6 +7098,7 @@
   - purpose: Audit summary worker progress or fail-closed blocker.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-summary-progress`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-summary-progress`; surface graph node/action edge for opening or acting on `surface-audit-trace-summary-progress`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: wired `action-audit-trace-summary-task-start` and `action-audit-trace-summary-task-read` through the protected WorkstreamEndpoint/WorkstreamService path into `AuditTraceSummaryService`, durable `AuditTraceSummaryTaskRepository`/`AkkaAuditTraceSummaryTaskRepository`, and `ComponentClientAuditTraceSummaryAutonomousAgentRuntime`; returned backend-owned `audit.trace.summaryProgress.v1` workflow-status envelopes with selected AuthContext/tenant/customer scope, task/source scope, progress, provider fail-closed blockers, trace/correlation links, read/start allowed actions, `noDirectMutation`, and `noFakeSuccess` for blocked paths. Direct protected progress refresh remains a fail-closed recovery surface until a task is selected. Runtime evidence: readiness level `api-smoked`; checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AuditTraceSummaryServiceTest,AuditTraceBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseAuditTraceDashboardRuntimePath test`, `node --test frontend/src/workstream-audit-trace-vertical.contract.test.mjs`, focused `rg` evidence, and `git diff --check`.
 
 ### TASK-FSCT-201: Verify or complete runtime testing for `surface-audit-trace-summary-progress`
 
