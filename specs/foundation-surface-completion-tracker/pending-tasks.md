@@ -7703,7 +7703,7 @@
 
 ### TASK-FSCT-218: Verify or complete runtime implementation for `surface-governance-policy-decision`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-217]
 - surface id: `surface-governance-policy-decision`
@@ -7734,6 +7734,7 @@
   - purpose: Policy decision/activation/rollback card.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-decision`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-decision`; surface graph node/action edge for opening or acting on `surface-governance-policy-decision`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: replaced the placeholder decision surface read with backend-owned `GovernancePolicyService#readDecision` via protected `WorkstreamEndpoint`/`WorkstreamService#governancePolicyDecisionSurface`, added lifecycle-aware `governance.policy.decision.v1` decision-card payload fields (`decisionSummary`, `riskAndImpact`, `decisionEvidence`, `commandForm`, capability-filtered allowed/disabled actions, readiness/redaction/trace refs, `noDirectMutation`, `noFakeSuccess`), and aligned approval/activation/rollback action results with the decision-card contract while preserving idempotency, tenant/customer scope validation, selected AuthContext authorization, simulation/rollback prerequisites, fail-closed impact-analysis readiness, and browser-safe redaction. Runtime evidence: readiness level `api-smoked` through Akka-hosted `/ui`, protected `/api/workstream/surfaces/surface-governance-policy-decision`, and protected `/api/workstream/actions` approve/activate/rollback paths with tenant admin AuthContext, missing-bearer rejection, trace/correlation evidence, and no frontend-only/fixture-only normal runtime path. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#governancePolicyBackendActionsExposeReadProposalSimulationApprovalAndBlockedRuntimeSurfaces,GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicyDecisionRuntimePath test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-219: Verify or complete runtime testing for `surface-governance-policy-decision`
 

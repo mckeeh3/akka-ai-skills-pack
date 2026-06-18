@@ -906,6 +906,160 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertBrowserSafe(finalDashboard);
   }
 
+  @Test
+  void protectedWorkstreamApiExercisesGovernancePolicyDecisionRuntimePath() throws Exception {
+    var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
+    assertTrue(shell.status().isSuccess(), "Hosted /ui shell must load before the decision surface is exercised through browser API paths.");
+    assertTrue(shell.body().contains("<div id=\"root\"></div>"));
+    assertBrowserSafe(shell.body());
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-governance-policy-decision")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy decision surface path must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-governance-decision-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-governance-policy-decide",
+            "action-governance-policy-decide",
+            "governance.proposals.review",
+            "governance.policy.approve",
+            Map.of("proposalId", "proposal-missing", "decision", "approve"),
+            "idem-governance-decision-missing-bearer",
+            ADMIN_CONTEXT_ID,
+            "surface-governance-policy-decision",
+            "corr-governance-decision-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy decision action path must reject missing bearer tokens.");
+
+    var draft = runAction(new CapabilityActionRequest(
+        "action-governance-policy-draft-proposal",
+        "action-governance-policy-draft-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("title", "Decision smoke proposal", "rationale", "exercise decision-card runtime path", "proposedContent", "Require human approval, advisory simulation, rollback metadata, tenant isolation, and audit traces before authority changes."),
+        "idem-governance-decision-draft",
+        ADMIN_CONTEXT_ID,
+        "surface-governance-policy-proposal",
+        "corr-governance-decision-draft"));
+    assertEquals("accepted", draft.status());
+    var proposalId = String.valueOf(draft.resultSurface().data().get("proposalId"));
+    assertBrowserSafe(draft.resultSurface());
+
+    var submitted = runAction(new CapabilityActionRequest(
+        "action-governance-policy-submit-proposal",
+        "action-governance-policy-submit-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("proposalId", proposalId),
+        "idem-governance-decision-submit",
+        ADMIN_CONTEXT_ID,
+        draft.resultSurface().surfaceId(),
+        "corr-governance-decision-submit"));
+    assertEquals("accepted", submitted.status());
+    assertEquals("in_review", submitted.resultSurface().data().get("state"));
+    assertBrowserSafe(submitted.resultSurface());
+
+    var simulation = runAction(new CapabilityActionRequest(
+        "action-governance-policy-simulate",
+        "action-governance-policy-simulate",
+        "governance.policy.simulate",
+        "governance.policy.simulate",
+        Map.of("proposalId", proposalId, "scenario", "decision smoke simulation evidence"),
+        "idem-governance-decision-simulation",
+        ADMIN_CONTEXT_ID,
+        submitted.resultSurface().surfaceId(),
+        "corr-governance-decision-simulation"));
+    assertEquals("accepted", simulation.status());
+    assertEquals("surface-governance-policy-simulation", simulation.resultSurface().surfaceId());
+    assertBrowserSafe(simulation.resultSurface());
+
+    var directDecision = getSurface("surface-governance-policy-decision", "corr-governance-decision-direct");
+    assertEquals("surface-governance-policy-decision", directDecision.surfaceId());
+    assertEquals("decision-card", directDecision.surfaceType());
+    assertEquals("governance.policy.decision.v1", directDecision.data().get("surfaceContract"));
+    assertNotNull(directDecision.data().get("proposalId"));
+    assertNotNull(directDecision.data().get("status"));
+    assertEquals(true, directDecision.data().get("noDirectMutation"));
+    assertEquals(true, directDecision.data().get("noFakeSuccess"));
+    assertTrue(directDecision.toString().contains("decisionSummary"));
+    assertTrue(directDecision.toString().contains("riskAndImpact"));
+    assertTrue(directDecision.toString().contains("decisionEvidence"));
+    assertTrue(directDecision.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-decide") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-decision")));
+    assertTrue(directDecision.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-activate") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-decision")));
+    assertBrowserSafe(directDecision);
+
+    var decision = runAction(new CapabilityActionRequest(
+        "action-governance-policy-decide",
+        "action-governance-policy-decide",
+        "governance.proposals.review",
+        "governance.policy.approve",
+        Map.of("proposalId", proposalId, "decision", "approve", "rationale", "decision smoke human approval"),
+        "idem-governance-decision-approve",
+        ADMIN_CONTEXT_ID,
+        directDecision.surfaceId(),
+        "corr-governance-decision-approve"));
+    assertEquals("accepted", decision.status());
+    assertEquals("surface-governance-policy-decision", decision.resultSurface().surfaceId());
+    assertEquals("approved", decision.resultSurface().data().get("status"));
+    assertTrue(decision.resultSurface().toString().contains("disabledActions"));
+    assertTrue(decision.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-decision")));
+    assertBrowserSafe(decision.resultSurface());
+
+    var activationBlocked = runAction(new CapabilityActionRequest(
+        "action-governance-policy-activate",
+        "action-governance-policy-activate",
+        "governance.proposals.activate",
+        "governance.policy.activate",
+        Map.of("proposalId", proposalId),
+        "idem-governance-decision-activate-blocked",
+        ADMIN_CONTEXT_ID,
+        decision.resultSurface().surfaceId(),
+        "corr-governance-decision-activate-blocked"));
+    assertEquals("approval-required", activationBlocked.status());
+    assertEquals("surface-governance-policy-activation-blocked", activationBlocked.resultSurface().surfaceId());
+    assertEquals(true, activationBlocked.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, activationBlocked.resultSurface().data().get("noFakeSuccess"));
+    assertTrue(activationBlocked.resultSurface().toString().contains("sideEffect=none"));
+    assertBrowserSafe(activationBlocked.resultSurface());
+
+    var activation = runAction(new CapabilityActionRequest(
+        "action-governance-policy-activate",
+        "action-governance-policy-activate",
+        "governance.proposals.activate",
+        "governance.policy.activate",
+        Map.of("proposalId", proposalId, "rollbackReference", "decision smoke rollback metadata"),
+        "idem-governance-decision-activate",
+        ADMIN_CONTEXT_ID,
+        decision.resultSurface().surfaceId(),
+        "corr-governance-decision-activate"));
+    assertEquals("accepted", activation.status());
+    assertEquals("surface-governance-policy-decision", activation.resultSurface().surfaceId());
+    assertEquals("activated", activation.resultSurface().data().get("status"));
+    assertTrue(activation.resultSurface().toString().contains("activated-with-rollback-metadata"));
+    assertBrowserSafe(activation.resultSurface());
+
+    var rollback = runAction(new CapabilityActionRequest(
+        "action-governance-policy-rollback",
+        "action-governance-policy-rollback",
+        "governance.proposals.activate",
+        "governance.policy.rollback",
+        Map.of("proposalId", proposalId),
+        "idem-governance-decision-rollback",
+        ADMIN_CONTEXT_ID,
+        activation.resultSurface().surfaceId(),
+        "corr-governance-decision-rollback"));
+    assertEquals("accepted", rollback.status());
+    assertEquals("surface-governance-policy-decision", rollback.resultSurface().surfaceId());
+    assertEquals("rolled_back", rollback.resultSurface().data().get("status"));
+    assertTrue(rollback.resultSurface().toString().contains("policy-decision"));
+    assertBrowserSafe(rollback.resultSurface());
+  }
+
   private SurfaceEnvelope getSurface(String surfaceId, String correlationId) throws Exception {
     return getSurfaceAs(surfaceId, correlationId, "workos-governance-admin", "governance-admin@example.test", "Governance Admin", ADMIN_CONTEXT_ID);
   }

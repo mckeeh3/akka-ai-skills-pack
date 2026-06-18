@@ -2260,9 +2260,27 @@ class WorkstreamServiceTest {
         "action-governance-policy-decide", "action-governance-policy-decide", "governance.proposals.review", "governance.policy.approve", Map.of("proposalId", proposalId, "decision", "approve", "rationale", "bounded starter proof"), "idem-gov-decision", "membership-admin", "surface-governance-policy-simulation", "corr-gov-decision"));
     assertEquals("accepted", decision.status());
     assertEquals("surface-governance-policy-decision", decision.resultSurface().surfaceId());
+    assertEquals("decision-card", decision.resultSurface().surfaceType());
+    assertEquals("governance.policy.decision.v1", decision.resultSurface().data().get("surfaceContract"));
+    assertEquals(true, decision.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, decision.resultSurface().data().get("noFakeSuccess"));
+    assertTrue(decision.resultSurface().toString().contains("decisionSummary"));
+    assertTrue(decision.resultSurface().toString().contains("riskAndImpact"));
     assertTrue(decision.resultSurface().toString().contains("rollback metadata"));
     assertTrue(decision.resultSurface().toString().contains("governance.proposals.review"));
+    assertTrue(decision.resultSurface().actions().toString().contains("action-governance-policy-activate"));
+    assertTrue(decision.resultSurface().actions().toString().contains("action-governance-policy-rollback"));
     assertTrue(decision.resultSurface().actions().toString().contains("action-governance-policy-outcome-note"));
+
+    var directDecision = service.surface(identity(), "membership-admin", "surface-governance-policy-decision", "corr-gov-decision-direct");
+    assertEquals("surface-governance-policy-decision", directDecision.surfaceId());
+    assertEquals("decision-card", directDecision.surfaceType());
+    assertEquals("governance.policy.decision.v1", directDecision.data().get("surfaceContract"));
+    assertEquals(proposalId, directDecision.data().get("proposalId"));
+    assertEquals("approved", directDecision.data().get("status"));
+    assertTrue(directDecision.toString().contains("allowedActions"));
+    assertTrue(directDecision.toString().contains("disabledActions"));
+    assertTrue(directDecision.toString().contains("omittedFieldKeys"));
 
     var activationBlocked = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-governance-policy-activate", "action-governance-policy-activate", "governance.proposals.activate", "governance.policy.activate", Map.of("proposalId", proposalId), "idem-gov-activate-blocked", "membership-admin", "surface-governance-policy-decision", "corr-gov-activate-blocked"));

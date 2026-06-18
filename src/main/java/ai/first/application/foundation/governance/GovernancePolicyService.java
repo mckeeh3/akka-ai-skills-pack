@@ -292,6 +292,19 @@ public final class GovernancePolicyService {
     return action("accepted", "Policy simulation evidence recorded for review; approval is still required before activation.", simulation(actor, proposal, simulation, correlationId), List.of(trace("simulation", correlationId)));
   }
 
+  public SurfaceData readDecision(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    validateScope(actor, input, correlationId);
+    requireRead(actor, READ_CAPABILITY, correlationId);
+    var proposal = findScopedProposal(actor, input);
+    if (proposal == null) {
+      if (stringInput(input, "proposalId", null) != null) {
+        return validation("proposalId", "No authorized proposal was found for Governance/Policy decision review in the selected AuthContext.", correlationId).surface();
+      }
+      return systemMessage("surface-governance-policy-system-message", "not_found_or_redacted", "No submitted, approved, or activated policy proposal is visible for Governance/Policy decision review in the selected AuthContext.", READ_CAPABILITY, correlationId);
+    }
+    return decision(actor, proposal, correlationId);
+  }
+
   public ActionResult decideProposal(AuthContextResolver.ResolvedMe actor, Object input, String idempotencyKey, String correlationId) {
     validateScope(actor, input, correlationId);
     requireVisible(actor, APPROVE_CAPABILITY, correlationId);
@@ -537,43 +550,66 @@ public final class GovernancePolicyService {
 
   private SurfaceData decision(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
     var status = proposal.status().name().toLowerCase();
-    return surface("surface-governance-policy-decision", "decision", "Governance decision", correlationId, mapOf(
+    var commandMode = proposal.status() == GovernancePolicyProposal.Status.APPROVED ? "activate" : proposal.status() == GovernancePolicyProposal.Status.ACTIVATED ? "rollback" : "decide";
+    var simulations = repository.listSimulations(actor.selectedContext().tenantId(), actor.selectedContext().customerId(), proposal.proposalId());
+    var hasSimulationEvidence = !simulations.isEmpty();
+    var allowedActions = decisionTransitions(actor, proposal, hasSimulationEvidence);
+    var disabledActions = decisionDisabledActions(actor, proposal, hasSimulationEvidence);
+    var activationBlocker = proposal.status() == GovernancePolicyProposal.Status.APPROVED && (!hasSimulationEvidence || proposal.rollbackReference() == null)
+        ? "Activation still requires simulation evidence, backend authority, idempotency, current approved state, and rollback metadata."
+        : null;
+    return surface("surface-governance-policy-decision", "decision-card", "Governance decision", correlationId, mapOf(
         "surfaceContract", "governance.policy.decision.v1",
         "canonicalSurfaceId", "surface.governance.decision_card.v1",
-        "decisionId", "decision-" + stableSuffix(firstNonBlank(proposal.decisionCorrelationId(), correlationId)),
+        "ownerFunctionalAgentId", "governance-policy-agent",
+        "decisionId", "decision-" + stableSuffix(firstNonBlank(proposal.decisionCorrelationId(), proposal.activationCorrelationId(), proposal.rollbackCorrelationId(), correlationId)),
         "proposalId", proposal.proposalId(),
+        "tenantId", actor.selectedContext().tenantId(),
+        "customerId", actor.selectedContext().customerId(),
         "status", status,
+        "state", status,
+        "lifecycleState", status,
+        "commandMode", commandMode,
         "decision", proposal.decision(),
         "actor", actor.account().accountId(),
         "recommendation", decisionRecommendation(proposal),
         "riskScore", riskScore(proposal.riskClassification()),
-        "confidenceScore", 80,
+        "confidenceScore", hasSimulationEvidence ? 82 : 64,
         "risk", proposal.riskClassification(),
         "impact", "Affected capabilities: " + String.join(", ", proposal.affectedCapabilityIds()),
         "affectedTarget", proposal.targetPolicyId(),
         "policyBasis", REVIEW_CAPABILITY + " + " + proposal.requiredApprovalCapabilityId(),
         "idempotencyKeySource", "client-generated or surface-item per action contract",
-        "activationBlocker", proposal.status() == GovernancePolicyProposal.Status.APPROVED ? "Activation still requires simulation evidence, backend authority, idempotency, current approved state, and rollback metadata." : null,
+        "activationBlocker", activationBlocker,
         "authorityBasis", REVIEW_CAPABILITY,
-        "activationCapabilityId", ACTIVATE_PROPOSAL_CAPABILITY,
+        "activationCapabilityId", ACTIVATE_CAPABILITY,
+        "rollbackCapabilityId", ROLLBACK_CAPABILITY,
         "outcomeCapabilityId", OUTCOMES_RECORD_CAPABILITY,
         "rationale", proposal.decisionRationale(),
         "result", proposal.status() == GovernancePolicyProposal.Status.ACTIVATED ? "activated-with-rollback-metadata" : status,
         "rollback metadata", proposal.rollbackReference() == null ? "required before activation" : proposal.rollbackReference(),
+        "decisionSummary", mapOf("proposalDisplayRef", proposal.proposalId(), "title", proposal.title(), "currentLifecycleState", status, "requestedCommandMode", commandMode, "recommendedOutcome", decisionRecommendation(proposal), "reviewerActivatorDisplaySummary", "backend-selected Governance/Policy actor", "affectedCapabilityArtifactSummary", proposal.affectedCapabilityIds(), "safePolicyBasisSummary", "Backend-selected AuthContext plus " + proposal.requiredApprovalCapabilityId(), "freshnessStatus", "ready", "userFacingCopy", decisionCopy(proposal, hasSimulationEvidence)),
+        "riskAndImpact", mapOf("riskScore", riskScore(proposal.riskClassification()), "riskClassification", proposal.riskClassification(), "confidenceLabel", hasSimulationEvidence ? "bounded-starter-with-simulation-evidence" : "evidence-missing", "expectedAccessEffect", "No authority changes occur until the backend activation command succeeds.", "affectedTargetSummaries", proposal.affectedArtifactRefs(), "blastRadiusSummary", "Selected tenant/customer AuthContext only; browser tenant/customer hints cannot expand scope.", "simulationEvidenceStatus", hasSimulationEvidence ? "present" : "missing", "impactAnalysisResultStatus", "blocked_provider_or_runtime", "rollbackReadiness", proposal.rollbackReference() == null ? "rollback metadata required" : "rollback metadata retained", "providerRuntimeBlockerCopy", "Impact analysis remains fail-closed until provider/runtime is configured; no model-less approval support is fabricated."),
+        "decisionEvidence", mapOf("requiredApprovals", List.of(proposal.requiredApprovalCapabilityId()), "approvalQuorumStatus", proposal.status() == GovernancePolicyProposal.Status.IN_REVIEW ? "pending_human_decision" : status, "advisorySimulationEvidenceSummary", hasSimulationEvidence ? "Simulation evidence is recorded for this proposal." : "Simulation evidence is missing; activation is disabled.", "impactAnalysisResultSummary", "blocked_provider_or_runtime", "prerequisiteChecklist", List.of("selected AuthContext authorized", "proposal tenant/customer scoped", "human approval required", "simulation evidence before activation", "rollback metadata before activation"), "alternativeOutcomes", List.of("approve", "reject", "request_changes", "activate", "rollback"), "sourceProposalTraceSummary", firstNonBlank(proposal.submittedCorrelationId(), proposal.createdCorrelationId()), "outcomeNoteSummaries", proposal.outcomeNotes(), "evidenceRedactionMarkers", List.of("privileged policy clauses omitted", "hidden authority state omitted", "raw provider/model/tool payloads omitted")),
+        "commandForm", mapOf("commandMode", commandMode, "reasonField", "reason", "acknowledgementText", commandMode.equals("activate") ? "Activation changes authority only after backend verifies approval, simulation evidence, rollback metadata, and capability." : commandMode.equals("rollback") ? "Rollback requires stored rollback metadata and rollback authority." : "Decision records human approval evidence only and does not activate policy.", "rollbackTargetSummary", proposal.rollbackReference() == null ? "rollback metadata required" : proposal.rollbackReference(), "requiredApprovalAcknowledgement", true, "disabledSubmitReasons", disabledActions.stream().map(action -> action.get("reason")).toList(), "validationMessages", List.of(), "idempotencyRequired", true),
         "evidence", List.of(
             mapOf("evidenceId", "proposal", "label", "Proposal", "summary", proposal.title() + " · " + status),
             mapOf("evidenceId", "authority", "label", "Authority basis", "summary", "Backend requires " + proposal.requiredApprovalCapabilityId() + "; frontend visibility is not authority."),
             mapOf("evidenceId", "redaction", "label", "Redaction", "summary", "Raw prompts, provider secrets, hidden authority, raw tool payloads, and cross-tenant evidence are omitted.")),
         "alternatives", List.of("Request changes for more evidence", "Reject the proposal", "Keep approved proposals inactive until rollback metadata and simulation evidence are attached"),
-        "allowedActions", List.of(
-            mapOf("actionId", "action-governance-policy-decide", "label", "Approve, reject, or request changes", "browserToolId", "action-governance-policy-decide", "governedToolId", REVIEW_CAPABILITY, "capabilityId", APPROVE_CAPABILITY),
-            mapOf("actionId", "action-governance-policy-outcome-note", "label", "Add outcome note", "browserToolId", "action-governance-policy-outcome-note", "governedToolId", OUTCOMES_RECORD_CAPABILITY, "capabilityId", OUTCOMES_RECORD_CAPABILITY),
-            mapOf("actionId", "action-open-audit-trace", "label", "Open audit trace", "browserToolId", "action-open-audit-trace", "governedToolId", "audit.trace.read", "capabilityId", "audit.trace.read")),
-        "disabledActions", List.of(mapOf("actionId", "action-governance-policy-activate", "label", "Activate approved policy", "reason", "Activation is a separate backend-governed command and remains blocked until all activation prerequisites are present.")),
+        "allowedActions", allowedActions,
+        "authorizedActions", allowedActions,
+        "disabledActions", disabledActions,
         "auditCorrelationId", correlationId,
-        "traceLinks", List.of(trace("decision", correlationId)),
+        "traceLinks", List.of(trace("decision", correlationId), trace("workstream-log", correlationId), trace("admin-audit", correlationId), trace("policy-decision", correlationId)),
+        "traceRefs", List.of(trace("decision", correlationId), trace("workstream-log", correlationId), trace("admin-audit", correlationId), trace("policy-decision", correlationId)),
         "outcomeNotes", proposal.outcomeNotes(),
-        "noDirectMutation", true));
+        "readiness", mapOf("simulation", hasSimulationEvidence ? "ready" : "missing_required_for_activation", "impactAnalysis", "blocked_provider_or_runtime", "providerRuntime", "blocked_provider_or_runtime", "noFakeSuccess", true),
+        "systemStates", List.of("loading", "ready", "deciding", "activating", "rolling-back", "success/approved", "success/rejected", "success/changes-requested", "success/activated", "success/rolled-back", "validation-error", "forbidden/system-message", "conflict/stale", "partial-data", "blocked-provider-or-runtime", "read-only", "failure"),
+        "redaction", mapOf("browserSafe", true, "omittedFieldKeys", OMITTED_FIELDS, "hiddenCrossTenantEvidence", true, "privilegedPolicyClauses", "omitted", "hiddenAuthorityState", "omitted", "rawProviderModelData", "omitted", "rawPrompts", "omitted", "rawToolPayloads", "omitted", "correlationIds", "role-gated", "idempotencyKeys", "role-gated"),
+        "visibilitySplit", mapOf("defaultUserVisible", List.of("proposal title", "lifecycle/status label", "command mode", "recommendation", "risk/impact summary", "required approvals/evidence", "authorized next actions"), "onDemandDrilldown", List.of("proposal display ids", "detailed diff summaries", "lifecycle history", "advisory evidence summaries", "redacted trace summaries"), "adminSupportAuditorOnly", List.of("capability ids", "policy-decision/admin-audit/workstream/agent-work refs", "denial/failure evidence"), "internalOnly", OMITTED_FIELDS),
+        "noDirectMutation", true,
+        "noFakeSuccess", true));
   }
 
   private SurfaceData outcome(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
@@ -608,6 +644,44 @@ public final class GovernancePolicyService {
     return List.copyOf(actions);
   }
 
+  private List<Map<String, Object>> decisionTransitions(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, boolean hasSimulationEvidence) {
+    var visibleCapabilities = actor.selectedContext().capabilities();
+    var actions = new java.util.ArrayList<Map<String, Object>>();
+    actions.add(proposalAction("action-governance-policy-read", "Refresh proposal evidence", READ_CAPABILITY, "list-policy-proposals", "surface-governance-policy-decision", false));
+    if (visibleCapabilities.contains(APPROVE_CAPABILITY) && proposal.status() == GovernancePolicyProposal.Status.IN_REVIEW) actions.add(proposalAction("action-governance-policy-decide", "Approve, reject, or request changes", APPROVE_CAPABILITY, "approve-activate-or-rollback-policy", "surface-governance-policy-decision", true));
+    if (visibleCapabilities.contains(ACTIVATE_CAPABILITY) && proposal.status() == GovernancePolicyProposal.Status.APPROVED && hasSimulationEvidence) actions.add(proposalAction("action-governance-policy-activate", "Activate approved policy", ACTIVATE_CAPABILITY, "approve-activate-or-rollback-policy", "surface-governance-policy-decision", true));
+    if (visibleCapabilities.contains(ROLLBACK_CAPABILITY) && proposal.status() == GovernancePolicyProposal.Status.ACTIVATED && proposal.rollbackReference() != null && !proposal.rollbackReference().isBlank()) actions.add(proposalAction("action-governance-policy-rollback", "Roll back activated policy", ROLLBACK_CAPABILITY, "approve-activate-or-rollback-policy", "surface-governance-policy-decision", true));
+    if (visibleCapabilities.contains(SIMULATE_CAPABILITY)) actions.add(proposalAction("action-governance-policy-simulate", "Open advisory simulation evidence", SIMULATE_CAPABILITY, "simulate-policy-change", "surface-governance-policy-simulation", false));
+    if (visibleCapabilities.contains("governance.policy.impact_analysis.start")) actions.add(proposalAction("action-governance-policy-start-impact-analysis", "Start impact analysis", "governance.policy.impact_analysis.start", "start-policy-impact-analysis", "surface-governance-policy-impact-analysis-task", true));
+    if (visibleCapabilities.contains("governance.policy.impact_analysis.read")) actions.add(proposalAction("action-governance-policy-read-impact-analysis", "Read impact analysis", "governance.policy.impact_analysis.read", "read-policy-impact-analysis", "surface-governance-policy-impact-analysis-task", false));
+    if (visibleCapabilities.contains(OUTCOMES_RECORD_CAPABILITY)) actions.add(proposalAction("action-governance-policy-outcome-note", "Open outcome note", OUTCOMES_RECORD_CAPABILITY, "record-policy-outcome-note", "surface-governance-policy-outcome", true));
+    return List.copyOf(actions);
+  }
+
+  private List<Map<String, Object>> decisionDisabledActions(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, boolean hasSimulationEvidence) {
+    var visibleCapabilities = actor.selectedContext().capabilities();
+    var actions = new java.util.ArrayList<Map<String, Object>>();
+    if (!visibleCapabilities.contains(APPROVE_CAPABILITY)) actions.add(mapOf("actionId", "action-governance-policy-decide", "label", "Approve, reject, or request changes", "reason", "Selected AuthContext lacks governance.policy.approve."));
+    else if (proposal.status() != GovernancePolicyProposal.Status.IN_REVIEW) actions.add(mapOf("actionId", "action-governance-policy-decide", "label", "Approve, reject, or request changes", "reason", "Proposal must be submitted/in review before recording a decision."));
+    if (!visibleCapabilities.contains(ACTIVATE_CAPABILITY)) actions.add(mapOf("actionId", "action-governance-policy-activate", "label", "Activate approved policy", "reason", "Selected AuthContext lacks governance.policy.activate."));
+    else if (proposal.status() != GovernancePolicyProposal.Status.APPROVED || !hasSimulationEvidence || proposal.rollbackReference() == null) actions.add(mapOf("actionId", "action-governance-policy-activate", "label", "Activate approved policy", "reason", "Activation requires approved proposal status, simulation evidence, backend authority, idempotency, and rollback metadata."));
+    if (!visibleCapabilities.contains(ROLLBACK_CAPABILITY)) actions.add(mapOf("actionId", "action-governance-policy-rollback", "label", "Roll back policy change", "reason", "Selected AuthContext lacks governance.policy.rollback."));
+    else if (proposal.status() != GovernancePolicyProposal.Status.ACTIVATED || proposal.rollbackReference() == null || proposal.rollbackReference().isBlank()) actions.add(mapOf("actionId", "action-governance-policy-rollback", "label", "Roll back policy change", "reason", "Rollback requires an activated proposal with stored rollback metadata."));
+    return List.copyOf(actions);
+  }
+
+  private String decisionCopy(GovernancePolicyProposal proposal, boolean hasSimulationEvidence) {
+    return switch (proposal.status()) {
+      case IN_REVIEW -> "Proposal is ready for a human Governance/Policy decision; approval does not activate authority.";
+      case APPROVED -> hasSimulationEvidence ? "Proposal is approved; activation remains a separate backend command requiring rollback metadata and authority." : "Proposal is approved, but activation is blocked until advisory simulation evidence is present.";
+      case ACTIVATED -> "Proposal has been activated through backend authority; rollback remains a separate governed command.";
+      case ROLLED_BACK -> "Proposal rollback has been recorded; authority state is not changed by the browser.";
+      case REJECTED -> "Proposal was rejected; activation is unavailable.";
+      case CHANGES_REQUESTED -> "Changes were requested; proposal work must return to the proposal surface before another decision.";
+      default -> "Decision card is read-only until the proposal reaches an eligible lifecycle state.";
+    };
+  }
+
   private Map<String, Object> proposalAction(String actionId, String label, String capabilityId, String governedToolId, String resultSurfaceId, boolean idempotencyRequired) {
     return mapOf("actionId", actionId, "label", label, "capabilityId", capabilityId, "governedToolId", governedToolId, "resultSurfaceId", resultSurfaceId, "idempotencyRequired", idempotencyRequired, "redaction", "browser-safe action metadata; raw idempotency/correlation values omitted");
   }
@@ -621,7 +695,7 @@ public final class GovernancePolicyService {
   }
 
   private SurfaceData systemMessage(String surfaceId, String status, String message, String capability, String correlationId) {
-    return new SurfaceData(surfaceId, "system_message", "Governance/Policy " + status, List.of(trace(status, correlationId)), mapOf("surfaceContract", "governance.policy.system_message.v1", "status", status, "message", message, "severity", "warning", "requiredCapabilityId", capability, "system_message", true, "sideEffect", "none", "traceLinks", List.of(trace(status, correlationId)), "redaction", "browser-safe", "noDirectMutation", true));
+    return new SurfaceData(surfaceId, "system_message", "Governance/Policy " + status, List.of(trace(status, correlationId)), mapOf("surfaceContract", "governance.policy.system_message.v1", "status", status, "message", message, "severity", "warning", "requiredCapabilityId", capability, "system_message", true, "sideEffect", "none", "traceLinks", List.of(trace(status, correlationId)), "redaction", "browser-safe", "noDirectMutation", true, "noFakeSuccess", true));
   }
 
   private GovernancePolicyProposal findScopedProposal(AuthContextResolver.ResolvedMe actor, Object input) {
