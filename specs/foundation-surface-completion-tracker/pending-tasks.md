@@ -7632,7 +7632,7 @@
 
 ### TASK-FSCT-216: Verify or complete runtime testing for `surface-governance-policy-simulation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-215]
 - surface id: `surface-governance-policy-simulation`
@@ -7666,6 +7666,7 @@
   - purpose: Advisory simulation surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-simulation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-simulation`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added `GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicySimulationRuntimePath` covering Akka-hosted `/ui`, protected bootstrap, direct simulation surface read, governed simulation action, isolated tenant-admin AuthContext, empty/not-run state, prerequisite draft/submit proposal flow, advisory expected allow/deny evidence, idempotent replay, provider/runtime fail-closed impact-analysis follow-up, member capability/direct-read denials, cross-tenant denial, trace/correlation evidence, browser-safe redaction, `noFakeSuccess`, and `noDirectMutation`/no authority mutation claims. Runtime evidence: readiness level `runtime-ready` for the simulation testing scope. Checks passed: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicySimulationRuntimePath test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`. Note: broader exploratory `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest test` exposed pre-existing order/state coupling between older proposal/dashboard tests in the same class and was not used as the required focused gate for this task.
 
 ### TASK-FSCT-217: Verify or complete app-description specification for `surface-governance-policy-decision`
 

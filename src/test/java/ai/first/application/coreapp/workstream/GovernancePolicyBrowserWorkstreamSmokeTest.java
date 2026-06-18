@@ -448,6 +448,227 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
 
   @Test
   @SuppressWarnings("unchecked")
+  void hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicySimulationRuntimePath() throws Exception {
+    var simulationTenantId = "tenant-governance-simulation-" + System.nanoTime();
+    var simulationCustomerId = "customer-governance-simulation-" + System.nanoTime();
+    var simulationAdminContextId = "membership-governance-simulation-admin-" + System.nanoTime();
+    var simulationMemberContextId = "membership-governance-simulation-member-" + System.nanoTime();
+    var simulationAdminSubject = "workos-governance-simulation-admin-" + System.nanoTime();
+    var simulationMemberSubject = "workos-governance-simulation-member-" + System.nanoTime();
+    var simulationAdminEmail = simulationAdminSubject + "@example.test";
+    var simulationMemberEmail = simulationMemberSubject + "@example.test";
+    var repository = new AkkaIdentityRepository(componentClient);
+    repository.saveTenant(new Tenant(simulationTenantId, "Governance Simulation Smoke Tenant", true));
+    repository.saveCustomer(new Customer(simulationTenantId, simulationCustomerId, "Governance Simulation Smoke Customer", true));
+    seedIdentity(repository, simulationAdminEmail, "Governance Simulation Admin", simulationAdminContextId, List.of(FoundationRole.TENANT_ADMIN), simulationTenantId, simulationCustomerId);
+    seedIdentity(repository, simulationMemberEmail, "Governance Simulation Member", simulationMemberContextId, List.of(FoundationRole.TENANT_EMPLOYEE), simulationTenantId, simulationCustomerId);
+
+    var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
+    assertTrue(shell.status().isSuccess(), "Hosted /ui shell must load before the simulation surface is exercised through browser API paths.");
+    assertTrue(shell.body().contains("<div id=\"root\"></div>"));
+    assertTrue(shell.body().contains("/assets/"));
+    assertBrowserSafe(shell.body());
+
+    var bootstrap = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken(simulationAdminSubject, simulationAdminEmail, "Governance Simulation Admin"))
+        .addHeader("X-Selected-Context-Id", simulationAdminContextId)
+        .addHeader("X-Correlation-Id", "corr-governance-simulation-bootstrap")
+        .responseBodyAs(WorkstreamBootstrapResponse.class)
+        .invoke();
+    assertTrue(bootstrap.status().isSuccess());
+    assertEquals(simulationAdminContextId, bootstrap.body().me().selectedAuthContext().selectedContextId());
+    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-governance-policy") && agent.availability().equals("visible")));
+    assertBrowserSafe(bootstrap.body());
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-governance-policy-simulation")
+        .addHeader("X-Selected-Context-Id", simulationAdminContextId)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy simulation surface must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", simulationAdminContextId)
+        .addHeader("X-Correlation-Id", "corr-governance-simulation-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-governance-policy-simulate",
+            "action-governance-policy-simulate",
+            "governance.policy.simulate",
+            "governance.policy.simulate",
+            Map.of("proposalId", "proposal-missing-bearer"),
+            "idem-governance-simulation-missing-bearer",
+            simulationAdminContextId,
+            "surface-governance-policy-simulation",
+            "corr-governance-simulation-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy simulation action path must reject missing bearer tokens.");
+
+    var direct = getSurfaceAs("surface-governance-policy-simulation", "corr-governance-simulation-direct-empty", simulationAdminSubject, simulationAdminEmail, "Governance Simulation Admin", simulationAdminContextId);
+    assertEquals("surface-governance-policy-simulation", direct.surfaceId());
+    assertEquals("governance-diff", direct.surfaceType());
+    assertEquals("governance.policy.simulation.v1", direct.data().get("surfaceContract"));
+    assertEquals("empty/not-run", direct.data().get("state"));
+    assertEquals(true, direct.data().get("noDirectMutation"));
+    assertEquals(true, direct.data().get("noFakeSuccess"));
+    assertTrue(direct.toString().contains("simulationSummaryPayload"));
+    assertTrue(direct.toString().contains("expectedAccessChanges"));
+    assertTrue(direct.toString().contains("activationGate"));
+    assertTrue(direct.toString().contains("blocked_provider_or_runtime"));
+    assertTrue(direct.traceIds().stream().anyMatch(traceId -> traceId.contains("simulation")));
+    assertTrue(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-simulate") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-simulation")));
+    assertBrowserSafe(direct);
+
+    var draft = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-draft-proposal",
+        "action-governance-policy-draft-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of(
+            "title", "Simulation smoke authority boundary",
+            "rationale", "exercise simulation governance-diff runtime path",
+            "proposedContent", "Require simulation evidence, human approval, rollback metadata, tenant isolation, redaction, and trace evidence before authority changes."),
+        "idem-governance-simulation-draft",
+        simulationAdminContextId,
+        "surface-governance-policy-proposal",
+        "corr-governance-simulation-draft"),
+        simulationAdminSubject, simulationAdminEmail, "Governance Simulation Admin", simulationAdminContextId);
+    assertEquals("accepted", draft.status());
+    assertEquals("surface-governance-policy-proposal", draft.resultSurface().surfaceId());
+    assertBrowserSafe(draft.resultSurface());
+
+    var proposalId = String.valueOf(draft.resultSurface().data().get("proposalId"));
+    var submitted = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-submit-proposal",
+        "action-governance-policy-submit-proposal",
+        "governance.policy.propose",
+        "governance.policy.propose",
+        Map.of("proposalId", proposalId),
+        "idem-governance-simulation-submit",
+        simulationAdminContextId,
+        draft.resultSurface().surfaceId(),
+        "corr-governance-simulation-submit"),
+        simulationAdminSubject, simulationAdminEmail, "Governance Simulation Admin", simulationAdminContextId);
+    assertEquals("accepted", submitted.status());
+    assertEquals("in_review", submitted.resultSurface().data().get("state"));
+    assertBrowserSafe(submitted.resultSurface());
+
+    var simulation = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-simulate",
+        "action-governance-policy-simulate",
+        "governance.policy.simulate",
+        "governance.policy.simulate",
+        Map.of("proposalId", proposalId, "scenario", "browser smoke expected access, denial, activation gate, and redaction review", "tenantId", simulationTenantId, "customerId", simulationCustomerId),
+        "idem-governance-simulation-run",
+        simulationAdminContextId,
+        submitted.resultSurface().surfaceId(),
+        "corr-governance-simulation-run"),
+        simulationAdminSubject, simulationAdminEmail, "Governance Simulation Admin", simulationAdminContextId);
+    assertEquals("accepted", simulation.status());
+    assertEquals("surface-governance-policy-simulation", simulation.resultSurface().surfaceId());
+    assertEquals("governance.policy.simulation.v1", simulation.resultSurface().data().get("surfaceContract"));
+    assertEquals("ready", simulation.resultSurface().data().get("state"));
+    assertEquals("completed_review_required", simulation.resultSurface().data().get("simulationStatus"));
+    assertEquals(true, simulation.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, simulation.resultSurface().data().get("noFakeSuccess"));
+    assertTrue(simulation.resultSurface().toString().contains("advisory deterministic simulation evidence record"));
+    assertTrue(simulation.resultSurface().toString().contains("expectedAccessChanges"));
+    assertTrue(simulation.resultSurface().toString().contains("model cannot self-approve"));
+    assertTrue(simulation.resultSurface().toString().contains("prompt text cannot grant tool access"));
+    assertTrue(simulation.resultSurface().toString().contains("blocked_provider_or_runtime"));
+    assertTrue(simulation.resultSurface().toString().contains("rawProviderModelData=omitted"));
+    assertTrue(simulation.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-simulation")));
+    assertTrue(simulation.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-simulate") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-simulation")));
+    assertTrue(simulation.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-decide") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-decision")));
+    assertTrue(simulation.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-start-impact-analysis") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-impact-analysis-task")));
+    var expectedAccessChanges = (List<Map<String, Object>>) simulation.resultSurface().data().get("expectedAccessChanges");
+    assertTrue(expectedAccessChanges.stream().anyMatch(row -> "allow".equals(row.get("expectedOutcome"))));
+    assertTrue(expectedAccessChanges.stream().anyMatch(row -> "deny".equals(row.get("expectedOutcome"))));
+    assertBrowserSafe(simulation.resultSurface());
+
+    var duplicateSimulation = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-simulate",
+        "action-governance-policy-simulate",
+        "governance.policy.simulate",
+        "governance.policy.simulate",
+        Map.of("proposalId", proposalId, "scenario", "duplicate request must not create second evidence record"),
+        "idem-governance-simulation-run",
+        simulationAdminContextId,
+        simulation.resultSurface().surfaceId(),
+        "corr-governance-simulation-run-replay"),
+        simulationAdminSubject, simulationAdminEmail, "Governance Simulation Admin", simulationAdminContextId);
+    assertEquals("no-op", duplicateSimulation.status());
+    assertEquals(simulation.resultSurface().data().get("simulationId"), duplicateSimulation.resultSurface().data().get("simulationId"));
+    assertTrue(duplicateSimulation.message().contains("no authority changed"));
+    assertBrowserSafe(duplicateSimulation.resultSurface());
+
+    var impact = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-start-impact-analysis",
+        "action-governance-policy-start-impact-analysis",
+        "governance.policy.impact_analysis.start",
+        "governance.policy.impact_analysis.start",
+        Map.of("proposalId", proposalId, "scope", "simulation-smoke", "reason", "verify simulation surface provider/runtime fail-closed path"),
+        "idem-governance-simulation-impact",
+        simulationAdminContextId,
+        simulation.resultSurface().surfaceId(),
+        "corr-governance-simulation-impact"),
+        simulationAdminSubject, simulationAdminEmail, "Governance Simulation Admin", simulationAdminContextId);
+    assertEquals("blocked_provider_or_runtime", impact.status());
+    assertEquals("surface-governance-policy-impact-analysis-task", impact.resultSurface().surfaceId());
+    assertEquals("blocked_provider_or_runtime", impact.resultSurface().data().get("status"));
+    assertEquals(true, impact.resultSurface().data().get("activationBlockedUntilHumanDecision"));
+    assertTrue(impact.resultSurface().toString().contains("AutonomousAgent"));
+    assertFalse(impact.resultSurface().toString().contains("impact_ready"));
+    assertBrowserSafe(impact.resultSurface());
+
+    var memberDenied = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-simulate",
+        "action-governance-policy-simulate",
+        "governance.policy.simulate",
+        "governance.policy.simulate",
+        Map.of("proposalId", proposalId),
+        "idem-governance-simulation-member-denied",
+        simulationMemberContextId,
+        "surface-governance-policy-simulation",
+        "corr-governance-simulation-member-denied"),
+        simulationMemberSubject,
+        simulationMemberEmail,
+        "Governance Simulation Member",
+        simulationMemberContextId);
+    assertEquals("denied", memberDenied.status());
+    assertEquals("surface-governance-policy-system-message", memberDenied.resultSurface().surfaceId());
+    assertEquals(true, memberDenied.resultSurface().data().get("noDirectMutation"));
+    assertTrue(memberDenied.resultSurface().toString().contains("CAPABILITY_FORBIDDEN"));
+    assertBrowserSafe(memberDenied.resultSurface());
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-governance-policy-simulation",
+        "corr-governance-simulation-member-direct-denied",
+        simulationMemberSubject,
+        simulationMemberEmail,
+        "Governance Simulation Member",
+        simulationMemberContextId), "Regular tenant members must not read the Governance/Policy simulation surface.");
+
+    var crossTenant = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-simulate",
+        "action-governance-policy-simulate",
+        "governance.policy.simulate",
+        "governance.policy.simulate",
+        Map.of("proposalId", proposalId, "tenantId", "tenant-other"),
+        "idem-governance-simulation-cross-tenant-denied",
+        simulationAdminContextId,
+        simulation.resultSurface().surfaceId(),
+        "corr-governance-simulation-cross-tenant-denied"),
+        simulationAdminSubject, simulationAdminEmail, "Governance Simulation Admin", simulationAdminContextId);
+    assertEquals("denied", crossTenant.status());
+    assertEquals("surface-governance-policy-system-message", crossTenant.resultSurface().surfaceId());
+    assertEquals("governance.policy.system_message.v1", crossTenant.resultSurface().data().get("surfaceContract"));
+    assertTrue(crossTenant.resultSurface().toString().contains("GOVERNANCE_POLICY_TENANT_FORBIDDEN"));
+    assertBrowserSafe(crossTenant.resultSurface());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
   void hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyDashboardRuntimePath() throws Exception {
     var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
     assertTrue(shell.status().isSuccess(), "Hosted /ui shell must load from Akka static resources.");
@@ -706,24 +927,32 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
   }
 
   private CapabilityActionResult runActionAs(CapabilityActionRequest request, String subject, String email, String name, String selectedContextId) throws Exception {
-    var response = httpClient
-        .POST("/api/workstream/actions")
-        .addHeader("Authorization", "Bearer " + bearerToken(subject, email, name))
-        .addHeader("X-Selected-Context-Id", selectedContextId)
-        .addHeader("X-Correlation-Id", request.correlationId())
-        .withRequestBody(request)
-        .responseBodyAs(CapabilityActionResult.class)
-        .invoke();
-    assertTrue(response.status().isSuccess());
-    assertNotNull(response.body().traceIds());
-    return response.body();
+    try {
+      var response = httpClient
+          .POST("/api/workstream/actions")
+          .addHeader("Authorization", "Bearer " + bearerToken(subject, email, name))
+          .addHeader("X-Selected-Context-Id", selectedContextId)
+          .addHeader("X-Correlation-Id", request.correlationId())
+          .withRequestBody(request)
+          .responseBodyAs(CapabilityActionResult.class)
+          .invoke();
+      assertTrue(response.status().isSuccess());
+      assertNotNull(response.body().traceIds());
+      return response.body();
+    } catch (RuntimeException e) {
+      throw new RuntimeException("Workstream action failed for actionId=" + request.actionId() + ", correlationId=" + request.correlationId(), e);
+    }
   }
 
   private void seedIdentity(AkkaIdentityRepository repository, String email, String displayName, String membershipId, List<FoundationRole> roles) {
+    seedIdentity(repository, email, displayName, membershipId, roles, TENANT_ID, CUSTOMER_ID);
+  }
+
+  private void seedIdentity(AkkaIdentityRepository repository, String email, String displayName, String membershipId, List<FoundationRole> roles, String tenantId, String customerId) {
     repository.saveAccount(new Account(email, null, email, email, AccountStatus.ACTIVE, "UNLINKED"));
     repository.saveProfile(new UserProfile(email, email, displayName, null, null, null));
     repository.saveSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
-    repository.saveMembership(new Membership(membershipId, email, ScopeType.TENANT, TENANT_ID, null, roles, MembershipStatus.ACTIVE, false, null));
+    repository.saveMembership(new Membership(membershipId, email, ScopeType.TENANT, tenantId, null, roles, MembershipStatus.ACTIVE, false, null));
   }
 
   private String bearerToken(String subject, String email, String name) throws Exception {
