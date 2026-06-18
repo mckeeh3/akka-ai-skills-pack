@@ -6113,7 +6113,7 @@
 
 ### TASK-FSCT-173: Verify or complete runtime implementation for `surface-agent-seed-material`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-172]
 - surface id: `surface-agent-seed-material`
@@ -6144,6 +6144,7 @@
   - purpose: Seed material discovery/import workflow surface.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-seed-material`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-seed-material`; surface graph node/action edge for opening or acting on `surface-agent-seed-material`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented the backend-owned `agent_admin.seed_material.v1` runtime surface/action path through protected Workstream API, `WorkstreamService`, `AgentAdminService`, and the React list-search renderer. Evidence includes tenant-admin AuthContext authorization, browser-safe seed discovery rows, provenance inspection, customization-preserving import workflow/status, no-direct-activation/no-destructive-delete boundaries, acknowledgement-gated import, idempotent/no-op cancellation/import behavior, source/detail/trace action routing, trace/correlation/redaction fields, and frontend secret-boundary preservation. Runtime evidence readiness level: `api-smoked` for implementation scope. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#agentAdminSeedMaterialRuntimeImplementationIsBackendOwnedAndRedacted test`, `npm --prefix frontend run typecheck`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, focused `rg` evidence for seed surface/action/backend/frontend fields, and `git diff --check`.
 
 ### TASK-FSCT-174: Verify or complete runtime testing for `surface-agent-seed-material`
 

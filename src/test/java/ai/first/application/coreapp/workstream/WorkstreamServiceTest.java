@@ -1299,6 +1299,56 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void agentAdminSeedMaterialRuntimeImplementationIsBackendOwnedAndRedacted() {
+    var seed = service.surface(identity(), "membership-admin", "surface-agent-seed-material", "corr-agent-seed-implementation");
+
+    assertEquals("surface-agent-seed-material", seed.surfaceId());
+    assertEquals("list-search", seed.surfaceType());
+    assertEquals("agent_admin.seed_material.v1", seed.data().get("surfaceContract"));
+    assertTrue(seed.toString().contains("seedMaterialSummary"));
+    assertTrue(seed.toString().contains("scopeSummary"));
+    assertTrue(seed.toString().contains("seedRows"));
+    assertTrue(seed.toString().contains("provenanceInspection"));
+    assertTrue(seed.toString().contains("importWorkflow"));
+    assertTrue(seed.toString().contains("customizationPreservation"));
+    assertTrue(seed.toString().contains("safeRedactionSummary"));
+    assertTrue(seed.toString().contains("action-agent-seed-material-refresh"));
+    assertTrue(seed.toString().contains("action-agent-seed-material-search"));
+    assertTrue(seed.toString().contains("action-agent-seed-material-prepare-import"));
+    assertTrue(seed.toString().contains("action-agent-seed-material-start-import"));
+    assertTrue(seed.toString().contains("action-agent-seed-material-open-trace"));
+    assertFalse(seed.toString().contains("sk-secret"));
+    assertFalse(seed.toString().contains("rawProviderCredential="));
+    assertFalse(seed.toString().toLowerCase().contains("api_key="));
+
+    var search = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-seed-material-search", "action-agent-seed-material-search", "agent_admin.list_seed_material", "agent_admin.list_seed_material", Map.of("query", "Agent Admin"), null, "membership-admin", "surface-agent-seed-material", "corr-agent-seed-search"));
+    assertEquals("accepted", search.status());
+    assertEquals("surface-agent-seed-material", search.resultSurface().surfaceId());
+    assertTrue(search.resultSurface().toString().contains("Agent Admin"));
+    assertFalse(search.resultSurface().toString().contains("tenant:tenant-2"));
+
+    var prepare = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-seed-material-prepare-import", "action-agent-seed-material-prepare-import", "agent_admin.list_seed_material", "agent_admin.list_seed_material", Map.of("seedMaterialId", "seed-" + AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "targetAgentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-seed-prepare", "membership-admin", "surface-agent-seed-material", "corr-agent-seed-prepare"));
+    assertEquals("accepted", prepare.status());
+    assertTrue(prepare.message().contains("without mutating"));
+    assertTrue(prepare.resultSurface().toString().contains("prepared"));
+    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+
+    var missingAcknowledgement = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-seed-material-start-import", "action-agent-seed-material-start-import", "agent_admin.reseed_missing_defaults", "agent_admin.reseed_missing_defaults", Map.of("seedMaterialId", "seed-" + AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-seed-start-missing-ack", "membership-admin", "surface-agent-seed-material", "corr-agent-seed-missing-ack"));
+    assertEquals("validation-error", missingAcknowledgement.status());
+    assertTrue(missingAcknowledgement.message().contains("acknowledgement=IMPORT"));
+
+    var start = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-seed-material-start-import", "action-agent-seed-material-start-import", "agent_admin.reseed_missing_defaults", "agent_admin.reseed_missing_defaults", Map.of("seedMaterialId", "seed-" + AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "IMPORT"), "idem-seed-start", "membership-admin", "surface-agent-seed-material", "corr-agent-seed-start"));
+    assertEquals("no-op", start.status());
+    assertEquals("surface-agent-seed-material", start.resultSurface().surfaceId());
+    assertTrue(start.message().contains("tenant customizations and active behavior were preserved"));
+    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+  }
+
+  @Test
   void agentAdminDefinitionLifecycleAndSeedImportActionsAreGovernedAndIdempotent() {
     var deactivate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-deactivate-agent-definition", "action-deactivate-agent-definition", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-deactivate", "membership-admin", "surface-agent-admin-detail", "corr-agent-deactivate"));

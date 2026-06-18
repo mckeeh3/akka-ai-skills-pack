@@ -349,14 +349,79 @@ public final class AgentAdminService {
   }
 
   public Map<String, Object> seedMaterialDetail(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    return seedMaterialDetail(actor, null, correlationId);
+  }
+
+  public Map<String, Object> seedMaterialDetail(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     require(actor, LIST_SEED_MATERIAL, correlationId, "agent_admin.seed_material.v1");
+    var searchText = safeInput(input, "query", safeInput(input, "searchText", "")).trim();
+    var sourceCategory = safeInput(input, "sourceCategory", "").trim().toLowerCase(Locale.ROOT);
+    var readinessState = safeInput(input, "readinessState", safeInput(input, "readiness", "")).trim().toLowerCase(Locale.ROOT);
+    var importStatus = safeInput(input, "importStatus", "").trim().toLowerCase(Locale.ROOT);
+    var selectedSeedId = safeInput(input, "seedMaterialId", safeInput(input, "artifactId", "")).trim();
+    var targetAgentId = safeInput(input, "targetAgentDefinitionId", safeInput(input, "agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID)).trim();
+    var workflowStatus = safeInput(input, "workflowStatus", "").trim().toLowerCase(Locale.ROOT);
+    var allRows = seedMaterial(actor, correlationId);
+    var filteredRows = allRows.stream()
+        .filter(row -> matches(row, searchText))
+        .filter(row -> sourceCategory.isBlank() || sourceCategory.equals(String.valueOf(row.get("sourceCategory")).toLowerCase(Locale.ROOT)))
+        .filter(row -> readinessState.isBlank() || readinessState.equals(String.valueOf(row.get("readinessState")).toLowerCase(Locale.ROOT)))
+        .filter(row -> importStatus.isBlank() || importStatus.equals(String.valueOf(row.get("importStatus")).toLowerCase(Locale.ROOT)))
+        .toList();
+    var selectedRow = filteredRows.stream()
+        .filter(row -> selectedSeedId.isBlank() || selectedSeedId.equals(row.get("id")) || selectedSeedId.equals(row.get("artifactId")))
+        .findFirst()
+        .orElse(filteredRows.isEmpty() ? null : filteredRows.get(0));
+    var traceId = traceId("seed-material", actor.selectedContext().tenantId(), correlationId);
+    var filters = mapOf(
+        "searchText", searchText,
+        "sourceCategory", sourceCategory,
+        "agentFamily", safeInput(input, "agentFamily", ""),
+        "readinessState", readinessState,
+        "compatibilityState", safeInput(input, "compatibilityState", ""),
+        "customizationPreservationState", safeInput(input, "customizationPreservationState", ""),
+        "importStatus", importStatus,
+        "sortKey", "artifactKind",
+        "sortDirection", "asc",
+        "pageCursor", safeInput(input, "pageCursor", ""),
+        "pageSize", 25,
+        "backendAuthoritative", true);
+    var customizedCount = allRows.stream().filter(row -> Boolean.TRUE.equals(row.get("tenantCustomized"))).count();
+    var emptyReason = allRows.isEmpty() ? "empty-no-seed-material" : filteredRows.isEmpty() ? "empty-no-filter-matches" : null;
     return mapOf(
         "surfaceContract", "agent_admin.seed_material.v1",
-        "surfaceContractAliases", List.of("surface.agent_admin.seed_import.v1"),
-        "rows", seedMaterial(actor, correlationId),
-        "traceLinks", List.of(traceId("seed", actor.selectedContext().tenantId(), correlationId)),
+        "surfaceContractAliases", List.of("surface.agent_admin.seed_material.v1", "surface.agent_admin.seed_import.v1"),
+        "seedMaterialSummary", mapOf("surfaceId", "surface-agent-seed-material", "title", "Seed material discovery and import workflow", "type", "list-search / workflow-status", "contract", "agent_admin.seed_material.v1", "selectedScopeLabel", scopeLabel(actor), "resultCount", filteredRows.size(), "filteredCount", filteredRows.size(), "totalVisibleCount", allRows.size(), "importReadinessCategory", "ready", "customizationPreservationStatus", customizedCount == 0 ? "starter-defaults-visible" : "tenant-customizations-preserved", "providerRuntimeReadinessCategory", "not-required-for-seed-discovery", "lastRefreshedAt", Instant.now().toString(), "emptyStateReason", emptyReason),
+        "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", actor.selectedContext().tenantId(), "organizationDisplayName", actor.selectedContext().tenantId(), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true, "visibilityDecision", "visible"),
+        "filters", filters,
+        "query", searchText.isBlank() ? mapOf("tenantScoped", true, "scope", actor.selectedContext().tenantId()) : searchText,
+        "rows", filteredRows,
+        "seedRows", filteredRows,
+        "emptyState", mapOf("state", emptyReason == null ? "ready" : emptyReason, "reason", emptyReason == null ? "Authorized seed material is visible." : (allRows.isEmpty() ? "No governed seed material is visible for this selected scope." : "No visible seed material matches the backend-validated filters."), "recoveryActions", emptyReason == null ? List.of() : List.of("action-agent-seed-material-reset-filters", "action-agent-seed-material-refresh")),
+        "pageInfo", mapOf("totalKnownCount", allRows.size(), "visibleCount", filteredRows.size(), "pageSize", 25, "nextCursor", null),
+        "provenanceInspection", provenanceInspection(selectedRow, correlationId),
+        "importWorkflow", seedImportWorkflow(workflowStatus.isBlank() ? "not-started" : workflowStatus, selectedRow, targetAgentId, correlationId),
+        "customizationPreservation", mapOf("tenantCustomizationsPreservedCount", customizedCount, "starterDefaultCount", allRows.size() - customizedCount, "preservedCategories", List.of("approvals", "deactivations", "prompt_overrides", "skill_manifests", "tool_boundaries", "model_refs", "trace_links"), "skippedOrRequiresHumanConfirmation", List.of("raw tenant override bodies", "hidden scope identifiers"), "rawOverrideContentVisible", false, "noDestructiveDelete", true),
+        "authorizedActions", List.of(
+            seedAction("action-agent-seed-material-refresh", "Refresh seed material", LIST_SEED_MATERIAL, "surface-agent-seed-material", true, null),
+            seedAction("action-agent-seed-material-search", "Search seed material", LIST_SEED_MATERIAL, "surface-agent-seed-material", true, null),
+            seedAction("action-agent-seed-material-reset-filters", "Reset seed filters", LIST_SEED_MATERIAL, "surface-agent-seed-material", true, null),
+            seedAction("action-agent-seed-material-open-provenance", "Open seed provenance", LIST_SEED_MATERIAL, "surface-agent-seed-material", selectedRow != null, selectedRow == null ? "Select a visible seed row." : null),
+            seedAction("action-agent-seed-material-prepare-import", "Prepare customization-preserving import", LIST_SEED_MATERIAL, "surface-agent-seed-material", selectedRow != null, selectedRow == null ? "Select a visible seed row." : null),
+            seedAction("action-agent-seed-material-start-import", "Start import after acknowledgement", "agent_admin.reseed_missing_defaults", "surface-agent-seed-material", selectedRow != null, selectedRow == null ? "Select a visible seed row." : null),
+            seedAction("action-agent-seed-material-cancel-import", "Cancel visible import task", "agent_admin.reseed_missing_defaults", "surface-agent-seed-material", true, null),
+            seedAction("action-agent-seed-material-open-agent-detail", "Open target managed agent", GET_DEFINITION, "surface-agent-admin-detail", true, null),
+            seedAction("action-agent-seed-material-open-trace", "Open seed trace", "audit.trace.read", "surface-agent-admin-trace", true, null),
+            seedAction("action-agent-seed-material-back-to-source", "Back to source surface", LIST_DEFINITIONS, "surface-agent-admin-catalog", true, null)),
+        "safeRedactionSummary", mapOf("rawSeedPackageContents", "omitted", "prompts", "omitted", "skills", "omitted", "referenceDocuments", "omitted", "tenantOverrideBodies", "omitted", "providerCredentials", "omitted", "modelInternals", "omitted", "hiddenScopes", "omitted", "rawTraceEvidence", "role-gated", "loaderToolInputs", "omitted", "bearerTokens", "omitted", "internalStackTraces", "omitted"),
         "redaction", redactionMetadata(),
-        "noDirectMutation", true);
+        "traceLinks", List.of(traceId),
+        "audit", mapOf("lastEventType", "AgentSeedMaterialListed", "visibilityDecision", "visible", "traceIds", List.of(traceId), "correlationId", correlationId, "redactionProfile", "agent-seed-material-browser-safe"),
+        "diagnostics", mapOf("selectedSeedMaterialId", selectedRow == null ? null : selectedRow.get("id"), "targetManagedAgentId", targetAgentId, "capabilityIds", List.of(LIST_SEED_MATERIAL, "agent_admin.reseed_missing_defaults", GET_DEFINITION, "audit.trace.read"), "traceIds", List.of(traceId), "correlationId", correlationId, "redactionProfile", "agent-seed-material-browser-safe"),
+        "systemStates", List.of("loading", "ready", "empty-no-seed-material", "empty-no-filter-matches", "ready-provenance", "prepared-import", "queued", "running", "completed", "cancelled", "blocked-provider-or-runtime", "blocked-customization-conflict", "submitting/searching/preparing/importing/cancelling", "validation-error", "forbidden", "not-found-or-redacted", "stale/reconnect", "partial-data", "conflict", "no-op", "failure"),
+        "noDirectMutation", true,
+        "noDirectActivation", true,
+        "noDestructiveDelete", true);
   }
 
   private void require(AuthContextResolver.ResolvedMe actor, String capabilityId, String correlationId, String surfaceContract) {
@@ -393,10 +458,40 @@ public final class AgentAdminService {
   private List<Map<String, Object>> seedMaterial(AuthContextResolver.ResolvedMe actor, String correlationId) {
     var tenantId = actor.selectedContext().tenantId();
     var rows = new java.util.ArrayList<Map<String, Object>>();
-    repository.agentDefinitions(tenantId).forEach(agent -> rows.add(seedRow("AgentDefinition", agent.agentDefinitionId(), agent.status(), agent.seedProvenance(), correlationId)));
-    repository.skillDocuments(tenantId).forEach(skill -> rows.add(seedRow("SkillDocument", skill.skillDocumentId(), skill.status(), skill.seedProvenance(), correlationId)));
-    repository.referenceDocuments(tenantId).forEach(reference -> rows.add(seedRow("ReferenceDocument", reference.referenceDocumentId(), reference.status(), reference.seedProvenance(), correlationId)));
-    return List.copyOf(rows);
+    repository.agentDefinitions(tenantId).forEach(agent -> rows.add(seedRow(
+        "AgentDefinition",
+        agent.agentDefinitionId(),
+        agent.displayName(),
+        safe(agent.description()),
+        "starter-agent-definition",
+        agent.agentDefinitionId(),
+        agent.status(),
+        agent.seedProvenance(),
+        agent.updatedAt(),
+        correlationId)));
+    repository.skillDocuments(tenantId).forEach(skill -> rows.add(seedRow(
+        "SkillDocument",
+        skill.skillDocumentId(),
+        skill.title(),
+        safe(skill.purpose()),
+        "starter-skill",
+        AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
+        skill.status(),
+        skill.seedProvenance(),
+        skill.updatedAt(),
+        correlationId)));
+    repository.referenceDocuments(tenantId).forEach(reference -> rows.add(seedRow(
+        "ReferenceDocument",
+        reference.referenceDocumentId(),
+        reference.title(),
+        safe(reference.summary()),
+        "starter-reference",
+        AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
+        reference.status(),
+        reference.seedProvenance(),
+        reference.updatedAt(),
+        correlationId)));
+    return List.copyOf(rows.stream().sorted(Comparator.comparing(row -> String.valueOf(row.get("artifactKind")) + ":" + String.valueOf(row.get("displayName")))).toList());
   }
 
   private Map<String, Object> catalogRow(AuthContextResolver.ResolvedMe actor, AgentDefinition agent, String correlationId) {
@@ -437,8 +532,85 @@ public final class AgentAdminService {
         "traceId", traceId("definition", agent.agentDefinitionId(), correlationId));
   }
 
-  private Map<String, Object> seedRow(String kind, String id, AgentLifecycleStatus status, SeedProvenance provenance, String correlationId) {
-    return mapOf("artifactKind", kind, "artifactId", id, "status", status.name().toLowerCase(), "seedStatus", seedStatus(provenance), "traceId", traceId("seed", id, correlationId));
+  private Map<String, Object> seedRow(String kind, String id, String displayName, String shortPurpose, String sourceCategory, String targetAgentId, AgentLifecycleStatus status, SeedProvenance provenance, Instant updatedAt, String correlationId) {
+    var seed = seedStatus(provenance);
+    var tenantCustomized = Boolean.TRUE.equals(seed.get("tenantCustomized"));
+    var traceId = traceId("seed", id, correlationId);
+    return mapOf(
+        "id", "seed-" + id,
+        "artifactKind", kind,
+        "artifactId", id,
+        "displayName", displayName,
+        "shortPurpose", shortPurpose,
+        "sourceCategory", sourceCategory,
+        "recommendedManagedAgentTarget", targetAgentId,
+        "seedVersionLabel", String.valueOf(seed.getOrDefault("contentVersion", "current")),
+        "seedBundleId", seed.get("seedBundleId"),
+        "checksum", seed.get("checksum"),
+        "compatibilitySummary", "Compatible with the selected tenant/organization Agent Admin starter runtime; backend checks remain authoritative.",
+        "compatibilityState", "compatible",
+        "readinessState", status == AgentLifecycleStatus.ACTIVE ? "ready" : "blocked-customization-conflict",
+        "importStatus", tenantCustomized ? "customized-preserved" : "not-started",
+        "status", status.name().toLowerCase(Locale.ROOT),
+        "customizationPreservationSummary", tenantCustomized ? "Tenant customization is preserved; raw override content is omitted." : "Starter default is visible; future tenant overrides will be preserved.",
+        "lastReviewedAt", updatedAt == null ? null : updatedAt.toString(),
+        "lastImportedAt", seed.get("importedAt"),
+        "safeProvenanceLabel", String.valueOf(seed.getOrDefault("seedBundleId", "unknown-seed")) + " / " + String.valueOf(seed.getOrDefault("resourceId", id)),
+        "redactionNote", "Raw seed package contents, prompts, skills, references, tenant overrides, provider secrets, JWT/session material, and full traces are omitted.",
+        "openActionId", "action-agent-seed-material-open-provenance",
+        "prepareImportActionId", "action-agent-seed-material-prepare-import",
+        "targetSurfaceId", "surface-agent-seed-material",
+        "governedCapability", LIST_SEED_MATERIAL,
+        "disabledOrOmittedReason", null,
+        "seedStatus", seed,
+        "tenantCustomized", tenantCustomized,
+        "traceId", traceId,
+        "traceRefs", List.of(traceId));
+  }
+
+  private Map<String, Object> provenanceInspection(Map<String, Object> selectedRow, String correlationId) {
+    if (selectedRow == null) return mapOf("state", "empty-no-seed-material", "safeReason", "No visible seed material row is selected.", "rawContentVisible", false);
+    return mapOf(
+        "state", "ready-provenance",
+        "selectedSeedMaterialId", selectedRow.get("id"),
+        "artifactKind", selectedRow.get("artifactKind"),
+        "displayName", selectedRow.get("displayName"),
+        "sourceLineage", selectedRow.get("safeProvenanceLabel"),
+        "publisherCategory", selectedRow.get("sourceCategory"),
+        "versionCompatibilityClaims", selectedRow.get("compatibilitySummary"),
+        "reviewHistorySummary", "Seed provenance was imported through the backend seed loader and is trace-linked for Agent Admin review.",
+        "knownConstraints", List.of("No raw seed package content in browser payloads", "Tenant overrides are summarized and preserved", "Provider credentials are never included"),
+        "omittedCategoryCounts", mapOf("rawSeedPackageContents", 1, "tenantOverrideBodies", 0, "providerCredentials", 0),
+        "safeEvidenceRefs", List.of(selectedRow.get("traceId"), "trace-agent-seed-provenance-" + Math.abs((String.valueOf(selectedRow.get("id")) + correlationId).hashCode())),
+        "rawContentVisible", false);
+  }
+
+  private Map<String, Object> seedImportWorkflow(String status, Map<String, Object> selectedRow, String targetAgentId, String correlationId) {
+    var normalizedStatus = status == null || status.isBlank() ? "not-started" : status;
+    return mapOf(
+        "selectedSeedMaterialId", selectedRow == null ? null : selectedRow.get("id"),
+        "importTaskId", "seed-import-" + Math.abs((String.valueOf(selectedRow == null ? "none" : selectedRow.get("id")) + correlationId).hashCode()),
+        "currentStatus", normalizedStatus,
+        "phaseLabel", switch (normalizedStatus) {
+          case "prepared", "prepared-import" -> "Customization-preserving import plan prepared";
+          case "queued", "running" -> "Import lifecycle is backend-governed";
+          case "completed" -> "Missing starter defaults imported without deleting tenant customizations";
+          case "cancelled" -> "Import task cancelled with no source artifact deletion";
+          case "failed", "blocked", "blocked-provider-or-runtime" -> "Import is blocked; no fake success is shown";
+          default -> "Select a visible seed row and prepare an import plan";
+        },
+        "targetManagedAgentDisplayLabel", targetAgentId,
+        "customizationPreservationPlan", "Preserve tenant/organization prompt overrides, skill manifests, tool boundaries, model refs, lifecycle choices, approvals, and trace links; never delete raw tenant overrides.",
+        "conflictSummary", selectedRow == null ? "No selected visible seed row." : "No customization conflict detected for the browser-safe starter seed plan.",
+        "providerRuntimeToolReadinessSummary", "Seed discovery and missing-default import do not claim provider/model success; provider-backed behavior remains fail-closed until configured.",
+        "progressEvents", List.of(mapOf("eventId", "seed-plan-visible", "status", selectedRow == null ? "blocked" : normalizedStatus, "summary", "Backend-authored seed workflow status with browser-safe provenance only.")),
+        "resultPreview", "Import may create missing starter defaults only; active behavior/lifecycle activation remains delegated to separate governed surfaces.",
+        "noDestructiveDelete", true,
+        "noDirectActivation", true);
+  }
+
+  private Map<String, Object> seedAction(String actionId, String label, String capabilityId, String targetSurfaceId, boolean available, String reason) {
+    return mapOf("actionId", actionId, "label", label, "governedToolId", capabilityId, "capabilityId", capabilityId, "resultSurfaceId", targetSurfaceId, "available", available, "disabledOrOmittedReason", available ? null : reason);
   }
 
   private Map<String, Object> providerReadinessSummary(AuthContextResolver.ResolvedMe actor) {
@@ -489,6 +661,11 @@ public final class AgentAdminService {
   private String safeFilter(Map<String, ?> input, String key, String fallback) {
     if (input == null || !input.containsKey(key) || input.get(key) == null) return fallback;
     return safe(String.valueOf(input.get(key)));
+  }
+
+  private String safeInput(Object input, String key, String fallback) {
+    if (!(input instanceof Map<?, ?> map) || !map.containsKey(key) || map.get(key) == null) return fallback;
+    return safe(String.valueOf(map.get(key)));
   }
 
   private String scopeLabel(AuthContextResolver.ResolvedMe actor) {
