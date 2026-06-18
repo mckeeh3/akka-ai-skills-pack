@@ -7279,7 +7279,7 @@
 
 ### TASK-FSCT-206: Verify or complete runtime implementation for `surface-governance-policy-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-205]
 - surface id: `surface-governance-policy-dashboard`
@@ -7310,6 +7310,7 @@
   - purpose: Governance/Policy dashboard.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-dashboard`; surface graph node/action edge for opening or acting on `surface-governance-policy-dashboard`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: expanded the backend-owned Governance/Policy dashboard runtime projection in `GovernancePolicyService#dashboard` with selected AuthContext scope, actionable cards, attention queues for review/simulation/activation/rollback/outcome/impact-analysis work, capability-filtered authorized actions, lifecycle segments, fail-closed provider/runtime readiness, redaction/visibility split, trace refs, `noDirectMutation`, and `noFakeSuccess`; verified `WorkstreamService#governancePolicyDashboardSurface` and protected workstream surface/action paths route the dashboard through backend authorization, trace/correlation, member denial system-message handling, and existing `DashboardSurface` rendering/governed action routing. Runtime evidence: readiness level `api-smoked` for implementation verification; provider/runtime impact-analysis remains fail-closed as `blocked_provider_or_runtime`; no frontend-only/fixture-only normal runtime path counted. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#governancePolicyBackendActionsExposeReadProposalSimulationApprovalAndBlockedRuntimeSurfaces test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-207: Verify or complete runtime testing for `surface-governance-policy-dashboard`
 

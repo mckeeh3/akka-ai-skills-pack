@@ -2199,7 +2199,15 @@ class WorkstreamServiceTest {
         "action-governance-policy-dashboard", "action-governance-policy-dashboard", "governance.policy.read", "governance.policy.read", null, null, "membership-admin", "surface-governance-policy-dashboard", "corr-gov-dashboard"));
     assertEquals("accepted", dashboard.status());
     assertEquals("surface-governance-policy-dashboard", dashboard.resultSurface().surfaceId());
+    assertEquals("governance.policy.dashboard.v1", dashboard.resultSurface().data().get("surfaceContract"));
+    assertTrue(dashboard.resultSurface().toString().contains("ready_with_fail_closed_advisory_workers"));
+    assertTrue(dashboard.resultSurface().toString().contains("policy-simulations-required-or-blocked"));
+    assertTrue(dashboard.resultSurface().toString().contains("proposalLifecycleSegments"));
     assertTrue(dashboard.resultSurface().toString().contains("governance.policy.activate"));
+    assertEquals(true, dashboard.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, dashboard.resultSurface().data().get("noDirectMutation"));
+    assertTrue(dashboard.resultSurface().toString().contains("omittedFieldKeys"));
+    assertEquals("surface-governance-policy-dashboard", service.surface(identity(), "membership-admin", "surface-governance-policy-dashboard", "corr-gov-dashboard-direct").surfaceId());
 
     var inventory = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-governance-policy-list", "action-governance-policy-list", "governance.policy.read", "governance.policy.read", null, null, "membership-admin", "surface-governance-policy-dashboard", "corr-gov-list"));
