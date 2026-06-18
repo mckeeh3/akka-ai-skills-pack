@@ -961,7 +961,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | 2026-06-18 app-description specification completed in `app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md`: expanded `surface-governance-policy-inventory` / `governance.policy.inventory.v1` with Governance/Policy ownership, `governance-policy-agent` placement, collection-object list/search role, browser-safe payload schema for summary/filters/sort/page/rows/actions/traces/redaction/readiness, backend data-source and selected AuthContext tenant/customer authorization rules, governed action-to-capability mappings, explicit loading/empty/ready/filter-error/forbidden/stale/partial/blocked/failure states, no-enumeration and secret-boundary redaction, audit/work trace and idempotency expectations, accessibility/responsive style/catalog binding, required app-description/frontend/backend/API tests, and sufficiency review. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

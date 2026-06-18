@@ -7352,7 +7352,7 @@
 
 ### TASK-FSCT-208: Verify or complete app-description specification for `surface-governance-policy-inventory`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-governance-policy-inventory`
@@ -7381,6 +7381,7 @@
   - purpose: Policy/proposal inventory and queue.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-inventory` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded the Governance/Policy inventory app-description with owner/placement, collection-object list/search role, payload schema, action/capability mapping, selected AuthContext tenant/customer authorization, no-enumeration redaction, trace/audit/work evidence, states, accessibility/responsive style/catalog binding, required tests, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-209: Verify or complete runtime implementation for `surface-governance-policy-inventory`
 

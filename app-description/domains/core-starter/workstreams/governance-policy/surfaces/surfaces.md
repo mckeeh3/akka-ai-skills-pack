@@ -114,7 +114,89 @@ Surface-description sufficiency review: this definition is sufficiently unambigu
 
 Pattern: `list-search`.
 
-Rows include policy/proposal id, name/title, type, status/lifecycle state, affected capability ids, source artifact, last trace id, and safe redaction metadata. Rows must never include raw prompts, provider secrets, hidden authority state, raw tool payloads, JWTs, or cross-tenant evidence.
+Owning workstream: Governance/Policy. Owning functional agent: `governance-policy-agent`. Reusable placements: opened from `surface-governance-policy-dashboard` lifecycle counters, dashboard queue cards, proposal/detail breadcrumbs, audit/trace drilldowns, and direct deep links only when the selected `AuthContext` grants Governance/Policy read authority. Purpose: discover, filter, and open authorized policy/proposal work without exposing hidden policy internals or granting authority from the browser.
+
+Collection-object progression role: this is the domain list/search surface for the policy/proposal collection. Row selection opens a lifecycle-aware inspection surface (`surface-governance-policy-detail`) or the specific task surface named by the backend row action (`surface-governance-policy-proposal`, `surface-governance-policy-simulation`, `surface-governance-policy-decision`, `surface-governance-policy-outcome`, `surface-governance-policy-impact-analysis-task`, or `surface-governance-policy-impact-analysis-result`). Draft/create, edit-like proposal changes, approval/activation/rollback, outcome notes, impact-analysis review, and rollback/destructive-lifecycle recovery are separate governed surfaces/actions and are not performed inline by the inventory.
+
+User goal: find the policy/proposal items the actor is allowed to see, understand lifecycle and blocker status, open the next authorized work surface, and recover safely when filters, scope, provider/runtime readiness, or authority prevent showing or acting on a proposal.
+
+Data source and backend authority: the payload is produced by the protected Governance/Policy policy proposal inventory projection for the backend-resolved tenant/customer/workspace scope. Browser-provided tenant/customer ids, lifecycle filters, search text, sort keys, page cursors, proposal ids, and correlation keys are hints only; the backend re-resolves selected `AuthContext`, capabilities, row visibility, trace visibility, redaction, and action availability before returning rows or target surfaces.
+
+Required payload schema (frontend-safe):
+
+- `inventorySummary`: selected workstream/context label, scope label, total visible count, filtered count, lifecycle bucket counts, blocked/provider-runtime count, selected filters summary, freshness state, and safe empty-state copy.
+- `filters`: backend-allowed filter definitions for lifecycle/status, type, source artifact, affected capability family, risk class, reviewer/owner display label, blocked state, recent activity window, and search text; each filter includes stable field id, label, allowed values, selected values, and validation messages.
+- `sortAndPage`: allowed sort keys, current sort, page size, next/previous cursor presence, stale cursor recovery copy, and no raw database cursor or implementation key in the default payload.
+- `rows`: policy/proposal rows with `proposalRef` or policy display id, title/name, type, lifecycle/status label, risk classification, affected capability summaries, source artifact summary, owner/reviewer display summary, simulation/evidence status, approval/activation/rollback readiness, outcome/impact-analysis task summary, last activity age, safe trace summary, row redaction markers, row target surface, and backend-authorized row action ids.
+- `emptyStates`: zero-result copy for no visible proposals, filter-matched zero results, stale cursor, denied direct proposal, provider/runtime-blocked advisory status, and partial-data omission.
+- `authorizedActions`: only actions the backend authorizes for the selected actor, including `action-governance-policy-list`, `action-governance-policy-read`, `action-governance-policy-draft-proposal`, `action-governance-policy-simulate`, `action-governance-policy-decide`, `action-governance-policy-start-impact-analysis`, `action-governance-policy-read-impact-analysis`, and `action-governance-policy-outcome-note` when each corresponding capability is granted and the target row/lifecycle permits it.
+- `traceLinks`: user-readable trace summaries plus role-gated references to policy-decision trace, admin-audit event, workstream-log trace, agent-work trace, impact-analysis task events, and denial/failure traces.
+- `redaction`: field-level indicators for hidden cross-tenant/customer rows, hidden policy authority state, privileged evidence, raw provider/model output, raw prompts, raw governed-tool payloads, JWTs, secrets, raw correlation ids, and idempotency keys.
+- `readiness`: provider/runtime/configuration state for advisory simulation and impact-analysis statuses represented as blocked/unknown/ready summaries; unavailable providers or autonomous-agent runtime are never rendered as successful analysis.
+
+Visibility split:
+
+- Default user-visible fields: proposal title/display ref, lifecycle/status labels, safe type/risk/source summaries, affected capability summaries, visible counts, readiness/blocker summaries, authorized next action labels, and recovery instructions.
+- On-demand drilldown fields: proposal display ids, evidence summaries, lifecycle history, outcome note summaries, redacted trace summaries, reviewer/owner display labels, and scoped source artifact details.
+- Admin/support/auditor-only fields: capability ids, policy-decision trace refs, admin-audit refs, workstream-log refs, agent-work refs, impact-analysis task refs, denial/failure evidence, and redaction reasons.
+- Internal-only metadata never rendered in ordinary browser payloads: raw provider/model data, prompts, governed-tool payloads, backend component names, hidden role policy clauses, raw database cursors, cross-tenant identifiers, JWTs/secrets, correlation ids, and idempotency implementation details.
+
+Required states: loading, empty, ready, filter-validation-error, forbidden/system-message, stale/reconnect, partial-data, blocked-provider-or-runtime, and failure.
+
+State semantics:
+
+- `loading`: workstream shell has selected Governance/Policy and is fetching the protected inventory projection.
+- `empty`: actor is authorized, but no visible proposals match the current scope or filters; show safe setup/start actions the backend authorizes.
+- `ready`: rows, filters, lifecycle counts, and action edges are backed by the protected projection for the selected `AuthContext`.
+- `filter-validation-error`: unsupported sort/filter/page hints are rejected or normalized by the backend and returned with safe corrective copy.
+- `forbidden/system-message`: missing bearer token, missing selected context, missing `governance.policy.read`, direct proposal access denial, or tenant/customer scope denial returns `surface-governance-policy-system-message` with `noFakeSuccess=true`, `noDirectMutation=true`, and no hidden proposal enumeration.
+- `stale/reconnect`: cursor, projection freshness, or trace freshness cannot be confirmed; disable side-effecting shortcuts and offer refresh.
+- `partial-data`: some row evidence, trace summaries, or provider readiness details are omitted; visible sections identify what was omitted and why.
+- `blocked-provider-or-runtime`: advisory simulation or impact-analysis status cannot be produced because provider/autonomous-agent runtime is unavailable; display blocked status and recovery, not fabricated analysis.
+- `failure`: unexpected read failure returns a safe system message with trace/audit reference and no raw exception, token, provider, or storage details.
+
+Action contract:
+
+| Visible action / target | Browser action id | Governed tool | Capability | Request payload | Result surface | Notes |
+|---|---|---|---|---|---|---|
+| Refresh/open inventory | `action-governance-policy-list` | `list-policy-proposals` | `governance.policy.read` | selected context/workstream, optional lifecycle/search/filter/sort/page hints, correlation key generated by client or backend | `surface-governance-policy-inventory` | Read-only; backend ignores tenant/customer expansion from the browser. |
+| Open row detail/evidence | `action-governance-policy-read` | `list-policy-proposals` | `governance.policy.read` | proposal display ref, optional source row id, correlation key | `surface-governance-policy-detail` | Backend reauthorizes row visibility and redacts evidence by selected scope. |
+| Draft new proposal from inventory | `action-governance-policy-draft-proposal` | `draft-policy-proposal` | `governance.policy.propose` | draft intent/source, optional template id, reason/rationale, idempotency key, correlation key | `surface-governance-policy-proposal` | Creates or opens an inert draft only; no authority changes. |
+| Open simulation task for row | `action-governance-policy-simulate` | `simulate-policy-change` | `governance.policy.simulate` | proposal id/display ref, scenario/scope, idempotency key when starting, correlation key | `surface-governance-policy-simulation` | Advisory only; blocked provider/runtime returns safe blocked state. |
+| Open decision/activation/rollback work | `action-governance-policy-decide` | `approve-activate-or-rollback-policy` | `governance.policy.approve` | proposal id/display ref, command mode `decide`, reason when supplied, idempotency key for command submission, correlation key | `surface-governance-policy-decision` | Inventory opens the decision surface; it does not approve, activate, or roll back inline. |
+| Start/read impact analysis | `action-governance-policy-start-impact-analysis` / `action-governance-policy-read-impact-analysis` | `start-policy-impact-analysis` / `read-policy-impact-analysis` | `governance.policy.impact_analysis.start` / `governance.policy.impact_analysis.read` | proposal id/display ref, task id when reading, scope, reason, idempotency key for start, correlation key | `surface-governance-policy-impact-analysis-task` | Durable advisory task path; provider/runtime unavailable returns blocked_provider_or_runtime with no fake success. |
+| Record/open outcome note | `action-governance-policy-outcome-note` | `record-policy-outcome-note` | `governance.outcomes.record` | proposal id/display ref, observation summary or open intent, idempotency key when recording, correlation key | `surface-governance-policy-outcome` | Outcome observations do not change authority or lifecycle state. |
+
+Hidden or denied actions: approval, activation, rollback, impact-result acceptance/rejection/request-changes, and outcome-note mutation are exposed only when the backend returns a row-specific authorized action and valid lifecycle state. Direct/deep-link attempts without authority return `surface-governance-policy-system-message` and must not reveal whether hidden proposals, policies, capabilities, or cross-tenant/customer evidence exists.
+
+Authorization and tenant scope:
+
+- `governance.policy.read` is required for inventory reads and row opens.
+- Proposal creation, simulation, approval/decision, activation, rollback, impact-analysis, and outcome capabilities are exposed only as backend-authorized actions for visible rows and selected lifecycle states.
+- The backend resolves tenant/customer/workspace scope from selected `AuthContext`; browser filters cannot expand scope, enumerate hidden proposals, or request raw authority state.
+- Rows and trace drilldowns redact hidden cross-tenant/customer details, privileged policy evidence, raw provider/model content, prompts, raw tool payloads, JWTs, secrets, and implementation correlation/idempotency details.
+- Direct proposal id, stale cursor, or hidden row requests return safe no-enumeration denial or empty filtered inventory states with trace refs.
+
+Trace, audit, and work evidence:
+
+- Inventory read/refresh, filter changes that hit the backend, direct row opens, denials, stale cursor recovery, and every row action produce workstream-log/correlation evidence.
+- Consequential row actions produce admin-audit and policy-decision traces where applicable; impact-analysis actions link agent-work/task events; denial/provider/runtime failures link failure traces.
+- Default trace copy is human-readable; raw ids/details are visible only through role-gated audit/support drilldowns.
+- Repeated draft/start/outcome commands require idempotency evidence; read-only inventory refresh is safe to repeat.
+
+Accessibility, responsive, and UI realization:
+
+- Use the selected web UI style guide, named-theme contract, and component-catalog list/search, filter bar, table/card, badge, empty-state, system-message, action-menu, and pagination anatomy.
+- Rows, cards, filter chips, lifecycle counters, pagination controls, and row action menus are keyboard-operable, announce selected filters/status/action targets, preserve focus after refresh/action results, and provide accessible names for target surfaces.
+- Responsive layouts may switch between table and cards but must preserve the same backend-authored row actions, redaction markers, filter semantics, recovery states, and attention ordering.
+
+Required tests:
+
+- App-description/contract tests prove the inventory contract includes payload schema, filters/sort/page, row action mapping, auth/tenant rules, states, traces, redaction, and sufficiency review.
+- Frontend tests prove list/search rendering, empty/ready/filter-error/stale/partial/blocked-provider-or-runtime/system-message states, backend-authorized action visibility, row keyboard navigation, direct-denial recovery, and secret-boundary redaction.
+- Backend/API tests prove selected AuthContext scoping, missing-bearer and missing-capability denials, no-enumeration direct proposal access, lifecycle filters, pagination validation/stale cursor behavior, row action authorization, trace/audit/work evidence, idempotency for side-effecting row actions, and provider/runtime fail-closed advisory statuses.
+
+Surface-description sufficiency review: this definition is sufficiently unambiguous for a developer or generator to implement and review `surface-governance-policy-inventory` without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. The default view avoids internal implementation details that do not help the target SaaS user, and no additional description pass is required before scoped implementation work for this inventory surface.
 
 ### `surface-governance-policy-proposal` (`governance.policy.proposal.v1`)
 
