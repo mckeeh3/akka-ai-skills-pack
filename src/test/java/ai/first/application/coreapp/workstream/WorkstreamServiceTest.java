@@ -1315,7 +1315,30 @@ class WorkstreamServiceTest {
         "action-activate-agent-definition", "action-activate-agent-definition", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-activate", "membership-admin", "surface-agent-admin-detail", "corr-agent-activate"));
     assertEquals("approval-required", activate.status());
     assertEquals("surface-agent-activation-confirmation", activate.resultSurface().surfaceId());
+    assertTrue(activate.resultSurface().toString().contains("agent_admin.activation_confirmation.v1"));
+    assertTrue(activate.resultSurface().toString().contains("activationSummary"));
+    assertTrue(activate.resultSurface().toString().contains("action-agent-activation-confirm"));
+    assertTrue(activate.resultSurface().toString().contains("provider-fail-closed"));
+    assertTrue(activate.resultSurface().toString().contains("noFakeSuccess=true"));
     assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+
+    var activationValidation = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-activation-confirm", "action-agent-activation-confirm", "agent_admin.activate_behavior_change", "agent_admin.activate_behavior_change", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-activation-missing-ack", "membership-admin", "surface-agent-activation-confirmation", "corr-agent-activation-missing-ack"));
+    assertEquals("validation-error", activationValidation.status());
+    assertEquals("surface-agent-activation-confirmation", activationValidation.resultSurface().surfaceId());
+    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+
+    var activationBlocked = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-activation-confirm", "action-agent-activation-confirm", "agent_admin.activate_behavior_change", "agent_admin.activate_behavior_change", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "ACTIVATE"), "idem-activation-confirm", "membership-admin", "surface-agent-activation-confirmation", "corr-agent-activation-confirm"));
+    assertEquals("approval-required", activationBlocked.status());
+    assertTrue(activationBlocked.message().contains("failed closed"));
+    assertEquals("surface-agent-activation-confirmation", activationBlocked.resultSurface().surfaceId());
+    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+
+    var activationCancel = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-activation-cancel", "action-agent-activation-cancel", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-activation-cancel", "membership-admin", "surface-agent-activation-confirmation", "corr-agent-activation-cancel"));
+    assertEquals("accepted", activationCancel.status());
+    assertEquals("surface-agent-admin-detail", activationCancel.resultSurface().surfaceId());
 
     var seedImport = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-import-agent-seed-defaults", "action-import-agent-seed-defaults", "agent_admin.reseed_missing_defaults", "agent_admin.reseed_missing_defaults", null, "idem-seed-import", "membership-admin", "surface-agent-seed-material", "corr-agent-seed-import"));

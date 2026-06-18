@@ -5477,7 +5477,7 @@
 
 ### TASK-FSCT-155: Verify or complete runtime implementation for `surface-agent-activation-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-154]
 - surface id: `surface-agent-activation-confirmation`
@@ -5508,6 +5508,7 @@
   - purpose: Activation confirmation surface.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-activation-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-activation-confirmation`; surface graph node/action edge for opening or acting on `surface-agent-activation-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented and verified backend-owned activation confirmation runtime path for `surface-agent-activation-confirmation`: direct protected surface read, detail/AgentDefinition activation entry actions, activation refresh/confirm/cancel/open-proposal/open-trace actions, provider/approval fail-closed and acknowledgement validation behavior, tenant-admin AuthContext authorization, trace/correlation/redaction/noDirectMutation/noFakeSuccess evidence, and frontend `AgentAdminTaskSurface` rendering for activation blockers and all backend-supplied lifecycle actions. Readiness level: `api-smoked`. Commands passed: `mvn -q -Dtest=WorkstreamServiceTest#agentAdminDefinitionLifecycleAndSeedImportActionsAreGovernedAndIdempotent test`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminCatalogRuntimePath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-156: Verify or complete runtime testing for `surface-agent-activation-confirmation`
 
