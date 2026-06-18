@@ -7458,7 +7458,7 @@
 
 ### TASK-FSCT-211: Verify or complete app-description specification for `surface-governance-policy-proposal`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-governance-policy-proposal`
@@ -7487,6 +7487,7 @@
   - purpose: Policy proposal lifecycle/diff surface.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Governance Policy `surface-governance-policy-proposal` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded `surface-governance-policy-proposal` / `governance.policy.proposal.v1` with Governance/Policy ownership, `governance-policy-agent` placement, collection-object create/edit/work role, backend-resolved selected AuthContext authority, frontend-safe proposal summary/diff/draft/lifecycle/evidence payload, lifecycle/state semantics, action mappings for read/draft/submit/simulate/decision/impact/outcome, tenant/customer scope and idempotency rules, trace/audit/work evidence, accessibility/responsive expectations, required tests, no-direct-mutation semantics, and sufficiency-review evidence. Checks passed: focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description and `git diff --check`.
 
 ### TASK-FSCT-212: Verify or complete runtime implementation for `surface-governance-policy-proposal`
 

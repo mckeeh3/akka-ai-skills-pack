@@ -974,7 +974,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | 2026-06-18 app-description specification completed in `app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md`: expanded `surface-governance-policy-proposal` / `governance.policy.proposal.v1` with Governance/Policy ownership, `governance-policy-agent` placement, collection-object create/edit/work role, backend-resolved selected AuthContext data source, frontend-safe proposal summary/diff/draft/lifecycle/evidence payload, visibility split, lifecycle/state semantics, backend-authorized action mappings for read/draft/submit/simulate/decision/impact/outcome actions, tenant/customer scope and idempotency rules, trace/audit/work evidence, accessibility/responsive expectations, required tests, no-direct-mutation semantics, and sufficiency-review evidence. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

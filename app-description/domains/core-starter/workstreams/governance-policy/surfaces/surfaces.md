@@ -202,9 +202,98 @@ Surface-description sufficiency review: this definition is sufficiently unambigu
 
 Pattern: `governance-diff`.
 
-Required payload: proposal id, lifecycle state, source, risk classification, required approval, before/after summaries, change rows, affected capabilities/artifacts, simulation/evidence status, available next transitions, idempotency metadata as diagnostic-only, decision metadata, outcome notes, trace links, redaction, and `noDirectMutation=true`.
+Owning workstream: Governance/Policy. Owning functional agent: `governance-policy-agent`. Reusable placements: opened from `surface-governance-policy-dashboard` draft shortcuts, `surface-governance-policy-inventory` row actions, lifecycle/detail breadcrumbs, simulation/decision/outcome follow-ups, and audit/trace drilldowns only when the selected `AuthContext` grants the required Governance/Policy authority. Purpose: draft, inspect, revise, and submit an inert policy proposal while clearly showing the before/after policy change, lifecycle blockers, evidence status, and next authorized transition without changing production authority from the browser.
 
-Allowed lifecycle states: `draft`, `submitted`, `simulation-required`, `in-review`, `changes-requested`, `approved`, `rejected`, `activated`, `rollback-candidate`, `rolled-back`, `superseded`. The surface must expose only backend-authorized actions for transitions valid from the current lifecycle state.
+Collection-object progression role: this is the lifecycle-aware create/edit/work surface for policy proposals. It may create or update an inert draft and may submit that draft for review through backend-governed proposal actions; simulation, approval, activation, rollback, outcome recording, and impact-analysis disposition remain separate governed surfaces/actions. Row selection and breadcrumbs return to the scoped proposal inventory or detail surfaces rather than embedding list/search behavior.
+
+User goal: understand the proposed policy change, safely complete or submit a draft when authorized, see what evidence or approvals are still required, and recover from authorization, validation, provider/runtime, or stale/conflict states without exposing hidden policy internals.
+
+Data source and backend authority: the payload is produced by the protected Governance/Policy proposal projection for the backend-resolved tenant/customer/workspace scope. Browser-provided proposal ids, source artifacts, requested lifecycle transitions, tenant/customer hints, correlation keys, and idempotency keys are treated as untrusted request metadata; the backend re-resolves the selected `AuthContext`, proposal visibility, lifecycle state, capabilities, row-level redaction, and allowed transitions before returning this surface or a safe system message.
+
+Required payload schema (frontend-safe):
+
+- `proposalSummary`: proposal display ref, title, purpose, lifecycle state, source summary, owner/reviewer display summary, risk classification, affected capability/artifact summary, freshness/conflict status, and safe empty/new-draft copy.
+- `changeSet`: before/after summaries, changed policy areas, added/removed/changed capability effects, human-readable diff rows with risk labels, validation messages, and row redaction markers; raw policy clauses or hidden role rules are omitted unless exposed through a role-gated drilldown.
+- `draftFields`: editable draft intent, rationale, source artifact reference, requested effective scope summary, risk justification, reviewer note, and validation errors for actors with `governance.policy.propose`; read-only actors receive display summaries only.
+- `lifecycleGate`: required approvals, simulation/evidence status, impact-analysis status, activation/rollback gate summary, disabled transition reasons, and blocked-provider-or-runtime status where advisory evidence cannot be produced.
+- `availableTransitions`: backend-authorized transition actions valid for the current lifecycle state, including draft/save, submit for review, open/start simulation, open decision, start/read impact analysis, and open outcome note only when the selected actor and proposal state permit them.
+- `decisionMetadata`: current recommendation/decision summary, reviewer display label, decision state, outcome note summaries, and activation/rollback prerequisite summaries when available.
+- `authorizedActions`: only actions the backend authorizes for the selected actor, including `action-governance-policy-draft-proposal`, `action-governance-policy-submit-proposal`, `action-governance-policy-simulate`, `action-governance-policy-decide`, `action-governance-policy-start-impact-analysis`, `action-governance-policy-read-impact-analysis`, and `action-governance-policy-outcome-note` when each corresponding capability and lifecycle rule is satisfied.
+- `traceLinks`: user-readable trace summaries plus role-gated references to policy-decision trace, admin-audit event, workstream-log trace, agent-work trace, impact-analysis task events, source artifact trace, and denial/failure traces.
+- `redaction`: field-level indicators for hidden cross-tenant/customer evidence, privileged policy clauses, hidden authority state, raw provider/model output, raw prompts, raw governed-tool payloads, JWTs, secrets, raw correlation ids, and idempotency keys.
+- `readiness`: provider/runtime/configuration state for advisory simulation and impact-analysis prerequisites represented as ready, blocked, unknown, or not-required summaries; unavailable providers or autonomous-agent runtime are never rendered as successful analysis.
+- `noDirectMutation`: always `true`; the browser renders backend-authored state and sends governed actions only. It cannot approve, activate, roll back, weaken security, expand authority, or fabricate evidence locally.
+
+Visibility split:
+
+- Default user-visible fields: proposal title/display ref, lifecycle/status label, purpose, safe source/risk summaries, before/after summary, validation and blocker copy, authorized next actions, required approval/evidence summary, and recovery instructions.
+- On-demand drilldown fields: proposal display ids, detailed diff rows, lifecycle history, redacted source artifact details, outcome note summaries, simulation/impact evidence summaries, and trace summaries.
+- Admin/support/auditor-only fields: capability ids, policy-decision trace refs, admin-audit refs, workstream-log refs, agent-work refs, impact-analysis task refs, denial/failure evidence, redaction reasons, and diagnostic idempotency/correlation status.
+- Internal-only metadata never rendered in ordinary browser payloads: raw policy engine clauses, raw role policy state, raw provider/model data, prompts, governed-tool payloads, backend component names, database ids/cursors, cross-tenant identifiers, JWTs/secrets, correlation ids, and idempotency implementation details.
+
+Allowed lifecycle states: `draft`, `submitted`, `simulation-required`, `in-review`, `changes-requested`, `approved`, `rejected`, `activated`, `rollback-candidate`, `rolled-back`, `superseded`. The surface exposes only backend-authorized actions for transitions valid from the current lifecycle state; invalid or stale transitions return a safe validation/conflict/system-message result and never imply a successful authority change.
+
+Required states: loading, empty/new-draft, ready, editing-draft, submitting, validation-error, forbidden/system-message, conflict/stale, partial-data, blocked-provider-or-runtime, read-only, success/submitted, and failure.
+
+State semantics:
+
+- `loading`: workstream shell has selected Governance/Policy and is fetching the protected proposal projection.
+- `empty/new-draft`: actor is authorized to propose and no existing proposal id was supplied; render backend-authored draft defaults and required field guidance.
+- `ready`: proposal summary, diff, lifecycle gates, traces, and authorized transitions are backed by the protected proposal projection for the selected `AuthContext`.
+- `editing-draft`: editable fields are available only for draft or changes-requested states and only when `governance.policy.propose` is granted; edits are unsaved until the governed draft action succeeds.
+- `submitting`: a governed draft or submit request is in flight; repeat submissions use idempotency and must not duplicate proposals or lifecycle transitions.
+- `validation-error`: missing rationale, unsupported source artifact, invalid policy diff, forbidden scope expansion, stale idempotency, or lifecycle-precondition failures are returned with field-level/user-safe copy.
+- `forbidden/system-message`: missing bearer token, missing selected context, missing read/propose capability, hidden proposal, or tenant/customer scope denial returns `surface-governance-policy-system-message` with `noFakeSuccess=true`, `noDirectMutation=true`, and no hidden proposal enumeration.
+- `conflict/stale`: proposal version, lifecycle state, source artifact, or trace freshness changed since the actor opened the surface; disable side-effecting actions until refresh.
+- `partial-data`: some evidence, trace summaries, or source artifact details are omitted; visible sections identify what was omitted and why.
+- `blocked-provider-or-runtime`: advisory simulation or impact-analysis evidence required for the next transition cannot be produced because provider/autonomous-agent runtime is unavailable; show blocked status and recovery, not fabricated analysis.
+- `read-only`: actor can inspect the proposal but cannot draft, submit, or transition it; denied actions are omitted or shown as safe disabled explanations only when useful.
+- `success/submitted`: backend accepted an inert draft save or submit transition and returns the refreshed proposal surface; approval, activation, rollback, or authority changes are not claimed.
+- `failure`: unexpected read or command failure returns a safe system message with trace/audit reference and no raw exception, token, provider, storage, or policy-engine details.
+
+Action contract:
+
+| Visible action / target | Browser action id | Governed tool | Capability | Request payload | Result surface | Notes |
+|---|---|---|---|---|---|---|
+| Open existing proposal or refresh draft | `action-governance-policy-read` | `list-policy-proposals` | `governance.policy.read` | proposal display ref or draft source hint, optional refresh reason, correlation key generated by client or backend | `surface-governance-policy-proposal` or `surface-governance-policy-system-message` | Read-only projection; backend reauthorizes proposal visibility and selected scope. |
+| Save or update inert draft | `action-governance-policy-draft-proposal` | `draft-policy-proposal` | `governance.policy.propose` | draft intent, source artifact/display ref, rationale, proposed change summary/diff input, requested scope summary, idempotency key, correlation key | `surface-governance-policy-proposal` | Creates or updates an inert draft only; no authority changes, approvals, activation, rollback, or hidden scope expansion. |
+| Submit draft for review | `action-governance-policy-submit-proposal` | `draft-policy-proposal` | `governance.policy.propose` | proposal id/display ref, current version/freshness token, rationale, required approval acknowledgement, idempotency key, correlation key | `surface-governance-policy-proposal` | Moves an eligible draft into review/submitted state only when backend lifecycle rules pass. |
+| Open/start simulation for proposal | `action-governance-policy-simulate` | `simulate-policy-change` | `governance.policy.simulate` | proposal id/display ref, scenario/scope, reason, idempotency key when starting, correlation key | `surface-governance-policy-simulation` or `surface-governance-policy-system-message` | Advisory only; provider/runtime unavailable returns blocked_provider_or_runtime with no fake success. |
+| Open decision/review work | `action-governance-policy-decide` | `approve-activate-or-rollback-policy` | `governance.policy.approve` | proposal id/display ref, command mode `decide`, reason when supplied, idempotency key for command submission, correlation key | `surface-governance-policy-decision` | Proposal surface may route to decision review but cannot approve, activate, or roll back inline. |
+| Start/read impact analysis | `action-governance-policy-start-impact-analysis` / `action-governance-policy-read-impact-analysis` | `start-policy-impact-analysis` / `read-policy-impact-analysis` | `governance.policy.impact_analysis.start` / `governance.policy.impact_analysis.read` | proposal id/display ref, task id when reading, scope, reason, idempotency key for start, correlation key | `surface-governance-policy-impact-analysis-task` | Durable advisory task path; activation remains blocked until valid human-reviewed evidence exists. |
+| Open outcome note | `action-governance-policy-outcome-note` | `record-policy-outcome-note` | `governance.outcomes.record` | proposal id/display ref, observation/open intent, idempotency key when recording, correlation key | `surface-governance-policy-outcome` | Outcome observations do not change authority or lifecycle state. |
+
+Hidden or denied actions: approval, activation, rollback, impact-result acceptance/rejection/request-changes, outcome-note mutation, raw policy-clause edits, tenant/customer scope expansion, and hidden proposal access are not performed directly by this proposal surface. Direct/deep-link attempts without authority return `surface-governance-policy-system-message`, are audit/trace recorded, and must not reveal whether hidden proposals, policies, capabilities, or cross-tenant/customer evidence exists.
+
+Authorization and tenant scope:
+
+- `governance.policy.read` is required to open an existing visible proposal; `governance.policy.propose` is required to create, update, or submit an inert draft.
+- Simulation, decision, impact-analysis, and outcome actions are exposed only as backend-authorized actions for the selected actor and valid lifecycle state.
+- The backend resolves tenant/customer/workspace authority from the selected `AuthContext`; browser fields cannot expand scope, enumerate hidden proposals, or request raw authority state.
+- Draft/save/submit requests must be idempotent and version/freshness-aware so repeat or stale submissions cannot duplicate side effects or skip lifecycle gates.
+- Proposal diffs, trace drilldowns, and source artifact details redact hidden cross-tenant/customer evidence, privileged policy clauses, raw provider/model content, prompts, raw tool payloads, JWTs, secrets, and implementation correlation/idempotency details.
+
+Trace, audit, and work evidence:
+
+- Proposal reads, draft saves, submit attempts, validation/conflict results, denials, stale refreshes, and every transition action produce workstream-log/correlation evidence.
+- Draft and submit commands produce admin-audit and policy-decision trace evidence even when validation fails; simulation/impact-analysis actions link agent-work/task events; denials/provider/runtime failures link failure traces.
+- Default trace copy is human-readable; raw ids/details are visible only through role-gated audit/support drilldowns.
+- Repeated draft/submit/start/outcome commands require idempotency evidence and must return the original outcome or a safe conflict message.
+
+Accessibility, responsive, and UI realization:
+
+- Use the selected web UI style guide, named-theme contract, and component-catalog governance-diff, form, validation-summary, badge, system-message, action-bar, trace-summary, and confirmation anatomy.
+- Diff rows, draft fields, validation summaries, lifecycle gates, action buttons, breadcrumbs, and trace links are keyboard-operable, announce lifecycle/validation/action targets, preserve focus after save/submit/action results, and provide accessible names for affected policy areas.
+- Responsive layouts may stack diff, form, and lifecycle gate panels but must preserve backend-authored actions, redaction markers, validation states, trace summaries, and recovery guidance.
+
+Required tests:
+
+- App-description/contract tests prove the proposal contract includes payload schema, lifecycle states, draft/submit actions, auth/tenant rules, idempotency, states, traces, redaction, no-direct-mutation semantics, and sufficiency review.
+- Frontend tests prove governance-diff rendering, new-draft/ready/editing/submitting/validation/conflict/blocked-provider-or-runtime/read-only/system-message states, backend-authorized action visibility, keyboard navigation, focus preservation, and secret-boundary redaction.
+- Backend/API tests prove selected AuthContext scoping, missing-bearer and missing-capability denials, no-enumeration hidden proposal access, draft creation/update idempotency, submit lifecycle validation, stale conflict handling, row/action authorization, trace/audit/work evidence, and provider/runtime fail-closed advisory statuses.
+- Negative tests prove the browser cannot approve, activate, roll back, mutate authority, expand tenant/customer scope, expose hidden policy internals, fabricate advisory evidence, or duplicate side effects on repeated draft/submit/start requests.
+
+Surface-description sufficiency review: this definition is sufficiently unambiguous for a developer or generator to implement and review `surface-governance-policy-proposal` without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. The default view avoids internal implementation details that do not help the target SaaS user, and no additional description pass is required before scoped implementation work for this proposal surface.
 
 ### `surface-governance-policy-simulation` (`governance.policy.simulation.v1`)
 
