@@ -788,7 +788,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-admin-trace` for `agent_admin.trace.v1` with Agent Admin/`agent-admin-agent` ownership, Audit/Trace reuse, browser-safe `traceSummary`, `scopeSummary`, `timelineEvents[]`, `authorizationNarrative`, redaction/export/escalation state, `authorizedActions[]`, diagnostics, governed trace refresh/drill-down/export/escalate/source-return actions, AuthContext/tenant no-enumeration rules, audit/work trace obligations, states, accessibility, mutation boundaries, realization tests, and sufficiency review. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

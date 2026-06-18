@@ -5974,7 +5974,7 @@
 
 ### TASK-FSCT-169: Verify or complete app-description specification for `surface-agent-admin-trace`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-admin-trace`
@@ -6003,6 +6003,7 @@
   - purpose: Agent Admin trace timeline.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-admin-trace` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded `surface-agent-admin-trace` app-description with Agent Admin/`agent-admin-agent` ownership, Audit/Trace reuse, browser-safe trace payload schema, governed action mapping, AuthContext/tenant no-enumeration authorization, audit/work trace obligations, states, accessibility, mutation boundaries, tests, and sufficiency review; tracker evidence updated. Checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in the Agent Admin app-description.
 
 ### TASK-FSCT-170: Verify or complete runtime implementation for `surface-agent-admin-trace`
 
