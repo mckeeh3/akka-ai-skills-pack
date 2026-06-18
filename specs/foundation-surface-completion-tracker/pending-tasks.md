@@ -5583,7 +5583,7 @@
 
 ### TASK-FSCT-158: Verify or complete runtime implementation for `surface-agent-deactivation-confirmation`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-157]
 - surface id: `surface-agent-deactivation-confirmation`
@@ -5614,6 +5614,7 @@
   - purpose: Deactivation confirmation surface.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-deactivation-confirmation`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-deactivation-confirmation`; surface graph node/action edge for opening or acting on `surface-agent-deactivation-confirmation`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented and verified the real Agent Admin deactivation confirmation runtime path: backend-owned `agent_admin.deactivation_confirmation.v1` lifecycle-confirmation payload with `deactivationSummary`/`policyAndApprovalSummary`, governed refresh/confirm/cancel/open-proposal/open-trace actions, required `DEACTIVATE` acknowledgement and reason validation, backend capability/AuthContext enforcement, trace/correlation evidence, idempotent no-op behavior, browser-safe redaction, and a real repository-backed lifecycle transition to `AgentLifecycleStatus.DISABLED` without deleting prompts, skills, references, provider data, or tenant overrides. Checks passed: `mvn -Dtest=WorkstreamServiceTest#agentAdminDefinitionLifecycleAndSeedImportActionsAreGovernedAndIdempotent test`, `npm --prefix frontend run typecheck`, `git diff --check`. Runtime evidence level: `api-smoked` for implementation scope.
 
 ### TASK-FSCT-159: Verify or complete runtime testing for `surface-agent-deactivation-confirmation`
 

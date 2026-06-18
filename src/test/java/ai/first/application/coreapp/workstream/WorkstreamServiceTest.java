@@ -1345,6 +1345,40 @@ class WorkstreamServiceTest {
     assertEquals("no-op", seedImport.status());
     assertTrue(seedImport.message().contains("skipped governed records"));
     assertEquals("surface-agent-seed-import-confirmation", seedImport.resultSurface().surfaceId());
+
+    var deactivationRefresh = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-deactivation-refresh", "action-agent-deactivation-refresh", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-deactivation-refresh", "membership-admin", "surface-agent-deactivation-confirmation", "corr-agent-deactivation-refresh"));
+    assertEquals("no-op", deactivationRefresh.status());
+    assertEquals("surface-agent-deactivation-confirmation", deactivationRefresh.resultSurface().surfaceId());
+    assertTrue(deactivationRefresh.resultSurface().toString().contains("deactivationSummary"));
+    assertTrue(deactivationRefresh.resultSurface().toString().contains("policyAndApprovalSummary"));
+    assertTrue(deactivationRefresh.resultSurface().toString().contains("action-agent-deactivation-confirm"));
+    assertTrue(deactivationRefresh.resultSurface().toString().contains("DEACTIVATE"));
+
+    var deactivationValidation = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-deactivation-confirm", "action-agent-deactivation-confirm", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-deactivation-missing-ack", "membership-admin", "surface-agent-deactivation-confirmation", "corr-agent-deactivation-missing-ack"));
+    assertEquals("validation-error", deactivationValidation.status());
+    assertEquals("surface-agent-deactivation-confirmation", deactivationValidation.resultSurface().surfaceId());
+    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+
+    var deactivationMissingReason = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-deactivation-confirm", "action-agent-deactivation-confirm", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "DEACTIVATE"), "idem-deactivation-missing-reason", "membership-admin", "surface-agent-deactivation-confirmation", "corr-agent-deactivation-missing-reason"));
+    assertEquals("validation-error", deactivationMissingReason.status());
+    assertEquals("surface-agent-deactivation-confirmation", deactivationMissingReason.resultSurface().surfaceId());
+    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+
+    var deactivationCancel = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-deactivation-cancel", "action-agent-deactivation-cancel", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-deactivation-cancel", "membership-admin", "surface-agent-deactivation-confirmation", "corr-agent-deactivation-cancel"));
+    assertEquals("accepted", deactivationCancel.status());
+    assertEquals("surface-agent-admin-detail", deactivationCancel.resultSurface().surfaceId());
+    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+
+    var deactivationConfirmed = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-deactivation-confirm", "action-agent-deactivation-confirm", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "DEACTIVATE", "reason", "Retire unsafe behavior"), "idem-deactivation-confirm", "membership-admin", "surface-agent-deactivation-confirmation", "corr-agent-deactivation-confirm"));
+    assertEquals("accepted", deactivationConfirmed.status());
+    assertTrue(deactivationConfirmed.message().contains("no prompt, skill, reference, provider, or tenant override artifacts were deleted"));
+    assertEquals("surface-agent-admin-detail", deactivationConfirmed.resultSurface().surfaceId());
+    assertEquals(AgentLifecycleStatus.DISABLED, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
   }
 
   @Test
