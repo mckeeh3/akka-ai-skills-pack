@@ -5338,7 +5338,7 @@
 
 ### TASK-FSCT-151: Verify or complete app-description specification for `surface-agent-test-console`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-test-console`
@@ -5367,6 +5367,7 @@
   - purpose: No-side-effect runtime test surface.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-test-console` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded the Agent Admin test-console app-description with identity/ownership/placement, browser-safe payload schema, governed action mappings, AuthContext/tenant authorization, trace/audit/correlation, no-side-effect and provider/runtime fail-closed states, accessibility/style/test expectations, and sufficiency review; tracker evidence updated; checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests
 
 ### TASK-FSCT-152: Verify or complete runtime implementation for `surface-agent-test-console`
 

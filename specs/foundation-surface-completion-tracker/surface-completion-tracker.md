@@ -710,7 +710,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-test-console` for `agent_admin.test_console.v1` with Agent Admin/`agent-admin-agent` ownership, detail/prompt-governance/skill-manifest/tool-boundary/model-reference placement, browser-safe `testSummary`, `scopeSummary`, `runtimeReadiness`, `safeResultSummary`, `loaderAndBoundaryChecks[]`, `proposalRoute`, `authorizedActions[]`, diagnostics, redaction payload boundaries, governed action mappings for refresh/run/read-result/proposal/trace/back-to-detail, backend AuthContext/tenant authorization rules, no-side-effect mutation boundaries, audit/work trace/correlation expectations, provider/runtime fail-closed and `ToolPermissionBoundary` states, accessibility/style bindings, regression/security/observability tests, and sufficiency review. Ready for implementation without invented fields/actions/states/auth/traces/tests. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 
