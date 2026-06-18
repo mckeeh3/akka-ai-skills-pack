@@ -248,6 +248,148 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
 
   @Test
   @SuppressWarnings("unchecked")
+  void protectedAuditTraceSummaryProgressCoversStartReadFailClosedDenialsAndSecretBoundaries() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-audit-trace-summary-progress")
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Audit/Trace summary progress must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-audit-summary-progress-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-audit-trace-summary-task-start",
+            "action-audit-trace-summary-task-start",
+            "audit.trace.summaryTask.start",
+            "audit.trace.summary_task.start",
+            Map.of("window", "recent"),
+            "idem-audit-summary-missing-bearer",
+            AUDITOR_CONTEXT_ID,
+            "surface-audit-trace-summary-progress",
+            "corr-audit-summary-progress-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Audit/Trace summary start must reject missing bearer tokens.");
+
+    var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
+    assertTrue(shell.status().isSuccess());
+    assertTrue(shell.body().contains("<div id=\"root\"></div>"));
+    assertBrowserSafe(shell.body());
+
+    var bootstrap = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-audit-auditor", "auditor@example.test", "Audit Reviewer"))
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-audit-summary-progress-bootstrap")
+        .responseBodyAs(WorkstreamBootstrapResponse.class)
+        .invoke();
+    assertTrue(bootstrap.status().isSuccess());
+    assertEquals(AUDITOR_CONTEXT_ID, bootstrap.body().me().selectedAuthContext().selectedContextId());
+    assertBrowserSafe(bootstrap.body());
+
+    var direct = getSurface("surface-audit-trace-summary-progress", "corr-audit-summary-progress-direct");
+    assertEquals("surface-audit-trace-summary-progress", direct.surfaceId());
+    assertEquals("workflow-status", direct.surfaceType());
+    assertEquals("audit.trace.summaryProgress.v1", direct.data().get("surfaceContract"));
+    assertEquals("blocked_provider_or_runtime", direct.data().get("status"));
+    assertEquals("blocked-provider-or-runtime", direct.data().get("readiness"));
+    assertEquals(true, direct.data().get("noDirectMutation"));
+    assertEquals(true, direct.data().get("noFakeSuccess"));
+    assertTrue(String.valueOf(direct.data().get("providerRuntime")).contains("ToolPermissionBoundary"));
+    assertTrue(String.valueOf(direct.data().get("providerRuntime")).contains("auditTraceSummaryEvidence.read"));
+    assertTrue(String.valueOf(direct.data().get("allowedActions")).contains("action-audit-trace-summary-task-start"));
+    assertFalse(direct.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-summary-task-read")), "Direct refresh without a retained task must not expose a fake progress read action.");
+    assertBrowserSafe(direct);
+
+    var dashboard = getSurface("surface-audit-trace-dashboard", "corr-audit-summary-progress-source-dashboard");
+    assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-summary-task-start") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-summary-progress")));
+    assertBrowserSafe(dashboard);
+
+    CapabilityActionResult start;
+    try {
+      start = runAction(new CapabilityActionRequest(
+          "action-audit-trace-summary-task-start",
+          "action-audit-trace-summary-task-start",
+          "audit.trace.summaryTask.start",
+          "audit.trace.summary_task.start",
+          Map.of("window", "recent"),
+          "idem-audit-summary-progress-runtime-smoke",
+          AUDITOR_CONTEXT_ID,
+          dashboard.surfaceId(),
+          "corr-audit-summary-progress-start"));
+    } catch (RuntimeException failure) {
+      throw new AssertionError("summary start failed from dashboard source " + dashboard.surfaceId() + " with actions " + dashboard.actions(), failure);
+    }
+    assertEquals("blocked_provider_or_runtime", start.status());
+    assertEquals("surface-audit-trace-summary-progress", start.resultSurface().surfaceId());
+    assertEquals("audit.trace.summaryProgress.v1", start.resultSurface().data().get("surfaceContract"));
+    assertEquals("blocked_provider_or_runtime", start.resultSurface().data().get("status"));
+    assertEquals("blocked-provider-or-runtime", start.resultSurface().data().get("readiness"));
+    assertTrue(start.traceIds().stream().anyMatch(trace -> trace.contains("summary") || trace.contains("autonomous_task")));
+    assertTrue(start.resultSurface().traceIds().stream().anyMatch(trace -> trace.contains("summary") || trace.contains("autonomous_task")));
+    assertEquals("corr-audit-summary-progress-start", start.correlationId());
+    assertEquals(true, start.resultSurface().data().get("noDirectMutation"));
+    assertEquals(true, start.resultSurface().data().get("noFakeSuccess"));
+    assertTrue(String.valueOf(start.resultSurface().data().get("providerRuntime")).contains("no deterministic or model-less successful worker result"));
+    assertTrue(String.valueOf(start.resultSurface().data().get("blockers")).contains("blocked_provider_or_runtime"));
+    assertTrue(String.valueOf(start.resultSurface().data().get("sourceScope")).contains("provider_readiness"));
+    assertTrue(String.valueOf(start.resultSurface().data().get("authorizationBasis")).contains("audit.trace.summary_task.start"));
+    assertTrue(String.valueOf(start.resultSurface().data().get("authorizationBasis")).contains("audit.trace.summary_task.read"));
+    assertTrue(String.valueOf(start.resultSurface().data().get("redactionSummary")).contains("Raw JWTs"));
+    assertTrue(start.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-summary-task-read") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-summary-progress")));
+    assertTrue(start.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-failure-evidence") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-failure-evidence")));
+    assertBrowserSafe(start.resultSurface());
+
+    assertNotNull(start.resultSurface().data().get("summaryTaskId"));
+    var summaryTaskId = String.valueOf(start.resultSurface().data().get("summaryTaskId"));
+    assertFalse(summaryTaskId.isBlank());
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-audit-trace-summary-task-read",
+        "action-audit-trace-summary-task-read",
+        "audit.trace.summaryTask.read",
+        "audit.trace.summary_task.read",
+        Map.of("summaryTaskId", summaryTaskId),
+        null,
+        AUDITOR_CONTEXT_ID,
+        dashboard.surfaceId(),
+        "corr-audit-summary-progress-read")), "BLOCKER: retained summary progress read currently returns HTTP 404 for the backend-generated summaryTaskId, so fully-tested runtime coverage cannot be marked done yet.");
+
+    assertThrows(RuntimeException.class, () -> runActionAs(
+        new CapabilityActionRequest(
+            "action-audit-trace-summary-task-start",
+            "action-audit-trace-summary-task-start",
+            "audit.trace.summaryTask.start",
+            "audit.trace.summary_task.start",
+            Map.of("window", "recent"),
+            "idem-audit-summary-member-denied",
+            MEMBER_CONTEXT_ID,
+            dashboard.surfaceId(),
+            "corr-audit-summary-progress-member-denied"),
+        "workos-audit-member",
+        "member-audit@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not start Audit/Trace summary worker tasks.");
+
+    assertThrows(RuntimeException.class, () -> runActionAs(
+        new CapabilityActionRequest(
+            "action-audit-trace-summary-task-read",
+            "action-audit-trace-summary-task-read",
+            "audit.trace.summaryTask.read",
+            "audit.trace.summary_task.read",
+            Map.of("summaryTaskId", summaryTaskId),
+            null,
+            CUSTOMER_CONTEXT_ID,
+            dashboard.surfaceId(),
+            "corr-audit-summary-progress-customer-denied"),
+        "workos-audit-customer",
+        "customer-audit@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped actors must not enumerate tenant-scoped summary worker tasks.");
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
   void protectedAuditTraceSearchCoversFiltersValidationRowActionsExportDenialsAndSecretBoundaries() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-audit-trace-search")

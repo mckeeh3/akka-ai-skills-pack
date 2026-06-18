@@ -7102,7 +7102,7 @@
 
 ### TASK-FSCT-201: Verify or complete runtime testing for `surface-audit-trace-summary-progress`
 
-- status: pending
+- status: blocked
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-200]
 - surface id: `surface-audit-trace-summary-progress`
@@ -7136,6 +7136,7 @@
   - purpose: Audit summary worker progress or fail-closed blocker.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-summary-progress`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-summary-progress`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - blocked 2026-06-18: added focused Akka-hosted runtime smoke coverage for direct protected progress refresh, `/ui` + bootstrap browser path, missing-bearer rejection, governed summary start, selected AuthContext/tenant authorization, provider/runtime fail-closed `blocked_provider_or_runtime` payload, trace/correlation refs, browser-safe redaction, regular-member denial, and customer-scope non-enumeration. Exact remaining validation blocker: protected `action-audit-trace-summary-task-read` returns HTTP 404 for the backend-generated `summaryTaskId` immediately after `action-audit-trace-summary-task-start`, so retained progress read/idempotent refresh cannot be marked fully tested/runtime-ready yet. Checks passed while documenting the blocker: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest#protectedAuditTraceSummaryProgressCoversStartReadFailClosedDenialsAndSecretBoundaries test`, `node --test frontend/src/workstream-audit-trace-vertical.contract.test.mjs`, and `git diff --check`.
 
 ### TASK-FSCT-202: Verify or complete app-description specification for `surface-audit-trace-summary-review`
 
