@@ -989,9 +989,12 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         directModelRefs.surfaceId(),
         "corr-agent-admin-model-refs-run-test"));
     assertEquals("blocked_provider_or_runtime", modelRefsRunTest.status());
-    assertEquals("surface-agent-model-refs", modelRefsRunTest.resultSurface().surfaceId());
+    assertEquals("surface-agent-test-console", modelRefsRunTest.resultSurface().surfaceId());
     assertTrue(modelRefsRunTest.message().contains("no fixture/model-less success was counted"));
     assertTrue(modelRefsRunTest.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-model-refs-provider-fail-closed")));
+    assertTrue(modelRefsRunTest.resultSurface().toString().contains("agent_admin.test_console.v1"));
+    assertTrue(modelRefsRunTest.resultSurface().toString().contains("noProductionSideEffects=true"));
+    assertTrue(modelRefsRunTest.resultSurface().toString().contains("noFakeSuccess=true"));
     assertBrowserSafe(modelRefsRunTest.resultSurface());
 
     var modelRefsSubmit = runAction(new CapabilityActionRequest(
@@ -1159,7 +1162,12 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertDetailActionRoutes("action-agent-detail-open-tool-boundary", "agent_admin.get_tool_boundary", "surface-agent-tool-boundary-diff", "accepted", "corr-agent-admin-detail-tool-boundary");
     var noSideEffectTest = assertDetailActionRoutes("action-agent-detail-run-test", "agent_admin.draft_behavior_change", "surface-agent-test-console", "accepted", "corr-agent-admin-detail-run-test");
     assertTrue(noSideEffectTest.resultSurface().toString().contains("noProductionSideEffects=true"));
+    assertTrue(noSideEffectTest.resultSurface().toString().contains("agent_admin.test_console.v1"));
+    assertTrue(noSideEffectTest.resultSurface().toString().contains("blocked_provider_or_runtime"));
     assertTrue(noSideEffectTest.resultSurface().toString().contains("PromptAssemblyTrace"));
+    assertTrue(noSideEffectTest.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-agent-test-console-run") && action.resultSurface().updateSurfaceId().equals("surface-agent-test-console")));
+    assertTrue(noSideEffectTest.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-agent-test-console-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+    assertTrue(noSideEffectTest.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-agent-test-console-back-to-detail") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail")));
     var promptRiskStatus = assertDetailActionRoutes("action-agent-detail-open-prompt-risk-review", "agent_admin.prompt_risk_review.read", "surface-agent-admin-prompt-risk-review", "accepted", "corr-agent-admin-detail-prompt-risk");
     assertTrue(promptRiskStatus.resultSurface().toString().contains("blocked_provider_or_runtime"));
     assertTrue(promptRiskStatus.resultSurface().toString().contains("activationBlockedUntilHumanDecision=true"));

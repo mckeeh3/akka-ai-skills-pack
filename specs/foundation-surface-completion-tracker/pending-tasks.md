@@ -5371,7 +5371,7 @@
 
 ### TASK-FSCT-152: Verify or complete runtime implementation for `surface-agent-test-console`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-151]
 - surface id: `surface-agent-test-console`
@@ -5402,6 +5402,7 @@
   - purpose: No-side-effect runtime test surface.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-test-console`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-test-console`; surface graph node/action edge for opening or acting on `surface-agent-test-console`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented and verified the backend-owned `agent_admin.test_console.v1` workflow-status runtime path for `surface-agent-test-console` through protected `/api/workstream/surfaces/surface-agent-test-console` and `/api/workstream/actions`; `WorkstreamService` now returns `testSummary`, `scopeSummary`, `runtimeReadiness`/`noFakeSuccess`, `safeResultSummary`, `loaderAndBoundaryChecks[]`, disabled `proposalRoute`, governed refresh/run/read-result/proposal/trace/back-to-detail actions, diagnostics, trace/correlation ids, safe redaction, no-direct-mutation, no-production-side-effect, ToolPermissionBoundary denial, and provider/runtime fail-closed evidence. Updated focused smoke expectations for model-reference run-test routing into the test console. Checks passed: `mvn -q -Dtest=WorkstreamServiceTest#agentAdminActionsCreateGovernedResultsAndTraces,AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, and `git diff --check`. Readiness level: `api-smoked` for implementation scope.
 
 ### TASK-FSCT-153: Verify or complete runtime testing for `surface-agent-test-console`
 
