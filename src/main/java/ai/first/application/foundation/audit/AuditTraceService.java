@@ -60,23 +60,44 @@ public final class AuditTraceService {
   }
 
   public SurfaceData search(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), SEARCH_CAPABILITY);
     var scope = validateScope(actor, input, correlationId);
     var pageSize = intInput(input, "pageSize", 10);
     if (pageSize < 1 || pageSize > 50) return validation(actor, correlationId, "pageSize", "Page size must be between 1 and 50.");
-    authContextResolver.appendProtectedReadTrace(actor, SEARCH_CAPABILITY, "search page-size-band:" + (pageSize <= 10 ? "small" : "bounded"), correlationId);
     var filter = stringInput(input, "filter", "recent");
-    var rows = sortedEvents(actor, correlationId).stream()
-        .filter(event -> matchesFilter(event, filter))
+    var normalizedFilter = filter == null || filter.isBlank() ? "recent" : filter.trim();
+    authContextResolver.appendProtectedReadTrace(actor, SEARCH_CAPABILITY, "search filter:" + normalizedFilter + " page-size-band:" + (pageSize <= 10 ? "small" : "bounded"), correlationId);
+    var matchingEvents = sortedEvents(actor, correlationId).stream()
+        .filter(event -> matchesFilter(event, normalizedFilter))
+        .toList();
+    var rows = matchingEvents.stream()
         .map(this::row)
         .limit(pageSize)
         .toList();
-    return new SurfaceData("surface-audit-trace-search", "list-search", "Trace search results", List.of("trace-audit-search-" + stableSuffix(correlationId)), mapOf(
+    var omittedCategories = matchingEvents.stream()
+        .filter(event -> event.omittedFieldKeys() != null && !event.omittedFieldKeys().isEmpty())
+        .flatMap(event -> event.omittedFieldKeys().stream())
+        .distinct()
+        .toList();
+    var traceId = "trace-audit-search-" + stableSuffix(correlationId);
+    return new SurfaceData("surface-audit-trace-search", "list-search", "Trace search results", List.of(traceId), mapOf(
         "surfaceContract", "audit.trace.search.v1",
-        "query", mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "pageSize", pageSize, "filter", filter, "scope", scope),
+        "selectedScope", mapOf("tenantLabel", "Selected tenant", "customerLabel", actor.selectedContext().customerId() == null ? null : "Selected customer", "scopeKind", actor.selectedContext().customerId() == null ? "tenant" : "customer", "supportAccess", "selected AuthContext"),
+        "authContextSummary", mapOf("selectedContextId", actor.selectedContext().membershipId(), "actor", actor.profile().displayName(), "roleLabels", actor.selectedContext().roles().stream().map(Enum::name).toList(), "capabilityCount", actor.selectedContext().capabilities().size()),
+        "capabilityIds", List.of(SEARCH_CAPABILITY, DETAIL_CAPABILITY, TIMELINE_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY, EXPORT_REQUEST_CAPABILITY, DASHBOARD_CAPABILITY),
+        "correlationId", correlationId,
+        "traceRefs", List.of(traceId),
+        "query", mapOf("displayValue", normalizedFilter, "pageSize", pageSize, "scope", scope, "helpText", "Search runs server-side over authorized, redacted Audit/Trace evidence for the selected AuthContext."),
+        "filters", mapOf("text", normalizedFilter, "timeWindow", "recent", "category", "all-authorized", "sort", "newest-first"),
+        "resultSummary", mapOf("visibleResultCount", rows.size(), "cappedAtPageSize", matchingEvents.size() > rows.size(), "appliedScope", actor.selectedContext().customerId() == null ? "tenant" : "customer", "omittedCategoryCounts", omittedCategories.isEmpty() ? Map.of() : Map.of("redactedFields", omittedCategories.size()), "nextStep", rows.isEmpty() ? "Clear filters or return to the Audit/Trace dashboard." : "Open a row detail, timeline, failure evidence, guidance, or redacted export through backend actions."),
         "rows", rows,
-        "pageInfo", mapOf("totalKnownCount", rows.size(), "nextCursor", null),
+        "pageInfo", mapOf("pageSize", pageSize, "totalKnownCount", rows.size(), "hasMore", matchingEvents.size() > rows.size(), "nextCursor", null, "sortLabel", "Newest authorized evidence first", "staleHint", "Refresh reruns backend authorization and redaction."),
         "partial", false,
-        "redaction", "safe summaries only; raw payloads, tokens, provider secrets, invitation tokens, and hidden prompts omitted"));
+        "actions", List.of("action-audit-trace-search", "action-audit-trace-detail", "action-audit-trace-timeline", "action-audit-trace-failure-evidence", "action-audit-trace-investigation-guide", "action-audit-trace-request-redacted-export", "action-audit-trace-dashboard"),
+        "emptyState", rows.isEmpty() ? mapOf("status", "empty", "message", "No authorized trace rows match this scoped search.", "recovery", "Clear filters or return to the Audit/Trace dashboard.") : null,
+        "validationErrors", List.of(),
+        "recovery", "Search, paging, row open, timeline, failure evidence, guidance, export, and dashboard return actions reauthorize server-side and preserve trace/correlation refs.",
+        "redaction", mapOf("browserSafe", true, "omittedFieldKeys", DEFAULT_OMITTED_FIELDS, "hiddenCountPolicy", "non-enumerating", "safeExplanation", "Safe summaries only; raw payloads, tokens, provider secrets, invitation tokens, hidden prompts, storage cursors, and cross-scope evidence are omitted.", "traceRefs", List.of(traceId))));
   }
 
   public SurfaceData detail(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
@@ -211,7 +232,7 @@ public final class AuditTraceService {
         throw new AuthorizationException(403, "AUDIT_TRACE_CUSTOMER_FORBIDDEN");
       }
     }
-    return mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "nonEnumeratingHiddenEvidence", true);
+    return mapOf("scopeKind", actor.selectedContext().customerId() == null ? "tenant" : "customer", "tenantLabel", "Selected tenant", "customerLabel", actor.selectedContext().customerId() == null ? null : "Selected customer", "nonEnumeratingHiddenEvidence", true);
   }
 
   private List<TraceEvent> sortedEvents(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -221,7 +242,24 @@ public final class AuditTraceService {
   }
 
   private Map<String, Object> row(TraceEvent event) {
-    return mapOf("traceId", event.traceId(), "correlationId", event.correlationId(), "eventKind", event.eventKind(), "actor", event.actor(), "workstream", event.workstream(), "severity", event.severity(), "status", event.status(), "redactionSummary", "redacted safe summary only", "summary", redacted(event.summary()));
+    return mapOf(
+        "rowKey", "row-" + stableSuffix(event.tenantId() + ":" + event.traceId()),
+        "traceId", event.traceId(),
+        "safeTraceRefLabel", event.traceId(),
+        "correlationId", event.correlationId(),
+        "correlationLabel", event.correlationId(),
+        "timestamp", event.occurredAt().toString(),
+        "eventKind", event.eventKind(),
+        "evidenceCategoryBadges", List.of(sourceType(event)),
+        "actor", event.actor(),
+        "workstream", event.workstream(),
+        "severity", event.severity(),
+        "status", event.status(),
+        "availableRowActionIds", List.of("action-audit-trace-detail", "action-audit-trace-timeline", "action-audit-trace-failure-evidence", "action-audit-trace-investigation-guide"),
+        "redactionBadges", List.of("browser-safe", "tenant-scoped"),
+        "redactionSummary", "redacted safe summary only",
+        "recoveryText", "Open governed detail or timeline to reauthorize this trace before viewing more evidence.",
+        "summary", redacted(event.summary()));
   }
 
   private Map<String, Object> notFound(String traceId) {
@@ -253,6 +291,13 @@ public final class AuditTraceService {
 
   private static int intInput(Object input, String key, int defaultValue) {
     if (input instanceof Map<?, ?> map && map.get(key) instanceof Number number) return number.intValue();
+    if (input instanceof Map<?, ?> map && map.get(key) instanceof String value) {
+      try {
+        return Integer.parseInt(value.trim());
+      } catch (NumberFormatException ignored) {
+        return defaultValue;
+      }
+    }
     return defaultValue;
   }
 

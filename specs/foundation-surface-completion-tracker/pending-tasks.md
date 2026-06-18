@@ -6325,7 +6325,7 @@
 
 ### TASK-FSCT-179: Verify or complete runtime implementation for `surface-audit-trace-search`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-178]
 - surface id: `surface-audit-trace-search`
@@ -6356,6 +6356,7 @@
   - purpose: Scoped trace search.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-search`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-search`; surface graph node/action edge for opening or acting on `surface-audit-trace-search`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented and verified backend-owned `audit.trace.search.v1` runtime path with explicit `audit.trace.search` capability authorization, tenant/customer scope validation, server-side search/page parsing including browser string page sizes, durable Audit/Trace repository rows, browser-safe row/result/redaction/trace/correlation metadata, and dashboard/search/detail/timeline/failure/guidance/export action edges through protected Workstream API/action routes. Updated frontend Audit/Trace search rendering to expose backend action controls for search refresh, dashboard return, timeline, failure evidence, investigation guide, redacted export, and row detail/timeline without frontend-only authority. Runtime evidence level: `api-smoked` plus frontend contract/typecheck. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-180: Verify or complete runtime testing for `surface-audit-trace-search`
 

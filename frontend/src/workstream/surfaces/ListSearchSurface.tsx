@@ -44,14 +44,21 @@ function AuditTraceSearchView({ envelope, onAction }: ListSearchSurfaceProps) {
   const searchAction = actionById.get('action-audit-trace-search');
   const detailAction = actionById.get('action-audit-trace-detail');
   const timelineAction = actionById.get('action-audit-trace-timeline');
+  const failureAction = actionById.get('action-audit-trace-failure-evidence');
+  const guideAction = actionById.get('action-audit-trace-investigation-guide');
   const exportAction = actionById.get('action-audit-trace-request-redacted-export');
-  const queryValue = typeof envelope.data.query === 'string' ? envelope.data.query : String(envelope.data.query?.filter ?? 'recent');
+  const dashboardAction = actionById.get('action-audit-trace-dashboard');
+  const queryValue = typeof envelope.data.query === 'string' ? envelope.data.query : String(envelope.data.query?.filter ?? envelope.data.query?.displayValue ?? 'recent');
+  const resultSummary = (envelope.data as { resultSummary?: unknown }).resultSummary;
   return (
     <section className="user-admin-users-surface audit-trace-search-surface" aria-label="Audit/Trace scoped search results">
       <div className="user-admin-users-header">
-        <div><p className="eyebrow">Audit/Trace · backend-scoped search</p><h3>Trace search results</h3><p>Rows open detail or correlation timelines through backend actions. The browser does not infer hidden evidence or export authority.</p></div>
+        <div><p className="eyebrow">Audit/Trace · backend-scoped search</p><h3>Trace search results</h3><p>Rows open detail, timelines, failure evidence, guidance, or export requests through backend actions. The browser does not infer hidden evidence or export authority.</p></div>
         <div className="user-admin-users-header-actions">
+          {dashboardAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(dashboardAction, envelope.surfaceId)}>Return to dashboard</button>}
           {timelineAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(timelineAction, envelope.surfaceId, { correlationId: envelope.correlationId })}>Open current timeline</button>}
+          {failureAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(failureAction, envelope.surfaceId, { failureCategory: 'provider_blocked' })}>Failure evidence</button>}
+          {guideAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(guideAction, envelope.surfaceId)}>Investigation guide</button>}
           {exportAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(exportAction, envelope.surfaceId, { reason: 'Scoped redacted export requested from Audit/Trace search results.', format: 'jsonl-redacted' })}>Request redacted export</button>}
         </div>
       </div>
@@ -61,11 +68,12 @@ function AuditTraceSearchView({ envelope, onAction }: ListSearchSurfaceProps) {
         <button type="submit" className="surface-action-link secondary" disabled={!searchAction}>Search</button>
       </form>
       {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial results: unauthorized or redacted evidence is omitted.</p>}
+      {resultSummary != null && <p className="surface-state-inline" role="status">{renderSurfaceValue(resultSummary)}</p>}
       {envelope.data.redaction && <p className="redaction-note">Redaction: {renderSurfaceValue(envelope.data.redaction)}</p>}
       {rows.length === 0 ? <p className="surface-empty-copy">{envelope.data.emptyMessage ?? 'No authorized trace rows match this search.'}</p> : (
         <div className="user-admin-clean-list audit-trace-result-list" role="list" aria-label="Authorized trace rows">
-          {rows.map((row, index) => <article key={String(row.traceId ?? index)} role="listitem" className="user-admin-clean-row audit-trace-result-row">
-            <span className="user-admin-person"><strong>{String(row.eventKind ?? row.traceId ?? 'Trace event')}</strong><small>{String(row.summary ?? row.redactionSummary ?? 'Browser-safe summary')}</small></span>
+          {rows.map((row, index) => <article key={String(row.rowKey ?? row.traceId ?? index)} role="listitem" className="user-admin-clean-row audit-trace-result-row">
+            <span className="user-admin-person"><strong>{String(row.eventKind ?? row.safeTraceRefLabel ?? row.traceId ?? 'Trace event')}</strong><small>{String(row.summary ?? row.redactionSummary ?? 'Browser-safe summary')}</small></span>
             <span className="user-admin-role">{String(row.workstream ?? 'workstream')}</span>
             <span className={`status-pill ${statusTone(String(row.status ?? row.severity ?? 'info'))}`}>{formatStatus(String(row.status ?? row.severity ?? 'info'))}</span>
             <span className="audit-row-actions">
