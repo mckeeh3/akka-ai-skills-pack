@@ -7314,7 +7314,7 @@
 
 ### TASK-FSCT-207: Verify or complete runtime testing for `surface-governance-policy-dashboard`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-206]
 - surface id: `surface-governance-policy-dashboard`
@@ -7348,6 +7348,7 @@
   - purpose: Governance/Policy dashboard.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-dashboard`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-dashboard`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added `GovernancePolicyBrowserWorkstreamSmokeTest` to exercise the Akka-hosted `/ui` shell plus protected `/api/workstream/bootstrap`, `/api/workstream/surfaces/surface-governance-policy-dashboard`, and `/api/workstream/actions` paths with JWT/selected AuthContext. Coverage includes missing-bearer rejection, tenant-admin dashboard success, backend-owned refresh/list/draft/idempotent replay actions, provider/runtime fail-closed impact-analysis task, member capability denial and direct surface denial, cross-tenant input denial, trace/correlation evidence, action graph target surfaces, and browser-safe secret/redaction assertions. Runtime evidence: readiness level `runtime-ready` for dashboard testing scope. Checks passed: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#hostedShellAndProtectedWorkstreamApiExerciseGovernancePolicyDashboardRuntimePath -DtrimStackTrace=false test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-208: Verify or complete app-description specification for `surface-governance-policy-inventory`
 
