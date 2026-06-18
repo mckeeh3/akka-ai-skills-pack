@@ -6643,7 +6643,7 @@
 
 ### TASK-FSCT-188: Verify or complete runtime implementation for `surface-audit-trace-failure-evidence`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-187]
 - surface id: `surface-audit-trace-failure-evidence`
@@ -6674,6 +6674,7 @@
   - purpose: Denial/provider/tool/model/runtime failure evidence.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-failure-evidence`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-failure-evidence`; surface graph node/action edge for opening or acting on `surface-audit-trace-failure-evidence`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: implemented and verified the `surface-audit-trace-failure-evidence` runtime path through protected WorkstreamEndpoint `/api/workstream/surfaces/surface-audit-trace-failure-evidence` and `/api/workstream/actions`, `WorkstreamService#auditTraceFailureEvidenceSurface`, `AuditTraceService#failureEvidence`, and the existing frontend `DetailEditSurface` audit-evidence renderer. Runtime evidence: readiness level `api-smoked`; explicit `audit.trace.failureEvidence.read` capability enforcement, tenant/customer scope validation, protected read trace/correlation evidence, browser-safe `audit.trace.failureEvidence.v1` payload with failure key/summary/classification/recovery/redacted evidence/related events/no-enumeration empty state, no raw provider/model/tool/prompt/secret payloads, and governed follow-up actions for detail, timeline, guidance, redacted export, note, search, and dashboard. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-audit-trace-vertical.contract.test.mjs`, and `npm --prefix frontend run typecheck`.
 
 ### TASK-FSCT-189: Verify or complete runtime testing for `surface-audit-trace-failure-evidence`
 

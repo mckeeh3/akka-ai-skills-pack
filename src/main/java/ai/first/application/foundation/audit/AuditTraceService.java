@@ -200,23 +200,62 @@ public final class AuditTraceService {
   }
 
   public SurfaceData failureEvidence(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), FAILURE_EVIDENCE_CAPABILITY);
     validateScope(actor, input, correlationId);
     var category = stringInput(input, "failureCategory", "provider_blocked");
-    authContextResolver.appendProtectedReadTrace(actor, FAILURE_EVIDENCE_CAPABILITY, "failure category:" + category, correlationId);
+    var normalizedCategory = category == null || category.isBlank() ? "provider_blocked" : category.trim();
+    if (normalizedCategory.length() > 120) return validation(actor, correlationId, "failureCategory", "Failure category must be at most 120 characters.");
+    var traceId = "trace-audit-failure-" + stableSuffix(correlationId);
+    authContextResolver.appendProtectedReadTrace(actor, FAILURE_EVIDENCE_CAPABILITY, "failure category:" + normalizedCategory, correlationId);
     var related = sortedEvents(actor, correlationId).stream()
-        .filter(event -> containsIgnoreCase(event.summary(), category) || containsIgnoreCase(event.eventKind(), category) || containsIgnoreCase(event.status(), "denied") || containsIgnoreCase(event.summary(), "provider") || containsIgnoreCase(event.summary(), "tool") || containsIgnoreCase(event.summary(), "model"))
+        .filter(event -> containsIgnoreCase(event.summary(), normalizedCategory) || containsIgnoreCase(event.eventKind(), normalizedCategory) || containsIgnoreCase(event.status(), "denied") || containsIgnoreCase(event.summary(), "provider") || containsIgnoreCase(event.summary(), "tool") || containsIgnoreCase(event.summary(), "model") || containsIgnoreCase(event.summary(), "runtime"))
         .limit(5)
-        .map(event -> mapOf("traceId", event.traceId(), "eventKind", event.eventKind(), "summary", redacted(event.summary()), "correlationId", event.correlationId(), "status", event.status()))
+        .map(event -> mapOf(
+            "traceId", event.traceId(),
+            "safeTraceRefLabel", event.traceId(),
+            "eventKind", event.eventKind(),
+            "summary", redacted(event.summary()),
+            "correlationId", event.correlationId(),
+            "status", event.status(),
+            "relationship", "related-redacted-failure-evidence",
+            "redactionBadges", List.of("browser-safe", "tenant-scoped"),
+            "availableActionIds", List.of("action-audit-trace-detail", "action-audit-trace-timeline", "action-audit-trace-investigation-guide", "action-audit-trace-request-redacted-export", "action-audit-trace-append-investigation-note")))
         .toList();
-    return new SurfaceData("surface-audit-trace-failure-evidence", "detail-edit", "Denial/provider/tool evidence", List.of("trace-audit-failure-" + stableSuffix(correlationId)), mapOf(
+    var omittedFields = related.isEmpty() ? DEFAULT_OMITTED_FIELDS : sortedEvents(actor, correlationId).stream()
+        .filter(event -> containsIgnoreCase(event.summary(), normalizedCategory) || containsIgnoreCase(event.eventKind(), normalizedCategory) || containsIgnoreCase(event.status(), "denied") || containsIgnoreCase(event.summary(), "provider") || containsIgnoreCase(event.summary(), "tool") || containsIgnoreCase(event.summary(), "model") || containsIgnoreCase(event.summary(), "runtime"))
+        .filter(event -> event.omittedFieldKeys() != null)
+        .flatMap(event -> event.omittedFieldKeys().stream())
+        .distinct()
+        .toList();
+    var status = related.isEmpty() ? "empty-no-authorized-failure" : "ready";
+    return new SurfaceData("surface-audit-trace-failure-evidence", "detail-edit", "Denial/provider/tool evidence", List.of(traceId), mapOf(
         "surfaceContract", "audit.trace.failureEvidence.v1",
-        "category", category,
-        "safeReason", "Provider, tool, model, worker, policy, and authorization failures are shown as redacted browser-safe evidence only.",
+        "surfaceId", "surface-audit-trace-failure-evidence",
+        "generatedAt", Instant.now().toString(),
+        "selectedScope", mapOf("tenantLabel", "Selected tenant", "customerLabel", actor.selectedContext().customerId() == null ? null : "Selected customer", "scopeKind", actor.selectedContext().customerId() == null ? "tenant" : "customer", "supportAccess", "selected AuthContext"),
+        "authContextSummary", mapOf("selectedContextId", actor.selectedContext().membershipId(), "actor", actor.profile().displayName(), "roleLabels", actor.selectedContext().roles().stream().map(Enum::name).toList(), "capabilityCount", actor.selectedContext().capabilities().size()),
+        "capabilityIds", List.of(FAILURE_EVIDENCE_CAPABILITY, DETAIL_CAPABILITY, TIMELINE_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY, EXPORT_REQUEST_CAPABILITY, INVESTIGATION_NOTE_CAPABILITY, SEARCH_CAPABILITY, DASHBOARD_CAPABILITY),
+        "correlationId", correlationId,
+        "traceRefs", List.of(traceId),
+        "readiness", status,
+        "failureKey", mapOf("displayHandle", normalizedCategory, "diagnosticCorrelationLabel", correlationId, "retentionStatus", "retained-redacted", "staleOrPurgedStatus", related.isEmpty() ? "empty-authorized" : "current"),
+        "failureSummary", mapOf("severity", related.isEmpty() ? "info" : "warning", "status", status, "decision", related.isEmpty() ? "not_found_or_redacted" : "allowed", "sourceWorkstream", "Audit/Trace", "sourceSurface", "surface-audit-trace-failure-evidence", "failureCategory", normalizedCategory, "redactedNarrative", related.isEmpty() ? "No authorized matching failure evidence was found for the selected context." : "Authorized failure evidence is available as redacted browser-safe summaries.", "nextStep", related.isEmpty() ? "Refine search or return to the Audit/Trace dashboard; hidden failures are not enumerated." : "Open detail, timeline, guidance, export request, note, search, or dashboard actions through backend-governed links."),
+        "authorizationBasis", mapOf("selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", List.of(FAILURE_EVIDENCE_CAPABILITY), "customerScopeRestricted", actor.selectedContext().customerId() != null, "redactionExplanation", "Selected AuthContext, tenant/customer scope, and failure-evidence capability are rechecked server-side; hidden failures are not enumerated."),
+        "failureClassification", mapOf("category", normalizedCategory, "safePublicErrorCode", normalizedCategory, "retryEligibility", "retry_after_provider_config", "approvalRequirement", "separate governed action required for export or policy review", "responsibleWorkstream", "Audit/Trace", "affectedCapability", FAILURE_EVIDENCE_CAPABILITY, "blocksCompletion", related.isEmpty() ? false : true),
+        "category", normalizedCategory,
+        "safeReason", "Provider, tool, model, worker, policy, runtime, and authorization failures are shown as redacted browser-safe evidence only.",
+        "recovery", mapOf("steps", List.of("Confirm the selected AuthContext and capability basis.", "Open correlation timeline or source trace detail for reauthorized context.", "Use governed export or note actions when policy allows."), "failClosed", "Provider/model/tool/runtime blockers fail closed; the browser cannot bypass policy, hidden ids, or redaction."),
         "userActionableNextSteps", List.of("Check selected AuthContext and required capability.", "Open correlation timeline.", "Ask Audit/Trace for an explanation after provider configuration is available."),
+        "evidence", mapOf("requestContext", "selected AuthContext and category only", "decisionOutcome", status, "failureTimelineExcerpt", related, "toolModelProviderRuntimeReadiness", "fail-closed when provider/runtime/tool-boundary configuration is unavailable", "retainedOutcome", "read-only redacted evidence; no source records are mutated"),
         "policyRefs", List.of(READ_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY),
+        "source", mapOf("workstream", "Audit/Trace", "surfaceId", "surface-audit-trace-failure-evidence", "actionId", "action-audit-trace-failure-evidence", "sourceResultStatus", status),
         "relatedEvents", related,
-        "redactedDetails", mapOf("providerSecret", "[REDACTED]", "rawPrompt", "[OMITTED]", "rawToolPayload", "[OMITTED]"),
-        "traceLinks", List.of(correlationId)));
+        "availableActions", List.of("action-audit-trace-detail", "action-audit-trace-timeline", "action-audit-trace-investigation-guide", "action-audit-trace-request-redacted-export", "action-audit-trace-append-investigation-note", "action-audit-trace-search", "action-audit-trace-dashboard"),
+        "emptyState", related.isEmpty() ? mapOf("status", "empty/no-authorized-failure", "message", "No authorized failure evidence matched this category in the selected scope.", "recovery", "Refine search or return to the Audit/Trace dashboard; hidden failures are not enumerated.") : null,
+        "validationErrors", List.of(),
+        "redaction", mapOf("browserSafe", true, "omittedFieldKeys", omittedFields.isEmpty() ? DEFAULT_OMITTED_FIELDS : omittedFields, "hiddenCountPolicy", "non-enumerating", "safeExplanation", "Raw provider/model/tool payloads, prompts, credentials, tokens, hidden policy internals, raw storage keys, and cross-scope evidence are omitted.", "traceRefs", List.of(traceId)),
+        "redactedDetails", mapOf("providerSecret", "[REDACTED]", "rawPrompt", "[OMITTED]", "rawToolPayload", "[OMITTED]", "rawModelOutput", "[OMITTED]"),
+        "traceLinks", List.of(correlationId, traceId)));
   }
 
   public SurfaceData investigationGuide(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
