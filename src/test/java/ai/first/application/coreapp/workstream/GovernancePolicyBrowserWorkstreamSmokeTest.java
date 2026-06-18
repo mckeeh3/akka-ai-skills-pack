@@ -912,6 +912,155 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
 
   @Test
   @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiExercisesGovernancePolicySystemMessageRuntimePath() throws Exception {
+    var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
+    assertTrue(shell.status().isSuccess(), "Hosted /ui shell must load before the system-message recovery surface is exercised through browser API paths.");
+    assertTrue(shell.body().contains("<div id=\"root\"></div>"));
+    assertTrue(shell.body().contains("/assets/"));
+    assertBrowserSafe(shell.body());
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-governance-policy-system-message")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy system-message surface path must reject missing bearer tokens.");
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-governance-system-message-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-governance-policy-dashboard",
+            "action-governance-policy-dashboard",
+            "governance.policy.read",
+            "governance.policy.read",
+            null,
+            null,
+            ADMIN_CONTEXT_ID,
+            "surface-governance-policy-system-message",
+            "corr-governance-system-message-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Governance/Policy system-message recovery action path must reject missing bearer tokens.");
+
+    var directRecovery = getSurface("surface-governance-policy-system-message", "corr-governance-system-message-direct");
+    assertEquals("surface-governance-policy-system-message", directRecovery.surfaceId());
+    assertEquals("system-message", directRecovery.surfaceType());
+    assertEquals("governance.policy.system_message.v1", directRecovery.data().get("surfaceContract"));
+    assertEquals("ready/recovery", directRecovery.data().get("status"));
+    assertEquals(true, directRecovery.data().get("noFakeSuccess"));
+    assertEquals(true, directRecovery.data().get("noDirectMutation"));
+    var directTraceRefs = (List<String>) directRecovery.data().get("traceRefs");
+    assertTrue(directTraceRefs.stream().anyMatch(traceId -> traceId.contains("trace-governance-policy-denial")));
+    assertTrue(directRecovery.toString().contains("hidden proposal/task/result and cross-tenant evidence are not enumerated"));
+    assertTrue(directRecovery.toString().contains("raw provider/model output"));
+    var recoveryOptions = (List<Map<String, Object>>) directRecovery.data().get("recoveryOptions");
+    assertTrue(recoveryOptions.stream().anyMatch(option -> "surface-governance-policy-dashboard".equals(option.get("targetSurfaceId")) && "none".equals(option.get("sideEffect"))));
+    assertTrue(recoveryOptions.stream().anyMatch(option -> "surface-governance-policy-inventory".equals(option.get("targetSurfaceId"))));
+    var authorizedActions = (List<String>) directRecovery.data().get("authorizedActions");
+    assertTrue(authorizedActions.contains("action-governance-policy-dashboard"));
+    assertTrue(authorizedActions.contains("action-governance-policy-list"));
+    assertTrue(directRecovery.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-dashboard") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-dashboard")));
+    assertTrue(directRecovery.actions().stream().anyMatch(action -> action.actionId().equals("action-governance-policy-list") && action.resultSurface().updateSurfaceId().equals("surface-governance-policy-inventory")));
+    assertBrowserSafe(directRecovery);
+
+    var missingIdempotency = runAction(new CapabilityActionRequest(
+        "action-governance-policy-decide",
+        "action-governance-policy-decide",
+        "governance.proposals.review",
+        "governance.policy.approve",
+        Map.of("proposalId", "proposal-system-message-smoke", "decision", "approve", "rationale", "missing idempotency must be rejected before mutation"),
+        null,
+        ADMIN_CONTEXT_ID,
+        directRecovery.surfaceId(),
+        "corr-governance-system-message-missing-idempotency"));
+    assertEquals("denied", missingIdempotency.status());
+    assertEquals("surface-governance-policy-system-message", missingIdempotency.resultSurface().surfaceId());
+    assertEquals("validation-error", missingIdempotency.resultSurface().data().get("status"));
+    assertTrue(missingIdempotency.resultSurface().toString().contains("idempotency-key-required"));
+    assertEquals(true, missingIdempotency.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, missingIdempotency.resultSurface().data().get("noDirectMutation"));
+    var validationMessages = (List<Map<String, Object>>) missingIdempotency.resultSurface().data().get("validationMessages");
+    assertFalse(validationMessages.isEmpty());
+    assertTrue(validationMessages.stream().allMatch(message -> "none".equals(message.get("sideEffect"))));
+    assertBrowserSafe(missingIdempotency.resultSurface());
+
+    var missingProposal = runAction(new CapabilityActionRequest(
+        "action-governance-policy-start-impact-analysis",
+        "action-governance-policy-start-impact-analysis",
+        "governance.policy.impact_analysis.start",
+        "governance.policy.impact_analysis.start",
+        Map.of("scope", "system-message-smoke", "reason", "missing proposal should return safe validation system message"),
+        "idem-governance-system-message-missing-proposal",
+        ADMIN_CONTEXT_ID,
+        directRecovery.surfaceId(),
+        "corr-governance-system-message-missing-proposal"));
+    assertEquals("denied", missingProposal.status());
+    assertEquals("surface-governance-policy-system-message", missingProposal.resultSurface().surfaceId());
+    assertEquals("validation-error", missingProposal.resultSurface().data().get("status"));
+    assertTrue(missingProposal.resultSurface().toString().contains("governance-impact-proposal-required"));
+    assertFalse(missingProposal.resultSurface().toString().contains("impact_ready"));
+    assertBrowserSafe(missingProposal.resultSurface());
+
+    var hiddenTask = runAction(new CapabilityActionRequest(
+        "action-governance-policy-read-impact-analysis",
+        "action-governance-policy-read-impact-analysis",
+        "governance.policy.impact_analysis.read",
+        "governance.policy.impact_analysis.read",
+        Map.of("taskId", "governance-impact-hidden-system-message"),
+        null,
+        ADMIN_CONTEXT_ID,
+        directRecovery.surfaceId(),
+        "corr-governance-system-message-hidden-task"));
+    assertEquals("denied", hiddenTask.status());
+    assertEquals("surface-governance-policy-system-message", hiddenTask.resultSurface().surfaceId());
+    assertTrue(hiddenTask.resultSurface().toString().contains("not-found") || hiddenTask.resultSurface().toString().contains("hidden"));
+    assertEquals(true, hiddenTask.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, hiddenTask.resultSurface().data().get("noDirectMutation"));
+    assertBrowserSafe(hiddenTask.resultSurface());
+
+    var memberDenied = runActionAs(new CapabilityActionRequest(
+        "action-governance-policy-dashboard",
+        "action-governance-policy-dashboard",
+        "governance.policy.read",
+        "governance.policy.read",
+        null,
+        null,
+        MEMBER_CONTEXT_ID,
+        directRecovery.surfaceId(),
+        "corr-governance-system-message-member-denied"),
+        "workos-governance-member",
+        "governance-member@example.test",
+        "Governance Member",
+        MEMBER_CONTEXT_ID);
+    assertEquals("denied", memberDenied.status());
+    assertEquals("surface-governance-policy-system-message", memberDenied.resultSurface().surfaceId());
+    assertEquals("forbidden", memberDenied.resultSurface().data().get("status"));
+    assertTrue(memberDenied.resultSurface().toString().contains("CAPABILITY_FORBIDDEN"));
+    assertTrue(((List<Map<String, Object>>) memberDenied.resultSurface().data().get("recoveryOptions")).isEmpty());
+    assertEquals(true, memberDenied.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, memberDenied.resultSurface().data().get("noDirectMutation"));
+    assertBrowserSafe(memberDenied.resultSurface());
+
+    var crossTenantDenied = runAction(new CapabilityActionRequest(
+        "action-governance-policy-simulate",
+        "action-governance-policy-simulate",
+        "governance.policy.simulate",
+        "governance.policy.simulate",
+        Map.of("tenantId", "tenant-other", "proposalId", "proposal-system-message-smoke"),
+        null,
+        ADMIN_CONTEXT_ID,
+        directRecovery.surfaceId(),
+        "corr-governance-system-message-cross-tenant"));
+    assertEquals("denied", crossTenantDenied.status());
+    assertEquals("surface-governance-policy-system-message", crossTenantDenied.resultSurface().surfaceId());
+    assertTrue(crossTenantDenied.resultSurface().toString().contains("GOVERNANCE_POLICY_TENANT_FORBIDDEN"));
+    assertTrue(crossTenantDenied.resultSurface().toString().contains("protected data omitted"));
+    assertFalse(crossTenantDenied.resultSurface().toString().contains("tenant-other-policy-secret"));
+    assertBrowserSafe(crossTenantDenied.resultSurface());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
   void protectedWorkstreamApiExercisesGovernancePolicyImpactAnalysisTaskRuntimePath() throws Exception {
     var shell = httpClient.GET("/ui").responseBodyAs(String.class).invoke();
     assertTrue(shell.status().isSuccess(), "Hosted /ui shell must load before the impact-analysis task is exercised through browser API paths.");

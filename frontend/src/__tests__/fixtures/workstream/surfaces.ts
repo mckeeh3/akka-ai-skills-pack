@@ -3803,6 +3803,49 @@ export const governancePolicyImpactAnalysisResultSurface = envelope(
   [governancePolicySurfaceActions.acceptImpactResult, governancePolicySurfaceActions.rejectImpactResult, governancePolicySurfaceActions.requestImpactChanges, governancePolicySurfaceActions.openTrace]
 );
 
+export const governancePolicySystemMessageSurface = envelope(
+  'surface-governance-policy-system-message',
+  'system-message',
+  'Governance/Policy action blocked',
+  'agent-governance-policy',
+  {
+    surfaceContract: 'governance.policy.system_message.v1',
+    status: 'blocked-provider-or-runtime',
+    severity: 'warning',
+    title: 'Governance/Policy action blocked',
+    message: 'The requested Governance/Policy work is unavailable, forbidden, stale, blocked, or failed in the selected AuthContext.',
+    messageSummary: {
+      safeReasonCode: 'GOVERNANCE_POLICY_TENANT_FORBIDDEN',
+      originalActionId: 'action-governance-policy-start-impact-analysis',
+      status: 'blocked-provider-or-runtime',
+      userMessage: 'No proposal, task, result, provider output, or cross-tenant/customer evidence is enumerated.'
+    },
+    contextSummary: {
+      selectedWorkstream: 'Governance/Policy',
+      selectedContextLabel: 'Tenant Admin · browser-safe',
+      omissionReason: 'hidden proposal/task/result and cross-tenant evidence are not enumerated'
+    },
+    recoveryOptions: [
+      { label: 'Return to Governance/Policy dashboard', targetSurfaceId: 'surface-governance-policy-dashboard', actionId: 'action-governance-policy-dashboard', sideEffect: 'none' },
+      { label: 'Open scoped policy inventory', targetSurfaceId: 'surface-governance-policy-inventory', actionId: 'action-governance-policy-list', sideEffect: 'none' },
+      { label: 'Retry/open visible impact-analysis state', targetSurfaceId: 'surface-governance-policy-impact-analysis-task', actionId: 'action-governance-policy-read-impact-analysis', sideEffect: 'none' }
+    ],
+    validationMessages: [
+      { field: 'request', reasonCode: 'idempotency-key-required', message: 'Side-effecting retries require idempotency before audit or lifecycle state can change.', sideEffect: 'none' },
+      { field: 'proposalId', reasonCode: 'not-found-or-hidden', message: 'Hidden or cross-tenant proposal/task/result references are not enumerated.', sideEffect: 'none' }
+    ],
+    authorizedActions: ['action-governance-policy-dashboard', 'action-governance-policy-list', 'action-governance-policy-read-impact-analysis'],
+    traceRefs: ['trace-governance-policy-denial-fixture', 'trace-governance-policy-provider-runtime-blocked-fixture'],
+    redaction: 'browser-safe denial; raw provider/model output, prompts, raw tool payloads, JWTs, secrets, stack traces, correlation ids, idempotency keys, and cross-tenant/customer evidence are omitted',
+    readiness: { provider: 'blocked', autonomousAgentRuntime: 'blocked', noFakeSuccess: true },
+    requiredStates: ['forbidden', 'missing-context', 'validation-error', 'conflict/stale', 'blocked-provider-or-runtime', 'not-found-or-hidden', 'partial-data', 'retryable-failure', 'terminal-failure', 'ready/recovery'],
+    noFakeSuccess: true,
+    noDirectMutation: true,
+    safety: { sanitized: true, redactionNote: 'Provider secrets, raw JWTs, hidden prompts, raw policy clauses, tool payloads, cross-tenant/customer evidence, stack traces, correlation ids, and idempotency keys are not shown.' }
+  },
+  [governancePolicySurfaceActions.showDashboard, governancePolicySurfaceActions.showInventory, governancePolicySurfaceActions.readImpactAnalysis, governancePolicySurfaceActions.openTrace]
+);
+
 export const governancePolicyDecisionTraceSurface = envelope(
   'surface-governance-policy-decision-trace',
   'audit-timeline',
@@ -3826,6 +3869,7 @@ export const governancePolicyStructuredSurfaces = [
   governancePolicyDecisionSurface,
   governancePolicyImpactAnalysisTaskSurface,
   governancePolicyImpactAnalysisResultSurface,
+  governancePolicySystemMessageSurface,
   governancePolicyDecisionTraceSurface
 ];
 

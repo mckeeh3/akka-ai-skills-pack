@@ -8162,7 +8162,7 @@
 
 ### TASK-FSCT-231: Verify or complete runtime testing for `surface-governance-policy-system-message`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-230]
 - surface id: `surface-governance-policy-system-message`
@@ -8196,6 +8196,7 @@
   - purpose: Governance/Policy safe system message.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Governance Policy functional agent surface `surface-governance-policy-system-message`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-governance-policy-system-message`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added `GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicySystemMessageRuntimePath` for the Akka-hosted `/ui` shell plus protected `/api/workstream/surfaces/surface-governance-policy-system-message` and `/api/workstream/actions` recovery/denial paths. Evidence covers missing-bearer rejection, tenant-admin selected AuthContext recovery, backend-authorized recovery actions, validation/idempotency and missing-proposal system messages, hidden impact-task no-enumeration, member capability denial, cross-tenant denial, trace refs, `noFakeSuccess`, `noDirectMutation`, no mutation side effects, provider/runtime fail-closed/no fabricated `impact_ready`, and browser-safe redaction. Added frontend Governance/Policy system-message fixture/contract coverage for recovery rendering, validation copy, role-gated traces, authorized action visibility, and secret-boundary checks. Runtime readiness level: `runtime-ready`; checks passed: `mvn -q -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesGovernancePolicySystemMessageRuntimePath test`, `node --test frontend/src/workstream-governance-policy-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-232: Verify foundation surface completion tracker
 

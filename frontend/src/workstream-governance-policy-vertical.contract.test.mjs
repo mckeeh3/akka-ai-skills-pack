@@ -12,6 +12,7 @@ const diff = read('./workstream/surfaces/GovernanceDiffSurface.tsx');
 const decision = read('./workstream/surfaces/DecisionSurface.tsx');
 const listSearch = read('./workstream/surfaces/ListSearchSurface.tsx');
 const outcome = read('./workstream/surfaces/OutcomeSurface.tsx');
+const systemMessage = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const types = read('./workstream/types/surfaces.ts');
 const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
 
@@ -45,6 +46,7 @@ test('Governance/Policy exposes contract capabilities, structured surfaces, and 
     'governancePolicyDecisionSurface',
     'governancePolicyImpactAnalysisTaskSurface',
     'governancePolicyImpactAnalysisResultSurface',
+    'governancePolicySystemMessageSurface',
     'governancePolicyDecisionTraceSurface'
   ]) {
     assert.match(fixtures, new RegExp(`export const ${surface}`));
@@ -175,6 +177,38 @@ test('Governance/Policy outcome-panel renderer keeps notes governed, trace-linke
     assert.match(types, new RegExp(escapeRegExp(marker)));
   }
   assert.doesNotMatch(outcome, /localStorage\.getItem\(['"](?:token|jwt|apiKey)|Authorization\s*=|dangerouslySetInnerHTML|innerHTML\s*=/);
+});
+
+test('Governance/Policy system-message renderer keeps recovery backend-authorized, trace-linked, and browser-safe', () => {
+  for (const marker of [
+    'surface-governance-policy-system-message',
+    'governance.policy.system_message.v1',
+    'GOVERNANCE_POLICY_TENANT_FORBIDDEN',
+    'idempotency-key-required',
+    'not-found-or-hidden',
+    'blocked-provider-or-runtime',
+    'action-governance-policy-dashboard',
+    'action-governance-policy-list',
+    'action-governance-policy-read-impact-analysis',
+    'trace-governance-policy-denial-fixture',
+    'noFakeSuccess: true',
+    'noDirectMutation: true',
+    'raw provider/model output, prompts, raw tool payloads, JWTs, secrets, stack traces, correlation ids, idempotency keys, and cross-tenant/customer evidence are omitted'
+  ]) {
+    assert.match(fixtures, new RegExp(escapeRegExp(marker)));
+  }
+  for (const marker of [
+    'Governance/Policy recovery is read-only',
+    'no approval, activation, rollback, policy weakening, tenant/customer scope expansion, provider/model prompt access, or hidden-object enumeration occurred',
+    'Recovery steps',
+    'Validation messages',
+    'Role-gated trace details',
+    'Provider secrets, raw JWTs, hidden prompts, invitation tokens, and unauthorized tenant/customer evidence are not shown.',
+    'SurfaceActionBar actions={envelope.actions}'
+  ]) {
+    assert.match(systemMessage, new RegExp(escapeRegExp(marker)));
+  }
+  assert.doesNotMatch(systemMessage, /localStorage\.getItem\(['"](?:token|jwt|apiKey)|Authorization\s*=|dangerouslySetInnerHTML|innerHTML\s*=/);
 });
 
 test('Governance/Policy fixture client returns structured results for dashboard, inventory, and simulation actions', () => {
