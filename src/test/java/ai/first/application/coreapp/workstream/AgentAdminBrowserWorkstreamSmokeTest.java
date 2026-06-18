@@ -173,7 +173,11 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "corr-agent-admin-model-refs"));
     assertEquals("accepted", modelRefs.status());
     assertEquals("surface-agent-model-refs", modelRefs.resultSurface().surfaceId());
-    assertEquals("agent_admin.model_ref.v1", modelRefs.resultSurface().data().get("surfaceContract"));
+    assertEquals("governance-diff", modelRefs.resultSurface().surfaceType());
+    assertEquals("agent_admin.model_refs.v1", modelRefs.resultSurface().data().get("surfaceContract"));
+    assertTrue(modelRefs.resultSurface().toString().contains("modelReferenceSummary"));
+    assertTrue(modelRefs.resultSurface().toString().contains("redactedModelReferenceDiff"));
+    assertTrue(modelRefs.resultSurface().toString().contains("action-agent-model-refs-submit-review"));
     assertTrue(modelRefs.resultSurface().toString().contains("providerCredential=[REDACTED]"));
     assertTrue(modelRefs.resultSurface().toString().contains("secretVisibility=redacted"));
     assertTrue(modelRefs.resultSurface().toString().contains("traceLinks"));
@@ -411,6 +415,7 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "corr-agent-admin-detail-model-refs"));
     assertEquals("accepted", detailModelRefs.status());
     assertEquals("surface-agent-model-refs", detailModelRefs.resultSurface().surfaceId());
+    assertEquals("agent_admin.model_refs.v1", detailModelRefs.resultSurface().data().get("surfaceContract"));
     assertTrue(detailModelRefs.resultSurface().toString().contains("providerCredential=[REDACTED]"));
     assertBrowserSafe(detailModelRefs.resultSurface());
 

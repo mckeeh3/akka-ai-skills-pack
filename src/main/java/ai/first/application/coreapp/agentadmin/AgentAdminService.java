@@ -326,12 +326,12 @@ public final class AgentAdminService {
   }
 
   public Map<String, Object> modelRefDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String correlationId) {
-    require(actor, GET_MODEL_REF, correlationId, "agent_admin.model_ref.v1");
+    require(actor, GET_MODEL_REF, correlationId, "agent_admin.model_refs.v1");
     var agent = agent(actor, firstNonBlank(agentDefinitionId, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID));
     var model = repository.modelConfigRef(actor.selectedContext().tenantId(), agent.modelConfigRefId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
     return mapOf(
-        "surfaceContract", "agent_admin.model_ref.v1",
-        "surfaceContractAliases", List.of("surface.agent_admin.model_ref.v1"),
+        "surfaceContract", "agent_admin.model_refs.v1",
+        "surfaceContractAliases", List.of("agent_admin.model_ref.v1", "surface.agent_admin.model_ref.v1", "surface.agent_admin.model_refs.v1"),
         "recordId", model.modelConfigRefId(),
         "recordKind", "ModelConfigRef",
         "displayName", model.displayName(),

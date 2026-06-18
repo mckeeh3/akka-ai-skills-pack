@@ -5265,7 +5265,7 @@
 
 ### TASK-FSCT-149: Verify or complete runtime implementation for `surface-agent-model-refs`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-148]
 - surface id: `surface-agent-model-refs`
@@ -5296,6 +5296,7 @@
   - purpose: Model reference proposal/review.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-model-refs`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-model-refs`; surface graph node/action edge for opening or acting on `surface-agent-model-refs`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-17: implemented and verified the backend-owned `agent_admin.model_refs.v1` governance-diff runtime path for `surface-agent-model-refs`; protected workstream API/surface/action paths now expose model-reference summary, redacted diff, provider readiness/no-fake-success, impact/risk/review state, authorized refresh/test/submit/approve/reject/prompt/tool/trace/detail actions, trace/correlation, provider credential/raw response/JWT/hidden-scope redaction, no direct activation/provider editing, and fail-closed model readiness behavior. runtime evidence: readiness level `api-smoked` with Akka-hosted Agent Admin smoke, tenant-admin AuthContext, inherited regular-member denial/secret-boundary coverage, and no fixture-only/frontend-only normal runtime path; checks passed: `mvn -q -DskipTests compile`, `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, and `git diff --check`
 
 ### TASK-FSCT-150: Verify or complete runtime testing for `surface-agent-model-refs`
 
