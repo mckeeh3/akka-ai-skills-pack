@@ -2493,6 +2493,287 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
 
   @Test
   @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiExercisesAgentAdminSeedMaterialRuntimeTestingPath() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-agent-seed-material")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin seed-material surface must reject missing bearer tokens.");
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-agent-seed-material-missing-bearer-action")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-agent-seed-material-start-import",
+            "action-agent-seed-material-start-import",
+            "agent_admin.reseed_missing_defaults",
+            "agent_admin.reseed_missing_defaults",
+            Map.of("seedMaterialId", "seed-" + AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "IMPORT"),
+            "idem-agent-seed-material-missing-bearer",
+            ADMIN_CONTEXT_ID,
+            "surface-agent-seed-material",
+            "corr-agent-seed-material-missing-bearer-action"))
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Agent Admin seed-material action path must reject missing bearer tokens.");
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-seed-material",
+        "corr-agent-seed-material-member-denied",
+        "workos-member",
+        "member@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Agent Admin seed material or hidden governance provenance.");
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-agent-seed-material",
+        "corr-agent-seed-material-customer-denied",
+        "workos-customer",
+        "customer@example.test",
+        "Customer Admin",
+        CUSTOMER_CONTEXT_ID), "Customer-scoped contexts must not read Agent Admin seed material or tenant governance state.");
+
+    assertThrows(RuntimeException.class, () -> httpClient
+        .POST("/api/workstream/actions")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-member", "member@example.test", "Member User"))
+        .addHeader("X-Selected-Context-Id", MEMBER_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", "corr-agent-seed-material-member-action-denied")
+        .withRequestBody(new CapabilityActionRequest(
+            "action-agent-seed-material-search",
+            "action-agent-seed-material-search",
+            "agent_admin.list_seed_material",
+            "agent_admin.list_seed_material",
+            Map.of("query", "Agent Admin"),
+            null,
+            MEMBER_CONTEXT_ID,
+            "surface-agent-seed-material",
+            "corr-agent-seed-material-member-action-denied"))
+        .responseBodyAs(String.class)
+        .invoke(), "Regular tenant members must not use seed-material browser actions to gain Agent Admin authority.");
+
+    var seed = getSurface("surface-agent-seed-material", "corr-agent-seed-material-direct");
+    assertEquals("surface-agent-seed-material", seed.surfaceId());
+    assertEquals("list-search", seed.surfaceType());
+    assertEquals("agent_admin.seed_material.v1", seed.data().get("surfaceContract"));
+    assertEquals("corr-agent-seed-material-direct", seed.correlationId());
+    assertEquals(Boolean.TRUE, seed.data().get("noDirectMutation"));
+    assertEquals(Boolean.TRUE, seed.data().get("noDirectActivation"));
+    assertEquals(Boolean.TRUE, seed.data().get("noDestructiveDelete"));
+    assertFalse(seed.traceIds().isEmpty());
+    assertTrue(seed.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-surface-agent-seed-material")));
+    assertTrue(seed.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-seed-material-refresh") && action.resultSurface().updateSurfaceId().equals("surface-agent-seed-material")));
+    assertTrue(seed.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-seed-material-search") && action.resultSurface().updateSurfaceId().equals("surface-agent-seed-material")));
+    assertTrue(seed.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-seed-material-prepare-import") && action.resultSurface().updateSurfaceId().equals("surface-agent-seed-material")));
+    assertTrue(seed.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-seed-material-start-import") && action.resultSurface().updateSurfaceId().equals("surface-agent-seed-material")));
+    assertTrue(seed.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-seed-material-open-agent-detail") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail")));
+    assertTrue(seed.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-seed-material-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
+
+    var seedSummary = (Map<String, Object>) seed.data().get("seedMaterialSummary");
+    assertEquals("surface-agent-seed-material", seedSummary.get("surfaceId"));
+    assertEquals("agent_admin.seed_material.v1", seedSummary.get("contract"));
+    assertEquals("not-required-for-seed-discovery", seedSummary.get("providerRuntimeReadinessCategory"));
+    assertTrue(((Number) seedSummary.get("totalVisibleCount")).intValue() > 0);
+    var scopeSummary = (Map<String, Object>) seed.data().get("scopeSummary");
+    assertEquals(ADMIN_CONTEXT_ID, scopeSummary.get("selectedAuthContextId"));
+    assertEquals("tenant", scopeSummary.get("scopeType"));
+    assertEquals(Boolean.TRUE, scopeSummary.get("governanceAuthorized"));
+    var filters = (Map<String, Object>) seed.data().get("filters");
+    assertEquals(Boolean.TRUE, filters.get("backendAuthoritative"));
+    assertEquals("", filters.get("searchText"));
+    var seedRows = (List<Map<String, Object>>) seed.data().get("seedRows");
+    assertFalse(seedRows.isEmpty());
+    assertEquals(seedRows, seed.data().get("rows"));
+    assertTrue(seedRows.stream().anyMatch(row -> ("seed-" + AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).equals(row.get("id"))
+        && "action-agent-seed-material-open-provenance".equals(row.get("openActionId"))
+        && "action-agent-seed-material-prepare-import".equals(row.get("prepareImportActionId"))));
+    assertTrue(seed.toString().contains("provenanceInspection"));
+    assertTrue(seed.toString().contains("customizationPreservation"));
+    assertTrue(seed.toString().contains("providerRuntimeToolReadinessSummary=Seed discovery and missing-default import do not claim provider/model success"));
+    assertTrue(seed.toString().contains("rawSeedPackageContents=omitted"));
+    assertTrue(seed.toString().contains("providerCredentials=omitted"));
+    assertTrue(seed.toString().contains("bearerTokens=omitted"));
+    assertBrowserSafe(seed);
+
+    var selectedSeedId = String.valueOf(seedRows.get(0).get("id"));
+    var selectedAgentId = String.valueOf(seedRows.get(0).get("recommendedManagedAgentTarget"));
+    var agentRepository = new AkkaAgentBehaviorRepository(componentClient);
+    var statusBeforeImport = agentRepository.agentDefinition(TENANT_ID, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status();
+
+    var search = runAction(new CapabilityActionRequest(
+        "action-agent-seed-material-search",
+        "action-agent-seed-material-search",
+        "agent_admin.list_seed_material",
+        "agent_admin.list_seed_material",
+        Map.of("query", "Agent Admin"),
+        null,
+        ADMIN_CONTEXT_ID,
+        seed.surfaceId(),
+        "corr-agent-seed-material-search"));
+    assertEquals("accepted", search.status());
+    assertEquals("surface-agent-seed-material", search.resultSurface().surfaceId());
+    assertEquals("Agent Admin", ((Map<String, Object>) search.resultSurface().data().get("filters")).get("searchText"));
+    assertFalse(((List<Map<String, Object>>) search.resultSurface().data().get("seedRows")).isEmpty());
+    assertBrowserSafe(search.resultSurface());
+
+    var noMatches = runAction(new CapabilityActionRequest(
+        "action-agent-seed-material-search",
+        "action-agent-seed-material-search",
+        "agent_admin.list_seed_material",
+        "agent_admin.list_seed_material",
+        Map.of("query", "no matching seed material"),
+        null,
+        ADMIN_CONTEXT_ID,
+        seed.surfaceId(),
+        "corr-agent-seed-material-empty"));
+    assertEquals("accepted", noMatches.status());
+    assertEquals("empty-no-filter-matches", ((Map<String, Object>) noMatches.resultSurface().data().get("emptyState")).get("state"));
+    assertTrue(((List<Map<String, Object>>) noMatches.resultSurface().data().get("seedRows")).isEmpty());
+    assertBrowserSafe(noMatches.resultSurface());
+
+    var provenance = runAction(new CapabilityActionRequest(
+        "action-agent-seed-material-open-provenance",
+        "action-agent-seed-material-open-provenance",
+        "agent_admin.list_seed_material",
+        "agent_admin.list_seed_material",
+        Map.of("seedMaterialId", selectedSeedId),
+        null,
+        ADMIN_CONTEXT_ID,
+        seed.surfaceId(),
+        "corr-agent-seed-material-provenance"));
+    assertEquals("accepted", provenance.status());
+    assertEquals("surface-agent-seed-material", provenance.resultSurface().surfaceId());
+    var provenanceInspection = (Map<String, Object>) provenance.resultSurface().data().get("provenanceInspection");
+    assertEquals("ready-provenance", provenanceInspection.get("state"));
+    assertEquals(Boolean.FALSE, provenanceInspection.get("rawContentVisible"));
+    assertTrue(provenance.message().contains("raw seed contents"));
+    assertBrowserSafe(provenance.resultSurface());
+
+    var prepare = runAction(new CapabilityActionRequest(
+        "action-agent-seed-material-prepare-import",
+        "action-agent-seed-material-prepare-import",
+        "agent_admin.list_seed_material",
+        "agent_admin.list_seed_material",
+        Map.of("seedMaterialId", selectedSeedId, "targetAgentDefinitionId", selectedAgentId),
+        "idem-agent-seed-material-prepare",
+        ADMIN_CONTEXT_ID,
+        seed.surfaceId(),
+        "corr-agent-seed-material-prepare"));
+    assertEquals("accepted", prepare.status());
+    assertEquals("surface-agent-seed-material", prepare.resultSurface().surfaceId());
+    assertEquals("prepared", ((Map<String, Object>) prepare.resultSurface().data().get("importWorkflow")).get("currentStatus"));
+    assertTrue(prepare.message().contains("without mutating active behavior"));
+    assertEquals(statusBeforeImport, agentRepository.agentDefinition(TENANT_ID, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+    assertBrowserSafe(prepare.resultSurface());
+
+    var missingAcknowledgement = runAction(new CapabilityActionRequest(
+        "action-agent-seed-material-start-import",
+        "action-agent-seed-material-start-import",
+        "agent_admin.reseed_missing_defaults",
+        "agent_admin.reseed_missing_defaults",
+        Map.of("seedMaterialId", selectedSeedId),
+        "idem-agent-seed-material-missing-ack",
+        ADMIN_CONTEXT_ID,
+        seed.surfaceId(),
+        "corr-agent-seed-material-missing-ack"));
+    assertEquals("validation-error", missingAcknowledgement.status());
+    assertTrue(missingAcknowledgement.message().contains("acknowledgement=IMPORT"));
+    assertEquals("prepared", ((Map<String, Object>) missingAcknowledgement.resultSurface().data().get("importWorkflow")).get("currentStatus"));
+    assertEquals(statusBeforeImport, agentRepository.agentDefinition(TENANT_ID, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+    assertBrowserSafe(missingAcknowledgement.resultSurface());
+
+    var start = runAction(new CapabilityActionRequest(
+        "action-agent-seed-material-start-import",
+        "action-agent-seed-material-start-import",
+        "agent_admin.reseed_missing_defaults",
+        "agent_admin.reseed_missing_defaults",
+        Map.of("seedMaterialId", selectedSeedId, "acknowledgement", "IMPORT"),
+        "idem-agent-seed-material-start",
+        ADMIN_CONTEXT_ID,
+        seed.surfaceId(),
+        "corr-agent-seed-material-start"));
+    assertTrue(start.status().equals("accepted") || start.status().equals("no-op"));
+    assertEquals("surface-agent-seed-material", start.resultSurface().surfaceId());
+    assertEquals("completed", ((Map<String, Object>) start.resultSurface().data().get("importWorkflow")).get("currentStatus"));
+    assertTrue(start.message().contains("tenant customizations and active behavior were preserved"));
+    assertEquals(statusBeforeImport, agentRepository.agentDefinition(TENANT_ID, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+    assertBrowserSafe(start.resultSurface());
+
+    var repeatedStart = runAction(new CapabilityActionRequest(
+        "action-agent-seed-material-start-import",
+        "action-agent-seed-material-start-import",
+        "agent_admin.reseed_missing_defaults",
+        "agent_admin.reseed_missing_defaults",
+        Map.of("seedMaterialId", selectedSeedId, "acknowledgement", "IMPORT"),
+        "idem-agent-seed-material-start",
+        ADMIN_CONTEXT_ID,
+        seed.surfaceId(),
+        "corr-agent-seed-material-start-repeat"));
+    assertEquals("no-op", repeatedStart.status());
+    assertEquals("surface-agent-seed-material", repeatedStart.resultSurface().surfaceId());
+    assertTrue(repeatedStart.message().contains("0 created"));
+    assertEquals(statusBeforeImport, agentRepository.agentDefinition(TENANT_ID, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+    assertBrowserSafe(repeatedStart.resultSurface());
+
+    var cancel = runAction(new CapabilityActionRequest(
+        "action-agent-seed-material-cancel-import",
+        "action-agent-seed-material-cancel-import",
+        "agent_admin.reseed_missing_defaults",
+        "agent_admin.reseed_missing_defaults",
+        Map.of("seedMaterialId", selectedSeedId),
+        "idem-agent-seed-material-cancel",
+        ADMIN_CONTEXT_ID,
+        seed.surfaceId(),
+        "corr-agent-seed-material-cancel"));
+    assertEquals("no-op", cancel.status());
+    assertEquals("cancelled", ((Map<String, Object>) cancel.resultSurface().data().get("importWorkflow")).get("currentStatus"));
+    assertTrue(cancel.message().contains("did not delete source seed material or tenant customizations"));
+    assertEquals(statusBeforeImport, agentRepository.agentDefinition(TENANT_ID, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+    assertBrowserSafe(cancel.resultSurface());
+
+    var detail = runAction(new CapabilityActionRequest(
+        "action-agent-seed-material-open-agent-detail",
+        "action-agent-seed-material-open-agent-detail",
+        "agent_admin.get_definition",
+        "agent_admin.get_definition",
+        Map.of("agentDefinitionId", selectedAgentId),
+        null,
+        ADMIN_CONTEXT_ID,
+        seed.surfaceId(),
+        "corr-agent-seed-material-detail"));
+    assertEquals("accepted", detail.status());
+    assertEquals("surface-agent-admin-detail", detail.resultSurface().surfaceId());
+    assertBrowserSafe(detail.resultSurface());
+
+    var trace = runAction(new CapabilityActionRequest(
+        "action-agent-seed-material-open-trace",
+        "action-agent-seed-material-open-trace",
+        "audit.trace.read",
+        "audit.trace.read",
+        Map.of("traceId", "trace-agent-seed-material"),
+        null,
+        ADMIN_CONTEXT_ID,
+        seed.surfaceId(),
+        "corr-agent-seed-material-trace"));
+    assertEquals("accepted", trace.status());
+    assertEquals("surface-agent-admin-trace", trace.resultSurface().surfaceId());
+    assertTrue(trace.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-agent-seed-material-open-trace")));
+    assertBrowserSafe(trace.resultSurface());
+
+    var source = runAction(new CapabilityActionRequest(
+        "action-agent-seed-material-back-to-source",
+        "action-agent-seed-material-back-to-source",
+        "agent_admin.list_definitions",
+        "agent_admin.list_definitions",
+        Map.of("returnSurfaceId", "surface-agent-admin-catalog"),
+        null,
+        ADMIN_CONTEXT_ID,
+        seed.surfaceId(),
+        "corr-agent-seed-material-source"));
+    assertEquals("accepted", source.status());
+    assertEquals("surface-agent-admin-catalog", source.resultSurface().surfaceId());
+    assertBrowserSafe(source.resultSurface());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
   void protectedWorkstreamApiExercisesAgentAdminTestConsoleRuntimeTestingPath() throws Exception {
     assertThrows(IllegalArgumentException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-agent-test-console")

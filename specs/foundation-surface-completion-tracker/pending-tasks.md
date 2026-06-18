@@ -6148,7 +6148,7 @@
 
 ### TASK-FSCT-174: Verify or complete runtime testing for `surface-agent-seed-material`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-173]
 - surface id: `surface-agent-seed-material`
@@ -6182,6 +6182,7 @@
   - purpose: Seed material discovery/import workflow surface.
   - testing readiness target: success, denial, trace, provider/fail-closed, and frontend secret-boundary evidence where applicable
   - vertical contract: workstream Agent Admin functional agent surface `surface-agent-seed-material`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-agent-seed-material`; surface graph node/action edge and result states tested; governed-tool/browser-tool or API exposure tested; capability id from app-description; AuthContext / roles / tenant scope denial tests required; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend / browser smoke path required; audit/work trace and correlation tested; local validation path: mvn/npm/manual smoke as applicable
+  - completed 2026-06-18: added dedicated protected Akka-hosted `AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminSeedMaterialRuntimeTestingPath` coverage for `surface-agent-seed-material`; verified missing-bearer rejection, tenant-member/customer-context denials, tenant-admin AuthContext direct surface read, backend-owned `agent_admin.seed_material.v1` seed summaries/filters/seedRows/provenance/import workflow/customization-preservation/no-direct-activation/no-destructive-delete payloads, search/no-match, provenance, prepare-import, missing-ack validation, acknowledged import, repeated no-op import, cancel, detail/trace/source routing, trace/correlation evidence, provider/model success not claimed for seed discovery, and browser-safe redaction. Runtime readiness level: `runtime-ready` for the seed-material testing scope. Checks passed: `mvn -q -Dtest=AgentAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesAgentAdminSeedMaterialRuntimeTestingPath test`, `npm --prefix frontend test -- --run src/workstream-agent-admin-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-FSCT-175: Verify or complete app-description specification for `surface-audit-trace-dashboard`
 
