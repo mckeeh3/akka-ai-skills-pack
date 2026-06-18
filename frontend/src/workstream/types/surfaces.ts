@@ -413,12 +413,16 @@ export type DecisionSurfaceData = {
 };
 
 export type AuditTimelineSurfaceData = {
-  events?: Array<{ eventId: string; occurredAt: string; actor: string; action: string; traceId: string }>;
+  events?: Array<{ eventId: string; occurredAt: string; actor: string; action: string; traceId: string; sourceType?: string; correlationId?: string; status?: string; availableEventActionIds?: string[]; recoveryText?: string }>;
   correlationId?: string;
+  correlationSummary?: { visibleEventCount?: number; outcome?: string; severity?: string; nextStep?: string; selectedScope?: string };
+  authorizationBasis?: { selectedContextId?: string; customerScopeRestricted?: boolean; redactionExplanation?: string };
+  links?: Array<{ label: string; relationship?: string; targetSurfaceId?: string; actionId?: string }>;
   nodes?: Array<{ nodeId: string; sourceType: string; summary: string; correlationId: string; status: string; traceId?: string }>;
   partial?: boolean;
   omittedCategories?: string[];
   redactionSummary?: string;
+  recovery?: string;
 };
 
 export type WorkflowStatusSurfaceData = {

@@ -6537,7 +6537,7 @@
 
 ### TASK-FSCT-185: Verify or complete runtime implementation for `surface-audit-trace-timeline`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: [TASK-FSCT-184]
 - surface id: `surface-audit-trace-timeline`
@@ -6568,6 +6568,7 @@
   - purpose: Correlation timeline.
   - implementation readiness target: real local browser/API/Akka path exists; fixture-only/frontend-only behavior does not count
   - vertical contract: workstream Audit Trace functional agent surface `surface-audit-trace-timeline`; attention category or non-attention reason inherited from app-description; role-specific dashboard/surface `surface-audit-trace-timeline`; surface graph node/action edge for opening or acting on `surface-audit-trace-timeline`; governed-tool/browser-tool or API exposure inherited from capability mapping; capability id from app-description; AuthContext / roles / tenant scope must be backend authorized; Akka substrate: endpoint/frontend/service/view/workflow/agent as applicable; API / frontend path must be real local runtime path; audit/work trace and correlation required; local validation path: focused backend/frontend checks plus runtime evidence
+  - completed 2026-06-18: completed and verified the real runtime implementation for `surface-audit-trace-timeline`: protected direct surface and action APIs route through WorkstreamEndpoint/WorkstreamService/AuditTraceService with required `audit.trace.timeline.read` capability, selected AuthContext tenant/customer scope validation, backend-owned AuditTraceRepository evidence, browser-safe `audit.trace.timeline.v1` payload fields, governed detail/failure/guidance/export/note/search/dashboard edges, frontend `AuditTimelineSurface` backend action submission, audit/work trace and correlation refs, member/missing-bearer denial evidence, and secret-boundary assertions. Checks passed: `mvn -q -Dtest=AuditTraceBrowserWorkstreamSmokeTest test`, `npm --prefix frontend run typecheck`, `git diff --check`. Tracker updated with readiness level `runtime-ready` for the implementation scope; fully-tested remains pending for TASK-FSCT-186.
 
 ### TASK-FSCT-186: Verify or complete runtime testing for `surface-audit-trace-timeline`
 

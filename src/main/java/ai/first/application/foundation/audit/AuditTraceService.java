@@ -124,21 +124,78 @@ public final class AuditTraceService {
   }
 
   public SurfaceData timeline(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    authContextResolver.requireCapability(actor.selectedContext(), TIMELINE_CAPABILITY);
     validateScope(actor, input, correlationId);
     var requestedCorrelation = stringInput(input, "correlationId", correlationId);
     if (requestedCorrelation == null || requestedCorrelation.isBlank() || requestedCorrelation.length() > 128) return validation(actor, correlationId, "correlationId", "Correlation id is required and must be at most 128 characters.");
+    var traceId = "trace-audit-timeline-" + stableSuffix(correlationId);
     authContextResolver.appendProtectedReadTrace(actor, TIMELINE_CAPABILITY, "timeline correlation:" + requestedCorrelation, correlationId);
-    var nodes = new ArrayList<Map<String, Object>>();
-    nodes.add(mapOf("nodeId", "auth-context", "sourceType", "policy", "summary", "Selected AuthContext resolved and tenant/customer scope applied.", "correlationId", requestedCorrelation, "status", "allowed", "redaction", "tenant-scoped"));
-    sortedEvents(actor, correlationId).stream()
+    var selectedEvents = sortedEvents(actor, correlationId).stream()
         .filter(event -> requestedCorrelation.equals(event.correlationId()))
-        .forEach(event -> nodes.add(mapOf("nodeId", event.traceId(), "sourceType", sourceType(event), "summary", redacted(event.summary()), "correlationId", event.correlationId(), "status", event.status(), "traceId", event.traceId())));
-    return new SurfaceData("surface-audit-trace-timeline", "audit-timeline", "Correlation timeline", List.of("trace-audit-timeline-" + stableSuffix(correlationId)), mapOf(
-        "surfaceContract", "audit.trace.timeline.v1",
+        .sorted(Comparator.comparing(TraceEvent::occurredAt))
+        .toList();
+    var events = new ArrayList<Map<String, Object>>();
+    events.add(mapOf(
+        "eventId", "auth-context",
+        "nodeId", "auth-context",
+        "sequence", 0,
+        "occurredAt", Instant.now().toString(),
+        "actor", "selected AuthContext",
+        "action", "allowed: Selected AuthContext resolved and tenant/customer scope applied.",
+        "traceId", "auth-context",
+        "sourceType", "policy",
         "correlationId", requestedCorrelation,
+        "status", "allowed",
+        "severity", "info",
+        "summary", "Selected AuthContext resolved and tenant/customer scope applied.",
+        "redactedSummary", "Selected AuthContext resolved and tenant/customer scope applied.",
+        "redactionBadges", List.of("tenant-scoped", "browser-safe"),
+        "availableEventActionIds", List.of("action-audit-trace-detail", "action-audit-trace-investigation-guide"),
+        "recoveryText", "Open governed detail, guidance, search, or dashboard actions to reauthorize more evidence."));
+    for (var index = 0; index < selectedEvents.size(); index++) {
+      var event = selectedEvents.get(index);
+      events.add(timelineEvent(event, index + 1));
+    }
+    var omittedCategories = selectedEvents.stream()
+        .filter(event -> event.omittedFieldKeys() != null && !event.omittedFieldKeys().isEmpty())
+        .flatMap(event -> event.omittedFieldKeys().stream())
+        .distinct()
+        .toList();
+    var nodes = events.stream()
+        .map(event -> mapOf(
+            "nodeId", event.get("eventId"),
+            "sourceType", event.get("sourceType"),
+            "summary", event.get("redactedSummary"),
+            "correlationId", event.get("correlationId"),
+            "status", event.get("status"),
+            "traceId", event.get("traceId")))
+        .toList();
+    var firstOccurred = selectedEvents.stream().map(TraceEvent::occurredAt).min(Comparator.naturalOrder()).map(Instant::toString).orElse(null);
+    var lastOccurred = selectedEvents.stream().map(TraceEvent::occurredAt).max(Comparator.naturalOrder()).map(Instant::toString).orElse(null);
+    return new SurfaceData("surface-audit-trace-timeline", "audit-timeline", "Correlation timeline", List.of(traceId), mapOf(
+        "surfaceContract", "audit.trace.timeline.v1",
+        "surfaceId", "surface-audit-trace-timeline",
+        "generatedAt", Instant.now().toString(),
+        "selectedScope", mapOf("tenantLabel", "Selected tenant", "customerLabel", actor.selectedContext().customerId() == null ? null : "Selected customer", "scopeKind", actor.selectedContext().customerId() == null ? "tenant" : "customer", "supportAccess", "selected AuthContext"),
+        "authContextSummary", mapOf("selectedContextId", actor.selectedContext().membershipId(), "actor", actor.profile().displayName(), "roleLabels", actor.selectedContext().roles().stream().map(Enum::name).toList(), "capabilityCount", actor.selectedContext().capabilities().size()),
+        "capabilityIds", List.of(TIMELINE_CAPABILITY, DETAIL_CAPABILITY, FAILURE_EVIDENCE_CAPABILITY, INVESTIGATION_GUIDE_CAPABILITY, EXPORT_REQUEST_CAPABILITY, INVESTIGATION_NOTE_CAPABILITY, SEARCH_CAPABILITY, DASHBOARD_CAPABILITY),
+        "correlationId", requestedCorrelation,
+        "traceRefs", List.of(traceId),
+        "readiness", "ready",
+        "timelineKey", mapOf("displayHandle", requestedCorrelation, "retentionStatus", "retained-redacted", "staleOrPurgedStatus", selectedEvents.isEmpty() ? "empty-authorized" : "current"),
+        "correlationSummary", mapOf("timeRange", mapOf("from", firstOccurred, "to", lastOccurred), "sourceLabels", selectedEvents.stream().map(TraceEvent::workstream).distinct().toList(), "initiatingActor", selectedEvents.stream().map(TraceEvent::actor).findFirst().orElse(actor.account().accountId()), "outcome", selectedEvents.stream().anyMatch(event -> containsIgnoreCase(event.status(), "denied")) ? "attention_needed" : "allowed", "severity", selectedEvents.stream().anyMatch(event -> "warning".equals(event.severity())) ? "warning" : "info", "visibleEventCount", events.size(), "selectedScope", actor.selectedContext().customerId() == null ? "tenant" : "customer", "nextStep", selectedEvents.isEmpty() ? "No retained events matched this authorized correlation; refine search or return to the dashboard." : "Open a governed detail, failure evidence, guidance, redacted export, note, search, or dashboard action."),
+        "authorizationBasis", mapOf("selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", List.of(TIMELINE_CAPABILITY), "customerScopeRestricted", actor.selectedContext().customerId() != null, "redactionExplanation", "Unauthorized categories and cross-scope evidence are omitted without enumeration."),
+        "filters", mapOf("timeWindow", "recent", "eventCategories", "all-authorized", "correlationLabel", requestedCorrelation, "redaction", "browser-safe"),
+        "events", events,
         "nodes", nodes,
+        "links", selectedEvents.stream().limit(10).map(event -> mapOf("label", event.traceId(), "relationship", "timeline-event", "targetSurfaceId", "surface-audit-trace-detail", "actionId", "action-audit-trace-detail", "redactionBadges", List.of("browser-safe"))).toList(),
         "partial", false,
-        "omittedCategories", List.of(),
+        "omittedCategories", omittedCategories,
+        "availableActions", List.of("action-audit-trace-detail", "action-audit-trace-failure-evidence", "action-audit-trace-investigation-guide", "action-audit-trace-request-redacted-export", "action-audit-trace-append-investigation-note", "action-audit-trace-search", "action-audit-trace-dashboard"),
+        "emptyState", selectedEvents.isEmpty() ? mapOf("status", "empty", "message", "No authorized timeline events match this correlation.", "recovery", "Refine search or return to the Audit/Trace dashboard; hidden evidence is not enumerated.") : null,
+        "validationErrors", List.of(),
+        "recovery", "Timeline reads, event opens, failure evidence, guidance, export, note, search, and dashboard return actions reauthorize server-side and preserve trace/correlation refs.",
+        "redaction", mapOf("browserSafe", true, "omittedFieldKeys", DEFAULT_OMITTED_FIELDS, "hiddenCountPolicy", "non-enumerating", "safeExplanation", "Unauthorized tenant/customer evidence is omitted; raw prompts, provider/tool payloads, credentials, tokens, hidden ids, and cross-scope evidence are never returned.", "traceRefs", List.of(traceId)),
         "redactionSummary", "Unauthorized tenant/customer evidence is omitted; not_found_or_redacted is used for hidden traces."));
   }
 
@@ -261,6 +318,30 @@ public final class AuditTraceService {
         "redactionSummary", "redacted safe summary only",
         "recoveryText", "Open governed detail or timeline to reauthorize this trace before viewing more evidence.",
         "summary", redacted(event.summary()));
+  }
+
+  private Map<String, Object> timelineEvent(TraceEvent event, int sequence) {
+    return mapOf(
+        "eventId", event.traceId(),
+        "nodeId", event.traceId(),
+        "sequence", sequence,
+        "occurredAt", event.occurredAt().toString(),
+        "actor", event.actor(),
+        "action", event.status() + ": " + redacted(event.summary()),
+        "traceId", event.traceId(),
+        "sourceType", sourceType(event),
+        "correlationId", event.correlationId(),
+        "status", event.status(),
+        "severity", event.severity(),
+        "eventCategory", event.eventKind(),
+        "sourceWorkstream", event.workstream(),
+        "sourceSurfaceActionLabel", event.workstream(),
+        "summary", redacted(event.summary()),
+        "redactedSummary", redacted(event.summary()),
+        "relationship", "selected-correlation-event",
+        "redactionBadges", List.of("browser-safe", "tenant-scoped"),
+        "availableEventActionIds", List.of("action-audit-trace-detail", "action-audit-trace-failure-evidence", "action-audit-trace-investigation-guide"),
+        "recoveryText", "Open governed detail, failure evidence, or guidance to reauthorize this event before viewing more evidence.");
   }
 
   private Map<String, Object> notFound(String traceId) {

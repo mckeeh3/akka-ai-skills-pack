@@ -109,6 +109,25 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(dashboard.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-summary-task-start") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-summary-progress")));
     assertBrowserSafe(dashboard);
 
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .GET("/api/workstream/surfaces/surface-audit-trace-timeline")
+        .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
+        .responseBodyAs(String.class)
+        .invoke(), "Protected Audit/Trace timeline must reject missing bearer tokens.");
+
+    var directTimeline = getSurface("surface-audit-trace-timeline", "corr-audit-timeline-direct");
+    assertEquals("surface-audit-trace-timeline", directTimeline.surfaceId());
+    assertEquals("audit-timeline", directTimeline.surfaceType());
+    assertEquals("audit.trace.timeline.v1", directTimeline.data().get("surfaceContract"));
+    assertTrue(directTimeline.data().containsKey("selectedScope"));
+    assertTrue(directTimeline.data().containsKey("authorizationBasis"));
+    assertTrue(directTimeline.data().containsKey("correlationSummary"));
+    assertTrue(((List<Map<String, Object>>) directTimeline.data().get("events")).stream().anyMatch(event -> "auth-context".equals(event.get("eventId"))));
+    assertTrue(directTimeline.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-request-redacted-export") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-export-request")));
+    assertTrue(directTimeline.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-append-investigation-note") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-investigation-note")));
+    assertTrue(directTimeline.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-search") && action.resultSurface().updateSurfaceId().equals("surface-audit-trace-search")));
+    assertBrowserSafe(directTimeline);
+
     var refreshed = runAction(new CapabilityActionRequest(
         "action-audit-trace-dashboard",
         "action-audit-trace-dashboard",
@@ -188,6 +207,8 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-audit-trace-timeline", timeline.resultSurface().surfaceId());
     assertEquals("audit.trace.timeline.v1", timeline.resultSurface().data().get("surfaceContract"));
     assertTrue(timeline.resultSurface().toString().contains("auth-context"));
+    assertTrue(((List<Map<String, Object>>) timeline.resultSurface().data().get("events")).stream().anyMatch(event -> String.valueOf(event.get("availableEventActionIds")).contains("action-audit-trace-detail")));
+    assertTrue(String.valueOf(timeline.resultSurface().data().get("redaction")).contains("non-enumerating"));
     assertBrowserSafe(timeline.resultSurface());
 
     var failureEvidence = runAction(new CapabilityActionRequest(
@@ -642,6 +663,14 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
         "member-audit@example.test",
         "Member User",
         MEMBER_CONTEXT_ID), "Regular tenant members must not read Audit/Trace dashboard state.");
+
+    assertThrows(RuntimeException.class, () -> getSurfaceAs(
+        "surface-audit-trace-timeline",
+        "corr-audit-timeline-member-denied",
+        "workos-audit-member",
+        "member-audit@example.test",
+        "Member User",
+        MEMBER_CONTEXT_ID), "Regular tenant members must not read Audit/Trace timeline evidence.");
 
     var customerDashboard = getSurfaceAs(
         "surface-audit-trace-dashboard",
