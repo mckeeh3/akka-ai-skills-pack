@@ -762,7 +762,7 @@ Evidence must cover: success path, validation/error path, forbidden/denied/hidde
 
 | Objective | Status | Evidence / blocker | Last updated |
 |---|---|---|---|
-| fully-specified | pending |  |  |
+| fully-specified | done | App-description contract completed in `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`: expanded `surface-agent-behavior-proposal` for `agent_admin.behavior_proposal.v1` with Agent Admin/`agent-admin-agent` ownership, dashboard/review/test/prompt-risk/lifecycle placement, browser-safe `proposalSummary`, `scopeSummary`, `recommendation`, `evidenceSummary`, `riskAndImpact`, `decisionState`, `authorizedActions[]`, diagnostics, and redaction payload semantics; added governed submit/approve/reject/defer/cancel/activation/rollback/source/trace action mappings, backend AuthContext/tenant-scope authorization and no-enumeration denial rules, audit/work trace and correlation/idempotency requirements, fail-closed provider/runtime states, mutation boundaries, accessibility/responsive bindings, and realization/security/negative/idempotency/trace tests. Validation passed: `git diff --check` plus focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description. | 2026-06-18 |
 | fully-implemented | pending |  |  |
 | fully-tested | pending |  |  |
 

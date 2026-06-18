@@ -5762,7 +5762,7 @@
 
 ### TASK-FSCT-163: Verify or complete app-description specification for `surface-agent-behavior-proposal`
 
-- status: pending
+- status: done
 - source: specs/foundation-surface-completion-tracker/surface-completion-tracker.md
 - depends on: []
 - surface id: `surface-agent-behavior-proposal`
@@ -5791,6 +5791,7 @@
   - purpose: Behavior proposal decision card.
   - specification readiness target: app-description can drive implementation without invented fields/actions/states/auth/traces/tests
   - vertical contract: docs-only / non-runtime specification task; foundation scope: Agent Admin `surface-agent-behavior-proposal` surface contract; non-attention/non-UI reason: app-description readiness only; capability and trace expectations must be documented or explicitly absent; local validation: `git diff --check` plus focused rg evidence
+  - completed 2026-06-18: expanded the Agent Admin behavior proposal app-description contract with ownership/placement, browser-safe payload schema (`proposalSummary`, `scopeSummary`, `recommendation`, `evidenceSummary`, `riskAndImpact`, `decisionState`, `authorizedActions[]`, redaction), governed submit/approve/reject/defer/cancel/activation/rollback/source/trace actions, backend AuthContext/tenant authorization and no-enumeration denials, audit/work trace and correlation/idempotency requirements, fail-closed provider/runtime states, mutation boundaries, accessibility/responsive bindings, tests, and sufficiency review. checks passed: `git diff --check` and focused `rg` evidence for surface id, payload/actions/auth/traces/tests in app-description. next runnable task: `TASK-FSCT-164`.
 
 ### TASK-FSCT-164: Verify or complete runtime implementation for `surface-agent-behavior-proposal`
 
