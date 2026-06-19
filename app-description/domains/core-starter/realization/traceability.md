@@ -34,7 +34,9 @@ This traceability map links the reconstructed current-intent graph to known root
 ## Runtime boundaries and deferred scope
 
 - The active frontend architecture is the workstream shell under `frontend/src/workstream/**`; removed screen modules are not current app-description targets or runtime fallbacks.
-- Test-only fixtures, fake providers, and deterministic model doubles prove tests only; they are not normal runtime behavior.
+- Test-only fixtures, fake providers, seeded repositories, captured payloads, and deterministic model doubles prove tests only; they are not normal runtime behavior and must not be wired into production paths.
 - Billing and timer-backed invitation reminder behavior remain explicitly out of scope in `app-description/deferred-scope.md` unless a future current-intent change accepts them.
 - Live WorkOS/AuthKit, Resend, and model provider smokes depend on external secrets; active descriptions must state fail-closed behavior and must not record secrets.
 - Archived specs may still cite legacy `app-description/` taxonomy; those references are historical evidence only and do not override this current-intent graph.
+- Compatibility APIs, legacy route names, retired action ids, and implementation class names are evidence or stale-client inputs only. They cannot expand product scope, bypass selected `AuthContext`, or replace canonical workstream/surface contracts.
+- When a requested behavior is absent, deferred, provider-blocked, unauthorized, hidden, stale, or represented only by archived/test material, runtime must return a safe typed denial/unsupported/fail-closed result with trace evidence rather than inventing success.

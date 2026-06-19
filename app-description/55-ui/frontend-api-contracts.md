@@ -1,10 +1,10 @@
 # Frontend API Contracts
 
-Canonical workstream UI calls protected backend APIs for data/actions; routes are not authorization.
+Canonical workstream UI calls protected backend APIs for data/actions; routes are not authorization. This file exists to prevent unsafe inference from compatibility endpoints: generated browser behavior must use the workstream shell contracts unless a surface explicitly names a protected compatibility/service API as additional evidence.
 
 ## User Admin compatibility contracts
 
-Canonical User Admin browser runtime uses the workstream shell contracts (`/api/workstream/bootstrap`, `/api/workstream/actions`, `/api/workstream/shell-requests`, and `/api/workstream/messages`) for typed structured surfaces. The `/api/admin/**` routes are protected compatibility/service APIs for direct JSON access, local smoke checks, and downstream integrations; they must preserve the same backend authorization, selected-context, idempotency, redaction, and audit semantics but do not replace the structured surface envelopes.
+Canonical User Admin browser runtime uses the workstream shell contracts (`/api/workstream/bootstrap`, `/api/workstream/actions`, `/api/workstream/shell-requests`, and `/api/workstream/messages`) for typed structured surfaces. The `/api/admin/**` routes are protected compatibility/service APIs for direct JSON access, local smoke checks, and downstream integrations; they must preserve the same backend authorization, selected-context, idempotency, redaction, and audit semantics but do not replace the structured surface envelopes. Compatibility routes must not be used to infer page-first UI, frontend-only authority, missing workstream actions, billing/support/customer-success behavior, or fixture-backed normal runtime success.
 
 - `GET /api/admin/users/dashboard` returns a compatibility `UserAdminDashboardPayload` with scoped dashboard counters, trace refs, and authorized actions. Rich dashboard surface rendering is sourced from `surface-user-admin-dashboard` through the workstream shell.
 - `GET /api/admin/users` returns scoped user/invitation rows.
@@ -82,3 +82,9 @@ The canonical frontend runtime is the workstream shell described by `global/surf
 - `GET /api/workstream/events` streams server-sent workstream events for the selected context. Events include typed surface updates, projection refresh notices, notification/attention changes, stale/reconnect markers, and bounded replay metadata. The browser ignores malformed, out-of-order, duplicate, or cross-context events and never treats events as authorization grants.
 
 Common envelope fields across these contracts: `surfaceId`, `surfaceType`, `surfaceContract`, `functionalAgentId`, `workstreamId`, `selectedAuthContext`, `capabilityDecision`, `authorizedActions[]`, `traceRefs[]`, `correlationId`, `idempotencyKeyHint?`, `redaction`, `systemStates`, `staleVersion?`, and `realtimeStatus?`. Raw JWT/session values, provider secrets/payloads, invitation tokens/token hashes, raw prompts/model responses, hidden tenant/customer ids, unredacted audit evidence, and raw idempotency keys are forbidden in browser payloads.
+
+## Unsafe-inference rejection rules
+
+- A browser route, query string, disabled button, fixture row, mock response, or compatibility `/api/admin/**` response never grants authority and never creates product scope outside the surface graph.
+- If a requested action is retired, deferred, unavailable, provider-blocked, model-blocked, outbox-blocked, hidden, or outside the selected `AuthContext`, the backend returns a typed safe system-message/result surface rather than a guessed success payload.
+- Workstream shell payloads must emit canonical workstream, surface, action, capability, and functional-agent ids. Retired ids may be accepted only as stale-client inputs that produce safe unsupported-action/system-message results with trace evidence.

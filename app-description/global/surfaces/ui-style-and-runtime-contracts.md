@@ -1,6 +1,6 @@
 # Global UI Style and Runtime Contracts
 
-The canonical browser UI is the workstream shell under `frontend/src/workstream/**`, backed by protected Akka/API calls. Removed screen modules are not active app-description targets, runtime fallbacks, fixture sources, or mechanics references.
+The canonical browser UI is the workstream shell under `frontend/src/workstream/**`, backed by protected Akka/API calls. Removed screen modules are not active app-description targets, runtime fallbacks, fixture sources, mechanics references, or generation templates.
 
 ## Style source of truth
 
@@ -16,5 +16,7 @@ Surface descriptions may refer to the selected web UI style guide, named-theme t
 
 - Workstream bootstrap, actions, messages, and realtime events come from protected backend endpoints.
 - Test fixtures may live only under test assets and must not be importable or selectable by the normal runtime path.
-- Browser route state, deep links, local storage, disabled controls, and fixture data never grant authority.
+- Browser route state, deep links, local storage, disabled controls, compatibility endpoints, and fixture data never grant authority or imply a missing workstream/surface contract.
 - Provider/model/outbox unavailable states render fail-closed typed surfaces; no fake success or canned model/provider result is normal runtime behavior.
+- Retired screen modules, page-first route tests, stale compatibility aliases, and archived specs must be treated as historical or test evidence only. If they conflict with current workstream/surface contracts, the current app-description graph wins.
+- Frontend code must omit or safely disable unsupported/deferred actions; it must not render placeholder panels for billing, CRM/customer-success/sales/support case management, timer reminders, or other deferred business domains.

@@ -27,8 +27,14 @@ Retired action ids are not accepted as current product actions: `action-customer
 
 ## Enforcement rule
 
-Frontend visibility is advisory. Backend actions must check selected `AuthContext`, canonical capability ids, target tenant/customer ownership, idempotency, approval policy, audit/work trace emission, and redaction before returning a surface.
+Frontend visibility is advisory. Backend actions must check selected `AuthContext`, canonical capability ids, target tenant/customer ownership, idempotency, approval policy, audit/work trace emission, and redaction before returning a surface. Retired capability or action ids must not be translated into successful product behavior at the browser/API boundary; stale clients receive safe unsupported-action or system-message results unless a backend-only internal mapping is explicitly listed above.
 
 ## Cleanup rule
 
 New app-description and implementation work must use canonical lowercase product ids. Uppercase `USERADMIN_*` and broad `secure-tenant-user-foundation` strings are retired and should not be introduced for new product meaning.
+
+## Unsafe-assumption rejection
+
+- Do not infer Customer CRM, customer-success, sales, support-case, billing, entitlement, procurement, customer-intelligence, or timer-reminder behavior from the foundation `Customer` boundary, old endpoint names, archived specs, or test fixtures.
+- Do not infer Organization/Tenant application-data authority from SaaS Owner, Organization Admin, or Customer Admin management surfaces; admin surfaces manage foundation identity/access boundaries only.
+- Do not infer provider/outbox/model success from seeded tests or local fixtures. Invitation delivery, agent guidance, access review, and identity recovery must use the governed runtime path or fail closed with trace evidence.

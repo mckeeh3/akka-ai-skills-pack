@@ -33,6 +33,14 @@ Reusable foundation doctrine is referenced rather than duplicated here:
 - Provider-dependent behavior must fail closed with actionable errors when required configuration is missing.
 - Runtime readiness is proven through the intended local Akka/API/UI path at the stated scope, not by description alone.
 
+## Generation and runtime guardrails
+
+- Generators and maintainers must read this file, `deferred-scope.md`, global runtime contracts, workstream surface contracts, and realization caveats together before treating behavior as current intent.
+- Archived specs, compatibility route names, retired action ids, legacy screen modules, fixtures, demo data, and test-only providers are never product authority and must not be used to infer missing behavior.
+- Canonical workstream shell contracts are authoritative for browser behavior; compatibility `/api/admin/**` routes are protected service/API edges only.
+- Model-backed, Resend-backed, WorkOS/AuthKit-backed, and outbox-backed behavior must either execute through configured runtime paths or return explicit fail-closed surfaces/results. Canned or model-less success is forbidden as normal runtime behavior.
+- Deferred scope remains absent until an accepted intent change adds capability, surface, API, auth, trace, test, and realization mappings in one consistent update.
+
 ## Non-goals
 
 - Do not add app-specific CRM, customer-success, sales/revenue, support/service, billing, procurement, customer intelligence, timer-backed reminder, or other business-domain workstreams to the core starter graph.
