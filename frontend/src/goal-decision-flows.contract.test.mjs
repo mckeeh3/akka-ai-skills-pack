@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
@@ -14,15 +14,7 @@ const outcomeSurface = read('./workstream/surfaces/OutcomeSurface.tsx');
 const workflowSurface = read('./workstream/surfaces/WorkflowStatusSurface.tsx');
 const actions = read('./workstream/actions/capabilityActionState.ts');
 
-const quarantinedLegacyScreens = [
-  './screens/goals/GoalWorkbenchPage.tsx',
-  './screens/decisions/DecisionQueuePage.tsx'
-];
-
-test('goal and decision legacy screens are quarantined behind the workstream shell', () => {
-  for (const path of quarantinedLegacyScreens) {
-    assert.ok(existsSync(new URL(path, import.meta.url)), `${path} remains only as a quarantined mechanics reference`);
-  }
+test('goal and decision work no longer depends on removed screen modules', () => {
   assert.match(main, /<WorkstreamShell/);
   assert.match(main, /<WorkstreamStream/);
   assert.match(main, /selectedFunctionalAgentId/);

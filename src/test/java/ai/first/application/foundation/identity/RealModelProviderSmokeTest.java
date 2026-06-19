@@ -13,7 +13,7 @@ import akka.javasdk.testkit.TestKit;
 import akka.javasdk.testkit.TestKitSupport;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import ai.first.application.foundation.workstream.LocalDemoWorkstreamLogRepository;
+import ai.first.application.foundation.workstream.InMemoryTestWorkstreamLogRepository;
 import ai.first.application.coreapp.workstream.WorkstreamService;
 
 /** Optional real-provider smoke. Skips unless backend-only provider env is present. */
@@ -57,7 +57,7 @@ class RealModelProviderSmokeTest extends TestKitSupport {
     StarterSecurityComponents.agentBehaviorSeedLoader()
         .importStarterDefaults(BootstrapAdminSeeder.DEFAULT_TENANT_ID, "real-provider-smoke", "corr-real-provider-seed");
     var meService = StarterSecurityComponents.meService();
-    var service = StarterSecurityComponents.workstreamService(componentClient, new LocalDemoWorkstreamLogRepository());
+    var service = StarterSecurityComponents.workstreamService(componentClient, new InMemoryTestWorkstreamLogRepository());
     var agentRuntimeService = StarterSecurityComponents.agentRuntimeService();
     var selectedContextId = "membership-admin@example.test";
 

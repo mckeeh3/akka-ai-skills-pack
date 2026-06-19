@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ai.first.application.foundation.audit.AuditTraceService;
 import ai.first.application.foundation.identity.AuthContextResolver;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.coreapp.myaccount.MyAccountService;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
@@ -31,12 +31,12 @@ import org.junit.jupiter.api.Test;
 import ai.first.application.coreapp.agentadmin.AgentAdminService;
 
 class AgentBehaviorSeedLoaderTest {
-  private LocalDemoAgentBehaviorRepository repository;
+  private InMemoryTestAgentBehaviorRepository repository;
   private AgentBehaviorSeedLoader loader;
 
   @BeforeEach
   void setUp() {
-    repository = new LocalDemoAgentBehaviorRepository();
+    repository = new InMemoryTestAgentBehaviorRepository();
     loader = new AgentBehaviorSeedLoader(repository, Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));
   }
 
@@ -97,7 +97,7 @@ class AgentBehaviorSeedLoaderTest {
   @Test
   void allFiveCoreAgentsResolveThroughSameManagedRuntimePathWithDistinctProfiles() {
     loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC), new OpenAiModelProviderClient(), new LocalDemoAgentRuntimeTraceSink());
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryTestIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC), new OpenAiModelProviderClient(), new InMemoryTestAgentRuntimeTraceSink());
     var toolResolver = new AgentRuntimeToolResolver(repository, runtimeService);
     var promptIds = new HashSet<String>();
     var skillManifestIds = new HashSet<String>();
@@ -167,7 +167,7 @@ class AgentBehaviorSeedLoaderTest {
   @Test
   void agentAdminRuntimePreparationRequiresAgentAdminSubmitTurnCapability() {
     loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC), new OpenAiModelProviderClient(), new LocalDemoAgentRuntimeTraceSink());
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryTestIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC), new OpenAiModelProviderClient(), new InMemoryTestAgentRuntimeTraceSink());
     var userAdminOnlyContext = new AuthContext(
         "admin-1",
         "workos-admin-1",

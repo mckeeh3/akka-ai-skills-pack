@@ -20,13 +20,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class MeServiceTest {
-  private LocalDemoIdentityRepository repository;
+  private InMemoryTestIdentityRepository repository;
   private MeService meService;
   private AuthContextResolver resolver;
 
   @BeforeEach
   void setUp() {
-    repository = new LocalDemoIdentityRepository();
+    repository = new InMemoryTestIdentityRepository();
     resolver = new AuthContextResolver(repository);
     meService = new MeService(resolver);
     repository.putTenant(new Tenant("tenant-1", "Tenant One", true));

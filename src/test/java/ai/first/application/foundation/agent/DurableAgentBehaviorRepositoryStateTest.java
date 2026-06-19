@@ -71,8 +71,8 @@ class DurableAgentBehaviorRepositoryStateTest {
     assertFalse(durablePrompt.contentBody().contains("RESEND_API_KEY"));
   }
 
-  private LocalDemoAgentBehaviorRepository seededRepository(String tenantId) {
-    var repository = new LocalDemoAgentBehaviorRepository();
+  private InMemoryTestAgentBehaviorRepository seededRepository(String tenantId) {
+    var repository = new InMemoryTestAgentBehaviorRepository();
     var loader = new AgentBehaviorSeedLoader(
         repository,
         Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC));

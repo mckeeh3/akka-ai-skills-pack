@@ -25,20 +25,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 
 class AuditTraceSummaryServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-25T10:15:30Z"), ZoneOffset.UTC);
-  private LocalDemoIdentityRepository identityRepository;
+  private InMemoryTestIdentityRepository identityRepository;
   private AuthContextResolver resolver;
   private AuthContextResolver.ResolvedMe auditor;
   private AuditTraceSummaryService service;
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
     resolver = new AuthContextResolver(identityRepository);
-    service = new AuditTraceSummaryService(new LocalDemoAuditTraceSummaryTaskRepository(), resolver, clock);
+    service = new AuditTraceSummaryService(new InMemoryTestAuditTraceSummaryTaskRepository(), resolver, clock);
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     seed("auditor@example.test", "membership-auditor", FoundationRole.AUDITOR);
     seed("member@example.test", "membership-member", FoundationRole.TENANT_EMPLOYEE);
@@ -63,7 +63,7 @@ class AuditTraceSummaryServiceTest {
 
   @Test
   void componentClientBackedRuntimeStartIsQueuedAndIdempotentUntilProjectionCompletes() {
-    var repository = new LocalDemoAuditTraceSummaryTaskRepository();
+    var repository = new InMemoryTestAuditTraceSummaryTaskRepository();
     var runtime = new RecordingAuditTraceSummaryAutonomousAgentRuntime();
     var summaries = new AuditTraceSummaryService(repository, resolver, clock, runtime);
 

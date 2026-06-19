@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /** Test-source Akka component test notification repository. */
-public final class LocalDemoNotificationRepository implements NotificationRepository {
+public final class InMemoryTestNotificationRepository implements NotificationRepository {
   private final Map<String, NotificationItem> items = new LinkedHashMap<>();
   private final Map<String, NotificationPreference> preferences = new LinkedHashMap<>();
   private final Map<String, EmailNotificationPreference> emailPreferences = new LinkedHashMap<>();

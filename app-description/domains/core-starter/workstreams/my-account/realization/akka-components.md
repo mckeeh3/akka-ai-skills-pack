@@ -26,4 +26,4 @@ This map is docs-only. It points to current implementation evidence and does not
 ## Gaps / caveats
 
 - Live provider validation is external-configuration dependent; missing model/provider configuration must fail closed.
-- `LocalDemoMyAccountPersonalAttentionDigestTaskRepository.java` is test/demo support only, not normal runtime proof.
+- In-memory test digest repositories are test support only, not normal runtime proof.

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 /** Unit-test/local adapter for governed workstream event backbone tests; production binds AkkaWorkstreamEventRepository. */
-public final class LocalDemoWorkstreamEventRepository implements WorkstreamEventRepository {
+public final class InMemoryTestWorkstreamEventRepository implements WorkstreamEventRepository {
   private WorkstreamEventRepositoryState state = WorkstreamEventRepositoryState.empty();
 
   public synchronized WorkstreamEventEnvelope publish(WorkstreamEventEnvelope event) {

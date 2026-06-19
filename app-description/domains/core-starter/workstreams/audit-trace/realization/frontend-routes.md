@@ -21,4 +21,4 @@ Capability: `audit-and-trace-investigation`.
 
 ## Gaps / caveats
 
-- Legacy `frontend/src/screens/audit/AuditTraceExplorerPage.tsx` is reference/fixture evidence, not the primary workstream shell architecture.
+- Audit/Trace frontend realization must stay in `frontend/src/workstream/**`; removed screen modules are not reference or fallback architecture.

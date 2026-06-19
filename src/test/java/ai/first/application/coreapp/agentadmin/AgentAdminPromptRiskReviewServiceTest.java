@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.domain.coreapp.agentadmin.PromptRiskReviewTask;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
@@ -29,16 +29,16 @@ import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
 
 class AgentAdminPromptRiskReviewServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-25T10:15:30Z"), ZoneOffset.UTC);
-  private LocalDemoIdentityRepository identityRepository;
+  private InMemoryTestIdentityRepository identityRepository;
   private AuthContextResolver resolver;
   private AuthContextResolver.ResolvedMe tenantAdmin;
   private AgentAdminPromptRiskReviewService service;
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
     resolver = new AuthContextResolver(identityRepository);
-    service = new AgentAdminPromptRiskReviewService(new LocalDemoPromptRiskReviewTaskRepository(), resolver, clock);
+    service = new AgentAdminPromptRiskReviewService(new InMemoryTestPromptRiskReviewTaskRepository(), resolver, clock);
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     seed("admin@example.test", "membership-admin", FoundationRole.TENANT_ADMIN);
     seed("member@example.test", "membership-member", FoundationRole.TENANT_EMPLOYEE);
@@ -63,7 +63,7 @@ class AgentAdminPromptRiskReviewServiceTest {
 
   @Test
   void componentClientBackedRuntimeStartIsQueuedAndIdempotentUntilProjectionCompletes() {
-    var repository = new LocalDemoPromptRiskReviewTaskRepository();
+    var repository = new InMemoryTestPromptRiskReviewTaskRepository();
     var runtime = new RecordingPromptRiskAutonomousAgentRuntime();
     var promptRisk = new AgentAdminPromptRiskReviewService(repository, resolver, clock, runtime);
 

@@ -24,19 +24,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
-import ai.first.application.foundation.notification.LocalDemoNotificationRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
+import ai.first.application.foundation.notification.InMemoryTestNotificationRepository;
 
 class DigestExportServiceTest {
-  private LocalDemoIdentityRepository identityRepository;
-  private LocalDemoNotificationRepository repository;
+  private InMemoryTestIdentityRepository identityRepository;
+  private InMemoryTestNotificationRepository repository;
   private AuthContextResolver resolver;
   private DigestExportService service;
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
-    repository = new LocalDemoNotificationRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
+    repository = new InMemoryTestNotificationRepository();
     resolver = new AuthContextResolver(identityRepository);
     service = new DigestExportService(repository, resolver, Clock.fixed(Instant.parse("2026-05-26T10:00:00Z"), ZoneOffset.UTC));
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));

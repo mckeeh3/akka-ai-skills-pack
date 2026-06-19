@@ -12,7 +12,7 @@ import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import java.util.List;
 import java.util.Optional;
 
-/** Persistence port for governed agent behavior records. Normal runtime must bind an Akka-backed implementation; local/demo adapters are test or explicit inspection aids only. */
+/** Persistence port for governed agent behavior records. Normal runtime must bind an Akka-backed implementation; in-memory test adapters are test or explicit inspection aids only. */
 public interface AgentBehaviorRepository {
   Optional<AgentDefinition> agentDefinition(String tenantId, String agentDefinitionId);
   AgentDefinition saveAgentDefinition(AgentDefinition definition);

@@ -31,18 +31,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.attention.AttentionProducerService;
 import ai.first.application.foundation.attention.AttentionService;
-import ai.first.application.foundation.attention.LocalDemoAttentionRepository;
+import ai.first.application.foundation.attention.InMemoryTestAttentionRepository;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
-import ai.first.application.foundation.workstream.LocalDemoWorkstreamEventRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
+import ai.first.application.foundation.workstream.InMemoryTestWorkstreamEventRepository;
 import ai.first.application.foundation.workstream.WorkstreamEventAttentionConsumer;
 import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 
 class MyAccountPersonalAttentionDigestServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-25T10:15:30Z"), ZoneOffset.UTC);
-  private LocalDemoIdentityRepository identityRepository;
-  private LocalDemoAttentionRepository attentionRepository;
+  private InMemoryTestIdentityRepository identityRepository;
+  private InMemoryTestAttentionRepository attentionRepository;
   private AuthContextResolver resolver;
   private AuthContextResolver.ResolvedMe owner;
   private AuthContextResolver.ResolvedMe employee;
@@ -50,11 +50,11 @@ class MyAccountPersonalAttentionDigestServiceTest {
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
-    attentionRepository = new LocalDemoAttentionRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
+    attentionRepository = new InMemoryTestAttentionRepository();
     resolver = new AuthContextResolver(identityRepository);
     var attentionService = new AttentionService(attentionRepository, resolver, clock);
-    service = new MyAccountPersonalAttentionDigestService(new LocalDemoMyAccountPersonalAttentionDigestTaskRepository(), resolver, attentionService, clock);
+    service = new MyAccountPersonalAttentionDigestService(new InMemoryTestMyAccountPersonalAttentionDigestTaskRepository(), resolver, attentionService, clock);
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     seed("owner@example.test", "membership-owner", FoundationRole.TENANT_ADMIN);
     seed("employee@example.test", "membership-employee", FoundationRole.TENANT_EMPLOYEE);
@@ -95,8 +95,8 @@ class MyAccountPersonalAttentionDigestServiceTest {
 
   @Test
   void lifecyclePublishesV3EventsAndDigestTaskAttentionWithoutMutatingSourceAttention() {
-    var repository = new LocalDemoMyAccountPersonalAttentionDigestTaskRepository();
-    var events = new LocalDemoWorkstreamEventRepository();
+    var repository = new InMemoryTestMyAccountPersonalAttentionDigestTaskRepository();
+    var events = new InMemoryTestWorkstreamEventRepository();
     var producer = new AttentionProducerService(attentionRepository, identityRepository, clock);
     var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producer, clock);
     var publisher = new WorkstreamEventPublisher(events, consumer, clock);
@@ -125,7 +125,7 @@ class MyAccountPersonalAttentionDigestServiceTest {
 
   @Test
   void componentClientBackedRuntimeStartIsQueuedAndProjectionCanCompleteReviewRequired() {
-    var repository = new LocalDemoMyAccountPersonalAttentionDigestTaskRepository();
+    var repository = new InMemoryTestMyAccountPersonalAttentionDigestTaskRepository();
     var runtime = new RecordingPersonalAttentionDigestRuntime();
     var digests = new MyAccountPersonalAttentionDigestService(repository, resolver, new AttentionService(attentionRepository, resolver, clock), clock, runtime);
 

@@ -9,12 +9,12 @@ import ai.first.application.foundation.agent.AgentRuntimeToolResolver.ResolveRun
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.foundation.governance.GovernancePolicyService;
-import ai.first.application.foundation.audit.LocalDemoAuditTraceRepository;
-import ai.first.application.foundation.governance.LocalDemoGovernancePolicyRepository;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
-import ai.first.application.foundation.attention.LocalDemoAttentionRepository;
-import ai.first.application.foundation.workstream.LocalDemoWorkstreamLogRepository;
-import ai.first.application.foundation.invitation.LocalDemoInvitationRepository;
+import ai.first.application.foundation.audit.InMemoryTestAuditTraceRepository;
+import ai.first.application.foundation.governance.InMemoryTestGovernancePolicyRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
+import ai.first.application.foundation.attention.InMemoryTestAttentionRepository;
+import ai.first.application.foundation.workstream.InMemoryTestWorkstreamLogRepository;
+import ai.first.application.foundation.invitation.InMemoryTestInvitationRepository;
 import ai.first.application.foundation.invitation.InvitationService;
 import ai.first.application.foundation.invitation.InvitationView;
 import ai.first.application.coreapp.myaccount.MyAccountService;
@@ -45,20 +45,20 @@ import ai.first.application.coreapp.myaccount.MyAccountEvidenceTools;
 import ai.first.application.coreapp.useradmin.UserAdminEvidenceTools;
 
 class AgentRuntimeToolResolverTest {
-  private LocalDemoAgentBehaviorRepository repository;
+  private InMemoryTestAgentBehaviorRepository repository;
   private AgentRuntimeToolResolver resolver;
   private AuthContext tenantAdmin;
 
   @BeforeEach
   void setUp() {
-    repository = new LocalDemoAgentBehaviorRepository();
+    repository = new InMemoryTestAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
-    var identityRepository = new LocalDemoIdentityRepository();
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(identityRepository), fixedClock(), new OpenAiModelProviderClient(), new LocalDemoAgentRuntimeTraceSink());
+    var identityRepository = new InMemoryTestIdentityRepository();
+    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(identityRepository), fixedClock(), new OpenAiModelProviderClient(), new InMemoryTestAgentRuntimeTraceSink());
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
-    StarterSecurityComponents.bindTestAttentionRepository(new LocalDemoAttentionRepository());
-    StarterSecurityComponents.bindTestAuditTraceRepository(new LocalDemoAuditTraceRepository(runtimeService, new LocalDemoWorkstreamLogRepository()));
-    StarterSecurityComponents.bindTestGovernancePolicyRepository(new LocalDemoGovernancePolicyRepository());
+    StarterSecurityComponents.bindTestAttentionRepository(new InMemoryTestAttentionRepository());
+    StarterSecurityComponents.bindTestAuditTraceRepository(new InMemoryTestAuditTraceRepository(runtimeService, new InMemoryTestWorkstreamLogRepository()));
+    StarterSecurityComponents.bindTestGovernancePolicyRepository(new InMemoryTestGovernancePolicyRepository());
     resolver = new AgentRuntimeToolResolver(repository, runtimeService);
     tenantAdmin = new AuthContext(
         "admin-1",
@@ -90,7 +90,7 @@ class AgentRuntimeToolResolverTest {
   void userAdminEvidenceToolReadsScopedRedactedEvidenceWithoutMutation() {
     var identityRepository = seededIdentityRepository();
     var userAdminService = new UserAdminService(identityRepository, fixedClock());
-    var invitationService = new InvitationService(identityRepository, new LocalDemoInvitationRepository(), fixedClock());
+    var invitationService = new InvitationService(identityRepository, new InMemoryTestInvitationRepository(), fixedClock());
     var tool = new UserAdminEvidenceTools(identityRepository, userAdminService, new InvitationView(invitationService), tenantAdmin, "corr-evidence");
 
     var beforeRoles = identityRepository.findMembership("membership-member").orElseThrow().roles();
@@ -273,7 +273,7 @@ class AgentRuntimeToolResolverTest {
   void userAdminEvidenceToolDeniesMissingCapabilityAndCrossTenantRequests() {
     var identityRepository = seededIdentityRepository();
     var userAdminService = new UserAdminService(identityRepository, fixedClock());
-    var invitationService = new InvitationService(identityRepository, new LocalDemoInvitationRepository(), fixedClock());
+    var invitationService = new InvitationService(identityRepository, new InMemoryTestInvitationRepository(), fixedClock());
     var noReadCapability = new AuthContext("admin-1", "workos-admin-1", "membership-1", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_ADMIN), List.of("agent.user_admin.use"));
     var deniedCapabilityTool = new UserAdminEvidenceTools(identityRepository, userAdminService, new InvitationView(invitationService), noReadCapability, "corr-evidence-denied");
 
@@ -344,8 +344,8 @@ class AgentRuntimeToolResolverTest {
     return new ResolveRuntimeToolsRequest("tenant-1", AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY, correlationId);
   }
 
-  private LocalDemoIdentityRepository seededIdentityRepository() {
-    var identityRepository = new LocalDemoIdentityRepository();
+  private InMemoryTestIdentityRepository seededIdentityRepository() {
+    var identityRepository = new InMemoryTestIdentityRepository();
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.saveAccount(new Account("admin-1", "workos-admin-1", "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));
     identityRepository.putProfile(new UserProfile("admin-1", "admin@example.test", "Tenant Admin", "Tenant", "Admin", null));

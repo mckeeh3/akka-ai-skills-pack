@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** In-memory repository used by the starter and tests until an Akka entity-backed policy store is introduced. */
-public final class LocalDemoGovernancePolicyRepository implements GovernancePolicyRepository {
+public final class InMemoryTestGovernancePolicyRepository implements GovernancePolicyRepository {
   private final Map<String, GovernancePolicyProposal> proposals = new ConcurrentHashMap<>();
   private final Map<String, GovernancePolicySimulationResult> simulations = new ConcurrentHashMap<>();
   private final Map<String, String> idempotencyIndex = new ConcurrentHashMap<>();

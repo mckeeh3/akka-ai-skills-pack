@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import ai.first.application.coreapp.agentadmin.AgentAdminPromptRiskReviewService;
 import ai.first.application.coreapp.audit.AuditTraceSummaryAutonomousAgentRuntime;
 import ai.first.application.coreapp.governance.GovernancePolicyImpactAutonomousAgentRuntime;
-import ai.first.application.coreapp.agentadmin.LocalDemoPromptRiskReviewTaskRepository;
+import ai.first.application.coreapp.agentadmin.InMemoryTestPromptRiskReviewTaskRepository;
 import ai.first.application.coreapp.agentadmin.PromptRiskAutonomousAgentRuntime;
 import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
 import ai.first.domain.coreapp.agentadmin.PromptRiskReviewTask;
@@ -43,29 +43,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.attention.AttentionProducerService;
 import ai.first.application.foundation.attention.AttentionService;
-import ai.first.application.foundation.attention.LocalDemoAttentionRepository;
+import ai.first.application.foundation.attention.InMemoryTestAttentionRepository;
 import ai.first.application.foundation.governance.GovernancePolicyService;
-import ai.first.application.foundation.governance.LocalDemoGovernancePolicyRepository;
+import ai.first.application.foundation.governance.InMemoryTestGovernancePolicyRepository;
 import ai.first.application.foundation.identity.AuthContextResolver;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.invitation.InvitationService;
-import ai.first.application.foundation.invitation.LocalDemoInvitationRepository;
+import ai.first.application.foundation.invitation.InMemoryTestInvitationRepository;
 import ai.first.application.coreapp.useradmin.AccessReviewAutonomousAgentRuntime;
 import ai.first.application.coreapp.audit.AuditTraceSummaryService;
 import ai.first.application.coreapp.governance.GovernancePolicyImpactService;
-import ai.first.application.coreapp.useradmin.LocalDemoAccessReviewTaskRepository;
-import ai.first.application.coreapp.audit.LocalDemoAuditTraceSummaryTaskRepository;
-import ai.first.application.coreapp.governance.LocalDemoGovernancePolicyImpactTaskRepository;
+import ai.first.application.coreapp.useradmin.InMemoryTestAccessReviewTaskRepository;
+import ai.first.application.coreapp.audit.InMemoryTestAuditTraceSummaryTaskRepository;
+import ai.first.application.coreapp.governance.InMemoryTestGovernancePolicyImpactTaskRepository;
 import ai.first.application.coreapp.useradmin.UserAdminAccessReviewService;
 import ai.first.application.coreapp.useradmin.UserAdminService;
 
 class WorkstreamEventBackboneServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-30T12:00:00Z"), ZoneOffset.UTC);
-  private LocalDemoIdentityRepository identityRepository;
-  private LocalDemoInvitationRepository invitationRepository;
-  private LocalDemoAttentionRepository attentionRepository;
-  private LocalDemoWorkstreamEventRepository eventRepository;
-  private LocalDemoAccessReviewTaskRepository accessReviewRepository;
+  private InMemoryTestIdentityRepository identityRepository;
+  private InMemoryTestInvitationRepository invitationRepository;
+  private InMemoryTestAttentionRepository attentionRepository;
+  private InMemoryTestWorkstreamEventRepository eventRepository;
+  private InMemoryTestAccessReviewTaskRepository accessReviewRepository;
   private AuthContextResolver resolver;
   private InvitationService invitations;
   private AttentionService attention;
@@ -73,11 +73,11 @@ class WorkstreamEventBackboneServiceTest {
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
-    invitationRepository = new LocalDemoInvitationRepository();
-    attentionRepository = new LocalDemoAttentionRepository();
-    eventRepository = new LocalDemoWorkstreamEventRepository();
-    accessReviewRepository = new LocalDemoAccessReviewTaskRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
+    invitationRepository = new InMemoryTestInvitationRepository();
+    attentionRepository = new InMemoryTestAttentionRepository();
+    eventRepository = new InMemoryTestWorkstreamEventRepository();
+    accessReviewRepository = new InMemoryTestAccessReviewTaskRepository();
     resolver = new AuthContextResolver(identityRepository);
     var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
     var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
@@ -281,7 +281,7 @@ class WorkstreamEventBackboneServiceTest {
     var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
     var publisher = new WorkstreamEventPublisher(eventRepository, consumer, clock);
     var runtime = new RecordingPromptRiskAutonomousAgentRuntime();
-    var promptRisk = new AgentAdminPromptRiskReviewService(new LocalDemoPromptRiskReviewTaskRepository(), resolver, clock, producers, publisher, runtime);
+    var promptRisk = new AgentAdminPromptRiskReviewService(new InMemoryTestPromptRiskReviewTaskRepository(), resolver, clock, producers, publisher, runtime);
 
     var task = promptRisk.start(tenantAdmin, promptRiskCommand("prompt-risk-event"), "corr-prompt-risk-start");
 
@@ -332,7 +332,7 @@ class WorkstreamEventBackboneServiceTest {
     var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
     var publisher = new WorkstreamEventPublisher(eventRepository, consumer, clock);
     var runtime = new RecordingAuditTraceSummaryAutonomousAgentRuntime();
-    var summaries = new AuditTraceSummaryService(new LocalDemoAuditTraceSummaryTaskRepository(), resolver, clock, producers, publisher, runtime);
+    var summaries = new AuditTraceSummaryService(new InMemoryTestAuditTraceSummaryTaskRepository(), resolver, clock, producers, publisher, runtime);
 
     var task = summaries.start(tenantAdmin, auditSummaryCommand("audit-summary-event"), "corr-audit-summary-start");
 
@@ -385,8 +385,8 @@ class WorkstreamEventBackboneServiceTest {
     var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
     var publisher = new WorkstreamEventPublisher(eventRepository, consumer, clock);
     var runtime = new RecordingGovernancePolicyImpactAutonomousAgentRuntime();
-    var governancePolicyRepository = new LocalDemoGovernancePolicyRepository();
-    var impacts = new GovernancePolicyImpactService(new LocalDemoGovernancePolicyImpactTaskRepository(), governancePolicyRepository, resolver, clock, producers, publisher, runtime);
+    var governancePolicyRepository = new InMemoryTestGovernancePolicyRepository();
+    var impacts = new GovernancePolicyImpactService(new InMemoryTestGovernancePolicyImpactTaskRepository(), governancePolicyRepository, resolver, clock, producers, publisher, runtime);
     var proposalId = governancePolicyProposal(governancePolicyRepository, "governance-impact-event");
 
     var task = impacts.start(tenantAdmin, governanceImpactCommand(proposalId, "governance-impact-event"), "corr-governance-impact-start");
@@ -438,7 +438,7 @@ class WorkstreamEventBackboneServiceTest {
     var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
     var consumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, producers, clock);
     var publisher = new WorkstreamEventPublisher(eventRepository, consumer, clock);
-    var promptRisk = new AgentAdminPromptRiskReviewService(new LocalDemoPromptRiskReviewTaskRepository(), resolver, clock, producers, publisher);
+    var promptRisk = new AgentAdminPromptRiskReviewService(new InMemoryTestPromptRiskReviewTaskRepository(), resolver, clock, producers, publisher);
 
     var task = promptRisk.start(tenantAdmin, promptRiskCommand("prompt-risk-blocked"), "corr-prompt-risk-blocked");
 
@@ -567,7 +567,7 @@ class WorkstreamEventBackboneServiceTest {
     var sourceFromOtherTenant = new ai.first.domain.foundation.invitation.Invitation(
         invite.invitationId(), invite.normalizedEmail(), invite.scopeType(), "tenant-2", invite.customerId(), invite.requestedRoles(), invite.accountId(), invite.membershipId(), invite.status(), invite.deliveryStatus(), invite.deliveryAttempts(), invite.providerMessageIds(), invite.lastDeliveryErrorSummary(), invite.acceptanceContextId(), invite.tokenHash(), invite.expiresAt(), invite.acceptedAt(), invite.acceptedByWorkosSubject(), invite.revokedAt(), invite.revokedByAccountId(), invite.revokeReason(), invite.resendCount(), invite.createdByAccountId(), invite.createdAt(), invite.idempotencyKey(), "corr-cross-source");
 
-    var consumer = new WorkstreamEventAttentionConsumer(new LocalDemoAttentionRepository(), identityRepository, new AttentionProducerService(new LocalDemoAttentionRepository(), identityRepository, clock), clock);
+    var consumer = new WorkstreamEventAttentionConsumer(new InMemoryTestAttentionRepository(), identityRepository, new AttentionProducerService(new InMemoryTestAttentionRepository(), identityRepository, clock), clock);
     var projected = consumer.project(event, sourceFromOtherTenant);
 
     assertEquals(null, projected);
@@ -588,7 +588,7 @@ class WorkstreamEventBackboneServiceTest {
     }
   }
 
-  private String governancePolicyProposal(LocalDemoGovernancePolicyRepository repository, String key) {
+  private String governancePolicyProposal(InMemoryTestGovernancePolicyRepository repository, String key) {
     var governance = new GovernancePolicyService(repository, resolver, clock);
     var draft = governance.draftProposal(tenantAdmin, Map.of("rationale", "tighten approval boundary", "proposedContent", "change ToolPermissionBoundary approval gate"), key, key + "-draft");
     var proposalId = draft.surface().data().get("proposalId").toString();

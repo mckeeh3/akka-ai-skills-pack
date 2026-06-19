@@ -42,19 +42,19 @@ import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.attention.AttentionService;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 
 class NotificationServiceTest {
-  private LocalDemoIdentityRepository identityRepository;
-  private LocalDemoNotificationRepository notificationRepository;
+  private InMemoryTestIdentityRepository identityRepository;
+  private InMemoryTestNotificationRepository notificationRepository;
   private AuthContextResolver resolver;
   private NotificationService service;
   private Clock clock;
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
-    notificationRepository = new LocalDemoNotificationRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
+    notificationRepository = new InMemoryTestNotificationRepository();
     resolver = new AuthContextResolver(identityRepository);
     clock = Clock.fixed(Instant.parse("2026-05-26T10:00:00Z"), ZoneOffset.UTC);
     service = new NotificationService(notificationRepository, resolver, clock);

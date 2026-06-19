@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /** Unit-test/local adapter for My Account personal attention digest task projections. */
-public final class LocalDemoMyAccountPersonalAttentionDigestTaskRepository implements MyAccountPersonalAttentionDigestTaskRepository {
+public final class InMemoryTestMyAccountPersonalAttentionDigestTaskRepository implements MyAccountPersonalAttentionDigestTaskRepository {
   private final Map<String, MyAccountPersonalAttentionDigestTask> tasks = new LinkedHashMap<>();
 
   @Override

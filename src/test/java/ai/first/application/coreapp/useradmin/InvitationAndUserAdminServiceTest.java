@@ -29,14 +29,14 @@ import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.email.ResendEmailService;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.invitation.InvitationService;
-import ai.first.application.foundation.invitation.LocalDemoInvitationRepository;
+import ai.first.application.foundation.invitation.InMemoryTestInvitationRepository;
 
 class InvitationAndUserAdminServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-20T10:15:30Z"), ZoneOffset.UTC);
-  private LocalDemoIdentityRepository identityRepository;
-  private LocalDemoInvitationRepository invitationRepository;
+  private InMemoryTestIdentityRepository identityRepository;
+  private InMemoryTestInvitationRepository invitationRepository;
   private AuthContextResolver resolver;
   private InvitationService invitations;
   private UserAdminService userAdmin;
@@ -44,8 +44,8 @@ class InvitationAndUserAdminServiceTest {
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
-    invitationRepository = new LocalDemoInvitationRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
+    invitationRepository = new InMemoryTestInvitationRepository();
     resolver = new AuthContextResolver(identityRepository);
     invitations = new InvitationService(identityRepository, invitationRepository, clock);
     userAdmin = new UserAdminService(identityRepository, clock);

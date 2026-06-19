@@ -5,7 +5,7 @@ import java.util.Optional;
 import ai.first.application.coreapp.workstream.WorkstreamService;
 
 /** Unit-test/local adapter for the durable workstream log port; production API paths bind AkkaWorkstreamLogRepository. */
-public final class LocalDemoWorkstreamLogRepository implements WorkstreamLogRepository {
+public final class InMemoryTestWorkstreamLogRepository implements WorkstreamLogRepository {
   private WorkstreamLogState state = WorkstreamLogState.empty();
 
   @Override

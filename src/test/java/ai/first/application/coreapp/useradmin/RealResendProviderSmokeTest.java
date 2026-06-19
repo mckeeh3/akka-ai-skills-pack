@@ -8,9 +8,9 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import ai.first.application.foundation.email.ResendEmailService;
 import ai.first.application.foundation.identity.AuthContextResolver;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.invitation.InvitationService;
-import ai.first.application.foundation.invitation.LocalDemoInvitationRepository;
+import ai.first.application.foundation.invitation.InMemoryTestInvitationRepository;
 import ai.first.domain.foundation.email.EmailDeliveryStatus;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
@@ -44,8 +44,8 @@ class RealResendProviderSmokeTest {
     var recipient = firstNonBlank(System.getenv("RESEND_SMOKE_TO"), System.getenv("RESEND_TEST_TO"), System.getenv("INVITE_EMAIL_TO"), extractEmail(from));
     assumeTrue(recipient != null, "Skipping live Resend smoke because no recipient can be derived from RESEND_SMOKE_TO/RESEND_TEST_TO/INVITE_EMAIL_TO or sender config.");
 
-    var identityRepository = new LocalDemoIdentityRepository();
-    var invitationRepository = new LocalDemoInvitationRepository();
+    var identityRepository = new InMemoryTestIdentityRepository();
+    var invitationRepository = new InMemoryTestInvitationRepository();
     var resolver = new AuthContextResolver(identityRepository);
     var invitations = new InvitationService(identityRepository, invitationRepository, clock);
     identityRepository.putTenant(new Tenant("tenant-resend-smoke", "Resend Smoke Tenant", true));
@@ -84,7 +84,7 @@ class RealResendProviderSmokeTest {
     assertTrue(identityRepository.auditEvents().stream().noneMatch(event -> event.toString().contains(apiKey)), "Provider secret leaked into audit events");
   }
 
-  private static void seedAdmin(LocalDemoIdentityRepository identityRepository, String email, String membershipId, FoundationRole role) {
+  private static void seedAdmin(InMemoryTestIdentityRepository identityRepository, String email, String membershipId, FoundationRole role) {
     identityRepository.saveAccount(new Account(email, "workos-" + email, email, email, AccountStatus.ACTIVE, "LINKED"));
     identityRepository.putProfile(new UserProfile(email, email, "Resend Admin", null, null, null));
     identityRepository.putSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));

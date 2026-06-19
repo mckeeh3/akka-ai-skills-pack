@@ -20,16 +20,6 @@ const actionButton = read('./workstream/actions/CapabilityActionButton.tsx');
 const realtime = read('./workstream/realtime/workstreamEvents.ts');
 
 const sourceFiles = collectSourceFiles(new URL('.', import.meta.url).pathname);
-const legacyScreenFiles = [
-  './screens/briefing/BriefingPage.tsx',
-  './screens/goals/GoalWorkbenchPage.tsx',
-  './screens/decisions/DecisionQueuePage.tsx',
-  './screens/governance/GovernancePoliciesPage.tsx',
-  './screens/audit/AuditTraceExplorerPage.tsx',
-  './screens/admin/AdminUsersPage.tsx',
-  './screens/profile/ProfilePreferencesPage.tsx'
-];
-
 test('route shell tests have been replaced by workstream deep-link contract coverage', () => {
   assert.match(main, /<WorkstreamShell/);
   assert.match(main, /parseWorkstreamDeepLink/);
@@ -41,10 +31,8 @@ test('route shell tests have been replaced by workstream deep-link contract cove
   assert.doesNotMatch(main, /function RouteShell|SidebarNav|route === 'briefing'|path: '\/ui\/briefing'/);
 });
 
-test('legacy screen source remains quarantined and is not imported by canonical entry', () => {
-  for (const path of legacyScreenFiles) {
-    assert.ok(existsSync(new URL(path, root)), `${path} remains available only for quarantine/drift comparison`);
-  }
+test('removed screen source is not imported by canonical entry', () => {
+  assert.ok(!existsSync(new URL('./screens', root)), 'removed screen modules are absent from the active frontend');
   assert.doesNotMatch(main, /from '\.\/screens\//);
   assert.doesNotMatch(main, /<BriefingPage|<GoalWorkbenchPage|<DecisionQueuePage|<GovernancePoliciesPage|<AuditTraceExplorerPage|<AdminUsersPage|<ProfilePreferencesPage/);
 });

@@ -29,21 +29,21 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.governance.GovernancePolicyService;
-import ai.first.application.foundation.governance.LocalDemoGovernancePolicyRepository;
+import ai.first.application.foundation.governance.InMemoryTestGovernancePolicyRepository;
 import ai.first.application.foundation.identity.AuthContextResolver;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.invitation.InvitationService;
-import ai.first.application.foundation.invitation.LocalDemoInvitationRepository;
-import ai.first.application.coreapp.useradmin.LocalDemoAccessReviewTaskRepository;
+import ai.first.application.foundation.invitation.InMemoryTestInvitationRepository;
+import ai.first.application.coreapp.useradmin.InMemoryTestAccessReviewTaskRepository;
 import ai.first.application.coreapp.useradmin.UserAdminAccessReviewService;
 import ai.first.application.coreapp.useradmin.UserAdminService;
 
 class AttentionProducerServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-28T12:00:00Z"), ZoneOffset.UTC);
-  private LocalDemoIdentityRepository identityRepository;
-  private LocalDemoInvitationRepository invitationRepository;
-  private LocalDemoAttentionRepository attentionRepository;
-  private LocalDemoGovernancePolicyRepository governanceRepository;
+  private InMemoryTestIdentityRepository identityRepository;
+  private InMemoryTestInvitationRepository invitationRepository;
+  private InMemoryTestAttentionRepository attentionRepository;
+  private InMemoryTestGovernancePolicyRepository governanceRepository;
   private AuthContextResolver resolver;
   private InvitationService invitations;
   private GovernancePolicyService governance;
@@ -52,10 +52,10 @@ class AttentionProducerServiceTest {
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
-    invitationRepository = new LocalDemoInvitationRepository();
-    attentionRepository = new LocalDemoAttentionRepository();
-    governanceRepository = new LocalDemoGovernancePolicyRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
+    invitationRepository = new InMemoryTestInvitationRepository();
+    attentionRepository = new InMemoryTestAttentionRepository();
+    governanceRepository = new InMemoryTestGovernancePolicyRepository();
     resolver = new AuthContextResolver(identityRepository);
     var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
     invitations = new InvitationService(identityRepository, invitationRepository, clock, producers);
@@ -118,7 +118,7 @@ class AttentionProducerServiceTest {
   @Test
   void workerTaskBlockedStateProducesAttentionAndCancelResolvesWithoutFakeSuccess() {
     var producers = new AttentionProducerService(attentionRepository, identityRepository, clock);
-    var accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), new UserAdminService(identityRepository, clock), clock, producers);
+    var accessReviews = new UserAdminAccessReviewService(new InMemoryTestAccessReviewTaskRepository(), new UserAdminService(identityRepository, clock), clock, producers);
 
     var task = accessReviews.start(tenantAdmin, "idem-worker-attention", "corr-worker-start");
 

@@ -28,13 +28,13 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.identity.AuthContextResolver;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
-import ai.first.application.foundation.notification.LocalDemoNotificationRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
+import ai.first.application.foundation.notification.InMemoryTestNotificationRepository;
 import ai.first.application.foundation.notification.NotificationService;
 
 class EmailNotificationServiceTest {
-  private LocalDemoIdentityRepository identityRepository;
-  private LocalDemoNotificationRepository notificationRepository;
+  private InMemoryTestIdentityRepository identityRepository;
+  private InMemoryTestNotificationRepository notificationRepository;
   private AuthContextResolver resolver;
   private NotificationService notifications;
   private EmailNotificationService email;
@@ -42,8 +42,8 @@ class EmailNotificationServiceTest {
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
-    notificationRepository = new LocalDemoNotificationRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
+    notificationRepository = new InMemoryTestNotificationRepository();
     resolver = new AuthContextResolver(identityRepository);
     clock = Clock.fixed(Instant.parse("2026-05-27T10:00:00Z"), ZoneOffset.UTC);
     notifications = new NotificationService(notificationRepository, resolver, clock);

@@ -27,22 +27,22 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.governance.GovernancePolicyService;
-import ai.first.application.foundation.governance.LocalDemoGovernancePolicyRepository;
+import ai.first.application.foundation.governance.InMemoryTestGovernancePolicyRepository;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 
 class GovernancePolicyImpactServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-26T10:15:30Z"), ZoneOffset.UTC);
-  private LocalDemoIdentityRepository identityRepository;
-  private LocalDemoGovernancePolicyRepository governancePolicyRepository;
+  private InMemoryTestIdentityRepository identityRepository;
+  private InMemoryTestGovernancePolicyRepository governancePolicyRepository;
   private AuthContextResolver resolver;
   private AuthContextResolver.ResolvedMe tenantAdmin;
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
-    governancePolicyRepository = new LocalDemoGovernancePolicyRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
+    governancePolicyRepository = new InMemoryTestGovernancePolicyRepository();
     resolver = new AuthContextResolver(identityRepository);
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     seed("admin@example.test", "membership-admin", FoundationRole.TENANT_ADMIN);
@@ -53,7 +53,7 @@ class GovernancePolicyImpactServiceTest {
   @Test
   void startCreatesProviderBlockedImpactTaskWithoutFakePolicyImpactSuccessAndReplaysIdempotently() {
     var proposalId = submittedProposalId("idem-impact-proposal");
-    var service = new GovernancePolicyImpactService(new LocalDemoGovernancePolicyImpactTaskRepository(), governancePolicyRepository, resolver, clock);
+    var service = new GovernancePolicyImpactService(new InMemoryTestGovernancePolicyImpactTaskRepository(), governancePolicyRepository, resolver, clock);
 
     var task = service.start(tenantAdmin, command(proposalId, "idem-impact"), "corr-impact-start");
 
@@ -73,7 +73,7 @@ class GovernancePolicyImpactServiceTest {
   @Test
   void componentClientBackedRuntimeStartProjectsCompletedReviewRequiredWithoutDirectPolicyMutation() {
     var proposalId = submittedProposalId("idem-impact-runtime-proposal");
-    var repository = new LocalDemoGovernancePolicyImpactTaskRepository();
+    var repository = new InMemoryTestGovernancePolicyImpactTaskRepository();
     var runtime = new RecordingGovernancePolicyImpactRuntime();
     var service = new GovernancePolicyImpactService(repository, governancePolicyRepository, resolver, clock, runtime);
 
@@ -122,7 +122,7 @@ class GovernancePolicyImpactServiceTest {
   @Test
   void cancelRejectAndRequestChangesAreAdvisoryOnlyAndRequireCompletedResult() {
     var proposalId = submittedProposalId("idem-impact-decision-proposal");
-    var service = new GovernancePolicyImpactService(new LocalDemoGovernancePolicyImpactTaskRepository(), governancePolicyRepository, resolver, clock);
+    var service = new GovernancePolicyImpactService(new InMemoryTestGovernancePolicyImpactTaskRepository(), governancePolicyRepository, resolver, clock);
     var task = service.start(tenantAdmin, command(proposalId, "idem-impact-decision"), "corr-impact-decision-start");
 
     var accept = assertThrows(AuthorizationException.class, () -> service.acceptResult(tenantAdmin, task.impactTaskId(), "looks good", "corr-impact-accept"));
@@ -140,7 +140,7 @@ class GovernancePolicyImpactServiceTest {
   @Test
   void memberAndCrossTenantInputsAreDeniedBeforeImpactEvidenceLeakage() {
     var proposalId = submittedProposalId("idem-impact-denial-proposal");
-    var service = new GovernancePolicyImpactService(new LocalDemoGovernancePolicyImpactTaskRepository(), governancePolicyRepository, resolver, clock);
+    var service = new GovernancePolicyImpactService(new InMemoryTestGovernancePolicyImpactTaskRepository(), governancePolicyRepository, resolver, clock);
     var deniedActor = resolver.resolveMe(new WorkosIdentity("workos-member", "member@example.test", "Member"), "membership-member", "corr-member");
 
     var deniedStart = assertThrows(AuthorizationException.class, () -> service.start(deniedActor, command(proposalId, "idem-impact-denied"), "corr-impact-denied"));

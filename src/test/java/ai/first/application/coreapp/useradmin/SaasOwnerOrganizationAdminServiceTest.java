@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
@@ -29,14 +29,14 @@ import org.junit.jupiter.api.Test;
 
 class SaasOwnerOrganizationAdminServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-06-01T10:00:00Z"), ZoneOffset.UTC);
-  private LocalDemoIdentityRepository repository;
+  private InMemoryTestIdentityRepository repository;
   private AuthContextResolver resolver;
   private SaasOwnerOrganizationAdminService service;
   private AuthContextResolver.ResolvedMe saasOwner;
 
   @BeforeEach
   void setUp() {
-    repository = new LocalDemoIdentityRepository();
+    repository = new InMemoryTestIdentityRepository();
     resolver = new AuthContextResolver(repository);
     service = new SaasOwnerOrganizationAdminService(repository, clock);
     repository.putTenant(new Tenant("tenant-1", "Tenant One", true));

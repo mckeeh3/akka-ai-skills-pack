@@ -42,4 +42,4 @@ My Account opens from the signed-in user/account control in the rail or from aut
 ## Gaps / caveats
 
 - The surface contracts in `../surfaces/surfaces.md` are now stricter than the existing generic dashboard/detail-edit rendering. Implementation cleanup must rebuild all My Account surfaces except the recently revised notification center to match these contracts and the current skills-pack web UI style guide.
-- `frontend/src/screens/**` page-style files are legacy/reference evidence and are not primary runtime architecture for this workstream.
+- Removed screen modules are not runtime architecture, fallback, or reference targets for this workstream.

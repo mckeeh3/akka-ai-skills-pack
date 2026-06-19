@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.BootstrapAdminSeeder;
-import ai.first.application.coreapp.useradmin.LocalDemoAccessReviewTaskRepository;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.coreapp.useradmin.InMemoryTestAccessReviewTaskRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.identity.StarterSecurityComponents;
 import ai.first.application.coreapp.useradmin.UserAdminAccessReviewService;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
@@ -27,17 +27,17 @@ import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.agent.AgentRuntimeService;
 import ai.first.application.foundation.agent.AgentRuntimeToolResolver;
-import ai.first.application.foundation.agent.LocalDemoAgentBehaviorRepository;
-import ai.first.application.foundation.agent.LocalDemoAgentRuntimeTraceSink;
+import ai.first.application.foundation.agent.InMemoryTestAgentBehaviorRepository;
+import ai.first.application.foundation.agent.InMemoryTestAgentRuntimeTraceSink;
 import ai.first.application.foundation.agent.ModelProviderClient;
-import ai.first.application.foundation.invitation.LocalDemoInvitationRepository;
+import ai.first.application.foundation.invitation.InMemoryTestInvitationRepository;
 
 class UserAdminAccessReviewWorkerTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-24T12:00:00Z"), ZoneOffset.UTC);
 
   @Test
   void completesAccessReviewWithModelBackedGovernedRuntimeAndNoDirectMutation() {
-    StarterSecurityComponents.bindTestAgentBehaviorRepository(new LocalDemoAgentBehaviorRepository());
+    StarterSecurityComponents.bindTestAgentBehaviorRepository(new InMemoryTestAgentBehaviorRepository());
     var actor = starterTenantAdmin("corr-worker-actor");
     var runtime = runtimeService(request -> new ModelProviderClient.ModelProviderResponse(
         "## Access review recommendation\n\nNo stale admin memberships found. no direct mutation; human must accept or reject.",
@@ -53,7 +53,7 @@ class UserAdminAccessReviewWorkerTest {
         "provider-response-1",
         "stop",
         "test provider produced model-backed access review"));
-    var accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
+    var accessReviews = new UserAdminAccessReviewService(new InMemoryTestAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
     var beforeRoles = StarterSecurityComponents.identityRepository().findMembership(actor.selectedContext().membershipId()).orElseThrow().roles();
     var task = accessReviews.start(actor, "idem-worker-success", "corr-worker-start");
 
@@ -78,11 +78,11 @@ class UserAdminAccessReviewWorkerTest {
     var failingProvider = (ModelProviderClient) request -> {
       throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");
     };
-    StarterSecurityComponents.bindTestAgentBehaviorRepository(new LocalDemoAgentBehaviorRepository());
+    StarterSecurityComponents.bindTestAgentBehaviorRepository(new InMemoryTestAgentBehaviorRepository());
     var actor = starterTenantAdmin("corr-worker-blocked-actor");
     var runtime = runtimeService(failingProvider);
     var worker = new UserAdminAccessReviewWorker(runtime, new AgentRuntimeToolResolver(StarterSecurityComponents.agentBehaviorRepository(), runtime), failingProvider);
-    var accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
+    var accessReviews = new UserAdminAccessReviewService(new InMemoryTestAccessReviewTaskRepository(), StarterSecurityComponents.userAdminService(), clock);
     var beforeRoles = StarterSecurityComponents.identityRepository().findMembership(actor.selectedContext().membershipId()).orElseThrow().roles();
     var task = accessReviews.start(actor, "idem-worker-blocked", "corr-worker-blocked-start");
 
@@ -103,13 +103,13 @@ class UserAdminAccessReviewWorkerTest {
         StarterSecurityComponents.authContextResolver(),
         clock,
         provider,
-        new LocalDemoAgentRuntimeTraceSink());
+        new InMemoryTestAgentRuntimeTraceSink());
   }
 
   private AuthContextResolver.ResolvedMe starterTenantAdmin(String correlationId) {
-    var identityRepository = new LocalDemoIdentityRepository();
+    var identityRepository = new InMemoryTestIdentityRepository();
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
-    StarterSecurityComponents.bindTestInvitationRepository(new ai.first.application.foundation.invitation.LocalDemoInvitationRepository());
+    StarterSecurityComponents.bindTestInvitationRepository(new ai.first.application.foundation.invitation.InMemoryTestInvitationRepository());
     BootstrapAdminSeeder.seedFixtureAdmins(identityRepository, "admin@example.test:TENANT_ADMIN:tenant-starter");
     seedTenantMember(identityRepository);
     StarterSecurityComponents.agentBehaviorSeedLoader().importStarterDefaults("tenant-starter", "test-bootstrap", correlationId + "-seed");
@@ -119,7 +119,7 @@ class UserAdminAccessReviewWorkerTest {
         correlationId);
   }
 
-  private void seedTenantMember(LocalDemoIdentityRepository identityRepository) {
+  private void seedTenantMember(InMemoryTestIdentityRepository identityRepository) {
     identityRepository.saveAccount(new ai.first.domain.foundation.identity.Account("member@example.test", null, "member@example.test", "member@example.test", ai.first.domain.foundation.identity.AccountStatus.ACTIVE, "UNLINKED"));
     identityRepository.saveProfile(new ai.first.domain.foundation.identity.UserProfile("member@example.test", "member@example.test", "member", null, null, null));
     identityRepository.saveSettings(new ai.first.domain.foundation.identity.UserSettings("member@example.test", ai.first.domain.foundation.identity.UserSettings.ThemeId.AURORA_LIGHT));

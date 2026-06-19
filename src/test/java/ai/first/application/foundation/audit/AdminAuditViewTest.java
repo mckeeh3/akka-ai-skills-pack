@@ -22,17 +22,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.coreapp.useradmin.UserAdminService;
 
 class AdminAuditViewTest {
-  private LocalDemoIdentityRepository identityRepository;
+  private InMemoryTestIdentityRepository identityRepository;
   private AuthContextResolver resolver;
   private AdminAuditView view;
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
     resolver = new AuthContextResolver(identityRepository);
     view = new AdminAuditView(new UserAdminService(identityRepository, Clock.systemUTC()));
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));

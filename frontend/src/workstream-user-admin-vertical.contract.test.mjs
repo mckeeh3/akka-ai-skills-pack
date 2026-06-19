@@ -19,7 +19,6 @@ const userAdminScopedAdminSurface = read('./workstream/surfaces/UserAdminScopedA
 const organizationAdminSurface = read('./workstream/surfaces/OrganizationAdminSurface.tsx');
 const workflowStatusSurface = read('./workstream/surfaces/WorkflowStatusSurface.tsx');
 const systemMessageSurface = read('./workstream/surfaces/SystemMessageSurface.tsx');
-const adminUsersPage = read('./screens/admin/AdminUsersPage.tsx');
 const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const surfaceTypes = read('./workstream/types/surfaces.ts');
 const componentsCss = read('./styles/components.css');
@@ -250,8 +249,7 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.match(detailEditSurface, /Provider-backed delivery/);
   assert.match(detailEditSurface, /Provider\/outbox delivery failed closed/);
   assert.match(detailEditSurface, /No raw tokens, Resend payloads, email bodies, provider message ids, and secrets are not shown|raw tokens, Resend payloads, email bodies, provider message ids, and secrets are not shown/);
-  assert.match(adminUsersPage, /quarantined-legacy-screen/);
-  assert.match(adminUsersPage, /not be used as a normal runtime path/);
+  assert.doesNotMatch(main, /from '\.\/screens\//);
   assert.match(userAdminTaskSurface, /No direct mutation: recovery must route to deterministic backend approval\/status flows or safe user detail/);
   assert.match(userAdminTaskSurface, /action-useradmin-request-identity-relink/);
   assert.match(userAdminTaskSurface, /action-useradmin-approve-identity-relink/);
@@ -405,9 +403,7 @@ test('User Admin full-stack conformance tests cover canonical runtime boundaries
   assert.match(systemMessageSurface, /Recovery steps/);
   assert.match(systemMessageSurface, /Provider secrets, raw JWTs, hidden prompts, invitation tokens, and unauthorized tenant\/customer evidence are not shown/);
 
-  assert.match(adminUsersPage, /quarantined-legacy-screen/);
-  assert.match(adminUsersPage, /not imported by\s+the canonical entry point/);
-  assert.doesNotMatch(main, /AdminUsersPage|admin-users|screens\/admin/);
+  assert.doesNotMatch(main, /AdminUsersPage|admin-users|screens\/admin|from '\.\/screens\//);
   assert.doesNotMatch(`${main}\n${httpApiClient}\n${dashboardSurface}\n${listSearchSurface}\n${detailEditSurface}\n${userAdminTaskSurface}`, /RESEND_API_KEY|WORKOS_API_KEY|Authorization:\s*Bearer|invite-token|tokenHash|sk-secret|api_key=/);
 });
 

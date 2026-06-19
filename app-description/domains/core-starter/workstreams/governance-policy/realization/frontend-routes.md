@@ -21,4 +21,4 @@ Capability: `governance-policy-lifecycle`.
 
 ## Gaps / caveats
 
-- Legacy `frontend/src/screens/governance/GovernancePoliciesPage.tsx` is reference/fixture evidence, not the primary workstream shell architecture.
+- Governance/Policy frontend realization must stay in `frontend/src/workstream/**`; removed screen modules are not reference or fallback architecture.

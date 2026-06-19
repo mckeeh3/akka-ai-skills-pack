@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ai.first.application.foundation.identity.AuthContextResolver;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.foundation.identity.AuthContext;
 import ai.first.domain.foundation.identity.FoundationRole;
@@ -20,12 +20,12 @@ import org.junit.jupiter.api.Test;
 class AgentRuntimeTraceSinkTest {
   @Test
   void runtimeServiceWritesPromptAssemblyTracesThroughInjectedDurableSinkBoundary() {
-    var repository = new LocalDemoAgentBehaviorRepository();
+    var repository = new InMemoryTestAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
     var sink = new CapturingTraceSink();
     var service = new AgentRuntimeService(
         repository,
-        new AuthContextResolver(new LocalDemoIdentityRepository()),
+        new AuthContextResolver(new InMemoryTestIdentityRepository()),
         fixedClock(),
         new OpenAiModelProviderClient(),
         sink);
@@ -49,12 +49,12 @@ class AgentRuntimeTraceSinkTest {
 
   @Test
   void runtimeServiceWritesDeniedLoaderTracesThroughInjectedDurableSinkBoundary() {
-    var repository = new LocalDemoAgentBehaviorRepository();
+    var repository = new InMemoryTestAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
     var sink = new CapturingTraceSink();
     var service = new AgentRuntimeService(
         repository,
-        new AuthContextResolver(new LocalDemoIdentityRepository()),
+        new AuthContextResolver(new InMemoryTestIdentityRepository()),
         fixedClock(),
         new OpenAiModelProviderClient(),
         sink);

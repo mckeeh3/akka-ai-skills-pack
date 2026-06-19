@@ -15,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import ai.first.application.coreapp.myaccount.MyAccountService;
 import ai.first.application.coreapp.useradmin.AccessReviewAutonomousAgentRuntime;
 import ai.first.application.coreapp.useradmin.FailClosedAccessReviewAutonomousAgentRuntime;
-import ai.first.application.coreapp.useradmin.LocalDemoAccessReviewTaskRepository;
+import ai.first.application.coreapp.useradmin.InMemoryTestAccessReviewTaskRepository;
 import ai.first.application.coreapp.useradmin.UserAdminService;
 import ai.first.application.coreapp.useradmin.UserDirectoryView;
 import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
 import ai.first.application.foundation.agent.AgentRuntimeService;
-import ai.first.application.foundation.agent.LocalDemoAgentBehaviorRepository;
-import ai.first.application.foundation.agent.LocalDemoAgentRuntimeTraceSink;
+import ai.first.application.foundation.agent.InMemoryTestAgentBehaviorRepository;
+import ai.first.application.foundation.agent.InMemoryTestAgentRuntimeTraceSink;
 import ai.first.application.foundation.agent.ModelProviderClient;
 import ai.first.application.foundation.agent.WorkstreamAgentRuntimeInvoker;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
@@ -50,58 +50,58 @@ import ai.first.application.foundation.agent.DefaultWorkstreamAgentRuntimeInvoke
 import ai.first.application.foundation.agent.WorkstreamRuntimeAgent;
 import ai.first.application.foundation.attention.AttentionProducerService;
 import ai.first.application.foundation.attention.AttentionService;
-import ai.first.application.foundation.attention.LocalDemoAttentionRepository;
+import ai.first.application.foundation.attention.InMemoryTestAttentionRepository;
 import ai.first.application.foundation.audit.AkkaAuditTraceRepository;
 import ai.first.application.foundation.audit.AuditTraceService;
-import ai.first.application.foundation.audit.LocalDemoAuditTraceRepository;
-import ai.first.application.foundation.governance.LocalDemoGovernancePolicyRepository;
+import ai.first.application.foundation.audit.InMemoryTestAuditTraceRepository;
+import ai.first.application.foundation.governance.InMemoryTestGovernancePolicyRepository;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.identity.MeService;
 import ai.first.application.foundation.identity.StarterSecurityComponents;
 import ai.first.application.foundation.invitation.InvitationService;
 import ai.first.application.foundation.invitation.InvitationView;
-import ai.first.application.foundation.invitation.LocalDemoInvitationRepository;
-import ai.first.application.foundation.notification.LocalDemoNotificationRepository;
+import ai.first.application.foundation.invitation.InMemoryTestInvitationRepository;
+import ai.first.application.foundation.notification.InMemoryTestNotificationRepository;
 import ai.first.application.foundation.notification.NotificationService;
 import ai.first.application.foundation.workstream.AkkaWorkstreamLogRepository;
-import ai.first.application.foundation.workstream.LocalDemoWorkstreamEventRepository;
-import ai.first.application.foundation.workstream.LocalDemoWorkstreamLogRepository;
+import ai.first.application.foundation.workstream.InMemoryTestWorkstreamEventRepository;
+import ai.first.application.foundation.workstream.InMemoryTestWorkstreamLogRepository;
 import ai.first.application.foundation.workstream.WorkstreamEventAttentionConsumer;
 import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 import ai.first.api.coreapp.workstream.WorkstreamEndpoint;
 
 class WorkstreamServiceTest {
-  private LocalDemoIdentityRepository identityRepository;
-  private LocalDemoAgentBehaviorRepository agentRepository;
-  private LocalDemoWorkstreamEventRepository eventRepository;
-  private LocalDemoInvitationRepository invitationRepository;
+  private InMemoryTestIdentityRepository identityRepository;
+  private InMemoryTestAgentBehaviorRepository agentRepository;
+  private InMemoryTestWorkstreamEventRepository eventRepository;
+  private InMemoryTestInvitationRepository invitationRepository;
   private InvitationService invitationService;
   private WorkstreamService service;
   private TrackingWorkstreamAgentRuntimeTestAdapter trackingRuntimeInvoker;
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
-    invitationRepository = new LocalDemoInvitationRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
+    invitationRepository = new InMemoryTestInvitationRepository();
     var resolver = new AuthContextResolver(identityRepository);
-    var attentionRepository = new LocalDemoAttentionRepository();
+    var attentionRepository = new InMemoryTestAttentionRepository();
     var attentionService = new AttentionService(attentionRepository, resolver, Clock.systemUTC());
     var attentionProducerService = new AttentionProducerService(attentionRepository, identityRepository, Clock.systemUTC());
-    eventRepository = new LocalDemoWorkstreamEventRepository();
+    eventRepository = new InMemoryTestWorkstreamEventRepository();
     var workstreamEventConsumer = new WorkstreamEventAttentionConsumer(attentionRepository, identityRepository, attentionProducerService, Clock.systemUTC());
     var workstreamEventPublisher = new WorkstreamEventPublisher(eventRepository, workstreamEventConsumer, Clock.systemUTC());
     var meService = new MeService(resolver, new MyAccountService(resolver, attentionService));
     var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
     invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC(), attentionProducerService, workstreamEventPublisher);
-    agentRepository = new LocalDemoAgentBehaviorRepository();
+    agentRepository = new InMemoryTestAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed");
-    var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("## " + request.functionalAgentId() + " model response\n\nProvider-backed test markdown.", "test-fake-provider", "test-fake-model", "fake-response-id", "stop", "unit-test fake model invocation"), new LocalDemoAgentRuntimeTraceSink());
+    var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("## " + request.functionalAgentId() + " model response\n\nProvider-backed test markdown.", "test-fake-provider", "test-fake-model", "fake-response-id", "stop", "unit-test fake model invocation"), new InMemoryTestAgentRuntimeTraceSink());
     trackingRuntimeInvoker = new TrackingWorkstreamAgentRuntimeTestAdapter(agentRuntimeService);
-    var workstreamLogRepository = new LocalDemoWorkstreamLogRepository();
-    var notificationService = new NotificationService(new LocalDemoNotificationRepository(), resolver, Clock.systemUTC());
-    service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, workstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService, attentionProducerService, workstreamEventPublisher, eventRepository, new FailClosedAccessReviewAutonomousAgentRuntime(), notificationService);
+    var workstreamLogRepository = new InMemoryTestWorkstreamLogRepository();
+    var notificationService = new NotificationService(new InMemoryTestNotificationRepository(), resolver, Clock.systemUTC());
+    service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, workstreamLogRepository, new InMemoryTestAccessReviewTaskRepository(), new InMemoryTestAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new InMemoryTestGovernancePolicyRepository(), attentionService, attentionProducerService, workstreamEventPublisher, eventRepository, new FailClosedAccessReviewAutonomousAgentRuntime(), notificationService);
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.putTenant(new Tenant("tenant-starter", "Starter Organization", true));
@@ -194,7 +194,7 @@ class WorkstreamServiceTest {
 
   @Test
   void productionAdminUsersBootstrapStillRejectsTenantAndCustomerAdmins() {
-    var repository = new LocalDemoIdentityRepository();
+    var repository = new InMemoryTestIdentityRepository();
 
     assertThrows(IllegalArgumentException.class, () -> ai.first.application.foundation.identity.BootstrapAdminSeeder.seedConfiguredAdmins(repository, "tenant-admin@example.test:TENANT_ADMIN:tenant-1"));
     assertThrows(IllegalArgumentException.class, () -> ai.first.application.foundation.identity.BootstrapAdminSeeder.seedConfiguredAdmins(repository, "customer-admin@example.test:CUSTOMER_ADMIN:tenant-1/customer-1"));
@@ -2350,20 +2350,20 @@ class WorkstreamServiceTest {
 
   @Test
   void auditTraceMessageFailsClosedWhenRuntimeProviderBoundaryIsMissing() {
-    var invitationRepository = new LocalDemoInvitationRepository();
+    var invitationRepository = new InMemoryTestInvitationRepository();
     var resolver = new AuthContextResolver(identityRepository);
-    var attentionService = new AttentionService(new LocalDemoAttentionRepository(), resolver, Clock.systemUTC());
+    var attentionService = new AttentionService(new InMemoryTestAttentionRepository(), resolver, Clock.systemUTC());
     var meService = new MeService(resolver, new MyAccountService(resolver, attentionService));
     var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
     var invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC());
-    var agentRepository = new LocalDemoAgentBehaviorRepository();
+    var agentRepository = new InMemoryTestAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed-failclosed");
     var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> {
       throw new ModelProviderClient.ModelProviderException("model-provider-config-missing", "Model provider configuration is missing required backend variable OPENAI_API_KEY.");
-    }, new LocalDemoAgentRuntimeTraceSink());
-    var failClosedWorkstreamLogRepository = new LocalDemoWorkstreamLogRepository();
-    var notificationService = new NotificationService(new LocalDemoNotificationRepository(), resolver, Clock.systemUTC());
-    var failClosedService = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, agentRuntimeService::invokeWorkstreamAgent, failClosedWorkstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(agentRuntimeService, failClosedWorkstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService, null, null, null, new FailClosedAccessReviewAutonomousAgentRuntime(), notificationService);
+    }, new InMemoryTestAgentRuntimeTraceSink());
+    var failClosedWorkstreamLogRepository = new InMemoryTestWorkstreamLogRepository();
+    var notificationService = new NotificationService(new InMemoryTestNotificationRepository(), resolver, Clock.systemUTC());
+    var failClosedService = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, agentRuntimeService::invokeWorkstreamAgent, failClosedWorkstreamLogRepository, new InMemoryTestAccessReviewTaskRepository(), new InMemoryTestAuditTraceRepository(agentRuntimeService, failClosedWorkstreamLogRepository), new InMemoryTestGovernancePolicyRepository(), attentionService, null, null, null, new FailClosedAccessReviewAutonomousAgentRuntime(), notificationService);
 
     var response = failClosedService.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "agent-audit-trace", "Explain this provider failure", "corr-audit-failclosed", "idem-audit-failclosed"), "corr-header");
@@ -2379,14 +2379,14 @@ class WorkstreamServiceTest {
 
   private WorkstreamService serviceWithAccessReviewRuntime(AccessReviewAutonomousAgentRuntime runtime) {
     var resolver = new AuthContextResolver(identityRepository);
-    var attentionService = new AttentionService(new LocalDemoAttentionRepository(), resolver, Clock.systemUTC());
-    var attentionProducerService = new AttentionProducerService(new LocalDemoAttentionRepository(), identityRepository, Clock.systemUTC());
+    var attentionService = new AttentionService(new InMemoryTestAttentionRepository(), resolver, Clock.systemUTC());
+    var attentionProducerService = new AttentionProducerService(new InMemoryTestAttentionRepository(), identityRepository, Clock.systemUTC());
     var meService = new MeService(resolver, new MyAccountService(resolver, attentionService));
     var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
     var localInvitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC(), attentionProducerService, null);
-    var workstreamLogRepository = new LocalDemoWorkstreamLogRepository();
-    var notificationService = new NotificationService(new LocalDemoNotificationRepository(), resolver, Clock.systemUTC());
-    return new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(localInvitationService), userAdminService, localInvitationService, agentRepository, trackingRuntimeInvoker.delegate, trackingRuntimeInvoker, workstreamLogRepository, new LocalDemoAccessReviewTaskRepository(), new LocalDemoAuditTraceRepository(trackingRuntimeInvoker.delegate, workstreamLogRepository), new LocalDemoGovernancePolicyRepository(), attentionService, attentionProducerService, null, null, runtime, notificationService);
+    var workstreamLogRepository = new InMemoryTestWorkstreamLogRepository();
+    var notificationService = new NotificationService(new InMemoryTestNotificationRepository(), resolver, Clock.systemUTC());
+    return new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(localInvitationService), userAdminService, localInvitationService, agentRepository, trackingRuntimeInvoker.delegate, trackingRuntimeInvoker, workstreamLogRepository, new InMemoryTestAccessReviewTaskRepository(), new InMemoryTestAuditTraceRepository(trackingRuntimeInvoker.delegate, workstreamLogRepository), new InMemoryTestGovernancePolicyRepository(), attentionService, attentionProducerService, null, null, runtime, notificationService);
   }
 
   private static final class CompletedAccessReviewRuntime implements AccessReviewAutonomousAgentRuntime {

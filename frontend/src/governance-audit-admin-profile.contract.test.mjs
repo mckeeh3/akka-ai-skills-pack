@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
@@ -14,17 +14,7 @@ const railState = read('./workstream/rail/railState.ts');
 const surfaceFrame = read('./workstream/surfaces/SurfaceStateFrame.tsx');
 const httpRealtime = read('./api/HttpWorkstreamRealtimeClient.ts');
 
-const quarantinedLegacyScreens = [
-  './screens/governance/GovernancePoliciesPage.tsx',
-  './screens/audit/AuditTraceExplorerPage.tsx',
-  './screens/admin/AdminUsersPage.tsx',
-  './screens/profile/ProfilePreferencesPage.tsx'
-];
-
-test('governance, audit, admin, and profile legacy screens are not primary app routes', () => {
-  for (const path of quarantinedLegacyScreens) {
-    assert.ok(existsSync(new URL(path, import.meta.url)), `${path} remains only as a quarantined mechanics reference`);
-  }
+test('governance, audit, admin, and profile work no longer depends on removed screen modules', () => {
   assert.match(main, /<WorkstreamShell/);
   assert.match(main, /<WorkstreamStream/);
   assert.doesNotMatch(main, /import \{ GovernancePoliciesPage \}|import \{ AuditTraceExplorerPage \}|import \{ AdminUsersPage \}|import \{ ProfilePreferencesPage \}/);

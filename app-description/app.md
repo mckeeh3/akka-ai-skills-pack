@@ -15,6 +15,7 @@ The app is a SaaS Foundation App with role-authorized functional-agent workstrea
 - Primary domain: [`domains/core-starter/domain.md`](domains/core-starter/domain.md)
 - Built-in workstreams: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy.
 - Business-specific extensions should be additive under repository extension zones rather than replacing this core starter graph.
+- Deferred scope: [`deferred-scope.md`](deferred-scope.md)
 
 ## Foundation references
 
@@ -34,6 +35,6 @@ Reusable foundation doctrine is referenced rather than duplicated here:
 
 ## Non-goals
 
-- Do not add app-specific CRM, customer-success, sales/revenue, support/service, billing, procurement, customer intelligence, or other business-domain workstreams to the core starter graph.
+- Do not add app-specific CRM, customer-success, sales/revenue, support/service, billing, procurement, customer intelligence, timer-backed reminder, or other business-domain workstreams to the core starter graph.
 - Do not treat archived legacy app-description files as current product authority.
 - Do not duplicate skills-pack foundation doctrine wholesale in this graph.

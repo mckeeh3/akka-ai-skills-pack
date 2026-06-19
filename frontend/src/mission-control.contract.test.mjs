@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
@@ -15,8 +15,7 @@ const surfaceFixtures = read('./__tests__/fixtures/workstream/surfaces.ts');
 const workstreamEvents = read('./__tests__/fixtures/workstream/events.ts');
 const realtime = read('./workstream/realtime/workstreamEvents.ts');
 
-test('Mission Control legacy screen is quarantined while the app entry uses the workstream shell', () => {
-  assert.ok(existsSync(new URL('./screens/briefing/BriefingPage.tsx', import.meta.url)));
+test('Mission Control screen code has been removed while the app entry uses the workstream shell', () => {
   assert.match(main, /<WorkstreamShell/);
   assert.doesNotMatch(main, /initialWorkstreamItems/);
   assert.doesNotMatch(main, /canonicalSurfaceEnvelopes/);

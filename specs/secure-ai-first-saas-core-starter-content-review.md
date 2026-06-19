@@ -110,8 +110,8 @@ Important paths:
 - `frontend/src/api/**`
   - Typed frontend API clients and DTOs.
 
-- `frontend/src/screens/**`
-  - Older/legacy page-style surfaces. Some app-description files call these reference/legacy rather than primary architecture.
+- Removed screen modules
+  - The former page-style screen tree is no longer part of the active frontend. Current UI work uses `frontend/src/workstream/**` plus protected API clients.
 
 - `frontend/src/*contract.test.mjs`
   - Contract tests for shell, workstreams, actions, user admin, agent admin, audit/trace, governance, auth runtime boundary, design system, and visual sessions.

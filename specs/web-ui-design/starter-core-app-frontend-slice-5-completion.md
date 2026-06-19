@@ -10,14 +10,14 @@ Slice 5 from `starter-core-app-localized-frontend-implementation-plan.md`:
 
 ## Status
 
-- status: complete
+- status: superseded by the canonical workstream shell; historical completion evidence only
 - implementation date: 2026-05-13
 
 ## Implemented files
 
-Frontend source:
+Frontend source at the time:
 
-- `frontend/src/screens/briefing/BriefingPage.tsx`
+- removed screen module for Briefing / Mission Control; no longer active
 - `frontend/src/main.tsx`
 - `frontend/src/styles/components.css`
 - `frontend/src/mission-control.contract.test.mjs`

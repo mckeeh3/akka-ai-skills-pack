@@ -13,11 +13,11 @@ import ai.first.application.foundation.workstream.WorkstreamLogRepository;
  * Starter repository facade that normalizes currently available Akka runtime and workstream evidence.
  * Production templates can replace this with view-backed adapters without changing AuditTraceService DTOs.
  */
-public final class LocalDemoAuditTraceRepository implements AuditTraceRepository {
+public final class InMemoryTestAuditTraceRepository implements AuditTraceRepository {
   private final AgentRuntimeService agentRuntimeService;
   private final WorkstreamLogRepository workstreamLogRepository;
 
-  public LocalDemoAuditTraceRepository(AgentRuntimeService agentRuntimeService, WorkstreamLogRepository workstreamLogRepository) {
+  public InMemoryTestAuditTraceRepository(AgentRuntimeService agentRuntimeService, WorkstreamLogRepository workstreamLogRepository) {
     this.agentRuntimeService = Objects.requireNonNull(agentRuntimeService);
     this.workstreamLogRepository = Objects.requireNonNull(workstreamLogRepository);
   }

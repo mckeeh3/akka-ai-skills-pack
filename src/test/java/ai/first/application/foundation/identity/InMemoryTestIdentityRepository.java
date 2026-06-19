@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** Test/local adapter for the core app. */
-public final class LocalDemoIdentityRepository implements IdentityRepository {
+public final class InMemoryTestIdentityRepository implements IdentityRepository {
   private final Map<String, Account> accounts = new ConcurrentHashMap<>();
   private final Map<String, UserProfile> profiles = new ConcurrentHashMap<>();
   private final Map<String, UserSettings> settings = new ConcurrentHashMap<>();

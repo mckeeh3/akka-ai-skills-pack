@@ -25,11 +25,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 
 class UserAdminAccessReviewServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-21T10:15:30Z"), ZoneOffset.UTC);
-  private LocalDemoIdentityRepository identityRepository;
+  private InMemoryTestIdentityRepository identityRepository;
   private AuthContextResolver resolver;
   private UserAdminService userAdminService;
   private UserAdminAccessReviewService accessReviews;
@@ -37,10 +37,10 @@ class UserAdminAccessReviewServiceTest {
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
     resolver = new AuthContextResolver(identityRepository);
     userAdminService = new UserAdminService(identityRepository, clock);
-    accessReviews = new UserAdminAccessReviewService(new LocalDemoAccessReviewTaskRepository(), userAdminService, clock);
+    accessReviews = new UserAdminAccessReviewService(new InMemoryTestAccessReviewTaskRepository(), userAdminService, clock);
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     seed("admin@example.test", "membership-admin", FoundationRole.TENANT_ADMIN);
     seed("member@example.test", "membership-member", FoundationRole.TENANT_EMPLOYEE);
@@ -65,7 +65,7 @@ class UserAdminAccessReviewServiceTest {
 
   @Test
   void componentClientBackedAutonomousAgentRuntimeStartIsQueuedAndIdempotentUntilProjectionCompletes() {
-    var repository = new LocalDemoAccessReviewTaskRepository();
+    var repository = new InMemoryTestAccessReviewTaskRepository();
     var runtime = new RecordingAutonomousAgentRuntime();
     var service = new UserAdminAccessReviewService(repository, userAdminService, clock, null, null, runtime);
 

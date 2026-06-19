@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** Test/local adapter for the starter invitation foundation. */
-public final class LocalDemoInvitationRepository implements InvitationRepository {
+public final class InMemoryTestInvitationRepository implements InvitationRepository {
   private final Map<String, Invitation> invitations = new ConcurrentHashMap<>();
   private final Map<String, EmailOutboxMessage> emails = new ConcurrentHashMap<>();
 

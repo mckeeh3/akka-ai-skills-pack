@@ -29,19 +29,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 
 class AttentionServiceTest {
-  private LocalDemoIdentityRepository identityRepository;
-  private LocalDemoAttentionRepository attentionRepository;
+  private InMemoryTestIdentityRepository identityRepository;
+  private InMemoryTestAttentionRepository attentionRepository;
   private AuthContextResolver resolver;
   private AttentionService service;
   private Clock clock;
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
-    attentionRepository = new LocalDemoAttentionRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
+    attentionRepository = new InMemoryTestAttentionRepository();
     resolver = new AuthContextResolver(identityRepository);
     clock = Clock.fixed(Instant.parse("2026-05-25T10:00:00Z"), ZoneOffset.UTC);
     service = new AttentionService(attentionRepository, resolver, clock);

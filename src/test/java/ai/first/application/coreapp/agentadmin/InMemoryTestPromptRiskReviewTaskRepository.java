@@ -5,8 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/** In-memory prompt-risk task repository for starter tests and local demos only. */
-public final class LocalDemoPromptRiskReviewTaskRepository implements PromptRiskReviewTaskRepository {
+/** In-memory prompt-risk task repository for starter tests and in-memory tests only. */
+public final class InMemoryTestPromptRiskReviewTaskRepository implements PromptRiskReviewTaskRepository {
   private final Map<String, PromptRiskReviewTask> tasks = new LinkedHashMap<>();
 
   @Override

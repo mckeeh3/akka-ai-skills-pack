@@ -35,7 +35,7 @@ class WorkosIdentityResolverTest {
     System.setProperty("WORKOS_API_KEY", "sk_test_should_not_be_used");
     System.setProperty("WORKOS_API_BASE_URL", "http://127.0.0.1:1");
 
-    var repository = new LocalDemoIdentityRepository();
+    var repository = new InMemoryTestIdentityRepository();
     BootstrapAdminSeeder.seedFixtureAdmins(repository, "admin@example.com:TENANT_ADMIN:tenant-starter");
     var meService = new MeService(new AuthContextResolver(repository));
     var identity = WorkosIdentityResolver.fromClaims(claims(Map.of("sub", "user-1", "email", "admin@example.com", "name", "Admin User")));
@@ -63,7 +63,7 @@ class WorkosIdentityResolverTest {
     System.setProperty("WORKOS_API_KEY", "sk_test_resolver");
     System.setProperty("WORKOS_API_BASE_URL", "http://127.0.0.1:" + server.getAddress().getPort());
 
-    var repository = new LocalDemoIdentityRepository();
+    var repository = new InMemoryTestIdentityRepository();
     BootstrapAdminSeeder.seedFixtureAdmins(repository, "resolved@example.com:TENANT_ADMIN:tenant-starter");
     var meService = new MeService(new AuthContextResolver(repository));
     var first = WorkosIdentityResolver.fromClaims(claims(Map.of("sub", "user-2")));
@@ -100,7 +100,7 @@ class WorkosIdentityResolverTest {
     server.start();
     System.setProperty("WORKOS_API_KEY", "sk_test_resolver");
     System.setProperty("WORKOS_API_BASE_URL", "http://127.0.0.1:" + server.getAddress().getPort());
-    var repository = new LocalDemoIdentityRepository();
+    var repository = new InMemoryTestIdentityRepository();
     var resolver = new AuthContextResolver(repository);
 
     var identity = WorkosIdentityResolver.fromClaims(claims(Map.of("sub", "user-4")));

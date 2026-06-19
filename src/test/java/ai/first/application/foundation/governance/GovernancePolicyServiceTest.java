@@ -24,18 +24,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 
 class GovernancePolicyServiceTest {
-  private LocalDemoIdentityRepository identityRepository;
+  private InMemoryTestIdentityRepository identityRepository;
   private AuthContextResolver resolver;
   private GovernancePolicyService service;
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
     resolver = new AuthContextResolver(identityRepository);
-    service = new GovernancePolicyService(new LocalDemoGovernancePolicyRepository(), resolver, Clock.systemUTC());
+    service = new GovernancePolicyService(new InMemoryTestGovernancePolicyRepository(), resolver, Clock.systemUTC());
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     identityRepository.saveAccount(new Account("admin@example.test", "workos-admin", "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));

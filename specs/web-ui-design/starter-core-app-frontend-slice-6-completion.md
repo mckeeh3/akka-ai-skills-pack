@@ -11,12 +11,12 @@ Slice 6 from `specs/web-ui-design/starter-core-app-localized-frontend-implementa
 
 ## Status
 
-- status: complete
+- status: superseded by the canonical workstream shell; historical completion evidence only
 
 ## Implemented files
 
-- `frontend/src/screens/goals/GoalWorkbenchPage.tsx`
-- `frontend/src/screens/decisions/DecisionQueuePage.tsx`
+- removed Goal Workbench screen module; no longer active
+- removed Decision Queue screen module; no longer active
 - `frontend/src/goal-decision-flows.contract.test.mjs`
 - `frontend/src/design-system/FormField.tsx`
 - `frontend/src/main.tsx`
@@ -82,7 +82,7 @@ Use this prompt to continue in a fresh harness session:
 ```text
 Read AGENTS.md, skills/README.md, docs/web-ui-quality-checklist.md, docs/web-ui-frontend-decomposition.md, skills/akka-web-ui-state-rendering/SKILL.md, skills/akka-web-ui-forms-validation/SKILL.md, skills/akka-web-ui-accessibility-responsive/SKILL.md, and skills/akka-web-ui-testing/SKILL.md. Then implement Slice 7 from specs/web-ui-design/starter-core-app-localized-frontend-implementation-plan.md for the starter frontend.
 
-Context: Slice 1-6 are complete. Do not redo them. Use existing frontend conventions under frontend/src/**, especially main.tsx, api/FixtureApiClient.ts, design-system components, styles/components.css, screens/briefing/BriefingPage.tsx, screens/goals/GoalWorkbenchPage.tsx, and screens/decisions/DecisionQueuePage.tsx.
+Context: Slice 1-6 are superseded by the canonical workstream shell. Use existing frontend conventions under frontend/src/**, especially main.tsx, workstream/**, api clients, design-system components, and styles/components.css.
 
 Implement Slice 7 only:
 - Governance Center at the existing governance route with policy list, proposal panel, simulation states, commit/authority-change warning copy, and audit links using fixture clients.

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ai.first.application.foundation.identity.BootstrapAdminSeeder;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.identity.StarterSecurityComponents;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.foundation.identity.AuthContext;
@@ -43,11 +43,11 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
 
   @BeforeEach
   void bindIdentityTestDouble() {
-    var identityRepository = new LocalDemoIdentityRepository();
+    var identityRepository = new InMemoryTestIdentityRepository();
     BootstrapAdminSeeder.seedFixtureAdmins(identityRepository, "admin@example.test:TENANT_ADMIN:" + TENANT_ID);
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
-    StarterSecurityComponents.bindTestAgentBehaviorRepository(new LocalDemoAgentBehaviorRepository());
-    StarterSecurityComponents.bindTestAgentRuntimeTraceSink(new LocalDemoAgentRuntimeTraceSink());
+    StarterSecurityComponents.bindTestAgentBehaviorRepository(new InMemoryTestAgentBehaviorRepository());
+    StarterSecurityComponents.bindTestAgentRuntimeTraceSink(new InMemoryTestAgentRuntimeTraceSink());
     StarterSecurityComponents.agentBehaviorSeedLoader().importStarterDefaults(TENANT_ID, "test-bootstrap", "corr-workstream-agent-seed");
     StarterSecurityComponents.startup();
   }

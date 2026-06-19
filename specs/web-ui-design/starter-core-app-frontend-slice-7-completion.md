@@ -12,14 +12,14 @@ Slice 7 from `specs/web-ui-design/starter-core-app-localized-frontend-implementa
 
 ## Status
 
-- status: complete
+- status: superseded by the canonical workstream shell; historical completion evidence only
 
 ## Implemented files
 
-- `frontend/src/screens/governance/GovernancePoliciesPage.tsx`
-- `frontend/src/screens/audit/AuditTraceExplorerPage.tsx`
-- `frontend/src/screens/admin/AdminUsersPage.tsx`
-- `frontend/src/screens/profile/ProfilePreferencesPage.tsx`
+- removed Governance screen module; no longer active
+- removed Audit screen module; no longer active
+- removed Admin Users screen module; no longer active
+- removed Profile Preferences screen module; no longer active
 - `frontend/src/governance-audit-admin-profile.contract.test.mjs`
 - `frontend/src/design-system/FormField.tsx`
 - `frontend/src/main.tsx`

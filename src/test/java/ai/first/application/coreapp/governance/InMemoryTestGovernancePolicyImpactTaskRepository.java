@@ -5,8 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/** In-memory Governance/Policy impact task repository for starter tests and local demos only. */
-public final class LocalDemoGovernancePolicyImpactTaskRepository implements GovernancePolicyImpactTaskRepository {
+/** In-memory Governance/Policy impact task repository for starter tests and in-memory tests only. */
+public final class InMemoryTestGovernancePolicyImpactTaskRepository implements GovernancePolicyImpactTaskRepository {
   private final Map<String, GovernancePolicyImpactTask> tasks = new LinkedHashMap<>();
 
   @Override

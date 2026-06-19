@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ai.first.application.foundation.identity.AuthContextResolver;
-import ai.first.application.foundation.identity.LocalDemoIdentityRepository;
+import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.domain.foundation.agent.BehaviorChangeProposal;
 import ai.first.domain.foundation.agent.ToolCatalogEntry;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
@@ -21,26 +21,26 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
 import ai.first.application.foundation.agent.AgentRuntimeService;
-import ai.first.application.foundation.agent.LocalDemoAgentBehaviorRepository;
-import ai.first.application.foundation.agent.LocalDemoAgentRuntimeTraceSink;
+import ai.first.application.foundation.agent.InMemoryTestAgentBehaviorRepository;
+import ai.first.application.foundation.agent.InMemoryTestAgentRuntimeTraceSink;
 import ai.first.application.foundation.agent.OpenAiModelProviderClient;
 import ai.first.application.foundation.agent.ToolRegistry;
 
 class AgentMarketplaceGovernanceServiceTest {
-  private LocalDemoAgentBehaviorRepository repository;
+  private InMemoryTestAgentBehaviorRepository repository;
   private AgentRuntimeService runtimeService;
   private AgentMarketplaceGovernanceService service;
   private AuthContext steward;
 
   @BeforeEach
   void setUp() {
-    repository = new LocalDemoAgentBehaviorRepository();
+    repository = new InMemoryTestAgentBehaviorRepository();
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
-    runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new LocalDemoIdentityRepository()), fixedClock(), new OpenAiModelProviderClient(), new LocalDemoAgentRuntimeTraceSink());
+    runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryTestIdentityRepository()), fixedClock(), new OpenAiModelProviderClient(), new InMemoryTestAgentRuntimeTraceSink());
     service = new AgentMarketplaceGovernanceService(
         repository,
         runtimeService,
-        new AuthContextResolver(new LocalDemoIdentityRepository()),
+        new AuthContextResolver(new InMemoryTestIdentityRepository()),
         ToolRegistry.starterDefault(),
         fixedClock(),
         AgentMarketplaceGovernanceService.starterMarketplacePrompts());
@@ -97,7 +97,7 @@ class AgentMarketplaceGovernanceServiceTest {
     var unsafe = new AgentMarketplaceGovernanceService(
         repository,
         runtimeService,
-        new AuthContextResolver(new LocalDemoIdentityRepository()),
+        new AuthContextResolver(new InMemoryTestIdentityRepository()),
         ToolRegistry.starterDefault(),
         fixedClock(),
         List.of(new AgentMarketplaceGovernanceService.MarketplacePrompt(
@@ -169,7 +169,7 @@ class AgentMarketplaceGovernanceServiceTest {
     var highImpactService = new AgentMarketplaceGovernanceService(
         repository,
         runtimeService,
-        new AuthContextResolver(new LocalDemoIdentityRepository()),
+        new AuthContextResolver(new InMemoryTestIdentityRepository()),
         highImpactRegistry,
         fixedClock(),
         AgentMarketplaceGovernanceService.starterMarketplacePrompts());

@@ -26,12 +26,12 @@ import org.junit.jupiter.api.Test;
 
 class EnterpriseIdentityAdminServiceTest {
   private final Clock clock = Clock.fixed(Instant.parse("2026-05-20T10:15:30Z"), ZoneOffset.UTC);
-  private LocalDemoIdentityRepository identityRepository;
+  private InMemoryTestIdentityRepository identityRepository;
   private AuthContextResolver.ResolvedMe tenantAdmin;
 
   @BeforeEach
   void setUp() {
-    identityRepository = new LocalDemoIdentityRepository();
+    identityRepository = new InMemoryTestIdentityRepository();
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     seedAdmin("admin@example.com", "membership-admin", FoundationRole.TENANT_ADMIN);
     tenantAdmin = new AuthContextResolver(identityRepository).resolveMe(new WorkosIdentity("workos-admin@example.com", "admin@example.com", "Admin"), null, "corr-admin");

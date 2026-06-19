@@ -34,5 +34,5 @@ Deep links to Customer directory/detail/create/rename/lifecycle surfaces, Custom
 
 ## Gaps / caveats
 
-- Legacy screen fixtures are not the primary runtime architecture unless later reconciliation reclassifies them.
+- Removed screen modules are not runtime architecture, fixture evidence, compatibility paths, or future reconciliation targets.
 - Surface rendering must use real backend API/realtime contracts for runtime completion; fixtures are only tests/examples.

@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** Test-only Akka component-backed Audit/Trace summary task repository. */
-public final class LocalDemoAuditTraceSummaryTaskRepository implements AuditTraceSummaryTaskRepository {
+public final class InMemoryTestAuditTraceSummaryTaskRepository implements AuditTraceSummaryTaskRepository {
   private final Map<String, AuditTraceSummaryTask> tasks = new ConcurrentHashMap<>();
 
   @Override

@@ -31,10 +31,10 @@ This traceability map links the reconstructed current-intent graph to known root
 | User Admin Customer and Customer Admin branch | `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md`, `app-description/55-ui/frontend-api-contracts.md` | Current intent requires Customer list/create/detail/lifecycle plus Customer Admin list/invite/bootstrap/detail/manage surfaces and APIs under selected Organization/Tenant and Customer scope, including `CUSTOMER_ADMIN` role validation, invitation/outbox integration, last-customer-admin protection, and no sibling-customer/Organization Admin/SaaS Owner authority by implication; runtime evidence must prove the protected paths. |
 | User Admin surface conformance | `app-description/domains/core-starter/workstreams/user-admin/workstream.md`, `app-description/domains/core-starter/workstreams/user-admin/surfaces/surfaces.md` | Current intent requires canonical surface types, backend-authored dashboard/list routing and options, `user-admin-agent` with `agent-user-admin` alias compatibility, inspection-only detail surfaces, typed `surface-user-admin-system-message` outcomes, diagnostic metadata redaction, and no inline mutation controls in normal User Admin detail/runtime paths; validate through contract and runtime tests. |
 
-## Explicit drift and deferred scope
+## Runtime boundaries and deferred scope
 
-- `frontend/src/screens/**` remains legacy/page-style reference or fixture evidence, not primary workstream runtime architecture.
-- Test-only `LocalDemo*`, fixture API clients, fake providers, and deterministic model doubles prove tests only; they are not normal runtime behavior.
-- Billing and timer-backed invitation reminder behavior remain explicitly out of scope for the core starter unless a future current-intent change accepts them.
+- The active frontend architecture is the workstream shell under `frontend/src/workstream/**`; removed screen modules are not current app-description targets or runtime fallbacks.
+- Test-only fixtures, fake providers, and deterministic model doubles prove tests only; they are not normal runtime behavior.
+- Billing and timer-backed invitation reminder behavior remain explicitly out of scope in `app-description/deferred-scope.md` unless a future current-intent change accepts them.
 - Live WorkOS/AuthKit, Resend, and model provider smokes depend on external secrets; active descriptions must state fail-closed behavior and must not record secrets.
 - Archived specs may still cite legacy `app-description/` taxonomy; those references are historical evidence only and do not override this current-intent graph.
