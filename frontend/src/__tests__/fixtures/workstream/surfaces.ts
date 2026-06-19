@@ -2807,7 +2807,7 @@ export const userAdminAccessReviewSurface = envelope(
 export const agentAdminDashboardSurface = envelope(
   'surface-agent-admin-dashboard',
   'dashboard',
-  'Agent Admin command center',
+  'Agent Admin dashboard',
   'agent-admin-agent',
   {
     surfaceContract: 'agent_admin.dashboard.v1',

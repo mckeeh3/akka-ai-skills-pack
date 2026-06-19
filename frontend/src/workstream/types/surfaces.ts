@@ -529,16 +529,16 @@ export type GovernanceDiffSurfaceData = {
   availableTransitions?: Array<{ actionId: string; label?: string; capabilityId?: string; governedToolId?: string; resultSurfaceId?: string; idempotencyRequired?: boolean; redaction?: string }>;
   authorizedActions?: Array<{ actionId: string; label?: string; capabilityId?: string; governedToolId?: string; resultSurfaceId?: string; idempotencyRequired?: boolean; redaction?: string }>;
   readiness?: Record<string, unknown>;
-  beforeSummary: string;
-  afterSummary: string;
-  changes: Array<{ path: string; before?: string; after?: string; impact: string; riskLabel?: string; redaction?: string }>;
+  beforeSummary?: string;
+  afterSummary?: string;
+  changes?: Array<{ path: string; before?: string; after?: string; impact: string; riskLabel?: string; redaction?: string }>;
   simulation?: {
-    affectedCapabilities: string[];
-    expectedAllows: string[];
-    expectedDenials: string[];
-    warnings: string[];
-    confidence: string;
-    evidenceTraceIds: string[];
+    affectedCapabilities?: string[];
+    expectedAllows?: string[];
+    expectedDenials?: string[];
+    warnings?: string[];
+    confidence?: string;
+    evidenceTraceIds?: string[];
   };
 };
 

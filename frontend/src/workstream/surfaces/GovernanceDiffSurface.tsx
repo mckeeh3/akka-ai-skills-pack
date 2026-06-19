@@ -12,11 +12,21 @@ function humanize(value: unknown) {
 }
 
 export function GovernanceDiffSurface({ envelope, onAction }: GovernanceDiffSurfaceProps) {
+  const changeRows = envelope.data.changes ?? envelope.data.changeSet?.diffRows ?? [];
+  const beforeSummary = envelope.data.beforeSummary ?? envelope.data.changeSet?.beforeSummary ?? 'No previous-state summary was provided.';
+  const afterSummary = envelope.data.afterSummary ?? envelope.data.changeSet?.afterSummary ?? 'No proposed-state summary was provided.';
+  const simulation = envelope.data.simulation;
+  const affectedCapabilities = simulation?.affectedCapabilities ?? [];
+  const expectedAllows = simulation?.expectedAllows ?? [];
+  const expectedDenials = simulation?.expectedDenials ?? [];
+  const simulationWarnings = simulation?.warnings ?? [];
+  const evidenceTraceIds = simulation?.evidenceTraceIds ?? [];
+
   return (
     <SurfaceStateFrame envelope={envelope}>
       <div className="governance-diff-summary" aria-label="Policy proposal summary">
-        <section><h4>Before</h4><p>{envelope.data.beforeSummary}</p></section>
-        <section><h4>After</h4><p>{envelope.data.afterSummary}</p></section>
+        <section><h4>Before</h4><p>{beforeSummary}</p></section>
+        <section><h4>After</h4><p>{afterSummary}</p></section>
       </div>
       <dl className="governance-policy-metadata" aria-label="Policy proposal governance metadata and behavior change review summary">
         {envelope.data.proposalSummary?.title && <><dt>Proposal</dt><dd>{humanize(envelope.data.proposalSummary.title)}</dd></>}
@@ -46,21 +56,21 @@ export function GovernanceDiffSurface({ envelope, onAction }: GovernanceDiffSurf
       )}
       {envelope.data.requiredApproval && <details className="dashboard-evidence-drawer"><summary>Role-gated approval diagnostics</summary><p>{envelope.data.requiredApproval}</p></details>}
       {envelope.data.simulationSummary && <p className="capability-basis">Simulation summary: {humanize(envelope.data.simulationSummary)}</p>}
-      {envelope.data.simulation && (
+      {simulation && (
         <section className="governance-simulation" aria-labelledby={`${envelope.surfaceId}-simulation`}>
           <h4 id={`${envelope.surfaceId}-simulation`}>Deterministic simulation evidence</h4>
-          <p>Confidence: {envelope.data.simulation.confidence}</p>
-          <p>Affected capabilities: {envelope.data.simulation.affectedCapabilities.join(', ')}</p>
-          <p>Expected allows: {envelope.data.simulation.expectedAllows.join(', ') || 'none'}</p>
-          <p>Expected denials: {envelope.data.simulation.expectedDenials.join(', ') || 'none'}</p>
-          {envelope.data.simulation.warnings.length > 0 && <p>Warnings: {envelope.data.simulation.warnings.join('; ')}</p>}
-          <p>Evidence traces: {envelope.data.simulation.evidenceTraceIds.join(', ')}</p>
+          <p>Confidence: {simulation.confidence}</p>
+          <p>Affected capabilities: {affectedCapabilities.join(', ') || 'none'}</p>
+          <p>Expected allows: {expectedAllows.join(', ') || 'none'}</p>
+          <p>Expected denials: {expectedDenials.join(', ') || 'none'}</p>
+          {simulationWarnings.length > 0 && <p>Warnings: {simulationWarnings.join('; ')}</p>}
+          <p>Evidence traces: {evidenceTraceIds.join(', ') || 'none'}</p>
         </section>
       )}
       <table>
         <caption>Behavior change summary</caption>
         <thead><tr><th scope="col">Change</th><th scope="col">Before</th><th scope="col">After</th><th scope="col">Impact</th></tr></thead>
-        <tbody>{envelope.data.changes.map((change) => <tr key={change.path}><th scope="row">{humanize(change.path)}</th><td>{humanize(change.before ?? '')}</td><td>{humanize(change.after ?? '')}</td><td>{humanize(change.impact)}</td></tr>)}</tbody>
+        <tbody>{changeRows.length > 0 ? changeRows.map((change) => <tr key={change.path}><th scope="row">{humanize(change.path)}</th><td>{humanize(change.before ?? '')}</td><td>{humanize(change.after ?? '')}</td><td>{humanize(change.impact)}</td></tr>) : <tr><td colSpan={4}>No row-level diff was provided for this governed surface.</td></tr>}</tbody>
       </table>
       {envelope.data.availableTransitions && envelope.data.availableTransitions.length > 0 && (
         <section className="governance-available-transitions" aria-label="Backend-authorized proposal transitions">
@@ -68,7 +78,7 @@ export function GovernanceDiffSurface({ envelope, onAction }: GovernanceDiffSurf
           <ul>{envelope.data.availableTransitions.map((transition) => <li key={transition.actionId}>{humanize(transition.label ?? transition.actionId)} · {humanize(transition.resultSurfaceId)}{transition.idempotencyRequired ? ' · idempotency required' : ''}</li>)}</ul>
         </section>
       )}
-      <details className="dashboard-evidence-drawer"><summary>Role-gated diff identifiers and trace diagnostics</summary><p>Paths: {envelope.data.changes.map((change) => change.path).join(', ')}</p>{envelope.data.traceLinks && <p>Trace links: {envelope.data.traceLinks.join(', ')}</p>}{envelope.data.traceRefs && <p>Trace refs: {envelope.data.traceRefs.join(', ')}</p>}</details>
+      <details className="dashboard-evidence-drawer"><summary>Role-gated diff identifiers and trace diagnostics</summary><p>Paths: {changeRows.map((change) => change.path).join(', ') || 'none provided'}</p>{envelope.data.traceLinks && <p>Trace links: {envelope.data.traceLinks.join(', ')}</p>}{envelope.data.traceRefs && <p>Trace refs: {envelope.data.traceRefs.join(', ')}</p>}</details>
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={envelope.data.proposalId ? { proposalId: envelope.data.proposalId } : undefined} onAction={onAction} />
     </SurfaceStateFrame>
   );

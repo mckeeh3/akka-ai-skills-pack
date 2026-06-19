@@ -2,7 +2,7 @@
 
 ## Workstream placement
 
-Agent Admin is a role-authorized functional-agent workstream owned by `agent-admin-agent`. Routes and deep links reopen structured surfaces; they do not define application meaning. The default workstream entry is `surface-agent-admin-dashboard`, an attention-first command center backed by capability `managed-agent-governance`.
+Agent Admin is a role-authorized functional-agent workstream owned by `agent-admin-agent`. Routes and deep links reopen structured surfaces; they do not define application meaning. The default workstream entry is `surface-agent-admin-dashboard`, an attention-first dashboard backed by capability `managed-agent-governance`.
 
 Reusable placements:
 
@@ -23,7 +23,7 @@ Durable collection objects in this workstream use the canonical progression: lis
 
 ## Surface contracts
 
-### `surface-agent-admin-dashboard` — Agent Admin command center
+### `surface-agent-admin-dashboard` — Agent Admin dashboard
 
 - Identity and ownership: `surface-agent-admin-dashboard`; type `dashboard`; contract `agent_admin.dashboard.v1`; role: workstream starting surface; owning workstream `Agent Admin`; owning functional agent `agent-admin-agent`; primary governed capability `managed-agent-governance`.
 - Placement: default Agent Admin entry surface from the workstream shell, reopenable from backend-owned My Account/Governance/Audit attention links when the selected `AuthContext` is authorized. Customer-scoped Agent Admin contexts return a safe forbidden/context state rather than implying customer-admin authority.
