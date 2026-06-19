@@ -318,7 +318,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
 
   function appendSurfaceRequestAndResponse(surface: SurfaceEnvelope<unknown>, title: string, body?: string) {
     const now = Date.now();
-    const functionalAgentId = surface.ownerFunctionalAgentId ?? selectedFunctionalAgentId ?? 'agent-user-admin';
+    const functionalAgentId = surface.ownerFunctionalAgentId ?? selectedFunctionalAgentId ?? 'user-admin-agent';
     const requestItem: WorkstreamItem = {
       itemId: `surface-request-${now}`,
       functionalAgentId,
@@ -371,7 +371,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     const now = Date.now();
     const actionRequestItem: WorkstreamItem = {
       itemId: `surface-action-request-${now}`,
-      functionalAgentId: targetSurface?.ownerFunctionalAgentId ?? selectedFunctionalAgentId ?? 'agent-user-admin',
+      functionalAgentId: targetSurface?.ownerFunctionalAgentId ?? selectedFunctionalAgentId ?? 'user-admin-agent',
       kind: 'surface-request',
       createdAt: new Date().toISOString(),
       correlationId: result.ok ? result.value.correlationId : result.error.correlationId,

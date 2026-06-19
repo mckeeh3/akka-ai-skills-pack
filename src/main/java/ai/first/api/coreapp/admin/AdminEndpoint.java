@@ -165,7 +165,7 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
   public HttpResponse saasOwnerAdmins() {
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
-      if (actor.selectedContext().scopeType() != ScopeType.SAAS_OWNER || !actor.selectedContext().hasCapability("saas_owner.user.manage")) throw forbidden();
+      if (actor.selectedContext().scopeType() != ScopeType.SAAS_OWNER || !actor.selectedContext().hasCapability("saas_owner.admin.manage")) throw forbidden();
       var admins = StarterSecurityComponents.userAdminService().searchUsers(actor, null, correlationId).stream().map(AdminSubjectSummary::from).toList();
       var invitations = scopedInvitationSummaries(actor, ScopeType.SAAS_OWNER, null, null);
       return HttpResponses.ok(new SaasOwnerAdminListPayload(admins, invitations, List.of("trace-saas-owner-admins"), correlationId, ADMIN_SUBJECT_REDACTIONS));

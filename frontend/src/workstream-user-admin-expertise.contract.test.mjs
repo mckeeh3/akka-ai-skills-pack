@@ -89,7 +89,7 @@ test('UserAdminAgent guidance fixtures cover read-only evidence and provider-blo
     'use deterministic User Admin surfaces for invite, member status, and role changes',
     'Provider secrets, raw JWTs, hidden prompts, invitation tokens, and unauthorized tenant/customer evidence are omitted',
     'trace-useradmin-agent-provider-blocked',
-    'USERADMIN_AGENT_TURN'
+    'USER_ADMIN_AGENT_TURN'
   ]) {
     assert.match(surfaces, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }

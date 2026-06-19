@@ -31,8 +31,8 @@ const userAdminFrontendRealization = read('../../app-description/domains/core-st
 test('User Admin functional agent defaults to markdown_response and uses the governed foundation capability', () => {
   assert.match(agents, /label: 'User Admin'/);
   assert.match(agents, /defaultSurfaceType: 'markdown_response'/);
-  assert.match(agents, /secure-tenant-user-foundation/);
-  assert.match(me, /secure-tenant-user-foundation/);
+  assert.match(agents, /user_admin.view_overview/);
+  assert.match(me, /user_admin.view_overview/);
 });
 
 test('User Admin dashboard, list, and detail surfaces use canonical surface ids and scoped variants', () => {
@@ -109,24 +109,24 @@ test('User Admin surface actions map to capability ids and trace or audit afford
   assert.match(surfaces, /Show Users/);
   assert.match(surfaces, /Show users/);
   assert.match(surfaces, /UserAdminListDisplayed/);
-  assert.match(surfaces, /secureTenantUserFoundation = 'secure-tenant-user-foundation'/);
+  assert.match(surfaces, /secureTenantUserFoundation = 'user_admin.view_overview'/);
   for (const capabilityId of [
-    'USERADMIN_VIEW_OVERVIEW',
-    'USERADMIN_LIST_INVITATIONS',
-    'USERADMIN_SEND_INVITATION',
-    'USERADMIN_RESEND_INVITATION',
-    'USERADMIN_REVOKE_INVITATION',
-    'USERADMIN_LIST_MEMBERS',
-    'USERADMIN_UPDATE_MEMBER_STATUS',
-    'USERADMIN_LIST_ROLES_CAPABILITIES',
-    'USERADMIN_PREVIEW_ROLE_CHANGE',
-    'USERADMIN_CHANGE_MEMBER_ROLES',
+    'user_admin.view_overview',
+    'user_admin.acceptance_status.read',
+    'user_admin.invite_user',
+    'user_admin.resend_invitation',
+    'user_admin.revoke_invitation',
+    'user_admin.list_members',
+    'user_admin.update_member_status',
+    'user_admin.preview_role_change',
+    'user_admin.preview_role_change',
+    'user_admin.change_member_roles',
     'user_admin.access_review.start',
     'user_admin.access_review.read',
     'user_admin.access_review.cancel',
     'user_admin.access_review.accept_result',
     'user_admin.access_review.reject_result',
-    'USERADMIN_VIEW_TRACE_REFERENCE'
+    'admin.audit.read'
   ]) {
     assert.match(surfaces, new RegExp(capabilityId));
   }
@@ -315,7 +315,8 @@ test('User Admin scoped admin surfaces cover SaaS Owner, Organization Admin, Cus
   assert.match(workstreamService, /targetScopeProof/);
   assert.match(userAdminScopedAdminSurface, /function CustomerTaskForm/);
   assert.match(userAdminScopedAdminSurface, /action-submit-customer-create/);
-  assert.match(userAdminScopedAdminSurface, /action-customer-create/);
+  assert.doesNotMatch(userAdminScopedAdminSurface, /action-customer-create/);
+  assert.doesNotMatch(userAdminScopedAdminSurface, /action-customer-rename/);
   assert.match(userAdminScopedAdminSurface, /action-customer-reactivate/);
   assert.match(userAdminScopedAdminSurface, /isReactivate \|\| envelope\.data\.confirmationRequired/);
   assert.match(userAdminScopedAdminSurface, /Type a confirmation before continuing/);
@@ -341,10 +342,8 @@ test('Customer branch action ids are normalized between app-description and runt
     'action-customer-read',
     'action-open-customer-create',
     'action-submit-customer-create',
-    'action-customer-create',
     'action-open-customer-rename',
     'action-submit-customer-rename',
-    'action-customer-rename',
     'action-open-customer-suspend',
     'action-customer-suspend',
     'action-open-customer-reactivate',
@@ -357,8 +356,8 @@ test('Customer branch action ids are normalized between app-description and runt
     assert.match(workstreamService, new RegExp(canonicalAction));
   }
 
-  for (const documentedNonAlias of ['action-customer-list', 'action-customer-admin-list', 'action-customer-admin-manage']) {
-    assert.match(description, new RegExp(`${documentedNonAlias}.*not an active alias|not active.*${documentedNonAlias}|documentation-only shorthand`, 's'));
+  for (const documentedNonAlias of ['action-customer-create', 'action-customer-rename', 'action-open-customer-suspend-confirmation', 'action-open-customer-reactivate-confirmation', 'action-customer-list', 'action-customer-admin-list', 'action-customer-admin-manage']) {
+    assert.match(description, new RegExp(`${documentedNonAlias}.*not .*product action|not an active alias|not active.*${documentedNonAlias}|documentation-only shorthand|Retired action ids`, 's'));
     assert.doesNotMatch(workstreamService, new RegExp(`new SurfaceAction\\("${documentedNonAlias}"`));
   }
 });

@@ -183,7 +183,7 @@ class ManifestBoundaryEntityTest {
     return new AgentSkillManifest(
         tenantId,
         manifestId,
-        "agent-user-admin",
+        "user-admin-agent",
         status,
         1,
         List.of(new AgentSkillManifest.Entry(
@@ -203,7 +203,7 @@ class ManifestBoundaryEntityTest {
     return new AgentReferenceManifest(
         tenantId,
         manifestId,
-        "agent-user-admin",
+        "user-admin-agent",
         "bundle-user-admin",
         status,
         1,
@@ -226,7 +226,7 @@ class ManifestBoundaryEntityTest {
     return new ToolPermissionBoundary(
         tenantId,
         boundaryId,
-        "agent-user-admin",
+        "user-admin-agent",
         status,
         1,
         grants,

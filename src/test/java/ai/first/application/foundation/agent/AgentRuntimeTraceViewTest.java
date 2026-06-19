@@ -14,7 +14,7 @@ class AgentRuntimeTraceViewTest {
     var trace = AgentRuntimeTraceEntityTest.trace(
         "trace-1",
         "tenant-1",
-        "agent-user-admin",
+        "user-admin-agent",
         "corr-1",
         "PromptAssemblyTrace",
         AgentRuntimeTrace.Decision.ALLOWED,
@@ -24,7 +24,7 @@ class AgentRuntimeTraceViewTest {
 
     assertEquals("trace-1", row.traceId());
     assertEquals("tenant-1", row.tenantId());
-    assertEquals("agent-user-admin", row.agentDefinitionId());
+    assertEquals("user-admin-agent", row.agentDefinitionId());
     assertEquals("corr-1", row.correlationId());
     assertEquals("corr-1", row.workTraceId());
     assertEquals("PromptAssemblyTrace", row.traceType());
@@ -37,8 +37,8 @@ class AgentRuntimeTraceViewTest {
 
   @Test
   void traceViewProjectsDeniedAndApprovalRequiredFilteringFlags() {
-    var denied = AgentRuntimeTraceEntityTest.trace("trace-denied", "tenant-1", "agent-user-admin", "corr-denied", "ReferenceLoadTrace", AgentRuntimeTrace.Decision.DENIED, "reference-not-available");
-    var approval = AgentRuntimeTraceEntityTest.trace("trace-approval", "tenant-1", "agent-user-admin", "corr-approval", "ToolInvocationTrace", AgentRuntimeTrace.Decision.APPROVAL_REQUIRED, "tool grant requires approval");
+    var denied = AgentRuntimeTraceEntityTest.trace("trace-denied", "tenant-1", "user-admin-agent", "corr-denied", "ReferenceLoadTrace", AgentRuntimeTrace.Decision.DENIED, "reference-not-available");
+    var approval = AgentRuntimeTraceEntityTest.trace("trace-approval", "tenant-1", "user-admin-agent", "corr-approval", "ToolInvocationTrace", AgentRuntimeTrace.Decision.APPROVAL_REQUIRED, "tool grant requires approval");
 
     var deniedRow = AgentRuntimeTraceView.AgentRuntimeTraceRow.from(denied);
     var approvalRow = AgentRuntimeTraceView.AgentRuntimeTraceRow.from(approval);

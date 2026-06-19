@@ -21,7 +21,7 @@ class AgentDefinitionViewIntegrationTest extends TestKitSupport {
   @Test
   void projectsAgentAdminCatalogDetailAndRuntimeLookupRows() {
     IncomingMessages events = testKit.getEventSourcedEntityIncomingMessages(AgentDefinitionEntity.class);
-    var definition = AgentDefinitionEntityTest.definition("tenant-catalog", "agent-user-admin", AgentLifecycleStatus.ACTIVE);
+    var definition = AgentDefinitionEntityTest.definition("tenant-catalog", "user-admin-agent", AgentLifecycleStatus.ACTIVE);
 
     events.publish(
         new AgentDefinitionEntity.Event.DefinitionSaved(definition),
@@ -35,11 +35,11 @@ class AgentDefinitionViewIntegrationTest extends TestKitSupport {
               var detail = componentClient
                   .forView()
                   .method(AgentDefinitionView::getDetail)
-                  .invoke(new AgentDefinitionView.AgentDefinitionDetailQuery("tenant-catalog", "agent-user-admin"));
+                  .invoke(new AgentDefinitionView.AgentDefinitionDetailQuery("tenant-catalog", "user-admin-agent"));
               var runtime = componentClient
                   .forView()
                   .method(AgentDefinitionView::activeRuntimeLookup)
-                  .invoke(AgentDefinitionView.AgentRuntimeLookupQuery.active("tenant-catalog", "agent-user-admin"));
+                  .invoke(AgentDefinitionView.AgentRuntimeLookupQuery.active("tenant-catalog", "user-admin-agent"));
               var catalog = componentClient
                   .forView()
                   .method(AgentDefinitionView::agentCatalog)
@@ -50,13 +50,13 @@ class AgentDefinitionViewIntegrationTest extends TestKitSupport {
                   .invoke(new AgentDefinitionView.WorkstreamPlacementQuery("tenant-catalog", "user-admin"));
 
               assertEquals("tenant-catalog", detail.tenantId());
-              assertEquals("agent-user-admin", detail.agentDefinitionId());
+              assertEquals("user-admin-agent", detail.agentDefinitionId());
               assertEquals("ACTIVE", detail.lifecycleStatus());
               assertTrue(detail.functionalAgent());
               assertEquals("user-admin", runtime.functionalAreaId());
               assertEquals(1, catalog.agents().size());
               assertEquals(1, placement.agents().size());
-              assertEquals("agent-user-admin", placement.agents().getFirst().agentDefinitionId());
+              assertEquals("user-admin-agent", placement.agents().getFirst().agentDefinitionId());
             });
   }
 
@@ -92,11 +92,11 @@ class AgentDefinitionViewIntegrationTest extends TestKitSupport {
   @Test
   void tenantScopedQueriesDoNotReturnOtherTenantRows() {
     IncomingMessages events = testKit.getEventSourcedEntityIncomingMessages(AgentDefinitionEntity.class);
-    var tenantOne = AgentDefinitionEntityTest.definition("tenant-1", "agent-user-admin", AgentLifecycleStatus.ACTIVE);
-    var tenantTwo = AgentDefinitionEntityTest.definition("tenant-2", "agent-user-admin", AgentLifecycleStatus.ACTIVE);
+    var tenantOne = AgentDefinitionEntityTest.definition("tenant-1", "user-admin-agent", AgentLifecycleStatus.ACTIVE);
+    var tenantTwo = AgentDefinitionEntityTest.definition("tenant-2", "user-admin-agent", AgentLifecycleStatus.ACTIVE);
 
-    events.publish(new AgentDefinitionEntity.Event.DefinitionSaved(tenantOne), AgentDefinitionEntity.entityId("tenant-1", "agent-user-admin"));
-    events.publish(new AgentDefinitionEntity.Event.DefinitionSaved(tenantTwo), AgentDefinitionEntity.entityId("tenant-2", "agent-user-admin"));
+    events.publish(new AgentDefinitionEntity.Event.DefinitionSaved(tenantOne), AgentDefinitionEntity.entityId("tenant-1", "user-admin-agent"));
+    events.publish(new AgentDefinitionEntity.Event.DefinitionSaved(tenantTwo), AgentDefinitionEntity.entityId("tenant-2", "user-admin-agent"));
 
     Awaitility.await()
         .ignoreExceptions()

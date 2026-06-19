@@ -37,7 +37,7 @@ public final class AgentBehaviorSeedLoader {
   public static final String SEED_BUNDLE_ID = "starter-agent-behavior-v1";
   public static final String CONTENT_VERSION = "1";
   public static final String MY_ACCOUNT_AGENT_ID = "agent-my-account";
-  public static final String USER_ADMIN_AGENT_ID = "agent-user-admin";
+  public static final String USER_ADMIN_AGENT_ID = "user-admin-agent";
   public static final String AGENT_ADMIN_AGENT_ID = "agent-agent-admin";
   public static final String AUDIT_TRACE_AGENT_ID = "agent-audit-trace";
   public static final String GOVERNANCE_POLICY_AGENT_ID = "agent-governance-policy";

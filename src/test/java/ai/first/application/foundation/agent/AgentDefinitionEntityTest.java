@@ -22,12 +22,12 @@ class AgentDefinitionEntityTest {
 
   @Test
   void savesActiveTenantScopedAgentDefinitionForRuntimeLookup() {
-    var definition = definition("tenant-1", "agent-user-admin", AgentLifecycleStatus.ACTIVE);
+    var definition = definition("tenant-1", "user-admin-agent", AgentLifecycleStatus.ACTIVE);
     var testKit = newTestKit(definition.tenantId(), definition.agentDefinitionId());
 
     var saveResult = testKit.method(AgentDefinitionEntity::save).invoke(definition);
     var lookupResult = testKit.method(AgentDefinitionEntity::activeRuntimeLookup)
-        .invoke(new AgentDefinitionEntity.AgentDefinitionQuery("tenant-1", "agent-user-admin"));
+        .invoke(new AgentDefinitionEntity.AgentDefinitionQuery("tenant-1", "user-admin-agent"));
 
     assertEquals(definition, saveResult.getReply());
     assertEquals(
@@ -38,16 +38,16 @@ class AgentDefinitionEntityTest {
 
   @Test
   void disabledAgentDefinitionRemainsInspectableButDeniedForRuntimeLookup() {
-    var definition = definition("tenant-1", "agent-user-admin", AgentLifecycleStatus.ACTIVE);
+    var definition = definition("tenant-1", "user-admin-agent", AgentLifecycleStatus.ACTIVE);
     var testKit = newTestKit(definition.tenantId(), definition.agentDefinitionId());
     testKit.method(AgentDefinitionEntity::save).invoke(definition);
 
     var disabled = testKit.method(AgentDefinitionEntity::disable)
         .invoke(new AgentDefinitionEntity.LifecycleCommand("tenant-1", "maintenance", "admin-1"));
     var runtimeLookup = testKit.method(AgentDefinitionEntity::activeRuntimeLookup)
-        .invoke(new AgentDefinitionEntity.AgentDefinitionQuery("tenant-1", "agent-user-admin"));
+        .invoke(new AgentDefinitionEntity.AgentDefinitionQuery("tenant-1", "user-admin-agent"));
     var detail = testKit.method(AgentDefinitionEntity::detail)
-        .invoke(new AgentDefinitionEntity.AgentDefinitionQuery("tenant-1", "agent-user-admin"));
+        .invoke(new AgentDefinitionEntity.AgentDefinitionQuery("tenant-1", "user-admin-agent"));
 
     assertEquals(AgentLifecycleStatus.DISABLED, disabled.getReply().status());
     assertEquals(
@@ -59,14 +59,14 @@ class AgentDefinitionEntityTest {
 
   @Test
   void archivedAgentDefinitionRemainsInspectableButDeniedForRuntimeLookup() {
-    var definition = definition("tenant-1", "agent-user-admin", AgentLifecycleStatus.DISABLED);
+    var definition = definition("tenant-1", "user-admin-agent", AgentLifecycleStatus.DISABLED);
     var testKit = newTestKit(definition.tenantId(), definition.agentDefinitionId());
     testKit.method(AgentDefinitionEntity::save).invoke(definition);
 
     var archived = testKit.method(AgentDefinitionEntity::archive)
         .invoke(new AgentDefinitionEntity.LifecycleCommand("tenant-1", "retired", "admin-1"));
     var runtimeLookup = testKit.method(AgentDefinitionEntity::activeRuntimeLookup)
-        .invoke(new AgentDefinitionEntity.AgentDefinitionQuery("tenant-1", "agent-user-admin"));
+        .invoke(new AgentDefinitionEntity.AgentDefinitionQuery("tenant-1", "user-admin-agent"));
 
     assertEquals(AgentLifecycleStatus.ARCHIVED, archived.getReply().status());
     assertEquals(
@@ -77,14 +77,14 @@ class AgentDefinitionEntityTest {
 
   @Test
   void crossTenantLookupDoesNotRevealAgentDefinition() {
-    var definition = definition("tenant-1", "agent-user-admin", AgentLifecycleStatus.ACTIVE);
+    var definition = definition("tenant-1", "user-admin-agent", AgentLifecycleStatus.ACTIVE);
     var testKit = newTestKit(definition.tenantId(), definition.agentDefinitionId());
     testKit.method(AgentDefinitionEntity::save).invoke(definition);
 
     var wrongTenant = testKit.method(AgentDefinitionEntity::detail)
-        .invoke(new AgentDefinitionEntity.AgentDefinitionQuery("tenant-2", "agent-user-admin"));
+        .invoke(new AgentDefinitionEntity.AgentDefinitionQuery("tenant-2", "user-admin-agent"));
     var wrongTenantRuntime = testKit.method(AgentDefinitionEntity::activeRuntimeLookup)
-        .invoke(new AgentDefinitionEntity.AgentDefinitionQuery("tenant-2", "agent-user-admin"));
+        .invoke(new AgentDefinitionEntity.AgentDefinitionQuery("tenant-2", "user-admin-agent"));
 
     assertTrue(wrongTenant.getReply().isEmpty());
     assertTrue(wrongTenantRuntime.getReply().isEmpty());
@@ -92,7 +92,7 @@ class AgentDefinitionEntityTest {
 
   @Test
   void invalidAgentDefinitionIsRejectedWithoutPersistingEvents() {
-    var testKit = newTestKit("tenant-1", "agent-user-admin");
+    var testKit = newTestKit("tenant-1", "user-admin-agent");
     var invalid = definition("tenant-1", "agent|bad", AgentLifecycleStatus.ACTIVE);
 
     var result = testKit.method(AgentDefinitionEntity::save).invoke(invalid);

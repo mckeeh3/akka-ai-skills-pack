@@ -115,38 +115,38 @@ test('left rail unseen response indicators are accessible, extensible, and visua
 test('rail attention state records background responses and clears on selection', () => {
   const { recordUnseenRailResponse, clearRailAttentionForAgent } = loadTypeScriptExports(railAttentionState);
   const selectedStore = recordUnseenRailResponse({}, {
-    functionalAgentId: 'agent-user-admin',
-    selectedFunctionalAgentId: 'agent-user-admin',
+    functionalAgentId: 'user-admin-agent',
+    selectedFunctionalAgentId: 'user-admin-agent',
     lastItemId: 'response-current'
   });
   assert.deepEqual(selectedStore, {}, 'selected workstream responses must not create unseen indicators');
 
   const first = recordUnseenRailResponse({}, {
-    functionalAgentId: 'agent-user-admin',
+    functionalAgentId: 'user-admin-agent',
     selectedFunctionalAgentId: 'agent-admin-agent',
     lastItemId: 'response-1',
     severity: 'info',
     kind: 'background-response',
     lastUpdatedAt: '2026-05-26T00:00:00.000Z'
   });
-  assert.equal(first['agent-user-admin'].unseenResponseCount, 1);
-  assert.equal(first['agent-user-admin'].lastItemId, 'response-1');
-  assert.equal(first['agent-user-admin'].kind, 'background-response');
+  assert.equal(first['user-admin-agent'].unseenResponseCount, 1);
+  assert.equal(first['user-admin-agent'].lastItemId, 'response-1');
+  assert.equal(first['user-admin-agent'].kind, 'background-response');
 
   const second = recordUnseenRailResponse(first, {
-    functionalAgentId: 'agent-user-admin',
+    functionalAgentId: 'user-admin-agent',
     selectedFunctionalAgentId: 'agent-admin-agent',
     lastItemId: 'response-2',
     severity: 'warning',
     kind: 'background-activity',
     lastUpdatedAt: '2026-05-26T00:01:00.000Z'
   });
-  assert.equal(second['agent-user-admin'].unseenResponseCount, 2);
-  assert.equal(second['agent-user-admin'].severity, 'warning');
-  assert.equal(second['agent-user-admin'].lastItemId, 'response-2');
+  assert.equal(second['user-admin-agent'].unseenResponseCount, 2);
+  assert.equal(second['user-admin-agent'].severity, 'warning');
+  assert.equal(second['user-admin-agent'].lastItemId, 'response-2');
 
-  const cleared = clearRailAttentionForAgent(second, 'agent-user-admin');
-  assert.equal(cleared['agent-user-admin'], undefined);
+  const cleared = clearRailAttentionForAgent(second, 'user-admin-agent');
+  assert.equal(cleared['user-admin-agent'], undefined);
 });
 
 test('persistent composer is selected-agent aware and exposes disabled states', () => {

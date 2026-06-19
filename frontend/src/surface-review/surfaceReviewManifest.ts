@@ -22,7 +22,6 @@ export type SurfaceReviewWorkstream = {
 };
 
 const workstreamByFunctionalAgentId: Record<string, string> = {
-  'agent-user-admin': 'user-admin',
   'user-admin-agent': 'user-admin',
   'agent-admin-agent': 'agent-admin',
   'agent-audit-trace': 'audit-trace',

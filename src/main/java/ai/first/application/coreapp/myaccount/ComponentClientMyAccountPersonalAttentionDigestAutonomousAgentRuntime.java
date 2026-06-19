@@ -83,7 +83,7 @@ public final class ComponentClientMyAccountPersonalAttentionDigestAutonomousAgen
           starterTask.selectedAuthContextId(),
           evidenceItems,
           evidenceRefs,
-          actor.selectedContext().capabilities().stream().filter(capability -> capability.startsWith("my_account.") || capability.startsWith("agent_admin.") || capability.startsWith("audit.trace") || capability.startsWith("governance.") || capability.equals("secure-tenant-user-foundation")).sorted().toList(),
+          actor.selectedContext().capabilities().stream().filter(capability -> capability.startsWith("my_account.") || capability.startsWith("agent_admin.") || capability.startsWith("audit.trace") || capability.startsWith("governance.") || capability.equals("user_admin.view_overview")).sorted().toList(),
           starterTask.idempotencyKey(),
           correlationId,
           "modelProviderAlias=" + preparation.governedRequest().modelProviderAlias()

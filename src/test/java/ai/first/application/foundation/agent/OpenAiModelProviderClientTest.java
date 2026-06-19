@@ -112,7 +112,7 @@ class OpenAiModelProviderClientTest {
         "System prompt with compact manifest only.",
         "User asks for help.",
         "tenant-1",
-        "agent-user-admin",
+        "user-admin-agent",
         correlationId,
         List.of("trace-prompt"));
   }

@@ -302,7 +302,7 @@ class InvitationAndUserAdminServiceTest {
     identityRepository.putMembership(new Membership("membership-admin", "admin@example.com", ScopeType.TENANT, "tenant-1", null, List.of(FoundationRole.TENANT_EMPLOYEE), MembershipStatus.ACTIVE, false, null));
     var lastAdmin = assertThrows(AuthorizationException.class, () -> userAdmin.updateMemberStatus(tenantAdmin, "membership-second-admin", MembershipStatus.SUSPENDED, "last admin", "idem-last-admin", "corr-last-admin-disable"));
     assertEquals("last-admin-denied", lastAdmin.reasonCode());
-    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("USERADMIN_UPDATE_MEMBER_STATUS") && event.result() == ai.first.domain.foundation.audit.AdminAuditEvent.Result.NO_OP));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("user_admin.update_member_status") && event.result() == ai.first.domain.foundation.audit.AdminAuditEvent.Result.NO_OP));
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.reasonCode().equals("self-disable-denied")));
   }
 
@@ -391,7 +391,7 @@ class InvitationAndUserAdminServiceTest {
     identityRepository.appendAudit(new AdminAuditEvent("audit-legal-hold", clock.instant(), "corr-legal-hold", "compliance@example.com", "membership-admin", ScopeType.TENANT, "tenant-1", null, "held@example.com", "membership-held", "LEGAL_HOLD_ACTIVE", AdminAuditEvent.Result.ALLOWED, "legal-hold", "legal-hold", "BROWSER_SAFE"));
     var legalHoldDenied = assertThrows(AuthorizationException.class, () -> userAdmin.permanentlyRemoveUser(tenantAdmin, "membership-held", "legal hold purge", "idem-legal-hold-purge", "corr-legal-hold-purge"));
     assertTrue(legalHoldDenied.reasonCode().contains("legal-hold"));
-    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("USERADMIN_PERMANENTLY_REMOVE_USER") && event.result() == AdminAuditEvent.Result.DENIED));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("user_admin.permanently_remove_user") && event.result() == AdminAuditEvent.Result.DENIED));
   }
 
   @Test

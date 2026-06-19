@@ -22,14 +22,14 @@ class DurableWorkstreamLogEntityTest {
   @Test
   void appendsReadsAndLooksUpSurfaceByTenantContextAndFunctionalAgent() {
     var testKit = newTestKit();
-    var entry = entry("tenant-1", "membership-1", "agent-user-admin", "idem-1", "corr-1");
+    var entry = entry("tenant-1", "membership-1", "user-admin-agent", "idem-1", "corr-1");
 
     var append = testKit.method(DurableWorkstreamLogEntity::appendMessage).invoke(entry);
 
     assertTrue(append.stateWasUpdated());
     assertEquals(entry, append.getReply());
     var items = testKit.method(DurableWorkstreamLogEntity::items)
-        .invoke(new DurableWorkstreamLogEntity.ItemsQuery("tenant-1", "membership-1", "agent-user-admin"))
+        .invoke(new DurableWorkstreamLogEntity.ItemsQuery("tenant-1", "membership-1", "user-admin-agent"))
         .getReply();
     assertEquals(List.of(entry.userItem(), entry.agentItem()), items);
     var surface = testKit.method(DurableWorkstreamLogEntity::surface)
@@ -41,8 +41,8 @@ class DurableWorkstreamLogEntityTest {
   @Test
   void duplicateIdempotencyReturnsExistingEntryWithoutUpdatingState() {
     var testKit = newTestKit();
-    var first = entry("tenant-1", "membership-1", "agent-user-admin", "idem-dup", "corr-first");
-    var duplicate = entry("tenant-1", "membership-1", "agent-user-admin", "idem-dup", "corr-second");
+    var first = entry("tenant-1", "membership-1", "user-admin-agent", "idem-dup", "corr-first");
+    var duplicate = entry("tenant-1", "membership-1", "user-admin-agent", "idem-dup", "corr-second");
     testKit.method(DurableWorkstreamLogEntity::appendMessage).invoke(first);
 
     var appendDuplicate = testKit.method(DurableWorkstreamLogEntity::appendMessage).invoke(duplicate);
@@ -50,7 +50,7 @@ class DurableWorkstreamLogEntityTest {
     assertFalse(appendDuplicate.stateWasUpdated());
     assertEquals(first, appendDuplicate.getReply());
     var byKey = testKit.method(DurableWorkstreamLogEntity::findByIdempotencyKey)
-        .invoke(new DurableWorkstreamLogEntity.IdempotencyQuery("tenant-1", "membership-1", "agent-user-admin", "idem-dup"))
+        .invoke(new DurableWorkstreamLogEntity.IdempotencyQuery("tenant-1", "membership-1", "user-admin-agent", "idem-dup"))
         .getReply();
     assertEquals(first, byKey.orElseThrow());
   }
@@ -58,14 +58,14 @@ class DurableWorkstreamLogEntityTest {
   @Test
   void tenantAndContextIsolationHideItemsAndSurfaces() {
     var testKit = newTestKit();
-    var entry = entry("tenant-1", "membership-1", "agent-user-admin", "idem-isolated", "corr-isolated");
+    var entry = entry("tenant-1", "membership-1", "user-admin-agent", "idem-isolated", "corr-isolated");
     testKit.method(DurableWorkstreamLogEntity::appendMessage).invoke(entry);
 
     assertTrue(testKit.method(DurableWorkstreamLogEntity::items)
-        .invoke(new DurableWorkstreamLogEntity.ItemsQuery("tenant-2", "membership-1", "agent-user-admin"))
+        .invoke(new DurableWorkstreamLogEntity.ItemsQuery("tenant-2", "membership-1", "user-admin-agent"))
         .getReply().isEmpty());
     assertTrue(testKit.method(DurableWorkstreamLogEntity::items)
-        .invoke(new DurableWorkstreamLogEntity.ItemsQuery("tenant-1", "membership-2", "agent-user-admin"))
+        .invoke(new DurableWorkstreamLogEntity.ItemsQuery("tenant-1", "membership-2", "user-admin-agent"))
         .getReply().isEmpty());
     assertTrue(testKit.method(DurableWorkstreamLogEntity::surface)
         .invoke(new DurableWorkstreamLogEntity.SurfaceQuery("tenant-2", "membership-1", entry.surface().surfaceId()))
@@ -75,7 +75,7 @@ class DurableWorkstreamLogEntityTest {
   @Test
   void appendsDeniedSystemEntry() {
     var testKit = newTestKit();
-    var denied = new WorkstreamService.WorkstreamItem("item-denied", "agent-user-admin", "system_message", Instant.parse("2026-05-24T10:15:30Z").toString(), "corr-denied", List.of("trace-denied"), null, "Message not submitted", "Backend authorization denied this workstream message: FUNCTIONAL_AGENT_FORBIDDEN.", "blocked");
+    var denied = new WorkstreamService.WorkstreamItem("item-denied", "user-admin-agent", "system_message", Instant.parse("2026-05-24T10:15:30Z").toString(), "corr-denied", List.of("trace-denied"), null, "Message not submitted", "Backend authorization denied this workstream message: FUNCTIONAL_AGENT_FORBIDDEN.", "blocked");
 
     var append = testKit.method(DurableWorkstreamLogEntity::appendSystemEntry)
         .invoke(new DurableWorkstreamLogEntity.SystemEntryCommand("tenant-1", "membership-1", denied, null));
@@ -83,7 +83,7 @@ class DurableWorkstreamLogEntityTest {
     assertTrue(append.stateWasUpdated());
     assertEquals(denied, append.getReply());
     var items = testKit.method(DurableWorkstreamLogEntity::items)
-        .invoke(new DurableWorkstreamLogEntity.ItemsQuery("tenant-1", "membership-1", "agent-user-admin"))
+        .invoke(new DurableWorkstreamLogEntity.ItemsQuery("tenant-1", "membership-1", "user-admin-agent"))
         .getReply();
     assertEquals(List.of(denied), items);
   }

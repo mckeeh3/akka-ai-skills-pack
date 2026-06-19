@@ -14,7 +14,7 @@ class AgentRuntimeTraceEntityTest {
 
   @Test
   void recordsAllowedPromptAssemblyTraceAsImmutableDurableFact() {
-    var trace = trace("trace-1", "tenant-1", "agent-user-admin", "corr-1", "PROMPT_ASSEMBLY", AgentRuntimeTrace.Decision.ALLOWED, "assembled PromptAssemblyTrace with compact manifests");
+    var trace = trace("trace-1", "tenant-1", "user-admin-agent", "corr-1", "PROMPT_ASSEMBLY", AgentRuntimeTrace.Decision.ALLOWED, "assembled PromptAssemblyTrace with compact manifests");
     var testKit = EventSourcedTestKit.of(
         AgentRuntimeTraceEntity.entityId(trace.tenantId(), trace.traceId()),
         AgentRuntimeTraceEntity::new);
@@ -33,8 +33,8 @@ class AgentRuntimeTraceEntityTest {
 
   @Test
   void recordsDeniedSkillAndReferenceLoadTracesWithSafeSummaries() {
-    var skillTrace = trace("trace-skill", "tenant-1", "agent-user-admin", "corr-denied", "SKILL_LOAD", AgentRuntimeTrace.Decision.DENIED, "skill-not-available");
-    var referenceTrace = trace("trace-reference", "tenant-1", "agent-user-admin", "corr-denied", "REFERENCE_LOAD", AgentRuntimeTrace.Decision.DENIED, "reference-not-available");
+    var skillTrace = trace("trace-skill", "tenant-1", "user-admin-agent", "corr-denied", "SKILL_LOAD", AgentRuntimeTrace.Decision.DENIED, "skill-not-available");
+    var referenceTrace = trace("trace-reference", "tenant-1", "user-admin-agent", "corr-denied", "REFERENCE_LOAD", AgentRuntimeTrace.Decision.DENIED, "reference-not-available");
     var skillKit = EventSourcedTestKit.of(AgentRuntimeTraceEntity.entityId(skillTrace.tenantId(), skillTrace.traceId()), AgentRuntimeTraceEntity::new);
     var referenceKit = EventSourcedTestKit.of(AgentRuntimeTraceEntity.entityId(referenceTrace.tenantId(), referenceTrace.traceId()), AgentRuntimeTraceEntity::new);
 
@@ -49,8 +49,8 @@ class AgentRuntimeTraceEntityTest {
 
   @Test
   void detailLookupIsTenantIsolatedAndTraceRecordIsImmutable() {
-    var trace = trace("trace-1", "tenant-1", "agent-user-admin", "corr-1", "MODEL_INVOCATION", AgentRuntimeTrace.Decision.ALLOWED, "ModelInvocationTrace completed");
-    var changed = trace("trace-1", "tenant-1", "agent-user-admin", "corr-1", "MODEL_INVOCATION", AgentRuntimeTrace.Decision.DENIED, "changed");
+    var trace = trace("trace-1", "tenant-1", "user-admin-agent", "corr-1", "MODEL_INVOCATION", AgentRuntimeTrace.Decision.ALLOWED, "ModelInvocationTrace completed");
+    var changed = trace("trace-1", "tenant-1", "user-admin-agent", "corr-1", "MODEL_INVOCATION", AgentRuntimeTrace.Decision.DENIED, "changed");
     var testKit = EventSourcedTestKit.of(AgentRuntimeTraceEntity.entityId(trace.tenantId(), trace.traceId()), AgentRuntimeTraceEntity::new);
 
     testKit.method(AgentRuntimeTraceEntity::record).invoke(trace);
@@ -66,7 +66,7 @@ class AgentRuntimeTraceEntityTest {
 
   @Test
   void rejectsSecretLikeTraceSummariesBeforePersisting() {
-    var unsafe = trace("trace-secret", "tenant-1", "agent-user-admin", "corr-secret", "AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, "api_key=hidden should not persist");
+    var unsafe = trace("trace-secret", "tenant-1", "user-admin-agent", "corr-secret", "AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, "api_key=hidden should not persist");
     var testKit = EventSourcedTestKit.of(AgentRuntimeTraceEntity.entityId(unsafe.tenantId(), unsafe.traceId()), AgentRuntimeTraceEntity::new);
 
     var result = testKit.method(AgentRuntimeTraceEntity::record).invoke(unsafe);

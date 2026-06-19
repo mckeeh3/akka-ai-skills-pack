@@ -65,7 +65,7 @@ class RealModelProviderSmokeTest extends TestKitSupport {
     var me = meService.me(identity, selectedContextId, "corr-real-provider-me");
     assertFalse(me.toString().contains(apiKey), "Provider secret leaked into /api/me response");
 
-    for (var agentId : List.of("agent-my-account", "agent-user-admin", "agent-agent-admin", "agent-audit-trace", "agent-governance-policy")) {
+    for (var agentId : List.of("agent-my-account", "user-admin-agent", "agent-agent-admin", "agent-audit-trace", "agent-governance-policy")) {
       var response = service.submitMessage(
           identity,
           selectedContextId,

@@ -56,12 +56,12 @@ public final class AttentionProducerService {
         itemId,
         invitationAttentionTenantId(invitation),
         invitation.customerId(),
-        "agent-user-admin",
+        "user-admin-agent",
         title,
         summary,
         AttentionCategory.INVITATION_DELIVERY,
         severity,
-        "secure-tenant-user-foundation",
+        "user_admin.view_overview",
         "surface-user-admin-users",
         invitation.invitationId(),
         INVITATION_DELIVERY_PRODUCER_ID,
@@ -261,7 +261,7 @@ public final class AttentionProducerService {
   private AttentionItem upsertTimedInvitationDelivery(Invitation invitation, String timerId, String correlationId) {
     var item = upsertInvitationDelivery(invitation, correlationId);
     var refs = new java.util.ArrayList<>(item.sourceRefs());
-    refs.add(new AttentionSourceRef("timer", safe(timerId, "invitation-delivery-expiry"), "Timed check: invitation delivery failure is near expiry", "secure-tenant-user-foundation", "trace-timer-" + stableSuffix(safe(timerId, "invitation-delivery-expiry") + invitation.invitationId()), correlationId));
+    refs.add(new AttentionSourceRef("timer", safe(timerId, "invitation-delivery-expiry"), "Timed check: invitation delivery failure is near expiry", "user_admin.view_overview", "trace-timer-" + stableSuffix(safe(timerId, "invitation-delivery-expiry") + invitation.invitationId()), correlationId));
     var updated = new AttentionItem(item.itemId(), item.tenantId(), item.customerId(), item.owningWorkstreamId(), item.title(), item.summary() + " Timed check shows the invitation expires at " + invitation.expiresAt() + ".", item.category(), AttentionSeverity.URGENT, item.status(), item.assigneeKind(), item.assigneeId(), item.requiredCapabilityId(), item.surfaceRef(), refs, item.redactionLevel(), item.createdAt(), Instant.now(clock), Instant.now(clock), item.expiresAt(), item.acknowledgedAt(), item.resolvedAt(), item.dismissedAt(), correlationId);
     attentionRepository.save(updated);
     appendSystemAudit("ATTENTION_PRODUCER_TIMED_CHECK", AdminAuditEvent.Result.ALLOWED, updated.tenantId(), updated.customerId(), INVITATION_DELIVERY_PRODUCER_ID + ":" + updated.itemId() + ":" + safe(timerId, "invitation-delivery-expiry"), correlationId);
@@ -273,12 +273,12 @@ public final class AttentionProducerService {
         workerTaskItemId(task.taskId()),
         task.tenantId(),
         task.customerId(),
-        "agent-user-admin",
+        "user-admin-agent",
         title,
         summary + " Evidence is limited to durable task state, governed tool refs, and work traces; no fake model-backed success is introduced.",
         category,
         severity,
-        "secure-tenant-user-foundation",
+        "user_admin.view_overview",
         "surface-user-admin-access-review-task",
         task.taskId(),
         WORKER_TASK_STATE_PRODUCER_ID,

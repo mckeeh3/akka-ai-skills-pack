@@ -199,7 +199,7 @@ class GovernedDocumentEntityTest {
     return new PromptDocument(
         tenantId,
         id,
-        "agent-user-admin",
+        "user-admin-agent",
         "User Admin prompt",
         "system",
         status,

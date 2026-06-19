@@ -9,6 +9,7 @@ import { ListSearchSurface } from './ListSearchSurface';
 import { MarkdownResponseSurface } from './MarkdownResponseSurface';
 import { OutcomeSurface } from './OutcomeSurface';
 import { NotificationCenterSurface } from './NotificationCenterSurface';
+import { MyAccountSurface, isMyAccountRebuiltSurface } from './MyAccountSurfaces';
 import { OrganizationAdminSurface } from './OrganizationAdminSurface';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
@@ -32,6 +33,10 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
 
   if (!selectedEnvelope) {
     return <SurfaceStateFrame />;
+  }
+
+  if (isMyAccountRebuiltSurface(selectedEnvelope)) {
+    return <MyAccountSurface envelope={selectedEnvelope as never} onAction={onAction} onFieldValueChange={onFieldValueChange} />;
   }
 
   if (isUserAdminScopedAdminSurface(selectedEnvelope)) {

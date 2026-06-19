@@ -238,7 +238,7 @@ class NotificationServiceTest {
 
   private PromptRiskReviewTask promptRiskTask(PromptRiskReviewTask.Status status, String summary, String blockerCode) {
     var now = Instant.parse("2026-05-26T09:00:00Z");
-    return new PromptRiskReviewTask("prompt-risk-task-1", "agent-task-prompt-risk-1", "tenant-1", null, "agent-user-admin", "proposal-1", "admin@example.test", "membership-admin", "idem-prompt-risk", status, 30, summary, blockerCode, null, null, List.of(), List.of("prompt-evidence-1"), List.of("prompt-finding-1"), List.of("trace-prompt-risk-1"), now, now);
+    return new PromptRiskReviewTask("prompt-risk-task-1", "agent-task-prompt-risk-1", "tenant-1", null, "user-admin-agent", "proposal-1", "admin@example.test", "membership-admin", "idem-prompt-risk", status, 30, summary, blockerCode, null, null, List.of(), List.of("prompt-evidence-1"), List.of("prompt-finding-1"), List.of("trace-prompt-risk-1"), now, now);
   }
 
   private AuditTraceSummaryTask auditTraceSummaryTask(AuditTraceSummaryTask.Status status, String summary, String blockerCode) {

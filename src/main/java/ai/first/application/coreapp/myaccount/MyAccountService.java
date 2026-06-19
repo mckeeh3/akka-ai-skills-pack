@@ -70,7 +70,7 @@ public final class MyAccountService {
       String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), OPEN_AUTHORIZED_WORKSTREAM_CAPABILITY);
     var target = switch (actionId) {
-      case "action-open-user-admin" -> target("agent-user-admin", "User Admin", List.of("secure-tenant-user-foundation", "saas_owner.user.manage", "tenant.user.read", "tenant.user.manage", "customer.user.read", "customer.user.manage"), "surface-user-admin-dashboard");
+      case "action-open-user-admin" -> target("user-admin-agent", "User Admin", List.of("user_admin.view_overview", "saas_owner.admin.manage", "tenant.user.read", "tenant.user.manage", "customer.user.read", "customer.user.manage"), "surface-user-admin-dashboard");
       case "action-open-agent-admin" -> target("agent-admin-agent", "Agent Admin", List.of("agent_admin.list_definitions"), "surface-agent-admin-dashboard");
       case "action-open-audit-trace" -> target("agent-audit-trace", "Audit/Trace", List.of("audit.trace.read", "saas_owner.audit.read", "tenant.audit.read", "customer.audit.read"), "surface-audit-trace-dashboard");
       case "action-open-governance-policy" -> target("agent-governance-policy", "Governance/Policy", List.of("governance.policy.read"), "surface-governance-policy-dashboard");
@@ -189,7 +189,7 @@ public final class MyAccountService {
 
   private String actionIdForWorkstream(String functionalAgentId) {
     return switch (functionalAgentId) {
-      case "agent-user-admin" -> "action-open-user-admin";
+      case "user-admin-agent" -> "action-open-user-admin";
       case "agent-admin-agent" -> "action-open-agent-admin";
       case "agent-audit-trace" -> "action-open-audit-trace";
       case "agent-governance-policy" -> "action-open-governance-policy";
@@ -202,7 +202,7 @@ public final class MyAccountService {
       case "agent-admin-agent" -> "surface-agent-admin-catalog";
       case "agent-audit-trace" -> "surface-audit-trace-dashboard";
       case "agent-governance-policy" -> "surface-governance-policy-dashboard";
-      case "agent-user-admin" -> "surface-user-admin-dashboard";
+      case "user-admin-agent" -> "surface-user-admin-dashboard";
       default -> "surface-my-account-dashboard";
     };
   }
@@ -231,7 +231,7 @@ public final class MyAccountService {
     return List.of(
         new CapabilityGroupSummary("my_account", "My Account", capabilities.stream().filter(capability -> capability.startsWith("my_account.")).sorted().toList()),
         new CapabilityGroupSummary("core_access_profile", "Core access/profile aliases", List.of(CORE_ACCESS_ME_CAPABILITY, CORE_PROFILE_UPDATE_CAPABILITY, CORE_ACCESS_CONTEXT_SELECT_CAPABILITY)),
-        new CapabilityGroupSummary("workstreams", "Authorized workstream navigation", capabilities.stream().filter(capability -> capability.startsWith("agent_admin.") || capability.startsWith("audit.trace") || capability.startsWith("governance.") || capability.equals("secure-tenant-user-foundation")).sorted().toList()));
+        new CapabilityGroupSummary("workstreams", "Authorized workstream navigation", capabilities.stream().filter(capability -> capability.startsWith("agent_admin.") || capability.startsWith("audit.trace") || capability.startsWith("governance.") || capability.equals("user_admin.view_overview")).sorted().toList()));
   }
 
   private List<String> myAccountAndCoreCapabilities(AuthContextResolver.ResolvedMe actor) {

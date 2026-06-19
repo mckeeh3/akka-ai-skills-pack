@@ -22,7 +22,7 @@ test('governance, audit, admin, and profile work no longer depends on removed sc
 });
 
 test('functional agents represent My Account plus admin, audit, governance, billing, and support work areas', () => {
-  for (const agentId of ['agent-my-account', 'agent-user-admin', 'agent-admin-agent', 'agent-audit-trace', 'agent-governance-policy', 'agent-billing', 'agent-support-access']) {
+  for (const agentId of ['agent-my-account', 'user-admin-agent', 'agent-admin-agent', 'agent-audit-trace', 'agent-governance-policy', 'agent-billing', 'agent-support-access']) {
     assert.match(agents, new RegExp(agentId));
   }
   assert.match(agents, /availability: 'denied'/);
@@ -53,7 +53,7 @@ test('admin, audit, governance, and profile work are structured surfaces with ca
   assert.match(surfaces, /auditTimelineSurface/);
   assert.match(surfaces, /governanceDiffSurface/);
   assert.match(surfaces, /dashboardSurface/);
-  assert.match(surfaces, /secure-tenant-user-foundation/);
+  assert.match(surfaces, /user_admin.view_overview/);
   assert.match(surfaces, /audit\.trace\.read/);
   assert.match(surfaces, /governance\.policy\.simulate/);
   assert.match(surfaces, /Backend authorization denied/);

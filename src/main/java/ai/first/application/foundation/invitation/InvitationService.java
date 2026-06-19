@@ -366,7 +366,7 @@ public final class InvitationService {
         ? (actor.selectedContext().scopeType() == ScopeType.TENANT ? "tenant.customer_admin.list" : "customer.user.read")
         : actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER && scopeType == ScopeType.TENANT ? "saas_owner.organization_admin.list" : "tenant.user.read";
     if (scopeType == ScopeType.SAAS_OWNER) {
-      capability = "saas_owner.user.manage";
+      capability = "saas_owner.admin.manage";
     }
     if (!actor.selectedContext().hasCapability(capability)
         && !(scopeType == ScopeType.TENANT && actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER && actor.selectedContext().hasCapability("saas_owner.tenant.read"))
@@ -427,7 +427,7 @@ public final class InvitationService {
     var required = targetScope == ScopeType.CUSTOMER
         ? (auth.scopeType() == ScopeType.TENANT ? "tenant.customer_admin.invite" : "customer.invitation.manage")
         : targetScope == ScopeType.SAAS_OWNER
-            ? "saas_owner.user.manage"
+            ? "saas_owner.admin.manage"
             : auth.scopeType() == ScopeType.SAAS_OWNER ? "saas_owner.organization_admin.invite" : "tenant.invitation.manage";
     if (!auth.hasCapability(required)) {
       if (targetScope == ScopeType.TENANT && auth.scopeType() == ScopeType.SAAS_OWNER && auth.hasCapability("saas_owner.tenant.manage")) return;

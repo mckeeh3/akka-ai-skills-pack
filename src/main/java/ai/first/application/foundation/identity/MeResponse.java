@@ -173,7 +173,7 @@ public record MeResponse(
     }
 
     public static List<FunctionalAgentSummary> fromCapabilities(List<String> capabilities) {
-      var userAdminCapability = firstGrantedCapability(capabilities, "secure-tenant-user-foundation", "saas_owner.user.manage", "tenant.user.read", "tenant.user.manage", "customer.user.read", "customer.user.manage");
+      var userAdminCapability = firstGrantedCapability(capabilities, "user_admin.view_overview", "saas_owner.admin.manage", "tenant.user.read", "tenant.user.manage", "customer.user.read", "customer.user.manage");
       var auditCapability = firstGrantedCapability(capabilities, "audit.trace.read", "saas_owner.audit.read", "tenant.audit.read", "customer.audit.read");
       var userAdminVisible = userAdminCapability != null
           || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
@@ -199,14 +199,14 @@ public record MeResponse(
               profileVisible ? "visible" : "denied",
               profileVisible ? null : "No active profile context is available."),
           new FunctionalAgentSummary(
-              "agent-user-admin",
+              "user-admin-agent",
               "User Admin",
               "Administer users, invitations, roles, memberships, support access, and access review with backend-authoritative policy checks.",
               "users",
               icon("workstream-user-admin", "User Admin", "users-admin", "users and roles", "accent-users", "Open User Admin workstream"),
               "markdown_response",
               null,
-              List.of(userAdminCapability == null ? "secure-tenant-user-foundation" : userAdminCapability),
+              List.of(userAdminCapability == null ? "user_admin.view_overview" : userAdminCapability),
               null,
               userAdminVisible ? "visible" : "denied",
               userAdminVisible ? null : "Missing User Admin read capability."),

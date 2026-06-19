@@ -20,7 +20,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
     availability: 'visible'
   },
   {
-    functionalAgentId: 'agent-user-admin',
+    functionalAgentId: 'user-admin-agent',
     label: 'User Admin',
     purpose: 'Manage invitations, memberships, roles, and access review.',
     icon: 'users',
@@ -34,7 +34,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
       ariaLabel: 'Open User Admin workstream'
     },
     defaultSurfaceType: 'markdown_response',
-    requiredCapabilityIds: ['secure-tenant-user-foundation', 'admin.users.dashboard.read', 'admin.users.search', 'admin.users.detail.read', 'admin.invitations.create', 'admin.audit.read'],
+    requiredCapabilityIds: ['user_admin.view_overview', 'admin.users.dashboard.read', 'admin.users.search', 'admin.users.detail.read', 'admin.invitations.create', 'admin.audit.read'],
     attention: { count: 2, severity: 'warning', source: 'attention.list_rail_summaries' },
     availability: 'visible'
   },

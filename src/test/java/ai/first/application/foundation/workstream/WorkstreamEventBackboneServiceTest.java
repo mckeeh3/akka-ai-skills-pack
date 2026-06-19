@@ -122,7 +122,7 @@ class WorkstreamEventBackboneServiceTest {
     var replay = consumer.project(event, failed);
     assertNotNull(replay);
     assertEquals(item.lastChangedAt(), replay.lastChangedAt());
-    assertEquals(1, attention.listWorkstreamItems(tenantAdmin, "agent-user-admin", "corr-list").size());
+    assertEquals(1, attention.listWorkstreamItems(tenantAdmin, "user-admin-agent", "corr-list").size());
     assertTrue(identityRepository.auditEvents().stream().anyMatch(audit -> audit.actionType().equals("WORKSTREAM_EVENT_CONSUMER_DUPLICATE") && audit.result() == ai.first.domain.foundation.audit.AdminAuditEvent.Result.NO_OP));
   }
 
@@ -467,15 +467,15 @@ class WorkstreamEventBackboneServiceTest {
         "membership",
         "membership-admin",
         "Tenant Admin membership role changed token=secret",
-        "secure-tenant-user-foundation",
+        "user_admin.view_overview",
         tenantAdmin.account().accountId(),
-        "agent-user-admin",
+        "user-admin-agent",
         "surface-user-admin-users",
         "changed",
         Map.of("safeTitle", "Membership role change needs review", "safeSummary", "Role membership changed through backend-governed command."),
         Map.of(),
         "corr-membership-role");
-    var supportEvent = publisher.publishGovernedLifecycle("tenant-1", null, WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN, "support_access.granted", "membership", "membership-admin", "Support access grant", "tenant.support_access.manage", tenantAdmin.account().accountId(), "agent-user-admin", "surface-user-admin-user-detail", "granted", Map.of("safeSummary", "Support access grant is visible for audit review."), Map.of(), "corr-support-access");
+    var supportEvent = publisher.publishGovernedLifecycle("tenant-1", null, WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN, "support_access.granted", "membership", "membership-admin", "Support access grant", "tenant.support_access.manage", tenantAdmin.account().accountId(), "user-admin-agent", "surface-user-admin-user-detail", "granted", Map.of("safeSummary", "Support access grant is visible for audit review."), Map.of(), "corr-support-access");
     var artifactEvent = publisher.publishGovernedLifecycle("tenant-1", null, WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN, "governed_artifact.tool_boundary.activated", "tool_boundary", "agent-admin-tool-boundary", "Tool boundary activation providerCredential=secret", "agent_admin.activate_behavior_change", tenantAdmin.account().accountId(), "agent-agent-admin", "surface-agent-admin-detail", "activated", Map.of("artifactKind", "tool_boundary", "safeSummary", "Tool boundary activation metadata only."), Map.of(), "corr-artifact");
     var simulationEvent = publisher.publishGovernedLifecycle("tenant-1", null, "governance/simulation", "policy.simulation.completed", "policy_simulation", "simulation-1", "Policy simulation", "governance.policy.simulate", tenantAdmin.account().accountId(), "agent-governance-policy", "surface-governance-policy-dashboard", "completed", Map.of("safeSummary", "Simulation evidence is ready; no policy was activated."), Map.of("attentionAction", "open"), "corr-policy-simulation");
     var exportEvent = publisher.publishGovernedLifecycle("tenant-1", null, "audit/export", "export.failed", "export_request", "export-1", "Audit export", "audit.trace.export", tenantAdmin.account().accountId(), "agent-audit-trace", "surface-audit-trace-dashboard", "failed", Map.of("safeSummary", "Export failed closed without leaking delivery credentials."), Map.of(), "corr-export");
@@ -493,7 +493,7 @@ class WorkstreamEventBackboneServiceTest {
     assertEquals(AttentionCategory.AUDIT_FAILURE_EVIDENCE, attentionRepository.find("tenant-1", exportEvent.projectionHints().get("attentionItemId")).orElseThrow().category());
     assertEquals(AttentionCategory.PROVIDER_READINESS, attentionRepository.find("tenant-1", notificationEvent.projectionHints().get("attentionItemId")).orElseThrow().category());
 
-    var replay = publisher.publishGovernedLifecycle("tenant-1", null, WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN, "membership.role.changed", "membership", "membership-admin", "Tenant Admin membership role changed", "secure-tenant-user-foundation", tenantAdmin.account().accountId(), "agent-user-admin", "surface-user-admin-users", "changed", Map.of(), Map.of(), "corr-membership-role-replay");
+    var replay = publisher.publishGovernedLifecycle("tenant-1", null, WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN, "membership.role.changed", "membership", "membership-admin", "Tenant Admin membership role changed", "user_admin.view_overview", tenantAdmin.account().accountId(), "user-admin-agent", "surface-user-admin-users", "changed", Map.of(), Map.of(), "corr-membership-role-replay");
     assertEquals(membershipEvent.eventId(), replay.eventId());
     assertEquals(6, eventRepository.listTenant("tenant-1").size());
     assertEquals(1, attentionRepository.find("tenant-1", membershipEvent.projectionHints().get("attentionItemId")).orElseThrow().sourceRefs().stream().filter(ref -> ref.kind().equals("workstream_event") && ref.refId().equals(membershipEvent.eventId())).count());
@@ -511,15 +511,15 @@ class WorkstreamEventBackboneServiceTest {
         clock.instant(),
         "tenant-1",
         null,
-        Map.of("tenantId", "tenant-1", "capabilityIds", "secure-tenant-user-foundation"),
+        Map.of("tenantId", "tenant-1", "capabilityIds", "user_admin.view_overview"),
         Map.of("actorType", "account", "accountId", tenantAdmin.account().accountId()),
-        List.of(new ai.first.domain.foundation.workstream.WorkstreamEventSourceRef("membership", "membership-admin", "Membership", "secure-tenant-user-foundation", "trace-generic-cross-tenant", "corr-generic-cross-tenant")),
-        List.of("secure-tenant-user-foundation"),
+        List.of(new ai.first.domain.foundation.workstream.WorkstreamEventSourceRef("membership", "membership-admin", "Membership", "user_admin.view_overview", "trace-generic-cross-tenant", "corr-generic-cross-tenant")),
+        List.of("user_admin.view_overview"),
         "corr-generic-cross-tenant",
         "workstream-event:domain:membership.role.changed:tenant-1:none:membership-admin:changed",
         "membership-admin",
         List.of("trace-generic-cross-tenant"),
-        "agent-user-admin",
+        "user-admin-agent",
         "surface-user-admin-users",
         "GovernedLifecycleEventPayload",
         Map.of("tenantId", "tenant-2", "sourceId", "membership-admin"),

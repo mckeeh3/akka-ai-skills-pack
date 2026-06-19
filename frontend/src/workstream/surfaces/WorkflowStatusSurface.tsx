@@ -223,7 +223,7 @@ function UserAdminWorkflowBranchReturn({ envelope, onAction }: { envelope: Surfa
 }
 
 function isUserAdminWorkflow(envelope: SurfaceEnvelope<WorkflowStatusSurfaceData>) {
-  return envelope.ownerFunctionalAgentId === 'agent-user-admin' || envelope.surfaceId.startsWith('surface-user-admin-') || envelope.data.surfaceContract?.startsWith('user_admin.');
+  return envelope.ownerFunctionalAgentId === 'user-admin-agent' || envelope.surfaceId.startsWith('surface-user-admin-') || envelope.data.surfaceContract?.startsWith('user_admin.');
 }
 
 function MyAccountDigestProgress({ data }: { data: WorkflowStatusSurfaceData }) {

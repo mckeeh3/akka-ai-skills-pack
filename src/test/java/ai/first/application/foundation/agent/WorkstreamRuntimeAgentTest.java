@@ -58,7 +58,7 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
         JsonSupport.encodeToString(
             new WorkstreamRuntimeAgent.MarkdownResponse(
                 "## User Admin\n\nInvite, review, or adjust memberships from governed actions.",
-                "agent-user-admin",
+                "user-admin-agent",
                 "corr-agent-runtime",
                 "safe markdown_response generated without provider secrets",
                 "promptTraceIds=[trace-prompt-1]; modelConfigRef=starter-default-model")));
@@ -81,7 +81,7 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
                     "What can I do next?",
                     List.of("trace-prompt-1")));
 
-    assertEquals("agent-user-admin", response.producingAgentId());
+    assertEquals("user-admin-agent", response.producingAgentId());
     assertEquals("corr-agent-runtime", response.correlationId());
     assertTrue(response.markdown().contains("## User Admin"));
     assertTrue(response.safety().contains("without provider secrets"));

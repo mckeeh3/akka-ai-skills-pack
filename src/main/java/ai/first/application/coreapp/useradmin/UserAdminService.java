@@ -65,13 +65,13 @@ public final class UserAdminService {
   public RoleChangePreview previewRoleChange(AuthContextResolver.ResolvedMe actor, String membershipId, List<FoundationRole> roles, String reason, String correlationId) {
     var existing = membership(membershipId);
     requireManage(actor, existing.scopeType(), existing.tenantId(), existing.customerId());
-    ensureAssignable(actor, existing, roles, "USERADMIN_PREVIEW_ROLE_CHANGE", correlationId);
+    ensureAssignable(actor, existing, roles, "user_admin.preview_role_change", correlationId);
     var noOp = existing.roles().equals(roles);
     var lastAdminDenied = wouldRemoveLastAdmin(existing, roles, existing.status());
     var selfRemovalDenied = wouldRemoveOwnAdminRole(actor, existing, roles);
     var allowed = !lastAdminDenied && !selfRemovalDenied;
     var denialReason = lastAdminDenied ? "last-admin-denied" : selfRemovalDenied ? "self-admin-role-removal-denied" : null;
-    audit(actor, existing, "USERADMIN_PREVIEW_ROLE_CHANGE", allowed ? noOp ? AdminAuditEvent.Result.NO_OP : AdminAuditEvent.Result.ALLOWED : AdminAuditEvent.Result.DENIED, denialReason == null ? reason : denialReason, correlationId);
+    audit(actor, existing, "user_admin.preview_role_change", allowed ? noOp ? AdminAuditEvent.Result.NO_OP : AdminAuditEvent.Result.ALLOWED : AdminAuditEvent.Result.DENIED, denialReason == null ? reason : denialReason, correlationId);
     return new RoleChangePreview(allowed, noOp, denialReason == null ? noOp ? "requested roles already match current assignment" : "role change can proceed with backend authorization" : denialReason, "trace-useradmin-preview-role-change-" + stableSuffix(correlationId), capabilityDelta(existing.roles(), roles), affectedWorkstreams(existing.roles(), roles), List.of("SMB policy: backend authority and human approval required for role changes", "last-admin and self-admin-role-removal guardrails enforced"), lastAdminDenied ? "would-remove-final-admin" : "admin-coverage-preserved");
   }
 
@@ -81,22 +81,22 @@ public final class UserAdminService {
     }
     var existing = membership(membershipId);
     requireManage(actor, existing.scopeType(), existing.tenantId(), existing.customerId());
-    ensureAssignable(actor, existing, roles, "USERADMIN_CHANGE_MEMBER_ROLES", correlationId);
+    ensureAssignable(actor, existing, roles, "user_admin.change_member_roles", correlationId);
     if (existing.roles().equals(roles)) {
-      audit(actor, existing, "USERADMIN_CHANGE_MEMBER_ROLES", AdminAuditEvent.Result.NO_OP, "no-op", correlationId);
+      audit(actor, existing, "user_admin.change_member_roles", AdminAuditEvent.Result.NO_OP, "no-op", correlationId);
       return new RoleChangeResult("no-op", "Requested roles already match current assignment.", existing, "trace-useradmin-change-member-roles-" + stableSuffix(idempotencyKey));
     }
     if (wouldRemoveLastAdmin(existing, roles, existing.status())) {
-      audit(actor, existing, "USERADMIN_CHANGE_MEMBER_ROLES", AdminAuditEvent.Result.DENIED, "last-admin-denied", correlationId);
+      audit(actor, existing, "user_admin.change_member_roles", AdminAuditEvent.Result.DENIED, "last-admin-denied", correlationId);
       throw new AuthorizationException(403, "last-admin-denied");
     }
     if (wouldRemoveOwnAdminRole(actor, existing, roles)) {
-      audit(actor, existing, "USERADMIN_CHANGE_MEMBER_ROLES", AdminAuditEvent.Result.DENIED, "self-admin-role-removal-denied", correlationId);
+      audit(actor, existing, "user_admin.change_member_roles", AdminAuditEvent.Result.DENIED, "self-admin-role-removal-denied", correlationId);
       throw new AuthorizationException(403, "self-admin-role-removal-denied");
     }
     var updated = new Membership(existing.membershipId(), existing.accountId(), existing.scopeType(), existing.tenantId(), existing.customerId(), roles, existing.status(), existing.supportAccess(), existing.expiresAt());
     put(updated);
-    audit(actor, updated, "USERADMIN_CHANGE_MEMBER_ROLES", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
+    audit(actor, updated, "user_admin.change_member_roles", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
     return new RoleChangeResult("accepted", "Member roles changed by backend-authoritative User Admin capability.", updated, "trace-useradmin-change-member-roles-" + stableSuffix(idempotencyKey));
   }
 
@@ -114,20 +114,20 @@ public final class UserAdminService {
     var existing = membership(membershipId);
     requireManage(actor, existing.scopeType(), existing.tenantId(), existing.customerId());
     if (actor.account().accountId().equals(existing.accountId()) && targetStatus != MembershipStatus.ACTIVE) {
-      audit(actor, existing, "USERADMIN_UPDATE_MEMBER_STATUS", AdminAuditEvent.Result.DENIED, "self-disable-denied", correlationId);
+      audit(actor, existing, "user_admin.update_member_status", AdminAuditEvent.Result.DENIED, "self-disable-denied", correlationId);
       throw new AuthorizationException(403, "self-disable-denied");
     }
     if (existing.status() == targetStatus) {
-      audit(actor, existing, "USERADMIN_UPDATE_MEMBER_STATUS", AdminAuditEvent.Result.NO_OP, "no-op idempotency", correlationId);
+      audit(actor, existing, "user_admin.update_member_status", AdminAuditEvent.Result.NO_OP, "no-op idempotency", correlationId);
       return new StatusTransitionResult("no-op", "Requested member status already matches current assignment; idempotency preserved.", existing, "trace-useradmin-update-member-status-" + stableSuffix(idempotencyKey));
     }
     if (targetStatus != MembershipStatus.ACTIVE && wouldRemoveLastAdmin(existing, existing.roles(), targetStatus)) {
-      audit(actor, existing, "USERADMIN_UPDATE_MEMBER_STATUS", AdminAuditEvent.Result.DENIED, "last-admin-denied", correlationId);
+      audit(actor, existing, "user_admin.update_member_status", AdminAuditEvent.Result.DENIED, "last-admin-denied", correlationId);
       throw new AuthorizationException(403, "last-admin-denied");
     }
     var updated = new Membership(existing.membershipId(), existing.accountId(), existing.scopeType(), existing.tenantId(), existing.customerId(), existing.roles(), targetStatus, existing.supportAccess(), existing.expiresAt());
     put(updated);
-    audit(actor, updated, "USERADMIN_UPDATE_MEMBER_STATUS", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
+    audit(actor, updated, "user_admin.update_member_status", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
     var label = targetStatus == MembershipStatus.ACTIVE ? "reactivated" : targetStatus == MembershipStatus.REMOVED ? "deactivated" : "disabled";
     return new StatusTransitionResult("accepted", "Member " + label + " by backend-authoritative User Admin capability.", updated, "trace-useradmin-update-member-status-" + stableSuffix(idempotencyKey));
   }
@@ -140,7 +140,7 @@ public final class UserAdminService {
     requireManage(actor, existing.scopeType(), existing.tenantId(), existing.customerId());
     var blockers = purgeBlockers(actor, existing);
     if (!blockers.isEmpty()) {
-      audit(actor, existing, "USERADMIN_PERMANENTLY_REMOVE_USER", AdminAuditEvent.Result.DENIED, String.join(",", blockers), correlationId);
+      audit(actor, existing, "user_admin.permanently_remove_user", AdminAuditEvent.Result.DENIED, String.join(",", blockers), correlationId);
       throw new AuthorizationException(403, "purge-blocked:" + String.join(",", blockers));
     }
     repository.deleteMembership(existing.membershipId());
@@ -149,7 +149,7 @@ public final class UserAdminService {
       repository.deleteProfile(existing.accountId());
       repository.deleteAccount(existing.accountId());
     }
-    audit(actor, existing, "USERADMIN_PERMANENTLY_REMOVE_USER", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
+    audit(actor, existing, "user_admin.permanently_remove_user", AdminAuditEvent.Result.ALLOWED, reason, correlationId);
     return new PermanentRemoveResult("accepted", "User record permanently removed; profile, settings, account, and membership data were discarded where no other memberships remain.", existing.accountId(), existing.membershipId(), "trace-useradmin-permanently-remove-user-" + stableSuffix(idempotencyKey));
   }
 
@@ -229,7 +229,7 @@ public final class UserAdminService {
     }
     var existing = membership(membershipId);
     requireManage(actor, existing.scopeType(), existing.tenantId(), existing.customerId());
-    var capability = existing.scopeType() == ScopeType.CUSTOMER ? "customer.user.manage" : existing.scopeType() == ScopeType.SAAS_OWNER ? "saas_owner.user.manage" : "tenant.support_access.manage";
+    var capability = existing.scopeType() == ScopeType.CUSTOMER ? "customer.user.manage" : existing.scopeType() == ScopeType.SAAS_OWNER ? "saas_owner.admin.manage" : "tenant.support_access.manage";
     if (!actor.selectedContext().hasCapability(capability)) {
       audit(actor, existing, enabled ? "SUPPORT_ACCESS_GRANT" : "SUPPORT_ACCESS_REVOKE", AdminAuditEvent.Result.DENIED, "missing-capability:" + capability, correlationId);
       throw new AuthorizationException(403, "missing-capability:" + capability);
@@ -410,14 +410,14 @@ public final class UserAdminService {
   }
 
   private String readCapability(AuthContextResolver.ResolvedMe actor, ScopeType scopeType) {
-    if (scopeType == ScopeType.SAAS_OWNER) return "saas_owner.user.manage";
+    if (scopeType == ScopeType.SAAS_OWNER) return "saas_owner.admin.manage";
     if (scopeType == ScopeType.TENANT && actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER) return "saas_owner.organization_admin.list";
     if (scopeType == ScopeType.CUSTOMER && actor.selectedContext().scopeType() == ScopeType.TENANT) return "tenant.customer_admin.list";
     return scopeType == ScopeType.CUSTOMER ? "customer.user.read" : "tenant.user.read";
   }
 
   private String manageCapability(AuthContextResolver.ResolvedMe actor, ScopeType scopeType) {
-    if (scopeType == ScopeType.SAAS_OWNER) return "saas_owner.user.manage";
+    if (scopeType == ScopeType.SAAS_OWNER) return "saas_owner.admin.manage";
     if (scopeType == ScopeType.TENANT && actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER) return "saas_owner.organization_admin.manage";
     if (scopeType == ScopeType.CUSTOMER && actor.selectedContext().scopeType() == ScopeType.TENANT) return "tenant.customer_admin.manage";
     return scopeType == ScopeType.CUSTOMER ? "customer.user.manage" : "tenant.user.manage";

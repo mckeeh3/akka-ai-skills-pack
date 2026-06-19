@@ -35,7 +35,7 @@ import ai.first.application.foundation.identity.IdentityRepository;
  */
 public final class WorkstreamEventAttentionConsumer {
   public static final String CONSUMER_ID = "workstream.event.consumer.attention";
-  private static final String INVITATION_CAPABILITY = "secure-tenant-user-foundation";
+  private static final String INVITATION_CAPABILITY = "user_admin.view_overview";
 
   private final AttentionRepository attentionRepository;
   private final IdentityRepository identityRepository;
@@ -342,7 +342,7 @@ public final class WorkstreamEventAttentionConsumer {
 
   private static GovernedLifecycleMetadata governedLifecycleMetadata(WorkstreamEventEnvelope event) {
     var type = event.eventType();
-    if (type.startsWith("membership.role.") || type.startsWith("membership.status.")) return new GovernedLifecycleMetadata("secure-tenant-user-foundation", AttentionCategory.SECURITY_REVIEW, AttentionSeverity.WARNING, "TENANT_ADMIN", "surface-user-admin-users", "list-search", "open_membership", "Membership lifecycle requires review", "Membership or role state changed through a backend-governed event.");
+    if (type.startsWith("membership.role.") || type.startsWith("membership.status.")) return new GovernedLifecycleMetadata("user_admin.view_overview", AttentionCategory.SECURITY_REVIEW, AttentionSeverity.WARNING, "TENANT_ADMIN", "surface-user-admin-users", "list-search", "open_membership", "Membership lifecycle requires review", "Membership or role state changed through a backend-governed event.");
     if (type.startsWith("support_access.")) return new GovernedLifecycleMetadata("tenant.support_access.", AttentionCategory.SECURITY_REVIEW, AttentionSeverity.URGENT, "TENANT_ADMIN", "surface-user-admin-user-detail", "detail-edit", "open_support_access", "Support access lifecycle requires review", "Support access changed; review expiry, scope, and audit evidence.");
     if (type.startsWith("governed_artifact.")) return new GovernedLifecycleMetadata("agent_admin.", AttentionCategory.SECURITY_REVIEW, AttentionSeverity.URGENT, "TENANT_ADMIN", "surface-agent-admin-detail", "dashboard", "open_governed_artifact", "Governed artifact lifecycle requires review", "Prompt, skill, reference, manifest, model, or tool-boundary artifact lifecycle changed without exposing raw content.");
     if (type.startsWith("policy.simulation.")) return new GovernedLifecycleMetadata("governance.policy.simulate", AttentionCategory.GOVERNANCE_APPROVAL, AttentionSeverity.WARNING, "TENANT_ADMIN", "surface-governance-policy-dashboard", "dashboard", "open_policy_simulation", "Policy simulation result needs review", "Policy simulation evidence is available; activation still requires explicit backend approval.");

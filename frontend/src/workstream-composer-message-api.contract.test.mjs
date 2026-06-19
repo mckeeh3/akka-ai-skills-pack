@@ -32,7 +32,7 @@ test('composer routes dashboard prompts through backend shell requests instead o
   assert.match(main, /'show dashboard'/);
   assert.match(main, /workstreamClient\.runShellRequest\(shellRequest\)/);
   assert.match(main, /dashboardSurfaceIdForAgent\(functionalAgentId\)/);
-  assert.match(main, /case 'agent-user-admin'|default: return 'surface-user-admin-dashboard'/);
+  assert.match(main, /case 'user-admin-agent'|default: return 'surface-user-admin-dashboard'/);
   assert.match(main, /const shellRequest = buildComposerShellRequest\(request\.prompt, request\.functionalAgentId, me\.selectedAuthContext\.selectedContextId, correlationId\)/);
 });
 
@@ -177,7 +177,7 @@ test('async response selection guards use a synchronously updated selected-works
 });
 
 test('fixture client returns backend-equivalent markdown for every initial core workstream', () => {
-  for (const agentId of ['agent-my-account', 'agent-user-admin', 'agent-admin-agent', 'agent-audit-trace', 'agent-governance-policy']) {
+  for (const agentId of ['agent-my-account', 'user-admin-agent', 'agent-admin-agent', 'agent-audit-trace', 'agent-governance-policy']) {
     assert.match(fixtureClient, new RegExp(agentId));
   }
   assert.match(fixtureClient, /surfaceType: 'markdown_response'/);

@@ -95,7 +95,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke();
     assertTrue(bootstrap.status().isSuccess());
     assertEquals(SELECTED_CONTEXT_ID, bootstrap.body().me().selectedAuthContext().selectedContextId());
-    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-user-admin") && agent.availability().equals("visible")));
+    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("user-admin-agent") && agent.availability().equals("visible")));
     assertBrowserSafe(bootstrap.body());
 
     var dashboard = getSurface("surface-user-admin-dashboard", "corr-browser-smoke-dashboard");
@@ -166,7 +166,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
             "action-user-admin-show-users",
             "user-admin.show-users",
             "search-user-directory",
-            "USERADMIN_LIST_MEMBERS",
+            "user_admin.list_members",
             null,
             null,
             SELECTED_CONTEXT_ID,
@@ -179,7 +179,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "action-user-admin-show-users",
         "user-admin.show-users",
         "search-user-directory",
-        "USERADMIN_LIST_MEMBERS",
+        "user_admin.list_members",
         null,
         null,
         SELECTED_CONTEXT_ID,
@@ -202,8 +202,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var detail = runAction(new CapabilityActionRequest(
         "action-display-user-detail",
         "action-display-user-detail",
-        "USERADMIN_LIST_MEMBERS",
-        "USERADMIN_LIST_MEMBERS",
+        "user_admin.list_members",
+        "user_admin.list_members",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member"),
         null,
         SELECTED_CONTEXT_ID,
@@ -234,8 +234,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var rolePreview = runAction(new CapabilityActionRequest(
         "action-useradmin-preview-role-change",
         "action-useradmin-preview-role-change",
-        "USERADMIN_PREVIEW_ROLE_CHANGE",
-        "USERADMIN_PREVIEW_ROLE_CHANGE",
+        "user_admin.preview_role_change",
+        "user_admin.preview_role_change",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "protected browser smoke role preview"),
         null,
         SELECTED_CONTEXT_ID,
@@ -262,8 +262,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var roleChanged = runAction(new CapabilityActionRequest(
         "action-commit-user-admin-role-change",
         "action-commit-user-admin-role-change",
-        "USERADMIN_CHANGE_MEMBER_ROLES",
-        "USERADMIN_CHANGE_MEMBER_ROLES",
+        "user_admin.change_member_roles",
+        "user_admin.change_member_roles",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "protected browser smoke role commit"),
         "idem-browser-smoke-role-change",
         SELECTED_CONTEXT_ID,
@@ -282,8 +282,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var roleReplay = runAction(new CapabilityActionRequest(
         "action-commit-user-admin-role-change",
         "action-commit-user-admin-role-change",
-        "USERADMIN_CHANGE_MEMBER_ROLES",
-        "USERADMIN_CHANGE_MEMBER_ROLES",
+        "user_admin.change_member_roles",
+        "user_admin.change_member_roles",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member", "roles", List.of("TENANT_ADMIN"), "reason", "protected browser smoke role replay"),
         "idem-browser-smoke-role-change-replay",
         SELECTED_CONTEXT_ID,
@@ -297,8 +297,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var selfRemovalPreview = runAction(new CapabilityActionRequest(
         "action-useradmin-preview-role-change",
         "action-useradmin-preview-role-change",
-        "USERADMIN_PREVIEW_ROLE_CHANGE",
-        "USERADMIN_PREVIEW_ROLE_CHANGE",
+        "user_admin.preview_role_change",
+        "user_admin.preview_role_change",
         Map.of("accountId", "admin@example.test", "membershipId", SELECTED_CONTEXT_ID, "roles", List.of("TENANT_EMPLOYEE"), "reason", "protected browser smoke self-removal denial"),
         null,
         SELECTED_CONTEXT_ID,
@@ -314,8 +314,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var membershipTask = runAction(new CapabilityActionRequest(
         "action-open-useradmin-membership-status-confirmation",
         "action-open-useradmin-membership-status-confirmation",
-        "USERADMIN_UPDATE_MEMBER_STATUS",
-        "USERADMIN_UPDATE_MEMBER_STATUS",
+        "user_admin.update_member_status",
+        "user_admin.update_member_status",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "removed"),
         null,
         SELECTED_CONTEXT_ID,
@@ -334,8 +334,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var membershipChanged = runAction(new CapabilityActionRequest(
         "action-confirm-user-admin-membership-status-change",
         "action-confirm-user-admin-membership-status-change",
-        "USERADMIN_UPDATE_MEMBER_STATUS",
-        "USERADMIN_UPDATE_MEMBER_STATUS",
+        "user_admin.update_member_status",
+        "user_admin.update_member_status",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "suspended", "reason", "protected browser smoke pause"),
         "idem-browser-smoke-membership-status-suspend",
         SELECTED_CONTEXT_ID,
@@ -354,8 +354,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var membershipReplay = runAction(new CapabilityActionRequest(
         "action-confirm-user-admin-membership-status-change",
         "action-confirm-user-admin-membership-status-change",
-        "USERADMIN_UPDATE_MEMBER_STATUS",
-        "USERADMIN_UPDATE_MEMBER_STATUS",
+        "user_admin.update_member_status",
+        "user_admin.update_member_status",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "suspended", "reason", "duplicate protected browser smoke pause"),
         "idem-browser-smoke-membership-status-replay",
         SELECTED_CONTEXT_ID,
@@ -369,8 +369,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var membershipReactivated = runAction(new CapabilityActionRequest(
         "action-confirm-user-admin-membership-status-change",
         "action-confirm-user-admin-membership-status-change",
-        "USERADMIN_UPDATE_MEMBER_STATUS",
-        "USERADMIN_UPDATE_MEMBER_STATUS",
+        "user_admin.update_member_status",
+        "user_admin.update_member_status",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member", "status", "active", "reason", "protected browser smoke restore"),
         "idem-browser-smoke-membership-status-reactivate",
         SELECTED_CONTEXT_ID,
@@ -385,8 +385,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var hiddenUserTask = runAction(new CapabilityActionRequest(
         "action-open-useradmin-membership-status-confirmation",
         "action-open-useradmin-membership-status-confirmation",
-        "USERADMIN_UPDATE_MEMBER_STATUS",
-        "USERADMIN_UPDATE_MEMBER_STATUS",
+        "user_admin.update_member_status",
+        "user_admin.update_member_status",
         Map.of("accountId", "hidden@example.test", "membershipId", "membership-hidden"),
         null,
         SELECTED_CONTEXT_ID,
@@ -402,8 +402,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var task = runAction(new CapabilityActionRequest(
         "action-open-user-admin-invitation-create",
         "action-open-user-admin-invitation-create",
-        "USERADMIN_SEND_INVITATION",
-        "USERADMIN_SEND_INVITATION",
+        "user_admin.invite_user",
+        "user_admin.invite_user",
         null,
         null,
         SELECTED_CONTEXT_ID,
@@ -424,8 +424,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var invited = runAction(new CapabilityActionRequest(
         "action-submit-user-admin-invitation",
         "action-submit-user-admin-invitation",
-        "USERADMIN_SEND_INVITATION",
-        "USERADMIN_SEND_INVITATION",
+        "user_admin.invite_user",
+        "user_admin.invite_user",
         Map.of("email", "smoke.invitee@example.test", "displayName", "Smoke Invitee"),
         "idem-browser-smoke-invite",
         SELECTED_CONTEXT_ID,
@@ -503,8 +503,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var denied = runAction(new CapabilityActionRequest(
         "action-display-invitation-detail",
         "action-display-invitation-detail",
-        "USERADMIN_LIST_INVITATIONS",
-        "USERADMIN_LIST_INVITATIONS",
+        "user_admin.acceptance_status.read",
+        "user_admin.acceptance_status.read",
         Map.of("invitationId", "invitation-hidden-cross-scope"),
         null,
         SELECTED_CONTEXT_ID,
@@ -555,8 +555,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var hiddenNavigation = runAction(new CapabilityActionRequest(
         "action-display-invitation-detail",
         "action-display-invitation-detail",
-        "USERADMIN_LIST_INVITATIONS",
-        "USERADMIN_LIST_INVITATIONS",
+        "user_admin.acceptance_status.read",
+        "user_admin.acceptance_status.read",
         Map.of("invitationId", "invitation-hidden-cross-scope"),
         null,
         SELECTED_CONTEXT_ID,
@@ -577,7 +577,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "action-user-admin-return-dashboard",
         "user-admin.return-dashboard",
         "search-user-directory",
-        "secure-tenant-user-foundation",
+        "user_admin.view_overview",
         null,
         null,
         SELECTED_CONTEXT_ID,
@@ -773,8 +773,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .withRequestBody(new CapabilityActionRequest(
             "action-submit-user-admin-support-access-grant",
             "action-submit-user-admin-support-access-grant",
-            "USERADMIN_SUPPORT_ACCESS_GRANT",
-            "USERADMIN_SUPPORT_ACCESS_GRANT",
+            "user_admin.support_access.grant_revoke_extend",
+            "user_admin.support_access.grant_revoke_extend",
             Map.of("accountId", "member@example.test", "membershipId", "membership-member", "purpose", "missing bearer", "expiryHours", "2"),
             "idem-user-support-grant-missing-bearer",
             SELECTED_CONTEXT_ID,
@@ -796,8 +796,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .withRequestBody(new CapabilityActionRequest(
             "action-confirm-user-admin-support-access-revoke",
             "action-confirm-user-admin-support-access-revoke",
-            "USERADMIN_SUPPORT_ACCESS_REVOKE",
-            "USERADMIN_SUPPORT_ACCESS_REVOKE",
+            "user_admin.support_access.grant_revoke_extend",
+            "user_admin.support_access.grant_revoke_extend",
             Map.of("accountId", "member@example.test", "membershipId", "membership-member", "reason", "missing bearer"),
             "idem-user-support-revoke-missing-bearer",
             SELECTED_CONTEXT_ID,
@@ -811,7 +811,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "action-user-admin-show-users",
         "user-admin.show-users",
         "search-user-directory",
-        "USERADMIN_LIST_MEMBERS",
+        "user_admin.list_members",
         null,
         null,
         SELECTED_CONTEXT_ID,
@@ -823,8 +823,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var detail = runAction(new CapabilityActionRequest(
         "action-display-user-detail",
         "action-display-user-detail",
-        "USERADMIN_LIST_MEMBERS",
-        "USERADMIN_LIST_MEMBERS",
+        "user_admin.list_members",
+        "user_admin.list_members",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member"),
         null,
         SELECTED_CONTEXT_ID,
@@ -853,8 +853,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var opened = runAction(new CapabilityActionRequest(
         "action-open-user-admin-support-access-grant",
         "action-open-user-admin-support-access-grant",
-        "USERADMIN_SUPPORT_ACCESS_GRANT",
-        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        "user_admin.support_access.grant_revoke_extend",
+        "user_admin.support_access.grant_revoke_extend",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member"),
         null,
         SELECTED_CONTEXT_ID,
@@ -875,8 +875,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var validation = runAction(new CapabilityActionRequest(
         "action-validate-user-admin-support-access-grant",
         "action-validate-user-admin-support-access-grant",
-        "USERADMIN_SUPPORT_ACCESS_GRANT",
-        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        "user_admin.support_access.grant_revoke_extend",
+        "user_admin.support_access.grant_revoke_extend",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member"),
         null,
         SELECTED_CONTEXT_ID,
@@ -891,8 +891,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var submitted = runAction(new CapabilityActionRequest(
         "action-submit-user-admin-support-access-grant",
         "action-submit-user-admin-support-access-grant",
-        "USERADMIN_SUPPORT_ACCESS_GRANT",
-        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        "user_admin.support_access.grant_revoke_extend",
+        "user_admin.support_access.grant_revoke_extend",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member", "purpose", "customer-requested-support", "expiryHours", "2"),
         "idem-user-support-grant-runtime",
         SELECTED_CONTEXT_ID,
@@ -911,8 +911,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var replayed = runAction(new CapabilityActionRequest(
         "action-submit-user-admin-support-access-grant",
         "action-submit-user-admin-support-access-grant",
-        "USERADMIN_SUPPORT_ACCESS_GRANT",
-        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        "user_admin.support_access.grant_revoke_extend",
+        "user_admin.support_access.grant_revoke_extend",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member", "purpose", "customer-requested-support", "expiryHours", "2"),
         "idem-user-support-grant-runtime-replay",
         SELECTED_CONTEXT_ID,
@@ -926,8 +926,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var revokeOpened = runAction(new CapabilityActionRequest(
         "action-open-user-admin-support-access-revoke-confirmation",
         "action-open-user-admin-support-access-revoke-confirmation",
-        "USERADMIN_SUPPORT_ACCESS_REVOKE",
-        "USERADMIN_SUPPORT_ACCESS_REVOKE",
+        "user_admin.support_access.grant_revoke_extend",
+        "user_admin.support_access.grant_revoke_extend",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member"),
         null,
         SELECTED_CONTEXT_ID,
@@ -963,8 +963,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var revoked = runAction(new CapabilityActionRequest(
         "action-confirm-user-admin-support-access-revoke",
         "action-confirm-user-admin-support-access-revoke",
-        "USERADMIN_SUPPORT_ACCESS_REVOKE",
-        "USERADMIN_SUPPORT_ACCESS_REVOKE",
+        "user_admin.support_access.grant_revoke_extend",
+        "user_admin.support_access.grant_revoke_extend",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member", "reason", "case complete"),
         "idem-user-support-revoke-runtime",
         SELECTED_CONTEXT_ID,
@@ -983,8 +983,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var revokeReplay = runAction(new CapabilityActionRequest(
         "action-confirm-user-admin-support-access-revoke",
         "action-confirm-user-admin-support-access-revoke",
-        "USERADMIN_SUPPORT_ACCESS_REVOKE",
-        "USERADMIN_SUPPORT_ACCESS_REVOKE",
+        "user_admin.support_access.grant_revoke_extend",
+        "user_admin.support_access.grant_revoke_extend",
         Map.of("accountId", "member@example.test", "membershipId", "membership-member", "reason", "case already complete"),
         "idem-user-support-revoke-runtime-replay",
         SELECTED_CONTEXT_ID,
@@ -998,8 +998,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertThrows(RuntimeException.class, () -> runActionAs(new CapabilityActionRequest(
         "action-open-user-admin-support-access-revoke-confirmation",
         "action-open-user-admin-support-access-revoke-confirmation",
-        "USERADMIN_SUPPORT_ACCESS_REVOKE",
-        "USERADMIN_SUPPORT_ACCESS_REVOKE",
+        "user_admin.support_access.grant_revoke_extend",
+        "user_admin.support_access.grant_revoke_extend",
         Map.of("accountId", "admin@example.test", "membershipId", SELECTED_CONTEXT_ID),
         null,
         "membership-member",
@@ -1010,8 +1010,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
         "action-open-user-admin-support-access-grant",
         "action-open-user-admin-support-access-grant",
-        "USERADMIN_SUPPORT_ACCESS_GRANT",
-        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        "user_admin.support_access.grant_revoke_extend",
+        "user_admin.support_access.grant_revoke_extend",
         Map.of("accountId", "hidden@example.test", "membershipId", "membership-hidden"),
         null,
         SELECTED_CONTEXT_ID,
@@ -1022,8 +1022,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertThrows(RuntimeException.class, () -> runActionAs(new CapabilityActionRequest(
         "action-open-user-admin-support-access-grant",
         "action-open-user-admin-support-access-grant",
-        "USERADMIN_SUPPORT_ACCESS_GRANT",
-        "USERADMIN_SUPPORT_ACCESS_GRANT",
+        "user_admin.support_access.grant_revoke_extend",
+        "user_admin.support_access.grant_revoke_extend",
         Map.of("accountId", "admin@example.test", "membershipId", SELECTED_CONTEXT_ID),
         null,
         "membership-member",
@@ -1059,7 +1059,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "action-user-admin-show-users",
         "user-admin.show-users",
         "search-user-directory",
-        "USERADMIN_LIST_MEMBERS",
+        "user_admin.list_members",
         null,
         null,
         SELECTED_CONTEXT_ID,
@@ -1071,8 +1071,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var opened = runAction(new CapabilityActionRequest(
         "action-open-user-admin-invitation-create",
         "action-open-user-admin-invitation-create",
-        "USERADMIN_SEND_INVITATION",
-        "USERADMIN_SEND_INVITATION",
+        "user_admin.invite_user",
+        "user_admin.invite_user",
         Map.of("email", "draft.invitee@example.test", "displayName", "Draft Invitee", "roles", "TENANT_EMPLOYEE", "reason", "draft smoke"),
         null,
         SELECTED_CONTEXT_ID,
@@ -1090,8 +1090,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var submitted = runAction(new CapabilityActionRequest(
         "action-submit-user-admin-invitation",
         "action-submit-user-admin-invitation",
-        "USERADMIN_SEND_INVITATION",
-        "USERADMIN_SEND_INVITATION",
+        "user_admin.invite_user",
+        "user_admin.invite_user",
         Map.of("email", "runtime.invitee@example.test", "displayName", "Runtime Invitee", "roles", "TENANT_EMPLOYEE", "reason", "runtime invitation create smoke"),
         "idem-user-invite-create-runtime",
         SELECTED_CONTEXT_ID,
@@ -1112,8 +1112,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var replayed = runAction(new CapabilityActionRequest(
         "action-submit-user-admin-invitation",
         "action-submit-user-admin-invitation",
-        "USERADMIN_SEND_INVITATION",
-        "USERADMIN_SEND_INVITATION",
+        "user_admin.invite_user",
+        "user_admin.invite_user",
         Map.of("email", "runtime.invitee@example.test", "displayName", "Runtime Invitee", "roles", "TENANT_EMPLOYEE", "reason", "runtime invitation replay"),
         "idem-user-invite-create-runtime",
         SELECTED_CONTEXT_ID,
@@ -1127,8 +1127,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var duplicateDifferentKey = runAction(new CapabilityActionRequest(
         "action-submit-user-admin-invitation",
         "action-submit-user-admin-invitation",
-        "USERADMIN_SEND_INVITATION",
-        "USERADMIN_SEND_INVITATION",
+        "user_admin.invite_user",
+        "user_admin.invite_user",
         Map.of("email", "runtime.invitee@example.test", "displayName", "Runtime Invitee", "roles", "TENANT_EMPLOYEE", "reason", "runtime invitation duplicate"),
         "idem-user-invite-create-runtime-duplicate",
         SELECTED_CONTEXT_ID,
@@ -1161,8 +1161,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var submitted = runAction(new CapabilityActionRequest(
         "action-submit-user-admin-invitation",
         "action-submit-user-admin-invitation",
-        "USERADMIN_SEND_INVITATION",
-        "USERADMIN_SEND_INVITATION",
+        "user_admin.invite_user",
+        "user_admin.invite_user",
         Map.of("email", "detail.invitee@example.test", "displayName", "Detail Invitee", "roles", "TENANT_EMPLOYEE", "reason", "runtime invitation detail smoke"),
         "idem-user-invite-detail-runtime",
         SELECTED_CONTEXT_ID,
@@ -1202,8 +1202,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var readDetail = runAction(new CapabilityActionRequest(
         "action-display-invitation-detail",
         "action-display-invitation-detail",
-        "USERADMIN_LIST_INVITATIONS",
-        "USERADMIN_LIST_INVITATIONS",
+        "user_admin.acceptance_status.read",
+        "user_admin.acceptance_status.read",
         Map.of("invitationId", invitationId),
         null,
         SELECTED_CONTEXT_ID,
@@ -1218,8 +1218,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var resendConfirmation = runAction(new CapabilityActionRequest(
         "action-open-useradmin-invitation-resend-confirmation",
         "action-open-useradmin-invitation-resend-confirmation",
-        "USERADMIN_RESEND_INVITATION",
-        "USERADMIN_RESEND_INVITATION",
+        "user_admin.resend_invitation",
+        "user_admin.resend_invitation",
         Map.of("invitationId", invitationId),
         null,
         SELECTED_CONTEXT_ID,
@@ -1235,8 +1235,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var resent = runAction(new CapabilityActionRequest(
         "action-useradmin-resend-invitation",
         "action-useradmin-resend-invitation",
-        "USERADMIN_RESEND_INVITATION",
-        "USERADMIN_RESEND_INVITATION",
+        "user_admin.resend_invitation",
+        "user_admin.resend_invitation",
         Map.of("invitationId", invitationId, "reason", "runtime resend smoke"),
         "idem-user-invite-detail-resend",
         SELECTED_CONTEXT_ID,
@@ -1250,8 +1250,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var revokeConfirmation = runAction(new CapabilityActionRequest(
         "action-open-useradmin-invitation-revoke-confirmation",
         "action-open-useradmin-invitation-revoke-confirmation",
-        "USERADMIN_REVOKE_INVITATION",
-        "USERADMIN_REVOKE_INVITATION",
+        "user_admin.revoke_invitation",
+        "user_admin.revoke_invitation",
         Map.of("invitationId", invitationId),
         null,
         SELECTED_CONTEXT_ID,
@@ -1267,8 +1267,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var revoked = runAction(new CapabilityActionRequest(
         "action-useradmin-revoke-invitation",
         "action-useradmin-revoke-invitation",
-        "USERADMIN_REVOKE_INVITATION",
-        "USERADMIN_REVOKE_INVITATION",
+        "user_admin.revoke_invitation",
+        "user_admin.revoke_invitation",
         Map.of("invitationId", invitationId, "reason", "runtime revoke smoke"),
         "idem-user-invite-detail-revoke",
         SELECTED_CONTEXT_ID,
@@ -1283,8 +1283,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var revokeReplay = runAction(new CapabilityActionRequest(
         "action-useradmin-revoke-invitation",
         "action-useradmin-revoke-invitation",
-        "USERADMIN_REVOKE_INVITATION",
-        "USERADMIN_REVOKE_INVITATION",
+        "user_admin.revoke_invitation",
+        "user_admin.revoke_invitation",
         Map.of("invitationId", invitationId, "reason", "runtime revoke replay"),
         "idem-user-invite-detail-revoke-replay",
         SELECTED_CONTEXT_ID,
@@ -1297,8 +1297,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var hidden = runAction(new CapabilityActionRequest(
         "action-display-invitation-detail",
         "action-display-invitation-detail",
-        "USERADMIN_LIST_INVITATIONS",
-        "USERADMIN_LIST_INVITATIONS",
+        "user_admin.acceptance_status.read",
+        "user_admin.acceptance_status.read",
         Map.of("invitationId", "invitation-hidden-cross-scope"),
         null,
         SELECTED_CONTEXT_ID,
@@ -1312,8 +1312,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertThrows(RuntimeException.class, () -> runActionAs(new CapabilityActionRequest(
         "action-display-invitation-detail",
         "action-display-invitation-detail",
-        "USERADMIN_LIST_INVITATIONS",
-        "USERADMIN_LIST_INVITATIONS",
+        "user_admin.acceptance_status.read",
+        "user_admin.acceptance_status.read",
         Map.of("invitationId", invitationId),
         null,
         "membership-member",
@@ -1337,8 +1337,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .withRequestBody(new CapabilityActionRequest(
             "action-useradmin-resend-invitation",
             "action-useradmin-resend-invitation",
-            "USERADMIN_RESEND_INVITATION",
-            "USERADMIN_RESEND_INVITATION",
+            "user_admin.resend_invitation",
+            "user_admin.resend_invitation",
             Map.of("invitationId", "hidden-without-bearer"),
             "idem-user-invite-resend-missing-bearer",
             SELECTED_CONTEXT_ID,
@@ -1351,8 +1351,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var submitted = runAction(new CapabilityActionRequest(
         "action-submit-user-admin-invitation",
         "action-submit-user-admin-invitation",
-        "USERADMIN_SEND_INVITATION",
-        "USERADMIN_SEND_INVITATION",
+        "user_admin.invite_user",
+        "user_admin.invite_user",
         Map.of("email", "resend.invitee@example.test", "displayName", "Resend Invitee", "roles", "TENANT_EMPLOYEE", "reason", "runtime invitation resend smoke"),
         "idem-user-invite-resend-create",
         SELECTED_CONTEXT_ID,
@@ -1387,8 +1387,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var openedConfirmation = runAction(new CapabilityActionRequest(
         "action-open-useradmin-invitation-resend-confirmation",
         "action-open-useradmin-invitation-resend-confirmation",
-        "USERADMIN_RESEND_INVITATION",
-        "USERADMIN_RESEND_INVITATION",
+        "user_admin.resend_invitation",
+        "user_admin.resend_invitation",
         Map.of("invitationId", invitationId),
         null,
         SELECTED_CONTEXT_ID,
@@ -1404,8 +1404,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var resent = runAction(new CapabilityActionRequest(
         "action-useradmin-resend-invitation",
         "action-useradmin-resend-invitation",
-        "USERADMIN_RESEND_INVITATION",
-        "USERADMIN_RESEND_INVITATION",
+        "user_admin.resend_invitation",
+        "user_admin.resend_invitation",
         Map.of("invitationId", invitationId, "reason", "runtime resend confirmation smoke"),
         "idem-user-invite-resend-confirmation",
         SELECTED_CONTEXT_ID,
@@ -1425,8 +1425,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var replayed = runAction(new CapabilityActionRequest(
         "action-useradmin-resend-invitation",
         "action-useradmin-resend-invitation",
-        "USERADMIN_RESEND_INVITATION",
-        "USERADMIN_RESEND_INVITATION",
+        "user_admin.resend_invitation",
+        "user_admin.resend_invitation",
         Map.of("invitationId", invitationId, "reason", "runtime resend confirmation replay"),
         "idem-user-invite-resend-confirmation",
         SELECTED_CONTEXT_ID,
@@ -1440,8 +1440,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var hiddenOpen = runAction(new CapabilityActionRequest(
         "action-open-useradmin-invitation-resend-confirmation",
         "action-open-useradmin-invitation-resend-confirmation",
-        "USERADMIN_RESEND_INVITATION",
-        "USERADMIN_RESEND_INVITATION",
+        "user_admin.resend_invitation",
+        "user_admin.resend_invitation",
         Map.of("invitationId", "invitation-hidden-cross-scope"),
         null,
         SELECTED_CONTEXT_ID,
@@ -1455,8 +1455,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertThrows(RuntimeException.class, () -> runActionAs(new CapabilityActionRequest(
         "action-open-useradmin-invitation-resend-confirmation",
         "action-open-useradmin-invitation-resend-confirmation",
-        "USERADMIN_RESEND_INVITATION",
-        "USERADMIN_RESEND_INVITATION",
+        "user_admin.resend_invitation",
+        "user_admin.resend_invitation",
         Map.of("invitationId", invitationId),
         null,
         "membership-member",
@@ -1480,8 +1480,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         .withRequestBody(new CapabilityActionRequest(
             "action-useradmin-revoke-invitation",
             "action-useradmin-revoke-invitation",
-            "USERADMIN_REVOKE_INVITATION",
-            "USERADMIN_REVOKE_INVITATION",
+            "user_admin.revoke_invitation",
+            "user_admin.revoke_invitation",
             Map.of("invitationId", "hidden-without-bearer"),
             "idem-user-invite-revoke-missing-bearer",
             SELECTED_CONTEXT_ID,
@@ -1494,8 +1494,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var submitted = runAction(new CapabilityActionRequest(
         "action-submit-user-admin-invitation",
         "action-submit-user-admin-invitation",
-        "USERADMIN_SEND_INVITATION",
-        "USERADMIN_SEND_INVITATION",
+        "user_admin.invite_user",
+        "user_admin.invite_user",
         Map.of("email", "revoke.invitee@example.test", "displayName", "Revoke Invitee", "roles", "TENANT_EMPLOYEE", "reason", "runtime invitation revoke smoke"),
         "idem-user-invite-revoke-create",
         SELECTED_CONTEXT_ID,
@@ -1530,8 +1530,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var openedConfirmation = runAction(new CapabilityActionRequest(
         "action-open-useradmin-invitation-revoke-confirmation",
         "action-open-useradmin-invitation-revoke-confirmation",
-        "USERADMIN_REVOKE_INVITATION",
-        "USERADMIN_REVOKE_INVITATION",
+        "user_admin.revoke_invitation",
+        "user_admin.revoke_invitation",
         Map.of("invitationId", invitationId),
         null,
         SELECTED_CONTEXT_ID,
@@ -1547,8 +1547,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var revoked = runAction(new CapabilityActionRequest(
         "action-useradmin-revoke-invitation",
         "action-useradmin-revoke-invitation",
-        "USERADMIN_REVOKE_INVITATION",
-        "USERADMIN_REVOKE_INVITATION",
+        "user_admin.revoke_invitation",
+        "user_admin.revoke_invitation",
         Map.of("invitationId", invitationId, "reason", "runtime revoke confirmation smoke"),
         "idem-user-invite-revoke-confirmation",
         SELECTED_CONTEXT_ID,
@@ -1569,8 +1569,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var replayed = runAction(new CapabilityActionRequest(
         "action-useradmin-revoke-invitation",
         "action-useradmin-revoke-invitation",
-        "USERADMIN_REVOKE_INVITATION",
-        "USERADMIN_REVOKE_INVITATION",
+        "user_admin.revoke_invitation",
+        "user_admin.revoke_invitation",
         Map.of("invitationId", invitationId, "reason", "runtime revoke confirmation replay"),
         "idem-user-invite-revoke-confirmation-replay",
         SELECTED_CONTEXT_ID,
@@ -1584,8 +1584,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     var hiddenOpen = runAction(new CapabilityActionRequest(
         "action-open-useradmin-invitation-revoke-confirmation",
         "action-open-useradmin-invitation-revoke-confirmation",
-        "USERADMIN_REVOKE_INVITATION",
-        "USERADMIN_REVOKE_INVITATION",
+        "user_admin.revoke_invitation",
+        "user_admin.revoke_invitation",
         Map.of("invitationId", "invitation-hidden-cross-scope"),
         null,
         SELECTED_CONTEXT_ID,
@@ -1599,8 +1599,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertThrows(RuntimeException.class, () -> runActionAs(new CapabilityActionRequest(
         "action-open-useradmin-invitation-revoke-confirmation",
         "action-open-useradmin-invitation-revoke-confirmation",
-        "USERADMIN_REVOKE_INVITATION",
-        "USERADMIN_REVOKE_INVITATION",
+        "user_admin.revoke_invitation",
+        "user_admin.revoke_invitation",
         Map.of("invitationId", invitationId),
         null,
         "membership-member",
@@ -3243,7 +3243,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("create-form", createForm.resultSurface().surfaceType());
     assertEquals("user_admin.customer_create.v1", createForm.resultSurface().data().get("surfaceContract"));
     assertTrue(createForm.resultSurface().toString().contains("action-submit-customer-create"));
-    assertTrue(createForm.resultSurface().toString().contains("action-customer-create"));
+    assertFalse(createForm.resultSurface().toString().contains("action-customer-create"));
     assertTrue(createForm.resultSurface().toString().contains("validationPolicy"));
     assertTrue(createForm.resultSurface().toString().contains("creationBoundary"));
     assertTrue(createForm.resultSurface().toString().contains("idempotencyKeyHint=client-generated"));
@@ -3378,7 +3378,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("edit-form", renameForm.resultSurface().surfaceType());
     assertEquals("user_admin.customer_rename.v1", renameForm.resultSurface().data().get("surfaceContract"));
     assertTrue(renameForm.resultSurface().toString().contains("action-submit-customer-rename"));
-    assertTrue(renameForm.resultSurface().toString().contains("action-customer-rename"));
+    assertFalse(renameForm.resultSurface().toString().contains("action-customer-rename"));
     assertTrue(renameForm.resultSurface().toString().contains("validationPolicy"));
     assertTrue(renameForm.resultSurface().toString().contains("changePreview"));
     assertTrue(renameForm.resultSurface().toString().contains("tenant.customer.rename"));
@@ -3593,8 +3593,8 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "membership-customer-admin"), "Customer Admin selected contexts must not direct-load Customer reactivate confirmation surfaces.");
 
     var reactivateForm = runAction(new CapabilityActionRequest(
-        "action-open-customer-reactivate-confirmation",
-        "user-admin.open-customer-reactivate-confirmation",
+        "action-open-customer-reactivate",
+        "user-admin.open-customer-reactivate",
         "manage-customers",
         "tenant.customer.reactivate",
         Map.of("customerId", createdCustomerId),

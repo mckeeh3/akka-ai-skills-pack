@@ -19,7 +19,7 @@ class ManifestBoundaryViewTest {
     var referenceRow = AgentReferenceManifestView.ReferenceManifestRow.from(referenceManifest);
 
     assertEquals("tenant-1", skillRow.tenantId());
-    assertEquals("agent-user-admin", skillRow.agentDefinitionId());
+    assertEquals("user-admin-agent", skillRow.agentDefinitionId());
     assertEquals("ACTIVE", skillRow.lifecycleStatus());
     assertEquals(1, skillRow.entryCount());
     assertEquals("ua.access-review-triage.v1", skillRow.compactSkillEntries().get(0).stableSkillId());
@@ -44,7 +44,7 @@ class ManifestBoundaryViewTest {
     var row = ToolBoundaryGrantView.ToolBoundaryRow.from(boundary);
 
     assertEquals("tenant-1", row.tenantId());
-    assertEquals("agent-user-admin", row.agentDefinitionId());
+    assertEquals("user-admin-agent", row.agentDefinitionId());
     assertEquals("ACTIVE", row.lifecycleStatus());
     assertEquals(2, row.grantCount());
     assertTrue(row.grantsReadSkill());

@@ -105,7 +105,7 @@ public final class EnterpriseIdentityAdminService {
 
   private void requireEnterpriseAdmin(AuthContextResolver.ResolvedMe actor, String action, String correlationId) {
     var scope = actor.selectedContext().scopeType();
-    var capability = scope == ScopeType.SAAS_OWNER ? "saas_owner.user.manage" : scope == ScopeType.CUSTOMER ? "customer.user.manage" : "tenant.user.manage";
+    var capability = scope == ScopeType.SAAS_OWNER ? "saas_owner.admin.manage" : scope == ScopeType.CUSTOMER ? "customer.user.manage" : "tenant.user.manage";
     if (!actor.selectedContext().hasCapability(capability)) {
       audit(actor, action, AdminAuditEvent.Result.DENIED, "missing-capability:" + capability, correlationId, null);
       throw new AuthorizationException(403, "missing-capability:" + capability);

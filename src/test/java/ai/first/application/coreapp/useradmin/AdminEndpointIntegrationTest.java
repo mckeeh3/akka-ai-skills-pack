@@ -608,7 +608,7 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
         .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
         .responseBodyAs(AdminAuditEventsResponse.class)
         .invoke();
-    assertTrue(audit.body().events().stream().anyMatch(event -> event.actionType().equals("USERADMIN_UPDATE_MEMBER_STATUS") && event.result().equals("denied") && event.reasonCode().equals("last-admin-denied") && event.customerId().equals("customer-admin-covered")));
+    assertTrue(audit.body().events().stream().anyMatch(event -> event.actionType().equals("user_admin.update_member_status") && event.result().equals("denied") && event.reasonCode().equals("last-admin-denied") && event.customerId().equals("customer-admin-covered")));
     assertTrue(audit.body().events().stream().anyMatch(event -> event.actionType().equals("INVITATION_CREATE") && event.customerId().equals("customer-admin-covered")));
     assertTrue(audit.body().events().stream().noneMatch(event -> "customer-admin-hidden".equals(event.customerId()) && event.result().equals("allowed")));
   }

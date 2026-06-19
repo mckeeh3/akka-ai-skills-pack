@@ -104,7 +104,7 @@ public final class NotificationService {
 
   public NotificationItem projectFromAccessReviewTask(AuthContextResolver.ResolvedMe actor, AccessReviewTask task, String correlationId) {
     return projectWorkerTask(actor, new WorkerTaskNotification(
-        task.taskId(), task.autonomousAgentTaskId(), task.tenantId(), task.customerId(), task.startedByMembershipId(), task.startedByAccountId(), "agent-user-admin", "access_review_task", "User Admin access-review task", task.status().name(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.recommendationRefs(), task.traceIds(), UserAdminAccessReviewService.READ_CAPABILITY, "surface-user-admin-access-review-task", "user_admin.access_review.open_result", workerSemanticKind(task.status().name()), workerCategory("user_admin", task.status().name()), workerPriority(task.status().name())), correlationId);
+        task.taskId(), task.autonomousAgentTaskId(), task.tenantId(), task.customerId(), task.startedByMembershipId(), task.startedByAccountId(), "user-admin-agent", "access_review_task", "User Admin access-review task", task.status().name(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.recommendationRefs(), task.traceIds(), UserAdminAccessReviewService.READ_CAPABILITY, "surface-user-admin-access-review-task", "user_admin.access_review.open_result", workerSemanticKind(task.status().name()), workerCategory("user_admin", task.status().name()), workerPriority(task.status().name())), correlationId);
   }
 
   public NotificationItem projectFromPromptRiskReviewTask(AuthContextResolver.ResolvedMe actor, PromptRiskReviewTask task, String correlationId) {

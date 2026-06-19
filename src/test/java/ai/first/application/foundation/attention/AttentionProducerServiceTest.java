@@ -77,7 +77,7 @@ class AttentionProducerServiceTest {
     var failed = invitations.recordDeliveryResult(invite.invitationId(), "delivery-1", false, null, "resend-http-401", "corr-delivery-failed");
     var duplicate = invitations.recordDeliveryResult(invite.invitationId(), "delivery-1-retry", false, null, "resend-http-401", "corr-delivery-failed-replay");
 
-    var items = attention.listWorkstreamItems(tenantAdmin, "agent-user-admin", "corr-user-admin-attention");
+    var items = attention.listWorkstreamItems(tenantAdmin, "user-admin-agent", "corr-user-admin-attention");
     assertEquals(1, items.size());
     var item = items.get(0);
     assertEquals("attention:user-admin:invitation-delivery:" + failed.invitationId(), item.itemId());
