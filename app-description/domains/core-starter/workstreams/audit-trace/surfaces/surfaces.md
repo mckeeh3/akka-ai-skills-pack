@@ -17,7 +17,7 @@ Audit/Trace is the cross-workstream investigation workstream for scoped audit ev
 | `surface-audit-trace-summary-progress` | `workflow-status` | `audit.trace.summaryProgress.v1` | Audit summary AutonomousAgent worker progress or fail-closed provider/runtime/tool-boundary blocker. |
 | `surface-audit-trace-summary-review` | `decision-card` | `audit.trace.summaryReview.v1` | Human review of a real model-backed redacted advisory summary; accept/reject records review evidence only. |
 
-Legacy `surface-audit-timeline` links are compatibility aliases for Audit/Trace timeline/detail routing. New work should target `surface-audit-trace-*` ids.
+`surface-audit-timeline` is retired. Current Audit/Trace links must target `surface-audit-trace-*` ids; stale `surface-audit-timeline` requests return a safe system-message result with trace evidence.
 
 ## `surface-audit-trace-dashboard` contract details
 

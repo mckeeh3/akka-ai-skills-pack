@@ -10,7 +10,7 @@ Owns `agent-admin-agent` as its exactly-one user-facing functional-agent binding
 
 ## Capability binding
 
-Primary capability: `../../capabilities/managed-agent-governance.md`. Access is limited to tenant/organization administrator selected contexts (`TENANT_ADMIN` / `tenant-admin`) with explicit `agent_admin.*` capabilities; customer-scoped admins are not Agent Admin operators.
+Primary capability: `../../capabilities/managed-agent-governance.md`. Access is available to SaaS Owner/App Admin selected contexts for platform-level managed agents and to tenant/organization administrator selected contexts (`TENANT_ADMIN` / `tenant-admin`) for tenant/organization-scoped managed agents, always with explicit `agent_admin.*` capabilities. Customer-scoped admins are not Agent Admin operators.
 
 ## Attention model
 

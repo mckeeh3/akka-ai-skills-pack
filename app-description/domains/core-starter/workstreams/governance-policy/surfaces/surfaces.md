@@ -2,7 +2,7 @@
 
 ## Canonical action/tool/capability matrix
 
-All Governance/Policy browser actions use the canonical `action-governance-policy-*` ids below. Legacy fixture aliases such as `action-govpol-*` may remain in tests only and must route to the same backend capability.
+All Governance/Policy browser actions use the canonical `action-governance-policy-*` ids below. Legacy fixture aliases such as `action-govpol-*` are retired and must not appear in current fixtures, runtime payloads, generated clients, or tests.
 
 | Surface action | Governed tool | Capability | Result surface | Notes |
 |---|---|---|---|---|

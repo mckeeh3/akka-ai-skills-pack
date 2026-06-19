@@ -33,7 +33,7 @@ API responses should render or update these typed User Admin surfaces: `surface-
 
 ## Capability compatibility
 
-Canonical User Admin capability ids and temporary runtime aliases are documented in `capability-compatibility.md`. New work should prefer canonical product ids (`user_admin.*`, `saas_owner.*`, `tenant.customer.*`, `tenant.customer_admin.*`) and treat uppercase `USERADMIN_*` or broad foundation ids as compatibility aliases only.
+Canonical User Admin capability ids and retired/internal mappings are documented in `capability-compatibility.md`. New work must use canonical product ids (`user_admin.*`, `saas_owner.*`, `tenant.customer.*`, `tenant.customer_admin.*`) and must not emit uppercase `USERADMIN_*` or broad foundation ids in current runtime payloads, fixtures, generated clients, or tests.
 
 ## Gaps / caveats
 

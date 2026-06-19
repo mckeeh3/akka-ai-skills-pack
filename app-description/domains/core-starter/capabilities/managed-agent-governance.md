@@ -2,14 +2,15 @@
 
 ## Purpose
 
-Let authorized agent stewards administer tenant-scoped managed agent behavior records, governed prompts, skills, references, manifests, tool permission boundaries, model policy references, seed imports, proposals, activation, rollback, and runtime trace review.
+Let authorized agent stewards administer platform-level and tenant/organization-scoped managed agent behavior records, governed prompts, skills, references, manifests, tool permission boundaries, model policy references, seed imports, proposals, activation, rollback, and runtime trace review.
 
 ## Actors and scope
 
-- Tenant/Organization Admin: the only human role that may open Agent Admin and create, review, approve, activate, or roll back managed-agent behavior changes through a selected `TENANT_ADMIN` / `tenant-admin` AuthContext with explicit `agent_admin.*` capabilities.
+- SaaS Owner/App Admin: may open Agent Admin and create, review, approve, activate, or roll back platform-level managed-agent defaults, seed material, and app-owner managed agents through a SaaS Owner selected `AuthContext` with explicit platform `agent_admin.*` capabilities. This does not grant tenant/customer application-data access or tenant-specific behavior authority by implication.
+- Tenant/Organization Admin: may open Agent Admin and create, review, approve, activate, or roll back tenant/organization-scoped managed-agent behavior changes through a selected `TENANT_ADMIN` / `tenant-admin` AuthContext with explicit tenant-scoped `agent_admin.*` capabilities.
 - Customer Admins and customer-scoped users: not authorized for Agent Admin reads or behavior changes, because managed-agent behavior records are tenant/organization-scoped rather than customer-scoped.
 - Auditor: may read audit/trace evidence through Audit/Trace capabilities, but audit access alone does not allow Agent Admin catalog, prompt, skill, reference, manifest, model, tool-boundary, seed, or prompt-risk task reads.
-- Agent Admin functional agent: explains, drafts proposals, identifies risk, and guides safe activation only for authorized tenant/organization admins; it cannot grant itself tools, data scope, model access, or approval authority.
+- Agent Admin functional agent: explains, drafts proposals, identifies risk, and guides safe activation only within the actor's authorized platform or tenant/organization governance scope; it cannot grant itself tools, data scope, model access, or approval authority.
 
 ## Governed tools and exposure
 
@@ -21,7 +22,7 @@ Let authorized agent stewards administer tenant-scoped managed agent behavior re
 
 ## Authorization and denials
 
-Backend policy, version state, approval gates, tenant/customer scope, `ToolPermissionBoundary`, and provider fail-closed rules are authoritative. Prompt text, expertise text, or rail visibility cannot expand authority.
+Backend policy, version state, approval gates, platform/tenant/customer scope, `ToolPermissionBoundary`, and provider fail-closed rules are authoritative. Prompt text, expertise text, or rail visibility cannot expand authority.
 
 ## Outcomes
 
