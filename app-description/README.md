@@ -8,4 +8,4 @@ It follows the intent-compiler graph shape:
 - `global/**` for reusable actors, roles, policies, surfaces, agents, tools, and trace patterns.
 - `domains/core-starter/**` for core starter capabilities, data/state responsibilities, and five workstream bindings.
 
-Active app-description content describes current intent only. Historical migration material belongs under `specs/app-description-intent-compiler-migration/**` and is not product authority.
+Active app-description content describes current intent only. Historical migration material belongs under `specs/archive/app-description-intent-compiler-migration/**` and is archived evidence only, not product authority.

@@ -85,9 +85,9 @@ All foundation customer-boundary commands require backend capability authorizati
 - `run-access-review` (`agent-tool`, `internal-tool`): durable access-review recommendations and review decisions; no autonomous access mutation.
 - `readSkill` / `readReferenceDoc` (`agent-tool` where assigned): governed User Admin expertise loaders with manifest/boundary/status/redaction checks.
 
-## Production runtime contract links
+## Production runtime contract
 
-Invitation delivery, identity exception recovery, and model-backed access-review automation are governed by `specs/user-admin-production-runtime-hardening/production-runtime-contract.md`. Implementation tasks must preserve these capability-level meanings: Resend/outbox invitation side effects fail closed when unconfigured; identity exception recovery is durable and provider-redacted; access-review automation invokes a governed Akka Agent path when configured and remains advisory until explicit human review.
+Invitation delivery, identity exception recovery, and model-backed access-review automation are governed by this capability contract and the User Admin workstream surface, behavior, tool, trace, and test nodes. Archived hardening specs may provide historical implementation evidence, but current product authority is captured here: Resend/outbox invitation side effects fail closed when unconfigured; identity exception recovery is durable and provider-redacted; access-review automation invokes a governed Akka Agent path when configured and remains advisory until explicit human review.
 
 ## Authorization and denials
 

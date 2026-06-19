@@ -19,6 +19,12 @@ User Admin app-description uses product-facing capability ids as the authoritati
 | `tenant.customer.*` | `tenant.customer.manage` | Tenant Admin Customer lifecycle; concrete `list/read/create/rename/suspend/reactivate` capabilities are now emitted and enforced. |
 | `tenant.customer_admin.*` | `tenant.customer.manage` | Customer Admin bootstrap/management; concrete `list/invite/manage` capabilities are now emitted and enforced. |
 
+## Canonical Customer action ids
+
+Current product surface contracts use these Customer branch action ids as authoritative for new work: `action-user-admin-show-customers`, `action-customer-read`, `action-open-customer-create`, `action-submit-customer-create`, `action-open-customer-rename`, `action-submit-customer-rename`, `action-open-customer-suspend`, `action-customer-suspend`, `action-open-customer-reactivate`, `action-customer-reactivate`, `action-user-admin-show-customer-admins`, `action-open-customer-admin-invitation-create`, and `action-customer-admin-invite`.
+
+Runtime may accept these compatibility aliases only at API/workstream boundaries while clients are normalized: `action-customer-create` for `action-submit-customer-create`, `action-customer-rename` for `action-submit-customer-rename`, `action-open-customer-suspend-confirmation` for `action-open-customer-suspend`, and `action-open-customer-reactivate-confirmation` for `action-open-customer-reactivate`. Generic `action-customer-list`, `action-customer-admin-list`, and `action-customer-admin-manage` are shorthand labels, not product action ids, unless a later compatibility task explicitly implements them.
+
 ## Enforcement rule
 
 Frontend visibility is advisory. Backend actions must check selected `AuthContext`, canonical capability ids or documented aliases, target tenant/customer ownership, idempotency, approval policy, audit/work trace emission, and redaction before returning a surface.
