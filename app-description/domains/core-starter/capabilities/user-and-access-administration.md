@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Let authorized administrators manage users, memberships, roles/capabilities, invitations, support access, access review, identity relink review, foundation Customer boundaries, Customer Admin bootstrap/maintenance, and admin audit evidence within selected tenant/customer scope without weakening isolation, approval policy, provider boundaries, or traceability. Let invited humans accept valid invitations through the standard WorkOS/AuthKit-backed onboarding path without granting any authority beyond the invitation's backend-validated target scope and requested role.
+Let authorized administrators manage users, memberships, roles/capabilities, invitations, support access, access review, identity relink review, foundation Customer boundaries, Customer Admin bootstrap/maintenance, first SaaS Owner Admin bootstrap evidence, and admin audit evidence within selected tenant/customer scope without weakening isolation, approval policy, provider boundaries, or traceability. Let invited humans accept valid invitations through the standard WorkOS/AuthKit-backed onboarding path without granting any authority beyond the invitation's backend-validated target scope and requested role.
 
 ## Actors and scope
 
@@ -91,7 +91,7 @@ All foundation customer-boundary commands require backend capability authorizati
 
 ## Production runtime contract
 
-Invitation delivery, invitee acceptance/onboarding, identity exception recovery, and model-backed access-review automation are governed by this capability contract and the User Admin workstream surface, behavior, tool, trace, and test nodes. Archived hardening specs may provide historical implementation evidence, but current product authority is captured here: Resend/outbox invitation side effects fail closed when unconfigured; invitation acceptance is deterministic signed-token plus WorkOS/AuthKit account linking/membership creation with safe recovery for expired/revoked/mismatched/accepted tokens; identity exception recovery is durable and provider-redacted; access-review automation invokes a governed Akka Agent path when configured and remains advisory until explicit human review.
+Invitation delivery, invitee acceptance/onboarding, first SaaS Owner Admin bootstrap, identity exception recovery, and model-backed access-review automation are governed by this capability contract and the User Admin workstream surface, behavior, tool, trace, and test nodes. Archived hardening specs may provide historical implementation evidence, but current product authority is captured here: Resend/outbox invitation side effects fail closed when unconfigured; invitation acceptance is deterministic signed-token plus WorkOS/AuthKit account linking/membership creation with safe recovery for expired/revoked/mismatched/accepted tokens; first-admin bootstrap is trusted configuration/migration controlled and idempotently creates only the first SaaS Owner Admin with immutable provenance/audit evidence; identity exception recovery is durable and provider-redacted; access-review automation invokes a governed Akka Agent path when configured and remains advisory until explicit human review.
 
 ## Authorization and denials
 
@@ -99,9 +99,9 @@ Every admin command/query is scoped by selected `AuthContext`, active account, n
 
 ## Outcomes
 
-In scope: governed user/admin operations, SaaS Owner Admin user management, SaaS Owner Organization administration, SaaS Owner bootstrap/maintenance of Organization Admin users, Organization Admin foundation Customer-boundary administration, Organization Admin bootstrap/maintenance of Customer Admin users, invitation delivery and acceptance/onboarding lifecycle, member status/role changes, support-access lifecycle, access-review recommendations, decision cards for risky changes, admin audit evidence, scoped User Admin agent guidance, and safe local/test email outbox behavior.
+In scope: governed user/admin operations, first SaaS Owner Admin bootstrap evidence, SaaS Owner Admin user management, SaaS Owner Organization administration, SaaS Owner bootstrap/maintenance of Organization Admin users, Organization Admin foundation Customer-boundary administration, Organization Admin bootstrap/maintenance of Customer Admin users, invitation delivery and acceptance/onboarding lifecycle, member status/role changes, support-access lifecycle, access-review recommendations, decision cards for risky changes, admin audit evidence, scoped User Admin agent guidance, and safe local/test email outbox behavior.
 
-Out of scope: public self-registration, full billing/subscription management, application-data access to managed Organizations, support access by implication, app-specific CRM/customer-success/sales/support/billing/customer-intelligence domains, app-specific customer billing, autonomous high-impact access changes, client-side authorization, deterministic/model-less normal agent success, and fixture/mock normal runtime data.
+Out of scope: public self-registration, permanent account deletion/profile anonymization, Organization/Customer hard delete, provider-side erasure automation, full billing/subscription management, application-data access to managed Organizations, support access by implication, app-specific CRM/customer-success/sales/support/billing/customer-intelligence domains, app-specific customer billing, autonomous high-impact access changes, client-side authorization, deterministic/model-less normal agent success, and fixture/mock normal runtime data.
 
 ## Linked graph nodes
 

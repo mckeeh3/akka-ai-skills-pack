@@ -6,6 +6,7 @@ This current-intent graph intentionally excludes the following behavior from the
 
 - Billing, subscription, entitlement, invoice, payment, and billing-provider administration.
 - Timer-backed invitation reminders and reminder scheduling.
+- Permanent account deletion/profile anonymization, provider-side erasure automation, Organization hard delete, Customer hard delete, legal-hold management, and bulk audit purge.
 - App-specific CRM, customer-success, sales/revenue, support/service case, procurement, customer-intelligence, or industry-specific customer domain behavior.
 
 ## Rules for deferred areas
