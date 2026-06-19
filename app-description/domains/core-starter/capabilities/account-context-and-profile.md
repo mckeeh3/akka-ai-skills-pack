@@ -22,7 +22,7 @@ Let an authenticated member inspect and maintain browser-safe account, profile, 
 
 ## Authorization and denials
 
-Backend authorization is authoritative. Disabled users, inactive memberships, missing selected context, cross-tenant reads, hidden source-workstream targets, unsupported notification actions, provider/runtime digest blockers, or unsupported permission changes are denied and traced. Notification and source-opening tools never mutate source attention, tasks, roles, memberships, or provider state; they only update personal lifecycle/read state or reauthorize a destination surface.
+Backend authorization is authoritative. Disabled accounts return `/api/me` safe `disabled_account` / no-selected-context recovery and cannot authorize workstream actions until an authorized account-reactivation flow succeeds. Inactive, disabled, suspended, removed, or archived-parent memberships are omitted from selected-context eligibility or returned as safe non-authorizing context summaries where policy permits. Zero-membership/orphaned accounts return `no_active_membership` recovery without deleting the account or enumerating hidden memberships. Disabled users, inactive memberships, missing selected context, cross-tenant reads, hidden source-workstream targets, unsupported notification actions, provider/runtime digest blockers, or unsupported permission changes are denied and traced. Notification and source-opening tools never mutate source attention, tasks, roles, memberships, or provider state; they only update personal lifecycle/read state or reauthorize a destination surface.
 
 ## Outcomes
 

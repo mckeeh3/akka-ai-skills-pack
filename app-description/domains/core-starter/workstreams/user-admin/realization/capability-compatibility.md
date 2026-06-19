@@ -16,7 +16,7 @@ User Admin app-description uses product-facing capability ids as the authoritati
 | `user_admin.preview_role_change` | retired: `USERADMIN_PREVIEW_ROLE_CHANGE`; internal mapping: `tenant.role.manage` | Role/capability preview decision surface. |
 | `user_admin.change_member_roles` | retired: `USERADMIN_CHANGE_MEMBER_ROLES`; internal mapping: `tenant.role.manage` | Role mutation after preview/approval. |
 | `saas_owner.organization.*` | internal mapping: `saas_owner.tenant.read`, `saas_owner.tenant.manage` | Browser/API language is Organization; backend isolation object is Tenant. Internal mappings are not emitted as browser/API capability ids. |
-| `tenant.customer.*` | internal mapping: `tenant.customer.manage` | Tenant Admin Customer lifecycle; concrete `list/read/create/rename/suspend/reactivate` capabilities are emitted and enforced. |
+| `tenant.customer.*` | internal mapping: `tenant.customer.manage` | Tenant Admin Customer lifecycle; concrete `list/read/create/rename/suspend/archive/reactivate` capabilities are emitted and enforced. |
 | `tenant.customer_admin.*` | internal mapping: `tenant.customer.manage` | Customer Admin bootstrap/management; concrete `list/invite/manage` capabilities are emitted and enforced. |
 
 ## Canonical Customer action ids

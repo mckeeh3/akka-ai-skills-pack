@@ -9,9 +9,9 @@ Global tool inventory: `../../../../../global/tools/foundation-governed-tools.md
 Allowed governed tools:
 
 - `manage-saas-owner-admins` (`browser-tool`; human-confirmed agent preparation only): SaaS Owner Admin list/read, app-owner invitation create/resend/revoke, role/status maintenance, last-owner-admin checks, and audit evidence.
-- `manage-organizations` (`browser-tool`; human-confirmed agent preparation only): SaaS Owner Organization list/read/create/rename/suspend/reactivate backed by internal Tenant authorization.
+- `manage-organizations` (`browser-tool`; human-confirmed agent preparation only): SaaS Owner Organization list/read/create/rename/suspend/archive/reactivate backed by internal Tenant authorization and terminal archive semantics.
 - `manage-organization-admins` (`browser-tool`; human-confirmed agent preparation only): SaaS Owner bootstrap and maintenance of `TENANT_ADMIN` users for a selected Organization/Tenant, including admin invitation lifecycle, role/status changes, and last-organization-admin checks.
-- `manage-customers` (`browser-tool`; human-confirmed agent preparation only): Organization Admin Customer list/read/create/rename/suspend/reactivate actions inside the selected Organization/Tenant.
+- `manage-customers` (`browser-tool`; human-confirmed agent preparation only): Organization Admin Customer list/read/create/rename/suspend/archive/reactivate actions inside the selected Organization/Tenant with terminal archive semantics.
 - `manage-customer-admins` (`browser-tool`; human-confirmed agent preparation only): Organization Admin bootstrap and maintenance of `CUSTOMER_ADMIN` users for a selected Customer, including admin invitation lifecycle, role/status changes, and last-customer-admin checks.
 - `search-user-directory` (`browser-tool`, `agent-tool` read): scoped dashboard, users directory, user detail inspection, invitation status, support-access state, access-review state, and audit-evidence views. Directory output is discovery-only; row/card activation opens inspection surfaces.
 - `create-or-resend-invitation` (`browser-tool`; human-confirmed agent preparation only): admin invitation create, detail read, resend confirmation, revoke confirmation, and delivery/outbox visibility.

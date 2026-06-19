@@ -13,9 +13,9 @@ The intended hierarchy is `SaaS Owner/App Admin -> Organization/Tenant Admin -> 
 The workstream explicitly covers these access-administration areas:
 
 - **Managing SaaS Owner Admins** — invite, inspect, activate/reactivate, disable/remove, and preserve last-owner-admin protection for app-owner administrators.
-- **Managing Organizations** — create, inspect, rename, suspend, and reactivate customer-facing Organizations backed by Tenant boundaries without granting tenant app-data/support/billing authority.
+- **Managing Organizations** — create, inspect, rename, suspend, archive, and reactivate customer-facing Organizations backed by Tenant boundaries without granting tenant app-data/support/billing authority; archive is terminal normal-administration closure, not hard delete.
 - **Managing Organization Admins** — bootstrap the first Organization Admin after Organization creation, invite additional `TENANT_ADMIN` users, and manage Organization Admin memberships/invitations under selected Organization/Tenant scope.
-- **Managing Customers** — create, inspect, rename/update, suspend/archive, and reactivate Customer records inside the selected Organization/Tenant without leaking sibling-customer facts.
+- **Managing Customers** — create, inspect, rename/update, suspend, archive, and reactivate Customer records inside the selected Organization/Tenant without leaking sibling-customer facts; archive is terminal normal-administration closure, not hard delete.
 - **Managing Customer Admins** — bootstrap the first Customer Admin after Customer creation, invite additional `CUSTOMER_ADMIN` users, and manage Customer Admin memberships/invitations under selected Customer scope.
 - **Managing users** — find, inspect, activate/reactivate, disable, and understand scoped user details at the App Admin, Tenant Admin, or Customer Admin level allowed by policy.
 - **Managing memberships** — add, suspend, reactivate, or remove a user's membership in an app-owner, tenant, or customer context while preserving tenant/customer boundaries and last-admin protections.
