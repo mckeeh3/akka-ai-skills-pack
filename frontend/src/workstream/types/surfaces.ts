@@ -151,7 +151,7 @@ export type DashboardSurfaceData = {
   administeredPopulations?: Array<{ populationType: string; label: string; visibleCount: string | number; attentionCount?: string | number; activeCount?: string | number; pendingInvitationCount?: string | number; suspendedOrDisabledCount?: string | number; staleOrExpiredCount?: string | number; reviewCount?: string | number; roleCoverageSummary?: string; targetSurfaceId: string; openActionId: string; capabilityIds?: string[]; traceRefs?: string[] }>;
   authorizedActions?: Array<{ actionId: string; label: string; governedToolId?: string; capabilityId?: string; resultSurfaceId?: string; approvalRequired?: boolean; denialHint?: string }>;
   recentActivity?: Array<{ activityId: string; label: string; summary?: string; traceId?: string; redaction?: string; occurredAt?: string }>;
-  attentionCounters?: Array<{ counterId: string; label: string; value: string | number; severity?: string; status?: string; source?: string; actionId?: string; surfaceId?: string; targetSurfaceId?: string; workstreamId?: string; description?: string; requiredCapabilityId?: string; redaction?: string; traceRefs?: string[] }>;
+  attentionCounters?: Array<{ counterId: string; label: string; workstreamLabel?: string; value: string | number; attentionCount?: string | number; severity?: string; status?: string; statusText?: string; source?: string; sourceToolId?: string; sourceCapabilityId?: string; actionId?: string; openActionId?: string; surfaceId?: string; targetSurfaceId?: string; workstreamId?: string; description?: string; purposeSummary?: string; requiredCapabilityId?: string; redaction?: string; redactionLevel?: string; disabledOrDeniedReason?: string; traceRefs?: string[] }>;
   needsAttention?: Array<AttentionItem>;
   controlPanels?: Array<{ panelId: string; label: string; summary: string; state?: string; value?: string | number; surfaceId?: string; actionId?: string; severity?: string }>;
   authorizedWorkstreamLinks?: Array<{ workstreamId: string; label: string; requiredCapabilityId?: string; surfaceId?: string; actionId?: string; status?: string }>;
@@ -547,6 +547,7 @@ export type NotificationCenterSurfaceData = {
   channel: 'in_app' | string;
   unreadCount: number;
   visibleCount: number;
+  triageSections?: Array<{ sectionId: 'needs_attention' | 'awareness' | 'handled' | string; laneId?: string; label: string; sectionIntent: string; itemCount?: number; emptyStateCopy?: string; responsiveLayout?: string; items?: NotificationCenterSurfaceData['items'] }>;
   items?: Array<{
     notificationId: string;
     channel?: 'in_app' | string;
@@ -561,6 +562,9 @@ export type NotificationCenterSurfaceData = {
     owningWorkstreamId?: string;
     surfaceRef?: AttentionSurfaceRef;
     sourceRefs?: Array<{ refType?: string; refId: string; label?: string; capabilityId?: string; traceId?: string; correlationId?: string }>;
+    targetSurfaceRef?: AttentionSurfaceRef;
+    lifecycleTimestamps?: Record<string, string | null | undefined>;
+    availableActions?: Array<{ actionId: string; label?: string; capabilityId?: string; enabled?: boolean; disabledReason?: string; resultSurfaceId?: string }>;
     traceRefs?: string[];
     createdAt?: string;
     updatedAt?: string;

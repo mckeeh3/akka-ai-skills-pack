@@ -37,6 +37,7 @@ import ai.first.domain.coreapp.myaccount.MyAccountPersonalAttentionDigestTask;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -303,14 +304,10 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         ADMIN_CONTEXT_ID,
         profile.surfaceId(),
         "corr-my-profile-browser-denied");
-    assertThrows(RuntimeException.class, () -> httpClient
-        .POST("/api/workstream/actions")
-        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
-        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
-        .addHeader("X-Correlation-Id", "corr-my-profile-browser-denied")
-        .withRequestBody(unsupportedMutation)
-        .responseBodyAs(String.class)
-        .invoke());
+    var unsupportedResult = runAction(unsupportedMutation, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("validation-error", unsupportedResult.status());
+    assertEquals("surface-my-profile", unsupportedResult.resultSurface().surfaceId());
+    assertTrue(unsupportedResult.resultSurface().data().toString().contains("MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD".toLowerCase(Locale.ROOT)) || unsupportedResult.resultSurface().data().toString().contains("unsupported"));
 
     var afterDenied = httpClient
         .GET("/api/workstream/bootstrap")
@@ -398,7 +395,9 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         ADMIN_CONTEXT_ID,
         context.surfaceId(),
         "corr-my-context-browser-hidden-action-denied");
-    assertThrows(RuntimeException.class, () -> runAction(hiddenContextSelection, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin"));
+    var hiddenContextResult = runAction(hiddenContextSelection, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("denied", hiddenContextResult.status());
+    assertEquals("surface-my-context", hiddenContextResult.resultSurface().surfaceId());
     assertThrows(RuntimeException.class, () -> getSurface("surface-my-context", "membership-hidden-cross-tenant", "admin@example.test", "Tenant Admin", "corr-my-context-hidden-denied"));
     assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-context").responseBodyAs(String.class).invoke());
   }
@@ -472,7 +471,9 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         MEMBER_CONTEXT_ID,
         "surface-my-account-notification-center",
         "corr-my-notifications-browser-member-denied");
-    assertThrows(RuntimeException.class, () -> runAction(memberDenied, MEMBER_CONTEXT_ID, "member@example.test", "Member User"));
+    var memberDeniedResult = runAction(memberDenied, MEMBER_CONTEXT_ID, "member@example.test", "Member User");
+    assertEquals("denied", memberDeniedResult.status());
+    assertNotNull(memberDeniedResult.resultSurface());
     assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-account-notification-center").responseBodyAs(String.class).invoke());
   }
 
@@ -567,7 +568,9 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         MEMBER_CONTEXT_ID,
         "surface-my-account-personal-attention-digest-progress",
         "corr-my-digest-progress-browser-member-denied");
-    assertThrows(RuntimeException.class, () -> runAction(memberDeniedRead, MEMBER_CONTEXT_ID, "member@example.test", "Member User"));
+    var memberDeniedReadResult = runAction(memberDeniedRead, MEMBER_CONTEXT_ID, "member@example.test", "Member User");
+    assertEquals("denied", memberDeniedReadResult.status());
+    assertNotNull(memberDeniedReadResult.resultSurface());
     assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-account-personal-attention-digest-progress").responseBodyAs(String.class).invoke());
   }
 
@@ -637,7 +640,9 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         MEMBER_CONTEXT_ID,
         "surface-my-account-personal-attention-digest-blocked",
         "corr-my-digest-blocked-browser-member-denied");
-    assertThrows(RuntimeException.class, () -> runAction(memberDeniedRead, MEMBER_CONTEXT_ID, "member@example.test", "Member User"));
+    var memberDeniedReadResult = runAction(memberDeniedRead, MEMBER_CONTEXT_ID, "member@example.test", "Member User");
+    assertEquals("denied", memberDeniedReadResult.status());
+    assertNotNull(memberDeniedReadResult.resultSurface());
     assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-account-personal-attention-digest-blocked").responseBodyAs(String.class).invoke());
   }
 
@@ -722,7 +727,9 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         ADMIN_CONTEXT_ID,
         accepted.resultSurface().surfaceId(),
         "corr-my-digest-result-browser-conflict");
-    assertThrows(RuntimeException.class, () -> runAction(conflictingReject, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin"));
+    var conflictingRejectResult = runAction(conflictingReject, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("denied", conflictingRejectResult.status());
+    assertNotNull(conflictingRejectResult.resultSurface());
 
     var rejectTaskId = seedCompletedDigestTask("digest-result-reject", MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, null, null);
     var missingReasonReject = new CapabilityActionRequest(
@@ -735,7 +742,9 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         ADMIN_CONTEXT_ID,
         result.resultSurface().surfaceId(),
         "corr-my-digest-result-browser-reject-missing-reason");
-    assertThrows(RuntimeException.class, () -> runAction(missingReasonReject, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin"));
+    var missingReasonRejectResult = runAction(missingReasonReject, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("validation-error", missingReasonRejectResult.status());
+    assertNotNull(missingReasonRejectResult.resultSurface());
 
     var rejected = runAction(new CapabilityActionRequest(
         "action-reject-my-account-personal-attention-digest",
@@ -764,7 +773,9 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         MEMBER_CONTEXT_ID,
         "surface-my-account-personal-attention-digest-result",
         "corr-my-digest-result-browser-member-denied");
-    assertThrows(RuntimeException.class, () -> runAction(memberDeniedRead, MEMBER_CONTEXT_ID, "member@example.test", "Member User"));
+    var memberDeniedReadResult = runAction(memberDeniedRead, MEMBER_CONTEXT_ID, "member@example.test", "Member User");
+    assertEquals("denied", memberDeniedReadResult.status());
+    assertNotNull(memberDeniedReadResult.resultSurface());
     assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-account-personal-attention-digest-result").responseBodyAs(String.class).invoke());
   }
 
@@ -856,14 +867,9 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         ADMIN_CONTEXT_ID,
         settings.surfaceId(),
         "corr-my-settings-browser-unsupported");
-    assertThrows(RuntimeException.class, () -> httpClient
-        .POST("/api/workstream/actions")
-        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
-        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
-        .addHeader("X-Correlation-Id", "corr-my-settings-browser-unsupported")
-        .withRequestBody(unsupportedProviderMutation)
-        .responseBodyAs(String.class)
-        .invoke());
+    var unsupportedSettings = runAction(unsupportedProviderMutation, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("validation-error", unsupportedSettings.status());
+    assertEquals("surface-my-settings", unsupportedSettings.resultSurface().surfaceId());
 
     var invalidTimezone = new CapabilityActionRequest(
         "action-update-my-settings",
@@ -875,14 +881,9 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         ADMIN_CONTEXT_ID,
         settings.surfaceId(),
         "corr-my-settings-browser-invalid");
-    assertThrows(RuntimeException.class, () -> httpClient
-        .POST("/api/workstream/actions")
-        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
-        .addHeader("X-Selected-Context-Id", ADMIN_CONTEXT_ID)
-        .addHeader("X-Correlation-Id", "corr-my-settings-browser-invalid")
-        .withRequestBody(invalidTimezone)
-        .responseBodyAs(String.class)
-        .invoke());
+    var invalidTimezoneResult = runAction(invalidTimezone, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("validation-error", invalidTimezoneResult.status());
+    assertEquals("surface-my-settings", invalidTimezoneResult.resultSurface().surfaceId());
 
     var afterDenied = httpClient
         .GET("/api/workstream/bootstrap")

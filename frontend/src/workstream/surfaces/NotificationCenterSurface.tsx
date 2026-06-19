@@ -34,7 +34,7 @@ export function NotificationCenterSurface({ envelope, onAction }: NotificationCe
   const refreshActions = envelope.actions.filter((action) => action.actionId === 'action-show-my-account-notification-center');
   const lifecycleActions = envelope.actions.filter((action) => itemLifecycleActionIds.has(action.actionId));
   const preferenceActions = envelope.actions.filter((action) => preferenceActionIds.has(action.actionId));
-  const lanes = buildTriageLanes(items);
+  const lanes = backendTriageLanes(data.triageSections) ?? buildTriageLanes(items);
   const primaryLane = lanes.find((lane) => lane.laneId === 'needs-attention') ?? lanes[0];
   const secondaryLanes = lanes.filter((lane) => lane.laneId !== 'needs-attention');
   const needsAttentionCount = primaryLane.items.length;
@@ -147,9 +147,20 @@ function NotificationTriageCard({ item, actions, surfaceId, onAction, compact = 
       {item.sourceRefs && item.sourceRefs.length > 0 && <p className="capability-basis">Why visible: {item.sourceRefs.map((ref) => ref.label ?? ref.refId).join(', ')}</p>}
       {item.surfaceRef?.targetSurfaceId && <p className="capability-basis">Source target requires reauthorization before opening: {item.surfaceRef.targetSurfaceId}</p>}
       {item.traceRefs && item.traceRefs.length > 0 && <section className="trace-link-list" aria-label="Notification trace links">{item.traceRefs.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-detail&traceId=${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}
+      {item.availableActions && item.availableActions.length > 0 && <p className="capability-basis">Backend-authored available actions: {item.availableActions.map((action) => `${action.label ?? action.actionId}${action.enabled === false ? ' (disabled)' : ''}`).join(', ')}</p>}
       {actions.length > 0 && <SurfaceActionBar actions={actions} surfaceId={surfaceId} label={`Lifecycle actions for ${item.title ?? item.notificationId}`} actionInput={{ notificationId: item.notificationId }} onAction={onAction} />}
     </article>
   );
+}
+
+function backendTriageLanes(sections: NotificationCenterSurfaceData['triageSections']): TriageLane[] | undefined {
+  if (!sections?.length) return undefined;
+  return sections.map((section) => ({
+    laneId: section.sectionId === 'needs_attention' ? 'needs-attention' : section.sectionId === 'handled' ? 'handled' : 'awareness',
+    title: section.label,
+    intent: section.sectionIntent,
+    items: section.items ?? []
+  }));
 }
 
 function buildTriageLanes(items: NotificationItem[]): TriageLane[] {

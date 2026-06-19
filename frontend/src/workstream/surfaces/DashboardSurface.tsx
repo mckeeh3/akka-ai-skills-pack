@@ -473,9 +473,9 @@ function MyAccountCommandCenter({ envelope, onAction, onSignOut }: DashboardSurf
         <div className="attention-counter-strip" aria-label="Attention by available workstream">
           {counters.map((counter) => {
             const action = counter.actionId ? actionById.get(counter.actionId) : undefined;
-            const status = counter.status ?? counter.description ?? 'Backend-owned attention';
-            const body = <><span>{counter.label}</span><strong>{counter.value}</strong><em>{formatStatus(status)}</em>{counter.description && <small>{counter.description}</small>}<small>{counter.redaction ?? 'Visible in selected context'}</small></>;
-            const input = { targetFunctionalAgentId: counter.workstreamId ?? '', targetSurfaceId: counter.targetSurfaceId ?? counter.surfaceId ?? '', requiredCapabilityId: counter.requiredCapabilityId ?? '', correlationId: envelope.correlationId };
+            const status = counter.statusText ?? counter.status ?? counter.description ?? 'Backend-owned attention';
+            const body = <><span>{counter.workstreamLabel ?? counter.label}</span><strong>{counter.attentionCount ?? counter.value}</strong><em>{formatStatus(status)}</em>{(counter.purposeSummary ?? counter.description) && <small>{counter.purposeSummary ?? counter.description}</small>}<small>{counter.redactionLevel ?? counter.redaction ?? 'Visible in selected context'}</small></>;
+            const input = { targetFunctionalAgentId: counter.workstreamId ?? '', targetSurfaceId: counter.targetSurfaceId ?? counter.surfaceId ?? '', requiredCapabilityId: counter.sourceCapabilityId ?? counter.requiredCapabilityId ?? '', correlationId: envelope.correlationId };
             return action ? <button key={counter.counterId} type="button" className={`attention-counter-card ${counter.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId, input)} aria-label={`Open ${counter.label}: ${status}; ${counter.value} attention items`}>{body}</button> : <article key={counter.counterId} className={`attention-counter-card ${counter.severity ?? 'info'}`}>{body}</article>;
           })}
         </div>

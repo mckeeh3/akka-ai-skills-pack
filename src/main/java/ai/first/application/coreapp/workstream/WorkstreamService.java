@@ -1050,12 +1050,14 @@ public final class WorkstreamService {
       var requestedContextId = stringInput(request.input(), "selectedContextId", selectedContextId);
       var selectedActor = authContextResolver.resolveMe(identity, requestedContextId, request.correlationId());
       var sameContext = Objects.equals(actor.selectedContext().membershipId(), selectedActor.selectedContext().membershipId());
+      var selectedSurface = myContextSurface(selectedActor, request.correlationId());
+      selectedSurface.data().put("selectionResult", mapOf("status", sameContext ? "no-op" : "accepted", "previousSelectedContextId", actor.selectedContext().membershipId(), "selectedContextId", selectedActor.selectedContext().membershipId(), "staleSurfaces", !sameContext, "refreshShell", true, "message", sameContext ? "Selected AuthContext was already active; no authority changed." : "Selected AuthContext switched through backend-authoritative context selection; shell and open surfaces must refresh."));
       result = new CapabilityActionResult(
           sameContext ? "no-op" : "accepted",
-          sameContext ? "Selected AuthContext was already active; no authority changed." : "Selected AuthContext refreshed through backend-authoritative context selection.",
+          sameContext ? "Selected AuthContext was already active; no authority changed." : "Selected AuthContext switched through backend-authoritative context selection; shell and open surfaces must refresh.",
           request.correlationId(),
           List.of("trace-my-account-context-select-" + stableSuffix(request.correlationId())),
-          myContextSurface(selectedActor, request.correlationId()));
+          selectedSurface);
     } else if ("action-start-my-account-personal-attention-digest".equals(request.actionId())) {
       var task = personalAttentionDigestService.start(actor, new MyAccountPersonalAttentionDigestService.StartPersonalAttentionDigestCommand(request.idempotencyKey()), request.correlationId());
       result = personalAttentionDigestActionResult(task, task.status() == MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "blocked_provider_or_runtime" : "accepted", "My Account personal attention digest task is backend-governed; results are advisory, redacted, and source attention is unchanged.", request.correlationId(), actor);
@@ -1193,6 +1195,7 @@ public final class WorkstreamService {
     } catch (AuthorizationException denied) {
       if (isUserAdminAction(request.actionId())) result = userAdminSystemMessageResult(actor, request.actionId(), denied.reasonCode(), userAdminSafeDenialMessage(denied.reasonCode()), request.correlationId());
       else if (isGovernancePolicyAction(request.actionId())) result = governancePolicySystemMessageResult(actor, request.actionId(), denied.reasonCode(), governancePolicySafeDenialMessage(denied.reasonCode()), request.correlationId());
+      else if (isMyAccountAction(request.actionId())) result = myAccountSystemMessageResult(actor, request.actionId(), denied.reasonCode(), request.correlationId());
       else throw denied;
     }
     if (result == null) result = new CapabilityActionResult("accepted", action.label(), request.correlationId(), List.of("trace-" + request.actionId()), surfaceForAction(actor, request.actionId(), request.correlationId()));
@@ -1222,6 +1225,31 @@ public final class WorkstreamService {
 
   private boolean isGovernancePolicyAction(String actionId) {
     return actionId != null && (actionId.startsWith("action-governance-policy-") || actionId.startsWith("action-govpol-") || actionId.equals("action-simulate-policy") || actionId.equals("action-commit-policy") || actionId.equals("action-open-governance-policy"));
+  }
+
+  private boolean isMyAccountAction(String actionId) {
+    return actionId != null && (actionId.startsWith("action-show-my-")
+        || actionId.startsWith("action-update-my-")
+        || actionId.startsWith("action-select-my-")
+        || actionId.startsWith("action-open-")
+        || actionId.startsWith("action-notification-")
+        || actionId.contains("my-account-personal-attention-digest"));
+  }
+
+  private CapabilityActionResult myAccountSystemMessageResult(AuthContextResolver.ResolvedMe actor, String actionId, String code, String correlationId) {
+    var normalized = firstNonBlank(code, "not_found_or_redacted").toLowerCase(Locale.ROOT).replace(':', '-');
+    var validation = normalized.contains("invalid") || normalized.contains("unsupported") || normalized.contains("required");
+    var status = validation ? "validation-error" : normalized.contains("no-op") ? "no-op" : "denied";
+    var message = validation
+        ? "My Account could not apply this change because the submitted self-service fields are invalid or unsupported. No profile, setting, authority, source work, or provider state was mutated."
+        : "The My Account action is unavailable in the selected context. Hidden targets, missing authority, and protected provider details are not enumerated.";
+    var surface = surfaceForAction(actor, actionId, correlationId);
+    surface.data().put("lastResult", mapOf("status", status, "message", message, "safeReasonCode", normalized, "sourceActionId", actionId, "noEnumeration", true, "noDirectMutation", true, "traceRefs", List.of("trace-my-account-action-recovery-" + stableSuffix(correlationId + actionId))));
+    surface.data().put("validationMessages", validation ? List.of(message) : List.of());
+    surface.data().put("safeReasonCode", normalized);
+    surface.data().put("noEnumeration", true);
+    surface.data().put("noDirectMutation", true);
+    return new CapabilityActionResult(status, message, correlationId, List.of("trace-my-account-action-recovery-" + stableSuffix(correlationId + actionId)), surface);
   }
 
   private CapabilityActionResult userAdminSystemMessageResult(AuthContextResolver.ResolvedMe actor, String actionId, String code, String message, String correlationId) {
@@ -1421,17 +1449,27 @@ public final class WorkstreamService {
         .map(card -> mapOf(
             "counterId", "counter-" + card.get("workstreamId"),
             "label", card.get("label"),
+            "workstreamLabel", card.get("label"),
             "value", card.get("value"),
+            "attentionCount", card.get("value"),
             "severity", card.get("severity"),
             "status", card.get("status"),
+            "statusText", card.get("status"),
             "source", AttentionService.LIST_MY_ACCOUNT_ITEMS_TOOL,
+            "sourceToolId", AttentionService.LIST_MY_ACCOUNT_ITEMS_TOOL,
+            "sourceCapabilityId", card.get("requiredCapabilityId"),
             "actionId", card.get("actionId"),
+            "openActionId", card.get("actionId"),
             "surfaceId", card.get("surfaceId"),
             "targetSurfaceId", card.get("surfaceId"),
             "workstreamId", card.get("workstreamId"),
             "requiredCapabilityId", card.get("requiredCapabilityId"),
             "redaction", card.getOrDefault("redaction", "Authorized in this context"),
-            "description", card.get("description")))
+            "redactionLevel", card.getOrDefault("redaction", "authorized"),
+            "description", card.get("description"),
+            "purposeSummary", card.get("description"),
+            "traceRefs", List.of("trace-my-account-counter-" + stableSuffix(String.valueOf(card.get("workstreamId")))),
+            "disabledOrDeniedReason", ""))
         .toList();
   }
 
@@ -1446,8 +1484,9 @@ public final class WorkstreamService {
 
   private SurfaceEnvelope myAccountNotificationCenterSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
     var center = myAccountNotificationCenterData(actor, correlationId);
+    var itemMaps = center.items().stream().map(this::notificationItemMap).toList();
     return envelope("surface-my-account-notification-center", "notification-center", "In-app notifications", actor, correlationId,
-        mapOf("surfaceContract", center.surfaceContract(), "channel", "in_app", "unreadCount", center.unreadCount(), "visibleCount", center.visibleCount(), "items", center.items().stream().map(this::notificationItemMap).toList(), "preferencesSummary", center.preferencesSummary().stream().map(this::notificationPreferenceMap).toList(), "sourceSummary", center.sourceSummary(), "redaction", center.redaction().name().toLowerCase(Locale.ROOT), "traceRefs", center.traceRefs(), "correlationId", center.correlationId(), "capabilityIds", List.of(NOTIFICATION_LIST_CAPABILITY, NOTIFICATION_MARK_READ_CAPABILITY, NOTIFICATION_DISMISS_CAPABILITY, NOTIFICATION_ARCHIVE_CAPABILITY, NOTIFICATION_SNOOZE_CAPABILITY, NOTIFICATION_UPDATE_PREFERENCES_CAPABILITY)),
+        mapOf("surfaceContract", center.surfaceContract(), "channel", "in_app", "accountContext", mapOf("accountId", actor.account().accountId(), "email", actor.account().displayEmail(), "displayName", actor.profile().displayName(), "tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "redactionLevel", "browser-safe"), "notificationSummary", mapOf("unreadCount", center.unreadCount(), "visibleCount", center.visibleCount(), "channel", "in_app"), "unreadCount", center.unreadCount(), "visibleCount", center.visibleCount(), "triageSections", notificationTriageSections(itemMaps), "items", itemMaps, "preferencesSummary", center.preferencesSummary().stream().map(this::notificationPreferenceMap).toList(), "sourceSummary", center.sourceSummary(), "redaction", center.redaction().name().toLowerCase(Locale.ROOT), "traceRefs", center.traceRefs(), "correlationId", center.correlationId(), "capabilityIds", List.of(NOTIFICATION_LIST_CAPABILITY, NOTIFICATION_MARK_READ_CAPABILITY, NOTIFICATION_DISMISS_CAPABILITY, NOTIFICATION_ARCHIVE_CAPABILITY, NOTIFICATION_SNOOZE_CAPABILITY, NOTIFICATION_UPDATE_PREFERENCES_CAPABILITY)),
         List.of(showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), openAuditAction()));
   }
 
@@ -1465,7 +1504,39 @@ public final class WorkstreamService {
   }
 
   private Map<String, Object> notificationItemMap(NotificationItem item) {
-    return mapOf("notificationId", item.notificationId(), "channel", item.channel().name().toLowerCase(Locale.ROOT), "title", item.title(), "summary", item.summary(), "category", item.category() == null ? null : item.category().name().toLowerCase(Locale.ROOT), "priority", item.priority() == null ? null : item.priority().name().toLowerCase(Locale.ROOT), "status", item.status().name().toLowerCase(Locale.ROOT), "origin", item.origin(), "redactionLevel", item.redactionLevel().name().toLowerCase(Locale.ROOT), "requiredCapabilityId", item.requiredCapabilityId(), "owningWorkstreamId", item.owningWorkstreamId(), "surfaceRef", item.surfaceRef(), "sourceRefs", item.sourceRefs().stream().map(this::notificationSourceRefMap).toList(), "traceRefs", item.traceRefs(), "createdAt", item.createdAt() == null ? null : item.createdAt().toString(), "updatedAt", item.updatedAt() == null ? null : item.updatedAt().toString(), "lastChangedAt", item.lastChangedAt() == null ? null : item.lastChangedAt().toString(), "readAt", item.readAt() == null ? null : item.readAt().toString(), "dismissedAt", item.dismissedAt() == null ? null : item.dismissedAt().toString(), "archivedAt", item.archivedAt() == null ? null : item.archivedAt().toString(), "snoozedUntil", item.snoozedUntil() == null ? null : item.snoozedUntil().toString());
+    return mapOf("notificationId", item.notificationId(), "channel", item.channel().name().toLowerCase(Locale.ROOT), "title", item.title(), "summary", item.summary(), "category", item.category() == null ? null : item.category().name().toLowerCase(Locale.ROOT), "priority", item.priority() == null ? null : item.priority().name().toLowerCase(Locale.ROOT), "status", item.status().name().toLowerCase(Locale.ROOT), "origin", item.origin(), "redactionLevel", item.redactionLevel().name().toLowerCase(Locale.ROOT), "requiredCapabilityId", item.requiredCapabilityId(), "owningWorkstreamId", item.owningWorkstreamId(), "targetSurfaceRef", item.surfaceRef(), "surfaceRef", item.surfaceRef(), "lifecycleTimestamps", mapOf("createdAt", item.createdAt() == null ? null : item.createdAt().toString(), "updatedAt", item.updatedAt() == null ? null : item.updatedAt().toString(), "lastChangedAt", item.lastChangedAt() == null ? null : item.lastChangedAt().toString(), "readAt", item.readAt() == null ? null : item.readAt().toString(), "dismissedAt", item.dismissedAt() == null ? null : item.dismissedAt().toString(), "archivedAt", item.archivedAt() == null ? null : item.archivedAt().toString(), "snoozedUntil", item.snoozedUntil() == null ? null : item.snoozedUntil().toString()), "availableActions", notificationAvailableActions(item), "sourceRefs", item.sourceRefs().stream().map(this::notificationSourceRefMap).toList(), "traceRefs", item.traceRefs(), "createdAt", item.createdAt() == null ? null : item.createdAt().toString(), "updatedAt", item.updatedAt() == null ? null : item.updatedAt().toString(), "lastChangedAt", item.lastChangedAt() == null ? null : item.lastChangedAt().toString(), "readAt", item.readAt() == null ? null : item.readAt().toString(), "dismissedAt", item.dismissedAt() == null ? null : item.dismissedAt().toString(), "archivedAt", item.archivedAt() == null ? null : item.archivedAt().toString(), "snoozedUntil", item.snoozedUntil() == null ? null : item.snoozedUntil().toString());
+  }
+
+  private List<Map<String, Object>> notificationAvailableActions(NotificationItem item) {
+    var status = item.status().name().toLowerCase(Locale.ROOT);
+    return Stream.of(
+            mapOf("actionId", "action-notification-mark-read", "label", "Mark read", "capabilityId", NOTIFICATION_MARK_READ_CAPABILITY, "enabled", !"read".equals(status) && !"archived".equals(status), "disabledReason", "read".equals(status) ? "Already read." : "archived".equals(status) ? "Archived notifications are terminal in this center." : "", "resultSurfaceId", "surface-my-account-notification-center"),
+            mapOf("actionId", "action-notification-dismiss", "label", "Dismiss", "capabilityId", NOTIFICATION_DISMISS_CAPABILITY, "enabled", !"dismissed".equals(status) && !"archived".equals(status), "disabledReason", "dismissed".equals(status) ? "Already dismissed." : "archived".equals(status) ? "Archived notifications are terminal in this center." : "", "resultSurfaceId", "surface-my-account-notification-center"),
+            mapOf("actionId", "action-notification-archive", "label", "Archive", "capabilityId", NOTIFICATION_ARCHIVE_CAPABILITY, "enabled", !"archived".equals(status), "disabledReason", "archived".equals(status) ? "Already archived." : "", "resultSurfaceId", "surface-my-account-notification-center"),
+            mapOf("actionId", "action-notification-snooze", "label", "Snooze", "capabilityId", NOTIFICATION_SNOOZE_CAPABILITY, "enabled", !"archived".equals(status) && !"dismissed".equals(status), "disabledReason", "archived".equals(status) || "dismissed".equals(status) ? "Handled notifications cannot be snoozed." : "", "resultSurfaceId", "surface-my-account-notification-center"))
+        .toList();
+  }
+
+  private List<Map<String, Object>> notificationTriageSections(List<Map<String, Object>> items) {
+    return List.of(
+        notificationTriageSection("needs_attention", "Needs attention", "Unread, blocked, urgent, warning, or deferred notifications that still require awareness.", items.stream().filter(this::notificationNeedsAttention).toList()),
+        notificationTriageSection("awareness", "Awareness", "Visible informational notifications that can be read or archived.", items.stream().filter(item -> !notificationNeedsAttention(item) && !notificationHandled(item)).toList()),
+        notificationTriageSection("handled", "Handled", "Read, dismissed, archived, expired, or otherwise completed notification records kept as recent context.", items.stream().filter(this::notificationHandled).toList()));
+  }
+
+  private Map<String, Object> notificationTriageSection(String sectionId, String label, String intent, List<Map<String, Object>> items) {
+    return mapOf("sectionId", sectionId, "laneId", sectionId, "label", label, "sectionIntent", intent, "itemCount", items.size(), "emptyStateCopy", "No notifications in this lane.", "responsiveLayout", "needs_attention".equals(sectionId) ? "responsive-card-grid" : "compact-card-list", "items", items);
+  }
+
+  private boolean notificationNeedsAttention(Map<String, Object> item) {
+    var status = Objects.toString(item.get("status"), "");
+    var priority = Objects.toString(item.get("priority"), "");
+    return !notificationHandled(item) && ("unread".equals(status) || "snoozed".equals(status) || "blocked".equals(priority) || "urgent".equals(priority) || "warning".equals(priority));
+  }
+
+  private boolean notificationHandled(Map<String, Object> item) {
+    var status = Objects.toString(item.get("status"), "");
+    return "read".equals(status) || "dismissed".equals(status) || "archived".equals(status) || "expired".equals(status);
   }
 
   private Map<String, Object> notificationSourceRefMap(NotificationSourceRef ref) {
