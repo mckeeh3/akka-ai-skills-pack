@@ -374,10 +374,10 @@ Forbidden payload/content:
 | Action | Governed backend capability/tool | Result behavior |
 |---|---|---|
 | Start personal digest/export | `my_account.personal_attention_digest.start` / `request-personal-digest-export` | Accept or no-op an authorized digest request and render progress, blocked, denied, or failure surface with trace refs. |
-| Refresh/read digest progress | `my_account.personal_attention_digest.read` / `read-personal-digest-task` | Reload backend-owned progress state for the visible task or render safe not-found/redacted/forbidden recovery. |
-| Cancel digest/export | `my_account.personal_attention_digest.cancel` / `cancel-personal-digest-task` | Cancel only an authorized cancellable task; return cancelled progress, no-op if already terminal, forbidden, conflict, or failure. |
-| Open digest result | `my_account.personal_attention_digest.read` | Render `surface-my-account-personal-attention-digest-result` only when the task is completed and review is authorized. |
-| Open blocked recovery | `my_account.personal_attention_digest.read` | Render `surface-my-account-personal-attention-digest-blocked` for fail-closed provider/runtime/tool readiness problems. |
+| Refresh/read digest progress | `my_account.personal_attention_digest.read` / `request-personal-digest-export` sub-action `read` | Reload backend-owned progress state for the visible task or render safe not-found/redacted/forbidden recovery. |
+| Cancel digest/export | `my_account.personal_attention_digest.cancel` / `request-personal-digest-export` sub-action `cancel` | Cancel only an authorized cancellable task; return cancelled progress, no-op if already terminal, forbidden, conflict, or failure. |
+| Open digest result | `my_account.personal_attention_digest.read` / `request-personal-digest-export` sub-action `read_result` | Render `surface-my-account-personal-attention-digest-result` only when the task is completed and review is authorized. |
+| Open blocked recovery | `my_account.personal_attention_digest.read` / `request-personal-digest-export` sub-action `read_blocker` | Render `surface-my-account-personal-attention-digest-blocked` for fail-closed provider/runtime/tool readiness problems. |
 | Open related trace | `my_account.view_own_trace_refs` | Render authorized Audit/Trace surface or safe redacted message. |
 
 ### State and style expectations
@@ -443,11 +443,11 @@ Forbidden payload/content:
 
 | Action | Governed backend capability/tool | Result behavior |
 |---|---|---|
-| Refresh/read digest result | `my_account.personal_attention_digest.read` / `read-personal-digest-task` | Reload the completed authorized result or render safe not-found/redacted/forbidden/stale recovery. |
-| Accept advisory digest | `my_account.personal_attention_digest.accept` / `record-personal-digest-review` | Record an authorized advisory review acceptance and return accepted result, no-op if already accepted, conflict if stale/superseded, or denial/failure. Source attention/tasks/events remain unchanged. |
-| Reject advisory digest | `my_account.personal_attention_digest.reject` / `record-personal-digest-review` | Require a user reason, record authorized advisory rejection, return rejected result or validation-error/conflict/denial/failure. Source attention/tasks/events remain unchanged. |
-| Open authorized source | source capability such as `attention.open_attention_item` | Reauthorize target source and render the target surface or `surface-my-account-open-denied` / safe `not_found_or_redacted`. |
-| Export/download digest | `my_account.personal_attention_digest.export` | Generate or retrieve a policy-allowed browser-safe export; otherwise render disabled, provider/policy blocked, or forbidden recovery. |
+| Refresh/read digest result | `my_account.personal_attention_digest.read` / `request-personal-digest-export` sub-action `read_result` | Reload the completed authorized result or render safe not-found/redacted/forbidden/stale recovery. |
+| Accept advisory digest | `my_account.personal_attention_digest.accept` / `request-personal-digest-export` sub-action `record_acceptance` | Record an authorized advisory review acceptance and return accepted result, no-op if already accepted, conflict if stale/superseded, or denial/failure. Source attention/tasks/events remain unchanged. |
+| Reject advisory digest | `my_account.personal_attention_digest.reject` / `request-personal-digest-export` sub-action `record_rejection` | Require a user reason, record authorized advisory rejection, return rejected result or validation-error/conflict/denial/failure. Source attention/tasks/events remain unchanged. |
+| Open authorized source | `attention.open_attention_item` | Reauthorize target source and render the target surface or `surface-my-account-open-denied` / safe `not_found_or_redacted`. |
+| Export/download digest | `my_account.personal_attention_digest.export` / `request-personal-digest-export` sub-action `export` | Generate or retrieve a policy-allowed browser-safe export; otherwise render disabled, provider/policy blocked, or forbidden recovery. |
 | Open related trace | `my_account.view_own_trace_refs` | Render authorized Audit/Trace surface or safe redacted message. |
 
 ### State and style expectations
@@ -511,10 +511,10 @@ Forbidden payload/content:
 
 | Action | Governed backend capability/tool | Result behavior |
 |---|---|---|
-| Retry/read digest state | `my_account.personal_attention_digest.read` / `read-personal-digest-task` | Re-read the authorized task/readiness state and render progress, result, blocked, stale, forbidden, or safe not-found/redacted recovery. |
+| Retry/read digest state | `my_account.personal_attention_digest.read` / `request-personal-digest-export` sub-action `read_blocker` | Re-read the authorized task/readiness state and render progress, result, blocked, stale, forbidden, or safe not-found/redacted recovery. |
 | Start replacement digest after readiness | `my_account.personal_attention_digest.start` / `request-personal-digest-export` | Only enabled when backend readiness permits; starts a new governed digest request or returns blocked/no-op/denied with trace refs. |
 | Return to My Account dashboard | `my_account.view_summary` | Render `surface-my-account-dashboard` with the digest panel showing blocked or retry state. |
-| Open digest progress | `my_account.personal_attention_digest.read` | Render `surface-my-account-personal-attention-digest-progress` for the authorized task when progress context is visible. |
+| Open digest progress | `my_account.personal_attention_digest.read` / `request-personal-digest-export` sub-action `read` | Render `surface-my-account-personal-attention-digest-progress` for the authorized task when progress context is visible. |
 | Open related trace | `my_account.view_own_trace_refs` | Render authorized Audit/Trace surface or safe redacted message. |
 | Contact/request admin readiness support | support/admin guidance capability if available; otherwise informational only | Open authorized support/request-access guidance or show no configured support channel without implying provider readiness can be changed by the user. |
 

@@ -21,10 +21,10 @@ The app is a SaaS Foundation App with role-authorized functional-agent workstrea
 
 Reusable foundation doctrine is referenced rather than duplicated here:
 
-- `.agents/skills/docs/ai-first-saas-application-architecture.md`
-- `.agents/skills/docs/capability-first-backend-architecture.md`
-- `.agents/skills/docs/current-intent-model.md`
-- `.agents/skills/docs/intent-to-realization-flow.md`
+- `skills-pack/docs/ai-first-saas-application-architecture.md`
+- `skills-pack/docs/capability-first-backend-architecture.md`
+- `skills-pack/docs/current-intent-model.md`
+- `skills-pack/docs/intent-to-realization-flow.md`
 
 ## Tenant, security, and validation posture
 

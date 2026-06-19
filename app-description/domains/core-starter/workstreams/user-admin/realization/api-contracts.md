@@ -34,7 +34,7 @@ API responses should render or update these typed User Admin surfaces and onboar
 
 ## Capability compatibility
 
-Canonical User Admin capability ids and retired/internal mappings are documented in `capability-compatibility.md`. New work must use canonical product ids (`user_admin.*`, `saas_owner.*`, `tenant.customer.*`, `tenant.customer_admin.*`) and must not emit uppercase `USERADMIN_*` or broad foundation ids in current runtime payloads, fixtures, generated clients, or tests.
+Canonical User Admin capability ids and retired/internal mappings are documented in `capability-compatibility.md`. New work must use canonical product ids (`user_admin.*`, `saas_owner.*`, `tenant.customer.*`, `tenant.customer_admin.*`) and must not emit uppercase `USERADMIN_*`, internal `saas_owner.tenant.*` implementation ids, or broad foundation ids in current browser/runtime payloads, denials, trace summaries, fixtures, generated clients, or tests. Internal Tenant mappings are server-only compatibility evidence.
 
 ## Gaps / caveats
 

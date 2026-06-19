@@ -14,7 +14,7 @@ Primary capability: `../../capabilities/governance-policy-lifecycle.md`.
 
 ## Attention model
 
-Backend-owned attention includes pending policy proposals, simulation results, approval gates, high-risk threshold or authority changes, rollback candidates, and outcome follow-ups. Counts feed the left rail and, where personal, My Account aggregation.
+Backend-owned attention includes stable categories `governance_policy.proposal.review_needed`, `governance_policy.simulation.ready`, `governance_policy.approval.required`, `governance_policy.threshold.high_risk`, `governance_policy.authority_change.high_risk`, `governance_policy.rollback.available`, `governance_policy.outcome.follow_up`, `governance_policy.impact_analysis.ready_for_review`, and `governance_policy.impact_analysis.blocked`. Producers are policy proposal lifecycle, simulation/impact-analysis tasks, approval-gate evaluation, activation/rollback flows, outcome-note follow-up scheduling, and provider/model/tool readiness checks. Each attention item has a backend idempotency key formed from selected scope, policy/proposal/task id, version, category, and lifecycle status; severity is backend-authored (`info`, `needs_review`, `approval_required`, `blocked`, `risk`) and terminal/resolved source states clear or downgrade the item. Counts feed the left rail and, where the signed-in human is a reviewer/approver/owner or assigned follow-up actor, My Account aggregation without exposing hidden policy clauses, raw model outputs, provider data, cross-scope facts, or hidden counts.
 
 ## Readiness posture
 

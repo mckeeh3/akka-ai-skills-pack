@@ -6,7 +6,7 @@ Capability: `account-context-and-profile`.
 
 My Account frontend realization uses the canonical AI-first workstream shell. Conventional routes and query params only reopen a selected functional agent, stream item, or structured surface. They do not define the application model, grant authority, or bypass `/api/me`, selected `AuthContext`, capability checks, or backend denial behavior.
 
-My Account opens from the signed-in user/account control in the rail or from authorized deep links. It should not be duplicated as a primary top rail workstream list item when the signed-in user tile already owns this personal control point.
+My Account canonical entry is the signed-in user/account control in the rail. It is not duplicated as a primary top rail workstream list item. Authorized deep links may reopen My Account surfaces through the shell using `/workstreams/my-account?surface=<surfaceId>&ref=<opaqueSafeTargetRef>&mode=<surfaceMode>`; the rail user tile remains the visible navigation owner, focus return target, and accessibility label source.
 
 ## Rebuilt surface realization targets
 
@@ -16,7 +16,7 @@ My Account opens from the signed-in user/account control in the rail or from aut
 | `surface-my-profile` | Self-service detail/edit surface | Tokenized structured form controls, immutable/provider-backed identity facts, validation/no-op/save-result system messages, trace links | Must not look or behave like an admin user record editor. |
 | `surface-my-settings` | Personal preferences detail/edit surface | Named theme selector from current skills-pack style guide/component catalog, immediate local preview, governed Save/Confirm, save failure recovery | Must not expose light/dark/system modes, external delivery/provider controls, or tenant-wide branding. |
 | `surface-my-context` | Authority/context panel surface | Selected context header, role/capability summary, available context cards/rows, stale-impact warning, safe context-switch action, trace/evidence block | Context changes call backend `/api/me`/shell APIs and refresh affected surfaces. |
-| `surface-my-account-notification-center` | `NotificationCenterSurface.tsx` | Preserve recently revised triage lanes, lifecycle action boundary, responsive card grid, trace links | This surface is close to target and should only receive style alignment if needed. |
+| `surface-my-account-notification-center` | `NotificationCenterSurface.tsx` | Preserve triage lanes, lifecycle action boundary, responsive card grid, trace links, and backend-authored action availability | Acceptance target: the component renders `my_account.notification_center.v1` lanes, read/dismiss/archive/snooze/preference actions, denied/no-op/stale states, source-opening reauthorization, trace refs, keyboard focus, and responsive card layout without source-work mutation or hidden-workstream enumeration. |
 | `surface-my-account-personal-attention-digest-progress` | Workflow-status/progress surface | Autonomous task progress, provider/runtime fail-closed state, no fake/model-less success, trace links | Source attention is not mutated by digest progress. |
 | `surface-my-account-personal-attention-digest-result` | Outcome-panel/advisory briefing surface | Evidence summary, redaction/omission notes, source links with reauthorization, accept/reject review actions, trace links | Should not be rendered as a generic dashboard. |
 | `surface-my-account-personal-attention-digest-blocked` | System-message card | Blocker code, recovery steps, required readiness hints, trace/correlation id, return/retry actions | Provider/runtime blocked state must fail closed. |
@@ -41,5 +41,5 @@ My Account opens from the signed-in user/account control in the rail or from aut
 
 ## Gaps / caveats
 
-- The surface contracts in `../surfaces/surfaces.md` are now stricter than the existing generic dashboard/detail-edit rendering. Implementation cleanup must rebuild all My Account surfaces except the recently revised notification center to match these contracts and the current skills-pack web UI style guide.
+- Implementation cleanup must rebuild or specialize all My Account owning components named above so they render the exact contracts in `../surfaces/surfaces.md`, use named theme `core-saas-foundation`, and satisfy the web UI style/component contracts referenced by the app-level foundation docs. Generic dashboard/detail-edit rendering is acceptable only as shared primitives beneath the named My Account surfaces, not as the final runtime shape.
 - Removed screen modules are not runtime architecture, fallback, or reference targets for this workstream.

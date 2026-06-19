@@ -7,7 +7,9 @@ Let authorized administrators manage users, memberships, roles/capabilities, inv
 ## Actors and scope
 
 - Tenant admins / Organization Admins manage tenant employees, tenant-owned Customer records, and Customer Admin users within their selected Organization/Tenant scope.
+- Tenant employees are non-admin tenant-scoped members; they may be invited/activated/disabled by Tenant Admins and receive the canonical `TENANT_EMPLOYEE` role id. Default capabilities are `account_context.read`, `profile.self_update`, personal notification/digest capabilities, and any future app-specific tenant workstream capabilities explicitly granted by that domain.
 - Customer admins manage customer users, invitations, customer roles, and customer access-review evidence within their selected customer scope.
+- Customer users are non-admin customer-scoped members; they may be invited/activated/disabled by Customer Admins and receive the canonical `CUSTOMER_USER` role id. Default capabilities are `account_context.read`, `profile.self_update`, personal notification/digest capabilities, and any future app-specific customer workstream capabilities explicitly granted by that domain.
 - Auditors read scoped evidence without mutating access.
 - SaaS Owner Admins may invite and manage other SaaS Owner Admin users only from a SaaS Owner selected `AuthContext` with backend `saas_owner.admin.*` capabilities, with last-owner-admin and privilege-escalation protections.
 - SaaS Owner Admins may list, read, create, rename, suspend, and reactivate customer-facing Organizations backed by internal Tenant boundaries only from a SaaS Owner selected `AuthContext` with backend `saas_owner.organization.*` product capabilities mapped to internal `saas_owner.tenant.read` or `saas_owner.tenant.manage` grants.

@@ -7,6 +7,15 @@ Reusable governed-tool ids used by core starter capability and workstream bindin
 - `read-current-account-context`
 - `update-own-profile-settings`
 - `request-personal-digest-export`
+- `notification.list_my_account_center`
+- `notification.mark_read`
+- `notification.dismiss`
+- `notification.archive`
+- `notification.snooze`
+- `notification.update_preferences`
+- `my_account.open_authorized_workstream`
+- `attention.open_attention_item`
+- `my_account.view_own_trace_refs`
 
 ## User Admin
 
@@ -27,16 +36,40 @@ Reusable governed-tool ids used by core starter capability and workstream bindin
 - `list-agent-catalog`
 - `read-agent-behavior-detail`
 - `draft-agent-behavior-proposal`
-- `approve-activate-or-rollback-agent-behavior`
+- `submit-agent-behavior-proposal`
+- `approve-agent-behavior-proposal`
+- `reject-agent-behavior-proposal`
+- `defer-agent-behavior-proposal`
+- `cancel-agent-behavior-proposal`
+- `activate-agent-behavior-version`
+- `rollback-agent-behavior-version`
+- `deactivate-agent-behavior-version`
+- `start-agent-prompt-risk-review`
+- `read-agent-prompt-risk-review`
+- `accept-agent-prompt-risk-review`
+- `reject-agent-prompt-risk-review`
+- `cancel-agent-prompt-risk-review`
+- `prepare-agent-seed-import`
+- `start-agent-seed-import`
+- `cancel-agent-seed-import`
 - `readSkill`
 - `readReferenceDoc`
 
 ## Audit and governance policy
 
+- `read-audit-trace-dashboard`
 - `search-audit-traces`
 - `read-trace-detail`
+- `read-trace-timeline`
+- `read-trace-failure-evidence`
+- `read-investigation-guide`
 - `request-redacted-export`
 - `draft-investigation-note`
+- `start-audit-summary-task`
+- `read-audit-summary-task`
+- `review-audit-summary-task`
+- `accept-audit-summary-task`
+- `reject-audit-summary-task`
 - `list-policy-proposals`
 - `draft-policy-proposal`
 - `simulate-policy-change`

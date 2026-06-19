@@ -17,8 +17,16 @@ Let authorized agent stewards administer platform-level and tenant/organization-
 - `list-agent-catalog` (`browser-tool`, `agent-tool` read): scoped managed agents and status.
 - `read-agent-behavior-detail` (`browser-tool`, `agent-tool` read): current versions, manifests, boundaries, model refs, and traces with redaction.
 - `draft-agent-behavior-proposal` (`browser-tool`, `agent-tool` proposal): creates draft/proposed changes.
-- `approve-activate-or-rollback-agent-behavior` (`browser-tool` approval): human-governed activation/rollback only.
+- `submit-agent-behavior-proposal` (`browser-tool`; `agent-tool` prepare): moves a draft to submitted/review-needed when backend evidence, version, provider/runtime, policy, and scope prerequisites pass.
+- `approve-agent-behavior-proposal`, `reject-agent-behavior-proposal`, `defer-agent-behavior-proposal`, and `cancel-agent-behavior-proposal` (`browser-tool` human decisions): record review state with reason/acknowledgement validation and idempotent replay handling; approval does not activate behavior.
+- `activate-agent-behavior-version`, `rollback-agent-behavior-version`, and `deactivate-agent-behavior-version` (`browser-tool` approval): perform explicit lifecycle changes only from approved/eligible backend states with version, scope, provider/runtime, tool-boundary, and policy checks.
+- `start-agent-prompt-risk-review`, `read-agent-prompt-risk-review`, `accept-agent-prompt-risk-review`, `reject-agent-prompt-risk-review`, and `cancel-agent-prompt-risk-review` (`browser-tool`, `agent-tool` read/prepare, `internal-tool` worker): govern real model-backed prompt-risk review progress/results; blocked, deferred, fixture-only, or model-less results cannot be accepted.
+- `prepare-agent-seed-import`, `start-agent-seed-import`, and `cancel-agent-seed-import` (`browser-tool`; `agent-tool` prepare): compute and execute customization-preserving seed imports with provenance, conflict, version, provider/runtime, and idempotency checks.
 - `readSkill` and `readReferenceDoc` (`agent-tool` loaders): authorized by manifest, scope, and tool boundary and traced.
+
+## Behavior lifecycle state machine
+
+Canonical proposal states are `draft`, `submitted`, `in_review`, `approved`, `rejected`, `deferred`, `cancelled`, `ready_for_activation`, `activation_blocked`, `active`, `rollback_available`, `rollback_blocked`, `rolled_back`, and `deactivated`. Legal transitions are: draft -> submitted; submitted/in_review -> approved, rejected, deferred, or cancelled; approved -> ready_for_activation when all runtime and policy prerequisites pass; ready_for_activation -> active through activation confirmation; active -> rollback_available when a prior safe version exists; rollback_available -> rolled_back through rollback confirmation; active -> deactivated only through explicit deactivation confirmation. Repeated terminal decisions are no-op/idempotent with trace evidence. Prompt-risk review and seed-import task states are separate durable task states and may provide evidence for proposal transitions, but they do not directly activate, roll back, or expand authority.
 
 ## Authorization and denials
 

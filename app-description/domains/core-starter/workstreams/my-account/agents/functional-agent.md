@@ -6,7 +6,7 @@ Global definition: `../../../../../global/agents/foundation-functional-agents.md
 
 ## Authority
 
-The agent operates only through capability `account-context-and-profile` and governed tools `read-current-account-context, update-own-profile-settings, request-personal-digest-export` with selected `AuthContext`, backend authorization, tool-boundary checks, approval gates, and durable traces.
+The agent operates only through capability `account-context-and-profile` and governed tools `read-current-account-context`, `update-own-profile-settings`, `request-personal-digest-export`, `notification.list_my_account_center`, `notification.mark_read`, `notification.dismiss`, `notification.archive`, `notification.snooze`, `notification.update_preferences`, `my_account.open_authorized_workstream`, `attention.open_attention_item`, and `my_account.view_own_trace_refs` with selected `AuthContext`, backend authorization, tool-boundary checks, approval gates, and durable traces. For notification lifecycle, source-opening, and trace-opening paths, the agent may explain state, draft safe actions, and prepare or invoke backend-authorized personal actions only as allowed by the tool boundary; it cannot resolve source work, broaden workstream visibility, mutate roles/memberships/tasks, or treat a browser route as authority.
 
 ## Model and expertise binding
 

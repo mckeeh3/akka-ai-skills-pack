@@ -4,6 +4,9 @@
 
 - Given an authorized caller with selected `AuthContext`, when they open Agent Admin, then the dashboard and allowed surfaces render only scoped data and expose only authorized actions.
 - Given an allowed action, when it is submitted with valid input, then capability `managed-agent-governance` returns the expected structured result and emits required traces.
+- Behavior proposal coverage includes draft, submit, approve, reject with reason, defer with reason/follow-up, cancel, ready-for-activation, activation confirmation, rollback confirmation, deactivation confirmation, stale version conflict, provider/runtime blocked, tool-boundary blocked, approval-required, and idempotent repeat/no-op paths.
+- Prompt-risk review coverage includes start/read/cancel, provider/model/runtime/tool-boundary fail-closed, completed real model-backed advisory result, accept/reject into proposal evidence, and denial of blocked/deferred/fixture-only/model-less review acceptance.
+- Seed material coverage includes search/filter/reset, provenance open, prepare import, start import, cancel import, conflict/customization-preservation blockers, provider/runtime blockers, open target agent detail, and redacted trace opens.
 
 ## Security and negative
 
@@ -14,5 +17,5 @@
 
 ## Idempotency and observability
 
-- Repeated side-effecting actions do not duplicate effects.
-- Denials, approval-required outcomes, provider fail-closed states, and trace emissions are verifiable through local Akka/API/UI tests or readiness evidence.
+- Repeated proposal decisions, lifecycle confirmations, prompt-risk review decisions, and seed-import starts/cancellations do not duplicate effects and retain correlation/trace evidence.
+- Denials, approval-required outcomes, provider fail-closed states, tool-boundary denials, stale/conflict outcomes, hidden/not-found results, and trace emissions are verifiable through local Akka/API/UI tests or readiness evidence.
