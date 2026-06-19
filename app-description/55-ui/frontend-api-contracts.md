@@ -67,7 +67,9 @@ DTOs:
 - `CustomerSummary`: `{ customerId, customerName, status, updatedAt?, safeLifecycleSummary?, visibleCustomerAdminCount?, traceRefs[] }`.
 - `CustomerDetailPayload`: `{ customer, safeBoundaryNotice, visibleActions[], recentAuditEvents[], traceRefs[], correlationId, redaction }`.
 - `CustomerListPayload`: `{ customers[], filters, pageInfo, traceRefs[], correlationId, redaction }`.
+- `CustomerActionResult`: `{ status, customer?, systemMessage?, traceRefs[], correlationId }` for Customer create, rename, suspend/archive, reactivate, stale, validation, no-op, duplicate, forbidden, and hidden/not-found outcomes.
 - `CustomerAdminListPayload`: `{ customer, admins[], invitations[], filters, pageInfo, safeBoundaryNotice, traceRefs[], correlationId, redaction }`.
+- `CustomerAdminActionResult`: `{ status, customer?, adminSubject?, invitation?, systemMessage?, traceRefs[], correlationId }` for Customer Admin invitation, resend, revoke, role, suspend, reactivate, remove, last-admin-risk, stale, validation, no-op, forbidden, and hidden/not-found outcomes.
 
 ## Workstream shell contracts
 

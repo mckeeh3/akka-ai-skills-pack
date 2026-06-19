@@ -1,3 +1,7 @@
-# My Account Agents Bindings
+# My Account Agent bindings
 
-Workstream-specific agents bindings will be populated after the skeleton is stable.
+Current authoritative Agent bindings for this workstream live in:
+
+- [`functional-agent.md`](functional-agent.md)
+
+This README is an index only; sibling files are the current-intent source of truth for this area.

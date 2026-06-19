@@ -1,3 +1,7 @@
-# User Admin Policies Bindings
+# User Admin Policy bindings
 
-Workstream-specific policies bindings will be populated after the skeleton is stable.
+Current authoritative Policy bindings for this workstream live in:
+
+- [`policy-bindings.md`](policy-bindings.md)
+
+This README is an index only; sibling files are the current-intent source of truth for this area.

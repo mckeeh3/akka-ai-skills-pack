@@ -1,3 +1,7 @@
-# My Account Surfaces Bindings
+# My Account Surface bindings
 
-Workstream-specific surfaces bindings will be populated after the skeleton is stable.
+Current authoritative Surface bindings for this workstream live in:
+
+- [`surfaces.md`](surfaces.md)
+
+This README is an index only; sibling files are the current-intent source of truth for this area.
