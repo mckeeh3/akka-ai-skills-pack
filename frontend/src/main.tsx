@@ -32,6 +32,8 @@ import {
   type WorkstreamShellRequest
 } from './workstream';
 
+const SurfaceReviewApp = React.lazy(() => import('./surface-review/SurfaceReviewApp').then((module) => ({ default: module.SurfaceReviewApp })));
+
 const workosClientId = import.meta.env.VITE_WORKOS_CLIENT_ID;
 const configuredWorkosRedirectUri = import.meta.env.VITE_WORKOS_REDIRECT_URI;
 const workosRedirectUri = typeof configuredWorkosRedirectUri === 'string' && configuredWorkosRedirectUri.trim().length > 0
@@ -924,6 +926,9 @@ async function parseInvitationErrorBody(response: Response): Promise<Partial<Api
 }
 
 function Root() {
+  if (window.location.pathname.startsWith('/surface-review')) {
+    return <React.Suspense fallback={<main className="content"><p>Loading surface review…</p></main>}><SurfaceReviewApp /></React.Suspense>;
+  }
   if (!hasConfiguredWorkosClient) {
     return (
       <div className="auth-gate">

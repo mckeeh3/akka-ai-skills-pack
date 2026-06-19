@@ -70,7 +70,7 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
             />
           </label>
         )}
-        {envelope.data.noDirectMutation && <p className="surface-state-inline forbidden">Advisory output cannot directly mutate prompts, skills, references, model refs, tool boundaries, activation, rollback, provider configuration, retained evidence, policy, authorization, or export delivery.</p>}
+        {envelope.data.noDirectMutation && <p className="surface-state-inline forbidden">Advisory output cannot directly mutate prompts, skills, references, model refs, tool boundaries, activation, rollback, provider configuration, retained evidence, policy, authorization, or export delivery. Advisory output cannot directly mutate prompts, skills, references, model refs, tool boundaries, activation, rollback, or provider configuration.</p>}
         <DecisionMetadataSection title="Export request" data={envelope.data.exportRequest} />
         <DecisionMetadataSection title="Export scope" data={envelope.data.exportScope} />
         <DecisionMetadataSection title="Authorization basis" data={envelope.data.authorizationBasis} />

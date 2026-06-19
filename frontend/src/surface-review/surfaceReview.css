@@ -1,0 +1,213 @@
+.surface-review-app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--color-ai) 16%, transparent), transparent 32rem),
+    var(--color-bg);
+}
+
+.surface-review-nav {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: var(--space-5);
+  border-right: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface-glass) 92%, var(--color-bg));
+}
+
+.surface-review-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.surface-review-brand span:not(.brand-mark),
+.surface-review-note,
+.surface-review-nav small,
+.surface-review-source {
+  color: var(--color-muted);
+}
+
+.surface-review-note {
+  margin-bottom: var(--space-5);
+  font-size: 0.9rem;
+}
+
+.surface-review-nav-group {
+  margin-block: var(--space-5);
+}
+
+.surface-review-nav-group h2 {
+  margin: 0 0 var(--space-2);
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.surface-review-nav-group ul {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.surface-review-nav-group button {
+  width: 100%;
+  display: grid;
+  gap: 0.15rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background: transparent;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.surface-review-nav-group button:hover,
+.surface-review-nav-group button.active {
+  border-color: color-mix(in srgb, var(--color-primary) 26%, var(--color-border));
+  background: color-mix(in srgb, var(--color-primary-soft) 64%, transparent);
+}
+
+.surface-review-nav-group button span {
+  font-weight: 700;
+}
+
+.surface-review-main {
+  min-width: 0;
+  padding: var(--space-8);
+}
+
+.surface-review-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.surface-review-header h1 {
+  margin-bottom: var(--space-2);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  letter-spacing: -0.06em;
+  line-height: 0.96;
+}
+
+.surface-review-grid {
+  display: grid;
+  grid-template-columns: minmax(22rem, 0.9fr) minmax(26rem, 1.35fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.surface-review-description,
+.surface-review-rendered {
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.surface-review-panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.surface-review-panel-heading h2 {
+  margin: 0;
+}
+
+.surface-review-source {
+  margin: var(--space-4) var(--space-5) 0;
+  overflow-wrap: anywhere;
+}
+
+.surface-review-markdown {
+  max-height: calc(100vh - 18rem);
+  overflow: auto;
+  padding: var(--space-5);
+}
+
+.surface-review-markdown h1,
+.surface-review-markdown h2,
+.surface-review-markdown h3 {
+  margin-top: var(--space-4);
+}
+
+.surface-review-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.surface-review-markdown th,
+.surface-review-markdown td {
+  border: 1px solid var(--color-border);
+  padding: var(--space-2);
+  vertical-align: top;
+}
+
+.surface-review-markdown pre,
+.surface-review-markdown code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.surface-review-canvas {
+  padding: var(--space-5);
+  background: color-mix(in srgb, var(--color-bg-subtle) 68%, transparent);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.surface-review-chip,
+.surface-review-action-note {
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+  background: color-mix(in srgb, var(--color-success) 12%, var(--color-surface-raised));
+  color: var(--color-text);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.surface-review-action-note {
+  display: block;
+  margin: var(--space-4) var(--space-5) 0;
+  border: 1px solid color-mix(in srgb, var(--color-success) 22%, var(--color-border));
+}
+
+@media (max-width: 1180px) {
+  .surface-review-app,
+  .surface-review-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .surface-review-nav {
+    position: relative;
+    height: auto;
+  }
+}
+
+@media (max-width: 680px) {
+  .surface-review-main,
+  .surface-review-nav,
+  .surface-review-canvas,
+  .surface-review-markdown {
+    padding: var(--space-4);
+  }
+
+  .surface-review-header {
+    flex-direction: column;
+  }
+}
