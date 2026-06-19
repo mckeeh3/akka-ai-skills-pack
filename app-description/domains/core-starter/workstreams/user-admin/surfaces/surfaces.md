@@ -1484,6 +1484,8 @@ The non-Organization User Admin graph follows the canonical durable collection-o
 | Access review workflow | `surface-user-admin-access-review-task` | `user_admin.access_review_task.v1` | Shows durable access-review task progress, provider/model blockers, evidence, recommendations, human accept/reject review, and follow-up task routing. Worker output cannot directly mutate access. |
 | Identity exception review | `surface-user-admin-identity-exception-review` | `user_admin.identity_exception_review.v1` | Shows scoped identity-link/relink exception evidence, risk, provider-boundary redaction, recovery options, approval state, and routing to deterministic recovery/status surfaces. |
 
+Invitation acceptance/onboarding is not an admin workstream surface and is not owned by `user-admin-agent`. It is a standard invitee/system flow reached from the delivered invitation link: safe acceptance bootstrap, WorkOS/AuthKit authentication or signup, backend token/email/scope/role/status validation, account/membership link or creation, accepted invitation status update, `/api/me` selected-context refresh guidance, and safe expired/revoked/mismatched/hidden recovery. Admin surfaces observe that lifecycle through `surface-user-admin-invitation-detail`, directory rows, dashboard attention, and Audit/Trace links; they never expose raw invitation tokens or use acceptance links as admin mutation controls.
+
 All graph nodes are owned by `user-admin-agent`. Reusable placements are limited to authorized My Account attention summaries and Audit/Trace evidence links unless another workstream explicitly declares a reusable-by edge.
 
 ### Dashboard-out flow verification

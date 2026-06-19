@@ -16,7 +16,8 @@ The foundation Customer state belongs to the secure core starter. It provides a 
 - Selected `AuthContext` is authoritative: tenant-scoped Customer lifecycle actions require the selected Tenant/Organization context; Customer Admin user operations require explicit target Customer proof and preserve the Organization Admin actor context; Customer Admin actors can operate only inside their selected customer scope.
 - Profile/settings changes cannot grant permissions.
 - Membership and support-access changes remain scoped, status-aware, idempotent, and audited.
-- Invitations track status, expiry, resend/revoke/acceptance, delivery attempts, target tenant/customer scope, role, and audit history.
+- Invitations track status, expiry, resend/revoke/acceptance, delivery attempts, target tenant/customer scope, requested role, invitee email identity, accepted account/membership linkage, and audit history.
+- Standard invitation acceptance is a signed-token plus WorkOS/AuthKit-authenticated onboarding flow: the invitee opens the invitation link, authenticates or signs up through WorkOS/AuthKit with the invited email identity, backend validation confirms the invitation is unexpired, unrevoked, unaccepted, target-scope-valid, and email/account eligible, then Akka-owned state creates or links the account and membership for the invited tenant/customer/app-owner scope and marks the invitation accepted. Repeated acceptance by the same resolved account is idempotent; expired, revoked, already-accepted-by-another-account, email-mismatch, disabled-account, hidden-target, suspended-customer, or stale-token attempts fail closed with safe recovery and audit/work trace evidence.
 - Disabled accounts, inactive memberships, suspended customers, hidden targets, sibling-customer targets, and cross-tenant/customer requests fail closed.
 
 ## Scope and business-domain separation

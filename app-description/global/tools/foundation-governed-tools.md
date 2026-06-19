@@ -17,6 +17,7 @@ Reusable governed-tool ids used by core starter capability and workstream bindin
 - `manage-customer-admins`
 - `search-user-directory`
 - `create-or-resend-invitation`
+- `accept-invitation`
 - `change-membership-role-or-status`
 - `grant-or-revoke-support-access`
 - `run-access-review`
@@ -48,4 +49,4 @@ Reusable governed-tool ids used by core starter capability and workstream bindin
 - `reject-policy-impact-result`
 - `request-policy-impact-changes`
 
-Exposure labels are `browser-tool`, `agent-tool`, or `internal-tool`; prompt content cannot add exposure or authority. Side-effecting tools require backend authorization, idempotency/correlation handling, audit/work traces, and approval/confirmation when policy marks the action risky.
+Exposure labels are `browser-tool`, `agent-tool`, `internal-tool`, or `onboarding-tool`; prompt content cannot add exposure or authority. Side-effecting tools require backend authorization, idempotency/correlation handling, audit/work traces, and approval/confirmation when policy marks the action risky. `onboarding-tool` exposure is reserved for deterministic invitee/system flows such as invitation acceptance and is not agent authority.

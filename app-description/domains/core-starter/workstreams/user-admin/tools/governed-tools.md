@@ -14,7 +14,8 @@ Allowed governed tools:
 - `manage-customers` (`browser-tool`; human-confirmed agent preparation only): Organization Admin Customer list/read/create/rename/suspend/reactivate actions inside the selected Organization/Tenant.
 - `manage-customer-admins` (`browser-tool`; human-confirmed agent preparation only): Organization Admin bootstrap and maintenance of `CUSTOMER_ADMIN` users for a selected Customer, including admin invitation lifecycle, role/status changes, and last-customer-admin checks.
 - `search-user-directory` (`browser-tool`, `agent-tool` read): scoped dashboard, users directory, user detail inspection, invitation status, support-access state, access-review state, and audit-evidence views. Directory output is discovery-only; row/card activation opens inspection surfaces.
-- `create-or-resend-invitation` (`browser-tool`; human-confirmed agent preparation only): invitation create, detail read, resend confirmation, revoke confirmation, and delivery/outbox visibility.
+- `create-or-resend-invitation` (`browser-tool`; human-confirmed agent preparation only): admin invitation create, detail read, resend confirmation, revoke confirmation, and delivery/outbox visibility.
+- `accept-invitation` (`onboarding-tool`; invitee/system only, no agent exposure): signed-token plus WorkOS/AuthKit invitation acceptance, account/membership link or creation, accepted status update, idempotent repeat completion, selected-context refresh guidance, and safe expired/revoked/mismatched/hidden recovery.
 - `change-membership-role-or-status` (`browser-tool`; approval/decision-card when risky): membership/account lifecycle confirmations and role preview/change commits through dedicated task surfaces.
 - `grant-or-revoke-support-access` (`browser-tool`; expiry/purpose/approval required): support-access grant/extend forms and revoke confirmations.
 - `run-access-review` (`agent-tool`, `internal-tool`): start/read/cancel/review durable access-review recommendations; recommendations route follow-up access changes through deterministic User Admin task surfaces.
@@ -24,4 +25,4 @@ Allowed governed tools:
 
 Tools are exposed as browser, agent, or internal tools only as stated by the linked capability. Side-effecting or high-impact tools require idempotency, correlation, authorization, confirmation or approval policy, and audit/work traces. Denied tool calls are traced and return safe feedback.
 
-The agent may prepare payloads and explain tool outcomes, but cannot autonomously invite SaaS Owner Admins, invite Organization Admins, invite Customer Admins, create Customers, send invitations, change roles, disable/reactivate users, alter support access, resolve reviews, or expand authority. Tool output must be browser-safe and app-owner/tenant/customer scoped.
+The agent may prepare payloads and explain tool outcomes, but cannot autonomously invite SaaS Owner Admins, invite Organization Admins, invite Customer Admins, create Customers, send invitations, accept invitations for users, change roles, disable/reactivate users, alter support access, resolve reviews, or expand authority. Tool output must be browser-safe and app-owner/tenant/customer scoped.

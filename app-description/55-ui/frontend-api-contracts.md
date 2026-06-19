@@ -13,6 +13,16 @@ Canonical User Admin browser runtime uses the workstream shell contracts (`/api/
 - `POST /api/admin/invitations/{invitationId}/resend` resends when authorized.
 - `POST /api/admin/invitations/{invitationId}/revoke` revokes when authorized.
 
+## Invitation acceptance and onboarding contracts
+
+There are no custom or unusual invitation requirements. The app uses a standard secure invitation lifecycle: an authorized admin creates an invitation, the backend persists invitation state and queues delivery through the supported outbox/Resend boundary, the invitee follows the delivered link, WorkOS/AuthKit authenticates or signs up the invitee, and the backend accepts the invitation only after validating the signed invitation token, invited email identity, target scope, requested role, expiry, revocation, duplicate membership, and account status.
+
+- `GET /invite/accept?token=...` or equivalent frontend route starts invitee onboarding and must not expose the raw token to workstream payloads, logs, traces, local storage, or model/tool prompts.
+- `POST /api/invitations/acceptance/bootstrap` validates the token enough to render safe onboarding state and route to WorkOS/AuthKit when authentication is required. It returns only browser-safe target labels, invited email hints, status, recovery copy, and correlation/trace refs; expired, revoked, already accepted, hidden, malformed, or cross-scope tokens return a safe unavailable/recovery state without target enumeration.
+- `POST /api/invitations/acceptance/complete` completes acceptance after WorkOS/AuthKit authentication. It validates that the authenticated account/email is eligible for the invitation, creates or links the account profile if needed, creates or activates the membership for the invitation's app-owner/Organization/Customer scope and requested role, marks the invitation accepted with accepted timestamp/account/membership linkage, emits audit/work traces, and returns `/api/me`-compatible selected-context refresh guidance.
+- Repeating completion for the same accepted invitation and same resolved account is idempotent and returns the existing accepted membership/context. Attempts by another account, mismatched email identity, disabled account, expired/revoked/stale token, hidden target, suspended Customer, unsupported role, or duplicate active membership return typed safe recovery and do not create extra accounts, memberships, roles, delivery events, or hidden-scope disclosures.
+- Invitation acceptance is invitee/system onboarding authority only. It is not a browser/admin tool for changing roles, bypassing last-admin or approval policy, granting support access, reading tenant/customer data, or inferring hidden Organizations, Customers, users, invitations, or provider state.
+
 ## SaaS Owner Admin user-management contracts
 
 SaaS Owner Admins must be able to invite and manage other app-owner administrators from a SaaS Owner selected `AuthContext`. These contracts are protected by backend `saas_owner.admin.*` capabilities and never expose tenant/customer application data, raw provider ids, raw invitation tokens, or provider secrets.
