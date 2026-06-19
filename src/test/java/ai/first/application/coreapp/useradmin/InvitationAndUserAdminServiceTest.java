@@ -156,6 +156,33 @@ class InvitationAndUserAdminServiceTest {
   }
 
   @Test
+  void browserAcceptanceBootstrapReturnsSafePreAuthStatesWithoutRawToken() {
+    var invite = invitations.createInvitation(tenantAdmin, inviteRequest("bootstrap-token", "bootstrap.user@example.com"));
+    var rawToken = rawTokenFromOutbox(invite.invitationId() + ":delivery-1");
+
+    var ready = invitations.bootstrapForBrowser(
+        new InvitationService.InvitationAcceptanceBootstrapRequest(rawToken),
+        "corr-bootstrap-ready");
+    assertEquals("authentication-required", ready.status());
+    assertTrue(ready.authenticationRequired());
+    assertFalse(ready.toString().contains(rawToken));
+
+    var invalid = invitations.bootstrapForBrowser(
+        new InvitationService.InvitationAcceptanceBootstrapRequest("not-a-real-token"),
+        "corr-bootstrap-invalid");
+    assertEquals("invalid", invalid.status());
+    assertFalse(invalid.authenticationRequired());
+    assertFalse(invalid.toString().contains("not-a-real-token"));
+
+    invitations.revoke(tenantAdmin, invite.invitationId(), "mistake", "corr-bootstrap-revoke");
+    var revoked = invitations.bootstrapForBrowser(
+        new InvitationService.InvitationAcceptanceBootstrapRequest(rawToken),
+        "corr-bootstrap-revoked");
+    assertEquals("revoked", revoked.status());
+    assertFalse(revoked.authenticationRequired());
+  }
+
+  @Test
   void browserAcceptanceReturnsSafeRecoveryStatesAndAcceptsRawToken() {
     var invite = invitations.createInvitation(tenantAdmin, inviteRequest("accept-token", "token.user@example.com"));
     var rawToken = rawTokenFromOutbox(invite.invitationId() + ":delivery-1");

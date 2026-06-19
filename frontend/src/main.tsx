@@ -58,6 +58,16 @@ type WorkstreamAppProps = {
   clients?: { workstream: WorkstreamClient; realtime: WorkstreamRealtimeClient };
 };
 
+type InvitationAcceptanceBootstrapResult = {
+  status: string;
+  reasonCode: string;
+  recoveryHint: string;
+  scopeType?: string;
+  expiresAt?: string;
+  authenticationRequired: boolean;
+  correlationId: string;
+};
+
 type InvitationAcceptanceResult = {
   status: string;
   reasonCode: string;
@@ -820,11 +830,12 @@ function AuthenticatedRoot() {
   const { isLoading, user, signIn, signOut, getAccessToken } = useAuth();
   const inviteToken = invitationTokenFromLocation();
   if (isLoading) return <div className="auth-gate"><p>Checking secure session…</p></div>;
+  if (!user && inviteToken) return <InvitationBootstrapPage token={inviteToken} onSignIn={() => void signIn({ state: { returnTo: currentBrowserReturnTo() } })} />;
   if (!user) {
     return (
       <div className="auth-gate">
-        <h1>{inviteToken ? 'Sign in to accept your invitation' : 'Welcome back'}</h1>
-        <p>{inviteToken ? 'Sign in with the email address that received this invitation.' : 'Sign in to access your workspace and continue your work.'}</p>
+        <h1>Welcome back</h1>
+        <p>Sign in to access your workspace and continue your work.</p>
         <button type="button" onClick={() => void signIn({ state: { returnTo: currentBrowserReturnTo() } })}>Sign in</button>
         <div className="auth-gate__hint" role="note" aria-label="Invitation required">
           <strong>Don’t have an invitation?</strong>
@@ -837,6 +848,54 @@ function AuthenticatedRoot() {
   return <WorkstreamApp tokenProvider={() => getAccessToken()} onSignOut={() => signOut()} />;
 }
 
+function InvitationBootstrapPage({ token, onSignIn }: { token: string; onSignIn: () => void }) {
+  const [result, setResult] = React.useState<{ status: 'loading' } | { status: 'ready'; value: InvitationAcceptanceBootstrapResult } | { status: 'error'; error: ApiError }>({ status: 'loading' });
+
+  React.useEffect(() => {
+    let active = true;
+    bootstrapInvitationToken(token).then((next) => {
+      if (!active) return;
+      setResult(next.ok ? { status: 'ready', value: next.value } : { status: 'error', error: next.error });
+    });
+    return () => {
+      active = false;
+    };
+  }, [token]);
+
+  if (result.status === 'loading') {
+    return <main className="auth-gate"><h1>Checking invitation…</h1><p>Validating this invitation before sign-in.</p></main>;
+  }
+  if (result.status === 'error') {
+    return <InvitationRecovery title="Invitation could not be checked" message={result.error.message} correlationId={result.error.correlationId} actionLabel="Try signing in" onAction={onSignIn} />;
+  }
+  if (!result.value.authenticationRequired) {
+    return <InvitationRecovery title="Invitation needs attention" message={result.value.recoveryHint} correlationId={result.value.correlationId} actionLabel="Sign in with another account" onAction={onSignIn} />;
+  }
+  return (
+    <main className="auth-gate">
+      <h1>Sign in to accept your invitation</h1>
+      <p>{result.value.recoveryHint}</p>
+      <p className="auth-gate__hint">Status {result.value.status}. Correlation {result.value.correlationId}.</p>
+      <button type="button" onClick={onSignIn}>Sign in</button>
+      <div className="auth-gate__hint" role="note" aria-label="Invitation required">
+        <strong>Use the invited email.</strong>
+        <span> WorkOS/AuthKit will verify your identity before the app accepts this invitation.</span>
+      </div>
+    </main>
+  );
+}
+
+function InvitationRecovery({ title, message, correlationId, actionLabel, onAction }: { title: string; message: string; correlationId: string; actionLabel: string; onAction: () => void }) {
+  return (
+    <main className="auth-gate">
+      <h1>{title}</h1>
+      <p>{message}</p>
+      <p className="auth-gate__hint">Correlation {correlationId}</p>
+      <button type="button" onClick={onAction}>{actionLabel}</button>
+    </main>
+  );
+}
+
 function InvitationAcceptancePage({ token, tokenProvider, onSignOut }: { token: string; tokenProvider: TokenProvider; onSignOut: () => void }) {
   const [result, setResult] = React.useState<{ status: 'loading' } | { status: 'ready'; value: InvitationAcceptanceResult } | { status: 'error'; error: ApiError }>({ status: 'loading' });
 
@@ -844,6 +903,7 @@ function InvitationAcceptancePage({ token, tokenProvider, onSignOut }: { token: 
     let active = true;
     acceptInvitationToken(token, tokenProvider).then((next) => {
       if (!active) return;
+      if (next.ok) removeInvitationTokenFromAddressBar();
       setResult(next.ok ? { status: 'ready', value: next.value } : { status: 'error', error: next.error });
     });
     return () => {
@@ -877,9 +937,14 @@ function InvitationAcceptancePage({ token, tokenProvider, onSignOut }: { token: 
 }
 
 function invitationTokenFromLocation(): string | undefined {
-  if (window.location.pathname !== '/accept') return undefined;
+  if (window.location.pathname !== '/accept' && window.location.pathname !== '/invite/accept') return undefined;
   const token = new URLSearchParams(window.location.search).get('token');
   return token && token.trim().length > 0 ? token.trim() : undefined;
+}
+
+function removeInvitationTokenFromAddressBar(): void {
+  if (window.location.pathname !== '/accept' && window.location.pathname !== '/invite/accept') return;
+  window.history.replaceState({}, document.title, window.location.pathname);
 }
 
 function currentBrowserReturnTo(): string {
@@ -891,12 +956,26 @@ function safeAuthReturnTo(value: unknown): string | undefined {
   return value;
 }
 
+async function bootstrapInvitationToken(token: string): Promise<{ ok: true; value: InvitationAcceptanceBootstrapResult } | { ok: false; error: ApiError }> {
+  try {
+    const response = await fetch('/api/invitations/acceptance/bootstrap', {
+      method: 'POST',
+      headers: new Headers({ Accept: 'application/json', 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ token })
+    });
+    if (!response.ok) return { ok: false, error: await mapInvitationAcceptanceError(response) };
+    return { ok: true, value: await response.json() as InvitationAcceptanceBootstrapResult };
+  } catch (error) {
+    return { ok: false, error: { code: 'network_error', message: error instanceof Error ? error.message : String(error), correlationId: 'client-network-error' } };
+  }
+}
+
 async function acceptInvitationToken(token: string, tokenProvider: TokenProvider): Promise<{ ok: true; value: InvitationAcceptanceResult } | { ok: false; error: ApiError }> {
   try {
     const accessToken = await tokenProvider();
     const headers = new Headers({ Accept: 'application/json', 'Content-Type': 'application/json' });
     if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
-    const response = await fetch('/api/workstream/invitations/accept', { method: 'POST', headers, body: JSON.stringify({ token }) });
+    const response = await fetch('/api/invitations/acceptance/complete', { method: 'POST', headers, body: JSON.stringify({ token }) });
     if (!response.ok) return { ok: false, error: await mapInvitationAcceptanceError(response) };
     return { ok: true, value: await response.json() as InvitationAcceptanceResult };
   } catch (error) {

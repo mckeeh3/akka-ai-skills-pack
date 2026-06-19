@@ -312,6 +312,28 @@ public final class InvitationService {
     return updated;
   }
 
+  public InvitationAcceptanceBootstrapResult bootstrapForBrowser(InvitationAcceptanceBootstrapRequest request, String correlationId) {
+    var resolved = resolveInvitationForAcceptance(new AcceptInvitationRequest(request == null ? null : request.token(), null));
+    if (resolved.isEmpty()) {
+      return InvitationAcceptanceBootstrapResult.invalid("invitation-not-found-or-forbidden", "Request a fresh invitation from an administrator.", correlationId);
+    }
+    var invite = resolved.get();
+    if (invite.status() == InvitationStatus.ACCEPTED) {
+      return InvitationAcceptanceBootstrapResult.from(invite, "already-accepted", "This invitation has already been accepted. Sign in with the accepted account or request a new invitation.", false, correlationId);
+    }
+    if (invite.status() == InvitationStatus.REVOKED) {
+      return InvitationAcceptanceBootstrapResult.from(invite, "revoked", "This invitation was revoked. Ask an administrator to send a new invitation.", false, correlationId);
+    }
+    if (invite.status() == InvitationStatus.EXPIRED || invite.expiredAt(clock.instant())) {
+      var expired = invite.status() == InvitationStatus.EXPIRED ? invite : expire(invite.invitationId(), invite.tenantId(), invite.customerId(), correlationId);
+      return InvitationAcceptanceBootstrapResult.from(expired, "expired", "This invitation has expired. Ask an administrator to resend it.", false, correlationId);
+    }
+    if (invite.status() == InvitationStatus.DELIVERY_FAILED || invite.deliveryStatus() == EmailDeliveryStatus.FAILED) {
+      return InvitationAcceptanceBootstrapResult.from(invite, "delivery-failed", "This invitation email failed delivery. Ask an administrator to resend it before accepting.", false, correlationId);
+    }
+    return InvitationAcceptanceBootstrapResult.from(invite, "authentication-required", "Sign in with the email address that received this invitation.", true, correlationId);
+  }
+
   public InvitationAcceptanceResult acceptForBrowser(WorkosIdentity identity, AcceptInvitationRequest request, String correlationId) {
     var resolved = resolveInvitationForAcceptance(request);
     if (resolved.isEmpty()) {
@@ -555,7 +577,26 @@ public final class InvitationService {
     }
   }
 
+  public record InvitationAcceptanceBootstrapRequest(String token) {}
+
   public record AcceptInvitationRequest(String token, String acceptanceContextId) {}
+
+  public record InvitationAcceptanceBootstrapResult(
+      String status,
+      String reasonCode,
+      String recoveryHint,
+      ScopeType scopeType,
+      Instant expiresAt,
+      boolean authenticationRequired,
+      String correlationId) {
+    static InvitationAcceptanceBootstrapResult from(Invitation invite, String status, String recoveryHint, boolean authenticationRequired, String correlationId) {
+      return new InvitationAcceptanceBootstrapResult(status, status, recoveryHint, invite.scopeType(), invite.expiresAt(), authenticationRequired, correlationId);
+    }
+
+    static InvitationAcceptanceBootstrapResult invalid(String reasonCode, String recoveryHint, String correlationId) {
+      return new InvitationAcceptanceBootstrapResult("invalid", reasonCode, recoveryHint, null, null, false, correlationId);
+    }
+  }
 
   public record InvitationAcceptanceResult(
       String status,
