@@ -1451,6 +1451,7 @@ button.dashboard-card.ds-card {
 .decision-detail-card { align-self: start; }
 
 .form-status {
+  margin: 0;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-success-soft);
@@ -2166,6 +2167,22 @@ button.attention-counter-card:focus-visible {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   gap: var(--space-3);
+}
+
+.my-account-self-service-form + .form-status,
+.my-account-self-service-form + .form-status + .surface-action-bar {
+  margin-top: 0;
+}
+
+.my-account-self-service-form + .form-status {
+  border-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.my-account-self-service-form:has(+ .form-status) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .my-account-digest-progress,
