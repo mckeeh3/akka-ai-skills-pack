@@ -1373,6 +1373,11 @@ button.dashboard-card.ds-card {
   gap: var(--space-4);
 }
 
+.decision-card section {
+  display: grid;
+  gap: var(--space-3);
+}
+
 .decision-card p,
 .decision-card h4 { margin: 0; }
 

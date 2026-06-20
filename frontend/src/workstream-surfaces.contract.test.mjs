@@ -150,6 +150,7 @@ test('canonical surface components include dashboard, list/search, detail/edit, 
   assert.match(allSurfaceComponents, /Member status authority/);
   assert.match(allSurfaceComponents, /Detail audit trace affordances/);
   assert.match(allSurfaceComponents, /decision-card/);
+  assert.match(surfaceStyles, /\.decision-card section \{\n  display: grid;\n  gap: var\(--space-3\);\n\}/);
   assert.match(allSurfaceComponents, /audit-timeline/);
   assert.match(allSurfaceComponents, /workflow-steps/);
   assert.match(allSurfaceComponents, /Access review task/);
