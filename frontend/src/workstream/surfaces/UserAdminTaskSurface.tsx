@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import type { SurfaceAction, SurfaceEnvelope, UserAdminBranchNavigation } from '../types';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
 
@@ -280,8 +280,16 @@ function IdentityExceptionReview({ envelope, onAction }: Props) {
   const [reason, setReason] = useState('');
   const [approvalRef, setApprovalRef] = useState('');
   const [error, setError] = useState<string>();
+  const reasonInputRef = useRef<HTMLTextAreaElement>(null);
   const context = stringRecord(envelope.data.actionContext);
   const seed = String(envelope.data.recordId ?? envelope.data.recoveryId ?? envelope.correlationId);
+  useLayoutEffect(() => {
+    const input = reasonInputRef.current;
+    if (!input) return;
+    input.style.height = 'auto';
+    input.style.height = `${input.scrollHeight}px`;
+  }, [reason]);
+
   function submit(action: SurfaceAction | undefined, prefix: string, requireApprovalRef = false) {
     if (!action || action.disabled) return;
     if (requireApprovalRef && !approvalRef.trim()) return setError('Approval reference is required before approving or completing identity recovery.');
@@ -300,7 +308,7 @@ function IdentityExceptionReview({ envelope, onAction }: Props) {
         <div><dt>Provider boundary</dt><dd>{String(envelope.data.providerBoundary ?? 'Provider identifiers and payloads are redacted.')}</dd></div>
       </dl>
       {(envelope.data.evidenceRefs ?? []).length > 0 && <ul aria-label="Identity recovery evidence">{(envelope.data.evidenceRefs ?? []).map((evidence) => <li key={evidence}>{evidence}</li>)}</ul>}
-      <label>Reason<textarea className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} /></label>
+      <label>Reason<textarea ref={reasonInputRef} className="designed-control auto-expanding-textarea" value={reason} onChange={(event) => setReason(event.currentTarget.value)} rows={1} /></label>
       <label>Approval reference<input className="designed-control" value={approvalRef} onChange={(event) => setApprovalRef(event.currentTarget.value)} /></label>
       <div className="surface-action-row" aria-label="Identity recovery actions">
         <button type="button" className="surface-action-link secondary" disabled={!requestAction || Boolean(requestAction.disabled)} onClick={() => submit(requestAction, 'identity-request')}>Request recovery</button>

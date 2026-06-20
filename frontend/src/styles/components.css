@@ -1477,6 +1477,12 @@ select.designed-control option {
   color: var(--color-muted);
 }
 
+textarea.designed-control.auto-expanding-textarea {
+  overflow: hidden;
+  resize: none;
+  padding-block: var(--space-2);
+}
+
 .surface-frame table {
   width: 100%;
   border-collapse: collapse;
