@@ -515,9 +515,29 @@
 }
 
 .clear-screen-button-icon {
-  width: 2.25rem;
-  height: 2.25rem;
-  stroke-width: 1.55;
+  width: 2rem;
+  height: 2rem;
+  stroke-width: 1.45;
+}
+
+.clear-screen-button-icon .clean-screen-base-fill {
+  fill: currentColor;
+  opacity: 0.22;
+  stroke: none;
+}
+
+.clear-screen-button-icon .clean-screen-shine {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 0.75;
+}
+
+.clear-screen-button-icon .clean-screen-shine-large {
+  stroke-width: 0.85;
+}
+
+.clear-screen-button-icon .clean-screen-sweep {
+  opacity: 0.95;
 }
 
 .workstream-send-prompt-tooltip {

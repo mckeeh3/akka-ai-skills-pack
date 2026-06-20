@@ -163,14 +163,12 @@ function DashboardIcon() {
 function CleanScreenIcon() {
   return (
     <svg className="clear-screen-button-icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
-      <path d="M5.1 15.9c2.5-1.2 5.7-1.2 8.1 0 1.9 1 4.1.9 5.7-.1" />
-      <path d="M7.5 13.5c.6 1.8 2 3.1 4 3.6 1.3.3 2.6-.1 3.5-1.1l2.7-2.9c.5-.5.5-1.3 0-1.8-.4-.4-1.2-.5-1.7-.1l-1.5 1.3" />
-      <path d="M9.8 7.9V12" />
-      <path d="M12 6.8v5" />
-      <path d="M14.2 7.7v4.6" />
-      <path d="M16.3 9.3v3.3" />
-      <path d="M7.5 13.5 6.4 9.7c-.2-.7.2-1.4.9-1.6.6-.2 1.3.2 1.5.8l1 3.1" />
-      <path d="M6.1 18.6c3.8-1.1 7.8 1.8 11.8.2" />
+      <ellipse className="clean-screen-base-fill" cx="12" cy="15.4" rx="7.1" ry="2.45" />
+      <ellipse className="clean-screen-base-ring" cx="12" cy="15.15" rx="7.65" ry="2.95" />
+      <path className="clean-screen-shine clean-screen-shine-large" d="M10.05 4.9c.55 2.05 1.65 3.15 3.7 3.7-2.05.55-3.15 1.65-3.7 3.7-.55-2.05-1.65-3.15-3.7-3.7 2.05-.55 3.15-1.65 3.7-3.7Z" />
+      <path className="clean-screen-shine" d="M16.95 3.85c.28 1.02.83 1.57 1.85 1.85-1.02.28-1.57.83-1.85 1.85-.28-1.02-.83-1.57-1.85-1.85 1.02-.28 1.57-.83 1.85-1.85Z" />
+      <path className="clean-screen-shine" d="M16.75 11.15c.22.78.64 1.2 1.42 1.42-.78.22-1.2.64-1.42 1.42-.22-.78-.64-1.2-1.42-1.42.78-.22 1.2-.64 1.42-1.42Z" />
+      <path className="clean-screen-sweep" d="M6.05 15.1c2.05-.85 4.2-.95 6.05-.3 1.78.62 3.82.5 5.84-.48" />
     </svg>
   );
 }
