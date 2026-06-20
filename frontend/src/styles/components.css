@@ -2169,15 +2169,16 @@ button.attention-counter-card:focus-visible {
   gap: var(--space-3);
 }
 
-.my-account-self-service-form + .form-status,
-.my-account-self-service-form + .form-status + .surface-action-bar {
-  margin-top: 0;
-}
-
 .my-account-self-service-form + .form-status {
+  margin-top: 0;
   border-top: 0;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+.my-account-self-service-form + .form-status + .surface-action-bar {
+  margin-top: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 .my-account-self-service-form:has(+ .form-status) {
