@@ -1406,6 +1406,20 @@ button.dashboard-card.ds-card {
   padding: var(--space-3);
 }
 
+.surface-field-stack {
+  display: grid;
+  width: min(100%, 56rem);
+  gap: var(--space-2);
+  color: var(--color-text);
+  font-weight: 750;
+}
+
+.decision-reviewer-reason {
+  min-height: 5rem;
+  line-height: 1.5;
+  resize: none;
+}
+
 .surface-search-form {
   display: grid;
   grid-template-columns: auto minmax(0, 20rem);

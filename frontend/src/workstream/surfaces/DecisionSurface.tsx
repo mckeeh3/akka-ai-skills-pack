@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useLayoutEffect, useRef, useState } from 'react';
 import type { DecisionSurfaceData, SurfaceAction, SurfaceEnvelope } from '../types';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
@@ -27,6 +27,7 @@ type DecisionSurfaceProps = {
 
 export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
   const [reviewerReason, setReviewerReason] = useState('');
+  const reviewerReasonRef = useRef<HTMLTextAreaElement>(null);
   const isImpactResult = envelope.surfaceId === 'surface-governance-policy-impact-analysis-result';
   const recommendation = typeof envelope.data.recommendation === 'string'
     ? envelope.data.recommendation
@@ -46,6 +47,12 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
     if (dispositionNeedsReason(action.actionId) && !reviewerReason.trim()) return { ...action, disabled: action.disabled ?? { reasonCode: 'REVIEWER_REASON_REQUIRED', message: 'Enter a reviewer reason before rejecting or requesting changes.' } };
     return action;
   });
+  useLayoutEffect(() => {
+    const input = reviewerReasonRef.current;
+    if (!input) return;
+    input.style.height = 'auto';
+    input.style.height = `${input.scrollHeight}px`;
+  }, [reviewerReason]);
   return (
     <SurfaceStateFrame envelope={envelope}>
       <article className="decision-card">
@@ -63,9 +70,12 @@ export function DecisionSurface({ envelope, onAction }: DecisionSurfaceProps) {
           <label className="surface-field-stack" htmlFor={`${envelope.surfaceId}-reviewer-reason`}>
             Reviewer reason or acknowledgement
             <textarea
+              ref={reviewerReasonRef}
+              className="designed-control auto-expanding-textarea decision-reviewer-reason"
               id={`${envelope.surfaceId}-reviewer-reason`}
               value={reviewerReason}
-              onChange={(event) => setReviewerReason(event.target.value)}
+              rows={2}
+              onChange={(event) => setReviewerReason(event.currentTarget.value)}
               placeholder="Required before rejecting or requesting changes; included with governed disposition actions."
             />
           </label>
