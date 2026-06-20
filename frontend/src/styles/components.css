@@ -1263,6 +1263,15 @@
   border-color: var(--color-primary);
   background: var(--color-primary-soft);
 }
+.surface-frame.workflow-status {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.surface-frame.workflow-status .surface-header {
+  margin-bottom: var(--space-1);
+}
+
 .surface-frame.dashboard {
   display: grid;
   gap: var(--space-4);
