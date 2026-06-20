@@ -84,7 +84,7 @@ test('User Admin dashboard follows current actionable command-center rules', () 
   assert.match(dashboardSurface, /Things I can do/);
   assert.match(dashboardSurface, /user-admin-work-card/);
   assert.match(surfaces, /userAdminDashboardSurface[\s\S]*userAdminSurfaceActions\.displayUserList[\s\S]*\]\n\);/);
-  assert.match(dashboardSurface, /Open scoped administration surfaces/);
+  assert.match(dashboardSurface, /Open scoped administration areas/);
   assert.match(dashboardSurface, /function userAdminQueueAction/);
   assert.match(dashboardSurface, /backendAuthoredUserAdminQueues/);
   assert.match(dashboardSurface, /backendAuthoredUserAdminPopulationCards/);
@@ -223,7 +223,7 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.match(userAdminTaskSurface, /policyOptions\?\.expiryHours/);
   assert.match(userAdminTaskSurface, /function InvitationConfirmationTask/);
   assert.match(userAdminTaskSurface, /function InvitationTaskDeliveryPanel/);
-  assert.match(userAdminTaskSurface, /Provider-backed delivery status returns on the invitation detail surface/);
+  assert.match(userAdminTaskSurface, /Provider-backed delivery status returns on the invitation detail view/);
   assert.match(userAdminTaskSurface, /Raw invitation tokens, full email bodies, Resend payloads, provider message ids, and secrets are redacted/);
   assert.match(userAdminTaskSurface, /deliveryState \?\? envelope\.data\.delivery/);
   assert.match(userAdminTaskSurface, /providerReadiness/);
@@ -244,7 +244,7 @@ test('User Admin task/confirmation descendants render purpose-specific frontend 
   assert.doesNotMatch(userAdminTaskSurface, /raw JWTs, invitation tokens, provider payloads, and secrets are omitted|Browser redaction|Target scope/);
   assert.doesNotMatch(detailEditSurface, /aria-label="Edit user status"|aria-label="Edit user role"|Permanently remove user|submitRoleChange|submitStatusChange/);
   assert.match(detailEditSurface, /Read-only inspection/);
-  assert.match(detailEditSurface, /Dedicated task surfaces/);
+  assert.match(detailEditSurface, /Dedicated tasks/);
   assert.match(detailEditSurface, /function InvitationDeliveryStatusPanel/);
   assert.match(detailEditSurface, /Provider-backed delivery/);
   assert.match(detailEditSurface, /Provider\/outbox delivery failed closed/);
@@ -391,7 +391,7 @@ test('User Admin full-stack conformance tests cover canonical runtime boundaries
   assert.match(renderer, /case 'system-message'/);
   assert.match(renderer, /isUserAdminTaskSurface\(selectedEnvelope\)/);
   assert.match(detailEditSurface, /UserAdminCleanDetail/);
-  assert.match(detailEditSurface, /Detail surfaces do not mutate access inline/);
+  assert.match(detailEditSurface, /Detail views do not mutate access inline/);
   assert.match(detailEditSurface, /taskEntryActions = envelope\.actions\.filter\(\(action\) => !isUserAdminShowUsersAction\(action\)\)/);
   assert.doesNotMatch(detailEditSurface, /action-useradmin-disable-member[\s\S]*submit|action-useradmin-change-member-roles[\s\S]*submitRoleChange/);
   assert.match(listSearchSurface, /row\.openActionId/);

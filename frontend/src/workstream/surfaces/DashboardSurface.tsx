@@ -76,7 +76,7 @@ export function DashboardSurface({ envelope, onAction, onSignOut }: DashboardSur
           );
         })}
       </div>
-      {myAccountSurfaceActions.length > 0 && <SurfaceActionBar label="My Account surfaces" actions={myAccountSurfaceActions} surfaceId={envelope.surfaceId} onAction={onAction} />}
+      {myAccountSurfaceActions.length > 0 && <SurfaceActionBar label="My Account tools" actions={myAccountSurfaceActions} surfaceId={envelope.surfaceId} onAction={onAction} />}
       {envelope.data.attentionItems && envelope.data.attentionItems.length > 0 && <AttentionList items={envelope.data.attentionItems} label="Backend-derived attention items; Audit/Trace attention items" />}
       {envelope.data.sections && envelope.data.sections.length > 0 && (
         <section className="surface-section-list" aria-label="Dashboard sections">
@@ -113,7 +113,7 @@ function AuditTraceCommandCenter({ envelope, onAction }: DashboardSurfaceProps) 
   const exportAction = actionById.get('action-audit-trace-request-redacted-export');
   return (
     <SurfaceStateFrame envelope={envelope}>
-      <p className="sr-only">Surface contract: {data.surfaceContract ?? 'audit.trace.dashboard.v1'}. Backend capabilities: {data.capabilityIds?.join(', ') ?? 'audit.trace.read'}. Trace access is backend-scoped and redacted.</p>
+      <p className="sr-only">Contract: {data.surfaceContract ?? 'audit.trace.dashboard.v1'}. Backend capabilities: {data.capabilityIds?.join(', ') ?? 'audit.trace.read'}. Trace access is backend-scoped and redacted.</p>
       <section className="my-account-command-hero audit-trace-command-hero" aria-label="Audit/Trace investigation command center">
         <div>
           <p className="eyebrow">Audit/Trace · selected AuthContext</p>
@@ -161,7 +161,7 @@ function auditTraceActionHint(actionId: string): string {
   if (actionId.includes('failure')) return 'Inspect denial/provider/tool/model evidence with secrets redacted.';
   if (actionId.includes('export')) return 'Request a scoped redacted export through policy review.';
   if (actionId.includes('guide')) return 'Get investigation guidance without granting new authority.';
-  return 'Backend returns the next safe Audit/Trace surface.';
+  return 'Backend returns the next safe Audit/Trace view.';
 }
 
 function defaultAuditTraceInput(action: SurfaceAction, envelope: { correlationId: string }): Record<string, string> {
@@ -186,7 +186,7 @@ function GovernancePolicyCommandCenter({ envelope, onAction }: DashboardSurfaceP
   const authorizedActions = data.authorizedActions ?? [];
   return (
     <SurfaceStateFrame envelope={envelope}>
-      <p className="sr-only">Surface contract: {data.surfaceContract ?? 'governance.policy.dashboard.v1'}. Policy proposals, simulations, approval gates, activation, rollback, outcomes, and traces are backend-owned and scoped by selected AuthContext.</p>
+      <p className="sr-only">Contract: {data.surfaceContract ?? 'governance.policy.dashboard.v1'}. Policy proposals, simulations, approval gates, activation, rollback, outcomes, and traces are backend-owned and scoped by selected AuthContext.</p>
       <section className="my-account-command-hero governance-policy-command-hero" aria-label="Governance Policy authority and policy lifecycle summary">
         <div>
           <p className="eyebrow">Governance/Policy · selected AuthContext</p>
@@ -205,7 +205,7 @@ function GovernancePolicyCommandCenter({ envelope, onAction }: DashboardSurfaceP
         <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-queues-heading`}>
           <div className="surface-section-heading">
             <div><p className="eyebrow">Things that need my attention</p><h4 id={`${envelope.surfaceId}-queues-heading`}>Policy governance queues</h4></div>
-            <p>Each queue opens a backend-authorized policy surface. Frontend state never approves, activates, rolls back, or fabricates impact-analysis success.</p>
+            <p>Each queue opens a backend-authorized policy view. Frontend state never approves, activates, rolls back, or fabricates impact-analysis success.</p>
           </div>
           <div className="attention-counter-strip user-admin-attention-strip" aria-label="Governance Policy attention counters">
             {queues.map((queue) => {
@@ -219,7 +219,7 @@ function GovernancePolicyCommandCenter({ envelope, onAction }: DashboardSurfaceP
 
       {agentAdminActionableCards(data.cards, actionById).length > 0 && (
         <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-cards-heading`}>
-          <div className="surface-section-heading"><div><p className="eyebrow">Policy posture</p><h4 id={`${envelope.surfaceId}-cards-heading`}>Clickable governance areas</h4></div><p>Cards are backend-authored projections and open structured surfaces for review.</p></div>
+          <div className="surface-section-heading"><div><p className="eyebrow">Policy posture</p><h4 id={`${envelope.surfaceId}-cards-heading`}>Clickable governance areas</h4></div><p>Cards are backend-authored projections and open structured review areas.</p></div>
           <div className="surface-dashboard-grid my-account-workstream-grid" aria-label="Governance Policy actionable cards">
             {agentAdminActionableCards(data.cards, actionById).map(({ card, action }) => <button key={card.cardId} type="button" className={`ds-card dashboard-card clickable ${card.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId, stringRecord({ targetSurfaceId: card.targetSurfaceId, cardId: card.cardId, correlationId: envelope.correlationId }))}><p>{card.label}</p><strong>{card.value}</strong>{card.status && <span>{card.status}</span>}</button>)}
           </div>
@@ -228,11 +228,11 @@ function GovernancePolicyCommandCenter({ envelope, onAction }: DashboardSurfaceP
 
       {authorizedActions.length > 0 && (
         <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-actions-heading`}>
-          <div className="surface-section-heading"><div><p className="eyebrow">Things I can do</p><h4 id={`${envelope.surfaceId}-actions-heading`}>Authorized Governance/Policy surfaces</h4></div><p>Actions recheck capability, idempotency, approval policy, provider readiness, redaction, and audit requirements.</p></div>
+          <div className="surface-section-heading"><div><p className="eyebrow">Things I can do</p><h4 id={`${envelope.surfaceId}-actions-heading`}>Authorized Governance/Policy tasks</h4></div><p>Actions recheck capability, idempotency, approval policy, provider readiness, redaction, and audit requirements.</p></div>
           <div className="user-admin-action-grid" aria-label="Authorized Governance Policy task entry points">
             {authorizedActions.map((entry) => {
               const action = actionById.get(entry.actionId);
-              return <button key={entry.actionId} type="button" className="user-admin-work-card" disabled={!action || Boolean(action.disabled)} onClick={() => action && !action.disabled && onAction?.(action, envelope.surfaceId)}><span className="eyebrow">{entry.approvalRequired || action?.requiresApproval ? 'Approval gated' : 'Authorized surface'}</span><h4>{entry.label}</h4><p>{entry.denialHint ?? 'Backend returns the next safe Governance/Policy surface after rechecking authority.'}</p></button>;
+              return <button key={entry.actionId} type="button" className="user-admin-work-card" disabled={!action || Boolean(action.disabled)} onClick={() => action && !action.disabled && onAction?.(action, envelope.surfaceId)}><span className="eyebrow">{entry.approvalRequired || action?.requiresApproval ? 'Approval gated' : 'Authorized task'}</span><h4>{entry.label}</h4><p>{entry.denialHint ?? 'Backend returns the next safe Governance/Policy view after rechecking authority.'}</p></button>;
             })}
           </div>
         </section>
@@ -251,7 +251,7 @@ function AgentAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) 
   const authorizedActions = data.authorizedActions ?? [];
   return (
     <SurfaceStateFrame envelope={envelope}>
-      <p className="sr-only">Surface contract: {data.surfaceContract ?? 'agent_admin.dashboard.v1'}. Provider secrets, raw prompts, raw skills, raw references, hidden authority, and cross-tenant evidence are omitted by backend redaction.</p>
+      <p className="sr-only">Contract: {data.surfaceContract ?? 'agent_admin.dashboard.v1'}. Provider secrets, raw prompts, raw skills, raw references, hidden authority, and cross-tenant evidence are omitted by backend redaction.</p>
       <section className="my-account-command-hero agent-admin-command-hero" aria-label="Agent Admin authority and readiness summary">
         <div>
           <p className="eyebrow">Agent Admin · selected AuthContext</p>
@@ -269,7 +269,7 @@ function AgentAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) 
       <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-attention-heading`}>
         <div className="surface-section-heading">
           <div><p className="eyebrow">Things that need my attention</p><h4 id={`${envelope.surfaceId}-attention-heading`}>Governance attention queues</h4></div>
-          <p>Each counter opens a backend-authorized surface. Hidden or forbidden agent evidence is omitted rather than inferred by the browser.</p>
+          <p>Each counter opens a backend-authorized view. Hidden or forbidden agent evidence is omitted rather than inferred by the browser.</p>
         </div>
         <div className="attention-counter-strip user-admin-attention-strip" aria-label="Agent Admin attention counters">
           {queues.map((queue) => {
@@ -284,7 +284,7 @@ function AgentAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) 
         <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-summary-heading`}>
           <div className="surface-section-heading">
             <div><p className="eyebrow">Governance summary</p><h4 id={`${envelope.surfaceId}-summary-heading`}>Clickable work areas</h4></div>
-            <p>Cards summarize backend-authored Agent Admin work areas and open structured surfaces. Non-actionable metrics are omitted from the command center.</p>
+            <p>Cards summarize backend-authored Agent Admin work areas and open structured work areas. Non-actionable metrics are omitted from the command center.</p>
           </div>
           <div className="surface-dashboard-grid my-account-workstream-grid" aria-label="Agent Admin actionable summary cards">
             {agentAdminActionableCards(data.cards, actionById).map(({ card, action }) => {
@@ -297,16 +297,16 @@ function AgentAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) 
 
       <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-actions-heading`}>
         <div className="surface-section-heading">
-          <div><p className="eyebrow">Things I can do</p><h4 id={`${envelope.surfaceId}-actions-heading`}>Authorized Agent Admin surfaces</h4></div>
-          <p>Actions recheck scope, capability, approval policy, idempotency, provider readiness, and audit requirements before returning a typed result surface.</p>
+          <div><p className="eyebrow">Things I can do</p><h4 id={`${envelope.surfaceId}-actions-heading`}>Authorized Agent Admin tasks</h4></div>
+          <p>Actions recheck scope, capability, approval policy, idempotency, provider readiness, and audit requirements before returning a typed result view.</p>
         </div>
         <div className="user-admin-action-grid" aria-label="Authorized Agent Admin task entry points">
           {authorizedActions.map((entry) => {
             const action = actionById.get(entry.actionId);
             return <button key={entry.actionId} type="button" className="user-admin-work-card" disabled={!action || Boolean(action.disabled)} onClick={() => action && onAction?.(action, envelope.surfaceId)}>
-              <span className="eyebrow">{entry.approvalRequired || action?.requiresApproval ? 'Approval gated' : 'Authorized surface'}</span>
+              <span className="eyebrow">{entry.approvalRequired || action?.requiresApproval ? 'Approval gated' : 'Authorized task'}</span>
               <h4>{entry.label}</h4>
-              <p>{entry.denialHint ?? 'Backend returns the next safe Agent Admin surface after rechecking authority.'}</p>
+              <p>{entry.denialHint ?? 'Backend returns the next safe Agent Admin view after rechecking authority.'}</p>
             </button>;
           })}
         </div>
@@ -336,7 +336,7 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
 
   return (
     <SurfaceStateFrame envelope={envelope}>
-      <p className="sr-only">Surface contract: {data.surfaceContract ?? 'user_admin.dashboard.v1'}. Browser-visible capability count: {data.capabilityIds?.length ?? envelope.authContext.visibleCapabilityIds.length}. Tenant: {data.accountContext?.tenantId ?? envelope.authContext.tenantId}. Scope: {data.accountContext?.customerId ?? envelope.authContext.customerId ?? 'Tenant scope'}.</p>
+      <p className="sr-only">Contract: {data.surfaceContract ?? 'user_admin.dashboard.v1'}. Browser-visible capability count: {data.capabilityIds?.length ?? envelope.authContext.visibleCapabilityIds.length}. Tenant: {data.accountContext?.tenantId ?? envelope.authContext.tenantId}. Scope: {data.accountContext?.customerId ?? envelope.authContext.customerId ?? 'Tenant scope'}.</p>
 
       <UserAdminHero envelope={envelope} />
 
@@ -366,14 +366,14 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
         <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-next-actions-heading`}>
           <div className="surface-section-heading">
             <div><p className="eyebrow">Things I can do</p><h4 id={`${envelope.surfaceId}-next-actions-heading`}>Authorized actions</h4></div>
-            <p>Each action rechecks scope, capability, idempotency, approval policy, and audit requirements before returning a result surface.</p>
+            <p>Each action rechecks scope, capability, idempotency, approval policy, and audit requirements before returning a result view.</p>
           </div>
           <div className="user-admin-action-grid" aria-label="Authorized User Admin actions">
             {nextActionButtons.map((action) => (
               <button key={action.actionId} type="button" className="user-admin-work-card" disabled={Boolean(action.disabled)} onClick={() => !action.disabled && onAction?.(action, envelope.surfaceId)} aria-disabled={Boolean(action.disabled)}>
                 <span className="eyebrow">{action.disabled ? 'Unavailable in this context' : action.requiresApproval ? 'Approval gated' : 'Authorized capability'}</span>
                 <h4>{cleanUserAdminActionLabel(action.label)}</h4>
-                <p>{action.disabled?.message ?? nextActions.find((candidate) => candidate.actionId === action.actionId)?.denialHint ?? 'Backend rechecks authority and returns the next safe surface.'}</p>
+                <p>{action.disabled?.message ?? nextActions.find((candidate) => candidate.actionId === action.actionId)?.denialHint ?? 'Backend rechecks authority and returns the next safe view.'}</p>
               </button>
             ))}
           </div>
@@ -383,7 +383,7 @@ function UserAdminCommandCenter({ envelope, onAction }: DashboardSurfaceProps) {
       {populationCards.length > 0 && (
         <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-populations-heading`}>
           <div className="surface-section-heading">
-            <div><p className="eyebrow">Inspectable areas</p><h4 id={`${envelope.surfaceId}-populations-heading`}>Open scoped administration surfaces</h4></div>
+            <div><p className="eyebrow">Inspectable areas</p><h4 id={`${envelope.surfaceId}-populations-heading`}>Open scoped administration areas</h4></div>
             <p>Population counts are clickable visible-scope projections. Hidden tenants, customers, users, and counts are omitted.</p>
           </div>
           <div className="user-admin-population-grid" aria-label="Visible administered populations">
@@ -421,7 +421,7 @@ function UserAdminHero({ envelope }: { envelope: SurfaceEnvelope<DashboardSurfac
       <div>
         <p className="eyebrow">User Admin · selected AuthContext</p>
         <h3>{hero?.title ?? data.scopeLabel ?? envelope.title}</h3>
-        <p>{hero?.redactionSummary ?? renderSurfaceValue(data.redaction) ?? 'Backend-selected scope, redaction, and capability boundaries apply to every surface action.'}</p>
+        <p>{hero?.redactionSummary ?? renderSurfaceValue(data.redaction) ?? 'Backend-selected scope, redaction, and capability boundaries apply to every action.'}</p>
       </div>
       <dl className="authority-summary-grid" aria-label="Selected User Admin authority">
         <div><dt>Scope</dt><dd>{hero?.scopeLabel ?? data.scopeLabel ?? accountContext?.authority ?? 'Selected scope'}</dd></div>
@@ -497,17 +497,17 @@ function MyAccountCommandCenter({ envelope, onAction, onSignOut }: DashboardSurf
       <section className="my-account-section" aria-labelledby={`${envelope.surfaceId}-control-heading`}>
         <div className="surface-section-heading">
           <div>
-            <p className="eyebrow">Personal surfaces</p>
+            <p className="eyebrow">Personal tools</p>
             <h4 id={`${envelope.surfaceId}-control-heading`}>Self-service controls</h4>
           </div>
-          <p>Manage your personal account surfaces without leaving this workstream.</p>
+          <p>Manage your personal account tools without leaving this workstream.</p>
         </div>
         <div className="my-account-control-panels" aria-label="Personal control panels">
           {panels.map((panel) => {
             const action = panel.actionId ? actionById.get(panel.actionId) : undefined;
             return (
               <article key={panel.panelId} className={`my-account-control-panel ${panel.severity ?? panel.state ?? 'info'}`}>
-                <p className="eyebrow">{panel.state ?? 'Available surface'}</p>
+                <p className="eyebrow">{panel.state ?? 'Available tool'}</p>
                 <h4>{panel.label}</h4>
                 <p>{panel.summary}</p>
                 {panel.value !== undefined && <strong>{panel.value}</strong>}

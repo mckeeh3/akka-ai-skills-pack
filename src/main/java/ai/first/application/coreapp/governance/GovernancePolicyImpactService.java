@@ -245,8 +245,8 @@ public final class GovernancePolicyImpactService {
         Map.entry("reviewState", "empty/no-result"),
         Map.entry("summary", "Select a completed Governance/Policy impact-analysis task before reviewing advisory evidence."),
         Map.entry("resultSummary", Map.of("reviewState", "empty/no-result", "safeEmptyCopy", "No completed impact-analysis task is selected; hidden tasks are not enumerated.")),
-        Map.entry("recommendation", Map.of("outcome", "Open an authorized impact-analysis task or proposal first.", "rationale", "The direct result surface is backend-derived and no-enumeration safe when no task id is selected.", "providerRuntimeReadiness", "not-required", "noFakeSuccess", true)),
-        Map.entry("advisorySummary", Map.of("narrative", "No advisory result is selected.", "advisoryOnly", "No policy approval, activation, rollback, or authority mutation occurs from this empty result surface.")),
+        Map.entry("recommendation", Map.of("outcome", "Open an authorized impact-analysis task or proposal first.", "rationale", "The direct result view is backend-derived and no-enumeration safe when no task id is selected.", "providerRuntimeReadiness", "not-required", "noFakeSuccess", true)),
+        Map.entry("advisorySummary", Map.of("narrative", "No advisory result is selected.", "advisoryOnly", "No policy approval, activation, rollback, or authority mutation occurs from this empty result view.")),
         Map.entry("evidenceSummary", List.of()),
         Map.entry("findings", List.of()),
         Map.entry("humanDecision", Map.of("reviewState", "empty/no-result", "allowedDispositionValues", List.of(), "reasonRequiredFor", List.of("reject", "request_changes"))),
@@ -301,8 +301,8 @@ public final class GovernancePolicyImpactService {
 
   private static List<Map<String, Object>> disabledResultActions(GovernancePolicyImpactTask task) {
     var disabled = new java.util.ArrayList<Map<String, Object>>();
-    disabled.add(Map.<String, Object>of("actionId", "action-governance-policy-activate", "label", "Activate policy", "reason", "governance.policy.activate is not executed by this worker result surface; impact-result disposition never activates policy inline.", "recovery", "Use the separate Governance/Policy decision and activation surfaces after prerequisites pass."));
-    disabled.add(Map.<String, Object>of("actionId", "action-governance-policy-rollback", "label", "Roll back policy", "reason", "Rollback is a separate governed policy command and cannot run from impact-result review.", "recovery", "Open the dedicated policy decision surface when authorized."));
+    disabled.add(Map.<String, Object>of("actionId", "action-governance-policy-activate", "label", "Activate policy", "reason", "governance.policy.activate is not executed by this worker result view; impact-result disposition never activates policy inline.", "recovery", "Use the separate Governance/Policy decision and activation tasks after prerequisites pass."));
+    disabled.add(Map.<String, Object>of("actionId", "action-governance-policy-rollback", "label", "Roll back policy", "reason", "Rollback is a separate governed policy command and cannot run from impact-result review.", "recovery", "Open the dedicated policy decision review when authorized."));
     if (task.status() != GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED) {
       disabled.add(Map.<String, Object>of("actionId", "action-governance-policy-accept-impact-result", "label", "Accept advisory impact result", "reason", "Result disposition is already recorded or no longer reviewable.", "recovery", "Review the prior disposition and start replacement analysis if needed."));
       disabled.add(Map.<String, Object>of("actionId", "action-governance-policy-reject-impact-result", "label", "Reject advisory impact result", "reason", "Result disposition is already recorded or no longer reviewable.", "recovery", "Review the prior disposition and start replacement analysis if needed."));
@@ -364,7 +364,7 @@ public final class GovernancePolicyImpactService {
     if (task.status() == GovernancePolicyImpactTask.Status.CANCELLED) return List.of("cancel disabled: already cancelled");
     if (task.status() == GovernancePolicyImpactTask.Status.ACCEPTED || task.status() == GovernancePolicyImpactTask.Status.REJECTED_RESULT || task.status() == GovernancePolicyImpactTask.Status.REQUEST_CHANGES) return List.of("result disposition already recorded on the result surface");
     if (task.status() == GovernancePolicyImpactTask.Status.BLOCKED_PROVIDER_OR_RUNTIME) return List.of("successful impact analysis disabled until provider/runtime is configured");
-    return List.of("approval, activation, rollback, and impact-result disposition are not performed by this task surface");
+    return List.of("approval, activation, rollback, and impact-result disposition are not performed by this task");
   }
 
   private static String readinessState(GovernancePolicyImpactTask task) {

@@ -14,7 +14,7 @@ export function ActionFeedbackItem({ item, onOpenSurface }: ActionFeedbackItemPr
       {item.body && <p>{item.body}</p>}
       {item.surfaceId && (
         <button type="button" className="link-button" onClick={() => onOpenSurface?.(item.surfaceId!)}>
-          Open result surface
+          Open result view
         </button>
       )}
       <TraceLinkList traceIds={item.traceIds} traceLinks={item.traceLinks} />

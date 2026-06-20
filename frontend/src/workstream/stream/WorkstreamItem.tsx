@@ -28,7 +28,7 @@ export function WorkstreamItemCard({ item, onOpenSurface }: WorkstreamItemCardPr
   if (item.kind === 'surface-request') {
     const requestVariant = item.itemId.startsWith('surface-action-request-') ? 'action-request-surface' : 'surface-request-surface';
     return (
-      <article id={item.itemId} className={`ds-card workstream-item surface-request request-surface ${requestVariant}`} tabIndex={-1} aria-label={requestVariant === 'action-request-surface' ? 'Action request received' : 'Surface request received'}>
+      <article id={item.itemId} className={`ds-card workstream-item surface-request request-surface ${requestVariant}`} tabIndex={-1} aria-label={requestVariant === 'action-request-surface' ? 'Action request received' : 'View request received'}>
         <p>{item.title ?? ''}</p>
       </article>
     );
@@ -46,7 +46,7 @@ export function WorkstreamItemCard({ item, onOpenSurface }: WorkstreamItemCardPr
       {item.status && <span className="status-pill info">{item.status.replace(/-/g, ' ')}</span>}
       {item.surfaceId && (
         <button type="button" className="link-button" onClick={() => onOpenSurface?.(item.surfaceId!)}>
-          Open structured surface
+          Open structured view
         </button>
       )}
       <TraceLinkList traceIds={item.traceIds} traceLinks={item.traceLinks} />

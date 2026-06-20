@@ -145,7 +145,7 @@ function InvitationCreateTask({ envelope, onAction }: Props) {
       {roleOptions.length === 0 && <p className="form-error">Backend did not provide authorized role options for this selected scope.</p>}
       <button className="surface-action-link primary" type="submit" disabled={!action || Boolean(action.disabled) || roleOptions.length === 0}>Create invitation</button>
       {action?.disabled && <p className="form-error">{action.disabled.message}</p>}
-      <p className="capability-basis">Provider-backed delivery status returns on the invitation detail surface; raw invitation tokens, provider payloads, and secrets are never shown.</p>
+      <p className="capability-basis">Provider-backed delivery status returns on the invitation detail view; raw invitation tokens, provider payloads, and secrets are never shown.</p>
     </form>
   );
 }

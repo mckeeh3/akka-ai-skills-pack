@@ -113,7 +113,7 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.doesNotMatch(dashboardSurface, /Use these counts to decide where to focus first/);
   assert.match(componentsCss, /\.attention-counter-card \{\n  display: grid;\n  place-items: center;[\s\S]*text-align: center;/);
   assert.match(dashboardSurface, /No personal attention items/);
-  assert.match(dashboardSurface, /Manage your personal account surfaces without leaving this workstream/);
+  assert.match(dashboardSurface, /Manage your personal account tools without leaving this workstream/);
   assert.match(surfaceRenderer, /case 'notification-center':\n      return <NotificationCenterSurface/);
   assert.match(notificationCenterSurface, /notification\.list_my_account_center/);
   assert.match(notificationCenterSurface, /Personal in-app triage/);

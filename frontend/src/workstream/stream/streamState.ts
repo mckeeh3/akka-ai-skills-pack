@@ -57,7 +57,7 @@ export function pruneWorkstreamSurfaceStreamsByAgent(items: WorkstreamItem[], ma
   return orderWorkstreamSurfaceStream(Array.from(grouped.values()).flatMap((agentItems) => pruneWorkstreamSurfaceStream(agentItems, maxSurfacesPerAgent)));
 }
 
-export function markSurfaceItemsStale(items: WorkstreamItem[], surfaceId: string, reason = 'Realtime stream marked this surface stale.'): WorkstreamItem[] {
+export function markSurfaceItemsStale(items: WorkstreamItem[], surfaceId: string, reason = 'Realtime stream marked this view stale.'): WorkstreamItem[] {
   return items.map((item) => (item.surfaceId === surfaceId ? { ...item, status: 'stale', body: item.body ?? reason } : item));
 }
 
@@ -81,8 +81,8 @@ export function mergeWorkstreamEvents(items: WorkstreamItem[], events: Workstrea
 
     if (event.eventType === 'projection.refresh.available' && event.surfaceId) {
       diagnostics.staleSurfaceIds.push(event.surfaceId);
-      diagnostics.diagnostics.push('Backend projection refresh is available; reload the backend-owned surface before treating it as current.');
-      merged = markSurfaceItemsStale(merged, event.surfaceId, 'Backend projection refresh is available; reload this surface.');
+      diagnostics.diagnostics.push('Backend projection refresh is available; reload the backend-owned view before treating it as current.');
+      merged = markSurfaceItemsStale(merged, event.surfaceId, 'Backend projection refresh is available; reload this view.');
       continue;
     }
 

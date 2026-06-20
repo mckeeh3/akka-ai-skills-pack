@@ -70,7 +70,7 @@ export function GovernanceDiffSurface({ envelope, onAction }: GovernanceDiffSurf
       <table>
         <caption>Behavior change summary</caption>
         <thead><tr><th scope="col">Change</th><th scope="col">Before</th><th scope="col">After</th><th scope="col">Impact</th></tr></thead>
-        <tbody>{changeRows.length > 0 ? changeRows.map((change) => <tr key={change.path}><th scope="row">{humanize(change.path)}</th><td>{humanize(change.before ?? '')}</td><td>{humanize(change.after ?? '')}</td><td>{humanize(change.impact)}</td></tr>) : <tr><td colSpan={4}>No row-level diff was provided for this governed surface.</td></tr>}</tbody>
+        <tbody>{changeRows.length > 0 ? changeRows.map((change) => <tr key={change.path}><th scope="row">{humanize(change.path)}</th><td>{humanize(change.before ?? '')}</td><td>{humanize(change.after ?? '')}</td><td>{humanize(change.impact)}</td></tr>) : <tr><td colSpan={4}>No row-level diff was provided for this governed review.</td></tr>}</tbody>
       </table>
       {envelope.data.availableTransitions && envelope.data.availableTransitions.length > 0 && (
         <section className="governance-available-transitions" aria-label="Backend-authorized proposal transitions">

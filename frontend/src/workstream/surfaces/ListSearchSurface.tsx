@@ -55,11 +55,11 @@ function GovernancePolicyInventoryView({ envelope, onAction }: ListSearchSurface
         <div>
           <p className="eyebrow">Governance/Policy · backend-scoped inventory</p>
           <h3>Policy/proposal inventory</h3>
-          <p>Rows open backend-authorized evidence or lifecycle surfaces. Filters are hints only; selected AuthContext, row visibility, redaction, and action availability are rechecked server-side.</p>
+          <p>Rows open backend-authorized evidence or lifecycle views. Filters are hints only; selected AuthContext, row visibility, redaction, and action availability are rechecked server-side.</p>
         </div>
         <div className="user-admin-users-header-actions">
           {refreshAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(refreshAction, envelope.surfaceId, safeDirectoryInput(envelope))}>Refresh inventory</button>}
-          {draftAction && <button type="button" className="surface-action-link primary" onClick={() => onAction?.(draftAction, envelope.surfaceId, { rationale: 'Draft from Governance/Policy inventory', proposedContent: 'Policy proposal drafted from authorized inventory surface.' })}>Draft proposal</button>}
+          {draftAction && <button type="button" className="surface-action-link primary" onClick={() => onAction?.(draftAction, envelope.surfaceId, { rationale: 'Draft from Governance/Policy inventory', proposedContent: 'Policy proposal drafted from authorized inventory view.' })}>Draft proposal</button>}
           {auditAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(auditAction, envelope.surfaceId)}>Open traces</button>}
         </div>
       </div>
@@ -201,7 +201,7 @@ function AgentAdminSeedMaterialView({ envelope, onAction }: ListSearchSurfacePro
       )}
       <details className="dashboard-evidence-drawer">
         <summary>Role-gated seed diagnostics</summary>
-        <p>Surface contract: {envelope.data.surfaceContract ?? 'agent_admin.seed_material.v1'}</p>
+        <p>Contract: {envelope.data.surfaceContract ?? 'agent_admin.seed_material.v1'}</p>
         <p>Redaction: {renderSurfaceValue(envelope.data.redaction) ?? 'raw behavior material and provider secrets omitted'}</p>
         <ul>{rows.map((row, index) => <li key={String(row.id ?? index)}>{renderSurfaceValue({ artifactId: row.artifactId, seedBundleId: row.seedBundleId, checksum: row.checksum, traceId: row.traceId, targetAgent: row.recommendedManagedAgentTarget })}</li>)}</ul>
       </details>
@@ -274,7 +274,7 @@ function AgentAdminCatalogView({ envelope, onAction }: ListSearchSurfaceProps) {
           {rows.map((row, index) => <AgentAdminCatalogRow key={String(row.id ?? index)} row={row} actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />)}
         </div>
       )}
-      <details className="dashboard-evidence-drawer"><summary>Role-gated catalog diagnostics</summary><p>Surface contract: {envelope.data.surfaceContract ?? 'agent_admin.catalog.v1'}</p><p>Trace links: {renderSurfaceValue((envelope.data as { traceLinks?: unknown }).traceLinks) ?? 'none'}</p></details>
+      <details className="dashboard-evidence-drawer"><summary>Role-gated catalog diagnostics</summary><p>Contract: {envelope.data.surfaceContract ?? 'agent_admin.catalog.v1'}</p><p>Trace links: {renderSurfaceValue((envelope.data as { traceLinks?: unknown }).traceLinks) ?? 'none'}</p></details>
     </section>
   );
 }
@@ -301,7 +301,7 @@ function AgentAdminCatalogRow({ row, actions, surfaceId, onAction }: { row: List
 }
 
 // Legacy contract marker: previous broad row control copy was "View/edit user" and helper userDetailInput(row);
-// current rows open backend-authored inspection/task surfaces only.
+// current rows open backend-authored inspection/task views only.
 function UserAdminUsersView({ envelope, onAction }: ListSearchSurfaceProps) {
   const rows = envelope.data.rows;
   const inviteSurfaceAction = envelope.actions.find((action) => action.actionId === 'action-open-useradmin-invitation-create')
@@ -314,7 +314,7 @@ function UserAdminUsersView({ envelope, onAction }: ListSearchSurfaceProps) {
         <div>
           <p className="eyebrow">User Admin · backend-routed directory</p>
           <h3>Users and access objects</h3>
-          <p>Every row opens the backend-declared target surface. The browser does not infer authority, row routing, hidden counts, role choices, or lifecycle eligibility from labels or status.</p>
+          <p>Every row opens the backend-declared target view. The browser does not infer authority, row routing, hidden counts, role choices, or lifecycle eligibility from labels or status.</p>
         </div>
         <div className="user-admin-users-header-actions">
           {inviteSurfaceAction && <button type="button" className="surface-action-link primary" onClick={() => onAction?.(inviteSurfaceAction, envelope.surfaceId)}>Invite user</button>}

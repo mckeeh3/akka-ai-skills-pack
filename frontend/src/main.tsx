@@ -1006,7 +1006,7 @@ async function parseInvitationErrorBody(response: Response): Promise<Partial<Api
 
 function Root() {
   if (window.location.pathname.startsWith('/surface-review')) {
-    return <React.Suspense fallback={<main className="content"><p>Loading surface review…</p></main>}><SurfaceReviewApp /></React.Suspense>;
+    return <React.Suspense fallback={<main className="content"><p>Loading review…</p></main>}><SurfaceReviewApp /></React.Suspense>;
   }
   if (!hasConfiguredWorkosClient) {
     return (

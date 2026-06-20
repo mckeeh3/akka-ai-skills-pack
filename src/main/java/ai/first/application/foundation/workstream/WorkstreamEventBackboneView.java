@@ -49,7 +49,7 @@ public class WorkstreamEventBackboneView extends View {
         event.occurredAt().toString(),
         0,
         new Patch(
-            "View-backed live SSE observed a backend event-backed projection refresh; reload backend-owned attention/dashboard surfaces instead of trusting frontend state.",
+            "View-backed live SSE observed a backend event-backed projection refresh; reload backend-owned attention/dashboard views instead of trusting frontend state.",
             "workstream.event.delivery.refresh",
             event.eventType(),
             event.eventFamily(),

@@ -2868,7 +2868,7 @@ export const agentAdminCatalogSurface = envelope(
     mobileFallback: 'table-to-card',
     systemStates: ['loading', 'empty', 'forbidden', 'validation-error', 'approval-required', 'blocked_provider_or_runtime', 'stale'],
     stateFixtures: {
-      loading: 'Loading surface while backend agent_admin.list_definitions reads scoped AgentDefinition projections.',
+      loading: 'Loading view while backend agent_admin.list_definitions reads scoped AgentDefinition projections.',
       empty: 'Empty when no governed AgentDefinition records are seeded.',
       forbidden: 'TARGET_NOT_FOUND_OR_FORBIDDEN hides cross-tenant AgentDefinition ids and row counts.',
       validation: 'validation-error preserves correlation id and safe input summary for behavior-change actions.',

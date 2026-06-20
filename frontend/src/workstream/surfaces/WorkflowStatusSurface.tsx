@@ -61,7 +61,7 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
       {(envelope.data.surfaceContract || envelope.data.taskId || envelope.data.digestTaskId || envelope.data.impactTaskId || envelope.data.autonomousAgentTaskId || envelope.data.requiredCapabilityId || envelope.data.initiatingCapabilityId) && (
         <details className="dashboard-evidence-drawer">
           <summary>Role-gated runtime diagnostics</summary>
-          {envelope.data.surfaceContract && <p className="form-status">Surface contract: {envelope.data.surfaceContract}</p>}
+          {envelope.data.surfaceContract && <p className="form-status">Contract: {envelope.data.surfaceContract}</p>}
           {(envelope.data.taskId || envelope.data.digestTaskId || envelope.data.impactTaskId || envelope.data.autonomousAgentTaskId) && <p className="form-status">Task id: {envelope.data.taskId ?? envelope.data.digestTaskId ?? envelope.data.impactTaskId ?? envelope.data.autonomousAgentTaskId}</p>}
           {envelope.data.requiredCapabilityId && <p className="form-status">Required capability: {envelope.data.requiredCapabilityId}</p>}
           {envelope.data.initiatingCapabilityId && <p className="form-status">Initiating capability: {envelope.data.initiatingCapabilityId}</p>}

@@ -51,7 +51,7 @@ test('workstream stream components cover canonical item kinds and action feedbac
   assert.match(item, /item\.kind === 'workflow-status'/);
   assert.match(item, /item\.kind === 'system-status'/);
   assert.match(feedback, /Action feedback/);
-  assert.match(feedback, /Open result surface/);
+  assert.match(feedback, /Open result view/);
   assert.match(traceLinks, /aria-label="Trace links"/);
   assert.match(traceLinks, /surface-audit-trace-detail/);
   assert.match(streamState, /appendOrUpdateWorkstreamItem/);

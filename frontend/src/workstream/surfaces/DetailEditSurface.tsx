@@ -218,12 +218,12 @@ function AgentAdminInspectionDetail({ envelope, onAction }: { envelope: SurfaceE
         <section className="user-admin-detail-overview" aria-label="Agent Admin default readiness summary">
           <article className="authority-context-panel">
             <h4>Readiness and authority boundary</h4>
-            <p>{envelope.data.permissionState?.reason ?? 'This inspection is read-only. Behavior and lifecycle changes open dedicated proposal, decision, confirmation, workflow, or system-message surfaces.'}</p>
+            <p>{envelope.data.permissionState?.reason ?? 'This inspection is read-only. Behavior and lifecycle changes open dedicated proposal, decision, confirmation, workflow, or system messages.'}</p>
             <dl>
               <div><dt>Agent state</dt><dd>{fieldValue(fields, 'status') ?? 'backend selected'}</dd></div>
               <div><dt>Authority tier</dt><dd>{fieldValue(fields, 'authorityLevel') ?? 'approval required'}</dd></div>
               <div><dt>Provider readiness</dt><dd>{provider?.status ?? 'not reported'}{provider?.secretVisibility ? ` · secrets ${provider.secretVisibility}` : ''}</dd></div>
-              <div><dt>Mutation model</dt><dd>No direct mutation from this detail surface</dd></div>
+              <div><dt>Mutation model</dt><dd>No direct mutation from this detail view</dd></div>
             </dl>
           </article>
         </section>
@@ -237,10 +237,10 @@ function AgentAdminInspectionDetail({ envelope, onAction }: { envelope: SurfaceE
           </section>
         )}
 
-        <section className="user-admin-context-actions" aria-label="Agent Admin dedicated task surfaces">
+        <section className="user-admin-context-actions" aria-label="Agent Admin dedicated task areas">
           <div className="surface-section-heading compact">
-            <div><p className="eyebrow">Dedicated task surfaces</p><h4>Govern behavior through proposals, decisions, tests, and traces</h4></div>
-            <p>Activation, deactivation, rollback, prompt/model/tool/manifest changes, and seed imports are not inline edits. Backend authorization returns the next safe surface.</p>
+            <div><p className="eyebrow">Dedicated tasks</p><h4>Govern behavior through proposals, decisions, tests, and traces</h4></div>
+            <p>Activation, deactivation, rollback, prompt/model/tool/manifest changes, and seed imports are not inline edits. Backend authorization returns the next safe view.</p>
           </div>
           <SurfaceActionBar actions={taskEntryActions} surfaceId={envelope.surfaceId} actionInput={actionContext} onAction={onAction} />
         </section>
@@ -250,7 +250,7 @@ function AgentAdminInspectionDetail({ envelope, onAction }: { envelope: SurfaceE
           <div className="user-admin-readable-fields">
             {fields.map((field) => <p key={field.fieldId}><span>{field.label}</span><strong>{field.value}</strong></p>)}
           </div>
-          <p>Surface contract: {envelope.data.surfaceContract ?? 'agent_admin.definition.v1'}</p>
+          <p>Contract: {envelope.data.surfaceContract ?? 'agent_admin.definition.v1'}</p>
           <p>Redaction: {renderSurfaceValue(envelope.data.redaction ?? envelope.data.redactionMetadata) ?? envelope.redaction.profile}</p>
           {envelope.data.audit && <section className="trace-link-list" aria-label="Agent Admin diagnostic trace links">{envelope.data.audit.traceIds.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-agent-admin-trace&traceId=${encodeURIComponent(traceId)}`}>{traceId}</a>)}</section>}
         </details>
@@ -282,7 +282,7 @@ function UserAdminCleanDetail({ envelope, onAction }: { envelope: SurfaceEnvelop
         <section className="detail-edit-form-section" aria-labelledby={`${envelope.surfaceId}-inspection-heading`}>
           <div className="surface-section-heading compact">
             <div><p className="eyebrow">Read-only inspection</p><h4 id={`${envelope.surfaceId}-inspection-heading`}>{isInvitation ? 'Invitation information' : 'User information'}</h4></div>
-            <p>Detail surfaces do not mutate access inline. Use task entry points to open dedicated forms, confirmations, decisions, workflows, or system messages returned by the backend.</p>
+            <p>Detail views do not mutate access inline. Use task entry points to open dedicated forms, confirmations, decisions, workflows, or system messages returned by the backend.</p>
           </div>
           <div className="user-admin-readable-fields">
             {fields.map((field) => <p key={field.fieldId}><span>{field.label}</span><strong>{field.value}</strong></p>)}
@@ -294,8 +294,8 @@ function UserAdminCleanDetail({ envelope, onAction }: { envelope: SurfaceEnvelop
         {taskEntryActions.length > 0 && (
           <section className="user-admin-context-actions" aria-label={isInvitation ? 'Invitation task entry points' : 'User task entry points'}>
             <div className="surface-section-heading compact">
-              <div><p className="eyebrow">Dedicated task surfaces</p><h4>{isInvitation ? 'Manage invitation through tasks' : 'Manage access through tasks'}</h4></div>
-              <p>Each action is backend-authored and reauthorized before returning a task, decision, result, or safe system message surface.</p>
+              <div><p className="eyebrow">Dedicated tasks</p><h4>{isInvitation ? 'Manage invitation through tasks' : 'Manage access through tasks'}</h4></div>
+              <p>Each action is backend-authored and reauthorized before returning a task, decision, result, or safe system message.</p>
             </div>
             <SurfaceActionBar actions={taskEntryActions} surfaceId={envelope.surfaceId} actionInput={actionContext} onAction={onAction} />
           </section>
@@ -407,7 +407,7 @@ function agentAdminArtifactSummary(artifact: Record<string, unknown>) {
   if (kind.includes('skill') || kind.includes('reference') || kind.includes('manifest')) return `${status}. Full document loads remain governed and trace-linked.`;
   if (kind.includes('tool')) return `${status}. Side-effecting tool expansion requires simulation and approval.`;
   if (kind.includes('model')) return `${status}. Provider aliases are visible; credentials remain backend-only.`;
-  return `${status}. Open a dedicated task surface for changes.`;
+  return `${status}. Open a dedicated task for changes.`;
 }
 
 function statusTone(value: string) {
@@ -502,14 +502,14 @@ function MyAccountDetailOverview({ envelope, fieldValues, onAction }: { envelope
       <section className="my-account-detail-overview" aria-label="Selected AuthContext authority">
         <article className="authority-context-panel">
           <h4>Backend-selected authority</h4>
-          <p>Changing context reboots the shell authority basis through /api/me or protected workstream APIs; the browser cannot grant roles or capabilities by editing this surface.</p>
+          <p>Changing context reboots the shell authority basis through /api/me or protected workstream APIs; the browser cannot grant roles or capabilities by editing this view.</p>
           <dl>
             <div><dt>Organization</dt><dd>Current organization</dd></div>
             <div><dt>Scope</dt><dd>{envelope.authContext.customerId ? 'Selected customer' : 'Tenant scope'}</dd></div>
             <div><dt>Visible permissions</dt><dd>{String(envelope.data.visibleCapabilitySummary?.count ?? envelope.authContext.visibleCapabilityIds.length)}</dd></div>
           </dl>
         </article>
-        <p className="surface-state-inline stale">Switching context refreshes the shell authority basis, workstream counters, traces, notifications, and any open structured surfaces.</p>
+        <p className="surface-state-inline stale">Switching context refreshes the shell authority basis, workstream counters, traces, notifications, and any open structured views.</p>
         {envelope.data.availableContexts && envelope.data.availableContexts.length > 0 && (
           <section className="available-context-grid" aria-label="Authorized context switch targets">
             {envelope.data.availableContexts.map((context, index) => {

@@ -49,14 +49,14 @@ function MyAccountSelfServiceSurface({ envelope, onAction, onFieldValueChange }:
 
   return (
     <SurfaceStateFrame envelope={envelope}>
-      <section className="my-account-detail-hero" aria-label={isSettings ? 'My Account settings self-service surface' : 'My Account profile self-service surface'}>
+      <section className="my-account-detail-hero" aria-label={isSettings ? 'My Account settings self-service view' : 'My Account profile self-service view'}>
         <div>
           <p className="eyebrow">{isSettings ? 'Personal preferences' : 'Self-service profile'}</p>
           <h3>{envelope.title}</h3>
           <p>{envelope.data.summary ?? (isSettings ? 'Preview and save personal preferences through governed backend actions.' : 'Inspect safe identity facts and edit only allowed self-service fields.')}</p>
         </div>
         <dl className="authority-summary-grid" aria-label="My Account self-service authority">
-          <div><dt>Surface</dt><dd>{envelope.data.surfaceContract ?? envelope.surfaceId}</dd></div>
+          <div><dt>View</dt><dd>{envelope.data.surfaceContract ?? envelope.surfaceId}</dd></div>
           <div><dt>Authority</dt><dd>{envelope.data.permissionState?.authoritativeCapabilityId ?? 'my_account.update_profile_settings'}</dd></div>
           <div><dt>Provider facts</dt><dd>{stringify(envelope.data.providerBoundarySummary ?? 'immutable provider-backed fields stay read-only')}</dd></div>
           <div><dt>Redaction</dt><dd>{stringify(envelope.data.redaction ?? 'browser-safe profile only')}</dd></div>
@@ -77,7 +77,7 @@ function MyAccountContextSurface({ envelope, onAction }: Props) {
   const contexts = Array.isArray(envelope.data.availableContexts) ? envelope.data.availableContexts : [];
   return (
     <SurfaceStateFrame envelope={envelope}>
-      <section className="my-account-detail-hero" aria-label="My Account context and authority surface">
+      <section className="my-account-detail-hero" aria-label="My Account context and authority view">
         <div><p className="eyebrow">Context & authority</p><h3>{envelope.title}</h3><p>{envelope.data.summary ?? 'Backend-owned selected context governs workstream visibility, actions, traces, and agent behavior.'}</p></div>
         <dl className="authority-summary-grid" aria-label="Selected backend AuthContext">
           <div><dt>Selected context</dt><dd>{stringify(envelope.data.selectedContext?.contextId ?? envelope.authContext.selectedContextId)}</dd></div>
@@ -87,7 +87,7 @@ function MyAccountContextSurface({ envelope, onAction }: Props) {
         </dl>
       </section>
       <section className="my-account-section" aria-labelledby={`${envelope.surfaceId}-contexts-heading`}>
-        <div className="surface-section-heading"><div><p className="eyebrow">Available contexts</p><h4 id={`${envelope.surfaceId}-contexts-heading`}>Switch only to backend-authorized contexts</h4></div><p>Client context ids are advisory request inputs; backend decides visibility and marks stale surfaces after a switch.</p></div>
+        <div className="surface-section-heading"><div><p className="eyebrow">Available contexts</p><h4 id={`${envelope.surfaceId}-contexts-heading`}>Switch only to backend-authorized contexts</h4></div><p>Client context ids are advisory request inputs; backend decides visibility and marks stale views after a switch.</p></div>
         <div className="my-account-control-panels" aria-label="Authorized context choices">
           {contexts.map((context: AnyData) => <article key={context.contextId ?? context.label} className={`my-account-control-panel ${context.selected ? 'success' : context.selectable === false ? 'warning' : 'info'}`}><p className="eyebrow">{context.selected ? 'Selected' : context.selectable === false ? 'Unavailable' : 'Available'}</p><h4>{context.label ?? context.contextId}</h4><p>{context.denialHint ?? context.contextType ?? 'Backend-authorized context option'}</p></article>)}
         </div>

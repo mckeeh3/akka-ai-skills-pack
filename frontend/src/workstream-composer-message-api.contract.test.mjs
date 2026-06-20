@@ -142,7 +142,7 @@ test('surface and action request acknowledgement surfaces match compact request 
   assert.match(itemCard, /item\.kind === 'surface-request'/);
   assert.match(itemCard, /request-surface/);
   assert.match(itemCard, /action-request-surface/);
-  assert.match(itemCard, /Surface request received/);
+  assert.match(itemCard, /View request received/);
   assert.match(itemCard, /Action request received/);
   assert.match(itemCard, /<p>\{item\.title \?\? ''\}<\/p>/);
   assert.doesNotMatch(itemCard, /item\.body && item\.body !== item\.title/);

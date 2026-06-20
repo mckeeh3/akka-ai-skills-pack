@@ -163,7 +163,7 @@ public final class AgentAdminService {
         "recordId", agent.agentDefinitionId(),
         "recordLabel", agent.displayName(),
         "recordKind", "AgentDefinition",
-        "summary", "Backend-authoritative managed-agent readiness inspection; behavior and lifecycle changes must use separate governed task surfaces.",
+        "summary", "Backend-authoritative managed-agent readiness inspection; behavior and lifecycle changes must use separate governed tasks.",
         "detailSummary", mapOf("surfaceId", "surface-agent-admin-detail", "title", "Agent readiness/behavior inspection", "type", "show-inspection", "contract", "agent_admin.detail.v1", "selectedManagedAgentDisplayName", agent.displayName(), "shortPurpose", safe(agent.description()), "lifecycleState", agent.status().name().toLowerCase(Locale.ROOT), "readinessState", readinessState, "authorityTier", agent.authorityLevel().name(), "owningScopeLabel", scopeLabel(actor), "lastChangedAt", agent.updatedAt() == null ? null : agent.updatedAt().toString(), "lastReviewedAt", agent.updatedAt() == null ? null : agent.updatedAt().toString(), "lastRefreshedAt", Instant.now().toString(), "readOnlyNotice", "No inline mutation; use dedicated governed task surfaces."),
         "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", actor.selectedContext().tenantId(), "organizationDisplayName", actor.selectedContext().tenantId(), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true, "visibilityDecision", "visible"),
         "readinessNarrative", mapOf("outcome", readinessState, "providerModelReadinessCategory", providerStatus, "promptRiskStatus", "ready".equals(providerStatus) ? "review-ready" : "deferred_until_provider_runtime_configured", "manifestToolBoundaryReferenceHealth", "active compact manifests and tool boundary are available when their artifact cards are active.", "seedCustomizationState", Boolean.TRUE.equals(seedStatus(agent.seedProvenance()).get("tenantCustomized")) ? "tenant-customized" : "starter-default", "blockedReasons", "ready".equals(readinessState) ? List.of() : List.of("Provider/model runtime is not fully ready; no fake success is shown."), "recoveryRouteLabels", List.of("Model references", "Prompt-risk review", "Trace"), "noFakeSuccess", !"ready".equals(providerStatus)),
@@ -173,7 +173,7 @@ public final class AgentAdminService {
         "taskEntryPoints", taskEntryPoints,
         "providerReadiness", provider,
         "seedStatus", seedStatus(agent.seedProvenance()),
-        "permissionState", mapOf("canEdit", false, "reason", "Read-only inspection. Use inert behavior-change proposals, lifecycle confirmations, no-side-effect tests, and trace drill-ins; no direct mutation from this surface.", "authoritativeCapabilityId", GET_DEFINITION),
+        "permissionState", mapOf("canEdit", false, "reason", "Read-only inspection. Use inert behavior-change proposals, lifecycle confirmations, no-side-effect tests, and trace drill-ins; no direct mutation from this view.", "authoritativeCapabilityId", GET_DEFINITION),
         "safeRedactionSummary", mapOf("rawPromptText", "omitted", "rawSkillReferenceBodies", "omitted", "providerCredentials", "omitted", "hiddenTenantCustomerIdentifiers", "omitted", "rawLoaderToolInputs", "omitted", "jwtSessionMaterial", "omitted", "internalStackTraces", "omitted", "fullEvidenceDocuments", "role-gated"),
         "redaction", redactionMetadata(),
         "traceLinks", List.of(traceId),
@@ -604,7 +604,7 @@ public final class AgentAdminService {
         "conflictSummary", selectedRow == null ? "No selected visible seed row." : "No customization conflict detected for the browser-safe starter seed plan.",
         "providerRuntimeToolReadinessSummary", "Seed discovery and missing-default import do not claim provider/model success; provider-backed behavior remains fail-closed until configured.",
         "progressEvents", List.of(mapOf("eventId", "seed-plan-visible", "status", selectedRow == null ? "blocked" : normalizedStatus, "summary", "Backend-authored seed workflow status with browser-safe provenance only.")),
-        "resultPreview", "Import may create missing starter defaults only; active behavior/lifecycle activation remains delegated to separate governed surfaces.",
+        "resultPreview", "Import may create missing starter defaults only; active behavior/lifecycle activation remains delegated to separate governed tasks.",
         "noDestructiveDelete", true,
         "noDirectActivation", true);
   }

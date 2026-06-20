@@ -35,7 +35,7 @@ export function UserAdminRoleChangePreviewSurface({ envelope, onAction }: Props)
         <section className="access-management-card role-change-preview" aria-label="Role and capability delta">
           <div className="surface-section-heading compact">
             <div><p className="eyebrow">Decision evidence</p><h4>Capability delta</h4></div>
-            <p>Commit actions are backend-authorized, idempotent, audit-traced, and may return approval, no-op, denial, or refreshed user detail surfaces.</p>
+            <p>Commit actions are backend-authorized, idempotent, audit-traced, and may return approval, no-op, denial, or refreshed user detail views.</p>
           </div>
           <dl>
             <div><dt>Added capabilities</dt><dd>{listOrNone(delta.added)}</dd></div>

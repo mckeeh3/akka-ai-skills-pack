@@ -10,7 +10,7 @@ type SurfaceStateFrameProps<T> = {
 
 export function SurfaceStateFrame<T>({ state, envelope, children, headerActions }: SurfaceStateFrameProps<T>) {
   if (state?.status === 'loading') {
-    return <section className="ds-card surface-frame loading" aria-busy="true"><p>Loading surface…</p></section>;
+    return <section className="ds-card surface-frame loading" aria-busy="true"><p>Loading view…</p></section>;
   }
   if (state?.status === 'empty') {
     return <section className="ds-card surface-frame empty"><p>{state.message}</p></section>;
@@ -19,12 +19,12 @@ export function SurfaceStateFrame<T>({ state, envelope, children, headerActions 
     return <section className="ds-card surface-frame forbidden" role="alert"><h3>Access denied</h3><p>{state.message}</p>{state.recovery && <p>{state.recovery}</p>}</section>;
   }
   if (state?.status === 'error') {
-    return <section className="ds-card surface-frame error" role="alert"><h3>Surface unavailable</h3><p>{state.message}</p>{state.retryable && <p>Retry may succeed.</p>}</section>;
+    return <section className="ds-card surface-frame error" role="alert"><h3>View unavailable</h3><p>{state.message}</p>{state.retryable && <p>Retry may succeed.</p>}</section>;
   }
 
   const visibleEnvelope = state?.status === 'ready' || state?.status === 'stale' ? state.value : envelope;
   if (!visibleEnvelope) {
-    return <section className="ds-card surface-frame empty"><p>No surface selected.</p></section>;
+    return <section className="ds-card surface-frame empty"><p>No view selected.</p></section>;
   }
 
   return (

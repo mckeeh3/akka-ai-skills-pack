@@ -22,7 +22,7 @@ export function StreamStatusItem({ item }: StreamStatusItemProps) {
       <h3 id={`${item.itemId}-title`}>{item.title ?? item.itemId}</h3>
       {item.body && <p>{item.body}</p>}
       {item.status && <span className={`status-pill ${tone}`}>{item.status.replace(/-/g, ' ')}</span>}
-      {item.surfaceId && <a href={`/ui?surfaceId=${encodeURIComponent(item.surfaceId)}`}>Open surface</a>}
+      {item.surfaceId && <a href={`/ui?surfaceId=${encodeURIComponent(item.surfaceId)}`}>Open view</a>}
       <TraceLinkList traceIds={item.traceIds} traceLinks={item.traceLinks} />
     </article>
   );

@@ -135,7 +135,7 @@ test('Governance/Policy inventory renderer keeps row actions backend-scoped, tra
   for (const marker of [
     'GovernancePolicyInventoryView',
     'Governance/Policy policy and proposal inventory',
-    'Rows open backend-authorized evidence or lifecycle surfaces',
+    'Rows open backend-authorized evidence or lifecycle views',
     'selected AuthContext, row visibility, redaction, and action availability are rechecked server-side',
     'Search visible policies and proposals',
     'action-governance-policy-list',

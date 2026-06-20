@@ -95,7 +95,7 @@ test('Agent Admin fixtures include catalog, detail, governed diffs, model refs, 
 
 test('Agent Admin surfaces preserve required UI states, approval gates, validation, redaction, and trace links', () => {
   for (const marker of [
-    'Loading surface',
+    'Loading view',
     'Empty',
     'TARGET_NOT_FOUND_OR_FORBIDDEN',
     'validation-error',

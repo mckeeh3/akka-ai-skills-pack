@@ -99,7 +99,7 @@ function ScopedHeader({ envelope }: { envelope: SurfaceEnvelope<ScopedAdminData>
       <div>
         <p className="eyebrow">User Admin · {scopeLabel(envelope)}</p>
         <h3 id={`${envelope.surfaceId}-heading`}>{envelope.title}</h3>
-        <p>{String(envelope.data.summary ?? envelope.data.boundaryNotice ?? envelope.data.safeBoundaryNotice ?? 'Backend-authored scope, capability, target, redaction, and audit policy govern this surface.')}</p>
+        <p>{String(envelope.data.summary ?? envelope.data.boundaryNotice ?? envelope.data.safeBoundaryNotice ?? 'Backend-authored scope, capability, target, redaction, and audit policy govern this view.')}</p>
       </div>
     </div>
   );
@@ -224,7 +224,7 @@ function ScopedInspection({ envelope, onAction }: Props) {
   const taskActions = envelope.actions.filter((action) => !isBranchReturnAction(envelope, action));
   return (
     <section className="user-admin-list-panel" aria-label="Scoped inspection">
-      <div className="surface-section-heading compact"><div><p className="eyebrow">Read-only inspection</p><h4>{String(envelope.data.recordLabel ?? envelope.title)}</h4></div><p>Consequential work opens dedicated task, confirmation, decision, workflow, or system-message surfaces. This inspection does not mutate access inline.</p></div>
+      <div className="surface-section-heading compact"><div><p className="eyebrow">Read-only inspection</p><h4>{String(envelope.data.recordLabel ?? envelope.title)}</h4></div><p>Consequential work opens dedicated task, confirmation, decision, workflow, or system messages. This inspection does not mutate access inline.</p></div>
       {envelope.data.fields && envelope.data.fields.length > 0 ? <div className="user-admin-readable-fields">{envelope.data.fields.map((field) => <p key={field.fieldId}><span>{field.label}</span><strong>{field.value}</strong></p>)}</div> : <p className="surface-empty-copy">{String(envelope.data.summary ?? 'No additional browser-safe fields were provided for this selected target.')}</p>}
       {taskActions.length > 0 && <div className="surface-action-row" aria-label="Scoped inspection task actions">{taskActions.map((action) => <button key={action.actionId} type="button" className="surface-action-link secondary" disabled={Boolean(action.disabled)} onClick={() => onAction?.(action, envelope.surfaceId, branchReturnInput(envelope))}>{action.label}</button>)}</div>}
     </section>

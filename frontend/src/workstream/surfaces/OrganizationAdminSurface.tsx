@@ -121,7 +121,7 @@ function OrganizationDirectory({ envelope, onAction }: Props) {
       <section className="user-admin-list-panel" aria-labelledby={`${envelope.surfaceId}-tasks-heading`}>
         <div className="surface-section-heading compact"><div><p className="eyebrow">Things I can do</p><h4 id={`${envelope.surfaceId}-tasks-heading`}>Organization tasks</h4></div></div>
         {envelope.actions.some((action) => action.actionId === 'action-open-organization-create' && !action.disabled) ? <button className="surface-action-link primary" type="button" onClick={() => run(envelope, onAction, 'action-open-organization-create', {})}>Create Organization</button> : <p className="surface-empty-copy">No backend-authorized create action is available in this selected context.</p>}
-        <p className="surface-empty-copy">Create, edit, suspend, and reactivate work is delegated to dedicated task surfaces. Directory rows open safe detail first.</p>
+        <p className="surface-empty-copy">Create, edit, suspend, and reactivate work is delegated to dedicated tasks. Directory rows open safe detail first.</p>
       </section>
     </div>
   );
@@ -148,7 +148,7 @@ function OrganizationDetail({ envelope, organization, onAction }: Props & { orga
         {organization && visibleActions.includes('reactivate') && <button className="surface-action-link secondary" type="button" disabled={!reactivateAction || Boolean(reactivateAction.disabled)} aria-disabled={!reactivateAction || Boolean(reactivateAction.disabled)} title={organizationActionUnavailableMessage(reactivateAction)} onClick={() => runAction(envelope, onAction, reactivateAction, { organizationId: organization.organizationId, recordId: organization.organizationId })}>Open reactivate confirmation</button>}
         <OrganizationBranchReturn envelope={envelope} onAction={onAction} />
       </div>
-      {organization && !renameAction && <p className="surface-empty-copy" role="status">Rename is unavailable because the backend did not include an authorized Organization rename task action for this detail surface.</p>}
+      {organization && !renameAction && <p className="surface-empty-copy" role="status">Rename is unavailable because the backend did not include an authorized Organization rename task action for this detail view.</p>}
     </section>
   );
 }
@@ -169,7 +169,7 @@ function OrganizationCreateForm({ envelope, onAction }: Props) {
     <form className="organization-admin-command-form" aria-label="Create Organization" onSubmit={submitCreate}>
       <h4>Create Organization</h4>
       {validationError && <p className="surface-state-inline validation-error" role="alert">{validationError}</p>}
-      <p className="surface-empty-copy">This single-purpose surface creates an active Organization/Tenant boundary through the protected workstream API. Organization Admin bootstrap stays in its separate backend-authorized task surface.</p>
+      <p className="surface-empty-copy">This single-purpose task creates an active Organization/Tenant boundary through the protected workstream API. Organization Admin bootstrap stays in its separate backend-authorized task.</p>
       <label>Name<input className="designed-control" value={createName} onChange={(event) => setCreateName(event.currentTarget.value)} required /></label>
       <label>Reason<input className="designed-control" value={reason} onChange={(event) => setReason(event.currentTarget.value)} placeholder="Reason for audit/work trace" /></label>
       <div className="organization-admin-lifecycle-actions">
@@ -300,7 +300,7 @@ function runAction(envelope: SurfaceEnvelope<OrganizationAdminSurfaceData>, onAc
 }
 
 function organizationActionUnavailableMessage(action: SurfaceAction | undefined): string | undefined {
-  if (!action) return 'The backend did not authorize this Organization task action for the current detail surface.';
+  if (!action) return 'The backend did not authorize this Organization task action for the current detail view.';
   return action.disabled?.message;
 }
 
