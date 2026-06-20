@@ -189,6 +189,15 @@ test('canonical surface components include dashboard, list/search, detail/edit, 
   assert.match(allSurfaceComponents, /outcome-metrics/);
 });
 
+test('list/search and task selects use enterprise designed-control styling hooks', () => {
+  assert.match(listSearchSurface, /<select className="designed-control"/);
+  assert.match(allSurfaceComponents, /<select className="designed-control/);
+  assert.match(surfaceStyles, /\.designed-control \{\n  width: 100%;/);
+  assert.match(surfaceStyles, /select\.designed-control \{\n  appearance: none;/);
+  assert.match(surfaceStyles, /select\.designed-control option \{/);
+  assert.match(surfaceStyles, /\.designed-control:focus-visible \{/);
+});
+
 test('detail-edit structured surface form controls use enterprise styling hooks', () => {
   assert.match(detailEditSurface, /<form className="surface-detail-edit-form"/);
   assert.match(detailEditSurface, /<div key=\{field\.fieldId\} className="surface-detail-field">/);

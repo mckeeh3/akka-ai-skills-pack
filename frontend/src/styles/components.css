@@ -1424,6 +1424,59 @@ button.dashboard-card.ds-card {
   padding: 0 var(--space-3);
 }
 
+.designed-control {
+  width: 100%;
+  min-height: var(--control-height);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 18%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, var(--color-surface-raised), color-mix(in srgb, var(--color-surface-raised) 86%, var(--color-surface-soft)));
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.24), 0 10px 24px rgb(15 23 42 / 0.045);
+  color: var(--color-text);
+  padding: 0 var(--space-3);
+  font: inherit;
+  font-weight: 650;
+}
+
+select.designed-control {
+  appearance: none;
+  color-scheme: inherit;
+  cursor: pointer;
+  padding-right: 2.75rem;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--color-primary-strong) 50%),
+    linear-gradient(135deg, var(--color-primary-strong) 50%, transparent 50%),
+    linear-gradient(180deg, var(--color-surface-raised), color-mix(in srgb, var(--color-surface-raised) 86%, var(--color-surface-soft)));
+  background-position:
+    calc(100% - 1.2rem) 50%,
+    calc(100% - 0.9rem) 50%,
+    0 0;
+  background-size: 0.32rem 0.32rem, 0.32rem 0.32rem, 100% 100%;
+  background-repeat: no-repeat;
+}
+
+select.designed-control option {
+  background-color: var(--color-surface-raised);
+  color: var(--color-text);
+}
+
+.designed-control:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 40%, var(--color-border));
+}
+
+.designed-control:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 24%, transparent);
+  outline-offset: 2px;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary), 0 14px 32px color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.designed-control:disabled {
+  cursor: not-allowed;
+  border-style: dashed;
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+}
+
 .surface-frame table {
   width: 100%;
   border-collapse: collapse;
