@@ -163,12 +163,14 @@ function DashboardIcon() {
 function CleanScreenIcon() {
   return (
     <svg className="clear-screen-button-icon" aria-hidden="true" viewBox="0 0 24 24" focusable="false">
-      <path d="M15 4 9.5 13" />
-      <path d="M7.5 13h5l1.5 5.5H6L7.5 13Z" />
-      <path d="M8 16h5" />
-      <path d="M7 18.5 5 21" />
-      <path d="M10 18.5 9 21" />
-      <path d="M13 18.5 15 21" />
+      <path d="M5.1 15.9c2.5-1.2 5.7-1.2 8.1 0 1.9 1 4.1.9 5.7-.1" />
+      <path d="M7.5 13.5c.6 1.8 2 3.1 4 3.6 1.3.3 2.6-.1 3.5-1.1l2.7-2.9c.5-.5.5-1.3 0-1.8-.4-.4-1.2-.5-1.7-.1l-1.5 1.3" />
+      <path d="M9.8 7.9V12" />
+      <path d="M12 6.8v5" />
+      <path d="M14.2 7.7v4.6" />
+      <path d="M16.3 9.3v3.3" />
+      <path d="M7.5 13.5 6.4 9.7c-.2-.7.2-1.4.9-1.6.6-.2 1.3.2 1.5.8l1 3.1" />
+      <path d="M6.1 18.6c3.8-1.1 7.8 1.8 11.8.2" />
     </svg>
   );
 }

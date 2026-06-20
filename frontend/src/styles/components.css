@@ -506,6 +506,20 @@
   stroke-width: 1.8;
 }
 
+.ds-button.ghost.clear-screen-button {
+  width: 3rem;
+  min-width: 3rem;
+  border-color: var(--color-ai);
+  background: var(--color-ai);
+  color: var(--color-inverse-text);
+}
+
+.clear-screen-button-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  stroke-width: 1.55;
+}
+
 .workstream-send-prompt-tooltip {
   position: absolute;
   right: 0;
