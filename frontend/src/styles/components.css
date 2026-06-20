@@ -2315,6 +2315,15 @@ button.attention-counter-card:focus-visible {
   padding: var(--space-3) var(--space-4);
 }
 
+.dashboard-evidence-drawer:not(:first-child) {
+  margin-block-start: var(--space-3);
+}
+
+.surface-frame.dashboard > .dashboard-evidence-drawer,
+.surface-frame.workflow-status > .dashboard-evidence-drawer {
+  margin-block-start: 0;
+}
+
 .dashboard-evidence-drawer summary {
   cursor: pointer;
   font-weight: 850;
