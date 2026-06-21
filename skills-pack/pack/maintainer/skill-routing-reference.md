@@ -187,6 +187,8 @@ Short reusable version:
 
 Use the skill library as a visible 3-stage hierarchy:
 
+This maintainer routing stage model starts after business-level intake. For SMB owner/operator interviews and raw business-process capture, use `business-intent-interview` and `business-intent-to-app-input` first; those Stage 1 business-intake artifacts are app-description input, not accepted architecture.
+
 ### Stage 1: Intent and architecture
 Start here when you have a PRD, requirements doc, user story, process description, API sketch, UI brief, or similar high-level input and still need to derive the Akka solution shape. For high-level product inputs, apply the AI-first SaaS interpretation rule above, interpret generated full-stack apps as agent workstream applications, then identify governed backend capabilities before mapping the work to Akka components.
 

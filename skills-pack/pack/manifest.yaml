@@ -33,6 +33,12 @@ install:
 
 content:
   skills:
+    - id: business-intent-interview
+      path: skills/business-intent-interview
+      category: focused
+    - id: business-intent-to-app-input
+      path: skills/business-intent-to-app-input
+      category: focused
     - id: app-description-auth-security
       path: skills/app-description-auth-security
       category: focused
