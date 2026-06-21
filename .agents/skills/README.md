@@ -41,6 +41,13 @@ Do not place new product-specific Java code in legacy top-level `security`, `age
 
 For high-level product input, treat the target as a secure AI-first SaaS **agent workstream application** unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material.
 
+For early SMB business discovery, use the Stage 1 interview skills before app-description decomposition:
+
+- `business-intent-interview` — guide an interactive interview with SMB owners or representatives, extrapolate likely business-specific processes and adjacent CRM/ERP/operations needs, and capture confirmed vs inferred input.
+- `business-intent-to-app-input` — turn interview notes, transcripts, emails, or messy stakeholder discussion into a clean `docs/input/**` artifact for later ingestion.
+
+Stage 1 output is business-authored / agent-assisted input. It is not app-description current intent or implementation design. For the shared doctrine, read `docs/business-intent-interview-process.md`.
+
 Security is mandatory. Load `core-saas-foundation` early whenever generated-app foundation rules are in scope. The mandatory secure SaaS foundation includes WorkOS/AuthKit browser authentication, local Akka-owned authorization state, account/profile/settings/membership/role/capability state, customer-facing Organization concepts backed by tenant isolation, `/api/me`, email-invite onboarding with Resend, backend authorization checks, tenant/customer scoping, support access, admin audit, audit/work traces, workstream UI surfaces, tenant-isolation tests, and frontend secret boundaries.
 
 AI-first managed agents / governed runtime agent foundation is mandatory for model-backed workstream behavior. Use `docs/governed-agent-substrate.md` for the shared record/runtime/trace model; focused agent-governance skills own only their specific slice.
@@ -50,6 +57,8 @@ Scope control: load only the smallest companion set needed for the current user 
 Canonical doctrine:
 
 - `docs/intent-compiler.md`
+- `docs/business-intent-interview-process.md`
+- `docs/business-extension-requirements-guidance.md`
 - `docs/current-intent-model.md`
 - `docs/incremental-intent-processing.md`
 - `docs/intent-to-realization-flow.md`
