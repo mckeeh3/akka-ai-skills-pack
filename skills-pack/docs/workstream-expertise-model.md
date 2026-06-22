@@ -35,7 +35,7 @@ A bundle must name:
 | Skill documents | Procedural guidance the model may load for how to perform workstream tasks. |
 | Reference documents | Durable policy/process/product/domain facts the model may cite or consult; not procedural skill instructions by default. |
 | Expertise manifest | Compact per-agent manifest entries for available skills and references, assembled into prompt context without full document bodies. |
-| Dashboard and surface graph | Role-specific dashboard purpose, attention categories, surface graph nodes/edges, system-message result surfaces, and prompt/surface-request shortcuts the agent should understand. |
+| Dashboard and surface graph | Role-specific dashboard purpose, attention categories, surface graph nodes/edges, deterministic surface intent routes, system-message result surfaces, and prompt/surface-request shortcuts the agent should understand. |
 | Capability map | Governed backend capabilities the workstream may request, propose, or call. |
 | Governed-tool map | Governed-tools inside those capabilities, with exposure as browser-tools, agent-tools, workflow-tools, timer-tools, consumer-tools, MCP-tools, or internal-tools. |
 | Tool boundary | ToolPermissionBoundary and model-facing agent-tools allowed for this agent, including `readSkill` and any reference loaders. |
@@ -143,7 +143,7 @@ app-description/12-workstreams/
     <functional-agent-id>.md
 ```
 
-Each `<functional-agent-id>.md` should capture the bundle contract: role-specific dashboard semantics, surface graph help, prompt intent, model binding, skills, references, manifests, capability map, governed-tool map, tool boundary, surfaces, denials/user help, traces, governance owner, default-content policy, and tests. Cross-layer files should link to it rather than redefining it:
+Each `<functional-agent-id>.md` should capture the bundle contract: role-specific dashboard semantics, surface graph help, deterministic surface intent routes and no-mutation prefill behavior, prompt intent, model binding, skills, references, manifests, capability map, governed-tool map, tool boundary, surfaces, denials/user help, traces, governance owner, default-content policy, and tests. Cross-layer files should link to it rather than redefining it:
 
 - `10-capabilities/**` owns detailed capability contracts.
 - `15-operating-model/**` owns governed runtime agent behavior and lifecycle rules.
@@ -162,7 +162,7 @@ A functional agent is not expertise-ready until:
 - [ ] prompt intent, governed prompt refs, model binding, skills, references, and compact manifest entries are listed;
 - [ ] model binding names an explicit `ModelConfigRef`/`ModelPolicy` pair or an explicit inherited governed default, including allowed modes, fallback/no-fallback behavior, provider secret boundary, and model-use trace facts;
 - [ ] references are distinguished from procedural skills;
-- [ ] role-specific dashboard purpose, attention categories, and surface graph help are specified;
+- [ ] role-specific dashboard purpose, attention categories, surface graph help, and surface intent route familiarity are specified;
 - [ ] assigned capabilities, governed-tools, and exposure channels are mapped;
 - [ ] `ToolPermissionBoundary` covers loaders and all model-facing agent-tools;
 - [ ] denied unassigned skill/reference loads are specified;

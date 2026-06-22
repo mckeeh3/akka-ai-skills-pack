@@ -21,6 +21,7 @@ Use this skill when the authoritative app-description/spec artifacts are ready t
 - `../docs/minimum-ai-first-saas-app.md`
 - `../docs/full-core-foundation-readiness.md`
 - `../docs/requirements-to-workstream-development-process.md`
+- `../docs/workstream-surface-intent-routing.md` when realizing composer-enabled workstreams or create/edit/task surfaces
 - `../docs/retired-content-boundaries.md`
 - focused Akka, web UI, auth/security, agent, workflow/entity/view/endpoint/test skills for the selected slice
 
@@ -48,6 +49,7 @@ Route from the selected current-intent graph slice to the smallest focused skill
 - app/security foundation: `core-saas-foundation`, `akka-workos-user-auth`, `akka-basic-user-admin`, `akka-saas-invitation-onboarding`, `akka-resend-email-service`
 - backend capability/component work: `capability-first-backend`, `akka-solution-decomposition`, then entity/workflow/view/consumer/timer/endpoint skills
 - model-backed workstream behavior: `akka-agents` and focused governance/tool/trace/testing skills
+- composer-to-surface routing and prefill-only workstream behavior: `agent-workstream-apps`, `app-description-surface-modeling`, `akka-web-ui-apps`, and `capability-first-backend`
 - browser UI: `akka-web-ui-apps` and focused UI companions
 - planning queue updates: pending task/question/change-request skills
 
@@ -56,6 +58,7 @@ Route from the selected current-intent graph slice to the smallest focused skill
 Depending on scope, update all applicable artifacts together:
 
 - Java domain/application/api code and resources
+- deterministic surface intent routing/catalog code for composer-enabled workstreams when in scope, preserving no-direct-command behavior before user submit
 - frontend source under `frontend/**` and rebuilt static resources when required
 - app-description extensions or readiness state when implementation discoveries change the authoritative model
 - specs/task brief/pending queue status
@@ -68,7 +71,7 @@ Final handoff must include:
 
 - generated/changed files grouped by backend, frontend, description/spec/docs/tests
 - runtime path exercised and commands run with exit codes
-- runtime evidence for feature-bearing changes: readiness level, browser/surface/API/Akka path, role/AuthContext/tenant setup, denial/provider fail-closed coverage, trace/audit evidence, and manual/browser/API smoke result
+- runtime evidence for feature-bearing changes: readiness level, browser/surface/API/Akka path, role/AuthContext/tenant setup, deterministic route/prefill/no-mutation evidence when applicable, denial/provider fail-closed coverage, trace/audit evidence, and manual/browser/API smoke result
 - what passed, failed, or could not be run
 - description/spec assumptions or drift discovered
 - incomplete/blocked items with recommended next task

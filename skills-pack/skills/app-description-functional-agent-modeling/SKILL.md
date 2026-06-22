@@ -21,6 +21,7 @@ Read these first if present:
 - `../docs/app-description-skill-output-contracts.md`
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/workstream-contract.md` for compact workstream fields, type-vs-instance terminology, ownership/reuse rules, id taxonomy, and readiness labels
+- `../docs/workstream-surface-intent-routing.md` for deterministic composer-to-surface routing and prefill-only behavior
 - `../docs/workstream-manifest-schema.md` for any target-project machine-readable workstream index when present
 - `../docs/minimum-implementable-workstream-slice.md` for one-slice implementation/task briefs
 - `../docs/workstream-attention-contracts.md` for attention item, producer, lifecycle, aggregation, and tests
@@ -77,10 +78,10 @@ Use `../docs/app-description-skill-output-contracts.md` for the detailed output 
 
 ## Modeling rules
 
-1. **Functional agents are verticals.** Model each as a role-authorized work area with workstream id/responsibility, exactly-one functional-agent ownership, workstream definition vs runtime instance semantics, readiness level, attention needs, role-specific dashboard surfaces, a surface graph, capabilities/governed-tools, workstream expertise, internal workstream agent graph candidates, and workstream icon semantics. Do not model it as an Akka `Agent` class first.
+1. **Functional agents are verticals.** Model each as a role-authorized work area with workstream id/responsibility, exactly-one functional-agent ownership, workstream definition vs runtime instance semantics, readiness level, attention needs, role-specific dashboard surfaces, a surface graph, deterministic surface intent routes for composer-enabled work, capabilities/governed-tools, workstream expertise, internal workstream agent graph candidates, and workstream icon semantics. Do not model it as an Akka `Agent` class first.
 2. **Attention is first-class.** Each workstream must answer `what needs my attention?` for authorized users and define backend-owned attention items, producer idempotency, lifecycle, source/evidence refs, redaction, traces, stale/recompute behavior, and how counts/projections feed the dashboard, left rail, and My Account before UI badges or routes are described.
 3. **Backend capabilities remain authoritative.** A functional agent can call or expose capabilities/governed-tools, but prompt text, rail visibility, workstream expertise text, and tool descriptions never authorize work.
-4. **Surfaces are structured artifacts.** Prefer dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, evidence bundles, autonomous task progress/result cards, version cards, and outcome panels over free-text-only responses.
+4. **Surfaces are structured artifacts.** Prefer dashboards, forms, tables, charts, decision cards, diffs, audit timelines, detail cards, approvals, workflow status, evidence bundles, autonomous task progress/result cards, version cards, and outcome panels over free-text-only responses. Each composer-enabled functional agent should know its workstream surface catalog so high-confidence user prompts can open or prepopulate surfaces before model fallback, without submitting commands.
 5. **Autonomous task candidates stay governed.** Durable model-driven investigation, review, summary, monitoring/remediation, or specialist follow-up should be modeled as internal-agent/autonomous task candidates with lifecycle notifications and capability boundaries; request-based Akka `Agent` remains the default for immediate user-facing turns.
 6. **Foundation agents are built in.** SaaS Foundation App scope includes the foundation-domain functional agents — My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy — with role authority, structured surfaces, durable workstream logs, trace links, capability/tool boundaries, and denial behavior. Business-domain agents extend this set rather than replacing it. If a task intentionally defers or removes a foundation behavior, record that scope explicitly.
 7. **Keep internal agents separate.** Classifiers, summarizers, evaluators, proposal drafters, and governance reviewers may support a functional agent, but they do not become left-rail work areas unless they represent a user-facing responsibility boundary.
@@ -92,7 +93,7 @@ Use `../docs/app-description-skill-output-contracts.md` for the detailed output 
 When a functional-agent change adds or changes:
 
 - a callable operation/query, update `domains/<domain>/capabilities/**` via `app-description-capability-modeling`;
-- surfaces, browser actions, or controls that open surfaces/workstreams, update `domains/<domain>/workstreams/<workstream>/surfaces/**` via `app-description-surface-modeling`, plus workstream realization files and surface-to-capability traceability; treat buttons, links, rows, cards, and icons that open protected workstreams/surfaces as surface-request actions such as `open_workstream`;
+- surfaces, browser actions, controls, or composer surface-intent routes that open/prepopulate surfaces/workstreams, update `domains/<domain>/workstreams/<workstream>/surfaces/**` via `app-description-surface-modeling`, plus workstream realization files and surface-to-capability traceability; treat buttons, links, rows, cards, icons, and high-confidence prompt aliases that open protected workstreams/surfaces as surface-request actions such as `open_workstream` or `show_surface`;
 - model binding, provider alias, fallback, or model policy, update the relevant global agent/model policy definition and workstream agent binding, readiness state, tests, and trace expectations;
 - prompt intent, skills, tools, or behavior documents, update global governed-document definitions and relevant workstream agent/tool bindings;
 - approval, policy, escalation, or autonomy, update policy definitions/bindings, behavior, auth/security, tests, and observability graph nodes;
@@ -116,7 +117,7 @@ Route onward as needed:
 Avoid:
 - treating functional agents as chatbot personas bolted onto pages;
 - making page/screen hierarchy the primary app-description structure;
-- omitting role-specific dashboards, surface graph edges, internal workstream agent graph candidates, or workstream expertise when the workstream needs them;
+- omitting role-specific dashboards, surface graph edges, deterministic surface intent routes, internal workstream agent graph candidates, or workstream expertise when the workstream needs them;
 - granting authority through prompt instructions, hidden UI state, rail visibility, or expertise text;
 - listing tools without linking them to governed capabilities and governed-tool exposure channels;
 - omitting tenant/customer scope or AuthContext;
@@ -132,7 +133,7 @@ Before finishing a functional-agent update, verify:
 - [ ] each user-facing functional agent has workstream id/responsibility, required managed-agent definition id, definition-vs-instance semantics, readiness level, purpose, authority, workstream icon metadata with tooltip, attention/dashboard contract, surfaces, capabilities, and when LLM-enabled, a workstream expert bundle with prompt intent, explicit `ModelConfigRef`/`ModelPolicy` or inherited governed default model binding, skills, references, compact manifest, tool boundary/loaders, traces, and tests;
 - [ ] functional agents are distinguished from internal agents;
 - [ ] every side-effecting action maps to a governed capability and backend authorization rule;
-- [ ] surfaces are typed and linked to capability-backed actions;
+- [ ] surfaces are typed and linked to capability-backed actions and deterministic no-mutation composer routes where applicable;
 - [ ] traceability maps link functional agents to capabilities, surfaces, UI, tests, and observability;
 - [ ] `tools/validate-workstream-contracts.sh <app-description-dir>` would pass for app-description trees claiming workstream-contract completeness;
 - [ ] no page-first or chatbot-bolt-on structure became the primary model.

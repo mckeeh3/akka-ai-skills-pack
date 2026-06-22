@@ -6,6 +6,7 @@ Use this index to avoid loading every UI document. For generated AI-first SaaS, 
 
 - `./workstream-ui-reference-architecture.md` — primary UI architecture and source layout reference.
 - `./structured-surface-contracts.md` — surface payload/action/event/auth/trace contracts.
+- `./workstream-surface-intent-routing.md` — deterministic composer-to-surface routing and safe editable prefill behavior.
 - `./web-ui-style-guide.md` — canonical AI-first SaaS visual/style system.
 - `./web-ui-api-contract-patterns.md` — typed browser API and DTO/error patterns.
 - `./web-ui-frontend-project-integration.md` — React/Vite frontend build and Akka static-resource hosting.

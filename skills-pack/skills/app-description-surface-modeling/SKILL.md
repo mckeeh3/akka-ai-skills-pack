@@ -15,6 +15,7 @@ Use this skill to update authoritative app-description surface definitions and w
 - `../docs/intent-compiler-skill-contracts.md`
 - `../docs/app-description-skill-output-contracts.md`
 - `../docs/structured-surface-contracts.md`
+- `../docs/workstream-surface-intent-routing.md`
 - `../docs/workstream-contract.md`
 - `../docs/workstream-attention-contracts.md`
 - `../docs/workstream-ui-reference-architecture.md`
@@ -37,6 +38,7 @@ For each surface, define:
 - loading, empty, ready, submitting, success, validation-error, forbidden, conflict, stale/reconnect, partial-data, and failure states as applicable
 - visible and hidden/denied actions
 - stable `actionId`, browser action/tool id, governed backend capability/tool id, idempotency/correlation behavior, result surface, and approval gate for each consequential action; keep ids and implementation names out of normal user copy unless the actor is in a support, auditor, admin, or developer-facing diagnostic context
+- deterministic surface intent routes for composer-enabled workstreams: prompt examples, target surface, safe editable prefill fields, ambiguity behavior, required capability, no-mutation guarantee, denial/system-message result, and route trace
 - target/result surface or typed `system_message`
 - trace/audit/work-trace links, redaction rules, and which trace/evidence details are summarized for users versus exposed only through role-gated drilldowns
 - accessibility/responsive expectations
@@ -52,6 +54,7 @@ For each surface, define:
 - Model dashboard attention and surface graph edges before conventional route/page details.
 - For any durable collection of domain things such as users, customers, orders, policies, agents, invitations, or governed documents, use the canonical collection-object surface progression in `../docs/structured-surface-contracts.md` by default. Name surfaces domain-semantically, not generically: use names such as `customerDirectory`, `customerProfile`, `newCustomerIntake`, `customerEditForm`, or `customerArchiveConfirmation` instead of `thing.list/show/create/edit/delete`.
 - Treat collection-object discovery as delegated progression: list/search surfaces discover and select; every listed row/card is clickable and keyboard-operable; selection opens the object's lifecycle-appropriate show/inspection surface; show/inspection surfaces expose task entry points; separate create, edit, destructive lifecycle, and domain-specific single-action surfaces perform consequential mutations.
+- For each create/edit/task surface in a composer-enabled workstream, define whether high-confidence natural-language requests may open the surface with prefilled fields. Prefill is advisory visible state only: the route must not submit commands, approve decisions, send invitations/emails, activate behavior, revoke/archive records, or otherwise mutate state.
 - Keep each surface single-purpose. Do not combine list, show, create, edit, and destructive lifecycle behavior into one broad surface. Use separate edit and delete/archive/revoke/deactivate/cancel confirmation surfaces, and prefer domain lifecycle language over physical delete unless true deletion is required.
 - Treat every workstream dashboard as an action router, not a report: ready dashboard content must be ordered top-to-bottom as **things that need my attention** followed by **things I can do**.
 - Aside from section labels, control labels, and minimal explanatory microcopy, model only actionable/clickable dashboard indicators. Cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons must declare the surface/action they open, the governed capability/browser-tool if protected, and the request/result surfaces they append. Passive FYI metrics, inert charts, decorative status tiles, and content that does not answer “what can I do with this?” belong in report/detail/analytics surfaces or must become governed drilldowns.
@@ -71,6 +74,7 @@ For each surface, define:
 Update or propose updates to the app-description with:
 
 - new/changed surface contracts
+- surface intent routing catalog entries for composer-enabled workstreams, including target surfaces, prefill mapping, ambiguity handling, no-mutation guarantees, and tests
 - for each durable collection object in scope, the domain-semantic list/show/create/edit/destructive-lifecycle surface progression, including lifecycle-state-dependent show/task routing and any explicit override from the canonical pattern
 - a surface-description sufficiency review result for each new or substantially changed browser-rendered surface, including whether another description pass is required before code generation and whether the default view avoids exposing internal implementation details that do not help the target SaaS user
 - affected capability/security/test/observability links

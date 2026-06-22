@@ -15,7 +15,7 @@ Create or update a repo-ready planning package that lets later harness sessions 
 
 - cite current-intent graph provenance in solution plans, specs, backlogs, task briefs, pending questions, and pending tasks;
 - interpret product intent through the secure AI-first SaaS operating model when generated-app scope is in play;
-- derive workstreams, attention/dashboard contracts, surface graph, governed tools, and backend capabilities before Akka substrates;
+- derive workstreams, attention/dashboard contracts, surface graph, deterministic surface intent routing, governed tools, and backend capabilities before Akka substrates;
 - produce a master solution plan with fixed Java base package `ai.first`;
 - split broad work into module/sprint specs or smaller vertical slice specs;
 - create matching build backlogs and, when needed, leaf task briefs;
@@ -75,6 +75,7 @@ Read first when present/relevant:
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/workstream-expertise-model.md`
 - `../docs/structured-surface-contracts.md`
+- `../docs/workstream-surface-intent-routing.md`
 - `../docs/agent-workstream-design-review-checklist.md`
 - `../docs/pending-question-queue.md`
 - `../docs/pending-task-queue.md`
@@ -138,7 +139,7 @@ Before finishing, verify:
 - current-intent graph provenance is recorded for generated specs, backlogs, questions, and tasks;
 - existing app-description/specs/source constraints were preserved;
 - foundation obligations are included or explicitly out of scope;
-- workstreams, surfaces, capabilities, governed tools, and Akka components are linked;
+- workstreams, surfaces, deterministic surface intent routes, capabilities, governed tools, and Akka components are linked;
 - specs/backlogs/tasks are small enough for focused runs;
 - pending questions block only affected work;
 - pending tasks have required reads, focused skills, acceptance checks, and validation path;

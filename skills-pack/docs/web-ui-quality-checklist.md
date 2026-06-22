@@ -41,6 +41,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 
 - [ ] Structured surfaces, when used, have explicit payload, action, event, auth, trace/audit, and rendering-test contracts per `./structured-surface-contracts.md`.
 - [ ] Every surface action and dashboard work-object interaction maps to a governed backend capability, including read/query and surface-request actions; frontend visibility, disabled controls, prompt text, and route names are not treated as authorization.
+- [ ] Composer-enabled workstreams have deterministic surface intent routing for high-confidence surface opens/prefills before model fallback; matched routes do not invoke the model, do not mutate state, and render editable prefill with user-review copy.
 - [ ] Browser-facing DTOs are intentional and not accidental domain or implementation leaks.
 - [ ] DTOs distinguish default user-visible fields, user-requested drilldowns, admin/support/auditor diagnostics, and internal-only metadata that should never be sent to ordinary browser views.
 - [ ] API routes use clear `/api/...` paths.
@@ -139,7 +140,7 @@ For generated SaaS applications, the browser UI inherits the mandatory secure fo
 - [ ] Served JS/CSS assets correspond to the frontend source build output.
 - [ ] Endpoint tests fetch packaged HTML/CSS/JS through `httpClient`.
 - [ ] Tests assert route references for API/SSE/WebSocket dependencies without promoting page routes as the primary app model.
-- [ ] Workstream contract tests cover shell, rail, composer, structured surfaces, dashboard work-object interactions, request/result append behavior, capability actions, deep links, forbidden/disabled states, stale/realtime behavior, and the User Admin reference vertical where foundation admin UI is in scope.
+- [ ] Workstream contract tests cover shell, rail, composer, deterministic surface intent routing, structured surfaces, dashboard work-object interactions, request/result append behavior, capability actions, deep links, forbidden/disabled states, stale/realtime behavior, and the User Admin reference vertical where foundation admin UI is in scope.
 - [ ] UX review notes or tests cover key loading, empty, error, validation, success states, structured-surface form control styling, and immediate named-theme preview when those surfaces are in scope.
 - [ ] Optional source drift check has been run when practical: `skills-pack/tools/validate-web-ui-style-contract.py --warn-only .` from the target project root, with warnings reconciled or documented.
 - [ ] Backend tests pass for changed endpoint/component behavior.
