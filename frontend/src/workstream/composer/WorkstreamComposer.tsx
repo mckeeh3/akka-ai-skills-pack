@@ -15,6 +15,7 @@ type WorkstreamComposerProps = {
 
 export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSurfaceId, isSubmitting = false, onSubmit, onShowDashboard, onClearScreen }: WorkstreamComposerProps) {
   const [draft, setDraft] = useState('');
+  const [isMultiline, setIsMultiline] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const availability = useMemo(() => composerAvailability(me, selectedAgent), [me, selectedAgent]);
   const disabledReason = availability.status === 'disabled' ? availability.reason : undefined;
@@ -48,6 +49,8 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
     if (!input) return;
     input.style.height = 'auto';
     input.style.height = `${input.scrollHeight}px`;
+    const lineHeight = Number.parseFloat(window.getComputedStyle(input).lineHeight) || 22;
+    setIsMultiline(input.scrollHeight > lineHeight * 2.2);
   }, [draft]);
 
   useEffect(() => {
@@ -113,7 +116,7 @@ export function WorkstreamComposer({ me, authContext, selectedAgent, attachedSur
   }
 
   return (
-    <form className="command-strip workstream-composer" aria-label="Persistent workstream composer" onSubmit={submit}>
+    <form className={`command-strip workstream-composer${isMultiline ? ' composer-multiline' : ''}`} aria-label="Persistent workstream composer" onSubmit={submit}>
       <div className="composer-input-wrap">
         <label htmlFor="workstream-composer-input" className="sr-only">Ask {selectedAgent?.label ?? 'a functional agent'}</label>
         <textarea

@@ -435,13 +435,24 @@
 .workstream-composer {
   pointer-events: auto;
   overflow: visible;
+  width: min(100%, 76rem);
+  margin-inline: auto;
   grid-template-columns: minmax(0, 1fr) auto auto auto;
-  align-items: end;
+  grid-template-areas: "input send dashboard clear";
+  align-items: center;
+  gap: var(--space-3);
   border-color: color-mix(in srgb, var(--color-ai) 24%, var(--color-border));
-  border-radius: var(--radius-xl);
+  border-radius: 1.6rem;
   background: color-mix(in srgb, var(--color-surface-glass) 96%, transparent);
   box-shadow: var(--shadow-command);
   backdrop-filter: blur(20px) saturate(1.16);
+}
+
+.workstream-composer.composer-multiline {
+  grid-template-areas:
+    "input input input input"
+    ". send dashboard clear";
+  align-items: end;
 }
 
 .workstream-composer::before {
@@ -454,20 +465,33 @@
   border-color: color-mix(in srgb, var(--color-ai) 44%, var(--color-border));
 }
 
-.composer-input-wrap { min-width: 0; }
+.composer-input-wrap {
+  grid-area: input;
+  min-width: 0;
+}
 
 .workstream-composer textarea {
   width: 100%;
-  min-height: 3rem;
+  min-height: 2.75rem;
   max-height: 8rem;
   border: 0;
   outline: 0;
   resize: none;
   overflow-y: auto;
   background: transparent;
+  box-shadow: none;
   color: var(--color-text);
   padding: 0.7rem 0.15rem;
   line-height: 1.35;
+}
+
+.workstream-composer textarea:hover,
+.workstream-composer textarea:focus-visible,
+.workstream-composer textarea.designed-control:focus-visible {
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  background: transparent;
 }
 
 .workstream-composer textarea::placeholder { color: var(--color-muted); }
@@ -485,8 +509,12 @@
 }
 
 .send-prompt-button {
+  grid-area: send;
   overflow: visible;
 }
+
+.show-dashboard-button { grid-area: dashboard; }
+.clear-screen-button { grid-area: clear; }
 
 .send-prompt-button,
 .show-dashboard-button {
@@ -1800,8 +1828,13 @@ textarea.designed-control.auto-expanding-textarea {
   .workstream-shell:has(.workstream-functional-agent-rail.collapsed) .workstream-composer-region {
     left: var(--space-3);
   }
-  .workstream-composer {
-    grid-template-columns: minmax(0, 1fr) auto auto;
+  .workstream-composer,
+  .workstream-composer.composer-multiline {
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-areas:
+      "input input input input"
+      ". send dashboard clear";
+    border-radius: var(--radius-xl);
   }
   .workstream-item.user-request,
   .workstream-item.surface-request {
