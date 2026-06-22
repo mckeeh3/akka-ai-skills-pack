@@ -57,7 +57,7 @@ class AttentionServiceTest {
   void authorizedReadsReturnWorkstreamMyAccountAndRailProjectionsFromSharedBackendState() {
     var actor = actor("admin@example.test", "membership-admin", "corr-read");
     service.upsertItem(actor, item("attention-agent", "tenant-1", "agent-agent-admin", "agent_admin.list_definitions", AttentionCategory.PROVIDER_READINESS, AttentionSeverity.BLOCKED), "corr-upsert-agent");
-    service.upsertItem(actor, item("attention-audit", "tenant-1", "agent-audit-trace", "audit.trace.read", AttentionCategory.AUDIT_FAILURE_EVIDENCE, AttentionSeverity.WARNING), "corr-upsert-audit");
+    service.upsertItem(actor, item("attention-audit", "tenant-1", "audit-trace-agent", "audit.trace.read", AttentionCategory.AUDIT_FAILURE_EVIDENCE, AttentionSeverity.WARNING), "corr-upsert-audit");
 
     var workstream = service.listWorkstreamItems(actor, "agent-agent-admin", "corr-workstream");
     var myAccount = service.listMyAccountItems(actor, "corr-my-account");
@@ -67,7 +67,7 @@ class AttentionServiceTest {
     assertEquals(2, myAccount.totalAttentionCount());
     assertEquals(AttentionSeverity.BLOCKED, myAccount.highestSeverity());
     assertTrue(myAccount.workstreams().stream().anyMatch(summary -> summary.workstreamId().equals("agent-agent-admin") && summary.attentionCount() == 1));
-    assertTrue(rail.stream().anyMatch(summary -> summary.workstreamId().equals("agent-audit-trace") && summary.items().isEmpty()));
+    assertTrue(rail.stream().anyMatch(summary -> summary.workstreamId().equals("audit-trace-agent") && summary.items().isEmpty()));
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("ATTENTION_LIST_MY_ACCOUNT_ITEMS") && event.correlationId().equals("corr-my-account")));
   }
 

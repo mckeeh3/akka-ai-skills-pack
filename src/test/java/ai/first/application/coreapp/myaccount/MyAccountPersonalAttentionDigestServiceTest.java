@@ -60,7 +60,7 @@ class MyAccountPersonalAttentionDigestServiceTest {
     seed("employee@example.test", "membership-employee", FoundationRole.TENANT_EMPLOYEE);
     owner = resolver.resolveMe(new WorkosIdentity("workos-owner", "owner@example.test", "Owner"), null, "corr-owner");
     employee = resolver.resolveMe(new WorkosIdentity("workos-employee", "employee@example.test", "Employee"), null, "corr-employee");
-    seedAttention(owner, "attention-visible-audit", "agent-audit-trace", "audit.trace.read", AttentionSeverity.WARNING);
+    seedAttention(owner, "attention-visible-audit", "audit-trace-agent", "audit.trace.read", AttentionSeverity.WARNING);
     seedAttention(owner, "attention-hidden-admin", "agent-agent-admin", "agent_admin.list_definitions", AttentionSeverity.BLOCKED);
   }
 
@@ -89,7 +89,7 @@ class MyAccountPersonalAttentionDigestServiceTest {
     assertEquals(0, task.authorizedAttentionCount());
     assertFalse(task.evidenceRefs().stream().anyMatch(ref -> ref.contains("attention-visible-audit")));
     assertFalse(task.evidenceRefs().stream().anyMatch(ref -> ref.contains("attention-hidden-admin")));
-    assertFalse(task.summary().contains("agent-audit-trace"));
+    assertFalse(task.summary().contains("audit-trace-agent"));
     assertFalse(task.summary().contains("agent-agent-admin"));
   }
 
@@ -113,7 +113,7 @@ class MyAccountPersonalAttentionDigestServiceTest {
     assertTrue(digestAttention.summary().contains("no source attention acknowledgement"));
     assertEquals(AttentionItemStatus.OPEN, attentionRepository.find("tenant-1", "attention-visible-audit").orElseThrow().status());
 
-    var completed = task.withWorkerUpdate(MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, 100, "Model-backed redacted digest ready for review; no direct mutation.", null, 2, task.evidenceRefs(), List.of("personal_attention_digest_section:agent-audit-trace"), List.of("trace-complete"), Instant.now(clock));
+    var completed = task.withWorkerUpdate(MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED, 100, "Model-backed redacted digest ready for review; no direct mutation.", null, 2, task.evidenceRefs(), List.of("personal_attention_digest_section:audit-trace-agent"), List.of("trace-complete"), Instant.now(clock));
     repository.save(completed);
     var projected = digests.read(owner, completed.digestTaskId(), "corr-events-read");
 
@@ -147,7 +147,7 @@ class MyAccountPersonalAttentionDigestServiceTest {
         null,
         2,
         List.of("attention_item:attention-visible-audit", "attention_item:attention-hidden-admin"),
-        List.of("personal_attention_digest_section:agent-audit-trace"),
+        List.of("personal_attention_digest_section:audit-trace-agent"),
         List.of("autonomous_task:" + task.autonomousAgentTaskId(), "trace-model-backed-personal-attention-digest-result"));
 
     var completed = digests.read(owner, task.digestTaskId(), "corr-autonomous-digest-read");

@@ -59,7 +59,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
     availability: 'visible'
   },
   {
-    functionalAgentId: 'agent-audit-trace',
+    functionalAgentId: 'audit-trace-agent',
     label: 'Audit/Trace',
     purpose: 'Inspect admin audit events, work traces, decisions, and evidence links.',
     icon: 'timeline',

@@ -1662,7 +1662,7 @@ function envelope<TData>(surfaceId: string, surfaceType: string, title: string, 
     surfaceVersion: 'v1',
     title,
     ownerFunctionalAgentId,
-    reusableByFunctionalAgentIds: ownerFunctionalAgentId === 'agent-admin-agent' ? ['agent-audit-trace', 'governance-policy-agent'] : ['agent-audit-trace'],
+    reusableByFunctionalAgentIds: ownerFunctionalAgentId === 'agent-admin-agent' ? ['audit-trace-agent', 'governance-policy-agent'] : ['audit-trace-agent'],
     authContext,
     correlationId: `corr-${surfaceId}`,
     traceIds: [`trace-${surfaceId}`],
@@ -1778,7 +1778,7 @@ export const myAccountSurfaceActions = {
     governedToolId: myAccountCapabilities.viewOwnTraceRefs,
     browserToolId: 'action-open-audit-trace',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-audit-timeline', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-audit-trace-timeline', openPlacement: 'inline' },
     audit: { eventType: 'AuditTimelineOpened', traceRequired: true }
   },
   signOut: {
@@ -1815,7 +1815,7 @@ export const myAccountDashboardSurface = envelope(
     nextSteps: [
       { workstreamId: 'user-admin-agent', label: 'Review users and invitations', allowed: true, capabilityIds: ['user_admin.view_overview'], traceId: 'trace-my-account-next-user-admin' },
       { workstreamId: 'agent-admin-agent', label: 'Review governed agent readiness', allowed: true, capabilityIds: ['agent_admin.list_definitions'], traceId: 'trace-my-account-next-agent-admin' },
-      { workstreamId: 'agent-audit-trace', label: 'Open My Account traces', allowed: true, capabilityIds: [myAccountCapabilities.viewOwnTraceRefs], traceId: 'trace-my-account-next-audit' },
+      { workstreamId: 'audit-trace-agent', label: 'Open My Account traces', allowed: true, capabilityIds: [myAccountCapabilities.viewOwnTraceRefs], traceId: 'trace-my-account-next-audit' },
       { workstreamId: 'agent-billing', label: 'Billing', allowed: false, blockedReason: 'Billing workstream remains hidden unless backend capability summary grants billing.read.', capabilityIds: ['billing.read'] }
     ],
     blockedState: { reasonCode: 'NO_SELECTED_CONTEXT_SAFE_GLOBAL_ONLY', message: 'Account-global safe fields can render without selected context, but scoped actions are blocked until a Tenant/Customer context is selected.', recovery: 'Select an active membership context before running scoped actions.' }
@@ -1925,7 +1925,7 @@ export const auditTraceSurfaceActions = {
     label: 'Refresh Audit/Trace dashboard',
     intent: 'read',
     capabilityId: 'audit.trace.dashboard.read',
-    governedToolId: 'audit.trace.dashboard.read',
+    governedToolId: 'read-audit-trace-dashboard',
     browserToolId: 'action-audit-trace-dashboard',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-dashboard', openPlacement: 'inline' },
@@ -1936,7 +1936,7 @@ export const auditTraceSurfaceActions = {
     label: 'Search scoped traces',
     intent: 'read',
     capabilityId: 'audit.trace.search',
-    governedToolId: 'audit.trace.search',
+    governedToolId: 'search-audit-traces',
     browserToolId: 'action-audit-trace-search',
     inputSchemaRef: 'schema.audit-trace.search.v1',
     idempotency: { required: false },
@@ -1948,7 +1948,7 @@ export const auditTraceSurfaceActions = {
     label: 'Open trace detail',
     intent: 'read',
     capabilityId: 'audit.trace.detail.read',
-    governedToolId: 'audit.trace.detail.read',
+    governedToolId: 'read-trace-detail',
     browserToolId: 'action-audit-trace-detail',
     inputSchemaRef: 'schema.audit-trace.detail.v1',
     idempotency: { required: false },
@@ -1960,7 +1960,7 @@ export const auditTraceSurfaceActions = {
     label: 'Open correlation timeline',
     intent: 'trace',
     capabilityId: 'audit.trace.timeline.read',
-    governedToolId: 'audit.trace.timeline.read',
+    governedToolId: 'read-trace-timeline',
     browserToolId: 'action-audit-trace-timeline',
     inputSchemaRef: 'schema.audit-trace.timeline.v1',
     idempotency: { required: false },
@@ -1972,7 +1972,7 @@ export const auditTraceSurfaceActions = {
     label: 'Open failure evidence',
     intent: 'read',
     capabilityId: 'audit.trace.failureEvidence.read',
-    governedToolId: 'audit.trace.failureEvidence.read',
+    governedToolId: 'read-trace-failure-evidence',
     browserToolId: 'action-audit-trace-failure-evidence',
     inputSchemaRef: 'schema.audit-trace.failure-evidence.v1',
     idempotency: { required: false },
@@ -1984,7 +1984,7 @@ export const auditTraceSurfaceActions = {
     label: 'Show investigation guidance',
     intent: 'read',
     capabilityId: 'audit.trace.investigationGuide.read',
-    governedToolId: 'audit.trace.investigationGuide.read',
+    governedToolId: 'read-investigation-guide',
     browserToolId: 'action-audit-trace-investigation-guide',
     inputSchemaRef: 'schema.audit-trace.investigation-guide.v1',
     idempotency: { required: false },
@@ -1996,7 +1996,7 @@ export const auditTraceSurfaceActions = {
     label: 'Append investigation note',
     intent: 'command',
     capabilityId: 'audit.trace.investigation_note.append',
-    governedToolId: 'audit.trace.investigation_note.append',
+    governedToolId: 'draft-investigation-note',
     browserToolId: 'action-audit-trace-append-investigation-note',
     inputSchemaRef: 'schema.audit-trace.investigation-note.v1',
     idempotency: { required: true, keySource: 'client-generated' },
@@ -2008,7 +2008,7 @@ export const auditTraceSurfaceActions = {
     label: 'Start audit summary task',
     intent: 'workflow',
     capabilityId: 'audit.trace.summary_task.start',
-    governedToolId: 'audit.trace.summaryTask.start',
+    governedToolId: 'start-audit-summary-task',
     browserToolId: 'action-audit-trace-summary-task-start',
     inputSchemaRef: 'schema.audit-trace.summary-task.start.v1',
     idempotency: { required: true, keySource: 'client-generated' },
@@ -2020,7 +2020,7 @@ export const auditTraceSurfaceActions = {
     label: 'Refresh summary task',
     intent: 'read',
     capabilityId: 'audit.trace.summary_task.read',
-    governedToolId: 'audit.trace.summaryTask.read',
+    governedToolId: 'read-audit-summary-task',
     browserToolId: 'action-audit-trace-summary-task-read',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-progress', openPlacement: 'inline' },
@@ -2031,7 +2031,7 @@ export const auditTraceSurfaceActions = {
     label: 'Open summary review',
     intent: 'read',
     capabilityId: 'audit.trace.summary_task.review',
-    governedToolId: 'audit.trace.summary_task.review',
+    governedToolId: 'review-audit-summary-task',
     browserToolId: 'action-audit-trace-summary-review',
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-review', openPlacement: 'inline' },
@@ -2042,7 +2042,7 @@ export const auditTraceSurfaceActions = {
     label: 'Accept advisory summary',
     intent: 'approval',
     capabilityId: 'audit.trace.summary_task.accept',
-    governedToolId: 'audit.trace.summary_task.accept',
+    governedToolId: 'accept-audit-summary-task',
     browserToolId: 'action-audit-trace-summary-accept',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-review', openPlacement: 'inline' },
@@ -2053,7 +2053,7 @@ export const auditTraceSurfaceActions = {
     label: 'Reject advisory summary',
     intent: 'approval',
     capabilityId: 'audit.trace.summary_task.reject',
-    governedToolId: 'audit.trace.summary_task.reject',
+    governedToolId: 'reject-audit-summary-task',
     browserToolId: 'action-audit-trace-summary-reject',
     idempotency: { required: true, keySource: 'client-generated' },
     resultSurface: { updateSurfaceId: 'surface-audit-trace-summary-review', openPlacement: 'inline' },
@@ -2075,7 +2075,7 @@ export const auditTraceSurfaceActions = {
     label: 'Request redacted export',
     intent: 'approval',
     capabilityId: 'audit.trace.export.request',
-    governedToolId: 'audit.trace.export.request',
+    governedToolId: 'request-redacted-export',
     browserToolId: 'action-audit-trace-request-redacted-export',
     inputSchemaRef: 'schema.audit-trace.export-request.v1',
     idempotency: { required: true, keySource: 'client-generated' },
@@ -2089,7 +2089,7 @@ export const auditTraceDashboardSurface = envelope(
   'surface-audit-trace-dashboard',
   'dashboard',
   'Audit/Trace dashboard',
-  'agent-audit-trace',
+  'audit-trace-agent',
   {
     cards: [
       { cardId: 'card-runtime-traces', label: 'Runtime traces', value: 12, severity: 'warning' },
@@ -2104,9 +2104,9 @@ export const auditTraceDashboardSurface = envelope(
       { sectionId: 'correlation-shortcuts', label: 'Correlation shortcuts', summary: 'Open a correlation timeline, trace detail, or bounded explanation from authorized evidence only.' }
     ],
     nextSteps: [
-      { workstreamId: 'agent-audit-trace', label: 'Search scoped traces', allowed: true, capabilityIds: ['audit.trace.search'], traceId: 'trace-audit-dashboard-search' },
-      { workstreamId: 'agent-audit-trace', label: 'Open failure evidence', allowed: true, capabilityIds: ['audit.trace.failureEvidence.read'], traceId: 'trace-audit-dashboard-failure' },
-      { workstreamId: 'agent-audit-trace-summary-task', label: 'Start audit summary task', allowed: true, capabilityIds: ['audit.trace.summary_task.start'], traceId: 'trace-audit-summary-task-start' }
+      { workstreamId: 'audit-trace-agent', label: 'Search scoped traces', allowed: true, capabilityIds: ['audit.trace.search'], traceId: 'trace-audit-dashboard-search' },
+      { workstreamId: 'audit-trace-agent', label: 'Open failure evidence', allowed: true, capabilityIds: ['audit.trace.failureEvidence.read'], traceId: 'trace-audit-dashboard-failure' },
+      { workstreamId: 'audit-trace-agent', label: 'Start audit summary task', allowed: true, capabilityIds: ['audit.trace.summary_task.start'], traceId: 'trace-audit-summary-task-start' }
     ]
   },
   [auditTraceSurfaceActions.search, auditTraceSurfaceActions.openTimeline, auditTraceSurfaceActions.openFailureEvidence, auditTraceSurfaceActions.showInvestigationGuide, auditTraceSurfaceActions.requestRedactedExport]
@@ -2116,7 +2116,7 @@ export const auditTraceSearchSurface = envelope(
   'surface-audit-trace-search',
   'list-search',
   'Trace search results',
-  'agent-audit-trace',
+  'audit-trace-agent',
   {
     query: { filter: 'recent denials OR provider_blocked', pageSize: 10 },
     rows: [
@@ -2135,13 +2135,13 @@ export const auditTraceDetailSurface = envelope(
   'surface-audit-trace-detail',
   'detail-edit',
   'Trace detail/evidence',
-  'agent-audit-trace',
+  'audit-trace-agent',
   {
     traceId: 'trace-provider-blocked-002',
     eventKind: 'PROVIDER_BLOCKED',
     timestamp: generatedAt,
     actor: 'WorkstreamRuntimeAgent',
-    source: 'agent-audit-trace',
+    source: 'audit-trace-agent',
     correlationIds: ['corr-provider-blocked-002'],
     authorizationBasis: 'audit.trace.detail.read',
     decision: 'blocked_provider_or_runtime',
@@ -2156,7 +2156,7 @@ export const auditTraceTimelineSurface = envelope(
   'surface-audit-trace-timeline',
   'audit-timeline',
   'Correlation timeline',
-  'agent-audit-trace',
+  'audit-trace-agent',
   {
     correlationId: 'corr-provider-blocked-002',
     nodes: [
@@ -2175,7 +2175,7 @@ export const auditTraceFailureEvidenceSurface = envelope(
   'surface-audit-trace-failure-evidence',
   'detail-edit',
   'Denial/provider/tool evidence',
-  'agent-audit-trace',
+  'audit-trace-agent',
   {
     category: 'provider_blocked',
     safeReason: 'Provider, tool, policy, and authorization failures are shown as redacted browser-safe evidence only.',
@@ -2191,12 +2191,12 @@ export const auditTraceInvestigationGuideSurface = envelope(
   'surface-audit-trace-investigation-guide',
   'decision',
   'Investigation guidance',
-  'agent-audit-trace',
+  'audit-trace-agent',
   {
     recommendation: 'Continue only with backend-authorized, tenant-scoped evidence.',
     allowedActions: [
-      { actionId: 'action-audit-trace-search', label: 'Refine search', browserToolId: 'action-audit-trace-search', governedToolId: 'audit.trace.search', capabilityId: 'audit.trace.search' },
-      { actionId: 'action-audit-trace-timeline', label: 'Open timeline', browserToolId: 'action-audit-trace-timeline', governedToolId: 'audit.trace.timeline.read', capabilityId: 'audit.trace.timeline.read' }
+      { actionId: 'action-audit-trace-search', label: 'Refine search', browserToolId: 'action-audit-trace-search', governedToolId: 'search-audit-traces', capabilityId: 'audit.trace.search' },
+      { actionId: 'action-audit-trace-timeline', label: 'Open timeline', browserToolId: 'action-audit-trace-timeline', governedToolId: 'read-trace-timeline', capabilityId: 'audit.trace.timeline.read' }
     ],
     disabledActions: [
       { actionId: 'action-audit-trace-summary-task-start-scheduled', reason: 'Scheduled audit summary cadence remains future work; manual backend-governed start is wired.' }
@@ -2211,7 +2211,7 @@ export const auditTraceExportRequestSurface = envelope(
   'surface-audit-trace-export-request',
   'decision',
   'Redacted audit export request',
-  'agent-audit-trace',
+  'audit-trace-agent',
   {
     surfaceContract: 'audit.trace.exportRequest.v1',
     exportId: 'audit-export-tenant-1-redacted-001',
@@ -2222,8 +2222,8 @@ export const auditTraceExportRequestSurface = envelope(
     risk: 'medium',
     bundleMetadata: { tenantId: authContext.tenantId, customerId: authContext.customerId, redactionProfile: 'browser-safe', omittedFieldKeys: ['rawJwt', 'rawProviderCredential', 'hiddenPromptText', 'rawToolPayload', 'invitationToken'] },
     allowedActions: [
-      { actionId: 'action-audit-trace-search', label: 'Refine scoped evidence', browserToolId: 'action-audit-trace-search', governedToolId: 'audit.trace.search', capabilityId: 'audit.trace.search' },
-      { actionId: 'action-audit-trace-timeline', label: 'Review correlation timeline', browserToolId: 'action-audit-trace-timeline', governedToolId: 'audit.trace.timeline.read', capabilityId: 'audit.trace.timeline.read' }
+      { actionId: 'action-audit-trace-search', label: 'Refine scoped evidence', browserToolId: 'action-audit-trace-search', governedToolId: 'search-audit-traces', capabilityId: 'audit.trace.search' },
+      { actionId: 'action-audit-trace-timeline', label: 'Review correlation timeline', browserToolId: 'action-audit-trace-timeline', governedToolId: 'read-trace-timeline', capabilityId: 'audit.trace.timeline.read' }
     ],
     disabledActions: [{ actionId: 'action-audit-trace-unredacted-export', reason: 'Unredacted export requires a separate policy exception and is not produced by this browser surface.' }],
     traceLinks: ['trace-audit-export-request'],
@@ -2236,7 +2236,7 @@ export const auditTraceInvestigationNoteSurface = envelope(
   'surface-audit-trace-investigation-note',
   'system-message',
   'Investigation note recorded',
-  'agent-audit-trace',
+  'audit-trace-agent',
   {
     surfaceContract: 'audit.trace.investigationNote.v1',
     status: 'recorded',
@@ -2252,7 +2252,7 @@ export const auditTraceSummaryProgressSurface = envelope(
   'surface-audit-trace-summary-progress',
   'detail-edit',
   'Audit/Trace summary progress',
-  'agent-audit-trace',
+  'audit-trace-agent',
   {
     surfaceContract: 'audit.trace.summaryProgress.v1',
     summaryTaskId: 'audit-summary-tenant-1-window-2026-05-25',
@@ -2276,7 +2276,7 @@ export const auditTraceSummaryReviewSurface = envelope(
   'surface-audit-trace-summary-review',
   'decision',
   'Audit/Trace summary review',
-  'agent-audit-trace',
+  'audit-trace-agent',
   {
     surfaceContract: 'audit.trace.summaryReview.v1',
     summaryTaskId: 'audit-summary-tenant-1-window-2026-05-25',
@@ -2319,7 +2319,7 @@ export const userAdminDashboardSurface = envelope(
       { attentionType: 'invitation_delivery', label: 'Invitation delivery', count: 2, severity: 'warning', statusText: 'Needs resend or revoke review', targetSurfaceId: 'surface-user-admin-users', filter: 'rowType:invitation', sourceCapabilityId: userAdminCapabilities.listInvitations, traceRefs: ['trace-invite-robin'], redactionState: 'full', openActionId: 'action-user-admin-show-users' },
       { attentionType: 'access_review', label: 'Access review results', count: 2, severity: 'critical', statusText: 'Human review needed', targetSurfaceId: 'surface-user-admin-access-review-task', sourceCapabilityId: userAdminCapabilities.viewAccessReviewTask, traceRefs: ['trace-useradmin-access-review-blocked'], redactionState: 'summary_only', openActionId: 'action-useradmin-read-access-review' },
       { attentionType: 'support_access', label: 'Support access expiring', count: 1, severity: 'warning', statusText: 'Review visible grant', targetSurfaceId: 'surface-user-admin-users', filter: 'supportAccess:true', sourceCapabilityId: userAdminCapabilities.viewTraceReference, traceRefs: ['trace-support-grant'], redactionState: 'full', openActionId: 'action-read-support-access' },
-      { attentionType: 'admin_audit', label: 'Recent admin audit', count: 0, severity: 'info', statusText: 'No evidence needs action', targetSurfaceId: 'surface-audit-timeline', sourceCapabilityId: userAdminCapabilities.viewTraceReference, traceRefs: ['trace-user-admin-dashboard'], redactionState: 'summary_only', openActionId: 'action-open-admin-audit' }
+      { attentionType: 'admin_audit', label: 'Recent admin audit', count: 0, severity: 'info', statusText: 'No evidence needs action', targetSurfaceId: 'surface-audit-trace-timeline', sourceCapabilityId: userAdminCapabilities.viewTraceReference, traceRefs: ['trace-user-admin-dashboard'], redactionState: 'summary_only', openActionId: 'action-open-admin-audit' }
     ],
     administeredPopulations: [
       { populationType: 'tenant_employees', label: 'Tenant employees', visibleCount: 18, attentionCount: 3, activeCount: 17, pendingInvitationCount: 2, suspendedOrDisabledCount: 1, staleOrExpiredCount: 1, reviewCount: 2, roleCoverageSummary: 'Tenant Admin and Member roles visible', targetSurfaceId: 'surface-user-admin-users', openActionId: 'action-user-admin-show-users', capabilityIds: [userAdminCapabilities.listMembers], traceRefs: ['trace-useradmin-population-tenant'] },
@@ -2329,7 +2329,7 @@ export const userAdminDashboardSurface = envelope(
       { actionId: 'action-user-admin-show-users', label: 'Open users', governedToolId: 'search-user-directory', capabilityId: userAdminCapabilities.listMembers, resultSurfaceId: 'surface-user-admin-users', denialHint: 'Open the backend-filtered directory.' },
       { actionId: 'action-open-useradmin-invitation-create', label: 'Invite user', governedToolId: 'create-or-resend-invitation', capabilityId: userAdminCapabilities.sendInvitation, resultSurfaceId: 'surface-user-admin-invitation-create', approvalRequired: false, denialHint: 'Backend validates target scope, role options, idempotency, and outbox readiness.' },
       { actionId: 'action-useradmin-read-access-review', label: 'Open access review', governedToolId: 'run-access-review', capabilityId: userAdminCapabilities.viewAccessReviewTask, resultSurfaceId: 'surface-user-admin-access-review-task', approvalRequired: true, denialHint: 'Review advisory output before any deterministic access change.' },
-      { actionId: 'action-open-admin-audit', label: 'Open admin audit', governedToolId: 'admin.audit.read', capabilityId: userAdminCapabilities.viewTraceReference, resultSurfaceId: 'surface-audit-timeline', denialHint: 'Open role-gated evidence when authorized.' }
+      { actionId: 'action-open-admin-audit', label: 'Open admin audit', governedToolId: 'admin.audit.read', capabilityId: userAdminCapabilities.viewTraceReference, resultSurfaceId: 'surface-audit-trace-timeline', denialHint: 'Open role-gated evidence when authorized.' }
     ],
     recentActivity: [
       { activityId: 'activity-invite-robin', label: 'Invitation delivery failed', summary: 'Robin Reviewer invitation needs recovery.', traceId: 'trace-invite-robin', redaction: 'browser-safe', occurredAt: generatedAt },
@@ -2509,7 +2509,7 @@ export const userAdminListSearchSurface = envelope(
       { id: 'invite-robin', rowType: 'invitation-queue', email: 'robin@example.test', displayName: 'Robin Reviewer', role: 'Reviewer', status: 'pending', delivery: 'failed', targetSurfaceId: 'surface-user-admin-invitation-detail', openActionId: 'action-display-invitation-detail', expiresInHours: 18, traceId: 'trace-invite-robin' },
       { id: 'membership-member', rowType: 'membership', email: 'member@example.test', displayName: 'Member User', role: 'Member', status: 'active', supportAccess: false, targetSurfaceId: 'surface-user-admin-user-detail', openActionId: 'action-display-user-detail', traceId: 'trace-membership-member' },
       { id: 'support-grant-1', rowType: 'support-access', email: 'support@example.test', displayName: 'Support Engineer', role: 'Support', status: 'expiring', supportAccess: true, expiresInHours: 6, targetSurfaceId: 'surface-user-admin-user-detail', openActionId: 'action-display-user-detail', traceId: 'trace-support-grant' },
-      { id: 'audit-invite-1', rowType: 'admin-audit-excerpt', email: 'admin@example.test', displayName: 'Tenant Admin', role: 'Audit actor', status: 'invited-user', targetSurfaceId: 'surface-audit-timeline', openActionId: 'action-open-admin-audit', traceId: 'trace-invite' }
+      { id: 'audit-invite-1', rowType: 'admin-audit-excerpt', email: 'admin@example.test', displayName: 'Tenant Admin', role: 'Audit actor', status: 'invited-user', targetSurfaceId: 'surface-audit-trace-timeline', openActionId: 'action-open-admin-audit', traceId: 'trace-invite' }
     ],
     pageInfo: { totalKnownCount: 5, nextPageToken: 'page-token-user-admin-2' },
     emptyMessage: 'No users, invitations, memberships, or support grants match the current scoped query.',
@@ -3917,7 +3917,7 @@ export const dashboardSurface = envelope('surface-dashboard', 'dashboard', 'Tena
 export const listSearchSurface = userAdminListSearchSurface;
 export const detailEditSurface = userAdminDetailEditSurface;
 export const decisionSurface = envelope('surface-decision-card', 'decision', 'Approve bounded outreach plan', 'governance-policy-agent', { decisionId: 'decision-1', recommendation: 'Approve after evidence review.', riskScore: 72, confidenceScore: 84, evidence: [{ evidenceId: 'evidence-1', label: 'Trace summary', summary: 'Agent stayed within tool boundary.' }] }, [surfaceActionsByIntent.approval, surfaceActionsByIntent.trace]);
-export const auditTimelineSurface = envelope('surface-audit-timeline', 'audit-timeline', 'Admin audit timeline', 'agent-audit-trace', { events: [{ eventId: 'audit-1', occurredAt: generatedAt, actor: 'Tenant Admin', action: 'invited user', traceId: 'trace-invite' }] }, [surfaceActionsByIntent.trace]);
+export const auditTimelineSurface = envelope('surface-audit-trace-timeline', 'audit-timeline', 'Admin audit timeline', 'audit-trace-agent', { events: [{ eventId: 'audit-1', occurredAt: generatedAt, actor: 'Tenant Admin', action: 'invited user', traceId: 'trace-invite' }] }, [surfaceActionsByIntent.trace]);
 export const workflowStatusSurface = envelope('surface-workflow-status', 'workflow-status', 'Invitation workflow status', 'user-admin-agent', { workflowId: 'workflow-invite-1', status: 'waiting-for-human', summary: 'Fixture fallback for non-authoritative workflows. User Admin invitation actions use /api/workstream/actions and backend-aligned action ids.', traceIds: ['trace-useradmin-invitation-workflow'], requiredCapabilityId: userAdminCapabilities.sendInvitation, steps: [{ stepId: 'send-email', label: 'Send invitation email', status: 'waiting-for-human' }] }, [surfaceActionsByIntent.workflow]);
 export const userAdminInvitationCreateSurface = envelope('surface-user-admin-invitation-create', 'create-form', 'Invite user', 'user-admin-agent', { surfaceContract: 'user_admin.invitation_create.v1', branchRootSurfaceId: 'surface-user-admin-users', branchReturnActionId: 'action-user-admin-show-users', branchReturnLabel: 'Show Users', safeFilterPreservation: 'backend-authored-only', status: 'ready', summary: 'Create a scoped invitation through the backend InvitationService. Submission requires a client idempotency key and returns invitation detail or a safe validation/denial result.', targetScope: { scopeType: 'TENANT', tenantId: authContext.tenantId, customerId: authContext.customerId }, draft: { email: '', displayName: '', roles: ['TENANT_EMPLOYEE'] }, validationMessages: [], idempotencyKeyHint: 'client-generated', traceRefs: ['trace-useradmin-invitation-create'], correlationId: 'corr-useradmin-invitation-create', redaction: ['invitation-token-redacted', 'provider-payload-redacted', 'raw-jwt-redacted'] }, [userAdminSurfaceActions.createInvitation, userAdminSurfaceActions.showUsers, userAdminSurfaceActions.openAdminAudit]);
 export const userAdminInvitationActionStatusSurface = envelope('surface-user-admin-invitation-action-status', 'workflow-status', 'User Admin invitation action status', 'user-admin-agent', { workflowId: 'user-admin-invitation-action', status: 'completed', summary: 'Invitation create/resend/revoke action feedback is rendered from backend-authoritative /api/workstream/actions results with idempotency, audit, trace, and outbox status references.', traceIds: ['trace-useradmin-invitation-action', 'trace-useradmin'], requiredCapabilityId: userAdminCapabilities.sendInvitation, steps: [{ stepId: 'authorize-selected-auth-context', label: 'Backend selected AuthContext and canonical user_admin.* capability authorized', status: 'completed' }, { stepId: 'enqueue-outbox', label: 'Invitation outbox/provider result surfaced without fixture-only success substitution', status: 'completed' }, { stepId: 'system-message-denials', label: 'system_message denials preserve correlation id for forbidden, stale, validation, no-op, or blocked_provider_or_runtime states', status: 'completed' }] }, [userAdminSurfaceActions.createInvitation, userAdminSurfaceActions.resendInvitation, userAdminSurfaceActions.revokeInvitation, userAdminSurfaceActions.openAdminAudit]);

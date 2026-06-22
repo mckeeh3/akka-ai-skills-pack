@@ -29,7 +29,7 @@ public final class AuditTraceSummaryTasks {
         - evidenceCategories: %s
         - correlationId: %s
         - governedCapability: %s
-        - governedTool: audit.trace.summaryTask.start
+        - governedTool: start-audit-summary-task
 
         Governed runtime context:
         %s

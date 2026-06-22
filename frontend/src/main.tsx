@@ -761,7 +761,7 @@ function dashboardSurfaceIdForAgent(functionalAgentId: string): string {
   switch (functionalAgentId) {
     case 'my-account-agent': return 'surface-my-account-dashboard';
     case 'agent-admin-agent': return 'surface-agent-admin-dashboard';
-    case 'agent-audit-trace': return 'surface-audit-trace-dashboard';
+    case 'audit-trace-agent': return 'surface-audit-trace-dashboard';
     case 'governance-policy-agent': return 'surface-governance-policy-dashboard';
     default: return 'surface-user-admin-dashboard';
   }

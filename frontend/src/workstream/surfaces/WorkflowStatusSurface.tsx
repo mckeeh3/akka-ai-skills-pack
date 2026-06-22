@@ -106,7 +106,7 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
       {evidenceRefs.length > 0 && (
         <section className="evidence-ref-list" aria-label="Access review evidence references">
           <h4>Evidence references</h4>
-          <ul>{evidenceRefs.map((evidence) => <li key={evidenceKey(evidence)}><span>{evidenceLabel(evidence)}</span>{evidenceSummary(evidence) && <span> — {evidenceSummary(evidence)}</span>}{evidenceTraceId(evidence) && <a href={`/ui?surfaceId=surface-audit-timeline#${evidenceTraceId(evidence)}`}>trace</a>}</li>)}</ul>
+          <ul>{evidenceRefs.map((evidence) => <li key={evidenceKey(evidence)}><span>{evidenceLabel(evidence)}</span>{evidenceSummary(evidence) && <span> — {evidenceSummary(evidence)}</span>}{evidenceTraceId(evidence) && <a href={`/ui?surfaceId=surface-audit-trace-timeline#${evidenceTraceId(evidence)}`}>trace</a>}</li>)}</ul>
         </section>
       )}
       {recommendations.length > 0 && (
@@ -128,7 +128,7 @@ export function WorkflowStatusSurface({ envelope, onAction }: WorkflowStatusSurf
       )}
       {progressSnapshots.length > 0 && (
         <ol className="workflow-steps" aria-label="Access review progress snapshots">
-          {progressSnapshots.map((snapshot) => <li key={snapshot.snapshotId} className={snapshot.status}><span>{snapshot.label}</span><span>{formatStatus(snapshot.status)}</span>{snapshot.traceId && <a href={`/ui?surfaceId=surface-audit-timeline#${snapshot.traceId}`}>trace</a>}</li>)}
+          {progressSnapshots.map((snapshot) => <li key={snapshot.snapshotId} className={snapshot.status}><span>{snapshot.label}</span><span>{formatStatus(snapshot.status)}</span>{snapshot.traceId && <a href={`/ui?surfaceId=surface-audit-trace-timeline#${snapshot.traceId}`}>trace</a>}</li>)}
         </ol>
       )}
       {steps.length > 0 ? (

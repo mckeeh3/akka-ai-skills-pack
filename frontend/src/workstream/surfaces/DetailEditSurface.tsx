@@ -189,7 +189,7 @@ export function DetailEditSurface({ envelope, onAction, onFieldValueChange }: De
         <section className="trace-link-list" aria-label="Detail audit trace affordances">
           <strong>Audit affordance: {envelope.data.audit.lastEventType}</strong>
           <span>Last actor: {envelope.data.audit.lastActor}</span>
-          {envelope.data.audit.traceIds.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-timeline#${traceId}`}>{traceId}</a>)}
+          {envelope.data.audit.traceIds.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-timeline#${traceId}`}>{traceId}</a>)}
         </section>
       )}
       {isUserAdminSurface(envelope) && <UserAdminBranchReturn envelope={envelope} onAction={onAction} />}
@@ -306,7 +306,7 @@ function UserAdminCleanDetail({ envelope, onAction }: { envelope: SurfaceEnvelop
             <summary>Audit details</summary>
             <section className="trace-link-list" aria-label="Audit trace links">
               <span>{envelope.data.audit.lastEventType}</span>
-              {envelope.data.audit.traceIds.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-timeline#${traceId}`}>{traceId}</a>)}
+              {envelope.data.audit.traceIds.map((traceId) => <a key={traceId} href={`/ui?surfaceId=surface-audit-trace-timeline#${traceId}`}>{traceId}</a>)}
             </section>
           </details>
         )}

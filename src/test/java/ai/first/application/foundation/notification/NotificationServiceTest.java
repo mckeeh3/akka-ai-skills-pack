@@ -99,7 +99,7 @@ class NotificationServiceTest {
   @Test
   void lifecycleOperationsAreNotificationOnlyIdempotentAndAudited() {
     var actor = actor("admin@example.test", "membership-admin", "corr-lifecycle");
-    var projected = service.projectFromAttention(actor, attention("attention-audit", "tenant-1", "agent-audit-trace", "audit.trace.read", AttentionCategory.AUDIT_FAILURE_EVIDENCE, AttentionSeverity.WARNING, "Audit evidence available"), "corr-project");
+    var projected = service.projectFromAttention(actor, attention("attention-audit", "tenant-1", "audit-trace-agent", "audit.trace.read", AttentionCategory.AUDIT_FAILURE_EVIDENCE, AttentionSeverity.WARNING, "Audit evidence available"), "corr-project");
 
     var read = service.markRead(actor, projected.notificationId(), "corr-read");
     var readAgain = service.markRead(actor, projected.notificationId(), "corr-read-again");

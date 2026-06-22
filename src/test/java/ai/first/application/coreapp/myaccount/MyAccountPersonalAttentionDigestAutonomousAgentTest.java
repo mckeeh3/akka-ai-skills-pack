@@ -70,7 +70,7 @@ class MyAccountPersonalAttentionDigestAutonomousAgentTest extends TestKitSupport
         List.of(new MyAccountPersonalAttentionDigestTasks.PersonalAttentionEvidenceItem(
             "attention_item:attention-1",
             "attention-1",
-            "agent-audit-trace",
+            "audit-trace-agent",
             "Audit/Trace needs review",
             "Provider readiness evidence is available for authorized review.",
             "open",
@@ -90,7 +90,7 @@ class MyAccountPersonalAttentionDigestAutonomousAgentTest extends TestKitSupport
   private static MyAccountPersonalAttentionDigestResult result() {
     var section = new MyAccountPersonalAttentionDigestResult.PersonalAttentionDigestSection(
         "section-audit-trace",
-        "agent-audit-trace",
+        "audit-trace-agent",
         "Audit/Trace review",
         "Provider readiness attention is available for authorized review.",
         "warning",
@@ -100,7 +100,7 @@ class MyAccountPersonalAttentionDigestAutonomousAgentTest extends TestKitSupport
         "recommendation-open-audit-trace",
         "Review Audit/Trace evidence",
         "This visible item is warning-level and cites authorized evidence only.",
-        "agent-audit-trace",
+        "audit-trace-agent",
         "surface-audit-trace-dashboard",
         "audit.trace.read",
         List.of("attention_item:attention-1"));

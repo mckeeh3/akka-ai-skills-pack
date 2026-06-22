@@ -114,7 +114,7 @@ public final class NotificationService {
 
   public NotificationItem projectFromAuditTraceSummaryTask(AuthContextResolver.ResolvedMe actor, AuditTraceSummaryTask task, String correlationId) {
     return projectWorkerTask(actor, new WorkerTaskNotification(
-        task.taskId(), task.autonomousAgentTaskId(), task.tenantId(), task.customerId(), task.selectedAuthContextId(), task.startedByAccountId(), "agent-audit-trace", "audit_trace_summary_task", "Audit/Trace summary task", task.status().name(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.findingRefs(), task.traceIds(), AuditTraceSummaryService.READ_CAPABILITY, "surface-audit-trace-summary-task", AuditTraceSummaryService.OPEN_EVIDENCE_CAPABILITY, workerSemanticKind(task.status().name()), workerCategory("audit_trace", task.status().name()), workerPriority(task.status().name())), correlationId);
+        task.taskId(), task.autonomousAgentTaskId(), task.tenantId(), task.customerId(), task.selectedAuthContextId(), task.startedByAccountId(), "audit-trace-agent", "audit_trace_summary_task", "Audit/Trace summary task", task.status().name(), task.progressPercent(), task.summary(), task.blockerCode(), task.evidenceRefs(), task.findingRefs(), task.traceIds(), AuditTraceSummaryService.READ_CAPABILITY, "surface-audit-trace-summary-progress", AuditTraceSummaryService.OPEN_EVIDENCE_CAPABILITY, workerSemanticKind(task.status().name()), workerCategory("audit_trace", task.status().name()), workerPriority(task.status().name())), correlationId);
   }
 
   public NotificationItem projectFromGovernancePolicyImpactTask(AuthContextResolver.ResolvedMe actor, GovernancePolicyImpactTask task, String correlationId) {

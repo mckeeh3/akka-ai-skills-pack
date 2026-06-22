@@ -313,7 +313,7 @@ public final class AttentionProducerService {
         workerTaskItemId(task.taskId()),
         task.tenantId(),
         task.customerId(),
-        "agent-audit-trace",
+        "audit-trace-agent",
         title,
         summary + " Evidence is limited to durable summary state, scoped/redacted auditTraceSummaryEvidence.read refs, readSkill/readReferenceDoc traces, and AutonomousAgent work traces; no audit, policy, user, provider, or authorization mutation and no fake model-backed success is introduced.",
         category,

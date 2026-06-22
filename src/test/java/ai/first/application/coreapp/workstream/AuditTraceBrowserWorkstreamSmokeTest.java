@@ -94,7 +94,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke();
     assertTrue(bootstrap.status().isSuccess());
     assertEquals(AUDITOR_CONTEXT_ID, bootstrap.body().me().selectedAuthContext().selectedContextId());
-    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-audit-trace") && agent.availability().equals("visible")));
+    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("audit-trace-agent") && agent.availability().equals("visible")));
     assertBrowserSafe(bootstrap.body());
 
     var dashboard = getSurface("surface-audit-trace-dashboard", "corr-audit-dashboard-direct");
@@ -234,7 +234,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
     var summaryStart = runAction(new CapabilityActionRequest(
         "action-audit-trace-summary-task-start",
         "action-audit-trace-summary-task-start",
-        "audit.trace.summaryTask.start",
+        "start-audit-summary-task",
         "audit.trace.summary_task.start",
         Map.of("window", "recent"),
         "idem-audit-dashboard-summary-start",
@@ -265,7 +265,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
         .withRequestBody(new CapabilityActionRequest(
             "action-audit-trace-summary-task-start",
             "action-audit-trace-summary-task-start",
-            "audit.trace.summaryTask.start",
+            "start-audit-summary-task",
             "audit.trace.summary_task.start",
             Map.of("window", "recent"),
             "idem-audit-summary-missing-bearer",
@@ -314,7 +314,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
       start = runAction(new CapabilityActionRequest(
           "action-audit-trace-summary-task-start",
           "action-audit-trace-summary-task-start",
-          "audit.trace.summaryTask.start",
+          "start-audit-summary-task",
           "audit.trace.summary_task.start",
           Map.of("window", "recent"),
           "idem-audit-summary-progress-runtime-smoke",
@@ -374,7 +374,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
         new CapabilityActionRequest(
             "action-audit-trace-summary-task-start",
             "action-audit-trace-summary-task-start",
-            "audit.trace.summaryTask.start",
+            "start-audit-summary-task",
             "audit.trace.summary_task.start",
             Map.of("window", "recent"),
             "idem-audit-summary-member-denied",
@@ -1849,7 +1849,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
     var summaryStart = runAction(new CapabilityActionRequest(
         "action-audit-trace-summary-task-start",
         "action-audit-trace-summary-task-start",
-        "audit.trace.summaryTask.start",
+        "start-audit-summary-task",
         "audit.trace.summary_task.start",
         Map.of("window", "guide-visible-evidence"),
         "idem-audit-guide-summary-start",
@@ -2011,7 +2011,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertBrowserSafe(replay.resultSurface());
 
     var items = httpClient
-        .GET("/api/workstream/items?functionalAgentId=agent-audit-trace")
+        .GET("/api/workstream/items?functionalAgentId=audit-trace-agent")
         .addHeader("Authorization", "Bearer " + bearerToken("workos-audit-auditor", "auditor@example.test", "Audit Reviewer"))
         .addHeader("X-Selected-Context-Id", AUDITOR_CONTEXT_ID)
         .addHeader("X-Correlation-Id", "corr-audit-note-items")

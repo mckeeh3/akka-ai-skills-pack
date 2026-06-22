@@ -39,7 +39,7 @@ public final class AgentBehaviorSeedLoader {
   public static final String MY_ACCOUNT_AGENT_ID = "my-account-agent";
   public static final String USER_ADMIN_AGENT_ID = "user-admin-agent";
   public static final String AGENT_ADMIN_AGENT_ID = "agent-agent-admin";
-  public static final String AUDIT_TRACE_AGENT_ID = "agent-audit-trace";
+  public static final String AUDIT_TRACE_AGENT_ID = "audit-trace-agent";
   public static final String GOVERNANCE_POLICY_AGENT_ID = "governance-policy-agent";
   public static final List<String> CORE_V0_AGENT_IDS = List.of(MY_ACCOUNT_AGENT_ID, USER_ADMIN_AGENT_ID, AGENT_ADMIN_AGENT_ID, AUDIT_TRACE_AGENT_ID, GOVERNANCE_POLICY_AGENT_ID);
   public static final String USER_ADMIN_PROMPT_ID = "prompt-user-admin-system";

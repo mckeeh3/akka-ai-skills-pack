@@ -101,7 +101,7 @@ import ai.first.application.coreapp.audit.AuditTraceSummaryAutonomousAgent;
 public final class WorkstreamService {
   private static final String MY_ACCOUNT_AGENT_ID = "my-account-agent";
   private static final String USER_ADMIN_AGENT_ID = "user-admin-agent";
-  private static final String AUDIT_TRACE_AGENT_ID = "agent-audit-trace";
+  private static final String AUDIT_TRACE_AGENT_ID = "audit-trace-agent";
   private static final String GOVERNANCE_POLICY_AGENT_ID = "governance-policy-agent";
   private static final String AGENT_ADMIN_AGENT_ID = "agent-admin-agent";
   private static final String USER_ADMIN_CAPABILITY = "user_admin.view_overview";
@@ -416,6 +416,10 @@ public final class WorkstreamService {
 
   public SurfaceEnvelope surface(WorkosIdentity identity, String selectedContextId, String surfaceId, String correlationId) {
     var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
+    if ("surface-audit-trace-investigation-note".equals(surfaceId)) {
+      var directNote = dynamicSurface(actor, surfaceId, correlationId);
+      if (directNote != null) return directNote;
+    }
     var persisted = workstreamLogRepository.surface(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), surfaceId);
     if (persisted.isPresent()) return persisted.orElseThrow();
     var dynamic = dynamicSurface(actor, surfaceId, correlationId);
@@ -493,7 +497,7 @@ public final class WorkstreamService {
     if (!Objects.equals(selectedContextId, request.selectedContextId())) throw new AuthorizationException(403, "CONTEXT_FORBIDDEN");
     var actor = authContextResolver.resolveMe(identity, selectedContextId, request.correlationId());
     var action = actionById(request.actionId());
-    if (action == null || !Objects.equals(action.capabilityId(), request.capabilityId()) || !Objects.equals(action.governedToolId(), request.governedToolId()) || !Objects.equals(action.browserToolId(), request.browserToolId())) throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
+    if (action == null || !Objects.equals(action.capabilityId(), request.capabilityId()) || !governedToolMatches(action, request) || !Objects.equals(action.browserToolId(), request.browserToolId())) throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
     if (!isActionCapabilityVisible(actor, action.capabilityId())) {
       if (isGovernancePolicyAction(request.actionId())) return governancePolicySystemMessageResult(actor, request.actionId(), "CAPABILITY_FORBIDDEN", governancePolicySafeDenialMessage("CAPABILITY_FORBIDDEN"), request.correlationId());
       throw new AuthorizationException(403, "CAPABILITY_FORBIDDEN");
@@ -3606,12 +3610,18 @@ public final class WorkstreamService {
     }
   }
 
-  private SurfaceEnvelope auditTimelineSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    var now = Instant.now().toString();
-    var events = new ArrayList<Map<String, Object>>();
-    events.add(mapOf("eventId", "audit-me-read", "occurredAt", now, "actor", actor.profile().displayName(), "action", "Loaded /api/me and selected AuthContext", "traceId", "trace-my-account"));
-    for (var trace : agentRuntimeService.traces()) events.add(mapOf("eventId", trace.traceId(), "occurredAt", trace.occurredAt().toString(), "actor", trace.actorId(), "action", trace.traceType() + " " + trace.decision() + " · " + trace.safeSummary(), "traceId", trace.traceId()));
-    return envelope("surface-audit-timeline", "audit-timeline", "Audit and trace timeline", actor, correlationId, mapOf("events", events), List.of(openAuditAction()));
+  private SurfaceEnvelope retiredAuditTimelineSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    var traceId = "trace-audit-retired-timeline-" + stableSuffix(correlationId);
+    return envelope("surface-audit-trace-retired-timeline", "system-message", "Audit timeline surface retired", actor, correlationId,
+        mapOf(
+            "surfaceContract", "audit.trace.retiredTimeline.v1",
+            "decision", "retired_surface_redirect",
+            "retiredSurfaceId", "surface-audit-timeline",
+            "currentSurfaceId", "surface-audit-trace-timeline",
+            "message", "surface-audit-timeline is retired; open current Audit/Trace timeline links through surface-audit-trace-timeline so backend authorization and redaction are recomputed.",
+            "traceRefs", List.of(traceId),
+            "redaction", "No retained evidence, hidden ids, or cross-scope counts are exposed from retired surface navigation."),
+        List.of(auditTraceTimelineAction(), auditTraceDashboardAction()));
   }
 
   private CapabilityActionResult auditTraceReadResult(AuthContextResolver.ResolvedMe actor, String message, String correlationId, SurfaceEnvelope surface) {
@@ -3782,10 +3792,10 @@ public final class WorkstreamService {
 
   private List<Map<String, Object>> auditTraceSummaryAllowedActions(String status) {
     var actions = new ArrayList<Map<String, Object>>();
-    actions.add(mapOf("actionId", "action-audit-trace-summary-task-start", "label", "Start or retry summary task", "browserToolId", "action-audit-trace-summary-task-start", "governedToolId", "audit.trace.summary_task.start", "capabilityId", AuditTraceSummaryService.START_CAPABILITY, "resultSurfaceId", "surface-audit-trace-summary-progress", "reason", "Backend validates scope, idempotency, provider/runtime readiness, and tool boundaries before starting or failing closed."));
-    actions.add(mapOf("actionId", "action-audit-trace-summary-task-read", "label", "Refresh summary task", "browserToolId", "action-audit-trace-summary-task-read", "governedToolId", AuditTraceSummaryService.READ_CAPABILITY, "capabilityId", AuditTraceSummaryService.READ_CAPABILITY, "resultSurfaceId", "surface-audit-trace-summary-progress", "reason", "Reads retained backend task state and recomputes selected-context authorization."));
+    actions.add(mapOf("actionId", "action-audit-trace-summary-task-start", "label", "Start or retry summary task", "browserToolId", "action-audit-trace-summary-task-start", "governedToolId", "start-audit-summary-task", "capabilityId", AuditTraceSummaryService.START_CAPABILITY, "resultSurfaceId", "surface-audit-trace-summary-progress", "reason", "Backend validates scope, idempotency, provider/runtime readiness, and tool boundaries before starting or failing closed."));
+    actions.add(mapOf("actionId", "action-audit-trace-summary-task-read", "label", "Refresh summary task", "browserToolId", "action-audit-trace-summary-task-read", "governedToolId", "read-audit-summary-task", "capabilityId", AuditTraceSummaryService.READ_CAPABILITY, "resultSurfaceId", "surface-audit-trace-summary-progress", "reason", "Reads retained backend task state and recomputes selected-context authorization."));
     actions.add(mapOf("actionId", "action-audit-trace-failure-evidence", "label", "Inspect blocker evidence", "browserToolId", "action-audit-trace-failure-evidence", "governedToolId", AUDIT_TRACE_FAILURE_EVIDENCE_CAPABILITY, "capabilityId", AUDIT_TRACE_FAILURE_EVIDENCE_CAPABILITY, "resultSurfaceId", "surface-audit-trace-failure-evidence", "reason", "Reauthorizes fail-closed evidence without exposing provider secrets or prompt/tool payloads."));
-    if ("completed_review_required".equals(status)) actions.add(mapOf("actionId", "action-audit-trace-summary-review", "label", "Open summary review", "browserToolId", "action-audit-trace-summary-review", "governedToolId", AuditTraceSummaryService.REVIEW_CAPABILITY, "capabilityId", AuditTraceSummaryService.REVIEW_CAPABILITY, "resultSurfaceId", "surface-audit-trace-summary-review", "reason", "Available only after a real model-backed summary is retained."));
+    if ("completed_review_required".equals(status)) actions.add(mapOf("actionId", "action-audit-trace-summary-review", "label", "Open summary review", "browserToolId", "action-audit-trace-summary-review", "governedToolId", "review-audit-summary-task", "capabilityId", AuditTraceSummaryService.REVIEW_CAPABILITY, "resultSurfaceId", "surface-audit-trace-summary-review", "reason", "Available only after a real model-backed summary is retained."));
     return actions;
   }
 
@@ -5220,7 +5230,7 @@ public final class WorkstreamService {
   private SurfaceEnvelope blockedAgentSystemMessageSurface(String surfaceId, String workstreamEntryId, MeResponse.FunctionalAgentSummary agent, AuthContextResolver.ResolvedMe actor, String correlationId, List<String> traceIds, AgentRuntimeService.RuntimeInvocationResult runtime) {
     var safeSummary = firstNonBlank(runtime.safeErrorSummary(), "Provider or governed runtime configuration is unavailable.");
     var safeCode = firstNonBlank(runtime.safeErrorCode(), "blocked_provider_or_runtime");
-    return new SurfaceEnvelope(surfaceId, "system_message", "v1", agent.label() + " unavailable", agent.functionalAgentId(), List.of("agent-audit-trace"),
+    return new SurfaceEnvelope(surfaceId, "system_message", "v1", agent.label() + " unavailable", agent.functionalAgentId(), List.of("audit-trace-agent"),
         mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", actor.selectedContext().capabilities()),
         correlationId, traceIds, Instant.now().toString(), null, mapOf("profile", "tenant-admin", "omittedFieldKeys", List.of("rawInvitationToken", "rawJwt", "rawProviderCredential", "providerCredentialValue")),
         mapOf("status", "blocked_provider_or_runtime", "severity", "warning", "title", agent.label() + " unavailable", "summary", "Model-backed workstream execution was blocked before a response was produced.", "safeErrorCode", safeCode, "message", "Model-backed workstream execution was blocked before a response was produced. " + safeCode + ": " + safeSummary, "recoverySteps", List.of("Verify model provider configuration and active ModelConfigRef.", "Review PromptAssemblyTrace and AgentWorkTrace for this correlation id.", "Retry after backend configuration is restored; no deterministic canned guidance was returned."), "workstreamEntryId", workstreamEntryId, "producingAgentId", agent.functionalAgentId(), "capabilityId", agent.requiredCapabilityIds().isEmpty() ? USER_ADMIN_CAPABILITY : agent.requiredCapabilityIds().get(0), "sourceRefs", List.of(mapOf("refType", "trace", "refId", traceIds.get(0), "label", "Blocked runtime trace")), "safety", mapOf("sanitized", true, "redactionNote", "Provider secrets, raw JWTs, invitation tokens, and hidden capabilities are never included."), "trace", mapOf("correlationId", correlationId, "traceIds", traceIds)),
@@ -5228,7 +5238,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceEnvelope markdownResponseSurface(String surfaceId, String workstreamEntryId, MeResponse.FunctionalAgentSummary agent, AuthContextResolver.ResolvedMe actor, String correlationId, List<String> traceIds, String markdown) {
-    return new SurfaceEnvelope(surfaceId, "markdown_response", "v1", agent.label(), agent.functionalAgentId(), List.of("agent-audit-trace"),
+    return new SurfaceEnvelope(surfaceId, "markdown_response", "v1", agent.label(), agent.functionalAgentId(), List.of("audit-trace-agent"),
         mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityIds", actor.selectedContext().capabilities()),
         correlationId, traceIds, Instant.now().toString(), null, mapOf("profile", "tenant-admin", "omittedFieldKeys", List.of("rawInvitationToken", "rawJwt", "rawProviderCredential", "providerCredentialValue")),
         mapOf("markdown", markdown, "title", agent.label() + " response", "summary", "Backend-authorized starter response for " + agent.label() + ".", "workstreamEntryId", workstreamEntryId, "producingAgentId", agent.functionalAgentId(), "sourceRefs", List.of(mapOf("refType", "capability", "refId", agent.requiredCapabilityIds().isEmpty() ? MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY : agent.requiredCapabilityIds().get(0), "label", "Backend capability boundary"), mapOf("refType", "trace", "refId", traceIds.get(0), "label", "Workstream message trace")), "sections", List.of(mapOf("anchor", "starter-scope", "title", "Starter scope"), mapOf("anchor", "safe-next-steps", "title", "Safe next steps")), "safety", mapOf("sanitized", false, "blockedUnsafeLinks", 0, "blockedRawHtml", false, "redactionNote", "Provider secrets, raw JWTs, invitation tokens, and hidden capabilities are never included."), "trace", mapOf("correlationId", correlationId, "traceIds", traceIds)),
@@ -5358,7 +5368,8 @@ public final class WorkstreamService {
       case "surface-audit-trace-dashboard" -> auditTraceDashboardSurface(actor, correlationId);
       case "surface-audit-trace-search" -> auditTraceSearchSurface(actor, null, correlationId);
       case "surface-audit-trace-detail" -> auditTraceDetailSurface(actor, null, correlationId);
-      case "surface-audit-trace-timeline", "surface-audit-timeline" -> auditTraceCorrelationTimelineSurface(actor, null, correlationId);
+      case "surface-audit-trace-timeline" -> auditTraceCorrelationTimelineSurface(actor, null, correlationId);
+      case "surface-audit-timeline" -> retiredAuditTimelineSurface(actor, correlationId);
       case "surface-audit-trace-failure-evidence" -> auditTraceFailureEvidenceSurface(actor, null, correlationId);
       case "surface-audit-trace-investigation-guide" -> auditTraceInvestigationGuideSurface(actor, null, correlationId);
       case "surface-audit-trace-investigation-note" -> auditTraceInvestigationNoteSurface(actor, null, null, correlationId);
@@ -5836,7 +5847,29 @@ public final class WorkstreamService {
 
   private String browserToolId(String actionId) { return actionId; }
 
-  private String governedToolId(String capabilityId) { return capabilityId; }
+  private boolean governedToolMatches(SurfaceAction action, CapabilityActionRequest request) {
+    return Objects.equals(action.governedToolId(), request.governedToolId())
+        || Objects.equals(action.capabilityId(), request.governedToolId());
+  }
+
+  private String governedToolId(String capabilityId) {
+    return switch (capabilityId) {
+      case AUDIT_TRACE_DASHBOARD_CAPABILITY -> "read-audit-trace-dashboard";
+      case AUDIT_TRACE_SEARCH_CAPABILITY -> "search-audit-traces";
+      case AUDIT_TRACE_DETAIL_CAPABILITY -> "read-trace-detail";
+      case AUDIT_TRACE_TIMELINE_CAPABILITY -> "read-trace-timeline";
+      case AUDIT_TRACE_FAILURE_EVIDENCE_CAPABILITY -> "read-trace-failure-evidence";
+      case AUDIT_TRACE_GUIDE_CAPABILITY -> "read-investigation-guide";
+      case AUDIT_TRACE_EXPORT_REQUEST_CAPABILITY -> "request-redacted-export";
+      case AUDIT_TRACE_INVESTIGATION_NOTE_CAPABILITY -> "draft-investigation-note";
+      case AUDIT_TRACE_SUMMARY_TASK_START_CAPABILITY -> "start-audit-summary-task";
+      case AuditTraceSummaryService.READ_CAPABILITY -> "read-audit-summary-task";
+      case AUDIT_TRACE_SUMMARY_TASK_REVIEW_CAPABILITY -> "review-audit-summary-task";
+      case AUDIT_TRACE_SUMMARY_TASK_ACCEPT_CAPABILITY -> "accept-audit-summary-task";
+      case AUDIT_TRACE_SUMMARY_TASK_REJECT_CAPABILITY -> "reject-audit-summary-task";
+      default -> capabilityId;
+    };
+  }
 
   private Membership selectedMembership(AuthContextResolver.ResolvedMe actor) {
     return actor.memberships().stream()
@@ -6041,7 +6074,7 @@ public final class WorkstreamService {
   private SurfaceAction auditTraceInvestigationGuideAction() { return new SurfaceAction("action-audit-trace-investigation-guide", "Show investigation guidance", "read", browserToolId("action-audit-trace-investigation-guide"), governedToolId(AUDIT_TRACE_GUIDE_CAPABILITY), AUDIT_TRACE_GUIDE_CAPABILITY, "schema.audit-trace.investigation-guide.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-audit-trace-investigation-guide", "inline"), new Audit("AuditTraceInvestigationGuideRequested", true)); }
   private SurfaceAction auditTraceExportRequestAction() { return new SurfaceAction("action-audit-trace-request-redacted-export", "Request redacted export", "approval", browserToolId("action-audit-trace-request-redacted-export"), governedToolId(AUDIT_TRACE_EXPORT_REQUEST_CAPABILITY), AUDIT_TRACE_EXPORT_REQUEST_CAPABILITY, "schema.audit-trace.export-request.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface("decision-card", "surface-audit-trace-export-request", "inline"), new Audit("AuditTraceRedactedExportRequested", true)); }
   private SurfaceAction auditTraceAppendInvestigationNoteAction() { return new SurfaceAction("action-audit-trace-append-investigation-note", "Append investigation note", "command", browserToolId("action-audit-trace-append-investigation-note"), governedToolId(AUDIT_TRACE_INVESTIGATION_NOTE_CAPABILITY), AUDIT_TRACE_INVESTIGATION_NOTE_CAPABILITY, "schema.audit-trace.investigation-note.v1", true, false, null, new Idempotency(true, "client-generated"), new ResultSurface("system-message", "surface-audit-trace-investigation-note", "inline"), new Audit("AuditTraceInvestigationNoteAppended", true)); }
-  private SurfaceAction auditTraceSummaryTaskBlockedAction() { return new SurfaceAction("action-audit-trace-summary-task-start", "Start audit summary task", "workflow", browserToolId("action-audit-trace-summary-task-start"), governedToolId("audit.trace.summaryTask.start"), AUDIT_TRACE_SUMMARY_TASK_START_CAPABILITY, "schema.audit-trace.summary-task.start.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface("workflow-status", "surface-audit-trace-summary-progress", "inline"), new Audit("AuditTraceSummaryTaskStartedOrBlocked", true)); }
+  private SurfaceAction auditTraceSummaryTaskBlockedAction() { return new SurfaceAction("action-audit-trace-summary-task-start", "Start audit summary task", "workflow", browserToolId("action-audit-trace-summary-task-start"), governedToolId("start-audit-summary-task"), AUDIT_TRACE_SUMMARY_TASK_START_CAPABILITY, "schema.audit-trace.summary-task.start.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface("workflow-status", "surface-audit-trace-summary-progress", "inline"), new Audit("AuditTraceSummaryTaskStartedOrBlocked", true)); }
   private SurfaceAction auditTraceSummaryTaskReadAction() { return new SurfaceAction("action-audit-trace-summary-task-read", "Refresh summary task", "read", browserToolId("action-audit-trace-summary-task-read"), governedToolId(AuditTraceSummaryService.READ_CAPABILITY), AuditTraceSummaryService.READ_CAPABILITY, "schema.audit-trace.summary-task.read.v1", false, false, null, new Idempotency(false, null), new ResultSurface("workflow-status", "surface-audit-trace-summary-progress", "inline"), new Audit("AuditTraceSummaryTaskRead", true)); }
   private SurfaceAction auditTraceSummaryReviewAction() { return new SurfaceAction("action-audit-trace-summary-review", "Open summary review", "read", browserToolId("action-audit-trace-summary-review"), governedToolId(AUDIT_TRACE_SUMMARY_TASK_REVIEW_CAPABILITY), AUDIT_TRACE_SUMMARY_TASK_REVIEW_CAPABILITY, "schema.audit-trace.summary-review.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface("decision-card", "surface-audit-trace-summary-review", "inline"), new Audit("AuditTraceSummaryReviewRead", true)); }
   private SurfaceAction auditTraceSummaryAcceptAction() { return new SurfaceAction("action-audit-trace-summary-accept", "Accept advisory summary", "approval", browserToolId("action-audit-trace-summary-accept"), governedToolId(AUDIT_TRACE_SUMMARY_TASK_ACCEPT_CAPABILITY), AUDIT_TRACE_SUMMARY_TASK_ACCEPT_CAPABILITY, "schema.audit-trace.summary-review.accept.v1", true, true, null, new Idempotency(true, "client-generated"), new ResultSurface("decision-card", "surface-audit-trace-summary-review", "inline"), new Audit("AuditTraceSummaryAccepted", true)); }

@@ -42,7 +42,7 @@ import {
   meTenantAdmin
 } from '../workstream';
 
-const fixtureMessageCapableAgentIds = ['my-account-agent', 'user-admin-agent', 'agent-admin-agent', 'agent-audit-trace', 'governance-policy-agent'];
+const fixtureMessageCapableAgentIds = ['my-account-agent', 'user-admin-agent', 'agent-admin-agent', 'audit-trace-agent', 'governance-policy-agent'];
 
 export class FixtureWorkstreamApiClient implements WorkstreamClient {
   private items: WorkstreamItem[] = [...initialWorkstreamItems];
@@ -104,7 +104,7 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
       surfaceVersion: 'v1',
       title: `${agent.label} response`,
       ownerFunctionalAgentId: request.functionalAgentId,
-      reusableByFunctionalAgentIds: ['agent-audit-trace'],
+      reusableByFunctionalAgentIds: ['audit-trace-agent'],
       authContext: {
         tenantId: meTenantAdmin.selectedAuthContext.tenantId,
         customerId: meTenantAdmin.selectedAuthContext.customerId,

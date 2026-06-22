@@ -412,7 +412,7 @@ public final class WorkstreamEventPublisher {
         idempotencyKey,
         task.idempotencyKey(),
         List.of(traceId),
-        "agent-audit-trace",
+        "audit-trace-agent",
         task.status() == AuditTraceSummaryTask.Status.COMPLETED_REVIEW_REQUIRED ? "surface-audit-trace-summary-review" : "surface-audit-trace-summary-progress",
         PAYLOAD_AUDIT_TRACE_SUMMARY_LIFECYCLE,
         Map.ofEntries(

@@ -56,15 +56,18 @@ class MeServiceTest {
     assertTrue(response.visibleCapabilityIds().contains("tenant.user.manage"));
     assertTrue(response.visibleCapabilityIds().contains("user_admin.view_overview"));
     assertEquals(
-        List.of("my-account-agent", "user-admin-agent", "agent-admin-agent", "agent-audit-trace", "governance-policy-agent"),
+        List.of("my-account-agent", "user-admin-agent", "agent-admin-agent", "audit-trace-agent", "governance-policy-agent"),
         response.functionalAgents().stream().map(MeResponse.FunctionalAgentSummary::functionalAgentId).toList());
     assertTrue(response.functionalAgents().stream().allMatch(agent -> agent.availability().equals("visible")));
     var userAdminAgent = response.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("user-admin-agent")).findFirst().orElseThrow();
     assertTrue(response.visibleCapabilityIds().containsAll(userAdminAgent.requiredCapabilityIds()));
     assertEquals("dashboard", response.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("agent-admin-agent")).findFirst().orElseThrow().defaultSurfaceType());
     assertEquals("surface-agent-admin-dashboard", response.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("agent-admin-agent")).findFirst().orElseThrow().defaultSurfaceId());
-    assertTrue(response.functionalAgents().stream().filter(agent -> !agent.functionalAgentId().equals("agent-admin-agent")).allMatch(agent -> agent.defaultSurfaceType().equals("markdown_response")));
-    assertEquals("Audit/Trace", response.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("agent-audit-trace")).findFirst().orElseThrow().label());
+    assertTrue(response.functionalAgents().stream().filter(agent -> !List.of("agent-admin-agent", "audit-trace-agent", "governance-policy-agent").contains(agent.functionalAgentId())).allMatch(agent -> agent.defaultSurfaceType().equals("markdown_response")));
+    var auditAgent = response.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("audit-trace-agent")).findFirst().orElseThrow();
+    assertEquals("Audit/Trace", auditAgent.label());
+    assertEquals("dashboard", auditAgent.defaultSurfaceType());
+    assertEquals("surface-audit-trace-dashboard", auditAgent.defaultSurfaceId());
     assertFalse(response.visibleCapabilityIds().contains("WORKOS_API_KEY"));
     assertEquals("corr-1", response.auditCorrelationId());
   }
@@ -99,7 +102,7 @@ class MeServiceTest {
     assertEquals("visible", ownerUserAdmin.availability());
     assertEquals(List.of("saas_owner.admin.manage"), ownerUserAdmin.requiredCapabilityIds());
     assertTrue(owner.visibleCapabilityIds().containsAll(ownerUserAdmin.requiredCapabilityIds()));
-    var ownerAudit = owner.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("agent-audit-trace")).findFirst().orElseThrow();
+    var ownerAudit = owner.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("audit-trace-agent")).findFirst().orElseThrow();
     assertEquals("visible", ownerAudit.availability());
     assertEquals(List.of("saas_owner.audit.read"), ownerAudit.requiredCapabilityIds());
     assertTrue(owner.visibleCapabilityIds().containsAll(ownerAudit.requiredCapabilityIds()));

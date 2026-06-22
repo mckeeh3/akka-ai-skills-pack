@@ -1899,7 +1899,7 @@ class WorkstreamServiceTest {
     assertEquals("surface-my-account-notification-center", notifications.resultSurface().surfaceId());
 
     var auditTimeline = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
-        "show_surface", "user_prompt", "show audit timeline", null, "agent-audit-trace", null, null, "agent-audit-trace", null, null, "current_workstream", "corr-shell-audit-timeline", "membership-admin"));
+        "show_surface", "user_prompt", "show audit timeline", null, "audit-trace-agent", null, null, "audit-trace-agent", null, null, "current_workstream", "corr-shell-audit-timeline", "membership-admin"));
     assertEquals("accepted", auditTimeline.status());
     assertEquals("surface-audit-trace-timeline", auditTimeline.resultSurface().surfaceId());
 
@@ -1997,7 +1997,7 @@ class WorkstreamServiceTest {
 
   @Test
   void submitMessageSupportsEveryFiveCoreV0FunctionalAgent() {
-    for (var agentId : List.of("my-account-agent", "user-admin-agent", "agent-admin-agent", "agent-audit-trace", "governance-policy-agent")) {
+    for (var agentId : List.of("my-account-agent", "user-admin-agent", "agent-admin-agent", "audit-trace-agent", "governance-policy-agent")) {
       var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
           "membership-admin", agentId, "Show five core v0 readiness", "corr-" + agentId, "idem-" + agentId), "corr-header");
 
@@ -2049,7 +2049,7 @@ class WorkstreamServiceTest {
   @Test
   void submitMessagePropagatesFallbackCorrelationWhenBodyOmitsIt() {
     var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
-        "membership-admin", "agent-audit-trace", "Show trace status", null, "idem-message-4"), "corr-header");
+        "membership-admin", "audit-trace-agent", "Show trace status", null, "idem-message-4"), "corr-header");
 
     assertEquals("corr-header", response.correlationId());
     assertEquals("corr-header", response.surface().correlationId());
@@ -2059,7 +2059,7 @@ class WorkstreamServiceTest {
   @Test
   void auditTraceActionsReturnScopedSearchDetailTimelineFailureAndGuidanceSurfaces() throws Exception {
     service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
-        "membership-admin", "agent-audit-trace", "Explain current trace status", "corr-audit-runtime", "idem-audit-runtime"), "corr-header");
+        "membership-admin", "audit-trace-agent", "Explain current trace status", "corr-audit-runtime", "idem-audit-runtime"), "corr-header");
 
     var dashboard = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-audit-trace-dashboard", "action-audit-trace-dashboard", "audit.trace.dashboard.read", "audit.trace.dashboard.read", null, null, "membership-admin", "surface-audit-trace-dashboard", "corr-audit-dashboard"));
@@ -2132,7 +2132,7 @@ class WorkstreamServiceTest {
     assertEquals("not_found_or_redacted", directNote.data().get("status"));
     assertTrue(directNote.toString().contains("no annotation was recorded"));
     assertTrue(directNote.actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-search")));
-    assertFalse(service.items(identity(), "membership-admin", "agent-audit-trace", "corr-audit-note-direct-read").stream().anyMatch(item -> "surface-audit-trace-investigation-note".equals(item.surfaceId())));
+    assertFalse(service.items(identity(), "membership-admin", "audit-trace-agent", "corr-audit-note-direct-read").stream().anyMatch(item -> "surface-audit-trace-investigation-note".equals(item.surfaceId())));
 
     var note = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-audit-trace-append-investigation-note", "action-audit-trace-append-investigation-note", "audit.trace.investigation_note.append", "audit.trace.investigation_note.append", Map.of("traceId", "trace-provider-blocked-002", "note", "Follow up without sk-test-secret or bearer hidden-token"), "idem-audit-note", "membership-admin", "surface-audit-trace-investigation-guide", "corr-audit-note"));
@@ -2149,13 +2149,13 @@ class WorkstreamServiceTest {
     assertTrue(note.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-audit-trace-dashboard")));
     assertFalse(note.resultSurface().toString().contains("sk-test-secret"));
     assertFalse(note.resultSurface().toString().contains("hidden-token"));
-    assertTrue(service.items(identity(), "membership-admin", "agent-audit-trace", "corr-audit-note-read").stream().anyMatch(item -> "surface-audit-trace-investigation-note".equals(item.surfaceId()) && "recorded".equals(item.status())));
+    assertTrue(service.items(identity(), "membership-admin", "audit-trace-agent", "corr-audit-note-read").stream().anyMatch(item -> "surface-audit-trace-investigation-note".equals(item.surfaceId()) && "recorded".equals(item.status())));
   }
 
   @Test
   void auditTraceSummaryWorkerFailsClosedUntilRealAutonomousRuntimeExists() {
     var summary = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-audit-trace-summary-task-start", "action-audit-trace-summary-task-start", "audit.trace.summaryTask.start", "audit.trace.summary_task.start", Map.of("schedule", "weekly-owner-digest"), "idem-audit-summary", "membership-admin", "surface-audit-trace-investigation-guide", "corr-audit-summary"));
+        "action-audit-trace-summary-task-start", "action-audit-trace-summary-task-start", "start-audit-summary-task", "audit.trace.summary_task.start", Map.of("schedule", "weekly-owner-digest"), "idem-audit-summary", "membership-admin", "surface-audit-trace-investigation-guide", "corr-audit-summary"));
 
     assertEquals("blocked_provider_or_runtime", summary.status());
     assertEquals("surface-audit-trace-summary-progress", summary.resultSurface().surfaceId());
@@ -2366,7 +2366,7 @@ class WorkstreamServiceTest {
     var failClosedService = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, agentRuntimeService::invokeWorkstreamAgent, failClosedWorkstreamLogRepository, new InMemoryTestAccessReviewTaskRepository(), new InMemoryTestAuditTraceRepository(agentRuntimeService, failClosedWorkstreamLogRepository), new InMemoryTestGovernancePolicyRepository(), attentionService, null, null, null, new FailClosedAccessReviewAutonomousAgentRuntime(), notificationService);
 
     var response = failClosedService.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
-        "membership-admin", "agent-audit-trace", "Explain this provider failure", "corr-audit-failclosed", "idem-audit-failclosed"), "corr-header");
+        "membership-admin", "audit-trace-agent", "Explain this provider failure", "corr-audit-failclosed", "idem-audit-failclosed"), "corr-header");
 
     assertEquals("blocked", response.agentItem().status());
     assertEquals("system_message", response.agentItem().kind());
