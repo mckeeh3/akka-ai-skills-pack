@@ -18,7 +18,7 @@ type FunctionalAgentRailProps = {
   onSignOut?: () => void;
 };
 
-const myAccountFunctionalAgentId = 'agent-my-account';
+const myAccountFunctionalAgentId = 'my-account-agent';
 
 export function FunctionalAgentRail({
   agents,

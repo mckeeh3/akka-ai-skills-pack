@@ -2,7 +2,7 @@ import type { FunctionalAgentSummary } from '../../../workstream/types';
 
 export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
   {
-    functionalAgentId: 'agent-my-account',
+    functionalAgentId: 'my-account-agent',
     label: 'My Account',
     purpose: 'Review signed-in account, selected context, profile, settings, sign-out action, and authority basis.',
     icon: 'my-account',

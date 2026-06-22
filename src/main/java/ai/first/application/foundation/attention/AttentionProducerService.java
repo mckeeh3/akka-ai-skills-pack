@@ -353,7 +353,7 @@ public final class AttentionProducerService {
         workerTaskItemId(task.digestTaskId()),
         task.tenantId(),
         task.customerId(),
-        "agent-my-account",
+        "my-account-agent",
         title,
         summary + " Evidence is limited to durable digest state, authorized/redacted personal attention refs, readSkill/readReferenceDoc traces, and AutonomousAgent work traces; no source attention acknowledgement, dismissal, resolution, workstream mutation, notification delivery, or fake model-backed success is introduced.",
         category,

@@ -1800,7 +1800,7 @@ export const myAccountDashboardSurface = envelope(
   'surface-my-account-dashboard',
   'dashboard',
   'My Account',
-  'agent-my-account',
+  'my-account-agent',
   {
     cards: [
       { cardId: 'card-my-profile', label: 'Signed-in profile', value: 'Tenant Admin', severity: 'info' },
@@ -1827,7 +1827,7 @@ export const myAccountProfileSurface = envelope(
   'surface-my-profile',
   'detail-edit',
   'User profile',
-  'agent-my-account',
+  'my-account-agent',
   {
     recordId: 'acct-admin-profile',
     recordLabel: 'Tenant Admin · admin@example.test',
@@ -1851,7 +1851,7 @@ export const myAccountSettingsSurface = envelope(
   'surface-my-settings',
   'detail-edit',
   'User settings',
-  'agent-my-account',
+  'my-account-agent',
   {
     recordId: 'acct-admin-settings',
     recordLabel: 'Tenant Admin settings',
@@ -1874,7 +1874,7 @@ export const myAccountTraceSurface = envelope(
   'surface-my-account-trace',
   'audit-timeline',
   'My Account traces',
-  'agent-my-account',
+  'my-account-agent',
   {
     events: [
       { eventId: 'trace-my-summary', occurredAt: generatedAt, actor: 'My Account Agent', action: 'Protected summary read emitted my_account.view_summary trace', traceId: 'trace-surface-my-account-dashboard' },
@@ -3913,7 +3913,7 @@ export const displayGovernancePolicyImpactResultActionResult: CapabilityActionRe
   resultSurface: governancePolicyImpactAnalysisResultSurface
 };
 
-export const dashboardSurface = envelope('surface-dashboard', 'dashboard', 'Tenant attention dashboard', 'agent-my-account', { cards: [{ cardId: 'card-open-decisions', label: 'Open decisions', value: 2, severity: 'warning' }], attentionSource: 'attention.list_workstream_items', attentionItems: [{ itemId: 'attention-agent-admin-readiness', label: 'Agent Admin provider readiness is blocked', summary: 'Model/runtime provider readiness is blocked until governed provider configuration is available.', status: 'open', severity: 'blocked', category: 'provider_readiness', capabilityId: 'agent_admin.list_definitions', governedToolId: 'attention.open_attention_item', traceId: 'trace-agent-admin-provider-readiness', sourceWorkstreamId: 'agent-admin-agent', surfaceRef: { targetFunctionalAgentId: 'agent-admin-agent', targetSurfaceId: 'surface-agent-admin-catalog', targetSurfaceType: 'dashboard', targetItemId: 'attention-agent-admin-readiness', defaultActionId: 'attention.open_attention_item', requiredCapabilityId: 'agent_admin.list_definitions' }, redaction: 'full' }], scopeNote: 'Full-core/demo surface; actionable attention is backend-derived through attention.list_workstream_items and separate from transient unseen-response badges.' }, [surfaceActionsByIntent.read]);
+export const dashboardSurface = envelope('surface-dashboard', 'dashboard', 'Tenant attention dashboard', 'my-account-agent', { cards: [{ cardId: 'card-open-decisions', label: 'Open decisions', value: 2, severity: 'warning' }], attentionSource: 'attention.list_workstream_items', attentionItems: [{ itemId: 'attention-agent-admin-readiness', label: 'Agent Admin provider readiness is blocked', summary: 'Model/runtime provider readiness is blocked until governed provider configuration is available.', status: 'open', severity: 'blocked', category: 'provider_readiness', capabilityId: 'agent_admin.list_definitions', governedToolId: 'attention.open_attention_item', traceId: 'trace-agent-admin-provider-readiness', sourceWorkstreamId: 'agent-admin-agent', surfaceRef: { targetFunctionalAgentId: 'agent-admin-agent', targetSurfaceId: 'surface-agent-admin-catalog', targetSurfaceType: 'dashboard', targetItemId: 'attention-agent-admin-readiness', defaultActionId: 'attention.open_attention_item', requiredCapabilityId: 'agent_admin.list_definitions' }, redaction: 'full' }], scopeNote: 'Full-core/demo surface; actionable attention is backend-derived through attention.list_workstream_items and separate from transient unseen-response badges.' }, [surfaceActionsByIntent.read]);
 export const listSearchSurface = userAdminListSearchSurface;
 export const detailEditSurface = userAdminDetailEditSurface;
 export const decisionSurface = envelope('surface-decision-card', 'decision', 'Approve bounded outreach plan', 'agent-governance-policy', { decisionId: 'decision-1', recommendation: 'Approve after evidence review.', riskScore: 72, confidenceScore: 84, evidence: [{ evidenceId: 'evidence-1', label: 'Trace summary', summary: 'Agent stayed within tool boundary.' }] }, [surfaceActionsByIntent.approval, surfaceActionsByIntent.trace]);

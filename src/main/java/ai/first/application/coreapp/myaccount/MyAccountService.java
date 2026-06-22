@@ -146,7 +146,7 @@ public final class MyAccountService {
 
   public List<Map<String, Object>> nextSteps(AuthContextResolver.ResolvedMe actor) {
     return MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
-        .filter(agent -> !"agent-my-account".equals(agent.functionalAgentId()))
+        .filter(agent -> !"my-account-agent".equals(agent.functionalAgentId()))
         .filter(agent -> "visible".equals(agent.availability()))
         .map(agent -> mapOf(
             "workstreamId", agent.functionalAgentId(),
@@ -163,7 +163,7 @@ public final class MyAccountService {
     var summaryByWorkstream = attentionService.listMyAccountItems(actor, correlationId).workstreams().stream()
         .collect(java.util.stream.Collectors.toMap(AttentionService.WorkstreamAttentionSummary::workstreamId, summary -> summary, (left, right) -> left, LinkedHashMap::new));
     return MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
-        .filter(agent -> !"agent-my-account".equals(agent.functionalAgentId()))
+        .filter(agent -> !"my-account-agent".equals(agent.functionalAgentId()))
         .filter(agent -> "visible".equals(agent.availability()))
         .map(agent -> {
           var summary = summaryByWorkstream.get(agent.functionalAgentId());
@@ -261,7 +261,7 @@ public final class MyAccountService {
   public record DashboardData(String surfaceContract, List<Map<String, Object>> cards, List<Map<String, Object>> sections, List<Map<String, Object>> attentionItems, List<Map<String, Object>> nextSteps, List<TraceRef> traceRefs, AuthorityBasisSummary authorityBasis, List<CapabilityGroupSummary> capabilityGroups) {}
   public record OpenWorkstreamDecision(String status, String message, String surfaceId, String functionalAgentId, String label, String requiredCapabilityId, String correlationId, List<String> traceIds, String safeReasonCode) {
     static OpenWorkstreamDecision denied(String safeReasonCode, String message, String correlationId) {
-      return new OpenWorkstreamDecision("denied", message, "surface-my-account-open-denied", "agent-my-account", "Workstream unavailable", null, correlationId, List.of("trace-my-account-open-denied"), safeReasonCode);
+      return new OpenWorkstreamDecision("denied", message, "surface-my-account-open-denied", "my-account-agent", "Workstream unavailable", null, correlationId, List.of("trace-my-account-open-denied"), safeReasonCode);
     }
   }
 }

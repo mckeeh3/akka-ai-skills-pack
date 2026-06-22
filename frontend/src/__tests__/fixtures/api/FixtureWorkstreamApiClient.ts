@@ -42,7 +42,7 @@ import {
   meTenantAdmin
 } from '../workstream';
 
-const fixtureMessageCapableAgentIds = ['agent-my-account', 'user-admin-agent', 'agent-admin-agent', 'agent-audit-trace', 'agent-governance-policy'];
+const fixtureMessageCapableAgentIds = ['my-account-agent', 'user-admin-agent', 'agent-admin-agent', 'agent-audit-trace', 'agent-governance-policy'];
 
 export class FixtureWorkstreamApiClient implements WorkstreamClient {
   private items: WorkstreamItem[] = [...initialWorkstreamItems];
@@ -145,7 +145,7 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
   }
 
   runShellRequest(request: WorkstreamShellRequest): Promise<ApiResult<WorkstreamShellResponse>> {
-    const targetSurfaceId = request.targetSurfaceId ?? (request.targetFunctionalAgentId === 'agent-admin-agent' ? 'surface-agent-admin-dashboard' : request.targetFunctionalAgentId === 'agent-my-account' ? 'surface-my-account-dashboard' : 'surface-user-admin-dashboard');
+    const targetSurfaceId = request.targetSurfaceId ?? (request.targetFunctionalAgentId === 'agent-admin-agent' ? 'surface-agent-admin-dashboard' : request.targetFunctionalAgentId === 'my-account-agent' ? 'surface-my-account-dashboard' : 'surface-user-admin-dashboard');
     const surface = this.surfaces.find((candidate) => candidate.surfaceId === targetSurfaceId);
     if (!surface) return delayedError('not_found', 'The requested shell surface is not available in this context.');
     const now = new Date().toISOString();

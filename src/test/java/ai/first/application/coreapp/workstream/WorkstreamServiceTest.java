@@ -240,7 +240,7 @@ class WorkstreamServiceTest {
     assertEquals(1, bootstrap.items().size());
     assertEquals(1, bootstrap.surfaces().size());
     assertEquals("surface-my-account-dashboard", bootstrap.surfaces().get(0).surfaceId());
-    assertEquals("agent-my-account", bootstrap.surfaces().get(0).ownerFunctionalAgentId());
+    assertEquals("my-account-agent", bootstrap.surfaces().get(0).ownerFunctionalAgentId());
     assertEquals("surface", bootstrap.items().get(0).kind());
     assertEquals("surface-my-account-dashboard", bootstrap.items().get(0).surfaceId());
     assertEquals("ready", bootstrap.items().get(0).status());
@@ -563,7 +563,7 @@ class WorkstreamServiceTest {
   @Test
   void userAdminOrganizationDeepLinkDenialUsesSafeSystemMessageForHiddenTargets() {
     var denied = service.runShellRequest(memberIdentity(), "membership-member", new WorkstreamService.WorkstreamShellRequest(
-        "show_surface", "deep_link", "Open Organization Directory", null, "user-admin-agent", "surface-user-admin-organization-directory", null, "agent-my-account", null, null, "current_workstream", "corr-member-org-deeplink", "membership-member"));
+        "show_surface", "deep_link", "Open Organization Directory", null, "user-admin-agent", "surface-user-admin-organization-directory", null, "my-account-agent", null, null, "current_workstream", "corr-member-org-deeplink", "membership-member"));
 
     assertEquals("denied", denied.status());
     assertEquals("system_message", denied.resultSurface().surfaceType());
@@ -1709,13 +1709,13 @@ class WorkstreamServiceTest {
     assertTrue(dashboard.toString().contains("my_account.list_personal_attention"));
     assertTrue(dashboard.toString().contains("blocked_provider_or_runtime"));
     assertTrue(dashboard.toString().contains("not_found_or_redacted"));
-    assertEquals("agent-my-account", dashboard.ownerFunctionalAgentId());
+    assertEquals("my-account-agent", dashboard.ownerFunctionalAgentId());
     assertEquals("detail-edit", profile.surfaceType());
     assertEquals("detail-edit", settings.surfaceType());
     assertEquals("detail-edit", context.surfaceType());
     assertEquals("surface-my-context", context.surfaceId());
     assertEquals("surface.access.profile.context.v1", accessProfileContext.surfaceId());
-    assertEquals("agent-my-account", accessProfileContext.ownerFunctionalAgentId());
+    assertEquals("my-account-agent", accessProfileContext.ownerFunctionalAgentId());
     assertTrue(accessProfileContext.toString().contains("core.access.me"));
     assertTrue(accessProfileContext.toString().contains("core.access.context.select"));
     assertTrue(profile.toString().contains("my_account.update_profile_settings"));
@@ -1883,7 +1883,7 @@ class WorkstreamServiceTest {
     assertEquals("surface-user-admin-tenant-dashboard", refresh.resultSurface().surfaceId());
 
     var openAttention = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
-        "open_attention_item", "my_account_panel", "Open Agent Admin readiness", null, "agent-admin-agent", "surface-agent-admin-catalog", "attention-agent-admin-readiness", "agent-my-account", "surface-my-account-dashboard", "action-open-agent-admin", "authorized_cross_workstream", "corr-shell-attention", "membership-admin"));
+        "open_attention_item", "my_account_panel", "Open Agent Admin readiness", null, "agent-admin-agent", "surface-agent-admin-catalog", "attention-agent-admin-readiness", "my-account-agent", "surface-my-account-dashboard", "action-open-agent-admin", "authorized_cross_workstream", "corr-shell-attention", "membership-admin"));
     assertEquals("accepted", openAttention.status());
     assertEquals("agent-admin-agent", openAttention.resultSurface().ownerFunctionalAgentId());
 
@@ -1894,7 +1894,7 @@ class WorkstreamServiceTest {
     assertEquals("show users", users.request().canonicalPrompt());
 
     var notifications = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
-        "show_surface", "user_prompt", "show notifications", null, "agent-my-account", null, null, "agent-my-account", null, null, "current_workstream", "corr-shell-notifications", "membership-admin"));
+        "show_surface", "user_prompt", "show notifications", null, "my-account-agent", null, null, "my-account-agent", null, null, "current_workstream", "corr-shell-notifications", "membership-admin"));
     assertEquals("accepted", notifications.status());
     assertEquals("surface-my-account-notification-center", notifications.resultSurface().surfaceId());
 
@@ -1917,7 +1917,7 @@ class WorkstreamServiceTest {
   @Test
   void shellRequestsReturnSafeSystemMessageForHiddenTargets() {
     var denied = service.runShellRequest(memberIdentity(), "membership-member", new WorkstreamService.WorkstreamShellRequest(
-        "open_workstream", "deep_link", "Open Agent Admin", null, "agent-admin-agent", null, null, "agent-my-account", null, null, "authorized_cross_workstream", "corr-shell-denied", "membership-member"));
+        "open_workstream", "deep_link", "Open Agent Admin", null, "agent-admin-agent", null, null, "my-account-agent", null, null, "authorized_cross_workstream", "corr-shell-denied", "membership-member"));
 
     assertEquals("denied", denied.status());
     assertEquals("system_message", denied.resultSurface().surfaceType());
@@ -1925,7 +1925,7 @@ class WorkstreamServiceTest {
     assertFalse(denied.resultSurface().toString().contains("agent_admin.list_definitions"));
 
     var deniedAlias = service.runShellRequest(memberIdentity(), "membership-member", new WorkstreamService.WorkstreamShellRequest(
-        "show_surface", "user_prompt", "show agent catalog", null, "agent-my-account", null, null, "agent-my-account", null, null, "current_workstream", "corr-shell-denied-alias", "membership-member"));
+        "show_surface", "user_prompt", "show agent catalog", null, "my-account-agent", null, null, "my-account-agent", null, null, "current_workstream", "corr-shell-denied-alias", "membership-member"));
     assertEquals("denied", deniedAlias.status());
     assertEquals("system_message", deniedAlias.resultSurface().surfaceType());
     assertEquals("TARGET_NOT_FOUND_OR_FORBIDDEN", deniedAlias.resultSurface().data().get("code"));
@@ -1935,7 +1935,7 @@ class WorkstreamServiceTest {
   @Test
   void shellRequestsDenyUnknownPromptAliasesWithoutDashboardFallback() {
     var unknown = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
-        "show_surface", "user_prompt", "show payroll", null, "agent-my-account", null, null, "agent-my-account", null, null, "current_workstream", "corr-shell-unknown-alias", "membership-admin"));
+        "show_surface", "user_prompt", "show payroll", null, "my-account-agent", null, null, "my-account-agent", null, null, "current_workstream", "corr-shell-unknown-alias", "membership-admin"));
 
     assertEquals("denied", unknown.status());
     assertEquals("system_message", unknown.resultSurface().surfaceType());
@@ -1984,11 +1984,11 @@ class WorkstreamServiceTest {
   @Test
   void regularMemberCanOpenOnlyMyAccountFromSignedInUserTile() {
     var response = service.submitMessage(new WorkosIdentity("workos-member", "member@example.test", "Member User"), "membership-member", new WorkstreamService.WorkstreamMessageRequest(
-        "membership-member", "agent-my-account", "What can I do in My Account?", "corr-member-my-account", "idem-member-my-account"), "corr-header");
+        "membership-member", "my-account-agent", "What can I do in My Account?", "corr-member-my-account", "idem-member-my-account"), "corr-header");
 
-    assertEquals("agent-my-account", response.surface().ownerFunctionalAgentId());
+    assertEquals("my-account-agent", response.surface().ownerFunctionalAgentId());
     assertEquals("markdown_response", response.surface().surfaceType());
-    assertEquals("agent-my-account", response.surface().data().get("producingAgentId"));
+    assertEquals("my-account-agent", response.surface().data().get("producingAgentId"));
 
     var denied = assertThrows(AuthorizationException.class, () -> service.submitMessage(new WorkosIdentity("workos-member", "member@example.test", "Member User"), "membership-member", new WorkstreamService.WorkstreamMessageRequest(
         "membership-member", "user-admin-agent", "Can I administer users?", "corr-member-user-admin", "idem-member-user-admin"), "corr-header"));
@@ -1997,7 +1997,7 @@ class WorkstreamServiceTest {
 
   @Test
   void submitMessageSupportsEveryFiveCoreV0FunctionalAgent() {
-    for (var agentId : List.of("agent-my-account", "user-admin-agent", "agent-admin-agent", "agent-audit-trace", "agent-governance-policy")) {
+    for (var agentId : List.of("my-account-agent", "user-admin-agent", "agent-admin-agent", "agent-audit-trace", "agent-governance-policy")) {
       var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
           "membership-admin", agentId, "Show five core v0 readiness", "corr-" + agentId, "idem-" + agentId), "corr-header");
 

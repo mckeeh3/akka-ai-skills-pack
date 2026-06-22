@@ -437,7 +437,7 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       const refreshed = await workstreamClient.bootstrap();
       if (refreshed.ok) {
         setBootstrap({ status: 'ready', me: refreshed.value.me, items: refreshed.value.items, surfaces: refreshed.value.surfaces });
-        updateSelection({ selectedFunctionalAgentId: 'agent-my-account', selectedSurfaceId: 'surface-my-context', surfacePlacement: 'inline' });
+        updateSelection({ selectedFunctionalAgentId: 'my-account-agent', selectedSurfaceId: 'surface-my-context', surfacePlacement: 'inline' });
       }
       return;
     }
@@ -759,7 +759,7 @@ function buildShowDashboardShellRequest(functionalAgentId: string, selectedConte
 
 function dashboardSurfaceIdForAgent(functionalAgentId: string): string {
   switch (functionalAgentId) {
-    case 'agent-my-account': return 'surface-my-account-dashboard';
+    case 'my-account-agent': return 'surface-my-account-dashboard';
     case 'agent-admin-agent': return 'surface-agent-admin-dashboard';
     case 'agent-audit-trace': return 'surface-audit-trace-dashboard';
     case 'agent-governance-policy': return 'surface-governance-policy-dashboard';

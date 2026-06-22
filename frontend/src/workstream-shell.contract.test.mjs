@@ -57,7 +57,7 @@ test('functional agent rail is collapsible and lists only allowed workstreams', 
   assert.match(rail, /mobileOpen = false/);
   assert.match(rail, /\$\{mobileOpen \? 'open' : ''\}/);
   assert.match(rail, /aria-label="Functional agents"/);
-  assert.match(rail, /const myAccountFunctionalAgentId = 'agent-my-account'/);
+  assert.match(rail, /const myAccountFunctionalAgentId = 'my-account-agent'/);
   assert.match(rail, /entry\.functionalAgentId !== myAccountFunctionalAgentId/);
   assert.match(rail, /className=\{`rail-user-button \$\{myAccountSelected \? 'active' : ''\}`\.trim\(\)\}/);
   assert.match(rail, /aria-label=\{`Open My Account workstream for \$\{userDisplayName\}`\}/);

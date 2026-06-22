@@ -107,10 +107,10 @@ class EmailNotificationServiceTest {
   void nonAllowlistedWorkstreamUpdatesAreDeniedByDefault() {
     var actor = actor("corr-allowlist");
     var input = new ai.first.domain.foundation.notification.NotificationProjectionInput(
-        "event-1", "workstream_event", "tenant-1", null, "admin@example.test", Map.of("selectedContextId", "membership-admin"), "agent-my-account", "my_account.view_summary",
+        "event-1", "workstream_event", "tenant-1", null, "admin@example.test", Map.of("selectedContextId", "membership-admin"), "my-account-agent", "my_account.view_summary",
         List.of(new ai.first.domain.foundation.notification.NotificationSourceRef("workstream_event", "event-1", "Routine update", "my_account.view_summary", "trace-event-1", "corr-event")),
         List.of("trace-event-1"), "Routine update", "No email", NotificationCategory.WORKSTREAM_UPDATE, NotificationPriority.INFO,
-        new ai.first.domain.foundation.notification.NotificationSurfaceRef("agent-my-account", "surface-my-account", "dashboard", "event-1", "open", "my_account.view_summary"),
+        new ai.first.domain.foundation.notification.NotificationSurfaceRef("my-account-agent", "surface-my-account", "dashboard", "event-1", "open", "my_account.view_summary"),
         "notification:in_app:tenant-1:none:admin@example.test:workstream_event:event-1:update", "corr-event");
     var notification = notifications.projectFromSource(actor, input, "corr-event");
     email.updatePreference(actor, NotificationCategory.ALL, true, NotificationPriority.INFO, null, "corr-pref");

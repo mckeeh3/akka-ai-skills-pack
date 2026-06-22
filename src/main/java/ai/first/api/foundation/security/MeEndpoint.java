@@ -12,6 +12,8 @@ import akka.javasdk.http.HttpResponses;
 import static akka.javasdk.http.HttpException.forbidden;
 import static akka.javasdk.http.HttpException.unauthorized;
 import ai.first.application.foundation.identity.AuthorizationException;
+import java.util.List;
+import java.util.Map;
 import ai.first.application.foundation.identity.StarterSecurityComponents;
 import ai.first.application.foundation.identity.WorkosIdentityResolver;
 
@@ -35,7 +37,22 @@ public class MeEndpoint extends AbstractHttpEndpoint {
       if (error.httpStatus() == 401) {
         throw unauthorized(error.reasonCode());
       }
+      if ("account-disabled".equals(error.reasonCode()) || "no-active-membership".equals(error.reasonCode())) {
+        return HttpResponses.ok(noAccessRecovery(error.reasonCode()));
+      }
       throw forbidden(error.reasonCode());
     }
+  }
+
+  private Map<String, Object> noAccessRecovery(String reasonCode) {
+    return Map.of(
+        "status", "no_access_recovery",
+        "reasonCode", reasonCode,
+        "message", "Your signed-in account was recognized, but no active application context is available. My Account can only show safe profile/session recovery guidance until an administrator restores access.",
+        "accountContext", Map.of("selectedContextId", "not_available", "redactionLevel", "browser-safe"),
+        "visibleFunctionalAgents", List.of(),
+        "availableActions", List.of("sign_out", "contact_admin"),
+        "redaction", "No tenant, customer, membership, workstream, capability, provider, or hidden context details are enumerated.",
+        "traceRefs", List.of("trace-me-no-access-recovery"));
   }
 }

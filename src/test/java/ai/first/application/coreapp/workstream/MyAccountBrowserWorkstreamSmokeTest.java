@@ -77,7 +77,7 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke();
     assertTrue(bootstrap.status().isSuccess());
     assertEquals(ADMIN_CONTEXT_ID, bootstrap.body().me().selectedAuthContext().selectedContextId());
-    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-my-account") && agent.availability().equals("visible")));
+    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("my-account-agent") && agent.availability().equals("visible")));
     assertEquals("surface-my-account-dashboard", bootstrap.body().surfaces().get(0).surfaceId());
     assertBrowserSafe(bootstrap.body());
 
@@ -986,7 +986,7 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         priority,
         NotificationLifecycleStatus.UNREAD,
         List.of(new NotificationSourceRef("workstream", notificationId + "-source", "Authorized source", "my_account.view_summary", "trace-" + notificationId, correlationId)),
-        new NotificationSurfaceRef("agent-my-account", "surface-my-account-dashboard", "dashboard", notificationId + "-source", "browser-tool-open-source", "my_account.view_summary"),
+        new NotificationSurfaceRef("my-account-agent", "surface-my-account-dashboard", "dashboard", notificationId + "-source", "browser-tool-open-source", "my_account.view_summary"),
         "my_account.view_summary",
         "my-account",
         "workstream-event",

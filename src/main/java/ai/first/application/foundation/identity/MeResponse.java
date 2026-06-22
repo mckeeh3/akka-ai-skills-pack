@@ -187,7 +187,7 @@ public record MeResponse(
           && capabilities.contains("agent_admin.get_model_ref");
       return List.of(
           new FunctionalAgentSummary(
-              "agent-my-account",
+              "my-account-agent",
               "My Account",
               "Review the signed-in account, profile, settings, selected AuthContext, sign-out action, and browser-safe capability basis.",
               "my-account",

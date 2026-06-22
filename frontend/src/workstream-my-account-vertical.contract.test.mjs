@@ -147,7 +147,7 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
 });
 
 test('My Account launches from signed-in user tile and uses backend shell requests rather than frontend-only authority', () => {
-  assert.match(rail, /const myAccountFunctionalAgentId = 'agent-my-account'/);
+  assert.match(rail, /const myAccountFunctionalAgentId = 'my-account-agent'/);
   assert.match(rail, /Open My Account workstream/);
   assert.match(shell, /onSelectAgent/);
   assert.match(shell, /selectAgent\(functionalAgentId/);

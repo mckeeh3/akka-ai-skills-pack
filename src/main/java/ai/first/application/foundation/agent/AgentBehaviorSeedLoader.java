@@ -36,7 +36,7 @@ import ai.first.application.coreapp.myaccount.MyAccountEvidenceTools;
 public final class AgentBehaviorSeedLoader {
   public static final String SEED_BUNDLE_ID = "starter-agent-behavior-v1";
   public static final String CONTENT_VERSION = "1";
-  public static final String MY_ACCOUNT_AGENT_ID = "agent-my-account";
+  public static final String MY_ACCOUNT_AGENT_ID = "my-account-agent";
   public static final String USER_ADMIN_AGENT_ID = "user-admin-agent";
   public static final String AGENT_ADMIN_AGENT_ID = "agent-agent-admin";
   public static final String AUDIT_TRACE_AGENT_ID = "agent-audit-trace";
@@ -60,6 +60,8 @@ public final class AgentBehaviorSeedLoader {
   public static final String USER_ADMIN_BOUNDARY_ID = "tool-boundary-user-admin";
   public static final String STARTER_DEFAULT_MODEL_CONFIG_ID = "starter-default-model";
   public static final String STARTER_DEFAULT_MODEL_POLICY_ID = "starter-default-model-policy";
+  public static final String MY_ACCOUNT_DEFAULT_MODEL_CONFIG_ID = "foundation-my-account-default-model";
+  public static final String MY_ACCOUNT_DEFAULT_MODEL_POLICY_ID = "foundation-my-account-model-policy";
 
   private final AgentBehaviorRepository repository;
   private final Clock clock;
@@ -183,20 +185,28 @@ public final class AgentBehaviorSeedLoader {
   }
 
   private ModelPolicy createModelPolicy(String tenantId, String actor, String correlationId, Instant now, SeedImportResult result) {
-    var safePolicyFacts = STARTER_DEFAULT_MODEL_POLICY_ID + ":openai-low-temperature:noFallback:summary";
+    return createNamedModelPolicy(tenantId, STARTER_DEFAULT_MODEL_POLICY_ID, "Starter default model policy", "model-policies/starter-default-model-policy", actor, correlationId, now, result);
+  }
+
+  private ModelPolicy createNamedModelPolicy(String tenantId, String modelPolicyId, String displayName, String provenanceId, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var safePolicyFacts = modelPolicyId + ":openai-low-temperature:noFallback:summary";
     var checksum = checksum(safePolicyFacts);
-    var policy = new ModelPolicy(tenantId, STARTER_DEFAULT_MODEL_POLICY_ID, "Starter default model policy", AgentLifecycleStatus.ACTIVE, List.of("openai-low-temperature"), List.of(), List.of(), true, "summary", provenance("model-policies/starter-default-model-policy", checksum, actor, correlationId, now, false), now, now);
+    var policy = new ModelPolicy(tenantId, modelPolicyId, displayName, AgentLifecycleStatus.ACTIVE, List.of("openai-low-temperature"), List.of(), List.of(), true, "summary", provenance(provenanceId, checksum, actor, correlationId, now, false), now, now);
     repository.saveModelPolicy(policy);
-    result.created("ModelPolicy", STARTER_DEFAULT_MODEL_POLICY_ID);
+    result.created("ModelPolicy", modelPolicyId);
     return policy;
   }
 
   private ModelConfigRef createModelConfigRef(String tenantId, ModelPolicy policy, String actor, String correlationId, Instant now, SeedImportResult result) {
-    var safeModelFacts = STARTER_DEFAULT_MODEL_CONFIG_ID + ":openai-low-temperature:" + policy.modelPolicyRefId();
+    return createNamedModelConfigRef(tenantId, STARTER_DEFAULT_MODEL_CONFIG_ID, "Starter default low-temperature model", policy, CORE_V0_AGENT_IDS, List.of(AgentRuntimeService.INVOKE_CAPABILITY, AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY, AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY, AgentRuntimeService.AUDIT_TRACE_INVOKE_CAPABILITY, AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY, AgentRuntimeService.AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY), "model-configs/starter-default-model", actor, correlationId, now, result);
+  }
+
+  private ModelConfigRef createNamedModelConfigRef(String tenantId, String modelConfigId, String displayName, ModelPolicy policy, List<String> agentIds, List<String> capabilityIds, String provenanceId, String actor, String correlationId, Instant now, SeedImportResult result) {
+    var safeModelFacts = modelConfigId + ":openai-low-temperature:" + policy.modelPolicyRefId();
     var checksum = checksum(safeModelFacts);
-    var model = new ModelConfigRef(tenantId, STARTER_DEFAULT_MODEL_CONFIG_ID, "Starter default low-temperature model", "openai-low-temperature", AgentLifecycleStatus.ACTIVE, CORE_V0_AGENT_IDS, List.of(AgentRuntimeService.INVOKE_CAPABILITY, AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY, AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY, AgentRuntimeService.AUDIT_TRACE_INVOKE_CAPABILITY, AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY, AgentRuntimeService.AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY), List.of("runtime", "test", "replay"), List.of(AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED), policy.modelPolicyRefId(), provenance("model-configs/starter-default-model", checksum, actor, correlationId, now, false), now, now);
+    var model = new ModelConfigRef(tenantId, modelConfigId, displayName, "openai-low-temperature", AgentLifecycleStatus.ACTIVE, agentIds, capabilityIds, List.of("runtime", "test", "replay"), List.of(AgentDefinition.AuthorityLevel.APPROVAL_REQUIRED), policy.modelPolicyRefId(), provenance(provenanceId, checksum, actor, correlationId, now, false), now, now);
     repository.saveModelConfigRef(model);
-    result.created("ModelConfigRef", STARTER_DEFAULT_MODEL_CONFIG_ID);
+    result.created("ModelConfigRef", modelConfigId);
     return model;
   }
 
@@ -233,9 +243,23 @@ public final class AgentBehaviorSeedLoader {
     var boundary = repository.toolBoundary(tenantId, seed.toolBoundaryId())
         .map(existing -> skipExisting("ToolPermissionBoundary", existing.boundaryId(), result, existing))
         .orElseGet(() -> createBasicBoundary(tenantId, seed, actor, correlationId, now, result));
+    final ModelPolicy selectedModelPolicy;
+    final ModelConfigRef selectedModelConfig;
+    if (MY_ACCOUNT_AGENT_ID.equals(seed.agentDefinitionId())) {
+      var myAccountModelPolicy = repository.modelPolicy(tenantId, MY_ACCOUNT_DEFAULT_MODEL_POLICY_ID)
+          .map(existing -> skipExisting("ModelPolicy", existing.modelPolicyRefId(), result, existing))
+          .orElseGet(() -> createNamedModelPolicy(tenantId, MY_ACCOUNT_DEFAULT_MODEL_POLICY_ID, "Foundation My Account model policy", "model-policies/foundation-my-account-model-policy", actor, correlationId, now, result));
+      selectedModelPolicy = myAccountModelPolicy;
+      selectedModelConfig = repository.modelConfigRef(tenantId, MY_ACCOUNT_DEFAULT_MODEL_CONFIG_ID)
+          .map(existing -> skipExisting("ModelConfigRef", existing.modelConfigRefId(), result, existing))
+          .orElseGet(() -> createNamedModelConfigRef(tenantId, MY_ACCOUNT_DEFAULT_MODEL_CONFIG_ID, "Foundation My Account default model", myAccountModelPolicy, List.of(MY_ACCOUNT_AGENT_ID), List.of(AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY), "model-configs/foundation-my-account-default-model", actor, correlationId, now, result));
+    } else {
+      selectedModelPolicy = modelPolicy;
+      selectedModelConfig = modelConfig;
+    }
     repository.agentDefinition(tenantId, seed.agentDefinitionId())
         .map(existing -> skipExisting("AgentDefinition", existing.agentDefinitionId(), result, existing))
-        .orElseGet(() -> createBasicAgentDefinition(tenantId, seed, prompt, manifest, referenceManifest, boundary, modelConfig, modelPolicy, actor, correlationId, now, result));
+        .orElseGet(() -> createBasicAgentDefinition(tenantId, seed, prompt, manifest, referenceManifest, boundary, selectedModelConfig, selectedModelPolicy, actor, correlationId, now, result));
   }
 
   private PromptDocument createBasicPrompt(String tenantId, BasicCoreAgentSeed seed, String content, String checksum, String actor, String correlationId, Instant now, SeedImportResult result) {
@@ -346,7 +370,7 @@ public final class AgentBehaviorSeedLoader {
 
   private List<BasicCoreAgentSeed> additionalCoreAgentSeeds() {
     return List.of(
-        new BasicCoreAgentSeed(MY_ACCOUNT_AGENT_ID, "my-account", "My Account Agent", "Role-authorized functional agent for signed-in account, profile, settings, context, and safe self-service guidance.", "MyAccountAgent", "prompt-my-account-system", "skill-my-account-starter-guidance", "my-account.starter-guidance.v1", "My Account Starter Guidance", "Explain account, profile, settings, context, and sign-out boundaries in the starter.", "Use for My Account bootstrap questions, profile/settings guidance, context selection, and safe self-service next steps.", "ref-my-account-starter-scope", "my-account.starter-scope.v1", "My Account Starter Scope", "Available and deferred My Account starter capabilities.", "Consult before explaining profile, settings, AuthContext, sign-out, or deferred self-service behavior.", "manifest-my-account", "reference-manifest-my-account", "tool-boundary-my-account", "/agent-behavior-seeds/starter-v1/my-account-system.md", "/agent-behavior-seeds/starter-v1/my-account-starter-guidance.md", "/agent-behavior-seeds/starter-v1/my-account-starter-scope-reference.md"),
+        new BasicCoreAgentSeed(MY_ACCOUNT_AGENT_ID, "my-account", "My Account Agent", "Role-authorized functional agent for signed-in account, profile, settings, context, personal attention, notifications, and digest/export guidance.", "MyAccountAgent", "prompt-my-account-system", "skill-my-account-starter-guidance", "ma.account-context-explanation.v1", "My Account Context Explanation", "Explain selected context, memberships, capabilities, notification/digest boundaries, and safe recovery without hidden-scope enumeration.", "Use for My Account profile/settings guidance, context explanation, notification triage, personal digest requests, and safe self-service next steps.", "ref-my-account-starter-scope", "ma.auth-context-guide.v1", "My Account Auth Context Guide", "Available and deferred My Account context, profile/settings, notification, and digest capabilities.", "Consult before explaining profile, settings, AuthContext, notification lifecycle, digest/export, sign-out, or deferred self-service behavior.", "manifest-my-account", "reference-manifest-my-account", "tool-boundary-my-account", "/agent-behavior-seeds/starter-v1/my-account-system.md", "/agent-behavior-seeds/starter-v1/my-account-starter-guidance.md", "/agent-behavior-seeds/starter-v1/my-account-starter-scope-reference.md"),
         new BasicCoreAgentSeed(AGENT_ADMIN_AGENT_ID, "agent-admin", "Agent Admin Agent", "Role-authorized functional agent for governed agent definitions, prompts, skills, manifests, tool boundaries, model refs, tests, and traces.", "AgentAdminAgent", "prompt-agent-admin-system", "skill-agent-admin-starter-guidance", "agent-admin.starter-guidance.v1", "Agent Admin Starter Guidance", "Explain governed agent behavior records, approvals, tests, model refs, and safe deferrals in the starter.", "Use for Agent Admin bootstrap questions about prompts, skills, manifests, tool boundaries, model refs, and traces.", "ref-agent-admin-starter-scope", "agent-admin.starter-scope.v1", "Agent Admin Starter Scope", "Available and deferred Agent Admin starter capabilities.", "Consult before explaining seeded behavior records, provider-secret boundaries, approvals, or runtime tests.", "manifest-agent-admin", "reference-manifest-agent-admin", "tool-boundary-agent-admin", "/agent-behavior-seeds/starter-v1/agent-admin-system.md", "/agent-behavior-seeds/starter-v1/agent-admin-starter-guidance.md", "/agent-behavior-seeds/starter-v1/agent-admin-starter-scope-reference.md"),
         new BasicCoreAgentSeed(AUDIT_TRACE_AGENT_ID, "audit-trace", "Audit/Trace Agent", "Role-authorized functional agent for browser-safe admin audit, authorization, prompt assembly, skill/reference load, and work trace explanations.", "AuditTraceAgent", "prompt-audit-trace-system", "skill-audit-trace-starter-guidance", "audit-trace.starter-guidance.v1", "Audit/Trace Starter Guidance", "Explain trace categories, redaction boundaries, correlation ids, and starter audit visibility.", "Use for audit/trace questions, correlation ids, denial explanations, and safe evidence summaries.", "ref-audit-trace-starter-scope", "audit-trace.starter-scope.v1", "Audit/Trace Starter Scope", "Available and deferred Audit/Trace starter capabilities.", "Consult before explaining PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, AdminAuditEvent, or redaction boundaries.", "manifest-audit-trace", "reference-manifest-audit-trace", "tool-boundary-audit-trace", "/agent-behavior-seeds/starter-v1/audit-trace-system.md", "/agent-behavior-seeds/starter-v1/audit-trace-starter-guidance.md", "/agent-behavior-seeds/starter-v1/audit-trace-starter-scope-reference.md"),
         new BasicCoreAgentSeed(GOVERNANCE_POLICY_AGENT_ID, "governance-policy", "Governance/Policy Agent", "Role-authorized functional agent for policy guardrails, approvals, improvement proposals, simulations, denials, and outcome evidence.", "GovernancePolicyAgent", "prompt-governance-policy-system", "skill-governance-policy-starter-guidance", "governance-policy.starter-guidance.v1", "Governance/Policy Starter Guidance", "Explain approval-required behavior, policy simulations, deferred commits, and safe governance next steps in the starter.", "Use for governance, policy, approval, denied authority expansion, and improvement-review questions.", "ref-governance-policy-starter-scope", "governance-policy.starter-scope.v1", "Governance/Policy Starter Scope", "Available and deferred Governance/Policy starter capabilities.", "Consult before explaining policy reads, simulations, commits, proposal approval, or deferred full-core governance behavior.", "manifest-governance-policy", "reference-manifest-governance-policy", "tool-boundary-governance-policy", "/agent-behavior-seeds/starter-v1/governance-policy-system.md", "/agent-behavior-seeds/starter-v1/governance-policy-starter-guidance.md", "/agent-behavior-seeds/starter-v1/governance-policy-starter-scope-reference.md"));

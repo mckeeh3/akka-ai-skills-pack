@@ -479,7 +479,7 @@ class WorkstreamEventBackboneServiceTest {
     var artifactEvent = publisher.publishGovernedLifecycle("tenant-1", null, WorkstreamEventPublisher.EVENT_FAMILY_DOMAIN, "governed_artifact.tool_boundary.activated", "tool_boundary", "agent-admin-tool-boundary", "Tool boundary activation providerCredential=secret", "agent_admin.activate_behavior_change", tenantAdmin.account().accountId(), "agent-agent-admin", "surface-agent-admin-detail", "activated", Map.of("artifactKind", "tool_boundary", "safeSummary", "Tool boundary activation metadata only."), Map.of(), "corr-artifact");
     var simulationEvent = publisher.publishGovernedLifecycle("tenant-1", null, "governance/simulation", "policy.simulation.completed", "policy_simulation", "simulation-1", "Policy simulation", "governance.policy.simulate", tenantAdmin.account().accountId(), "agent-governance-policy", "surface-governance-policy-dashboard", "completed", Map.of("safeSummary", "Simulation evidence is ready; no policy was activated."), Map.of("attentionAction", "open"), "corr-policy-simulation");
     var exportEvent = publisher.publishGovernedLifecycle("tenant-1", null, "audit/export", "export.failed", "export_request", "export-1", "Audit export", "audit.trace.export", tenantAdmin.account().accountId(), "agent-audit-trace", "surface-audit-trace-dashboard", "failed", Map.of("safeSummary", "Export failed closed without leaking delivery credentials."), Map.of(), "corr-export");
-    var notificationEvent = publisher.publishGovernedLifecycle("tenant-1", null, "notification/lifecycle", "notification.lifecycle.failed", "notification", "notification-1", "Notification delivery", "notification.delivery", tenantAdmin.account().accountId(), "agent-my-account", "surface-my-account-notification-center", "failed", Map.of("safeSummary", "Notification channel delivery failed closed."), Map.of(), "corr-notification");
+    var notificationEvent = publisher.publishGovernedLifecycle("tenant-1", null, "notification/lifecycle", "notification.lifecycle.failed", "notification", "notification-1", "Notification delivery", "notification.delivery", tenantAdmin.account().accountId(), "my-account-agent", "surface-my-account-notification-center", "failed", Map.of("safeSummary", "Notification channel delivery failed closed."), Map.of(), "corr-notification");
 
     assertEquals(6, eventRepository.listTenant("tenant-1").size());
     assertEquals("GovernedLifecycleEventPayload", artifactEvent.payloadClass());
@@ -547,7 +547,7 @@ class WorkstreamEventBackboneServiceTest {
         "workstream-event:notification/lifecycle:notification.lifecycle.failed:tenant-1:none:notification-1:failed",
         "notification-1",
         List.of("trace-generic-missing-capability"),
-        "agent-my-account",
+        "my-account-agent",
         "surface-my-account-notification-center",
         "GovernedLifecycleEventPayload",
         Map.of("tenantId", "tenant-1", "sourceId", "notification-1"),

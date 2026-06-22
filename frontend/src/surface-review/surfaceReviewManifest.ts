@@ -26,7 +26,7 @@ const workstreamByFunctionalAgentId: Record<string, string> = {
   'agent-admin-agent': 'agent-admin',
   'agent-audit-trace': 'audit-trace',
   'agent-governance-policy': 'governance-policy',
-  'agent-my-account': 'my-account'
+  'my-account-agent': 'my-account'
 };
 
 export const surfaceReviewEntries: SurfaceReviewEntry[] = Array.from(

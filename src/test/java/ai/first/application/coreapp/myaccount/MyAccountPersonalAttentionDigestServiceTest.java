@@ -108,7 +108,7 @@ class MyAccountPersonalAttentionDigestServiceTest {
     assertTrue(eventTypes.contains("workflow.my_account.personal_attention_digest.started"));
     assertTrue(eventTypes.contains("worker.task.queued"));
     var digestAttention = attentionRepository.find("tenant-1", "attention:worker-task:" + task.digestTaskId() + ":task-state").orElseThrow();
-    assertEquals("agent-my-account", digestAttention.owningWorkstreamId());
+    assertEquals("my-account-agent", digestAttention.owningWorkstreamId());
     assertEquals(MyAccountPersonalAttentionDigestService.READ_CAPABILITY, digestAttention.requiredCapabilityId());
     assertTrue(digestAttention.summary().contains("no source attention acknowledgement"));
     assertEquals(AttentionItemStatus.OPEN, attentionRepository.find("tenant-1", "attention-visible-audit").orElseThrow().status());

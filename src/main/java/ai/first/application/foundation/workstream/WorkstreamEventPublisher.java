@@ -209,7 +209,7 @@ public final class WorkstreamEventPublisher {
         idempotencyKey,
         sourceId,
         List.of(traceId),
-        safe(owningWorkstreamId, "agent-my-account"),
+        safe(owningWorkstreamId, "my-account-agent"),
         safe(targetSurfaceId, "surface-my-account-dashboard"),
         PAYLOAD_GOVERNED_LIFECYCLE,
         Map.copyOf(payload),
@@ -479,7 +479,7 @@ public final class WorkstreamEventPublisher {
         idempotencyKey,
         task.idempotencyKey(),
         List.of(traceId),
-        "agent-my-account",
+        "my-account-agent",
         completed ? "surface-my-account-personal-attention-digest-result" : (task.status() == MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME ? "surface-my-account-personal-attention-digest-blocked" : "surface-my-account-personal-attention-digest-progress"),
         PAYLOAD_MY_ACCOUNT_PERSONAL_ATTENTION_DIGEST_LIFECYCLE,
         Map.ofEntries(
