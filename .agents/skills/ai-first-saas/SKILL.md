@@ -7,7 +7,7 @@ description: Interpret high-level product intent as an AI-first SaaS operating m
 
 Use this as the top-level interpretation skill when a product, PRD, feature request, or architecture prompt involves delegated operational work, autonomous or semi-autonomous decisions, agent teams, human supervision, policy controls, approvals, exceptions, audit traces, or outcome accountability.
 
-This is a routing and framing skill. It does not replace `core-saas-foundation`, `agent-workstream-apps`, app-description skills, Akka solution decomposition, web UI skills, or focused component implementation skills. Treat broad product input as an incremental source intent for the intent compiler: preserve only the accepted current intent, bind reusable global artifacts into concrete workstreams, then route to description, specs/backlogs, decomposition, or implementation. For every generated SaaS app, preserve this handoff order: secure AI-first SaaS interpretation → `agent-workstream-apps` for functional agents, workstreams, and structured surfaces → `core-saas-foundation` for mandatory foundation verticals inside that workstream model → `capability-first-backend` for governed operation/query contracts → the selected app-description/current-intent, decomposition, specs/backlog, or focused implementation path.
+This is a routing and framing skill. It does not replace `core-saas-foundation`, `agent-workstream-apps`, app-description skills, Akka solution decomposition, web UI skills, or focused component implementation skills. Treat broad product input as an incremental source intent for the intent compiler: preserve only the accepted current intent, bind reusable global artifacts into concrete workstreams, then route to description, specs/backlogs, decomposition, or implementation. For every generated SaaS app, preserve this handoff order: secure AI-first SaaS interpretation → `agent-workstream-apps` for functional agents, workstreams, and structured surfaces → `ai-first-saas-worker-decomposition` when human/agent/system responsibilities are not already explicit → `core-saas-foundation` for mandatory foundation verticals inside that workstream model → `capability-first-backend` for governed operation/query contracts → the selected app-description/current-intent, decomposition, specs/backlog, or focused implementation path.
 
 ## Goal
 
@@ -41,6 +41,7 @@ Read these first when using this skill:
 - `../docs/incremental-intent-processing.md` when interpreting a revision, correction, PRD, or feature request as a current-intent delta
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app routing
+- `../docs/workforce-decomposition.md` when human workers, agent workers, system workers, responsibilities, authority, or handoffs are in scope
 - `../docs/structured-surface-contracts.md` when surfaces or surface actions need implementation-ready contracts
 
 For minimum, SaaS Foundation App, basic, basic-chatbot, smallest-useful-app, or initial chatbot-like generated SaaS requests, also read `../docs/minimum-ai-first-saas-app.md` before applying the anti-chatbot and SaaS Foundation App rule.
@@ -91,7 +92,19 @@ Extract:
 
 If the objective is too vague to bound authority, ask or queue a clarification before designing autonomous action.
 
-### 2. Identify durable substrate objects
+### 2. Identify the workforce
+
+Before selecting surfaces, capabilities, agent teams, or Akka components, identify the workers that do or supervise the work:
+- human workers such as reps, managers, approvers, support operators, admins, or auditors;
+- functional-agent workers that own user-facing workstreams;
+- internal specialist agent workers that perform bounded reasoning jobs;
+- autonomous/background agent workers that need durable task lifecycle;
+- evaluator/reviewer agents that judge quality, risk, policy fit, or outcomes;
+- deterministic system workers such as workflows, timers, consumers, projections, or integrations.
+
+For each worker, capture responsibility, non-responsibilities, authority level, selected AuthContext/scope, evidence needs, allowed tools/capabilities, surfaces used or produced, handoffs/escalations, audit/work traces, and failure behavior. Route to `ai-first-saas-worker-decomposition` when this is not already explicit.
+
+### 3. Identify durable substrate objects
 
 Look for durable objects in these categories:
 - intent: goals, objectives, constraints, policies, guardrails, examples
@@ -103,7 +116,7 @@ Look for durable objects in these categories:
 
 Do not create all categories by default. Select only objects needed for behavior, authorization, explainability, learning, or audit.
 
-### 3. Bound agent responsibility and authority
+### 4. Bound agent responsibility and authority
 
 For each agent or agent team, define:
 - responsibility and non-responsibility
@@ -115,7 +128,7 @@ For each agent or agent team, define:
 
 Route implementation to `akka-agents` only after these boundaries are clear enough for code.
 
-### 4. Capture governance and decision needs
+### 5. Capture governance and decision needs
 
 Identify:
 - policies, clauses, prompts, skills, thresholds, and permission rules that affect behavior
@@ -126,7 +139,7 @@ Identify:
 
 Prefer mechanically enforced permissions and versioned policy records over prompt-only control.
 
-### 5. Choose the downstream operating path
+### 6. Choose the downstream operating path
 
 For generated full-stack SaaS apps, load or apply `agent-workstream-apps` before downstream description, decomposition, PRD/backlog, capability, or implementation work so the handoff contains an explicit inventory of functional agents, any internal agents, initial workstreams, structured surfaces, surface action-to-capability candidates, and downstream skills to load. Load `core-saas-foundation` alongside that model to ensure Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline work is represented as mandatory foundation verticals rather than as optional object lists. For SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS requests, that inventory starts with the SaaS Foundation App domain—My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy—with bounded authority, structured surfaces, durable workstream log, audit/work trace substrate, and explicit extension seams. When core user administration is in scope for a generated SaaS app, load `ai-first-saas-admin-agents` so AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and approval boundaries are planned before domain work. Then route based on what the user is asking for:
 
@@ -154,8 +167,9 @@ Map AI-first concepts to Akka implementation families only after the secure foun
 
 When this skill is the entry point, produce or feed downstream work with:
 - AI-first interpretation: objective, delegated work, retained human authority, and outcome loop
+- worker inventory: human workers, functional-agent workers, internal/autonomous/evaluator agent workers, system workers, responsibility/authority boundaries, handoffs, traces, and failure behavior
 - selected durable objects and why each is needed
-- generated SaaS handoff: functional agents, role-specific dashboards, human surface graph nodes/actions, internal workstream agent graph nodes/delegations/results when applicable, initial workstreams, structured surfaces, governed-tools, and surface action-to-capability mappings
+- generated SaaS handoff: functional agents, worker roster, role-specific dashboards, human surface graph nodes/actions, internal workstream agent graph nodes/delegations/results when applicable, initial workstreams, structured surfaces, governed-tools, and surface action-to-capability mappings
 - agent/team responsibilities and authority boundaries, including mandatory foundation admin agents, any app-specific agents, internal worker agents, and the governed-tool exposure labels they may use
 - policy, approval, exception, audit, and outcome implications
 - recommended downstream path and exact skills to load next, always including `core-saas-foundation` and normally `agent-workstream-apps` before capability or Akka component routing for generated SaaS apps
@@ -165,6 +179,7 @@ When this skill is the entry point, produce or feed downstream work with:
 
 Before moving to code, verify:
 - goals or delegated work are durable enough to inspect
+- workers are identified before capabilities/components, including human, agent, and system workers where relevant
 - agent authority is explicit and bounded
 - policy and permission controls are enforceable, not only suggested in prompts
 - approval and exception flows include evidence, risk, confidence, impact, and alternatives when consequential

@@ -2,7 +2,7 @@
 pack	akka-ai-skills-pack
 source	/home/hxmc/ai/akka-ai-skills-pack/skills-pack
 mode	copy
-installed_at	2026-06-21T16:44:09Z
+installed_at	2026-06-22T10:50:48Z
 entry	file	README.md
 entry	dir	references
 entry	dir	docs
@@ -19,6 +19,7 @@ entry	dir	ai-first-saas-object-model
 entry	dir	ai-first-saas-outcomes-metrics
 entry	dir	ai-first-saas-policy-governance
 entry	dir	ai-first-saas-ui-surfaces
+entry	dir	ai-first-saas-worker-decomposition
 entry	dir	akka-agent-behavior-editing
 entry	dir	akka-agent-behavior-profiles
 entry	dir	akka-agent-closed-loop-improvement

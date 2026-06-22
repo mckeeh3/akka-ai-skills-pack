@@ -69,6 +69,7 @@ Canonical doctrine:
 - `docs/minimum-ai-first-saas-app.md`
 - `docs/requirements-to-workstream-development-process.md`
 - `docs/agent-workstream-application-architecture.md`
+- `docs/workforce-decomposition.md`
 - `docs/workstream-contract.md`
 - `docs/workstream-attention-contracts.md`
 - `docs/structured-surface-contracts.md`
@@ -83,6 +84,7 @@ Top-level entry skills:
 
 - `ai-first-saas` — interpret product intent as a secure AI-first SaaS operating model and route to app-description, decomposition, planning, or implementation.
 - `agent-workstream-apps` — interpret generated full-stack AI-first SaaS apps as role-authorized functional-agent workstream applications.
+- `ai-first-saas-worker-decomposition` — identify human, functional-agent, internal/autonomous/evaluator agent, and system workers before surfaces, capabilities, or components are selected.
 - `core-saas-foundation` — apply the non-optional secure SaaS baseline for every new project/app/PRD/spec/backlog unless the user explicitly asks for non-SaaS reference material.
 - `capability-first-backend` — model backend behavior as governed capabilities before choosing Akka components or exposure surfaces.
 
@@ -96,6 +98,7 @@ Mandatory foundation companions:
 AI-first companion skills:
 
 - `ai-first-saas-object-model`
+- `ai-first-saas-worker-decomposition`
 - `ai-first-saas-agent-team-design`
 - `ai-first-saas-admin-agents`
 - `akka-agent-governed-documents`
@@ -109,7 +112,7 @@ Use companion skills only for concerns actually in scope, except foundation/admi
 
 ## Canonical generated-app handoff order
 
-Secure AI-first SaaS interpretation → agent workstream model → mandatory core SaaS foundation verticals → affected workstreams → role-specific dashboard attention model → human surface graph → internal workstream agent graph → governed-tools in capability files and surface/action maps → capability-first backend substrate → description/decomposition/planning path → focused implementation.
+Secure AI-first SaaS interpretation → agent workstream model → mandatory core SaaS foundation verticals → affected workstreams → workforce decomposition and responsibility/authority/handoff map → role-specific dashboard attention model → human surface graph → internal workstream agent graph → governed-tools in capability files and surface/action maps → capability-first backend substrate → description/decomposition/planning path → focused implementation.
 
 For SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS prompts, the first runnable target is the SaaS Foundation App domain with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. It is not a generic public chatbot or page-first CRUD shell.
 

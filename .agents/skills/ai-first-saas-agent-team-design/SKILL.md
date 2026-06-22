@@ -7,7 +7,7 @@ description: Design bounded AI-first SaaS agent teams with explicit coordinator/
 
 Use this companion after `ai-first-saas` and `agent-workstream-apps` when a product or feature needs one or more agents to perform delegated operational work under human and policy control.
 
-This is an operating-model and routing skill. It distinguishes user-facing functional/context-area agents from internal agents before selecting one-agent, team, workflow, tool, or Akka implementation patterns. It does not replace `akka-agents`, `akka-agent-orchestration`, or `akka-workflows` implementation guidance.
+This is an operating-model and routing skill. It assumes workforce decomposition has identified the relevant human workers, functional-agent workers, internal/autonomous/evaluator agent workers, system workers, authority boundaries, and handoffs. It distinguishes user-facing functional/context-area agents from internal agents before selecting one-agent, team, workflow, tool, or Akka implementation patterns. It does not replace `akka-agents`, `akka-agent-orchestration`, or `akka-workflows` implementation guidance.
 
 ## Required reading
 
@@ -17,7 +17,9 @@ Read first:
 - `../docs/intent-to-realization-flow.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/agent-workstream-application-architecture.md`
+- `../docs/workforce-decomposition.md`
 - `../ai-first-saas/SKILL.md`
+- `../ai-first-saas-worker-decomposition/SKILL.md`
 - `../agent-workstream-apps/SKILL.md`
 
 For implementation, route to:
@@ -45,6 +47,19 @@ Do not design an agent team when:
 - a single bounded request/reply agent is enough
 - authority, tools, policy, or escalation boundaries are too vague to implement safely
 - the request is only to add a chatbot interface without durable delegated work
+
+## Worker roster prerequisite
+
+Before naming agent classes or tools, verify the worker roster:
+
+- human supervisors, reviewers, approvers, and auditors;
+- owning functional-agent worker for each user-facing workstream;
+- internal specialist agent workers;
+- autonomous/background agent workers when durable task lifecycle is needed;
+- evaluator/reviewer agent workers when independent quality, risk, or policy judgment is needed;
+- deterministic system workers such as workflows, timers, consumers, projections, and integrations.
+
+For each agent worker, preserve the workforce contract: responsibility, non-responsibilities, supervising human, authority level, evidence, allowed capabilities/governed-tools, approval policy, handoffs/escalations, traces, and fail-closed behavior. If this is missing, route first to `ai-first-saas-worker-decomposition`.
 
 ## Functional agent vs internal agent placement
 
@@ -167,9 +182,11 @@ Route to:
 
 ## Agent contract template
 
-For each agent, define:
+For each agent worker, define:
 
 ```text
+Worker id:
+Worker type: functional-agent | internal-agent | autonomous-agent | evaluator-agent
 Agent name:
 Single responsibility:
 Non-responsibilities:
@@ -184,6 +201,8 @@ Confidence/risk/impact thresholds:
 Memory/session behavior:
 Trace records emitted:
 Evaluation or guardrails:
+Supervising human worker:
+Handoffs/escalations:
 Implementation routing:
 ```
 

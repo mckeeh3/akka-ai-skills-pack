@@ -32,6 +32,8 @@ For generated SaaS requirements, preserve this vertical chain from the canonical
 ```text
 input / PRD / feature request / incremental change
 → affected workstream inventory
+→ per-workstream worker roster: human workers, functional-agent workers, internal/autonomous/evaluator agent workers, and system workers
+→ worker responsibility, authority, supervision, and handoff map
 → per-workstream attention categories answering "what needs my attention?"
 → role-specific dashboard surfaces and WorkstreamAttentionSummary contracts
 → human surface graph: dashboard trunk, surface nodes, surface-action edges
@@ -54,9 +56,17 @@ My Account is the main aggregate exception; its dashboard is the current user's 
 
 AutonomousAgent task progress/result surfaces are part of the workstream model when durable internal/background model-driven work exists. Task lifecycle events, notifications, snapshots, blocked states, rejected results, failures, and completion recommendations should update dashboards, attention items, traces, and governed surface actions; the task machinery never grants authority by itself.
 
+## Workforce decomposition and workstream actors
+
+Before selecting surfaces, capabilities, agent teams, or Akka components, identify the workstream workforce. A workforce roster names the human workers, functional-agent worker, internal specialist agent workers, durable autonomous/background agent workers, evaluator/reviewer agents, and deterministic system workers that perform or supervise the work.
+
+Each worker should have explicit responsibility, non-responsibilities, authority, AuthContext/scope, evidence needs, governed-tools/capabilities, surfaces used or produced, handoffs/escalations, audit/work traces, and failure/denial behavior. Use `./workforce-decomposition.md` for the canonical contract. Agent workers are not generic AI helpers; they are bounded workers whose authority is narrower than, and separately declared from, the authority of the human workers they support.
+
+A workstream definition is incomplete if it names a functional agent, internal agent, AutonomousAgent task, workflow, dashboard, or consequential surface action without identifying the responsible worker and actor adapter.
+
 ## Human-backed and AI-backed workstream actors
 
-A workstream agent is the shared governed application harness for a durable area of work. It can host **human-backed actor** turns, **AI-backed actor** turns, or mixed human/AI collaboration in the same workstream instance. Externally, a signed-in app user is a human supervisor. Internally, a human-backed actor is the governed participant whose reasoning engine is that authenticated human rather than an AI model. An AI-backed actor is the governed participant whose reasoning engine is a configured model invoked through the Akka Agent runtime path.
+A workstream agent is the shared governed application harness for a durable area of work. It can host **human-backed actor** turns, **AI-backed actor** turns, system-worker results, or mixed human/AI collaboration in the same workstream instance. Externally, a signed-in app user is a human supervisor. Internally, a human-backed actor is the governed participant whose reasoning engine is that authenticated human rather than an AI model. An AI-backed actor is the governed participant whose reasoning engine is a configured model invoked through the Akka Agent runtime path.
 
 The harness shapes each actor through actor-specific adapters while preserving one authority model:
 

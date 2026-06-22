@@ -19,6 +19,7 @@ Read these first when using this skill:
 - `../docs/intent-to-realization-flow.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app modeling before backend capability design
+- `../docs/workforce-decomposition.md` when workers, responsibilities, authority, supervision, or handoffs are in scope
 - `../docs/structured-surface-contracts.md` when workstream surfaces, surface actions, or browser UI actions are in scope
 - `../docs/capability-first-backend-architecture.md`
 - `../agent-workstream-apps/SKILL.md` when generated SaaS intent has not already produced functional-agent, workstream, and structured-surface context
@@ -55,6 +56,7 @@ For generated full-stack SaaS apps, capabilities sit **below** the agent workstr
 secure SaaS foundation
 → functional/context-area agents
 → durable workstreams
+→ workforce roster and worker responsibility/authority/handoff map
 → typed structured surfaces and actions
 → governed backend capabilities as product-level groupings
 → governed-tools inside those capabilities
@@ -96,6 +98,8 @@ Prompt text, agent-tool descriptions, frontend navigation, and hidden fields are
 For generated SaaS apps, first identify or load the upstream workstream model before inventing backend operations:
 - role-authorized functional/context-area agents and their tenant/customer scope;
 - durable workstreams and retained human authority for each functional agent;
+- worker roster: human workers, functional-agent workers, internal/autonomous/evaluator agent workers, and system workers;
+- worker responsibilities, authority levels, supervising humans, handoffs/escalations, failure behavior, and trace obligations;
 - structured surfaces, payload-producing queries, allowed actions, events, and trace links;
 - surface/action placement, reusable functional-agent placement, and denial/recovery states;
 - candidate action-to-governed-tool/capability mappings from each surface action, agent-tool, browser-tool, workflow-tool, API call, timer-tool, consumer-tool, or internal-tool.
@@ -177,6 +181,7 @@ Load focused component skills only after the capability contract says why the co
 
 When this skill is used directly, produce or hand off:
 - upstream functional-agent/workstream/surface context, or an explicit statement that the task is non-SaaS/repository-maintenance-only;
+- worker-to-capability context: responsible human/agent/system worker, actor adapter, authority level, handoff/escalation, and trace source;
 - surface/action-to-capability mapping for generated SaaS apps;
 - capability inventory with ids and classes;
 - actors/callers and AuthContext rules;

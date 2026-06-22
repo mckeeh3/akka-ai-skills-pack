@@ -24,6 +24,7 @@ Each downstream artifact should cite the upstream current-intent node or accepte
 Feature-bearing implementation tasks should inherit or state a vertical contract before coding:
 
 - workstream or explicit internal/foundation/cross-cutting scope;
+- responsible worker(s), worker type, actor adapter, authority level, and handoff/escalation path;
 - attention category or non-attention reason;
 - role-specific dashboard or non-UI trigger;
 - human surface graph node and action edge, when user-facing;
@@ -46,6 +47,7 @@ Current intent should drive implementation choices:
 
 - Capabilities map to HTTP/gRPC/MCP/API contracts, governed tool contracts, workflows, entities, consumers, timers, views, or agents.
 - Workstream surfaces map to frontend routes, structured panels/cards/forms, SSE/WebSocket subscriptions, browser API clients, and human-backed surface-action adapters for governed tools.
+- Worker bindings map human roles, functional agents, internal/autonomous/evaluator agents, and system workers to responsibilities, surfaces, capabilities, handoffs, and trace obligations.
 - Agent bindings map to concrete Akka `Agent` or `AutonomousAgent` components, model policy, governed prompts/skills/references, agent-tool adapters, tool boundaries, memory, guardrails, and traces.
 - Data-state artifacts map to EventSourcedEntity or KeyValueEntity state, events/commands, views, retention, and tests.
 - Policies map to authorization checks, approval workflows, denial responses, audit events, and negative tests.
