@@ -246,7 +246,7 @@
 
 ### TASK-SIR-06-001: Expand routing to all core workstreams
 
-- status: pending
+- status: done
 - source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
 - task brief: specs/workstream-surface-intent-routing/tasks/06-workstream-expansion/01-expand-routing-to-all-core-workstreams.md
 - depends on:
@@ -278,6 +278,12 @@
   - destructive or approval-gated asks open relevant surfaces or fall back; they do not execute commands
   - existing User Admin Organization Create routing remains covered
   - changes and queue update are committed
+- notes:
+  - expanded `DefaultSurfaceIntentRouter` with high-confidence Agent Admin, Audit/Trace, and Governance/Policy open routes while preserving My Account and User Admin Organization Create/invitation routes
+  - added generic compound/high-risk fallback guard for destructive or approval-gated prompts; matched routes remain side-effect free and never execute commands
+  - added backend and frontend contract coverage for one representative matched route per core workstream, existing User Admin Organization Create no-mutation behavior, and high-risk fallback
+  - commands run: `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageRoutesRepresentativeCoreWorkstreamSurfaceIntentsWithoutModelOrMutation,ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageRoutesUserAdminSurfaceIntentsWithSafePrefillAndNoMutation,ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageFallsBackSafelyForUnauthorizedAmbiguousOrHighRiskSurfacePrompts,ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageRoutesMatchedSurfaceIntentBeforeModelInvocation test` (passed); `npm --prefix frontend test -- --run` (passed); `npm --prefix frontend run typecheck` (passed); `git diff --check` (passed)
+  - commit message: `surface-intent-routing: expand core workstream routes`
 
 ### TASK-SIR-07-001: Update agent surface familiarity seeds
 

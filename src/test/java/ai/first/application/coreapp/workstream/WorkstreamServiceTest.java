@@ -1804,7 +1804,50 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void submitMessageFallsBackSafelyForUnauthorizedOrAmbiguousUserAdminSurfacePrompts() {
+  @SuppressWarnings("unchecked")
+  void submitMessageRoutesRepresentativeCoreWorkstreamSurfaceIntentsWithoutModelOrMutation() {
+    var tenantCountBeforeRoute = identityRepository.tenantRows().size();
+
+    var myAccount = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "my-account-agent", "show my account dashboard", "corr-route-core-my-account", "idem-route-core-my-account"), "corr-header");
+    assertEquals("surface_intent_route", myAccount.agentItem().kind());
+    assertEquals("surface-my-account-dashboard", myAccount.surface().surfaceId());
+    assertEquals("route-my-account-dashboard-open-v1", ((Map<?, ?>) ((Map<?, ?>) myAccount.surface().data().get("surfaceIntentRoute")).get("metadata")).get("routeId"));
+
+    var userAdmin = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-owner", "user-admin-agent", "create organization \"Core Route Org\"", "corr-route-core-user-admin", "idem-route-core-user-admin"), "corr-header");
+    assertEquals("surface_intent_route", userAdmin.agentItem().kind());
+    assertEquals("surface-user-admin-organization-create", userAdmin.surface().surfaceId());
+    assertEquals("Core Route Org", ((Map<?, ?>) userAdmin.surface().data().get("prefill")).get("organizationName"));
+    assertEquals(tenantCountBeforeRoute, identityRepository.tenantRows().size(), "Core User Admin route must open the create surface without creating an Organization");
+
+    var agentAdmin = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "agent-admin-agent", "show agent catalog", "corr-route-core-agent-admin", "idem-route-core-agent-admin"), "corr-header");
+    assertEquals("surface_intent_route", agentAdmin.agentItem().kind());
+    assertEquals("surface-agent-admin-catalog", agentAdmin.surface().surfaceId());
+    assertEquals("agent_admin.catalog.v1", agentAdmin.surface().data().get("surfaceContract"));
+    assertEquals("route-agent-admin-catalog-open-v1", ((Map<?, ?>) ((Map<?, ?>) agentAdmin.surface().data().get("surfaceIntentRoute")).get("metadata")).get("routeId"));
+
+    var auditTrace = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "audit-trace-agent", "open audit trace", "corr-route-core-audit", "idem-route-core-audit"), "corr-header");
+    assertEquals("surface_intent_route", auditTrace.agentItem().kind());
+    assertEquals("surface-audit-trace-dashboard", auditTrace.surface().surfaceId());
+    assertEquals("audit.trace.dashboard.v1", auditTrace.surface().data().get("surfaceContract"));
+    assertEquals("route-audit-trace-dashboard-open-v1", ((Map<?, ?>) ((Map<?, ?>) auditTrace.surface().data().get("surfaceIntentRoute")).get("metadata")).get("routeId"));
+
+    var governancePolicy = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "governance-policy-agent", "show policy dashboard", "corr-route-core-governance", "idem-route-core-governance"), "corr-header");
+    assertEquals("surface_intent_route", governancePolicy.agentItem().kind());
+    assertEquals("surface-governance-policy-dashboard", governancePolicy.surface().surfaceId());
+    assertEquals("governance.policy.dashboard.v1", governancePolicy.surface().data().get("surfaceContract"));
+    assertEquals("route-governance-policy-dashboard-open-v1", ((Map<?, ?>) ((Map<?, ?>) governancePolicy.surface().data().get("surfaceIntentRoute")).get("metadata")).get("routeId"));
+
+    assertEquals(0, trackingRuntimeInvoker.invocationCount(), "Representative deterministic routes for all five core workstreams must not invoke the model-backed runtime");
+    assertFalse(identityRepository.tenantRows().stream().anyMatch(tenant -> "Core Route Org".equals(tenant.displayName())), "Deterministic routing must not submit create commands");
+  }
+
+  @Test
+  void submitMessageFallsBackSafelyForUnauthorizedAmbiguousOrHighRiskSurfacePrompts() {
     var tenantCreate = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "user-admin-agent", "create organization \"Tenant Hidden\"", "corr-route-tenant-org-create", "idem-route-tenant-org-create"), "corr-header");
 
@@ -1823,6 +1866,20 @@ class WorkstreamServiceTest {
     assertEquals(2, trackingRuntimeInvoker.invocationCount(), "Ambiguous multi-target prompts must preserve the governed model-backed fallback");
     assertEquals("user-admin-agent", trackingRuntimeInvoker.lastRequest().agentDefinitionId());
     assertEquals("create organization \"Org 2\" and invite user alice@example.com", trackingRuntimeInvoker.lastRequest().userInput());
+
+    var highRiskAgentLifecycle = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "agent-admin-agent", "activate agent", "corr-route-high-risk-agent", "idem-route-high-risk-agent"), "corr-header");
+    assertEquals("markdown_response", highRiskAgentLifecycle.agentItem().kind());
+    assertNull(highRiskAgentLifecycle.surface().data().get("surfaceIntentRoute"));
+    assertFalse(highRiskAgentLifecycle.toString().contains("surface-agent-activation-confirmation"));
+
+    var approvalGatedGovernance = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "governance-policy-agent", "approve proposal", "corr-route-high-risk-governance", "idem-route-high-risk-governance"), "corr-header");
+    assertEquals("markdown_response", approvalGatedGovernance.agentItem().kind());
+    assertNull(approvalGatedGovernance.surface().data().get("surfaceIntentRoute"));
+    assertFalse(approvalGatedGovernance.toString().contains("action-governance-policy-decide"));
+
+    assertEquals(4, trackingRuntimeInvoker.invocationCount(), "High-risk or approval-gated prompts must fall back safely without deterministic command execution");
   }
 
   @Test

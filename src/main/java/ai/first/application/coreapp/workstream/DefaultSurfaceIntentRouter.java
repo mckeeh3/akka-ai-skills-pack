@@ -10,11 +10,18 @@ import java.util.regex.Pattern;
 final class DefaultSurfaceIntentRouter implements SurfaceIntentRouter {
   private static final String MY_ACCOUNT_AGENT_ID = "my-account-agent";
   private static final String USER_ADMIN_AGENT_ID = "user-admin-agent";
+  private static final String AGENT_ADMIN_AGENT_ID = "agent-admin-agent";
+  private static final String AUDIT_TRACE_AGENT_ID = "audit-trace-agent";
+  private static final String GOVERNANCE_POLICY_AGENT_ID = "governance-policy-agent";
   private static final String SAAS_OWNER_TENANT_MANAGE_CAPABILITY = "saas_owner.tenant.manage";
   private static final String SAAS_OWNER_TENANT_READ_CAPABILITY = "saas_owner.tenant.read";
   private static final String USERADMIN_VIEW_OVERVIEW = "user_admin.view_overview";
   private static final String USERADMIN_LIST_MEMBERS = "user_admin.list_members";
   private static final String USERADMIN_SEND_INVITATION = "user_admin.invite_user";
+  private static final String AGENT_ADMIN_LIST_DEFINITIONS = "agent_admin.list_definitions";
+  private static final String AUDIT_TRACE_DASHBOARD_READ = "audit.trace.dashboard.read";
+  private static final String AUDIT_TRACE_SEARCH = "audit.trace.search";
+  private static final String GOVERNANCE_POLICY_READ = "governance.policy.read";
   private static final Pattern CREATE_ORGANIZATION = Pattern.compile("^(?:please\\s+)?(?:create|add)\\s+(?:an?\\s+)?organization\\s+\\\"([^\\\"]{2,120})\\\"\\s*$", Pattern.CASE_INSENSITIVE);
   private static final Pattern INVITE_USER = Pattern.compile("^(?:please\\s+)?invite\\s+user\\s+([A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,63})\\s*$", Pattern.CASE_INSENSITIVE);
 
@@ -35,10 +42,14 @@ final class DefaultSurfaceIntentRouter implements SurfaceIntentRouter {
           "surface_open",
           null));
     }
-    if (USER_ADMIN_AGENT_ID.equals(request.functionalAgentId()) && !isAmbiguousUserAdminPrompt(normalized)) {
+    if (USER_ADMIN_AGENT_ID.equals(request.functionalAgentId()) && !isAmbiguousOrCompoundPrompt(normalized)) {
       var userAdminRoute = routeUserAdmin(request, normalized);
       if (userAdminRoute.isPresent()) return userAdminRoute;
     }
+    if (isAmbiguousOrCompoundPrompt(normalized) || isHighRiskPrompt(normalized)) return Optional.empty();
+    if (AGENT_ADMIN_AGENT_ID.equals(request.functionalAgentId())) return routeAgentAdmin(request, normalized);
+    if (AUDIT_TRACE_AGENT_ID.equals(request.functionalAgentId())) return routeAuditTrace(request, normalized);
+    if (GOVERNANCE_POLICY_AGENT_ID.equals(request.functionalAgentId())) return routeGovernancePolicy(request, normalized);
     return Optional.empty();
   }
 
@@ -85,6 +96,78 @@ final class DefaultSurfaceIntentRouter implements SurfaceIntentRouter {
           "route-user-admin-invitation-create-v1",
           "surface_create_prefill",
           USERADMIN_SEND_INVITATION));
+    }
+    return Optional.empty();
+  }
+
+  private Optional<Result> routeAgentAdmin(Request request, String normalized) {
+    if (isAgentAdminDashboardOpen(normalized) && hasCapability(request, AGENT_ADMIN_LIST_DEFINITIONS)) {
+      return Optional.of(routeResult(
+          request,
+          "surface-agent-admin-dashboard",
+          "open agent admin dashboard",
+          Map.of(),
+          "route-agent-admin-dashboard-open-v1",
+          "surface_open",
+          AGENT_ADMIN_LIST_DEFINITIONS));
+    }
+    if (isAgentAdminCatalogOpen(normalized) && hasCapability(request, AGENT_ADMIN_LIST_DEFINITIONS)) {
+      return Optional.of(routeResult(
+          request,
+          "surface-agent-admin-catalog",
+          "show agent catalog",
+          Map.of(),
+          "route-agent-admin-catalog-open-v1",
+          "surface_open",
+          AGENT_ADMIN_LIST_DEFINITIONS));
+    }
+    return Optional.empty();
+  }
+
+  private Optional<Result> routeAuditTrace(Request request, String normalized) {
+    if (isAuditTraceDashboardOpen(normalized) && hasCapability(request, AUDIT_TRACE_DASHBOARD_READ)) {
+      return Optional.of(routeResult(
+          request,
+          "surface-audit-trace-dashboard",
+          "open audit trace dashboard",
+          Map.of(),
+          "route-audit-trace-dashboard-open-v1",
+          "surface_open",
+          AUDIT_TRACE_DASHBOARD_READ));
+    }
+    if (isAuditTraceSearchOpen(normalized) && hasCapability(request, AUDIT_TRACE_SEARCH)) {
+      return Optional.of(routeResult(
+          request,
+          "surface-audit-trace-search",
+          "search traces",
+          Map.of(),
+          "route-audit-trace-search-open-v1",
+          "surface_open",
+          AUDIT_TRACE_SEARCH));
+    }
+    return Optional.empty();
+  }
+
+  private Optional<Result> routeGovernancePolicy(Request request, String normalized) {
+    if (isGovernancePolicyDashboardOpen(normalized) && hasCapability(request, GOVERNANCE_POLICY_READ)) {
+      return Optional.of(routeResult(
+          request,
+          "surface-governance-policy-dashboard",
+          "open governance policy dashboard",
+          Map.of(),
+          "route-governance-policy-dashboard-open-v1",
+          "surface_open",
+          GOVERNANCE_POLICY_READ));
+    }
+    if (isGovernancePolicyInventoryOpen(normalized) && hasCapability(request, GOVERNANCE_POLICY_READ)) {
+      return Optional.of(routeResult(
+          request,
+          "surface-governance-policy-inventory",
+          "show policy inventory",
+          Map.of(),
+          "route-governance-policy-inventory-open-v1",
+          "surface_open",
+          GOVERNANCE_POLICY_READ));
     }
     return Optional.empty();
   }
@@ -158,8 +241,76 @@ final class DefaultSurfaceIntentRouter implements SurfaceIntentRouter {
         "user directory").contains(normalized);
   }
 
-  private static boolean isAmbiguousUserAdminPrompt(String normalized) {
+  private static boolean isAgentAdminDashboardOpen(String normalized) {
+    return List.of(
+        "open agent admin",
+        "open agent admin dashboard",
+        "show agent admin dashboard",
+        "agent readiness").contains(normalized);
+  }
+
+  private static boolean isAgentAdminCatalogOpen(String normalized) {
+    return List.of(
+        "show agent catalog",
+        "open agent catalog",
+        "list agents",
+        "find agent user admin").contains(normalized);
+  }
+
+  private static boolean isAuditTraceDashboardOpen(String normalized) {
+    return List.of(
+        "open audit trace",
+        "open audit trace dashboard",
+        "show audit dashboard",
+        "show audit trace dashboard",
+        "what failed?").contains(normalized);
+  }
+
+  private static boolean isAuditTraceSearchOpen(String normalized) {
+    return List.of(
+        "search traces",
+        "search traces for denial",
+        "find provider failures").contains(normalized);
+  }
+
+  private static boolean isGovernancePolicyDashboardOpen(String normalized) {
+    return List.of(
+        "open governance",
+        "open governance policy",
+        "open governance policy dashboard",
+        "show policy dashboard",
+        "policy work needing review").contains(normalized);
+  }
+
+  private static boolean isGovernancePolicyInventoryOpen(String normalized) {
+    return List.of(
+        "show policy inventory",
+        "open policy inventory",
+        "list proposals",
+        "find policy changes").contains(normalized);
+  }
+
+  private static boolean isAmbiguousOrCompoundPrompt(String normalized) {
     return normalized.contains(" and ") || normalized.contains(" then ") || normalized.contains(",");
+  }
+
+  private static boolean isHighRiskPrompt(String normalized) {
+    return normalized.startsWith("delete ")
+        || normalized.startsWith("remove ")
+        || normalized.startsWith("disable ")
+        || normalized.startsWith("deactivate ")
+        || normalized.startsWith("activate ")
+        || normalized.startsWith("approve ")
+        || normalized.startsWith("reject ")
+        || normalized.startsWith("rollback ")
+        || normalized.startsWith("import ")
+        || normalized.startsWith("export ")
+        || normalized.startsWith("send ")
+        || normalized.startsWith("submit ")
+        || normalized.startsWith("grant ")
+        || normalized.startsWith("revoke ")
+        || normalized.startsWith("suspend ")
+        || normalized.startsWith("archive ");
   }
 
   private static String normalize(String prompt) {
