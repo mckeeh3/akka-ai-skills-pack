@@ -13,7 +13,7 @@ This is a narrower follow-on planning skill than `akka-prd-to-specs-backlog`.
 
 Create or update a single backlog file that is tightly aligned with one existing slice or sprint spec and the current intent graph nodes it realizes, and is detailed enough to drive focused coding sessions.
 The backlog should end in bounded harness-sized task items, not just class lists and prose.
-For generated secure AI-first SaaS, each backlog item must preserve the vertical workstream graph chain from the source increment: workstream → role-specific dashboard attention → human surface graph node/action or workstream event → internal workstream agent graph delegation/result when applicable → governed-tool id/class inside capability and surface/action maps → selected Akka substrate/exposure channel → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
+For generated secure AI-first SaaS, each backlog item must preserve the vertical workstream graph chain from the source increment: workstream → role-specific dashboard attention → human surface graph node/action or workstream event → deterministic surface intent route/prefill behavior for composer-enabled surfaces → internal workstream agent graph delegation/result when applicable → governed-tool id/class inside capability and surface/action maps → selected Akka substrate/exposure channel → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
 Also create or update matching entries in `specs/pending-tasks.md` so follow-on implementation can proceed one task per fresh context.
 
 ## Use this skill when
@@ -57,6 +57,7 @@ Read these first if present:
 - `../docs/pending-task-queue.md`
 - `../docs/ai-first-saas-application-architecture.md` when the slice or sprint includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../docs/requirements-to-workstream-development-process.md` when the source increment includes generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent candidates, notifications/projections, or task queues
+- `../docs/workstream-surface-intent-routing.md` when the slice includes composer-enabled workstreams, create/edit/task surfaces, or natural-language surface requests
 - target project path: app-description/15-operating-model/ or equivalent operating-model specs when present and relevant
 - target project path: specs/templates/build-backlog-template.md if the target project provides it; otherwise use the backlog structure described in this skill
 - target project path: specs/templates/implementation-task-template.md if the target project provides it; otherwise use the task-brief structure described in this skill
@@ -143,7 +144,7 @@ Before finishing, verify:
 - the class list fits the slice or sprint scope
 - the endpoint list fits the slice or sprint scope
 - UI tasks include the selected style guide in required reads, or are blocked by the style-selection question
-- AI-first delegated-work, authority, policy, decision, trace, UI-surface, evaluation, and outcome constraints from the source slice are preserved in backlog sections and pending-task entries when applicable
+- AI-first delegated-work, authority, policy, decision, trace, UI-surface, deterministic surface intent routing, evaluation, and outcome constraints from the source slice are preserved in backlog sections and pending-task entries when applicable
 - unresolved AI-first authority, approval, policy, risk, trace, UI, evaluation, or outcome decisions block only the affected tasks and are captured as pending questions
 - the tests cover entity/workflow/view/endpoint/frontend behavior as applicable
 - the local app-run, endpoint smoke, browser/workstream smoke, or manual-test path is present for feature-bearing sprint/slice goals

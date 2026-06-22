@@ -224,7 +224,7 @@ type WorkstreamItem = {
 
 The stream supports grouped history, stable item ids, append/update semantics, trace links, and action-feedback items for non-chat navigation/actions.
 
-Every new user request or surface action is acknowledged as a prompt-like workstream item before the agent response, capability result, or structured surface is shown. This applies to direct composer prompts, prompt-entered shell commands such as `show users list`, the standard composer **Show dashboard** shell button, indirect requests raised by existing surface actions, My Account panels, rail selection, and deep-link entry. A separate renderable `surface-request` / request surface is optional and should be used only when the request itself needs user inspection, confirmation, approval, validation repair, or visible async progress. Do not create a redundant request surface just to echo a successful form submission or button click.
+Every new user request or surface action is acknowledged as a prompt-like workstream item before the agent response, capability result, or structured surface is shown. This applies to direct composer prompts, prompt-entered shell commands such as `show users list`, deterministic surface-intent routes such as `create customer "Acme"`, the standard composer **Show dashboard** shell button, indirect requests raised by existing surface actions, My Account panels, rail selection, and deep-link entry. A separate renderable `surface-request` / request surface is optional and should be used only when the request itself needs user inspection, confirmation, approval, validation repair, or visible async progress. Do not create a redundant request surface just to echo a successful form submission or button click.
 
 The stream uses traditional chat ordering: older turn groups remain above and newer turn groups append below them. When the request item is appended, the workstream scrolls that request item to the top of the visible panel; any resulting markdown or structured response surfaces append below the request so the user sees the prompt/action first and the response surfaces in order. For ordinary surface actions, the preferred response is the authoritative result surface: the updated originating surface, the created/changed object's show surface, a collection/list refresh, a decision/approval surface, a workflow-status surface, or a typed `system_message` for denial/no-op/blocked/failure. For example, **Save settings changes** appends a request/action-feedback item and then returns the updated Settings surface with success/no-op/validation/trace state. An **Invite user** submit should append an invite request/action-feedback item and then return the invitation detail, updated invitation list, validation-error form state, approval-required decision surface, conflict/no-op surface, or denial `system_message`; it should not show a separate invite-request surface unless review, confirmation, approval, validation repair, or async progress is actually required.
 
@@ -250,6 +250,8 @@ type WorkstreamShellRequest = {
 ```
 
 Default prompt resolution is current-workstream scoped. Authorized cross-workstream surface requests are supported for power users and deep links, but unresolved or unauthorized targets must render typed `system_message` denial/recovery surfaces without leaking hidden workstream existence.
+
+Composer prompts should first pass through the deterministic surface intent routing contract in `./workstream-surface-intent-routing.md`. Matched routes append the original user request, return the target authorized surface, and may include safe editable prefill data. They must not auto-submit the surface action or mutate state. Unmatched prompts then continue to the governed model-backed workstream agent path.
 
 ### Surface envelopes
 
@@ -280,6 +282,12 @@ type SurfaceEnvelope<TData, TAction extends SurfaceAction = SurfaceAction> = {
   data: TData;
   actions: TAction[];
   links?: SurfaceLink[];
+  prefill?: {
+    source: "surface_intent_route" | "deep_link" | "system_suggestion";
+    fields: Record<string, unknown>;
+    userReviewRequired: true;
+    noMutation: true;
+  };
 };
 ```
 
@@ -298,7 +306,7 @@ Canonical reusable surface components:
 
 For durable collection objects, implement the progression defined in `./structured-surface-contracts.md`: domain-semantically named list/search surfaces delegate selection to lifecycle-aware show/inspection surfaces; show surfaces delegate consequential mutation to separate create, edit, destructive lifecycle, or domain-specific single-action surfaces. Do not rebuild a combined CRUD page/component as the canonical workstream UI.
 
-Each surface renders loading, empty, ready, submitting, success, pending, approval-needed, error, forbidden, conflict, stale, reconnecting, partial-data, and no-op states where applicable.
+Each surface renders loading, empty, ready, submitting, success, pending, approval-needed, error, forbidden, conflict, stale, reconnecting, partial-data, prefilled-for-review, and no-op states where applicable. Prefilled fields are advisory state from a route/deep link/system suggestion and must remain editable and subject to normal validation.
 
 ### Browser-tool / capability actions
 

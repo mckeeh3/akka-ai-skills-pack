@@ -21,6 +21,7 @@ Read these first when using this skill:
 - `../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app modeling before backend capability design
 - `../docs/workforce-decomposition.md` when workers, responsibilities, authority, supervision, or handoffs are in scope
 - `../docs/structured-surface-contracts.md` when workstream surfaces, surface actions, or browser UI actions are in scope
+- `../docs/workstream-surface-intent-routing.md` when composer prompts open or prepopulate protected surfaces
 - `../docs/capability-first-backend-architecture.md`
 - `../agent-workstream-apps/SKILL.md` when generated SaaS intent has not already produced functional-agent, workstream, and structured-surface context
 
@@ -64,7 +65,7 @@ secure SaaS foundation
 → Akka components
 ```
 
-Functional agents, workstreams, and structured surfaces define the user-facing application model. Capabilities define product-level backend abilities or groupings. Governed-tools are the executable semantic operations or queries inside those capabilities and carry the authority/behavior contract behind every surface action, agent-tool, browser-tool, workflow step, API, timer, consumer, or internal call. Do not use capability-first modeling to bypass functional-agent and surface modeling for generated SaaS apps.
+Functional agents, workstreams, and structured surfaces define the user-facing application model. Capabilities define product-level backend abilities or groupings. Governed-tools are the executable semantic operations or queries inside those capabilities and carry the authority/behavior contract behind every surface action, agent-tool, browser-tool, workflow step, API, timer, consumer, or internal call. Deterministic surface intent routes that open or prepopulate protected surfaces must still resolve selected AuthContext and capability authorization in the backend. Do not use capability-first modeling to bypass functional-agent and surface modeling for generated SaaS apps.
 
 A backend capability groups one or more governed-tools:
 
@@ -102,7 +103,7 @@ For generated SaaS apps, first identify or load the upstream workstream model be
 - worker responsibilities, authority levels, supervising humans, handoffs/escalations, failure behavior, and trace obligations;
 - structured surfaces, payload-producing queries, allowed actions, events, and trace links;
 - surface/action placement, reusable functional-agent placement, and denial/recovery states;
-- candidate action-to-governed-tool/capability mappings from each surface action, agent-tool, browser-tool, workflow-tool, API call, timer-tool, consumer-tool, or internal-tool.
+- candidate action-to-governed-tool/capability mappings from each surface action, deterministic surface-intent route, agent-tool, browser-tool, workflow-tool, API call, timer-tool, consumer-tool, or internal-tool.
 
 If this context is missing for a generated full-stack SaaS request, route through `agent-workstream-apps` or record the gap before selecting capabilities or Akka components.
 

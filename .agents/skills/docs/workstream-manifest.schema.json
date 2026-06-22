@@ -44,6 +44,30 @@
       },
       "additionalProperties": false
     },
+    "surfaceIntentRoute": {
+      "type": "object",
+      "required": [
+        "intentId",
+        "promptExamples",
+        "targetSurfaceId",
+        "requiredCapabilityId",
+        "prefillFields",
+        "ambiguityBehavior",
+        "forbiddenEffects",
+        "traceRequired"
+      ],
+      "properties": {
+        "intentId": { "$ref": "#/$defs/nonEmptyString" },
+        "promptExamples": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "targetSurfaceId": { "$ref": "#/$defs/nonEmptyString" },
+        "requiredCapabilityId": { "$ref": "#/$defs/nonEmptyString" },
+        "prefillFields": { "type": "array", "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "ambiguityBehavior": { "$ref": "#/$defs/nonEmptyString" },
+        "forbiddenEffects": { "$ref": "#/$defs/nonEmptyString" },
+        "traceRequired": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
     "readinessEvidence": {
       "type": "object",
       "required": ["localCommands", "apiUiSmokePath", "providerSecurityFailClosedCheck", "traceEvidence"],
@@ -127,6 +151,7 @@
         "surfaces": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonEmptyString" } },
         "capabilities": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonEmptyString" } },
         "surfaceActionMappings": { "type": "array", "items": { "$ref": "#/$defs/surfaceActionMapping" } },
+        "surfaceIntentRoutes": { "type": "array", "items": { "$ref": "#/$defs/surfaceIntentRoute" } },
         "readinessEvidence": { "$ref": "#/$defs/readinessEvidence" },
         "expertiseBundle": { "type": "string" },
         "internalWorkers": { "type": "array", "items": { "$ref": "#/$defs/internalWorker" } },

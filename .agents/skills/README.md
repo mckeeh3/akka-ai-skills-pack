@@ -112,7 +112,7 @@ Use companion skills only for concerns actually in scope, except foundation/admi
 
 ## Canonical generated-app handoff order
 
-Secure AI-first SaaS interpretation → agent workstream model → mandatory core SaaS foundation verticals → affected workstreams → workforce decomposition and responsibility/authority/handoff map → role-specific dashboard attention model → human surface graph → internal workstream agent graph → governed-tools in capability files and surface/action maps → capability-first backend substrate → description/decomposition/planning path → focused implementation.
+Secure AI-first SaaS interpretation → agent workstream model → mandatory core SaaS foundation verticals → affected workstreams → workforce decomposition and responsibility/authority/handoff map → role-specific dashboard attention model → human surface graph → deterministic surface intent routing for composer-enabled surfaces → internal workstream agent graph → governed-tools in capability files and surface/action maps → capability-first backend substrate → description/decomposition/planning path → focused implementation.
 
 For SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS prompts, the first runnable target is the SaaS Foundation App domain with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. It is not a generic public chatbot or page-first CRUD shell.
 

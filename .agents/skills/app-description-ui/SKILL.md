@@ -25,6 +25,7 @@ Read these first if present:
 - `../docs/workstream-contract.md` for workstream definition/instance/view terminology and readiness labels
 - `../docs/workstream-attention-contracts.md` for backend-owned attention, My Account aggregation, and left-rail counts
 - `../docs/workstream-ui-reference-architecture.md` for the canonical generated-app workstream UI implementation reference under `frontend/src/workstream/**`
+- `../docs/workstream-surface-intent-routing.md` for deterministic composer-to-surface routing and safe editable prefill behavior
 - `../docs/web-ui-frontend-decomposition.md`
 - `../docs/web-ui-style-guide.md`
 - `../docs/web-ui-component-catalog.md`
@@ -64,13 +65,13 @@ For retired/static/page-first UI boundaries, use `../docs/retired-content-bounda
 
 ## What to capture
 
-Use `../docs/app-description-skill-output-contracts.md`, `../docs/workstream-contract.md`, `../docs/workstream-attention-contracts.md`, and `../docs/workstream-ui-reference-architecture.md` for the detailed UI contract. Capture only the affected browser-realization meaning: workstream shell, functional-agent rail, structured surfaces, routes/deep links, personas/journeys, managed-agent governance UI, forms/interactions, API contracts, realtime/stale states, accessibility/responsive behavior, and style-guide selection. Link every protected action to backend capability/tool authority, AuthContext/scope, denial behavior, traces, and tests.
+Use `../docs/app-description-skill-output-contracts.md`, `../docs/workstream-contract.md`, `../docs/workstream-attention-contracts.md`, `../docs/workstream-ui-reference-architecture.md`, and `../docs/workstream-surface-intent-routing.md` for the detailed UI contract. Capture only the affected browser-realization meaning: workstream shell, functional-agent rail, persistent composer routing, structured surfaces, routes/deep links, personas/journeys, managed-agent governance UI, forms/interactions, API contracts, realtime/stale states, accessibility/responsive behavior, and style-guide selection. Link every protected action to backend capability/tool authority, AuthContext/scope, denial behavior, traces, and tests.
 
 For each new or substantially changed browser-rendered surface, verify the app-description surface contract has answered the surface-description sufficiency questions from `app-description-surface-modeling`: can a developer or generator implement and review the surface without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics; would the target SaaS user understand the default surface without knowing internal architecture; and does every default-visible field/action help the user decide, act, recover, or understand a business outcome? If not, route back to surface description refinement instead of allowing frontend realization to invent missing application meaning or expose internal implementation detail.
 
 ## Change handling
 
-Update only affected UI description files and linked workstream/surface/capability/behavior/test/security/observability/readiness artifacts. Do not use UI edits to redefine domain meaning, authorization, tool authority, or generated-app completion semantics. UI realization must translate internal capability/policy/trace metadata into role-appropriate SaaS UX copy and progressive disclosure; it must not surface raw implementation ids or backend mechanics to ordinary users just because they exist in the app-description.
+Update only affected UI description files and linked workstream/surface/capability/behavior/test/security/observability/readiness artifacts. Do not use UI edits to redefine domain meaning, authorization, tool authority, or generated-app completion semantics. UI realization must translate internal capability/policy/trace metadata into role-appropriate SaaS UX copy and progressive disclosure; it must not surface raw implementation ids or backend mechanics to ordinary users just because they exist in the app-description. Composer surface-intent routes are UI behavior plus backend authorization behavior: document prompt examples, target surface, prefill rendering, user-review/no-mutation copy, ambiguity/fallback handling, and tests instead of treating them as model prompt instructions.
 
 ## Realization routing
 

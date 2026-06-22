@@ -45,6 +45,7 @@ Implementation mode is readiness-aware. Workstreams at `capability-ready` and ab
 | `surfaces` | Surface ids owned/reused by this workstream; must include `defaultSurfaceId`. |
 | `capabilities` | Capability family ids used by this workstream. |
 | `surfaceActionMappings` | Lightweight action/governed-tool mappings for implementability. Optional below `capability-ready`; non-empty and required at `capability-ready`, `expertise-ready`, `runtime-ready`, and `production-ready`. |
+| `surfaceIntentRoutes` | Optional lightweight composer-to-surface route catalog. Recommended for every composer-enabled workstream at `surface-ready` and above; entries open/refresh/prepopulate surfaces and must declare no-mutation behavior. |
 | `readinessEvidence` | Explicit runtime evidence. Required at `runtime-ready` and `production-ready`; optional and usually omitted below those levels. |
 | `expertiseBundle` | Optional file name under `12-workstreams/workstream-expertise/`; required when LLM-backed behavior claims expertise readiness. |
 | `internalWorkers` | Optional structured internal worker entries. Omit or use `[]` when no internal/background worker behavior is claimed; string-only worker ids are not valid. |
@@ -88,6 +89,25 @@ Required for `capability-ready`, `expertise-ready`, `runtime-ready`, and `produc
 ```
 
 Allowed `exposureChannel` values are `browser-tool`, `agent-tool`, `workflow-tool`, `timer-tool`, `consumer-tool`, `MCP-tool`, `internal-tool`, `api`, and `surface-request`.
+
+## Surface intent route template
+
+`surfaceIntentRoutes` is the lightweight machine-readable bridge from composer prompt patterns to safe structured surface opens/prefills. It does not submit the surface action; it documents deterministic routing before model fallback.
+
+Recommended for composer-enabled workstreams:
+
+```json
+{
+  "intentId": "user-admin.organization.create.open",
+  "promptExamples": ["create organization \"Org 1\"", "new organization Org 1"],
+  "targetSurfaceId": "surface-user-admin-organization-create",
+  "requiredCapabilityId": "saas_owner.tenant.manage",
+  "prefillFields": ["organizationName", "reasonHint"],
+  "ambiguityBehavior": "open blank create surface or ask for clarification; never guess hidden targets",
+  "forbiddenEffects": "does not create, invite, send, approve, archive, activate, or mutate before human submit",
+  "traceRequired": true
+}
+```
 
 ## Runtime readiness evidence template
 

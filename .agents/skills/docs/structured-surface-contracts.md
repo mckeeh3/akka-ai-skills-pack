@@ -16,6 +16,7 @@ Every surface contract must preserve this chain:
 functional/context-area agent workstream placement
 → attention/dashboard purpose where applicable
 → surface type and payload schema
+→ composer surface-intent route and safe prefill behavior where applicable
 → allowed actions and events
 → governed backend capabilities
 → backend authorization, audit, and trace
@@ -27,6 +28,8 @@ For broad requirements, surfaces are discovered through the canonical process: w
 Frontend action visibility is advisory only. The linked backend capability and governed-tool contract remain authoritative for authentication, selected `AuthContext`, tenant/customer scope, membership status, role/capability checks, approval policy, idempotency, side effects, audit, and denial behavior. Those internal ids and mechanics must not become normal SaaS user copy; surface contracts translate them into task-oriented language and expose raw identifiers only in role-gated diagnostics, audit, support, or developer surfaces.
 
 Surfaces are the human-backed actor's tool-use interface. A surface action should be understood as a human-facing adapter for a governed workstream tool: it supplies labels, fields, validation, evidence, confirmations, disabled/denied states, result surfaces, and trace links so the authenticated human supervisor can safely use the operation. The same governed tool may also be exposed as an AI agent tool, workflow/internal tool, API, or MCP tool, but those exposures must be declared separately in the capability/governed-tool map and tool boundary. Do not duplicate business semantics between the surface action and the agent tool; both should point back to the same capability-backed operation.
+
+For composer-enabled workstreams, model deterministic surface intent routes from `./workstream-surface-intent-routing.md` as surface graph edges. A route may open, refresh, or prepopulate a surface from a high-confidence natural-language request, but it must not submit side-effecting commands. Prefill is advisory visible form state; the user still reviews and submits through the normal backend-authorized surface action.
 
 ## Surface graph contract
 
@@ -116,6 +119,7 @@ For each surface, define these fields before implementation:
 | Redaction | Role-dependent fields, PII/secret boundaries, support/auditor visibility, frontend-safe fields, agent-safe fields, and explicit rules that prevent normal user views from showing raw policy ids, governed-tool ids, backend component names, provider/model details, prompt internals, raw event ids, or correlation/idempotency mechanics. |
 | Data source | Read/evidence capabilities and view/query sources that produce the payload; no raw unscoped state dumps by default. |
 | Actions | Allowed human-backed and AI-backed actor actions, labels, input payloads, confirmation/approval requirements, idempotency keys, result states, linked capability ids, governed-tool ids, exposure channel, and trace source such as `surface_action` or `agent_tool_call`. Dashboard cards/rows/counters/badges/charts/task panels/shortcuts that represent attention or next work must declare their interaction target, full-shape hit area, request/result append behavior, zero-count behavior where applicable, and `none` reason only when intentionally non-actionable. |
+| Surface intent routes | High-confidence composer prompt aliases/patterns, target surface, prefill field mapping, ambiguity behavior, required capability, no-mutation guarantee, denial/system-message shape, and route-decision trace. |
 | Events | Realtime/update events, event ids, ordering/dedupe rules, reconnect behavior, partial update semantics, stale markers. |
 | Authority | AuthContext assumptions, tenant/customer scope, role/capability requirements, policy gates, denial shape, disabled-user behavior. |
 | Audit/trace | Audit event types, work-trace fields, user-readable trace summaries, role-gated trace links, correlation ids/evidence references only when visible to the current actor, retention/redaction expectations, and raw-audit/support detail boundaries. |

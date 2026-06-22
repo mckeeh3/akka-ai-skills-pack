@@ -18,6 +18,7 @@ Use this skill when a generated or extended SaaS app should be modeled as a set 
 - `../docs/workstream-attention-contracts.md`
 - `../docs/workstream-ui-reference-architecture.md`
 - `../docs/structured-surface-contracts.md`
+- `../docs/workstream-surface-intent-routing.md`
 - `../docs/capability-first-backend-architecture.md`
 - `../docs/generated-saas-canonical-doctrine.md`
 - `../docs/minimum-ai-first-saas-app.md` when foundation scope is involved
@@ -33,6 +34,7 @@ A workstream app has:
 - continuous stream/composer for work history and requests
 - structured surfaces for dashboards, tables, forms, detail cards, decision cards, diffs, audit timelines, evidence bundles, and system messages
 - surface graph edges backed by browser actions, governed backend capabilities/tools, authorization, audit/work traces, and result surfaces
+- deterministic surface intent routing from composer prompts to authorized surfaces with safe editable prefill before model fallback
 - model-backed agents only where a concrete governed Akka Agent runtime path is required and configured
 
 Routes and pages are implementation/deep-link details. Backend capabilities and authorization are authoritative.
@@ -61,6 +63,7 @@ For each workstream/functional agent, define:
 - allowed backend capabilities/tools and approval gates
 - dashboard/attention model and evidence freshness
 - surfaces, payloads, states, actions, system messages, and trace links
+- surface intent routing catalog: high-confidence prompt patterns, target surfaces, prefill fields, ambiguity/denial behavior, no-mutation guarantee, and tests
 - internal agent or AutonomousAgent delegation only when needed
 - tests for allowed, denied, stale, failure, and tenant/customer isolation paths
 
