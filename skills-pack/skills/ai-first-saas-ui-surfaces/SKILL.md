@@ -41,11 +41,12 @@ For any durable collection of domain things such as users, customers, orders, po
 Before selecting any surface family, place it inside one or more functional/context-area agent workstreams:
 
 - identify the owning functional agent responsible for the surface's user outcome;
+- identify the human, agent, or system worker that needs, produces, or acts through the surface;
 - identify reusable functional agents that may render or link the same surface without owning its semantics;
 - record workstream placement: default briefing/dashboard, timeline item, attention queue, embedded card, modal, side panel, drill-in, or direct deep link;
 - define payload/query source expectations: read/evidence capabilities, view/query sources, redaction, selected `AuthContext`, and user-visible versus drilldown/admin/support/auditor/internal metadata boundaries for trace/correlation fields;
 - list capability-backed actions and denial/result surfaces; for collection-object surfaces, list row/card selection, create, edit, destructive lifecycle, and lifecycle-specific task edges as delegated surface requests or task surfaces; for dashboard/command-center/attention surfaces, list clickable and keyboard-operable work-object interactions for cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons; frontend controls are exposure details only;
-- link audit/work traces for payload access, agent work, decisions, approvals, denials, and side effects;
+- link audit/work traces for payload access, worker handoffs, agent work, decisions, approvals, denials, and side effects;
 - treat routes and deep links only as implementation details that reopen a selected functional agent, workstream item, or structured surface.
 
 ### Goal-to-Execution Workbench
@@ -170,7 +171,7 @@ Route to:
 ## Output expectations
 
 Produce a compact UI-surface plan with:
-- selected surfaces, owning functional agent, reusable functional agents, and primary human roles/temporal modes
+- selected surfaces, owning functional agent, reusable functional agents, responsible human/agent/system workers, and primary human roles/temporal modes
 - for each durable collection object in scope, the domain-semantic list/show/create/edit/destructive-lifecycle progression, including lifecycle-state-specific show/task routing
 - workstream placement for each surface, plus route/deep-link behavior only as implementation detail
 - payload/query source expectations, backing durable objects, read models, redaction, trace requirements, and visibility split for default user content, drilldowns, role-gated diagnostics, and internal-only metadata

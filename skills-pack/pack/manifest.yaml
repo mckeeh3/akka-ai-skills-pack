@@ -105,6 +105,9 @@ content:
     - id: ai-first-saas-agent-team-design
       path: skills/ai-first-saas-agent-team-design
       category: focused
+    - id: ai-first-saas-worker-decomposition
+      path: skills/ai-first-saas-worker-decomposition
+      category: focused
     - id: ai-first-saas-admin-agents
       path: skills/ai-first-saas-admin-agents
       category: focused
@@ -566,6 +569,7 @@ bundles:
       - capability-first-backend
       - core-saas-foundation
       - ai-first-saas-agent-team-design
+      - ai-first-saas-worker-decomposition
       - ai-first-saas-admin-agents
       - ai-first-saas-audit-trace
       - ai-first-saas-decision-cards

@@ -9,15 +9,15 @@ Default generated-application interpretation:
 ```text
 product intent
 → mandatory secure SaaS foundation
-→ requirements-to-workstream process: workstreams, attention, dashboards, surfaces/actions
-→ agent workstream application model: role-authorized functional/context-area agents, workstreams, and structured surfaces
+→ requirements-to-workstream process: workstreams, workforce, attention, dashboards, surfaces/actions
+→ agent workstream application model: role-authorized functional/context-area agents, worker rosters, workstreams, and structured surfaces
 → capability inventory
 → authority, scope, schemas, side effects, audit, approval, and supervision rules
 → selected capability exposure channels
 → Akka component realization
 ```
 
-Use `./requirements-to-workstream-development-process.md` for broad input, PRD, app-description, planning, backlog, and implementation-readiness work. It discovers capabilities through workstream attention, dashboard, surface, and action semantics before selecting APIs or Akka components.
+Use `./requirements-to-workstream-development-process.md` for broad input, PRD, app-description, planning, backlog, and implementation-readiness work. It discovers capabilities through workstream workforce, attention, dashboard, surface, and action semantics before selecting APIs or Akka components.
 
 A capability is the product-level backend ability or grouping. A capability owns one or more governed-tools: semantic executable operations or queries with actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. Agent workstream actions, Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent-tools are implementation or exposure choices for those governed-tools.
 
@@ -140,10 +140,10 @@ Choose Akka components from the capability shape, not from CRUD intuition.
 For broad product input or implementation planning:
 
 1. Preserve the mandatory secure SaaS foundation.
-2. Apply the requirements-to-workstream process: identify workstreams, per-workstream attention categories ("what needs my attention?"), dashboard scope, `WorkstreamAttentionSummary` needs, structured surfaces/actions, My Account aggregate behavior, left rail projections, AutonomousAgent task progress/result surfaces, events/notifications, traces, and tests.
-3. Interpret the agent workstream application model: functional/context-area agents (shortened to functional agents), internal agents, workstreams, structured surfaces, and retained human authority.
+2. Apply the requirements-to-workstream process: identify workstreams, workforce rosters, per-worker responsibility/authority/handoff maps, per-workstream attention categories ("what needs my attention?"), dashboard scope, `WorkstreamAttentionSummary` needs, structured surfaces/actions, My Account aggregate behavior, left rail projections, AutonomousAgent task progress/result surfaces, events/notifications, traces, and tests.
+3. Interpret the agent workstream application model: functional/context-area agents (shortened to functional agents), human workers, internal/autonomous/evaluator agent workers, system workers, workstreams, structured surfaces, and retained human authority.
 4. Interpret AI-first operating-model needs: delegated work, durable goals/plans, policies, decisions, traces, supervision, and outcomes.
-5. Build a capability inventory before selecting Akka components.
+5. Build a capability inventory from worker needs and surface/action semantics before selecting Akka components.
 6. For each capability, define schemas, auth/scope, side effects, idempotency, policy/approval, audit/trace, and tests.
 7. Decide which exposure channels expose the capability, if any.
 8. Select Akka components that realize the capability semantics. Use `./agent-component-selection-guide.md` when a capability could be a request-based Agent, AutonomousAgent, Workflow, Workflow + Agent, or Workflow + AutonomousAgent.

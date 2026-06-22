@@ -47,6 +47,7 @@ Read first when present/relevant:
 - `../docs/minimum-ai-first-saas-app.md` for minimum/core/basic/chatbot-like generated SaaS requests;
 - `../docs/ai-first-saas-application-architecture.md`;
 - `../agent-workstream-apps/SKILL.md` and `../docs/agent-workstream-application-architecture.md` when generated full-stack SaaS workstreams are in scope;
+- `../docs/workforce-decomposition.md` and `../ai-first-saas-worker-decomposition/SKILL.md` when human/agent/system workers, authority, handoffs, or supervision are in scope;
 - `../docs/structured-surface-contracts.md` when surfaces/actions/events are in scope;
 - `../capability-first-backend/SKILL.md` and `../docs/capability-first-backend-architecture.md` before backend component selection;
 - `../docs/agent-coverage-matrix.md` when agent runtime/governance coverage is in scope;
@@ -65,18 +66,19 @@ Before coding, produce a component plan with these sections. Keep each concise; 
 5. Core secure SaaS foundation obligations
 6. Workstream decomposition decision
 7. Agent workstream model and retained human authority
-8. Attention/dashboard model
-9. Human surface graph and surface actions
-10. Surface/action-to-capability and governed-tool mapping
-11. Internal agent/autonomous-task candidates
-12. Workstream expertise plan
-13. Capability and governed-tool inventory
-14. Capability-to-component mapping
-15. Chosen components and why each exists
-16. Skill routing for implementation and tests
-17. Open questions/assumptions
-18. Vertical implementation order
-19. Required tests
+8. Workforce decomposition: human, functional-agent, internal/autonomous/evaluator agent, and system workers
+9. Attention/dashboard model
+10. Human surface graph and surface actions
+11. Surface/action-to-capability and governed-tool mapping
+12. Internal agent/autonomous-task candidates
+13. Workstream expertise plan
+14. Capability and governed-tool inventory
+15. Capability-to-component mapping
+16. Chosen components and why each exists
+17. Skill routing for implementation and tests
+18. Open questions/assumptions
+19. Vertical implementation order
+20. Required tests
 
 A plan is incomplete if it names components without saying which current-intent graph nodes, functional agent, workstream, surface, capability, authority boundary, trace, and tests each increment belongs to.
 
@@ -104,6 +106,7 @@ Before CRUD or component decomposition, extract:
 - human objective, owner, success criteria, constraints, definition of done;
 - delegated work vs retained human authority;
 - goals, plans, tasks, policies, decisions, approvals, exceptions, traces, outcomes;
+- worker roster: human workers, functional-agent workers, internal/autonomous/evaluator agent workers, and system workers;
 - agent/team responsibilities, tools, permissions, thresholds, escalation rules;
 - supervision, decision, governance, digest, audit, and outcome UI needs.
 
@@ -111,7 +114,7 @@ If the product is clearly non-agentic, say so and continue with secure foundatio
 
 ### 4. Model workstreams and surfaces before backend components
 
-For generated full-stack SaaS, apply `agent-workstream-apps` before backend mapping. Identify functional/context-area agents, workstreams, attention categories, role dashboards, human surface graph nodes/actions, system-message/result surfaces, trace links, workstream expertise bundles, internal/background worker candidates, and notification/projection needs.
+For generated full-stack SaaS, apply `agent-workstream-apps` before backend mapping. Identify functional/context-area agents, workstreams, workforce roster, worker responsibility/authority/handoff map, attention categories, role dashboards, human surface graph nodes/actions, system-message/result surfaces, trace links, workstream expertise bundles, internal/background worker candidates, and notification/projection needs.
 
 If this inventory is absent, stop and add it or record a blocking gap.
 
@@ -161,7 +164,7 @@ Rules:
 Prefer vertical increments:
 
 1. foundation/auth/tenancy/audit needed by the selected scope;
-2. workstream/attention/dashboard/surface contract;
+2. workstream/workforce/attention/dashboard/surface contract;
 3. capability contracts and governed tools;
 4. write model;
 5. query/projection model;

@@ -13,6 +13,7 @@ Use this skill when a generated or extended SaaS app should be modeled as a set 
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
 - `../docs/agent-workstream-application-architecture.md`
+- `../docs/workforce-decomposition.md`
 - `../docs/workstream-contract.md`
 - `../docs/workstream-attention-contracts.md`
 - `../docs/workstream-ui-reference-architecture.md`
@@ -27,6 +28,7 @@ A workstream app has:
 
 - authenticated shell and selected `AuthContext`
 - explicit workstream definition/type, runtime workstream instance/thread/log, browser view/session terminology, and readiness level
+- workforce roster covering human workers, the owning functional-agent worker, internal/autonomous/evaluator agent workers, and system workers
 - functional-agent rail with role/capability visibility and backend-owned attention state
 - continuous stream/composer for work history and requests
 - structured surfaces for dashboards, tables, forms, detail cards, decision cards, diffs, audit timelines, evidence bundles, and system messages
@@ -51,8 +53,10 @@ For each workstream/functional agent, define:
 
 - current-intent graph paths for the domain/workstream plus any reused global agent/surface/tool/policy/trace definitions
 - workstream id, responsibility, exactly-one owning functional agent, required managed-agent definition id, icon metadata with tooltip, instance scope, and readiness level
+- worker roster: human workers, owning functional-agent worker, internal/autonomous/evaluator agent workers, and deterministic system workers
+- responsibility, non-responsibility, authority, supervision, handoff, failure, and trace boundaries for each worker
 - actor roles, scopes, capabilities, hidden/denied states, and default selection
-- backend-owned workstream-local attention category ids, canonical category/severity mappings, producers, lifecycle, My Account/rail aggregation, and dashboard variants
+- backend-owned workstream-local attention category ids, canonical category/severity mappings, producers/workers, lifecycle, My Account/rail aggregation, and dashboard variants
 - prompt intent and bounded authority
 - allowed backend capabilities/tools and approval gates
 - dashboard/attention model and evidence freshness
