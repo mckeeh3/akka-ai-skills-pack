@@ -21,6 +21,7 @@ public final class TenantCustomerAdminService {
   private static final String CREATE_CAPABILITY = "tenant.customer.create";
   private static final String RENAME_CAPABILITY = "tenant.customer.rename";
   private static final String SUSPEND_CAPABILITY = "tenant.customer.suspend";
+  private static final String ARCHIVE_CAPABILITY = "tenant.customer.archive";
   private static final String REACTIVATE_CAPABILITY = "tenant.customer.reactivate";
   private static final String CUSTOMER_ADMIN_LIST_CAPABILITY = "tenant.customer_admin.list";
   private static final String CUSTOMER_ADMIN_INVITE_CAPABILITY = "tenant.customer_admin.invite";
@@ -87,7 +88,11 @@ public final class TenantCustomerAdminService {
       audit(actor, "CUSTOMER_RENAME", AdminAuditEvent.Result.NO_OP, "no-op idempotency", existing.customerId(), correlationId);
       return action("no-op", "Requested Customer name already matches current state.", existing, "rename", idempotencyKey, correlationId);
     }
-    var updated = repository.saveCustomer(new Customer(existing.tenantId(), existing.customerId(), displayName, existing.active()));
+    if (existing.archived()) {
+      audit(actor, "CUSTOMER_RENAME", AdminAuditEvent.Result.DENIED, "customer-archived-terminal", existing.customerId(), correlationId);
+      throw new AuthorizationException(403, "customer-archived-terminal");
+    }
+    var updated = repository.saveCustomer(new Customer(existing.tenantId(), existing.customerId(), displayName, existing.active(), existing.archived()));
     audit(actor, "CUSTOMER_RENAME", AdminAuditEvent.Result.ALLOWED, safeReason(reason, "customer-renamed"), updated.customerId(), correlationId);
     return action("accepted", "Customer display name updated without exposing sibling Customer facts.", updated, "rename", idempotencyKey, correlationId);
   }
@@ -97,24 +102,46 @@ public final class TenantCustomerAdminService {
     if (reason == null || reason.isBlank()) throw new AuthorizationException(400, "reason-required");
     requireTenantAdmin(actor, SUSPEND_CAPABILITY, "CUSTOMER_SUSPEND", correlationId);
     var existing = findCustomerOrDeny(actor, customerId, "CUSTOMER_SUSPEND", correlationId);
+    if (existing.archived()) {
+      audit(actor, "CUSTOMER_SUSPEND", AdminAuditEvent.Result.NO_OP, "already-archived", existing.customerId(), correlationId);
+      return action("no-op", "Customer is already archived; terminal lifecycle state is preserved.", existing, "suspend", idempotencyKey, correlationId);
+    }
     if (!existing.active()) {
       audit(actor, "CUSTOMER_SUSPEND", AdminAuditEvent.Result.NO_OP, "already-suspended", existing.customerId(), correlationId);
       return action("no-op", "Customer is already suspended; idempotency preserved.", existing, "suspend", idempotencyKey, correlationId);
     }
-    var updated = repository.saveCustomer(new Customer(existing.tenantId(), existing.customerId(), existing.displayName(), false));
+    var updated = repository.saveCustomer(new Customer(existing.tenantId(), existing.customerId(), existing.displayName(), false, false));
     audit(actor, "CUSTOMER_SUSPEND", AdminAuditEvent.Result.ALLOWED, safeReason(reason, "customer-suspended"), updated.customerId(), correlationId);
     return action("accepted", "Customer suspended within the selected Organization/Tenant boundary.", updated, "suspend", idempotencyKey, correlationId);
+  }
+
+  public CustomerActionResult archiveCustomer(AuthContextResolver.ResolvedMe actor, String customerId, String reason, String idempotencyKey, String correlationId) {
+    requireIdempotency(idempotencyKey);
+    if (reason == null || reason.isBlank()) throw new AuthorizationException(400, "reason-required");
+    requireTenantAdmin(actor, ARCHIVE_CAPABILITY, "CUSTOMER_ARCHIVE", correlationId);
+    var existing = findCustomerOrDeny(actor, customerId, "CUSTOMER_ARCHIVE", correlationId);
+    if (existing.archived()) {
+      audit(actor, "CUSTOMER_ARCHIVE", AdminAuditEvent.Result.NO_OP, "already-archived", existing.customerId(), correlationId);
+      return action("no-op", "Customer is already archived; terminal lifecycle state is preserved.", existing, "archive", idempotencyKey, correlationId);
+    }
+    var updated = repository.saveCustomer(new Customer(existing.tenantId(), existing.customerId(), existing.displayName(), false, true));
+    audit(actor, "CUSTOMER_ARCHIVE", AdminAuditEvent.Result.ALLOWED, safeReason(reason, "customer-archived"), updated.customerId(), correlationId);
+    return action("accepted", "Customer archived as a terminal boundary; reactivation and normal Customer Admin/User operations are blocked.", updated, "archive", idempotencyKey, correlationId);
   }
 
   public CustomerActionResult reactivateCustomer(AuthContextResolver.ResolvedMe actor, String customerId, String reason, String idempotencyKey, String correlationId) {
     requireIdempotency(idempotencyKey);
     requireTenantAdmin(actor, REACTIVATE_CAPABILITY, "CUSTOMER_REACTIVATE", correlationId);
     var existing = findCustomerOrDeny(actor, customerId, "CUSTOMER_REACTIVATE", correlationId);
+    if (existing.archived()) {
+      audit(actor, "CUSTOMER_REACTIVATE", AdminAuditEvent.Result.DENIED, "customer-archived-terminal", existing.customerId(), correlationId);
+      throw new AuthorizationException(403, "customer-archived-terminal");
+    }
     if (existing.active()) {
       audit(actor, "CUSTOMER_REACTIVATE", AdminAuditEvent.Result.NO_OP, "already-active", existing.customerId(), correlationId);
       return action("no-op", "Customer is already active; idempotency preserved.", existing, "reactivate", idempotencyKey, correlationId);
     }
-    var updated = repository.saveCustomer(new Customer(existing.tenantId(), existing.customerId(), existing.displayName(), true));
+    var updated = repository.saveCustomer(new Customer(existing.tenantId(), existing.customerId(), existing.displayName(), true, false));
     audit(actor, "CUSTOMER_REACTIVATE", AdminAuditEvent.Result.ALLOWED, safeReason(reason, "customer-reactivated"), updated.customerId(), correlationId);
     return action("accepted", "Customer reactivated within the selected Organization/Tenant boundary.", updated, "reactivate", idempotencyKey, correlationId);
   }
@@ -134,6 +161,10 @@ public final class TenantCustomerAdminService {
   private CustomerDetail requireActiveCustomerForCustomerAdmin(AuthContextResolver.ResolvedMe actor, String customerId, String capability, String action, String correlationId) {
     requireTenantAdmin(actor, capability, action, correlationId);
     var customer = findCustomerOrDeny(actor, customerId, action, correlationId);
+    if (customer.archived()) {
+      audit(actor, action, AdminAuditEvent.Result.DENIED, "customer-archived-terminal", customer.customerId(), correlationId);
+      throw new AuthorizationException(403, "customer-archived-terminal");
+    }
     if (!customer.active()) {
       audit(actor, action, AdminAuditEvent.Result.DENIED, "customer-suspended", customer.customerId(), correlationId);
       throw new AuthorizationException(403, "customer-suspended");
@@ -190,10 +221,12 @@ public final class TenantCustomerAdminService {
   }
 
   private List<String> visibleActions(Customer customer) {
-    return customer.active() ? List.of("read", "rename", "suspend") : List.of("read", "rename", "reactivate");
+    if (customer.archived()) return List.of("read");
+    return customer.active() ? List.of("read", "rename", "suspend", "archive") : List.of("read", "rename", "reactivate", "archive");
   }
 
   private String lifecycleStatus(Customer customer) {
+    if (customer.archived()) return "archived";
     return customer.active() ? "active" : "suspended";
   }
 

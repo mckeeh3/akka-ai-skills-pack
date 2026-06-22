@@ -152,6 +152,7 @@ public enum FoundationRole {
           "tenant.customer.create",
           "tenant.customer.rename",
           "tenant.customer.suspend",
+          "tenant.customer.archive",
           "tenant.customer.reactivate",
           "tenant.customer_admin.list",
           "tenant.customer_admin.invite",

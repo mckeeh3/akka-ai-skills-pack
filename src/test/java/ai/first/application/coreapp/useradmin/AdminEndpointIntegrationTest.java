@@ -455,6 +455,25 @@ class AdminEndpointIntegrationTest extends TestKitSupport {
         .invoke();
     assertEquals("active", reactivated.body().customer().customer().status());
 
+    var archived = httpClient
+        .POST("/api/admin/customers/" + customerId + "/archive")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-lifecycle-archive")
+        .withRequestBody(new CustomerLifecycleApiRequest("customer closed", "idem-customer-lifecycle-archive"))
+        .responseBodyAs(CustomerActionApiResponse.class)
+        .invoke();
+    assertEquals("archived", archived.body().customer().customer().status());
+    assertEquals(List.of("read"), archived.body().customer().visibleActions());
+
+    var archivedReactivate = assertThrows(RuntimeException.class, () -> httpClient
+        .POST("/api/admin/customers/" + customerId + "/reactivate")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))
+        .addHeader("X-Correlation-Id", "corr-customer-lifecycle-reactivate-archived")
+        .withRequestBody(new CustomerLifecycleApiRequest("customer returned", "idem-customer-lifecycle-reactivate-archived"))
+        .responseBodyAs(CustomerActionApiResponse.class)
+        .invoke());
+    assertTrue(archivedReactivate.getMessage().contains("403"));
+
     var missingIdempotency = assertThrows(IllegalArgumentException.class, () -> httpClient
         .POST("/api/admin/customers")
         .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Admin"))

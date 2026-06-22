@@ -86,8 +86,15 @@ class SaasOwnerOrganizationAdminServiceTest {
     assertEquals("accepted", reactivated.status());
     assertTrue(repository.tenant(createdId).orElseThrow().active());
 
+    var archived = service.archiveOrganization(saasOwner, createdId, "contract closed", "ARCHIVE", "archive-acme", "corr-archive");
+    assertEquals("accepted", archived.status());
+    assertEquals("archived", archived.organization().organization().status());
+    assertTrue(repository.tenant(createdId).orElseThrow().archived());
+    assertFalse(repository.tenant(createdId).orElseThrow().active());
+    assertThrows(AuthorizationException.class, () -> service.reactivateOrganization(saasOwner, createdId, "return", "REACTIVATE", "reactivate-archived", "corr-reactivate-archived"));
+
     var actionTypes = repository.auditEvents().stream().map(AdminAuditEvent::actionType).toList();
-    assertTrue(actionTypes.containsAll(List.of("ORGANIZATION_LIST", "ORGANIZATION_READ", "ORGANIZATION_CREATE", "ORGANIZATION_RENAME", "ORGANIZATION_SUSPEND", "ORGANIZATION_REACTIVATE")));
+    assertTrue(actionTypes.containsAll(List.of("ORGANIZATION_LIST", "ORGANIZATION_READ", "ORGANIZATION_CREATE", "ORGANIZATION_RENAME", "ORGANIZATION_SUSPEND", "ORGANIZATION_REACTIVATE", "ORGANIZATION_ARCHIVE")));
     assertTrue(repository.auditEvents().stream().anyMatch(event -> event.actionType().equals("ORGANIZATION_CREATE") && event.result() == AdminAuditEvent.Result.NO_OP));
   }
 

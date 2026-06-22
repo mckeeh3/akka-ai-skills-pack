@@ -1,3 +1,7 @@
 package ai.first.domain.foundation.identity;
 
-public record Tenant(String tenantId, String displayName, boolean active) {}
+public record Tenant(String tenantId, String displayName, boolean active, boolean archived) {
+  public Tenant(String tenantId, String displayName, boolean active) {
+    this(tenantId, displayName, active, false);
+  }
+}

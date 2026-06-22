@@ -150,6 +150,17 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     });
   }
 
+  @Post("/organizations/{organizationId}/archive")
+  public HttpResponse archiveOrganization(String organizationId, OrganizationLifecycleApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.saasOwnerOrganizationAdminService().archiveOrganization(actor, organizationId, request == null ? null : request.reason(), request == null ? null : request.confirmationPhrase(), stableIdempotencyKey, correlationId);
+      return HttpResponses.ok(OrganizationActionApiResponse.from(result));
+    });
+  }
+
   @Post("/organizations/{organizationId}/reactivate")
   public HttpResponse reactivateOrganization(String organizationId, OrganizationLifecycleApiRequest request) {
     var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
@@ -285,6 +296,17 @@ public class AdminEndpoint extends AbstractHttpEndpoint {
     return authorized((identity, selectedContextId, correlationId) -> {
       var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
       var result = StarterSecurityComponents.tenantCustomerAdminService().suspendCustomer(actor, customerId, request == null ? null : request.reason(), stableIdempotencyKey, correlationId);
+      return HttpResponses.ok(new CustomerActionApiResponse(result.status(), result.message(), fromCustomerDetail(result.customer()), result.traceRefs(), result.correlationId()));
+    });
+  }
+
+  @Post("/customers/{customerId}/archive")
+  public HttpResponse archiveCustomer(String customerId, CustomerLifecycleApiRequest request) {
+    var stableIdempotencyKey = idempotencyKey(request == null ? null : request.idempotencyKey());
+    if (stableIdempotencyKey == null) return HttpResponses.badRequest("X-Idempotency-Key or idempotencyKey is required");
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var actor = StarterSecurityComponents.authContextResolver().resolveMe(identity, selectedContextId, correlationId);
+      var result = StarterSecurityComponents.tenantCustomerAdminService().archiveCustomer(actor, customerId, request == null ? null : request.reason(), stableIdempotencyKey, correlationId);
       return HttpResponses.ok(new CustomerActionApiResponse(result.status(), result.message(), fromCustomerDetail(result.customer()), result.traceRefs(), result.correlationId()));
     });
   }

@@ -44,7 +44,9 @@ export function OrganizationAdminSurface({ envelope, onAction }: Props) {
         {isDetail && <OrganizationDetail envelope={envelope} organization={selectedOrganization} onAction={onAction} />}
         {isCreate && <OrganizationCreateForm envelope={envelope} onAction={onAction} />}
         {isRename && <OrganizationRenameForm envelope={envelope} organization={selectedOrganization} onAction={onAction} />}
-        {isSuspend && <OrganizationLifecycleConfirmation envelope={envelope} organization={selectedOrganization} actionId="action-organization-suspend" title="Suspend Organization" submitLabel="Suspend" consequence="Suspending changes the Organization/Tenant lifecycle boundary only; it does not expose or mutate tenant application data." onAction={onAction} />}
+        {isSuspend && String(data.lifecycleMode ?? '').toLowerCase() === 'archive'
+          ? <OrganizationLifecycleConfirmation envelope={envelope} organization={selectedOrganization} actionId="action-organization-archive" title="Archive Organization" submitLabel="Archive" consequence="Archiving is terminal normal-administration closure for the Organization/Tenant boundary; authorized audit/detail evidence remains visible." onAction={onAction} />
+          : isSuspend && <OrganizationLifecycleConfirmation envelope={envelope} organization={selectedOrganization} actionId="action-organization-suspend" title="Suspend Organization" submitLabel="Suspend" consequence="Suspending changes the Organization/Tenant lifecycle boundary only; it does not expose or mutate tenant application data." onAction={onAction} />}
         {isReactivate && <OrganizationLifecycleConfirmation envelope={envelope} organization={selectedOrganization} actionId="action-organization-reactivate" title="Reactivate Organization" submitLabel="Reactivate" consequence="Reactivation restores the Organization/Tenant lifecycle boundary and remains subject to backend authorization and audit." onAction={onAction} />}
         {data.redaction && <p className="redaction-note">Browser redaction: {renderValue(data.redaction)}. Hidden counts, provider secrets, billing details, support-access internals, and tenant application data are omitted.</p>}
       </section>
@@ -131,6 +133,7 @@ function OrganizationDetail({ envelope, organization, onAction }: Props & { orga
   const detail = envelope.data.organizationDetail;
   const renameAction = envelope.actions.find((action) => action.actionId === 'action-open-organization-rename');
   const suspendAction = envelope.actions.find((action) => action.actionId === 'action-open-organization-suspend');
+  const archiveAction = envelope.actions.find((action) => action.actionId === 'action-open-organization-archive');
   const reactivateAction = envelope.actions.find((action) => action.actionId === 'action-open-organization-reactivate');
   const showAdminsAction = envelope.actions.find((action) => action.actionId === 'action-user-admin-show-organization-admins');
   const inviteAdminAction = envelope.actions.find((action) => action.actionId === 'action-open-organization-admin-invitation-create');
@@ -143,6 +146,7 @@ function OrganizationDetail({ envelope, organization, onAction }: Props & { orga
       <div className="organization-admin-lifecycle-actions" aria-label="Organization task entry points">
         {organization && <button className="surface-action-link secondary" type="button" disabled={!renameAction || Boolean(renameAction.disabled)} aria-disabled={!renameAction || Boolean(renameAction.disabled)} title={organizationActionUnavailableMessage(renameAction)} onClick={() => runAction(envelope, onAction, renameAction, { organizationId: organization.organizationId, recordId: organization.organizationId })}>Rename selected Organization</button>}
         {organization && visibleActions.includes('suspend') && <button className="surface-action-link danger" type="button" disabled={!suspendAction || Boolean(suspendAction.disabled)} aria-disabled={!suspendAction || Boolean(suspendAction.disabled)} title={organizationActionUnavailableMessage(suspendAction)} onClick={() => runAction(envelope, onAction, suspendAction, { organizationId: organization.organizationId, recordId: organization.organizationId })}>Open suspend confirmation</button>}
+        {organization && visibleActions.includes('archive') && <button className="surface-action-link danger" type="button" disabled={!archiveAction || Boolean(archiveAction.disabled)} aria-disabled={!archiveAction || Boolean(archiveAction.disabled)} title={organizationActionUnavailableMessage(archiveAction)} onClick={() => runAction(envelope, onAction, archiveAction, { organizationId: organization.organizationId, recordId: organization.organizationId })}>Open archive confirmation</button>}
         {organization && <button className="surface-action-link secondary" type="button" disabled={!showAdminsAction || Boolean(showAdminsAction.disabled)} aria-disabled={!showAdminsAction || Boolean(showAdminsAction.disabled)} title={organizationActionUnavailableMessage(showAdminsAction)} onClick={() => runAction(envelope, onAction, showAdminsAction, { organizationId: organization.organizationId, tenantId: organization.organizationId, recordId: organization.organizationId })}>Show Organization Admins</button>}
         {organization && <button className="surface-action-link primary" type="button" disabled={!inviteAdminAction || Boolean(inviteAdminAction.disabled)} aria-disabled={!inviteAdminAction || Boolean(inviteAdminAction.disabled)} title={organizationActionUnavailableMessage(inviteAdminAction)} onClick={() => runAction(envelope, onAction, inviteAdminAction, { organizationId: organization.organizationId, tenantId: organization.organizationId, recordId: organization.organizationId })}>Invite Organization Admin</button>}
         {organization && visibleActions.includes('reactivate') && <button className="surface-action-link secondary" type="button" disabled={!reactivateAction || Boolean(reactivateAction.disabled)} aria-disabled={!reactivateAction || Boolean(reactivateAction.disabled)} title={organizationActionUnavailableMessage(reactivateAction)} onClick={() => runAction(envelope, onAction, reactivateAction, { organizationId: organization.organizationId, recordId: organization.organizationId })}>Open reactivate confirmation</button>}
@@ -211,10 +215,10 @@ function OrganizationRenameForm({ envelope, organization, onAction }: Props & { 
   );
 }
 
-function OrganizationLifecycleConfirmation({ envelope, organization, actionId, title, submitLabel, consequence, onAction }: Props & { organization?: OrganizationLike; actionId: 'action-organization-suspend' | 'action-organization-reactivate'; title: string; submitLabel: string; consequence: string }) {
+function OrganizationLifecycleConfirmation({ envelope, organization, actionId, title, submitLabel, consequence, onAction }: Props & { organization?: OrganizationLike; actionId: 'action-organization-suspend' | 'action-organization-archive' | 'action-organization-reactivate'; title: string; submitLabel: string; consequence: string }) {
   const confirmation = envelope.data.confirmation;
-  const expectedPhrase = confirmation?.confirmationPhrase ?? (actionId === 'action-organization-suspend' ? 'SUSPEND' : undefined);
-  const submitActionId = (confirmation?.submitActionId as 'action-organization-suspend' | 'action-organization-reactivate' | undefined) ?? actionId;
+  const expectedPhrase = confirmation?.confirmationPhrase ?? (actionId === 'action-organization-suspend' ? 'SUSPEND' : actionId === 'action-organization-archive' ? 'ARCHIVE' : undefined);
+  const submitActionId = (confirmation?.submitActionId as 'action-organization-suspend' | 'action-organization-archive' | 'action-organization-reactivate' | undefined) ?? actionId;
   const disabledReason = confirmation?.disabledReason;
   const [reason, setReason] = useState(confirmation?.reasonDraft ?? '');
   const [confirmationPhrase, setConfirmationPhrase] = useState('');
@@ -236,7 +240,7 @@ function OrganizationLifecycleConfirmation({ envelope, organization, actionId, t
       {expectedPhrase && <label>Confirmation phrase<input className="designed-control" value={confirmationPhrase} onChange={(event) => setConfirmationPhrase(event.currentTarget.value)} placeholder={`Type ${expectedPhrase} to confirm`} required disabled={Boolean(disabledReason)} /></label>}
       {disabledReason && <p className="surface-state-inline validation-error" role="status">{disabledReason}</p>}
       <div className="organization-admin-lifecycle-actions">
-        <button className={`surface-action-link ${actionId === 'action-organization-suspend' ? 'danger' : 'secondary'}`} type="button" onClick={submitLifecycle} disabled={Boolean(disabledReason)}>{confirmation?.submitLabel ?? submitLabel}</button>
+        <button className={`surface-action-link ${actionId === 'action-organization-suspend' || actionId === 'action-organization-archive' ? 'danger' : 'secondary'}`} type="button" onClick={submitLifecycle} disabled={Boolean(disabledReason)}>{confirmation?.submitLabel ?? submitLabel}</button>
         <OrganizationBranchReturn envelope={envelope} onAction={onAction} compact />
       </div>
     </section>

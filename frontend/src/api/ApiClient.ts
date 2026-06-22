@@ -62,6 +62,7 @@ export interface AdminClient {
   createOrganization(request: OrganizationCreateRequest): Promise<ApiResult<OrganizationActionResponse>>;
   renameOrganization(organizationId: string, request: OrganizationRenameRequest): Promise<ApiResult<OrganizationActionResponse>>;
   suspendOrganization(organizationId: string, request: OrganizationLifecycleRequest): Promise<ApiResult<OrganizationActionResponse>>;
+  archiveOrganization(organizationId: string, request: OrganizationLifecycleRequest): Promise<ApiResult<OrganizationActionResponse>>;
   reactivateOrganization(organizationId: string, request: OrganizationLifecycleRequest): Promise<ApiResult<OrganizationActionResponse>>;
   listSaasOwnerAdmins(query?: Record<string, string | undefined>): Promise<ApiResult<SaasOwnerAdminListPayload>>;
   inviteSaasOwnerAdmin(request: ScopedAdminInvitationRequest): Promise<ApiResult<InviteUserResponse>>;
@@ -78,6 +79,7 @@ export interface AdminClient {
   createCustomer(request: CustomerCreateRequest): Promise<ApiResult<CustomerActionResponse>>;
   renameCustomer(customerId: string, request: CustomerRenameRequest): Promise<ApiResult<CustomerActionResponse>>;
   suspendCustomer(customerId: string, request: CustomerLifecycleRequest): Promise<ApiResult<CustomerActionResponse>>;
+  archiveCustomer(customerId: string, request: CustomerLifecycleRequest): Promise<ApiResult<CustomerActionResponse>>;
   reactivateCustomer(customerId: string, request: CustomerLifecycleRequest): Promise<ApiResult<CustomerActionResponse>>;
   listCustomerAdmins(customerId: string, query?: Record<string, string | undefined>): Promise<ApiResult<CustomerAdminListPayload>>;
   inviteCustomerAdmin(customerId: string, request: ScopedAdminInvitationRequest): Promise<ApiResult<InviteUserResponse>>;

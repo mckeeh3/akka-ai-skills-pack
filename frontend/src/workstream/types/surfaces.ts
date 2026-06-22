@@ -209,6 +209,7 @@ export type OrganizationAdminSurfaceData = {
   organizationId?: string;
   organizationName?: string;
   organizationStatus?: string;
+  lifecycleMode?: string;
   detailReturnActionId?: string;
   boundaryNotice?: string;
   safeBoundaryNotice?: string;

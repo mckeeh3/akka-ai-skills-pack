@@ -190,8 +190,9 @@ function RoleScopedInvitationForm({ envelope, onAction }: Props) {
 function CustomerTaskForm({ envelope, onAction }: Props) {
   const isRename = envelope.data.surfaceContract === 'user_admin.customer_rename.v1';
   const isSuspend = envelope.data.surfaceContract === 'user_admin.customer_suspend_confirmation.v1';
+  const isArchive = isSuspend && String(envelope.data.lifecycleMode ?? '').toLowerCase() === 'archive';
   const isReactivate = envelope.data.surfaceContract === 'user_admin.customer_reactivate_confirmation.v1';
-  const actionId = isRename ? 'action-submit-customer-rename' : isSuspend ? 'action-customer-suspend' : isReactivate ? 'action-customer-reactivate' : 'action-submit-customer-create';
+  const actionId = isRename ? 'action-submit-customer-rename' : isArchive ? 'action-customer-archive' : isSuspend ? 'action-customer-suspend' : isReactivate ? 'action-customer-reactivate' : 'action-submit-customer-create';
   const action = envelope.actions.find((candidate) => candidate.actionId === actionId)
     ?? envelope.actions.find((candidate) => candidate.intent === 'command');
   const [customerName, setCustomerName] = useState(String(envelope.data.draft?.customerName ?? envelope.data.recordLabel ?? ''));

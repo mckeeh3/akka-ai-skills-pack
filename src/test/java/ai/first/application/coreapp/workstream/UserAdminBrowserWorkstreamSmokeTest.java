@@ -1936,7 +1936,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(createdOrganization.message().contains("Organization created"));
     assertTrue(createdOrganization.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-create")));
     assertTrue(createdOrganization.resultSurface().toString().contains("Acme Launch Org"));
-    assertTrue(createdOrganization.resultSurface().toString().contains("visibleActions=[read, rename, suspend]"));
+    assertTrue(createdOrganization.resultSurface().toString().contains("visibleActions=[read, rename, suspend, archive]"));
     assertBrowserSafe(createdOrganization.resultSurface());
 
     var createReplay = runActionAs(new CapabilityActionRequest(
@@ -2011,7 +2011,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(detail.resultSurface().toString().contains("action-open-organization-admin-invitation-create"));
     assertTrue(detail.resultSurface().toString().contains("availableTaskActions"));
     assertTrue(detail.resultSurface().toString().contains("organizationDetail"));
-    assertTrue(detail.resultSurface().toString().contains("visibleActions=[read, rename, suspend]"));
+    assertTrue(detail.resultSurface().toString().contains("visibleActions=[read, rename, suspend, archive]"));
     assertTrue(detail.resultSurface().toString().contains("does not grant tenant/customer application-data access"));
     assertBrowserSafe(detail.resultSurface());
 
@@ -2022,6 +2022,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("corr-org-detail-direct", directDetail.correlationId());
     assertTrue(directDetail.toString().contains("action-open-organization-rename"));
     assertTrue(directDetail.toString().contains("action-open-organization-suspend"));
+    assertTrue(directDetail.toString().contains("action-open-organization-archive"));
     assertTrue(directDetail.toString().contains("action-open-organization-reactivate"));
     assertTrue(directDetail.toString().contains("action-user-admin-show-organization-admins"));
     assertTrue(directDetail.toString().contains("action-open-organization-admin-invitation-create"));
@@ -2162,7 +2163,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("user_admin.organization_suspend_confirmation.v1", suspendTask.resultSurface().data().get("surfaceContract"));
     assertTrue(suspendTask.resultSurface().toString().contains("confirmationPhrase=SUSPEND"));
     assertTrue(suspendTask.resultSurface().toString().contains("saas_owner.organization.suspend"));
-    assertTrue(suspendTask.resultSurface().toString().contains("visibleActions=[read, rename, suspend]"));
+    assertTrue(suspendTask.resultSurface().toString().contains("visibleActions=[read, rename, suspend, archive]"));
     assertBrowserSafe(suspendTask.resultSurface());
 
     var directSuspendWithoutTarget = getSurfaceAs("surface-user-admin-organization-suspend-confirmation", "corr-org-suspend-direct-missing-target", "workos-owner", "owner@example.test", "SaaS Owner", "membership-owner");
@@ -2265,7 +2266,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-user-admin-organization-detail", suspended.resultSurface().surfaceId());
     assertTrue(suspended.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-organization-suspend")));
     assertTrue(suspended.resultSurface().toString().contains("status=suspended"));
-    assertTrue(suspended.resultSurface().toString().contains("visibleActions=[read, rename, reactivate]"));
+    assertTrue(suspended.resultSurface().toString().contains("visibleActions=[read, rename, reactivate, archive]"));
     assertFalse(suspended.resultSurface().toString().contains("tenant application data"));
     assertBrowserSafe(suspended.resultSurface());
 
@@ -3214,9 +3215,10 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(detail.resultSurface().toString().contains("Customer lifecycle inspection"));
     assertTrue(detail.resultSurface().toString().contains("canMutateInline=false"));
     assertTrue(detail.resultSurface().toString().contains("canOpenTaskSurfaces=true"));
-    assertTrue(detail.resultSurface().toString().contains("visibleActions=[read, rename, suspend]"));
+    assertTrue(detail.resultSurface().toString().contains("visibleActions=[read, rename, suspend, archive]"));
     assertTrue(detail.resultSurface().toString().contains("action-open-customer-rename"));
     assertTrue(detail.resultSurface().toString().contains("action-open-customer-suspend"));
+    assertTrue(detail.resultSurface().toString().contains("action-open-customer-archive"));
     assertTrue(detail.resultSurface().toString().contains("action-user-admin-show-customer-admins"));
     assertTrue(detail.resultSurface().toString().contains("action-open-customer-admin-invitation-create"));
     assertTrue(detail.resultSurface().toString().contains("action-open-audit-trace"));

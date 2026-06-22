@@ -153,12 +153,12 @@ public final class AuthContextResolver {
 
   private void validateScopeState(Account account, Membership membership, String correlationId) {
     if (membership.scopeType() == ScopeType.TENANT
-        && repository.tenant(membership.tenantId()).filter(Tenant -> Tenant.active()).isEmpty()) {
-      throw deny("AUTH_CONTEXT_RESOLVE", account, membership, "tenant-missing-or-disabled", correlationId);
+        && repository.tenant(membership.tenantId()).filter(tenant -> tenant.active() && !tenant.archived()).isEmpty()) {
+      throw deny("AUTH_CONTEXT_RESOLVE", account, membership, "tenant-missing-disabled-or-archived", correlationId);
     }
     if (membership.scopeType() == ScopeType.CUSTOMER
-        && repository.customer(membership.tenantId(), membership.customerId()).filter(Customer -> Customer.active()).isEmpty()) {
-      throw deny("AUTH_CONTEXT_RESOLVE", account, membership, "customer-missing-or-disabled", correlationId);
+        && repository.customer(membership.tenantId(), membership.customerId()).filter(customer -> customer.active() && !customer.archived()).isEmpty()) {
+      throw deny("AUTH_CONTEXT_RESOLVE", account, membership, "customer-missing-disabled-or-archived", correlationId);
     }
   }
 

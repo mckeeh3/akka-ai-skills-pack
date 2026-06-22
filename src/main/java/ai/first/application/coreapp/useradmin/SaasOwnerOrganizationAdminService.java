@@ -94,7 +94,11 @@ public final class SaasOwnerOrganizationAdminService {
       audit(actor, "ORGANIZATION_RENAME", AdminAuditEvent.Result.DENIED, "duplicate-visible-organization-name", existing.tenantId(), correlationId);
       return action("validation-error", "A visible Organization already uses this name; choose a distinct display name before renaming.", existing, "rename", idempotencyKey, correlationId);
     }
-    var updated = repository.saveTenant(new Tenant(existing.tenantId(), displayName, existing.active()));
+    if (existing.archived()) {
+      audit(actor, "ORGANIZATION_RENAME", AdminAuditEvent.Result.DENIED, "organization-archived-terminal", existing.tenantId(), correlationId);
+      throw new AuthorizationException(403, "organization-archived-terminal");
+    }
+    var updated = repository.saveTenant(new Tenant(existing.tenantId(), displayName, existing.active(), existing.archived()));
     audit(actor, "ORGANIZATION_RENAME", AdminAuditEvent.Result.ALLOWED, safeReason(reason, "organization-renamed"), updated.tenantId(), correlationId);
     return action("accepted", "Organization display name updated without changing Tenant isolation or support access.", updated, "rename", idempotencyKey, correlationId);
   }
@@ -109,13 +113,36 @@ public final class SaasOwnerOrganizationAdminService {
     }
     requireManage(actor, "ORGANIZATION_SUSPEND", correlationId);
     var existing = findTenantOrDeny(actor, organizationId, "ORGANIZATION_SUSPEND", correlationId);
+    if (existing.archived()) {
+      audit(actor, "ORGANIZATION_SUSPEND", AdminAuditEvent.Result.NO_OP, "already-archived", existing.tenantId(), correlationId);
+      return action("no-op", "Organization is already archived; terminal lifecycle state is preserved.", existing, "suspend", idempotencyKey, correlationId);
+    }
     if (!existing.active()) {
       audit(actor, "ORGANIZATION_SUSPEND", AdminAuditEvent.Result.NO_OP, "already-suspended", existing.tenantId(), correlationId);
       return action("no-op", "Organization is already suspended; Tenant boundary remains unavailable.", existing, "suspend", idempotencyKey, correlationId);
     }
-    var updated = repository.saveTenant(new Tenant(existing.tenantId(), existing.displayName(), false));
+    var updated = repository.saveTenant(new Tenant(existing.tenantId(), existing.displayName(), false, false));
     audit(actor, "ORGANIZATION_SUSPEND", AdminAuditEvent.Result.ALLOWED, safeReason(reason, "organization-suspended"), updated.tenantId(), correlationId);
     return action("accepted", "Organization suspended at the Tenant lifecycle boundary without exposing tenant application data.", updated, "suspend", idempotencyKey, correlationId);
+  }
+
+  public OrganizationActionResult archiveOrganization(AuthContextResolver.ResolvedMe actor, String organizationId, String reason, String confirmationPhrase, String idempotencyKey, String correlationId) {
+    requireIdempotency(idempotencyKey);
+    if (reason == null || reason.isBlank()) {
+      throw new AuthorizationException(400, "reason-required");
+    }
+    if (!"ARCHIVE".equalsIgnoreCase(confirmationPhrase == null ? "" : confirmationPhrase.trim())) {
+      throw new AuthorizationException(400, "confirmation-phrase-required");
+    }
+    requireManage(actor, "ORGANIZATION_ARCHIVE", correlationId);
+    var existing = findTenantOrDeny(actor, organizationId, "ORGANIZATION_ARCHIVE", correlationId);
+    if (existing.archived()) {
+      audit(actor, "ORGANIZATION_ARCHIVE", AdminAuditEvent.Result.NO_OP, "already-archived", existing.tenantId(), correlationId);
+      return action("no-op", "Organization is already archived; terminal lifecycle state is preserved.", existing, "archive", idempotencyKey, correlationId);
+    }
+    var updated = repository.saveTenant(new Tenant(existing.tenantId(), existing.displayName(), false, true));
+    audit(actor, "ORGANIZATION_ARCHIVE", AdminAuditEvent.Result.ALLOWED, safeReason(reason, "organization-archived"), updated.tenantId(), correlationId);
+    return action("accepted", "Organization archived as a terminal Tenant lifecycle boundary; normal reactivation and administration are blocked.", updated, "archive", idempotencyKey, correlationId);
   }
 
   public OrganizationActionResult reactivateOrganization(AuthContextResolver.ResolvedMe actor, String organizationId, String reason, String confirmationPhrase, String idempotencyKey, String correlationId) {
@@ -128,11 +155,15 @@ public final class SaasOwnerOrganizationAdminService {
     }
     requireManage(actor, "ORGANIZATION_REACTIVATE", correlationId);
     var existing = findTenantOrDeny(actor, organizationId, "ORGANIZATION_REACTIVATE", correlationId);
+    if (existing.archived()) {
+      audit(actor, "ORGANIZATION_REACTIVATE", AdminAuditEvent.Result.DENIED, "organization-archived-terminal", existing.tenantId(), correlationId);
+      throw new AuthorizationException(403, "organization-archived-terminal");
+    }
     if (existing.active()) {
       audit(actor, "ORGANIZATION_REACTIVATE", AdminAuditEvent.Result.NO_OP, "already-active", existing.tenantId(), correlationId);
       return action("no-op", "Organization is already active; idempotency preserved.", existing, "reactivate", idempotencyKey, correlationId);
     }
-    var updated = repository.saveTenant(new Tenant(existing.tenantId(), existing.displayName(), true));
+    var updated = repository.saveTenant(new Tenant(existing.tenantId(), existing.displayName(), true, false));
     audit(actor, "ORGANIZATION_REACTIVATE", AdminAuditEvent.Result.ALLOWED, safeReason(reason, "organization-reactivated"), updated.tenantId(), correlationId);
     return action("accepted", "Organization reactivated at the Tenant lifecycle boundary.", updated, "reactivate", idempotencyKey, correlationId);
   }
@@ -205,12 +236,14 @@ public final class SaasOwnerOrganizationAdminService {
   }
 
   private List<String> visibleActions(Tenant tenant) {
+    if (tenant.archived()) return List.of("read");
     return tenant.active()
-        ? List.of("read", "rename", "suspend")
-        : List.of("read", "rename", "reactivate");
+        ? List.of("read", "rename", "suspend", "archive")
+        : List.of("read", "rename", "reactivate", "archive");
   }
 
   private String lifecycleStatus(Tenant tenant) {
+    if (tenant.archived()) return "archived";
     return tenant.active() ? "active" : "suspended";
   }
 
