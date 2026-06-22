@@ -3,6 +3,7 @@
 Available in the SMB full-core My Account baseline:
 - selected AuthContext summary, authority basis, and browser-safe capability groups;
 - signed-in account/profile/settings summaries plus deterministic self-service profile/settings update surfaces;
+- dashboard, profile, settings, context/authority, notification center, personal digest progress/result, and blocked/open-denied recovery surfaces that keep fields reviewable and backend-authorized;
 - personal attention aggregated only from authorized sibling workstreams;
 - own trace refs and safe workstream navigation through backend authorization;
 - provider/runtime blocked states rendered as typed `system_message` surfaces;

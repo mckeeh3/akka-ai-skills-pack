@@ -287,7 +287,7 @@
 
 ### TASK-SIR-07-001: Update agent surface familiarity seeds
 
-- status: pending
+- status: done
 - source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
 - task brief: specs/workstream-surface-intent-routing/tasks/07-agent-familiarity/01-update-agent-surface-familiarity-seeds.md
 - depends on:
@@ -317,6 +317,12 @@
   - each core workstream agent has enough familiarity to explain key surfaces and safe next steps
   - prompt/skill/reference text cannot be interpreted as granting backend capability or direct mutation authority
   - changes and queue update are committed
+- notes:
+  - updated all five core workstream seed prompts plus relevant skill/reference material with structured surface familiarity, safe next-step guidance, and explicit no-direct-mutation/no-authority-grant boundaries
+  - updated User Admin seed manifest checksums for changed packaged prompt/skill/reference resources and added seed import coverage that checks each core agent has surface familiarity in prompt, skill, and reference records without surface text granting submit/approve authority
+  - commands run: `mvn -Dtest=ai.first.application.foundation.agent.AgentBehaviorSeedLoaderTest#freshTenantImportCreatesApprovedActiveGovernedRecords,ai.first.application.foundation.agent.AgentBehaviorSeedLoaderTest#importedCoreAgentSeedsDescribeSurfaceRoutingWithoutGrantingMutationAuthority test` (passed); `mvn -Dtest=ai.first.application.foundation.agent.AgentBehaviorSeedLoaderTest,ai.first.application.foundation.agent.DurableAgentBehaviorRepositoryStateTest test` (passed); `git diff --check` (passed)
+  - broader `mvn test` was not run because shared seed loading code did not materially change
+  - commit message: `surface-intent-routing: update agent familiarity seeds`
 
 ### TASK-SIR-99-001: Verify Workstream Surface Intent Routing completion
 

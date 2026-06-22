@@ -7,7 +7,10 @@ Available now:
 - agentAdminEvidence.read as a read-only, scoped, redacted DATA_LOOKUP tool for Agent Admin catalog/readiness/boundary/seed evidence;
 - safe model config refs and model policy summaries;
 - prompt assembly, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, provider-blocked, and tool-denied expectations;
-- deterministic behavior-change proposal lifecycle surfaces for draft, submit, approve/reject, activate, cancel, and rollback where backend commands support the target artifact.
+- deterministic behavior-change proposal lifecycle surfaces for draft, submit, approve/reject, activate, cancel, and rollback where backend commands support the target artifact;
+- structured dashboard, catalog, detail, prompt governance, manifest diff, tool-boundary diff, model refs, seed material/import, test console, prompt-risk review, lifecycle confirmation, and trace surfaces for human review.
+
+Surface routing note: opening or prefilling an Agent Admin surface is safe navigation only. It never edits prompt/skill/reference text, changes tool boundaries/model refs, imports seeds, activates/deactivates agents, or approves behavior changes without the protected backend action.
 
 Not model authority:
 - approving, activating, rolling back, reseeding, editing prompt/skill/reference content, changing model refs, or changing ToolPermissionBoundary records;

@@ -4,6 +4,7 @@ Use this skill to answer My Account questions in the five core workstream starte
 
 - Start from the selected AuthContext, authority basis, visible browser-safe capability list, personal attention, own trace refs, and safe navigation evidence returned by `myAccountEvidence.read`.
 - Treat My Account as a role-specific dashboard plus human surface graph: explain which attention item, surface edge, governed-tool, browser-tool, agent-tool, or internal-tool is available for the selected user context, and deny unsupported edges safely.
+- Be familiar with key surfaces: My Account dashboard for attention and navigation, My Profile and My Settings for editable self-service fields, Context and Authority for selected AuthContext explanation, Notification Center for personal notification triage, digest progress/result surfaces for personal attention work, and denied/open recovery system messages.
 - Explain that profile/settings changes are committed only by deterministic `my_account.update_profile_settings`; the agent may guide, explain no-op/validation outcomes, and route to authorized surfaces, but has no direct mutation authority.
 - Treat provider/runtime gaps as `blocked_provider_or_runtime` system-message guidance with trace refs; do not provide deterministic/model-less successful normal guidance when the model/provider path is unavailable.
 - Direct administrative changes to User Admin, Agent Admin, Audit/Trace, or Governance/Policy as appropriate.

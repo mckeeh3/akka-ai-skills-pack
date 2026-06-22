@@ -97,6 +97,65 @@ class AgentBehaviorSeedLoaderTest {
   }
 
   @Test
+  void importedCoreAgentSeedsDescribeSurfaceRoutingWithoutGrantingMutationAuthority() {
+    loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
+
+    assertSurfaceFamiliarity(
+        AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID,
+        List.of("dashboard", "profile", "settings", "context/authority", "digest"),
+        List.of("Notification Center", "digest progress/result", "no direct mutation authority"),
+        List.of("blocked/open-denied recovery surfaces", "backend-authorized"));
+    assertSurfaceFamiliarity(
+        AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+        List.of("user and Organization directories", "invitation create", "Organization create"),
+        List.of("access-review tasks", "structured invitation surfaces", "role-change preview"),
+        List.of("Structured surface note", "invitation create surface"));
+    assertSurfaceFamiliarity(
+        AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
+        List.of("managed-agent catalog", "tool-boundary diff", "lifecycle confirmations"),
+        List.of("prompt governance", "behavior proposal", "direct mutation authority"),
+        List.of("Surface routing note", "test console"));
+    assertSurfaceFamiliarity(
+        AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID,
+        List.of("dashboard", "search", "timeline", "export request"),
+        List.of("summary progress/review", "safe fallback"),
+        List.of("routed Audit/Trace surfaces", "summary progress/review"));
+    assertSurfaceFamiliarity(
+        AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID,
+        List.of("policy inventory", "decision", "impact-analysis"),
+        List.of("activation/rollback blocked recovery", "safe fallback"),
+        List.of("routed Governance/Policy surfaces", "protected backend action"));
+  }
+
+  private void assertSurfaceFamiliarity(String agentId, List<String> promptMarkers, List<String> skillMarkers, List<String> referenceMarkers) {
+    var agent = repository.agentDefinition("tenant-1", agentId).orElseThrow();
+    var prompt = repository.promptDocument("tenant-1", agent.promptDocumentId()).orElseThrow().contentBody();
+    var skills = repository.skillManifest("tenant-1", agent.skillManifestId()).orElseThrow().entries().stream()
+        .map(entry -> repository.skillDocument("tenant-1", entry.skillDocumentId()).orElseThrow().contentBody())
+        .reduce("", (left, right) -> left + "\n" + right);
+    var references = repository.referenceManifest("tenant-1", agent.referenceManifestId()).orElseThrow().entries().stream()
+        .map(entry -> repository.referenceDocument("tenant-1", entry.referenceDocumentId()).orElseThrow().contentBody())
+        .reduce("", (left, right) -> left + "\n" + right);
+
+    assertContainsAll(prompt, promptMarkers, agentId + " prompt");
+    assertContainsAll(skills, skillMarkers, agentId + " skills");
+    assertContainsAll(references, referenceMarkers, agentId + " references");
+    var combined = (prompt + "\n" + skills + "\n" + references).toLowerCase();
+    assertTrue(combined.contains("surface"), agentId);
+    assertTrue(combined.contains("protected backend") || combined.contains("protected surface action"), agentId);
+    assertFalse(combined.contains("you may submit"), agentId);
+    assertFalse(combined.contains("you can submit"), agentId);
+    assertFalse(combined.contains("you may approve"), agentId);
+    assertFalse(combined.contains("you can approve"), agentId);
+  }
+
+  private void assertContainsAll(String text, List<String> markers, String label) {
+    for (var marker : markers) {
+      assertTrue(text.contains(marker), () -> label + " missing marker: " + marker);
+    }
+  }
+
+  @Test
   void allFiveCoreAgentsResolveThroughSameManagedRuntimePathWithDistinctProfiles() {
     loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
     var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(new InMemoryTestIdentityRepository()), Clock.fixed(Instant.parse("2026-05-20T00:00:00Z"), ZoneOffset.UTC), new OpenAiModelProviderClient(), new InMemoryTestAgentRuntimeTraceSink());
