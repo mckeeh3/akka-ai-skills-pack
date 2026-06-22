@@ -11,6 +11,8 @@ The target may be a downstream generated app, a fork of the secure SaaS Foundati
 
 The output is planning and queue materialization only. Treat the discussed idea as current intent for the mini-project, then materialize bounded tasks from that current-state model. Do not implement the queued tasks in the same run unless the user explicitly asks to execute one task after the queue exists.
 
+After the mini-project exists, execution should be subagent-orchestrated: the parent harness session owns the queue, launches exactly one fresh-context subagent for exactly one queued task, waits for that subagent to finish and commit or block, reviews the reported queue state, and only then launches the next single-task subagent. Do not run queued implementation tasks in parallel.
+
 ## Use this skill when
 
 Use when the prompt sounds like:
@@ -50,6 +52,18 @@ Prefer source artifacts that capture the actual discussion. Do not reread the wh
 ## Output directory shape
 
 Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed mini-project, backlog, and queue output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
+
+## Sequential subagent execution model
+
+Design the mini-project so it can be executed by a parent orchestrator using the `pi-subagents` workflow:
+
+1. the parent reads `specs/<initiative>/pending-tasks.md` and picks the first runnable non-done task;
+2. the parent launches one fresh-context subagent, usually `worker`, with a contract to execute only that task;
+3. the subagent marks that task `in-progress`, performs only its scoped changes, runs the required checks, marks it `done` or `blocked`, commits completed changes, and reports the next runnable task;
+4. the parent inspects the subagent result and repository state before deciding whether to launch the next subagent;
+5. the parent repeats the loop one subagent at a time until the terminal verification task says the mini-project is complete or blocked.
+
+Do not create a prompt that asks multiple subagents to edit concurrently. Do not use parallel fanout for queued implementation tasks. If a review task is queued, run it as its own single subagent task. If a task needs advisory input, the parent may ask one read-only subagent first and then a separate single writer subagent, but the queue still advances by one task at a time.
 
 ## Verification loop
 
@@ -91,14 +105,15 @@ Generated-app/reference-runtime tasks must preserve the target project runtime c
 
 ## Status and commit rules
 
-Future task sessions must:
-1. mark exactly one selected task `in-progress` before implementation edits;
-2. execute only that task;
-3. run required checks or block with a clear reason;
-4. mark `done` only when checks and done criteria pass;
-5. create one focused git commit for completed work;
-6. record the commit message or hash in task notes;
-7. report the next runnable task.
+Future subagent task sessions must:
+1. be launched one at a time by the parent orchestrator, preferably as fresh-context `worker` subagents;
+2. mark exactly one selected task `in-progress` before implementation edits;
+3. execute only that task;
+4. run required checks or block with a clear reason;
+5. mark `done` only when checks and done criteria pass;
+6. create one focused git commit for completed work;
+7. record the commit message or hash in task notes;
+8. report the next runnable task to the parent orchestrator.
 
 Do not mark a task `done` without a commit unless the queue explicitly says the task is non-mutating review-only and the user accepts no commit. For this repository's normal mini-projects, prefer committing review outputs too.
 
@@ -125,9 +140,18 @@ Report:
 - whether the planning scaffold was committed;
 - questions, concerns, or recommendations.
 
-End with a fresh-context handoff prompt for the next task, for example:
+End with a fresh-context subagent execution prompt that starts the sequential queue runner. The prompt should be ready for the user to paste into a new parent harness session and should instruct the parent to use `pi-subagents` to run one task at a time, for example:
 
 ```text
-Use the project-discussed-idea-to-pending-project queue at specs/<initiative>/pending-tasks.md.
-Execute only the next runnable task, load only its required reads and listed skills, update the queue, commit the task changes, and report the next runnable task.
+Use the pi-subagents workflow to execute the mini-project queue at specs/<initiative>/pending-tasks.md sequentially.
+
+Parent orchestration contract:
+- read the queue and select only the first runnable non-done task;
+- launch exactly one fresh-context worker subagent for that task;
+- tell the worker to load only the task's required reads and listed skills, mark that single task in-progress, implement only that task, run the required checks, update the queue, commit completed changes, and report the next runnable task;
+- wait for the worker to finish before launching any other task subagent;
+- inspect the result and repeat one worker subagent at a time until the terminal verification task closes the mini-project or reports a blocker;
+- do not run queued implementation tasks in parallel.
 ```
+
+If the user asked only to create the mini-project, provide this start prompt without launching execution. If the user explicitly asked to start execution now, launch only the first queued task subagent and stop after reporting its result and the next runnable task.
