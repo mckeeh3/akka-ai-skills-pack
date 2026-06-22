@@ -87,7 +87,7 @@
 
 ### TASK-SIR-02-001: Implement User Admin surface routing proof
 
-- status: pending
+- status: done
 - source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
 - task brief: specs/workstream-surface-intent-routing/tasks/02-user-admin/01-implement-user-admin-surface-routing.md
 - depends on:
@@ -118,6 +118,10 @@
   - missing capability or unavailable surface is handled as a safe denial/fallback without hidden target enumeration
   - user-facing workstream item copy says the user must review and submit the surface
   - changes and queue update are committed
+- notes:
+  - added high-confidence User Admin deterministic routes for Organization Create, Organization Directory, User Directory, and invitation create with selected-context capability checks, prefill metadata, and no direct mutations
+  - commands run: `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageRoutesUserAdminSurfaceIntentsWithSafePrefillAndNoMutation,ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageFallsBackSafelyForUnauthorizedOrAmbiguousUserAdminSurfacePrompts,ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageRoutesMatchedSurfaceIntentBeforeModelInvocation,ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageLeavesUnmatchedPromptOnGovernedModelFallback test` (passed); `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest test` (attempted; failed in existing non-router tests: agent admin artifact ordering, governance policy assertion, audit summary repository binding, My Account validation, User Admin status no-op); `git diff --check` (passed)
+  - commit message: `surface-intent-routing: add user admin routes`
 
 ### TASK-SIR-03-001: Wire prefilled surface rendering
 

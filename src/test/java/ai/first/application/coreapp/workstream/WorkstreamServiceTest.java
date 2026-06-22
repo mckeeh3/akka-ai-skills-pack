@@ -1752,6 +1752,70 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  void submitMessageRoutesUserAdminSurfaceIntentsWithSafePrefillAndNoMutation() {
+    var create = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-owner", "user-admin-agent", "create organization \"Org 1\"", "corr-route-org-create", "idem-route-org-create"), "corr-header");
+
+    assertEquals("surface_intent_route", create.agentItem().kind());
+    assertEquals("surface-user-admin-organization-create", create.surface().surfaceId());
+    assertEquals("create-form", create.surface().surfaceType());
+    assertTrue(create.agentItem().body().contains("must review the surface and submit"));
+    assertEquals(0, trackingRuntimeInvoker.invocationCount(), "Matched User Admin surface routes must not invoke the model-backed runtime");
+    assertEquals(true, create.surface().data().get("noDirectMutation"));
+    var createRoute = (Map<String, Object>) create.surface().data().get("surfaceIntentRoute");
+    assertEquals("route-user-admin-organization-create-v1", ((Map<?, ?>) createRoute.get("metadata")).get("routeId"));
+    assertEquals("Org 1", ((Map<?, ?>) createRoute.get("prefill")).get("organizationName"));
+    assertEquals("Org 1", ((Map<?, ?>) create.surface().data().get("prefill")).get("organizationName"));
+    assertEquals("Org 1", ((Map<?, ?>) create.surface().data().get("draft")).get("organizationName"));
+    assertEquals("Org 1", ((Map<?, ?>) create.surface().data().get("form")).get("organizationNameDraft"));
+    assertEquals(true, ((Map<?, ?>) create.surface().data().get("form")).get("prefillReviewRequired"));
+    assertFalse(identityRepository.tenantRows().stream().anyMatch(tenant -> "Org 1".equals(tenant.displayName())), "Router must not create an Organization before the user submits the form action");
+    assertBrowserPayloadSafe(create.surface());
+
+    var organizations = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-owner", "user-admin-agent", "show organizations", "corr-route-orgs", "idem-route-orgs"), "corr-header");
+    assertEquals("surface_intent_route", organizations.agentItem().kind());
+    assertEquals("surface-user-admin-organization-directory", organizations.surface().surfaceId());
+    assertEquals("user_admin.organization_directory.v1", organizations.surface().data().get("surfaceContract"));
+
+    var users = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "user-admin-agent", "show users", "corr-route-users", "idem-route-users"), "corr-header");
+    assertEquals("surface_intent_route", users.agentItem().kind());
+    assertEquals("surface-user-admin-users", users.surface().surfaceId());
+    assertEquals("user_admin.users.v1", users.surface().data().get("surfaceContract"));
+
+    var invite = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "user-admin-agent", "invite user alice@example.com", "corr-route-invite", "idem-route-invite"), "corr-header");
+    assertEquals("surface_intent_route", invite.agentItem().kind());
+    assertEquals("surface-user-admin-invitation-create", invite.surface().surfaceId());
+    assertEquals("alice@example.com", ((Map<?, ?>) invite.surface().data().get("prefill")).get("email"));
+    assertEquals("alice@example.com", ((Map<?, ?>) invite.surface().data().get("form")).get("emailDraft"));
+    assertFalse(invitationRepository.invitations().stream().anyMatch(invitation -> "alice@example.com".equals(invitation.normalizedEmail())), "Router must not create an invitation before the user submits the form action");
+    assertBrowserPayloadSafe(invite.surface());
+  }
+
+  @Test
+  void submitMessageFallsBackSafelyForUnauthorizedOrAmbiguousUserAdminSurfacePrompts() {
+    var tenantCreate = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "user-admin-agent", "create organization \"Tenant Hidden\"", "corr-route-tenant-org-create", "idem-route-tenant-org-create"), "corr-header");
+
+    assertEquals("markdown_response", tenantCreate.agentItem().kind());
+    assertEquals("markdown_response", tenantCreate.surface().surfaceType());
+    assertNull(tenantCreate.surface().data().get("surfaceIntentRoute"));
+    assertFalse(tenantCreate.toString().contains("surface-user-admin-organization-create"));
+    assertEquals(1, trackingRuntimeInvoker.invocationCount(), "Unauthorized selected contexts must fall back without deterministic target enumeration");
+
+    var ambiguous = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-owner", "user-admin-agent", "create organization \"Org 2\" and invite user alice@example.com", "corr-route-ambiguous", "idem-route-ambiguous"), "corr-header");
+
+    assertEquals("markdown_response", ambiguous.agentItem().kind());
+    assertEquals("markdown_response", ambiguous.surface().surfaceType());
+    assertNull(ambiguous.surface().data().get("surfaceIntentRoute"));
+    assertEquals(2, trackingRuntimeInvoker.invocationCount(), "Ambiguous multi-target prompts must preserve the governed model-backed fallback");
+  }
+
+  @Test
   void submitMessageLeavesUnmatchedPromptOnGovernedModelFallback() {
     var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "user-admin-agent", "What can I do next?", "corr-fallback-message", "idem-fallback-message"), "corr-header");

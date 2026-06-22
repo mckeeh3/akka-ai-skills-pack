@@ -1457,7 +1457,7 @@ public final class WorkstreamService {
     var traceIds = routeTraceIds(route, surface, responseSeed);
     enrichRoutedSurface(surface, route, agentItemId, traceIds, correlationId);
     var userItem = new WorkstreamItem(userItemId, request.functionalAgentId(), "user-request", now, correlationId, traceIds, null, null, request.prompt(), "ready");
-    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "surface_intent_route", now, correlationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Opened " + surface.title() + " from your request. No changes were made; review the surface and submit an authorized action when ready.", "ready");
+    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "surface_intent_route", now, correlationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Opened " + surface.title() + " from your request. No changes were made; you must review the surface and submit an authorized action when ready.", "ready");
     var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, surface));
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
@@ -1480,8 +1480,43 @@ public final class WorkstreamService {
         "metadata", route.metadata());
     surface.data().put("surfaceIntentRoute", routeSummary);
     surface.data().put("prefill", route.prefill());
+    applyRoutedPrefill(surface, route.prefill());
     surface.data().put("noDirectMutation", true);
-    surface.data().put("lastResult", mapOf("status", "routed", "message", "Surface opened from a deterministic no-mutation router. Review and submit an authorized action to make changes.", "noMutation", true, "sideEffect", "none", "correlationId", correlationId, "traceRefs", traceIds));
+    surface.data().put("lastResult", mapOf("status", "routed", "message", "Surface opened from a deterministic no-mutation router. You must review and submit an authorized action to make changes.", "noMutation", true, "sideEffect", "none", "correlationId", correlationId, "traceRefs", traceIds));
+  }
+
+  private void applyRoutedPrefill(SurfaceEnvelope surface, Map<String, Object> prefill) {
+    if (prefill == null || prefill.isEmpty()) return;
+    if ("surface-user-admin-organization-create".equals(surface.surfaceId())) {
+      var organizationName = stringPrefill(prefill, "organizationName");
+      if (organizationName == null || organizationName.isBlank()) return;
+      var draft = mapValue(surface.data().get("draft"));
+      draft.put("organizationName", organizationName);
+      surface.data().put("draft", draft);
+      var form = mapValue(surface.data().get("form"));
+      form.put("organizationNameDraft", organizationName);
+      form.put("prefillSource", "surface-intent-route");
+      form.put("prefillReviewRequired", true);
+      form.put("prefillReviewMessage", "Prefilled from your request; review before submitting.");
+      surface.data().put("form", form);
+    } else if ("surface-user-admin-invitation-create".equals(surface.surfaceId())) {
+      var email = stringPrefill(prefill, "email");
+      if (email == null || email.isBlank()) return;
+      var draft = mapValue(surface.data().get("draft"));
+      draft.put("email", email);
+      surface.data().put("draft", draft);
+      var form = mapValue(surface.data().get("form"));
+      form.put("emailDraft", email);
+      form.put("prefillSource", "surface-intent-route");
+      form.put("prefillReviewRequired", true);
+      form.put("prefillReviewMessage", "Prefilled from your request; review before submitting.");
+      surface.data().put("form", form);
+    }
+  }
+
+  private String stringPrefill(Map<String, Object> prefill, String key) {
+    var value = prefill.get(key);
+    return value == null ? null : String.valueOf(value).trim();
   }
 
   private List<String> routeTraceIds(SurfaceIntentRouter.Result route, SurfaceEnvelope surface, String responseSeed) {
