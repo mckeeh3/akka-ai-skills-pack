@@ -8,6 +8,7 @@ import ai.first.domain.foundation.attention.AttentionItemStatus;
 import ai.first.domain.foundation.attention.AttentionSeverity;
 import ai.first.domain.foundation.attention.AttentionSourceRef;
 import ai.first.domain.foundation.attention.AttentionSurfaceRef;
+import ai.first.domain.foundation.identity.ScopeType;
 import ai.first.domain.foundation.identity.UserSettings;
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -18,6 +19,7 @@ import ai.first.application.foundation.attention.AttentionService;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.MeResponse;
 import ai.first.application.foundation.identity.StarterSecurityComponents;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 
 /** Deterministic My Account boundary for browser-safe account, context, settings, trace, and navigation data. */
 public final class MyAccountService {
@@ -124,7 +126,13 @@ public final class MyAccountService {
 
   private AttentionItem attentionItem(AuthContextResolver.ResolvedMe actor, String itemId, String workstreamId, String title, String summary, AttentionCategory category, AttentionSeverity severity, String capabilityId, String surfaceId, String sourceId, String correlationId) {
     var now = Instant.now();
-    return new AttentionItem(itemId, actor.selectedContext().tenantId(), actor.selectedContext().customerId(), workstreamId, title, summary, category, severity, AttentionItemStatus.OPEN, AttentionItem.AssigneeKind.CAPABILITY, capabilityId, capabilityId, new AttentionSurfaceRef(workstreamId, surfaceId, "dashboard", itemId, actionIdForWorkstream(workstreamId), capabilityId), List.of(new AttentionSourceRef("capability", sourceId, title, capabilityId, "trace-" + sourceId, correlationId)), null, now, now, now, null, null, null, null, correlationId);
+    return new AttentionItem(itemId, selectedScopeTenantId(actor.selectedContext()), actor.selectedContext().customerId(), workstreamId, title, summary, category, severity, AttentionItemStatus.OPEN, AttentionItem.AssigneeKind.CAPABILITY, capabilityId, capabilityId, new AttentionSurfaceRef(workstreamId, surfaceId, "dashboard", itemId, actionIdForWorkstream(workstreamId), capabilityId), List.of(new AttentionSourceRef("capability", sourceId, title, capabilityId, "trace-" + sourceId, correlationId)), null, now, now, now, null, null, null, null, correlationId);
+  }
+
+  private static String selectedScopeTenantId(AuthContext authContext) {
+    return authContext.scopeType() == ScopeType.SAAS_OWNER && (authContext.tenantId() == null || authContext.tenantId().isBlank())
+        ? WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID
+        : authContext.tenantId();
   }
 
   private Map<String, Object> attentionItemMap(AttentionItem item) {

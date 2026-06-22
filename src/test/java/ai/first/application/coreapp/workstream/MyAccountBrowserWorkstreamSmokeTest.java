@@ -68,6 +68,10 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(shell.body().contains("providerSecret"));
     assertFalse(shell.body().contains("Bearer "));
 
+    var authCallbackShell = httpClient.GET("/callback").responseBodyAs(String.class).invoke();
+    assertTrue(authCallbackShell.status().isSuccess(), "WorkOS/AuthKit redirect callback must return the SPA shell, not a 404.");
+    assertTrue(authCallbackShell.body().contains("<div id=\"root\"></div>"));
+
     var bootstrap = httpClient
         .GET("/api/workstream/bootstrap")
         .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))

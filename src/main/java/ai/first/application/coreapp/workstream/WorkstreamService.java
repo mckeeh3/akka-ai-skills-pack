@@ -5486,7 +5486,7 @@ public final class WorkstreamService {
     var now = Instant.now();
     return new AttentionItem(
         itemId,
-        actor.selectedContext().tenantId(),
+        workstreamEventTenantId(actor.selectedContext()),
         actor.selectedContext().customerId(),
         workstreamId,
         title,

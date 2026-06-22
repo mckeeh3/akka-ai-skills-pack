@@ -38,6 +38,11 @@ public class StarterFrontendEndpoint extends AbstractHttpEndpoint {
     return HttpResponses.staticResource("index.html");
   }
 
+  @Get("callback")
+  public HttpResponse authCallback() {
+    return HttpResponses.staticResource("index.html");
+  }
+
   @Get("accept")
   public HttpResponse acceptInvitation() {
     return HttpResponses.staticResource("index.html");

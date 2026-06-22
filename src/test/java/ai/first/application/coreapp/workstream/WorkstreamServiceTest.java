@@ -168,6 +168,21 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void saasOwnerBootstrapUsesPlatformScopeForDefaultAttentionAndNotifications() {
+    var ownerIdentity = new WorkosIdentity("workos-owner@example.test", "owner@example.test", "SaaS Owner");
+
+    var bootstrap = service.bootstrap(ownerIdentity, "membership-owner", "corr-owner-bootstrap");
+
+    assertEquals("membership-owner", bootstrap.me().selectedAuthContext().selectedContextId());
+    assertTrue(bootstrap.functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("my-account-agent") && agent.availability().equals("visible")));
+    assertEquals("surface-my-account-dashboard", bootstrap.surfaces().get(0).surfaceId());
+    assertTrue(bootstrap.surfaces().get(0).toString().contains("notificationCenter"));
+    assertTrue(bootstrap.surfaces().get(0).toString().contains("attentionCounters"));
+    assertTrue(eventRepository.listTenant(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID).isEmpty(), "Owner bootstrap should use platform-scoped attention/notification storage without requiring a tenant id.");
+    assertBrowserPayloadSafe(bootstrap.surfaces().get(0));
+  }
+
+  @Test
   void saasOwnerPlatformInvitationEventsDoNotBreakMyAccountNotificationCenter() {
     var ownerIdentity = new WorkosIdentity("workos-owner@example.test", "owner@example.test", "SaaS Owner");
     var owner = new AuthContextResolver(identityRepository).resolveMe(ownerIdentity, "membership-owner", "corr-owner-resolve");
