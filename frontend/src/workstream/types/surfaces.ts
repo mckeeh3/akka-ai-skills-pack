@@ -10,6 +10,24 @@ export type SurfaceLink = {
   rel: 'self' | 'deep-link' | 'trace' | 'evidence' | 'related';
 };
 
+export type BrowserSafeSurfacePrefillValue = string | number | boolean | null | undefined;
+export type BrowserSafeSurfacePrefill = Record<string, BrowserSafeSurfacePrefillValue>;
+
+export type RoutedSurfaceIntentRoute = {
+  routeId?: string;
+  source?: string;
+  matchedPrompt?: string;
+  canonicalPrompt?: string;
+  confidence?: string;
+  category?: string;
+  prefill?: BrowserSafeSurfacePrefill;
+  noMutation?: boolean;
+  sideEffect?: 'none' | string;
+  targetSurfaceId?: string;
+  targetFunctionalAgentId?: string;
+  metadata?: Record<string, unknown>;
+};
+
 export type SurfaceEnvelope<TData, TAction extends SurfaceAction = SurfaceAction> = {
   surfaceId: string;
   surfaceType: CanonicalSurfaceType | string;
@@ -215,7 +233,11 @@ export type OrganizationAdminSurfaceData = {
   safeBoundaryNotice?: string;
   traceRefs?: string[];
   correlationId?: string;
+  prefill?: BrowserSafeSurfacePrefill;
+  surfaceIntentRoute?: RoutedSurfaceIntentRoute;
+  noDirectMutation?: boolean;
   redaction?: BrowserSafeRedactionMetadata;
+  draft?: Record<string, string | number | boolean | null | undefined>;
   organizations?: Array<{
     organizationId: string;
     organizationName: string;
@@ -247,6 +269,9 @@ export type OrganizationAdminSurfaceData = {
     idempotencyKeyHint?: string;
     freshnessVersionHint?: string;
     disabledReason?: string;
+    prefillSource?: string;
+    prefillReviewRequired?: boolean;
+    prefillReviewMessage?: string;
   };
   confirmation?: {
     consequenceCopy?: string;

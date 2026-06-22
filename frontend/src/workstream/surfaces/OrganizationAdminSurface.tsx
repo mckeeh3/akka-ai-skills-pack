@@ -1,5 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import type { OrganizationAdminSurfaceData, SurfaceAction, SurfaceEnvelope } from '../types';
+import { browserSafePrefillString, firstNonEmptyFormValue, hasRoutedPrefill, routedPrefillMessage } from './prefill';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 const boundaryFallback = 'Organization administration manages the Tenant lifecycle boundary only; it does not grant tenant/customer application-data access, support access, provider secret access, or billing-derived authority.';
@@ -159,10 +160,12 @@ function OrganizationDetail({ envelope, organization, onAction }: Props & { orga
 
 function OrganizationCreateForm({ envelope, onAction }: Props) {
   const form = envelope.data.form;
+  const draft = envelope.data.draft;
   const submitActionId = form?.submitActionId ?? (envelope.actions.some((action) => action.actionId === organizationCreateSubmitActionId) ? organizationCreateSubmitActionId : legacyOrganizationCreateActionId);
-  const [createName, setCreateName] = useState(form?.organizationNameDraft ?? '');
-  const [reason, setReason] = useState(form?.reasonDraft ?? '');
+  const [createName, setCreateName] = useState(firstNonEmptyFormValue(form?.organizationNameDraft, draft?.organizationName, browserSafePrefillString(envelope.data, 'organizationName')));
+  const [reason, setReason] = useState(firstNonEmptyFormValue(form?.reasonDraft, draft?.reason));
   const [validationError, setValidationError] = useState<string>();
+  const showPrefillNotice = hasRoutedPrefill(envelope.data);
   function submitCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!createName.trim()) return setValidationError('Organization name is required.');
@@ -172,6 +175,7 @@ function OrganizationCreateForm({ envelope, onAction }: Props) {
   return (
     <form className="organization-admin-command-form" aria-label="Create Organization" onSubmit={submitCreate}>
       <h4>Create Organization</h4>
+      {showPrefillNotice && <p className="surface-state-inline pending" role="status">{routedPrefillMessage(envelope.data)}</p>}
       {validationError && <p className="surface-state-inline validation-error" role="alert">{validationError}</p>}
       <p className="surface-empty-copy">This single-purpose task creates an active Organization/Tenant boundary through the protected workstream API. Organization Admin bootstrap stays in its separate backend-authorized task.</p>
       <label>Name<input className="designed-control" value={createName} onChange={(event) => setCreateName(event.currentTarget.value)} required /></label>

@@ -1,5 +1,6 @@
 import { useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import type { SurfaceAction, SurfaceEnvelope, UserAdminBranchNavigation } from '../types';
+import type { BrowserSafeSurfacePrefill, RoutedSurfaceIntentRoute, SurfaceAction, SurfaceEnvelope, UserAdminBranchNavigation } from '../types';
+import { browserSafePrefillString, firstNonEmptyFormValue, hasRoutedPrefill, routedPrefillMessage } from './prefill';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
 
 type UserAdminTaskSurfaceData = Record<string, unknown> & {
@@ -31,9 +32,21 @@ type UserAdminTaskSurfaceData = Record<string, unknown> & {
   systemStates?: string[];
   traceRefs?: string[];
   correlationId?: string;
+  prefill?: BrowserSafeSurfacePrefill;
+  surfaceIntentRoute?: RoutedSurfaceIntentRoute;
   redaction?: unknown;
   actionContext?: Record<string, string>;
   draft?: Record<string, unknown>;
+  form?: {
+    emailDraft?: unknown;
+    displayNameDraft?: unknown;
+    rolesDraft?: unknown;
+    selectedRole?: unknown;
+    prefillSource?: unknown;
+    prefillReviewRequired?: unknown;
+    prefillReviewMessage?: unknown;
+    [key: string]: unknown;
+  };
   targetScope?: Record<string, unknown>;
   roleOptions?: Array<{ value?: string; roleId?: string; id?: string; label?: string; name?: string }>;
   allowedRoleOptions?: Array<{ value?: string; roleId?: string; id?: string; label?: string; name?: string }>;
@@ -124,11 +137,13 @@ function UserAdminTaskValidationMessages({ envelope }: { envelope: SurfaceEnvelo
 
 function InvitationCreateTask({ envelope, onAction }: Props) {
   const action = findAction(envelope.actions, 'action-submit-user-admin-invitation') ?? findAction(envelope.actions, 'action-invite-user');
-  const [email, setEmail] = useState(String(envelope.data.draft?.email ?? ''));
-  const [displayName, setDisplayName] = useState(String(envelope.data.draft?.displayName ?? ''));
+  const form = envelope.data.form;
+  const [email, setEmail] = useState(firstNonEmptyFormValue(form?.emailDraft, envelope.data.draft?.email, browserSafePrefillString(envelope.data, 'email')));
+  const [displayName, setDisplayName] = useState(firstNonEmptyFormValue(form?.displayNameDraft, envelope.data.draft?.displayName, browserSafePrefillString(envelope.data, 'displayName')));
   const roleOptions = userAdminRoleOptions(envelope);
-  const [role, setRole] = useState(firstRole(envelope.data.draft?.roles, roleOptions));
+  const [role, setRole] = useState(firstRole(form?.rolesDraft ?? form?.selectedRole ?? envelope.data.draft?.roles, roleOptions));
   const [error, setError] = useState<string>();
+  const showPrefillNotice = hasRoutedPrefill(envelope.data);
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!email.trim() || !email.includes('@')) return setError('Enter a valid email address before creating an invitation.');
@@ -138,6 +153,7 @@ function InvitationCreateTask({ envelope, onAction }: Props) {
   return (
     <form className="user-admin-task-form" aria-label="Create invitation" onSubmit={submit}>
       <h4>Invite a user</h4>
+      {showPrefillNotice && <p className="surface-state-inline pending" role="status">{routedPrefillMessage(envelope.data)}</p>}
       {error && <p className="surface-state-inline validation-error" role="alert">{error}</p>}
       <label>Email<input className="designed-control" type="email" value={email} onChange={(event) => setEmail(event.currentTarget.value)} required /></label>
       <label>Display name<input className="designed-control" value={displayName} onChange={(event) => setDisplayName(event.currentTarget.value)} /></label>

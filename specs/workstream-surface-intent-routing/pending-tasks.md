@@ -125,7 +125,7 @@
 
 ### TASK-SIR-03-001: Wire prefilled surface rendering
 
-- status: pending
+- status: done
 - source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
 - task brief: specs/workstream-surface-intent-routing/tasks/03-frontend-prefill/01-wire-prefilled-surface-rendering.md
 - depends on:
@@ -159,6 +159,12 @@
   - users can edit or clear prefilled fields
   - no frontend-only authorization is introduced
   - changes and queue update are committed
+- notes:
+  - added typed browser-safe routed prefill metadata and shared prefill helpers that only render scalar values
+  - Organization Create and invitation create forms initialize from backend prefill/form drafts, keep normal editable controls, validation, idempotency, and submit actions, and show review-required copy
+  - added `frontend/src/workstream-surface-prefill.contract.test.mjs` covering prefill shape, copy, editable fields, validation, idempotency, and no auto-submit/secret leakage
+  - commands run: `npm --prefix frontend run typecheck` (passed after resolving one duplicate type field); `npm --prefix frontend test -- --run` (passed); `git diff --check` (passed)
+  - commit message: `surface-intent-routing: wire prefilled surfaces`
 
 ### TASK-SIR-04-001: Add no-model routing tests
 
