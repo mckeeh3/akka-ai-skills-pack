@@ -326,7 +326,7 @@
 
 ### TASK-SIR-99-001: Verify Workstream Surface Intent Routing completion
 
-- status: pending
+- status: done
 - source: specs/workstream-surface-intent-routing/README.md done state
 - task brief: specs/workstream-surface-intent-routing/tasks/99-verification/01-verify-surface-intent-routing.md
 - depends on:
@@ -362,3 +362,8 @@
   - agent familiarity material aligns with the no-direct-command non-goal
   - verification records evidence, residual risks, and either closes the mini-project or appends precise follow-up work
   - changes and queue update are committed
+- notes:
+  - added terminal verification notes in `specs/workstream-surface-intent-routing/verification-notes.md` covering backend/API/UI-source routing path evidence, all-workstream catalog-backed routing, agent familiarity/no-direct-command alignment, residual risks, and closure decision
+  - commands run: `mvn -Dtest='ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageRoutesUserAdminSurfaceIntentsWithSafePrefillAndNoMutation+submitMessageRoutesRepresentativeCoreWorkstreamSurfaceIntentsWithoutModelOrMutation+submitMessageFallsBackSafelyForUnauthorizedAmbiguousOrHighRiskSurfacePrompts+submitMessageLeavesUnmatchedPromptOnGovernedModelFallback+submitMessageRequiresSelectedContextMatch,ai.first.application.foundation.agent.AgentBehaviorSeedLoaderTest#importedCoreAgentSeedsDescribeSurfaceRoutingWithoutGrantingMutationAuthority' test` (passed); `npm --prefix frontend test -- --run` (passed); `npm --prefix frontend run typecheck` (passed); `git diff --check` (passed)
+  - `npm --prefix frontend run build` was not run because production frontend output did not change; full `mvn test` was not run because verification did not materially change shared backend behavior
+  - commit message: `surface-intent-routing: verify completion`
