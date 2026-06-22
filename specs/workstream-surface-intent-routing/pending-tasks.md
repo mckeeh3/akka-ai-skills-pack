@@ -1,0 +1,328 @@
+# Pending Tasks: Workstream Surface Intent Routing
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
+- Commit message format: `surface-intent-routing: <short task title>`.
+- Do not commit unrelated changes while executing this app-realization queue.
+- Do not edit `skills-pack/**` for this mini-project unless a future task explicitly changes scope.
+
+## Tasks
+
+### TASK-SIR-00-001: Create Workstream Surface Intent Routing planning scaffold
+
+- status: done
+- source: user requested a mini-project for deterministic workstream surface intent routing across all workstreams
+- task brief: specs/workstream-surface-intent-routing/tasks/00-planning/00-create-surface-intent-routing-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - current conversation context
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/workstream-surface-intent-routing/README.md
+  - specs/workstream-surface-intent-routing/conversation-capture.md
+  - specs/workstream-surface-intent-routing/pending-tasks.md
+  - specs/workstream-surface-intent-routing/sprints/*.md
+  - specs/workstream-surface-intent-routing/backlog/*.md
+  - specs/workstream-surface-intent-routing/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - mini-project has captured rationale, sprint sequence, backlog, task briefs, and pending queue
+  - task changes and queue update are committed
+- notes:
+  - commit message: `surface-intent-routing: add planning queue`
+
+### TASK-SIR-01-001: Add surface intent router contract
+
+- status: pending
+- source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
+- task brief: specs/workstream-surface-intent-routing/tasks/01-router-contract/01-add-surface-intent-router-contract.md
+- depends on:
+  - TASK-SIR-00-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-surface-intent-routing/README.md
+  - specs/workstream-surface-intent-routing/conversation-capture.md
+  - specs/workstream-surface-intent-routing/sprints/01-router-user-admin-proof.md
+  - specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
+  - specs/workstream-surface-intent-routing/tasks/01-router-contract/01-add-surface-intent-router-contract.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - src/main/java/ai/first/application/foundation/agent/AgentBehaviorSeedLoader.java
+- skills:
+  - capability-first-backend
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+- expected outputs:
+  - backend router/result model for deterministic surface intent matches
+  - workstream message path attempts router before model invocation
+  - matched route returns a surface response/workstream item and no-mutation marker
+  - safe fallback to current governed model-backed chat for unmatched prompts
+  - focused tests or test seams for matched vs fallback behavior
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend tests for the new router path
+  - broader `mvn test` if shared workstream runtime behavior changes materially
+- done criteria:
+  - router contract is explicit and side-effect free
+  - matched routes do not invoke the model-backed runtime
+  - unmatched prompts preserve existing governed runtime behavior
+  - backend authorization/selected-context handling remains authoritative
+  - changes and queue update are committed
+
+### TASK-SIR-02-001: Implement User Admin surface routing proof
+
+- status: pending
+- source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
+- task brief: specs/workstream-surface-intent-routing/tasks/02-user-admin/01-implement-user-admin-surface-routing.md
+- depends on:
+  - TASK-SIR-01-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-surface-intent-routing/README.md
+  - specs/workstream-surface-intent-routing/conversation-capture.md
+  - specs/workstream-surface-intent-routing/sprints/01-router-user-admin-proof.md
+  - specs/workstream-surface-intent-routing/tasks/02-user-admin/01-implement-user-admin-surface-routing.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - frontend/src/workstream/surfaces/OrganizationAdminSurface.tsx
+- skills:
+  - capability-first-backend
+  - akka-http-endpoint-component-client
+  - akka-web-ui-state-rendering
+- expected outputs:
+  - high-confidence User Admin routes for Organization Create, Organization Directory, User Directory, and invitation create
+  - safe no-match/ambiguous fallback behavior
+  - tests for authorized and unauthorized selected contexts
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend tests for User Admin routing
+  - `mvn test` if shared workstream behavior changes materially
+- done criteria:
+  - `create organization "Org 1"` opens a prefilled Organization Create surface and does not create an Organization
+  - missing capability or unavailable surface is handled as a safe denial/fallback without hidden target enumeration
+  - user-facing workstream item copy says the user must review and submit the surface
+  - changes and queue update are committed
+
+### TASK-SIR-03-001: Wire prefilled surface rendering
+
+- status: pending
+- source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
+- task brief: specs/workstream-surface-intent-routing/tasks/03-frontend-prefill/01-wire-prefilled-surface-rendering.md
+- depends on:
+  - TASK-SIR-02-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-surface-intent-routing/README.md
+  - specs/workstream-surface-intent-routing/sprints/02-frontend-prefill-tests.md
+  - specs/workstream-surface-intent-routing/tasks/03-frontend-prefill/01-wire-prefilled-surface-rendering.md
+  - frontend/src/main.tsx
+  - frontend/src/workstream/surfaces/OrganizationAdminSurface.tsx
+  - frontend/src/workstream/surfaces/UserAdminTaskSurface.tsx
+  - frontend/src/workstream/types/surfaces.ts
+  - frontend/src/workstream/actions/capabilityActionState.ts
+- skills:
+  - akka-web-ui-forms-validation
+  - akka-web-ui-state-rendering
+  - akka-web-ui-accessibility-responsive
+- expected outputs:
+  - browser-safe prefill handling convention for routed surfaces
+  - Organization Create and invitation create forms initialize from prefill while preserving editable fields
+  - UI copy indicates fields were prefilled from the request and require user review
+  - frontend tests or contract tests for prefill rendering
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - prefill does not bypass validation, confirmation, idempotency, or submit buttons
+  - users can edit or clear prefilled fields
+  - no frontend-only authorization is introduced
+  - changes and queue update are committed
+
+### TASK-SIR-04-001: Add no-model routing tests
+
+- status: pending
+- source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
+- task brief: specs/workstream-surface-intent-routing/tasks/04-tests/01-add-no-model-routing-tests.md
+- depends on:
+  - TASK-SIR-03-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-surface-intent-routing/README.md
+  - specs/workstream-surface-intent-routing/sprints/02-frontend-prefill-tests.md
+  - specs/workstream-surface-intent-routing/tasks/04-tests/01-add-no-model-routing-tests.md
+  - router and User Admin routing implementation files
+  - frontend/src/workstream-composer-message-api.contract.test.mjs
+  - frontend/src/workstream-organization-admin-vertical.contract.test.mjs
+- skills:
+  - akka-agent-testing
+  - akka-web-ui-testing
+  - akka-runtime-feature-verification
+- expected outputs:
+  - backend tests for matched route, fallback route, unauthorized context, and no mutation
+  - frontend/contract tests for routed response and prefill rendering
+  - test evidence in queue notes
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend tests
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - tests fail if matched User Admin routing calls the model runtime
+  - tests fail if Organization creation happens before surface submit
+  - tests prove ambiguous/unmatched prompts still use the governed fallback path
+  - changes and queue update are committed
+
+### TASK-SIR-05-001: Add core surface catalog metadata
+
+- status: pending
+- source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
+- task brief: specs/workstream-surface-intent-routing/tasks/05-surface-catalog/01-add-core-surface-catalog-metadata.md
+- depends on:
+  - TASK-SIR-04-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-surface-intent-routing/README.md
+  - specs/workstream-surface-intent-routing/sprints/03-catalog-and-expansion.md
+  - specs/workstream-surface-intent-routing/tasks/05-surface-catalog/01-add-core-surface-catalog-metadata.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - app-description/domains/core-starter/workstreams/**
+  - frontend/src/workstream/surfaces/**
+- skills:
+  - app-description-surface-modeling
+  - ai-first-saas-ui-surfaces
+  - akka-agent-behavior-profiles
+- expected outputs:
+  - surface catalog metadata for all five core workstreams
+  - router/catalog mapping documentation
+  - queue update
+- required checks:
+  - `git diff --check`
+  - focused search/contract check proving all five workstreams have catalog entries
+  - targeted tests if code-owned catalog behavior changes
+- done criteria:
+  - surface catalog does not grant authority; it only describes routing/familiarity
+  - catalog entries cover current core surfaces sufficiently for high-confidence open/prefill routing
+  - deferred or ambiguous surfaces are explicitly noted
+  - changes and queue update are committed
+
+### TASK-SIR-06-001: Expand routing to all core workstreams
+
+- status: pending
+- source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
+- task brief: specs/workstream-surface-intent-routing/tasks/06-workstream-expansion/01-expand-routing-to-all-core-workstreams.md
+- depends on:
+  - TASK-SIR-05-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-surface-intent-routing/README.md
+  - specs/workstream-surface-intent-routing/sprints/03-catalog-and-expansion.md
+  - specs/workstream-surface-intent-routing/tasks/06-workstream-expansion/01-expand-routing-to-all-core-workstreams.md
+  - surface catalog from previous task
+  - router implementation files
+  - relevant frontend surface components and tests
+- skills:
+  - capability-first-backend
+  - akka-web-ui-apps
+  - ai-first-saas-ui-surfaces
+- expected outputs:
+  - representative deterministic routes for each core workstream
+  - safe fallback for ambiguous/high-risk prompts
+  - contract tests covering at least one matched route per workstream
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend router tests
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - all five core workstreams have at least one useful deterministic route
+  - destructive or approval-gated asks open relevant surfaces or fall back; they do not execute commands
+  - existing User Admin Organization Create routing remains covered
+  - changes and queue update are committed
+
+### TASK-SIR-07-001: Update agent surface familiarity seeds
+
+- status: pending
+- source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
+- task brief: specs/workstream-surface-intent-routing/tasks/07-agent-familiarity/01-update-agent-surface-familiarity-seeds.md
+- depends on:
+  - TASK-SIR-06-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-surface-intent-routing/README.md
+  - specs/workstream-surface-intent-routing/sprints/04-agent-familiarity-verification.md
+  - specs/workstream-surface-intent-routing/tasks/07-agent-familiarity/01-update-agent-surface-familiarity-seeds.md
+  - src/main/java/ai/first/application/foundation/agent/AgentBehaviorSeedLoader.java
+  - src/main/resources/agent-behavior-seeds/starter-v1/**
+  - surface catalog metadata from previous tasks
+- skills:
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-reference-governance
+  - akka-agent-tool-boundaries
+- expected outputs:
+  - seed prompt/skill/reference updates describing surface routing and structured surface use
+  - tests or checksum/seed import adjustments as needed
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted seed/import tests
+  - broader `mvn test` if shared agent behavior seed loading changes materially
+- done criteria:
+  - each core workstream agent has enough familiarity to explain key surfaces and safe next steps
+  - prompt/skill/reference text cannot be interpreted as granting backend capability or direct mutation authority
+  - changes and queue update are committed
+
+### TASK-SIR-99-001: Verify Workstream Surface Intent Routing completion
+
+- status: pending
+- source: specs/workstream-surface-intent-routing/README.md done state
+- task brief: specs/workstream-surface-intent-routing/tasks/99-verification/01-verify-surface-intent-routing.md
+- depends on:
+  - TASK-SIR-07-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-surface-intent-routing/README.md
+  - specs/workstream-surface-intent-routing/conversation-capture.md
+  - specs/workstream-surface-intent-routing/pending-tasks.md
+  - specs/workstream-surface-intent-routing/sprints/*.md
+  - specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
+  - specs/workstream-surface-intent-routing/tasks/99-verification/01-verify-surface-intent-routing.md
+  - completed task notes
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-agent-work-trace
+- expected outputs:
+  - verification notes under specs/workstream-surface-intent-routing/ if needed
+  - queue updates marking verification done only when the README done state is achieved
+  - new bounded follow-up tasks plus a new terminal verification task if gaps remain
+  - commit for verification notes and queue updates
+- required checks:
+  - `git diff --check`
+  - targeted backend routing tests
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build` if production frontend output changed
+  - `mvn test` if shared backend workstream/agent behavior changed materially
+- done criteria:
+  - `create organization "Org 1"` routes to a prefilled Organization Create surface through the real local backend/API/UI path and does not mutate before submit
+  - all five core workstreams have catalog-backed deterministic routing at the stated scope
+  - agent familiarity material aligns with the no-direct-command non-goal
+  - verification records evidence, residual risks, and either closes the mini-project or appends precise follow-up work
+  - changes and queue update are committed
