@@ -45,7 +45,7 @@
 
 ### TASK-SIR-01-001: Add surface intent router contract
 
-- status: pending
+- status: done
 - source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
 - task brief: specs/workstream-surface-intent-routing/tasks/01-router-contract/01-add-surface-intent-router-contract.md
 - depends on:
@@ -80,6 +80,10 @@
   - unmatched prompts preserve existing governed runtime behavior
   - backend authorization/selected-context handling remains authoritative
   - changes and queue update are committed
+- notes:
+  - added side-effect-free `SurfaceIntentRouter` contract, default high-confidence My Account surface-open route, workstream message integration before model invocation, no-mutation route metadata, and matched/fallback tests
+  - commands run: `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageRoutesMatchedSurfaceIntentBeforeModelInvocation,ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageLeavesUnmatchedPromptOnGovernedModelFallback test` (passed); `mvn test` (attempted; failed in broader suite expectations outside the router path); `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest test` (attempted; same non-router failures); `git diff --check` (passed)
+  - commit message: `surface-intent-routing: add router contract`
 
 ### TASK-SIR-02-001: Implement User Admin surface routing proof
 

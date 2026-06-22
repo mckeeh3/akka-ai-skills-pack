@@ -68,6 +68,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -250,6 +251,7 @@ public final class WorkstreamService {
   private final GovernancePolicyImpactService governancePolicyImpactService;
   private final AttentionService attentionService;
   private final WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker;
+  private final SurfaceIntentRouter surfaceIntentRouter;
   private final WorkstreamLogRepository workstreamLogRepository;
   private final WorkstreamEventRepository workstreamEventRepository;
   private final AccessReviewAutonomousAgentRuntime accessReviewAutonomousAgentRuntime;
@@ -366,6 +368,33 @@ public final class WorkstreamService {
       PromptRiskAutonomousAgentRuntime promptRiskAutonomousAgentRuntime,
       NotificationService notificationService,
       GovernancePolicyImpactAutonomousAgentRuntime governancePolicyImpactAutonomousAgentRuntime) {
+    this(meService, authContextResolver, userDirectoryView, invitationView, userAdminService, invitationService, agentBehaviorRepository, agentRuntimeService, workstreamAgentRuntimeInvoker, workstreamLogRepository, accessReviewTaskRepository, auditTraceRepository, governancePolicyRepository, attentionService, attentionProducerService, workstreamEventPublisher, workstreamEventRepository, accessReviewAutonomousAgentRuntime, promptRiskReviewTaskRepository, promptRiskAutonomousAgentRuntime, notificationService, governancePolicyImpactAutonomousAgentRuntime, DefaultSurfaceIntentRouter.create());
+  }
+
+  WorkstreamService(
+      MeService meService,
+      AuthContextResolver authContextResolver,
+      UserDirectoryView userDirectoryView,
+      InvitationView invitationView,
+      UserAdminService userAdminService,
+      InvitationService invitationService,
+      AgentBehaviorRepository agentBehaviorRepository,
+      AgentRuntimeService agentRuntimeService,
+      WorkstreamAgentRuntimeInvoker workstreamAgentRuntimeInvoker,
+      WorkstreamLogRepository workstreamLogRepository,
+      AccessReviewTaskRepository accessReviewTaskRepository,
+      AuditTraceRepository auditTraceRepository,
+      GovernancePolicyRepository governancePolicyRepository,
+      AttentionService attentionService,
+      AttentionProducerService attentionProducerService,
+      WorkstreamEventPublisher workstreamEventPublisher,
+      WorkstreamEventRepository workstreamEventRepository,
+      AccessReviewAutonomousAgentRuntime accessReviewAutonomousAgentRuntime,
+      PromptRiskReviewTaskRepository promptRiskReviewTaskRepository,
+      PromptRiskAutonomousAgentRuntime promptRiskAutonomousAgentRuntime,
+      NotificationService notificationService,
+      GovernancePolicyImpactAutonomousAgentRuntime governancePolicyImpactAutonomousAgentRuntime,
+      SurfaceIntentRouter surfaceIntentRouter) {
     this.meService = meService;
     this.authContextResolver = authContextResolver;
     this.attentionService = Objects.requireNonNull(attentionService);
@@ -383,6 +412,7 @@ public final class WorkstreamService {
     this.promptRiskReviewService = new AgentAdminPromptRiskReviewService(Objects.requireNonNull(promptRiskReviewTaskRepository), authContextResolver, Clock.systemUTC(), attentionProducerService, workstreamEventPublisher, Objects.requireNonNull(promptRiskAutonomousAgentRuntime));
     this.agentRuntimeService = agentRuntimeService;
     this.workstreamAgentRuntimeInvoker = Objects.requireNonNull(workstreamAgentRuntimeInvoker);
+    this.surfaceIntentRouter = Objects.requireNonNull(surfaceIntentRouter);
     this.workstreamLogRepository = Objects.requireNonNull(workstreamLogRepository);
     this.workstreamEventRepository = workstreamEventRepository == null ? new EmptyWorkstreamEventRepository() : workstreamEventRepository;
     this.auditTraceService = new AuditTraceService(authContextResolver, Objects.requireNonNull(auditTraceRepository));
@@ -1392,6 +1422,11 @@ public final class WorkstreamService {
       return new WorkstreamMessageResponse(existing.correlationId(), existing.idempotencyKey(), existing.userItem(), existing.agentItem(), existing.surface());
     }
 
+    var routed = surfaceIntentRouter.route(new SurfaceIntentRouter.Request(request.functionalAgentId(), request.prompt(), actor.selectedContext(), requestCorrelationId));
+    if (routed.isPresent()) {
+      return routedSurfaceMessageResponse(actor, functionalAgent, workstreamScopeId, request, requestCorrelationId, routed.orElseThrow());
+    }
+
     var runtime = workstreamAgentRuntimeInvoker.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest(
         runtimeGovernanceScopeId, runtimeAgentDefinitionId(request.functionalAgentId()), actor.selectedContext(), requestCorrelationId, request.prompt()));
     var responseSeed = firstNonBlank(request.idempotencyKey(), requestCorrelationId, request.functionalAgentId());
@@ -1411,6 +1446,51 @@ public final class WorkstreamService {
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
 
+  private WorkstreamMessageResponse routedSurfaceMessageResponse(AuthContextResolver.ResolvedMe actor, MeResponse.FunctionalAgentSummary functionalAgent, String workstreamScopeId, WorkstreamMessageRequest request, String correlationId, SurfaceIntentRouter.Result route) {
+    if (!Objects.equals(request.functionalAgentId(), route.functionalAgentId())) throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
+    var surface = dynamicSurface(actor, route.targetSurfaceId(), correlationId);
+    if (surface == null) throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
+    var responseSeed = firstNonBlank(request.idempotencyKey(), correlationId, request.functionalAgentId(), route.targetSurfaceId());
+    var userItemId = "item-message-user-" + stableSuffix(responseSeed + ":user");
+    var agentItemId = "item-surface-route-" + stableSuffix(responseSeed + ":surface-route");
+    var now = Instant.now().toString();
+    var traceIds = routeTraceIds(route, surface, responseSeed);
+    enrichRoutedSurface(surface, route, agentItemId, traceIds, correlationId);
+    var userItem = new WorkstreamItem(userItemId, request.functionalAgentId(), "user-request", now, correlationId, traceIds, null, null, request.prompt(), "ready");
+    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "surface_intent_route", now, correlationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Opened " + surface.title() + " from your request. No changes were made; review the surface and submit an authorized action when ready.", "ready");
+    var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, surface));
+    return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
+  }
+
+  private void enrichRoutedSurface(SurfaceEnvelope surface, SurfaceIntentRouter.Result route, String itemId, List<String> traceIds, String correlationId) {
+    var routeSummary = mapOf(
+        "routerContract", "surface_intent_route.v1",
+        "functionalAgentId", route.functionalAgentId(),
+        "targetSurfaceId", route.targetSurfaceId(),
+        "sourcePrompt", route.sourcePrompt(),
+        "canonicalPrompt", route.canonicalPrompt(),
+        "category", route.category(),
+        "confidence", route.confidence(),
+        "prefill", route.prefill(),
+        "noMutation", route.noMutation(),
+        "sideEffect", "none",
+        "workstreamEntryId", itemId,
+        "correlationId", correlationId,
+        "traceRefs", traceIds,
+        "metadata", route.metadata());
+    surface.data().put("surfaceIntentRoute", routeSummary);
+    surface.data().put("prefill", route.prefill());
+    surface.data().put("noDirectMutation", true);
+    surface.data().put("lastResult", mapOf("status", "routed", "message", "Surface opened from a deterministic no-mutation router. Review and submit an authorized action to make changes.", "noMutation", true, "sideEffect", "none", "correlationId", correlationId, "traceRefs", traceIds));
+  }
+
+  private List<String> routeTraceIds(SurfaceIntentRouter.Result route, SurfaceEnvelope surface, String responseSeed) {
+    var traceIds = new LinkedHashSet<String>();
+    traceIds.addAll(route.traceIds());
+    traceIds.addAll(surface.traceIds());
+    if (traceIds.isEmpty()) traceIds.add("trace-surface-intent-route-" + stableSuffix(responseSeed + ":trace"));
+    return List.copyOf(traceIds);
+  }
 
   private String runtimeAgentDefinitionId(String functionalAgentId) {
     return AGENT_ADMIN_AGENT_ID.equals(functionalAgentId) ? AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID : functionalAgentId;

@@ -1718,6 +1718,52 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void submitMessageRoutesMatchedSurfaceIntentBeforeModelInvocation() {
+    var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "my-account-agent", "open my account dashboard", "corr-route-my-account", "idem-route-my-account"), "corr-header");
+
+    assertEquals("corr-route-my-account", response.correlationId());
+    assertEquals("user-request", response.userItem().kind());
+    assertEquals("surface_intent_route", response.agentItem().kind());
+    assertEquals("ready", response.agentItem().status());
+    assertEquals("surface-my-account-dashboard", response.surface().surfaceId());
+    assertEquals(response.surface().surfaceId(), response.agentItem().surfaceId());
+    assertTrue(response.agentItem().body().contains("No changes were made"));
+    assertEquals(0, trackingRuntimeInvoker.invocationCount(), "Matched deterministic surface routes must not invoke the model-backed runtime");
+    assertEquals(true, response.surface().data().get("noDirectMutation"));
+    @SuppressWarnings("unchecked")
+    var route = (Map<String, Object>) response.surface().data().get("surfaceIntentRoute");
+    assertNotNull(route);
+    assertEquals("surface_intent_route.v1", route.get("routerContract"));
+    assertEquals("my-account-agent", route.get("functionalAgentId"));
+    assertEquals("surface-my-account-dashboard", route.get("targetSurfaceId"));
+    assertEquals("open my account dashboard", route.get("canonicalPrompt"));
+    assertEquals(true, route.get("noMutation"));
+    assertEquals("none", route.get("sideEffect"));
+    assertEquals(Map.of(), route.get("prefill"));
+    assertTrue(response.surface().data().get("lastResult").toString().contains("noMutation=true"));
+    assertBrowserPayloadSafe(response.surface());
+
+    var persistedItems = service.items(identity(), "membership-admin", "my-account-agent", "corr-route-read");
+    assertTrue(persistedItems.stream().anyMatch(item -> item.itemId().equals(response.agentItem().itemId()) && item.kind().equals("surface_intent_route")));
+    var persistedSurface = service.surface(identity(), "membership-admin", response.surface().surfaceId(), "corr-route-read");
+    assertEquals("surface-my-account-dashboard", persistedSurface.surfaceId());
+    assertEquals("surface_intent_route.v1", ((Map<?, ?>) persistedSurface.data().get("surfaceIntentRoute")).get("routerContract"));
+  }
+
+  @Test
+  void submitMessageLeavesUnmatchedPromptOnGovernedModelFallback() {
+    var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "user-admin-agent", "What can I do next?", "corr-fallback-message", "idem-fallback-message"), "corr-header");
+
+    assertEquals("markdown_response", response.agentItem().kind());
+    assertEquals("markdown_response", response.surface().surfaceType());
+    assertTrue(response.surface().data().get("markdown").toString().contains("## user-admin-agent model response"));
+    assertNull(response.surface().data().get("surfaceIntentRoute"));
+    assertEquals(1, trackingRuntimeInvoker.invocationCount(), "Unmatched prompts must preserve the governed model-backed runtime path");
+  }
+
+  @Test
   void submitMessageSupportsSaasOwnerTenantAndCustomerRuntimeScopes() {
     var ownerResponse = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
         "membership-owner", "user-admin-agent", "create organization \"Org 1\" and invite user mckee.hugh@gmail.com as an org admin", "corr-owner-message", "idem-owner-message"), "corr-owner-header");
