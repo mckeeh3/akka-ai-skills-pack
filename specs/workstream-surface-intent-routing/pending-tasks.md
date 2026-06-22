@@ -208,7 +208,7 @@
 
 ### TASK-SIR-05-001: Add core surface catalog metadata
 
-- status: pending
+- status: done
 - source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
 - task brief: specs/workstream-surface-intent-routing/tasks/05-surface-catalog/01-add-core-surface-catalog-metadata.md
 - depends on:
@@ -238,6 +238,11 @@
   - catalog entries cover current core surfaces sufficiently for high-confidence open/prefill routing
   - deferred or ambiguous surfaces are explicitly noted
   - changes and queue update are committed
+- notes:
+  - added app-description-owned authority-neutral core surface catalog metadata for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, including prompt examples, required capability hints, prefill fields, forbidden direct effects, deferred/ambiguous routing notes, and current router/catalog mapping
+  - commands run: `git diff --check` (passed); `for id in my-account-agent user-admin-agent agent-admin-agent audit-trace-agent governance-policy-agent; do if grep -q "catalog-workstream: \`$id\`" app-description/domains/core-starter/workstreams/surface-catalog.md; then echo "$id catalog-present"; else echo "$id missing"; exit 1; fi; done` (passed); `grep -n "Router/catalog mapping\|route-user-admin-organization-create-v1\|surface-user-admin-organization-create\|surface-governance-policy-dashboard" app-description/domains/core-starter/workstreams/surface-catalog.md | head -20` (passed)
+  - targeted tests were not run because the catalog is app-description documentation only and no code-owned router behavior changed
+  - commit message: `surface-intent-routing: add core surface catalog`
 
 ### TASK-SIR-06-001: Expand routing to all core workstreams
 
