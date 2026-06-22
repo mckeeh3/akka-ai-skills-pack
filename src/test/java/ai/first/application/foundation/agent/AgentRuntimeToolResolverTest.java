@@ -14,6 +14,7 @@ import ai.first.application.foundation.governance.InMemoryTestGovernancePolicyRe
 import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.attention.InMemoryTestAttentionRepository;
 import ai.first.application.foundation.workstream.InMemoryTestWorkstreamLogRepository;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 import ai.first.application.foundation.invitation.InMemoryTestInvitationRepository;
 import ai.first.application.foundation.invitation.InvitationService;
 import ai.first.application.foundation.invitation.InvitationView;
@@ -52,7 +53,9 @@ class AgentRuntimeToolResolverTest {
   @BeforeEach
   void setUp() {
     repository = new InMemoryTestAgentBehaviorRepository();
-    new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
+    var seedLoader = new AgentBehaviorSeedLoader(repository, fixedClock());
+    seedLoader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
+    seedLoader.importStarterDefaults(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, "bootstrap-platform", "corr-seed-platform");
     var identityRepository = new InMemoryTestIdentityRepository();
     var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(identityRepository), fixedClock(), new OpenAiModelProviderClient(), new InMemoryTestAgentRuntimeTraceSink());
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
@@ -84,6 +87,66 @@ class AgentRuntimeToolResolverTest {
     assertTrue(resolved.runtimeTools().stream().anyMatch(UserAdminEvidenceTools.class::isInstance));
     var binding = resolved.runtimeTools().stream().filter(AgentRuntimeLoaderTools.class::isInstance).map(AgentRuntimeLoaderTools.class::cast).findFirst().orElseThrow();
     assertTrue(binding.readSkill("ua.access-review-triage.v1").contains("authority_note=Skill content is internal guidance only"));
+  }
+
+  @Test
+  void resolvesSaasOwnerPlatformRuntimeToolsWithoutTenantMismatch() {
+    var saasOwner = new AuthContext(
+        "owner-1",
+        "workos-owner-1",
+        "membership-owner",
+        ScopeType.SAAS_OWNER,
+        null,
+        null,
+        List.of(FoundationRole.SAAS_OWNER_ADMIN),
+        List.of("saas_owner.admin.manage", "saas_owner.tenant.manage", "saas_owner.tenant.read"));
+
+    var resolved = resolver.resolve(new ResolveRuntimeToolsRequest(
+        WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID,
+        AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+        saasOwner,
+        "runtime",
+        "saas_owner.admin.manage",
+        "corr-platform-tools"));
+
+    assertTrue(resolved.grantedToolIds().contains("readSkill"));
+    assertTrue(resolved.grantedToolIds().contains("readReferenceDoc"));
+    assertFalse(resolved.runtimeTools().isEmpty());
+  }
+
+  @Test
+  void rejectsTenantRuntimeToolsWhenSelectedAuthContextBelongsToAnotherTenant() {
+    var mismatch = assertThrows(AuthorizationException.class, () -> resolver.resolve(new ResolveRuntimeToolsRequest(
+        "tenant-other",
+        AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+        tenantAdmin,
+        "runtime",
+        AgentRuntimeService.INVOKE_CAPABILITY,
+        "corr-mismatch")));
+
+    assertEquals("runtime-tool-tenant-mismatch", mismatch.reasonCode());
+  }
+
+  @Test
+  void userAdminEvidenceToolSupportsSaasOwnerPlatformScopeWithoutTenantNpe() {
+    var identityRepository = seededIdentityRepository();
+    identityRepository.saveAccount(new Account("owner-1", "workos-owner-1", "owner@example.test", "owner@example.test", AccountStatus.ACTIVE, "LINKED"));
+    identityRepository.putProfile(new UserProfile("owner-1", "owner@example.test", "SaaS Owner", "SaaS", "Owner", null));
+    identityRepository.putSettings(new UserSettings("owner-1", UserSettings.ThemeId.AURORA_LIGHT));
+    identityRepository.putMembership(new Membership("membership-owner", "owner-1", ScopeType.SAAS_OWNER, null, null, List.of(FoundationRole.SAAS_OWNER_ADMIN), MembershipStatus.ACTIVE, false, null));
+    var saasOwner = new AuthContext("owner-1", "workos-owner-1", "membership-owner", ScopeType.SAAS_OWNER, null, null, List.of(FoundationRole.SAAS_OWNER_ADMIN), List.of("saas_owner.admin.manage", "saas_owner.audit.read"));
+    var userAdminService = new UserAdminService(identityRepository, fixedClock());
+    var invitationService = new InvitationService(identityRepository, new InMemoryTestInvitationRepository(), fixedClock());
+    var tool = new UserAdminEvidenceTools(identityRepository, userAdminService, new InvitationView(invitationService), saasOwner, "corr-owner-evidence");
+
+    var evidence = tool.read("create organization request tenantId=platform; no direct mutation");
+
+    assertTrue(evidence.contains("tool_id=userAdminEvidence.read"));
+    assertTrue(evidence.contains("capability=saas_owner.admin.manage"));
+    assertTrue(evidence.contains("selectedTenantId=null"));
+    assertTrue(evidence.contains("memberCount=1"));
+    assertTrue(evidence.contains("trace-useradmin-evidence"));
+    assertFalse(evidence.toLowerCase().contains("tokenhash"));
   }
 
   @Test

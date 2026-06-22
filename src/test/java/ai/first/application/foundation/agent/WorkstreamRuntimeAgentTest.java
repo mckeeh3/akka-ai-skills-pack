@@ -8,10 +8,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import ai.first.application.foundation.identity.BootstrapAdminSeeder;
 import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.identity.StarterSecurityComponents;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
+import ai.first.domain.foundation.identity.Account;
+import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.identity.AuthContext;
 import ai.first.domain.foundation.identity.FoundationRole;
+import ai.first.domain.foundation.identity.Membership;
+import ai.first.domain.foundation.identity.MembershipStatus;
 import ai.first.domain.foundation.identity.ScopeType;
+import ai.first.domain.foundation.identity.UserProfile;
+import ai.first.domain.foundation.identity.UserSettings;
 import akka.javasdk.JsonSupport;
 import akka.javasdk.testkit.TestKit;
 import akka.javasdk.testkit.TestKitSupport;
@@ -45,10 +52,15 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
   void bindIdentityTestDouble() {
     var identityRepository = new InMemoryTestIdentityRepository();
     BootstrapAdminSeeder.seedFixtureAdmins(identityRepository, "admin@example.test:TENANT_ADMIN:" + TENANT_ID);
+    identityRepository.saveAccount(new Account("owner@example.test", "workos-owner", "owner@example.test", "owner@example.test", AccountStatus.ACTIVE, "LINKED"));
+    identityRepository.putProfile(new UserProfile("owner@example.test", "owner@example.test", "SaaS Owner", "SaaS", "Owner", null));
+    identityRepository.putSettings(new UserSettings("owner@example.test", UserSettings.ThemeId.AURORA_LIGHT));
+    identityRepository.putMembership(new Membership("membership-owner", "owner@example.test", ScopeType.SAAS_OWNER, null, null, List.of(FoundationRole.SAAS_OWNER_ADMIN), MembershipStatus.ACTIVE, false, null));
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
     StarterSecurityComponents.bindTestAgentBehaviorRepository(new InMemoryTestAgentBehaviorRepository());
     StarterSecurityComponents.bindTestAgentRuntimeTraceSink(new InMemoryTestAgentRuntimeTraceSink());
     StarterSecurityComponents.agentBehaviorSeedLoader().importStarterDefaults(TENANT_ID, "test-bootstrap", "corr-workstream-agent-seed");
+    StarterSecurityComponents.agentBehaviorSeedLoader().importStarterDefaults(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, "test-platform-bootstrap", "corr-workstream-platform-agent-seed");
     StarterSecurityComponents.startup();
   }
 
@@ -86,6 +98,40 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
     assertTrue(response.markdown().contains("## User Admin"));
     assertTrue(response.safety().contains("without provider secrets"));
     assertTrue(response.trace().contains("trace-prompt-1"));
+  }
+
+  @Test
+  void saasOwnerPlatformScopeResolvesRuntimeToolsBeforeModelInvocation() {
+    workstreamRuntimeModelTestProvider.fixedResponse(
+        JsonSupport.encodeToString(
+            new WorkstreamRuntimeAgent.MarkdownResponse(
+                "## User Admin\n\nPlatform-scoped Organization administration request accepted by governed runtime tools.",
+                "user-admin-agent",
+                "corr-platform-agent-runtime",
+                "safe markdown_response generated without tenant-required tool denial",
+                "platform runtime tool context resolved")));
+
+    var response =
+        componentClient
+            .forAgent()
+            .inSession("workstream-runtime-platform-agent-test-session")
+            .method(WorkstreamRuntimeAgent::respond)
+            .invoke(
+                new WorkstreamRuntimeAgent.GovernedWorkstreamRequest(
+                    "# Governed prompt\nUse SaaS Owner platform authority only.",
+                    MODEL_ALIAS,
+                    WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID,
+                    AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+                    saasOwnerAdmin(),
+                    "runtime",
+                    "saas_owner.admin.manage",
+                    "corr-platform-agent-runtime",
+                    "create organization \"Org 1\" and invite user mckee.hugh@gmail.com as an org admin",
+                    List.of("trace-platform-prompt")));
+
+    assertEquals("user-admin-agent", response.producingAgentId());
+    assertEquals("corr-platform-agent-runtime", response.correlationId());
+    assertTrue(response.markdown().contains("Platform-scoped Organization administration"));
   }
 
   @Test
@@ -425,6 +471,18 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
         null,
         List.of(FoundationRole.TENANT_ADMIN),
         List.of("agent.user_admin.use", "agent.behavior.manage", "tenant.user.read", "tenant.audit.read"));
+  }
+
+  private static AuthContext saasOwnerAdmin() {
+    return new AuthContext(
+        "owner@example.test",
+        "workos-owner",
+        "membership-owner",
+        ScopeType.SAAS_OWNER,
+        null,
+        null,
+        List.of(FoundationRole.SAAS_OWNER_ADMIN),
+        List.of("saas_owner.admin.manage", "saas_owner.tenant.manage", "saas_owner.tenant.read"));
   }
 
   private static AuthContext auditTraceAdmin() {

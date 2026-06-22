@@ -1,6 +1,7 @@
 package ai.first.application.foundation.agent;
 
 import ai.first.application.foundation.identity.AuthorizationException;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.ToolCatalogEntry;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
@@ -35,7 +36,7 @@ public final class AgentRuntimeToolResolver {
     if (isBlank(request.tenantId()) || isBlank(request.agentDefinitionId()) || isBlank(request.mode()) || isBlank(request.capabilityId()) || isBlank(request.correlationId())) {
       throw new AuthorizationException(403, "runtime-tool-context-incomplete");
     }
-    if (!request.tenantId().equals(request.authContext().tenantId())) {
+    if (!runtimeScopeMatchesAuthContext(request.tenantId(), request.authContext())) {
       throw new AuthorizationException(403, "runtime-tool-tenant-mismatch");
     }
     var agent = repository.agentDefinition(request.tenantId(), request.agentDefinitionId())
@@ -80,6 +81,14 @@ public final class AgentRuntimeToolResolver {
       }
     }
     return new ResolvedRuntimeTools(List.copyOf(runtimeTools), List.copyOf(entries), List.copyOf(grantedToolIds), List.copyOf(deniedToolIds));
+  }
+
+  private boolean runtimeScopeMatchesAuthContext(String runtimeGovernanceScopeId, AuthContext authContext) {
+    if (authContext.scopeType() == ai.first.domain.foundation.identity.ScopeType.SAAS_OWNER) {
+      return WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID.equals(runtimeGovernanceScopeId)
+          && (authContext.tenantId() == null || authContext.tenantId().isBlank());
+    }
+    return runtimeGovernanceScopeId.equals(authContext.tenantId());
   }
 
   private String bindingGroup(ToolCatalogEntry entry) {
