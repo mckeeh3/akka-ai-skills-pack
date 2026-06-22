@@ -14,7 +14,8 @@ Durable personal notification, workstream attention, dashboard-count, and source
 - Hidden or unauthorized source items are omitted or summarized only as allowed by redaction policy; they never leak source object ids, hidden workstream names, hidden counts, or cross-tenant/customer facts.
 - Snooze has an explicit backend expiry and reactivates only if the source item still needs attention and remains visible to the user.
 - Expired notifications remain available only as audit/read-history evidence where policy permits; they are not active attention.
-- Notification preferences are account-scoped UX preferences and cannot disable mandatory security, provider-failure, invitation, approval, or audit notifications required by policy.
+- Notification preferences are account-scoped UX preferences and cannot disable mandatory security, provider-failure, invitation, approval, or audit in-app notifications required by policy.
+- Email notifications are foundation-scoped to invitations only. Approval-required, provider/outbox/model blocked, access-review ready, audit/export approval, policy activation/rollback, and other foundation attention events remain in-app unless a later accepted intent change adds email contracts, authorization, traces, and tests.
 
 ## Source ownership
 

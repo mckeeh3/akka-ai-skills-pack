@@ -6,7 +6,10 @@ Let authorized auditors, admins, supervisors, and policy owners search, inspect,
 
 ## Actors and scope
 
-- Auditor and authorized admins inspect evidence within selected tenant/customer scope.
+- SaaS Owner Admins inspect app-owner/platform evidence and Organization administration traces visible from a SaaS Owner selected `AuthContext`.
+- Organization/Tenant Admins inspect Organization-scoped evidence, including customer-boundary administration evidence inside that Organization.
+- Customer Admins inspect only selected Customer-scoped evidence.
+- Auditors and policy owners inspect scoped evidence where explicitly granted.
 - Audit/Trace functional agent can summarize and explain trace timelines from authorized evidence.
 - Internal audit summary workers may prepare redacted summaries and investigation notes.
 
@@ -31,9 +34,9 @@ Trace visibility is scoped, redacted, and permissioned. Unauthorized callers mus
 
 ## Outcomes
 
-In scope: durable investigation evidence, correlation continuity, redacted timelines, export governance, trace links from workstream items, and diagnosable denial/provider failures.
+In scope: durable investigation evidence, correlation continuity, redacted timelines, configurable retention, export governance, trace links from workstream items, and diagnosable denial/provider failures. Default audit/work trace retention is one year. Retention is configurable at app/SaaS-owner, Organization, and Customer layers; Organization Admins may set Customer-level retention for Customers in their Organization when policy permits. Approved exports are available after approval, but bundle contents are limited to redacted evidence still retained and available at export generation/download time.
 
-Out of scope: raw secret/provider payload exposure, unredacted exports by default, and audit access based only on frontend navigation.
+Out of scope: raw secret/provider payload exposure, unredacted exports in all cases, and audit access based only on frontend navigation.
 
 ## Linked graph nodes
 

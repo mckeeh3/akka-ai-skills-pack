@@ -26,7 +26,7 @@ Let authorized policy owners and approvers propose, simulate, review, decide, ac
 
 ## Authorization and denials
 
-Policy commits, approval gates, thresholds, and authority expansions require backend-enforced roles/capabilities and approval records. Agents may recommend or draft but not autonomously weaken security, expand authority, or activate high-impact changes.
+Policy commits, approval gates, thresholds, and authority expansions require backend-enforced roles/capabilities and approval records. The same authorized human may draft and approve a policy change unless a specific policy adds stricter separation of duties. High-risk changes require two approvers when multiple eligible approvers are available in the selected scope; if only one eligible approver exists, the single-approver path is allowed but must record that no second approver was available. High-risk categories include role/capability expansion, support-access policy changes, agent tool-boundary changes, model/provider configuration changes, audit export policy changes, and other authority-expanding or security-impacting governance changes. Agents may recommend or draft but not autonomously weaken security, expand authority, or activate high-impact changes.
 
 ## Capability contract
 

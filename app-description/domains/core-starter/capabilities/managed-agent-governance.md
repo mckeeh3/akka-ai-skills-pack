@@ -34,7 +34,7 @@ Backend policy, version state, approval gates, platform/tenant/customer scope, `
 
 ## Outcomes
 
-In scope: governed behavior lifecycle, compact expertise manifests, loader denials/traces, seed provenance, customization-preserving upgrades, safe model provider boundary, and behavior change decision cards.
+In scope: active default managed agents for the five foundation workstreams, governed behavior lifecycle, compact expertise manifests, loader denials/traces, seed provenance, customization-preserving upgrades, safe model provider boundary, serious missing-provider runtime blockers, and behavior change decision cards.
 
 Out of scope: arbitrary Java class registration from tenant content, unapproved tool expansion, preloading all skill/reference text into prompts, and model-less runtime substitutes for model-backed behavior.
 
