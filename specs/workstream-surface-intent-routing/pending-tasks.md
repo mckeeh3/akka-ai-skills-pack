@@ -168,7 +168,7 @@
 
 ### TASK-SIR-04-001: Add no-model routing tests
 
-- status: pending
+- status: done
 - source: specs/workstream-surface-intent-routing/backlog/01-surface-intent-routing-build-backlog.md
 - task brief: specs/workstream-surface-intent-routing/tasks/04-tests/01-add-no-model-routing-tests.md
 - depends on:
@@ -200,6 +200,11 @@
   - tests fail if Organization creation happens before surface submit
   - tests prove ambiguous/unmatched prompts still use the governed fallback path
   - changes and queue update are committed
+- notes:
+  - strengthened backend no-model routing coverage for matched User Admin Organization create route, fallback route, unauthorized selected-context mismatch, and no mutation before form submit
+  - added frontend contract coverage for routed response handling and Organization Create routed prefill rendering without client-side mutation or auto-submit
+  - commands run: `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageRoutesUserAdminSurfaceIntentsWithSafePrefillAndNoMutation,ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageFallsBackSafelyForUnauthorizedOrAmbiguousUserAdminSurfacePrompts,ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageLeavesUnmatchedPromptOnGovernedModelFallback,ai.first.application.coreapp.workstream.WorkstreamServiceTest#submitMessageRequiresSelectedContextMatch test` (passed); `npm --prefix frontend test -- --run` (passed); `npm --prefix frontend run typecheck` (passed); `git diff --check` (passed)
+  - commit message: `surface-intent-routing: add no-model routing tests`
 
 ### TASK-SIR-05-001: Add core surface catalog metadata
 

@@ -70,6 +70,18 @@ test('composer response appends returned items and markdown_response surface', (
   assert.match(apiContract, /agentItem: WorkstreamItem/);
 });
 
+test('composer accepts backend routed surface responses without client-side mutation or model branching', () => {
+  assert.match(apiContract, /export type WorkstreamMessageResponse = \{[\s\S]*agentItem: WorkstreamItem;[\s\S]*surface: SurfaceEnvelope<unknown>;/);
+  assert.match(main, /const \{ userItem, agentItem, surface \} = result\.value/);
+  assert.match(main, /const traceableAgentItem: WorkstreamItem = \{\s*\.\.\.agentItem,/);
+  assert.match(main, /selectedSurfaceId: surface\.surfaceId/);
+  assert.match(main, /const nextSurfaces = current\.surfaces\.some\(\(candidate\) => candidate\.surfaceId === surface\.surfaceId\)[\s\S]*: \[\.\.\.current\.surfaces, surface\]/);
+  assert.match(main, /items: pruneWorkstreamItems\(\[\.\.\.current\.items\.filter\(\(item\) => item\.itemId !== userRequestItem\.itemId\), userItem, traceableAgentItem\]\)/);
+  assert.match(itemCard, /className=\{`ds-card workstream-item \$\{item\.kind\}`\}/);
+  assert.match(itemCard, /Open structured view/);
+  assert.doesNotMatch(main, /if \(agentItem\.kind === 'surface_intent_route'\)[\s\S]*runCapabilityAction|action-submit-organization-create|createOrganization\(/);
+});
+
 test('composer acknowledges prompts immediately as request surfaces and scrolls them to the top', () => {
   assert.match(main, /const \[requestScrollTargetBySessionKey, setRequestScrollTargetBySessionKey\] = React\.useState<Record<string, string \| undefined>>\(\{\}\)/);
   assert.match(main, /const userRequestItem: WorkstreamItem = \{/);

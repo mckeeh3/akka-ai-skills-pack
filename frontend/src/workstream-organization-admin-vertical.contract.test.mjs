@@ -80,6 +80,20 @@ test('Organization Admin frontend contract proves dashboard-to-organization-bran
   assert.doesNotMatch(`${surfaces}\n${organizationSurface}\n${main}\n${apiClient}\n${httpApiClient}`, /Authorization:\s*Bearer|RESEND_API_KEY|sk-secret|api_key=|tenant\/customer application data/);
 });
 
+test('Organization Admin routed create prefill renders as review-only draft data', () => {
+  assert.match(workstreamService, /surface-user-admin-organization-create/);
+  assert.match(workstreamService, /surface\.data\(\)\.put\("prefill", route\.prefill\(\)\)/);
+  assert.match(workstreamService, /form\.put\("organizationNameDraft", organizationName\)/);
+  assert.match(workstreamService, /form\.put\("prefillReviewRequired", true\)/);
+  assert.match(workstreamService, /Surface opened from a deterministic no-mutation router\. You must review and submit an authorized action to make changes\./);
+  assert.match(organizationSurface, /firstNonEmptyFormValue\(form\?\.organizationNameDraft, draft\?\.organizationName, browserSafePrefillString\(envelope\.data, 'organizationName'\)\)/);
+  assert.match(organizationSurface, /hasRoutedPrefill\(envelope\.data\)/);
+  assert.match(organizationSurface, /routedPrefillMessage\(envelope\.data\)/);
+  assert.match(organizationSurface, /value=\{createName\} onChange=\{\(event\) => setCreateName\(event\.currentTarget\.value\)\} required/);
+  assert.match(organizationSurface, /run\(envelope, onAction, submitActionId, \{ organizationName: createName\.trim\(\), reason: reason\.trim\(\), idempotencyKey: idempotencyKey\('create', createName\) \}\)/);
+  assert.doesNotMatch(organizationSurface, /useEffect\(\(\) => .*action-submit-organization-create|onChange=\{\(event\) => run\(|createOrganization\(/);
+});
+
 test('Organization Admin renderer covers safe states, forms, and inaccessible role denials', () => {
   assert.match(renderer, /OrganizationAdminSurface/);
   assert.match(organizationSurface, /Organization Admin is unavailable for this selected context/);

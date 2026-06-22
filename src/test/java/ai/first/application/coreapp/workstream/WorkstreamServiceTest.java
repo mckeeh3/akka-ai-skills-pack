@@ -1754,6 +1754,7 @@ class WorkstreamServiceTest {
   @Test
   @SuppressWarnings("unchecked")
   void submitMessageRoutesUserAdminSurfaceIntentsWithSafePrefillAndNoMutation() {
+    var tenantCountBeforeRoute = identityRepository.tenantRows().size();
     var create = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
         "membership-owner", "user-admin-agent", "create organization \"Org 1\"", "corr-route-org-create", "idem-route-org-create"), "corr-header");
 
@@ -1762,14 +1763,21 @@ class WorkstreamServiceTest {
     assertEquals("create-form", create.surface().surfaceType());
     assertTrue(create.agentItem().body().contains("must review the surface and submit"));
     assertEquals(0, trackingRuntimeInvoker.invocationCount(), "Matched User Admin surface routes must not invoke the model-backed runtime");
+    assertNull(trackingRuntimeInvoker.lastRequest(), "Matched User Admin surface routes must never build a model runtime invocation request");
     assertEquals(true, create.surface().data().get("noDirectMutation"));
     var createRoute = (Map<String, Object>) create.surface().data().get("surfaceIntentRoute");
+    assertEquals("surface_intent_route.v1", createRoute.get("routerContract"));
+    assertEquals("surface_create_prefill", createRoute.get("category"));
+    assertEquals(true, createRoute.get("noMutation"));
+    assertEquals("none", createRoute.get("sideEffect"));
     assertEquals("route-user-admin-organization-create-v1", ((Map<?, ?>) createRoute.get("metadata")).get("routeId"));
+    assertEquals("membership-owner", ((Map<?, ?>) createRoute.get("metadata")).get("selectedContextId"));
     assertEquals("Org 1", ((Map<?, ?>) createRoute.get("prefill")).get("organizationName"));
     assertEquals("Org 1", ((Map<?, ?>) create.surface().data().get("prefill")).get("organizationName"));
     assertEquals("Org 1", ((Map<?, ?>) create.surface().data().get("draft")).get("organizationName"));
     assertEquals("Org 1", ((Map<?, ?>) create.surface().data().get("form")).get("organizationNameDraft"));
     assertEquals(true, ((Map<?, ?>) create.surface().data().get("form")).get("prefillReviewRequired"));
+    assertEquals(tenantCountBeforeRoute, identityRepository.tenantRows().size(), "Router must not create an Organization before the user submits the form action");
     assertFalse(identityRepository.tenantRows().stream().anyMatch(tenant -> "Org 1".equals(tenant.displayName())), "Router must not create an Organization before the user submits the form action");
     assertBrowserPayloadSafe(create.surface());
 
@@ -1813,6 +1821,8 @@ class WorkstreamServiceTest {
     assertEquals("markdown_response", ambiguous.surface().surfaceType());
     assertNull(ambiguous.surface().data().get("surfaceIntentRoute"));
     assertEquals(2, trackingRuntimeInvoker.invocationCount(), "Ambiguous multi-target prompts must preserve the governed model-backed fallback");
+    assertEquals("user-admin-agent", trackingRuntimeInvoker.lastRequest().agentDefinitionId());
+    assertEquals("create organization \"Org 2\" and invite user alice@example.com", trackingRuntimeInvoker.lastRequest().userInput());
   }
 
   @Test
@@ -1825,6 +1835,8 @@ class WorkstreamServiceTest {
     assertTrue(response.surface().data().get("markdown").toString().contains("## user-admin-agent model response"));
     assertNull(response.surface().data().get("surfaceIntentRoute"));
     assertEquals(1, trackingRuntimeInvoker.invocationCount(), "Unmatched prompts must preserve the governed model-backed runtime path");
+    assertEquals("user-admin-agent", trackingRuntimeInvoker.lastRequest().agentDefinitionId());
+    assertEquals("What can I do next?", trackingRuntimeInvoker.lastRequest().userInput());
   }
 
   @Test
@@ -2191,9 +2203,12 @@ class WorkstreamServiceTest {
   @Test
   void submitMessageRequiresSelectedContextMatch() {
     var mismatch = assertThrows(AuthorizationException.class, () -> service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
-        "membership-other", "user-admin-agent", "Hello", "corr-message", "idem-message-2"), "corr-header"));
+        "membership-other", "user-admin-agent", "create organization \"Forbidden Org\"", "corr-message", "idem-message-2"), "corr-header"));
 
     assertEquals("CONTEXT_FORBIDDEN", mismatch.reasonCode());
+    assertEquals(0, trackingRuntimeInvoker.invocationCount(), "Mismatched selected contexts must be rejected before router fallback or model runtime invocation");
+    assertNull(trackingRuntimeInvoker.lastRequest());
+    assertFalse(identityRepository.tenantRows().stream().anyMatch(tenant -> "Forbidden Org".equals(tenant.displayName())), "Rejected contexts must not mutate Organization/Tenant state");
   }
 
   @Test
