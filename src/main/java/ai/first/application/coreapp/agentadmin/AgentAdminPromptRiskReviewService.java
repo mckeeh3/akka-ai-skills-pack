@@ -55,18 +55,18 @@ public final class AgentAdminPromptRiskReviewService {
     if (blank(command.proposalId())) throw new AuthorizationException(400, "proposal-required");
     if (command.proposedDeltas().isEmpty()) throw new AuthorizationException(400, "proposal-deltas-required");
     require(actor, START_CAPABILITY, correlationId);
-    var duplicate = repository.findByIdempotencyKey(actor.selectedContext().tenantId(), actor.account().accountId(), command.idempotencyKey());
+    var duplicate = repository.findByIdempotencyKey(governanceScopeId(actor), actor.account().accountId(), command.idempotencyKey());
     if (duplicate.isPresent()) {
       authContextResolver.appendProtectedReadTrace(actor, START_CAPABILITY, "idempotent-prompt-risk-replay", correlationId);
       return duplicate.orElseThrow();
     }
     var now = Instant.now(clock);
-    var taskId = "prompt-risk-" + stableSuffix(actor.selectedContext().tenantId() + ":" + actor.account().accountId() + ":" + command.idempotencyKey());
+    var taskId = "prompt-risk-" + stableSuffix(governanceScopeId(actor) + ":" + actor.account().accountId() + ":" + command.idempotencyKey());
     var traceId = "trace-agent-admin-prompt-risk-start-" + stableSuffix(correlationId + ":" + taskId);
     var task = new PromptRiskReviewTask(
         taskId,
         null,
-        actor.selectedContext().tenantId(),
+        governanceScopeId(actor),
         actor.selectedContext().customerId(),
         command.targetAgentDefinitionId(),
         command.proposalId(),
@@ -171,22 +171,29 @@ public final class AgentAdminPromptRiskReviewService {
 
   private PromptRiskReviewTask task(AuthContextResolver.ResolvedMe actor, String taskId) {
     var task = repository.find(taskId).orElseThrow(() -> new AuthorizationException(404, "prompt-risk-task-not-found-or-forbidden"));
-    if (!Objects.equals(actor.selectedContext().tenantId(), task.tenantId())) throw new AuthorizationException(404, "prompt-risk-task-not-found-or-forbidden");
+    if (!Objects.equals(governanceScopeId(actor), task.tenantId())) throw new AuthorizationException(404, "prompt-risk-task-not-found-or-forbidden");
     if (actor.selectedContext().customerId() != null && !Objects.equals(actor.selectedContext().customerId(), task.customerId())) throw new AuthorizationException(404, "prompt-risk-task-not-found-or-forbidden");
     return task;
   }
 
   private void require(AuthContextResolver.ResolvedMe actor, String capabilityId, String correlationId) {
-    requireTenantOrganizationAdmin(actor);
-    authContextResolver.requireTenant(actor.selectedContext(), actor.selectedContext().tenantId());
+    requireAgentAdminOperator(actor);
     authContextResolver.requireCapability(actor.selectedContext(), capabilityId);
     authContextResolver.appendProtectedReadTrace(actor, capabilityId, "agent_admin.prompt_risk_review_task.v1", correlationId);
   }
 
-  private void requireTenantOrganizationAdmin(AuthContextResolver.ResolvedMe actor) {
-    if (actor.selectedContext().scopeType() != ScopeType.TENANT || !actor.selectedContext().roles().contains(FoundationRole.TENANT_ADMIN)) {
-      throw new AuthorizationException(403, "agent-admin-requires-tenant-admin");
-    }
+  private void requireAgentAdminOperator(AuthContextResolver.ResolvedMe actor) {
+    var context = actor.selectedContext();
+    if (context.scopeType() == ScopeType.SAAS_OWNER && context.roles().contains(FoundationRole.SAAS_OWNER_ADMIN)) return;
+    if (context.scopeType() == ScopeType.TENANT && context.roles().contains(FoundationRole.TENANT_ADMIN)) return;
+    throw new AuthorizationException(403, "agent-admin-requires-tenant-admin");
+  }
+
+  private static String governanceScopeId(AuthContextResolver.ResolvedMe actor) {
+    var context = actor.selectedContext();
+    return context.scopeType() == ScopeType.SAAS_OWNER
+        ? WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID
+        : context.tenantId();
   }
 
   private static List<String> evidenceRefs(StartPromptRiskReviewCommand command) {

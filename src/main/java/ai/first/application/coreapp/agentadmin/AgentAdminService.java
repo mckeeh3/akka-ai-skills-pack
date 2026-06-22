@@ -14,6 +14,7 @@ import ai.first.domain.foundation.agent.SkillDocument;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.identity.ScopeType;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -57,7 +58,7 @@ public final class AgentAdminService {
     var readinessFilter = safeFilter(input, "readiness", "").trim().toLowerCase(Locale.ROOT);
     var providerFilter = safeFilter(input, "providerReadiness", "").trim().toLowerCase(Locale.ROOT);
     var authorityFilter = safeFilter(input, "authorityTier", "").trim().toLowerCase(Locale.ROOT);
-    var allRows = repository.agentDefinitions(actor.selectedContext().tenantId()).stream()
+    var allRows = repository.agentDefinitions(governanceScopeId(actor)).stream()
         .sorted(Comparator.comparing(AgentDefinition::displayName))
         .map(agent -> catalogRow(actor, agent, correlationId))
         .toList();
@@ -68,7 +69,7 @@ public final class AgentAdminService {
         .filter(row -> providerFilter.isBlank() || providerFilter.equals(String.valueOf(row.get("providerModelReadinessCategory"))))
         .filter(row -> authorityFilter.isBlank() || authorityFilter.equals(String.valueOf(row.get("authorityTier")).toLowerCase(Locale.ROOT)))
         .toList();
-    var traceId = traceId("catalog", actor.selectedContext().tenantId(), correlationId);
+    var traceId = traceId("catalog", governanceScopeId(actor), correlationId);
     var providerSummary = providerReadinessSummary(actor);
     var readinessCounts = counts(allRows, "readinessState");
     var lifecycleCounts = counts(allRows, "lifecycleState");
@@ -90,9 +91,9 @@ public final class AgentAdminService {
         "surfaceContract", "agent_admin.catalog.v1",
         "surfaceContractAliases", List.of("surface.agent_admin.catalog.v1"),
         "catalogSummary", mapOf("surfaceId", "surface-agent-admin-catalog", "title", "Managed agent catalog", "type", "list-search", "contract", "agent_admin.catalog.v1", "selectedScopeLabel", scopeLabel(actor), "resultCount", filteredRows.size(), "filteredCount", filteredRows.size(), "totalVisibleCount", allRows.size(), "readinessCounts", readinessCounts, "lifecycleCounts", lifecycleCounts, "providerReadinessCounts", providerCounts, "seedCustomizationSummary", seedCustomizationSummary(allRows), "lastRefreshedAt", Instant.now().toString(), "emptyStateReason", emptyReason),
-        "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", actor.selectedContext().tenantId(), "organizationDisplayName", actor.selectedContext().tenantId(), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true),
+        "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", governanceScopeId(actor), "organizationDisplayName", governanceScopeId(actor), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true),
         "filters", filters,
-        "query", searchText.isBlank() ? "tenant:" + actor.selectedContext().tenantId() : searchText,
+        "query", searchText.isBlank() ? "tenant:" + governanceScopeId(actor) : searchText,
         "rows", filteredRows,
         "agents", filteredRows,
         "emptyState", mapOf("state", emptyReason == null ? "ready" : emptyReason, "reason", emptyReason == null ? "Authorized managed agents are visible." : (allRows.isEmpty() ? "No governed AgentDefinition records are seeded for this selected scope." : "No visible managed agents match the backend-validated filters."), "recoveryActions", emptyReason == null ? List.of() : List.of("action-agent-admin-reset-catalog-filters", "action-agent-admin-refresh-catalog")),
@@ -111,15 +112,15 @@ public final class AgentAdminService {
   public Map<String, Object> definitionDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String correlationId) {
     require(actor, GET_DEFINITION, correlationId, "agent_admin.detail.v1");
     var requestedAgentId = firstNonBlank(agentDefinitionId, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID);
-    var maybeAgent = repository.agentDefinition(actor.selectedContext().tenantId(), requestedAgentId);
+    var maybeAgent = repository.agentDefinition(governanceScopeId(actor), requestedAgentId);
     if (maybeAgent.isEmpty()) return hiddenOrStaleDetail(actor, requestedAgentId, correlationId);
 
     var agent = maybeAgent.orElseThrow();
-    var prompt = repository.promptDocument(actor.selectedContext().tenantId(), agent.promptDocumentId()).orElse(null);
-    var skillManifest = repository.skillManifest(actor.selectedContext().tenantId(), agent.skillManifestId()).orElse(null);
-    var referenceManifest = repository.referenceManifest(actor.selectedContext().tenantId(), agent.referenceManifestId()).orElse(null);
-    var boundary = repository.toolBoundary(actor.selectedContext().tenantId(), agent.toolBoundaryId()).orElse(null);
-    var model = repository.modelConfigRef(actor.selectedContext().tenantId(), agent.modelConfigRefId()).orElse(null);
+    var prompt = repository.promptDocument(governanceScopeId(actor), agent.promptDocumentId()).orElse(null);
+    var skillManifest = repository.skillManifest(governanceScopeId(actor), agent.skillManifestId()).orElse(null);
+    var referenceManifest = repository.referenceManifest(governanceScopeId(actor), agent.referenceManifestId()).orElse(null);
+    var boundary = repository.toolBoundary(governanceScopeId(actor), agent.toolBoundaryId()).orElse(null);
+    var model = repository.modelConfigRef(governanceScopeId(actor), agent.modelConfigRefId()).orElse(null);
     var provider = providerReadiness(actor, agent);
     var providerStatus = String.valueOf(provider.get("status"));
     var readinessState = "ready".equals(providerStatus) && agent.status() == AgentLifecycleStatus.ACTIVE ? "ready" : "blocked_provider_or_runtime";
@@ -152,9 +153,9 @@ public final class AgentAdminService {
         taskEntryPoint("action-agent-detail-open-model-refs", "Inspect model refs", "surface-agent-model-refs", GET_MODEL_REF, true, "Provider credentials redacted."),
         taskEntryPoint("action-agent-detail-run-test", "Run no-side-effect runtime test", "surface-agent-test-console", "agent_admin.draft_behavior_change", true, "Advisory test cannot activate behavior."),
         taskEntryPoint("action-agent-detail-open-prompt-risk-review", "Open prompt-risk review", "surface-agent-admin-prompt-risk-review", "agent_admin.prompt_risk_review.read", true, "Model-backed review fails closed when provider/runtime is unavailable."),
-        taskEntryPoint("action-agent-detail-open-activation", "Open activation confirmation", "surface-agent-activation-confirmation", "agent_admin.manage_definitions", "ready".equals(readinessState), "Separate approval/provider prerequisites required."),
-        taskEntryPoint("action-agent-detail-open-deactivation", "Open deactivation confirmation", "surface-agent-deactivation-confirmation", "agent_admin.manage_definitions", true, "Separate consequential confirmation required."),
-        taskEntryPoint("action-agent-detail-open-rollback", "Open rollback confirmation", "surface-agent-rollback-confirmation", "agent_admin.rollback_behavior_change", false, "Requires backend-visible activated proposal metadata."),
+        taskEntryPoint("action-agent-detail-open-activation", "Open activation confirmation", "surface-agent-activation-confirmation", "activate-agent-behavior-version", "ready".equals(readinessState), "Separate approval/provider prerequisites required."),
+        taskEntryPoint("action-agent-detail-open-deactivation", "Open deactivation confirmation", "surface-agent-deactivation-confirmation", "deactivate-agent-behavior-version", true, "Separate consequential confirmation required."),
+        taskEntryPoint("action-agent-detail-open-rollback", "Open rollback confirmation", "surface-agent-rollback-confirmation", "rollback-agent-behavior-version", false, "Requires backend-visible activated proposal metadata."),
         taskEntryPoint("action-agent-detail-open-trace", "Open redacted trace", "surface-agent-admin-trace", "audit.trace.read", true, "Raw trace evidence remains role-gated."),
         taskEntryPoint("action-agent-detail-back-to-catalog", "Back to catalog", "surface-agent-admin-catalog", LIST_DEFINITIONS, true, "Catalog filters remain backend-validated."));
     return mapOf(
@@ -165,7 +166,7 @@ public final class AgentAdminService {
         "recordKind", "AgentDefinition",
         "summary", "Backend-authoritative managed-agent readiness inspection; behavior and lifecycle changes must use separate governed tasks.",
         "detailSummary", mapOf("surfaceId", "surface-agent-admin-detail", "title", "Agent readiness/behavior inspection", "type", "show-inspection", "contract", "agent_admin.detail.v1", "selectedManagedAgentDisplayName", agent.displayName(), "shortPurpose", safe(agent.description()), "lifecycleState", agent.status().name().toLowerCase(Locale.ROOT), "readinessState", readinessState, "authorityTier", agent.authorityLevel().name(), "owningScopeLabel", scopeLabel(actor), "lastChangedAt", agent.updatedAt() == null ? null : agent.updatedAt().toString(), "lastReviewedAt", agent.updatedAt() == null ? null : agent.updatedAt().toString(), "lastRefreshedAt", Instant.now().toString(), "readOnlyNotice", "No inline mutation; use dedicated governed task surfaces."),
-        "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", actor.selectedContext().tenantId(), "organizationDisplayName", actor.selectedContext().tenantId(), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true, "visibilityDecision", "visible"),
+        "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", governanceScopeId(actor), "organizationDisplayName", governanceScopeId(actor), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true, "visibilityDecision", "visible"),
         "readinessNarrative", mapOf("outcome", readinessState, "providerModelReadinessCategory", providerStatus, "promptRiskStatus", "ready".equals(providerStatus) ? "review-ready" : "deferred_until_provider_runtime_configured", "manifestToolBoundaryReferenceHealth", "active compact manifests and tool boundary are available when their artifact cards are active.", "seedCustomizationState", Boolean.TRUE.equals(seedStatus(agent.seedProvenance()).get("tenantCustomized")) ? "tenant-customized" : "starter-default", "blockedReasons", "ready".equals(readinessState) ? List.of() : List.of("Provider/model runtime is not fully ready; no fake success is shown."), "recoveryRouteLabels", List.of("Model references", "Prompt-risk review", "Trace"), "noFakeSuccess", !"ready".equals(providerStatus)),
         "fields", fields,
         "relatedArtifacts", relatedArtifacts,
@@ -192,7 +193,7 @@ public final class AgentAdminService {
         "recordKind", "AgentDefinition",
         "summary", "The selected managed agent is unavailable, hidden, stale, inactive, or outside the selected governance scope.",
         "detailSummary", mapOf("surfaceId", "surface-agent-admin-detail", "title", "Agent readiness/behavior inspection", "type", "show-inspection", "contract", "agent_admin.detail.v1", "readinessState", "empty-hidden-or-stale-selection", "owningScopeLabel", scopeLabel(actor), "lastRefreshedAt", Instant.now().toString(), "readOnlyNotice", "No inline mutation; choose a backend-authorized catalog row."),
-        "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", actor.selectedContext().tenantId(), "organizationDisplayName", actor.selectedContext().tenantId(), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true, "visibilityDecision", "not_found_or_redacted", "safeReason", "Selected managed-agent row is not visible in this AuthContext."),
+        "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", governanceScopeId(actor), "organizationDisplayName", governanceScopeId(actor), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true, "visibilityDecision", "not_found_or_redacted", "safeReason", "Selected managed-agent row is not visible in this AuthContext."),
         "readinessNarrative", mapOf("outcome", "not_found_or_redacted", "blockedReasons", List.of("Open a visible managed agent from the backend-authorized catalog."), "noFakeSuccess", true),
         "fields", List.of(),
         "relatedArtifacts", List.of(),
@@ -236,7 +237,7 @@ public final class AgentAdminService {
   public Map<String, Object> promptDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String correlationId) {
     require(actor, GET_PROMPT_VERSION, correlationId, "agent_admin.prompt_version.v1");
     var agent = agent(actor, firstNonBlank(agentDefinitionId, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID));
-    var prompt = repository.promptDocument(actor.selectedContext().tenantId(), agent.promptDocumentId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    var prompt = repository.promptDocument(governanceScopeId(actor), agent.promptDocumentId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
     return mapOf(
         "surfaceContract", "agent_admin.prompt_version.v1",
         "surfaceContractAliases", List.of("surface.agent_admin.prompt_versions.v1"),
@@ -259,12 +260,12 @@ public final class AgentAdminService {
   public Map<String, Object> skillDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String stableSkillId, String correlationId) {
     require(actor, GET_SKILL_VERSION, correlationId, "agent_admin.skill_version.v1");
     var agent = agent(actor, firstNonBlank(agentDefinitionId, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID));
-    var manifest = repository.skillManifest(actor.selectedContext().tenantId(), agent.skillManifestId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    var manifest = repository.skillManifest(governanceScopeId(actor), agent.skillManifestId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
     var entry = manifest.entries().stream()
         .filter(candidate -> stableSkillId == null || stableSkillId.isBlank() || candidate.stableSkillId().equals(stableSkillId))
         .findFirst()
         .orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
-    var skill = repository.skillDocument(actor.selectedContext().tenantId(), entry.skillDocumentId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    var skill = repository.skillDocument(governanceScopeId(actor), entry.skillDocumentId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
     return mapOf(
         "surfaceContract", "agent_admin.skill_version.v1",
         "surfaceContractAliases", List.of("surface.agent_admin.skill_versions.v1"),
@@ -290,8 +291,8 @@ public final class AgentAdminService {
   public Map<String, Object> manifestDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String correlationId) {
     require(actor, GET_MANIFEST, correlationId, "agent_admin.manifest.v1");
     var agent = agent(actor, firstNonBlank(agentDefinitionId, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID));
-    var skills = repository.skillManifest(actor.selectedContext().tenantId(), agent.skillManifestId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
-    var references = repository.referenceManifest(actor.selectedContext().tenantId(), agent.referenceManifestId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    var skills = repository.skillManifest(governanceScopeId(actor), agent.skillManifestId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    var references = repository.referenceManifest(governanceScopeId(actor), agent.referenceManifestId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
     return mapOf(
         "surfaceContract", "agent_admin.manifest.v1",
         "surfaceContractAliases", List.of("surface.agent_admin.manifest_detail.v1"),
@@ -308,7 +309,7 @@ public final class AgentAdminService {
   public Map<String, Object> toolBoundaryDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String correlationId) {
     require(actor, GET_TOOL_BOUNDARY, correlationId, "agent_admin.tool_boundary.v1");
     var agent = agent(actor, firstNonBlank(agentDefinitionId, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID));
-    var boundary = repository.toolBoundary(actor.selectedContext().tenantId(), agent.toolBoundaryId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    var boundary = repository.toolBoundary(governanceScopeId(actor), agent.toolBoundaryId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
     return mapOf(
         "surfaceContract", "agent_admin.tool_boundary.v1",
         "surfaceContractAliases", List.of("surface.agent_admin.tool_boundary.v1"),
@@ -328,7 +329,7 @@ public final class AgentAdminService {
   public Map<String, Object> modelRefDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String correlationId) {
     require(actor, GET_MODEL_REF, correlationId, "agent_admin.model_refs.v1");
     var agent = agent(actor, firstNonBlank(agentDefinitionId, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID));
-    var model = repository.modelConfigRef(actor.selectedContext().tenantId(), agent.modelConfigRefId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    var model = repository.modelConfigRef(governanceScopeId(actor), agent.modelConfigRefId()).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
     return mapOf(
         "surfaceContract", "agent_admin.model_refs.v1",
         "surfaceContractAliases", List.of("agent_admin.model_ref.v1", "surface.agent_admin.model_ref.v1", "surface.agent_admin.model_refs.v1"),
@@ -372,7 +373,7 @@ public final class AgentAdminService {
         .filter(row -> selectedSeedId.isBlank() || selectedSeedId.equals(row.get("id")) || selectedSeedId.equals(row.get("artifactId")))
         .findFirst()
         .orElse(filteredRows.isEmpty() ? null : filteredRows.get(0));
-    var traceId = traceId("seed-material", actor.selectedContext().tenantId(), correlationId);
+    var traceId = traceId("seed-material", governanceScopeId(actor), correlationId);
     var filters = mapOf(
         "searchText", searchText,
         "sourceCategory", sourceCategory,
@@ -392,9 +393,9 @@ public final class AgentAdminService {
         "surfaceContract", "agent_admin.seed_material.v1",
         "surfaceContractAliases", List.of("surface.agent_admin.seed_material.v1", "surface.agent_admin.seed_import.v1"),
         "seedMaterialSummary", mapOf("surfaceId", "surface-agent-seed-material", "title", "Seed material discovery and import workflow", "type", "list-search / workflow-status", "contract", "agent_admin.seed_material.v1", "selectedScopeLabel", scopeLabel(actor), "resultCount", filteredRows.size(), "filteredCount", filteredRows.size(), "totalVisibleCount", allRows.size(), "importReadinessCategory", "ready", "customizationPreservationStatus", customizedCount == 0 ? "starter-defaults-visible" : "tenant-customizations-preserved", "providerRuntimeReadinessCategory", "not-required-for-seed-discovery", "lastRefreshedAt", Instant.now().toString(), "emptyStateReason", emptyReason),
-        "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", actor.selectedContext().tenantId(), "organizationDisplayName", actor.selectedContext().tenantId(), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true, "visibilityDecision", "visible"),
+        "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantDisplayName", governanceScopeId(actor), "organizationDisplayName", governanceScopeId(actor), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true, "visibilityDecision", "visible"),
         "filters", filters,
-        "query", searchText.isBlank() ? mapOf("tenantScoped", true, "scope", actor.selectedContext().tenantId()) : searchText,
+        "query", searchText.isBlank() ? mapOf("tenantScoped", true, "scope", governanceScopeId(actor)) : searchText,
         "rows", filteredRows,
         "seedRows", filteredRows,
         "emptyState", mapOf("state", emptyReason == null ? "ready" : emptyReason, "reason", emptyReason == null ? "Authorized seed material is visible." : (allRows.isEmpty() ? "No governed seed material is visible for this selected scope." : "No visible seed material matches the backend-validated filters."), "recoveryActions", emptyReason == null ? List.of() : List.of("action-agent-seed-material-reset-filters", "action-agent-seed-material-refresh")),
@@ -425,38 +426,45 @@ public final class AgentAdminService {
   }
 
   private void require(AuthContextResolver.ResolvedMe actor, String capabilityId, String correlationId, String surfaceContract) {
-    requireTenantOrganizationAdmin(actor);
-    authContextResolver.requireTenant(actor.selectedContext(), actor.selectedContext().tenantId());
+    requireAgentAdminOperator(actor);
     authContextResolver.requireCapability(actor.selectedContext(), capabilityId);
     authContextResolver.appendProtectedReadTrace(actor, capabilityId, surfaceContract, correlationId);
   }
 
-  private void requireTenantOrganizationAdmin(AuthContextResolver.ResolvedMe actor) {
-    if (actor.selectedContext().scopeType() != ScopeType.TENANT || !actor.selectedContext().roles().contains(FoundationRole.TENANT_ADMIN)) {
-      throw new AuthorizationException(403, "agent-admin-requires-tenant-admin");
-    }
+  private void requireAgentAdminOperator(AuthContextResolver.ResolvedMe actor) {
+    var context = actor.selectedContext();
+    if (context.scopeType() == ScopeType.SAAS_OWNER && context.roles().contains(FoundationRole.SAAS_OWNER_ADMIN)) return;
+    if (context.scopeType() == ScopeType.TENANT && context.roles().contains(FoundationRole.TENANT_ADMIN)) return;
+    throw new AuthorizationException(403, "agent-admin-requires-tenant-admin");
+  }
+
+  private static String governanceScopeId(AuthContextResolver.ResolvedMe actor) {
+    var context = actor.selectedContext();
+    return context.scopeType() == ScopeType.SAAS_OWNER
+        ? WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID
+        : context.tenantId();
   }
 
   private AgentDefinition agent(AuthContextResolver.ResolvedMe actor, String agentDefinitionId) {
-    return repository.agentDefinition(actor.selectedContext().tenantId(), agentDefinitionId).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    return repository.agentDefinition(governanceScopeId(actor), agentDefinitionId).orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
   }
 
   private List<Map<String, Object>> skillEntries(AuthContextResolver.ResolvedMe actor, AgentSkillManifest manifest) {
     return manifest.entries().stream().map(entry -> {
-      var skill = repository.skillDocument(actor.selectedContext().tenantId(), entry.skillDocumentId()).orElse(null);
+      var skill = repository.skillDocument(governanceScopeId(actor), entry.skillDocumentId()).orElse(null);
       return mapOf("stableSkillId", entry.stableSkillId(), "skillDocumentId", entry.skillDocumentId(), "pinnedVersion", entry.pinnedVersion(), "title", entry.title(), "purpose", entry.purpose(), "whenToUse", entry.whenToUse(), "status", skill == null ? "missing" : skill.status().name().toLowerCase(), "redactedPreview", skill == null ? null : preview(skill.contentBody()), "fullContentAvailableInBrowser", false, "seedStatus", skill == null ? null : seedStatus(skill.seedProvenance()), "traceId", traceId("skill", entry.stableSkillId(), manifest.manifestId()));
     }).toList();
   }
 
   private List<Map<String, Object>> referenceEntries(AuthContextResolver.ResolvedMe actor, AgentReferenceManifest manifest) {
     return manifest.entries().stream().map(entry -> {
-      var reference = repository.referenceDocument(actor.selectedContext().tenantId(), entry.referenceDocumentId()).orElse(null);
+      var reference = repository.referenceDocument(governanceScopeId(actor), entry.referenceDocumentId()).orElse(null);
       return mapOf("stableReferenceId", entry.stableReferenceId(), "referenceDocumentId", entry.referenceDocumentId(), "pinnedVersion", entry.pinnedVersion(), "title", entry.title(), "summary", entry.summary(), "whenToConsult", entry.whenToConsult(), "allowedUse", entry.allowedUse(), "accessLevel", entry.accessLevel(), "status", reference == null ? "missing" : reference.status().name().toLowerCase(), "redactedPreview", reference == null ? null : preview(reference.contentBody()), "fullContentAvailableInBrowser", false, "seedStatus", reference == null ? null : seedStatus(reference.seedProvenance()), "traceId", traceId("reference", entry.stableReferenceId(), manifest.manifestId()));
     }).toList();
   }
 
   private List<Map<String, Object>> seedMaterial(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    var tenantId = actor.selectedContext().tenantId();
+    var tenantId = governanceScopeId(actor);
     var rows = new java.util.ArrayList<Map<String, Object>>();
     repository.agentDefinitions(tenantId).forEach(agent -> rows.add(seedRow(
         "AgentDefinition",
@@ -614,13 +622,13 @@ public final class AgentAdminService {
   }
 
   private Map<String, Object> providerReadinessSummary(AuthContextResolver.ResolvedMe actor) {
-    var total = repository.agentDefinitions(actor.selectedContext().tenantId()).size();
-    var ready = repository.agentDefinitions(actor.selectedContext().tenantId()).stream().filter(agent -> "ready".equals(providerReadiness(actor, agent).get("status"))).count();
+    var total = repository.agentDefinitions(governanceScopeId(actor)).size();
+    var ready = repository.agentDefinitions(governanceScopeId(actor)).stream().filter(agent -> "ready".equals(providerReadiness(actor, agent).get("status"))).count();
     return mapOf("status", ready == total ? "ready" : "warning", "readyAgents", ready, "totalAgents", total, "secretVisibility", "redacted");
   }
 
   private Map<String, Object> providerReadiness(AuthContextResolver.ResolvedMe actor, AgentDefinition agent) {
-    var model = repository.modelConfigRef(actor.selectedContext().tenantId(), agent.modelConfigRefId());
+    var model = repository.modelConfigRef(governanceScopeId(actor), agent.modelConfigRefId());
     if (model.isEmpty()) return mapOf("status", "blocked_provider_or_runtime", "safeReason", "ModelConfigRef is unavailable.", "providerAlias", null, "secretVisibility", "redacted");
     var value = model.orElseThrow();
     if (value.status() != AgentLifecycleStatus.ACTIVE) return mapOf("status", "blocked_provider_or_runtime", "safeReason", "ModelConfigRef is not active.", "providerAlias", safe(value.providerAlias()), "secretVisibility", "redacted");
@@ -669,7 +677,7 @@ public final class AgentAdminService {
   }
 
   private String scopeLabel(AuthContextResolver.ResolvedMe actor) {
-    return actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT).replace('_', '-') + ":" + actor.selectedContext().tenantId();
+    return actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT).replace('_', '-') + ":" + governanceScopeId(actor);
   }
 
   private Map<String, Object> toolGrant(ToolPermissionBoundary.ToolGrant grant) {

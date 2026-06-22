@@ -99,7 +99,7 @@ function withDisabledReason(action: SurfaceAction, message: string): SurfaceActi
 function primaryLifecycleAction(envelope: SurfaceEnvelope<AgentAdminLifecycleData>): SurfaceAction | undefined {
   const lifecycleAction = String(envelope.data.lifecycleAction ?? '');
   if (lifecycleAction === 'activate') return envelope.actions.find((action) => action.actionId === 'action-agent-activation-confirm' || action.actionId === 'action-activate-behavior-change' || action.actionId === 'action-activate-agent-definition');
-  if (lifecycleAction === 'deactivate') return envelope.actions.find((action) => action.actionId === 'action-deactivate-agent-definition' || action.actionId === 'action-cancel-behavior-change');
+  if (lifecycleAction === 'deactivate') return envelope.actions.find((action) => action.actionId === 'action-agent-deactivation-confirm' || action.actionId === 'action-deactivate-agent-definition' || action.actionId === 'action-cancel-behavior-change');
   if (lifecycleAction === 'rollback') return envelope.actions.find((action) => action.actionId === 'action-agent-rollback-confirm' || action.actionId === 'action-rollback-behavior-change');
   return envelope.actions[0];
 }

@@ -42,6 +42,7 @@ class AgentAdminPromptRiskReviewServiceTest {
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
     seed("admin@example.test", "membership-admin", FoundationRole.TENANT_ADMIN);
     seed("member@example.test", "membership-member", FoundationRole.TENANT_EMPLOYEE);
+    seed("owner@example.test", "membership-owner", ScopeType.SAAS_OWNER, null, FoundationRole.SAAS_OWNER_ADMIN);
     tenantAdmin = resolver.resolveMe(new WorkosIdentity("workos-admin", "admin@example.test", "Tenant Admin"), null, "corr-admin");
   }
 
@@ -111,6 +112,17 @@ class AgentAdminPromptRiskReviewServiceTest {
   }
 
   @Test
+  void saasOwnerCanStartPlatformScopedPromptRiskReviewWithoutTenantContext() {
+    var owner = resolver.resolveMe(new WorkosIdentity("workos-owner", "owner@example.test", "SaaS Owner"), "membership-owner", "corr-owner");
+
+    var task = service.start(owner, command("idem-owner-platform"), "corr-owner-start");
+
+    assertEquals("platform", task.tenantId());
+    assertEquals(PromptRiskReviewTask.Status.BLOCKED_PROVIDER_OR_RUNTIME, task.status());
+    assertTrue(task.summary().contains("fails closed"));
+  }
+
+  @Test
   void memberWithoutAgentAdminAuthorityCannotStartOrReadPromptRiskReview() {
     var deniedActor = resolver.resolveMe(new WorkosIdentity("workos-member", "member@example.test", "Member"), "membership-member", "corr-member");
 
@@ -151,9 +163,13 @@ class AgentAdminPromptRiskReviewServiceTest {
   }
 
   private void seed(String email, String membershipId, FoundationRole role) {
+    seed(email, membershipId, ScopeType.TENANT, "tenant-1", role);
+  }
+
+  private void seed(String email, String membershipId, ScopeType scopeType, String tenantId, FoundationRole role) {
     identityRepository.saveAccount(new Account(email, null, email, email, AccountStatus.ACTIVE, "LINKED"));
     identityRepository.putProfile(new UserProfile(email, email, email, null, null, null));
     identityRepository.putSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
-    identityRepository.putMembership(new Membership(membershipId, email, ScopeType.TENANT, "tenant-1", null, List.of(role), MembershipStatus.ACTIVE, false, null));
+    identityRepository.putMembership(new Membership(membershipId, email, scopeType, tenantId, null, List.of(role), MembershipStatus.ACTIVE, false, null));
   }
 }

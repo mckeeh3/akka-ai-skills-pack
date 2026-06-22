@@ -937,6 +937,7 @@ const agentSubmitReviewCapability = 'agent_admin.submit_behavior_change_for_revi
 const agentSkillsCapability = 'agent_admin.approve_behavior_change';
 const agentRejectCapability = 'agent_admin.reject_behavior_change';
 const agentActivateCapability = 'agent_admin.activate_behavior_change';
+const agentDeactivateCapability = 'agent_admin.deactivate_behavior_version';
 const agentCancelCapability = 'agent_admin.cancel_behavior_change';
 const agentRollbackCapability = 'agent_admin.rollback_behavior_change';
 const agentToolBoundariesCapability = 'agent_admin.simulate_tool_boundary';
@@ -2922,7 +2923,7 @@ export const agentAdminDetailSurface = envelope(
       { actionId: 'action-agent-detail-run-test', targetSurfaceId: 'surface-agent-test-console', governedCapability: agentRuntimeTestCapability, disabledReason: null },
       { actionId: 'action-agent-detail-open-prompt-risk-review', targetSurfaceId: 'surface-agent-admin-prompt-risk-review', governedCapability: 'agent_admin.prompt_risk_review.read', disabledReason: 'Model-backed review fails closed when provider/runtime is unavailable.' },
       { actionId: 'action-agent-detail-open-activation', targetSurfaceId: 'surface-agent-activation-confirmation', governedCapability: agentDefinitionsManageCapability, disabledReason: 'Separate approval/provider prerequisites required.' },
-      { actionId: 'action-agent-detail-open-deactivation', targetSurfaceId: 'surface-agent-deactivation-confirmation', governedCapability: agentDefinitionsManageCapability, disabledReason: null },
+      { actionId: 'action-agent-detail-open-deactivation', targetSurfaceId: 'surface-agent-deactivation-confirmation', governedCapability: agentDeactivateCapability, disabledReason: null },
       { actionId: 'action-agent-detail-open-rollback', targetSurfaceId: 'surface-agent-rollback-confirmation', governedCapability: agentRollbackCapability, disabledReason: 'Requires backend-visible activated proposal metadata.' },
       { actionId: 'action-agent-detail-open-trace', targetSurfaceId: 'surface-agent-admin-trace', governedCapability: 'audit.trace.read', disabledReason: null },
       { actionId: 'action-agent-detail-back-to-catalog', targetSurfaceId: 'surface-agent-admin-catalog', governedCapability: agentDefinitionsCapability, disabledReason: null }
