@@ -15,6 +15,7 @@ import ai.first.domain.foundation.agent.ReferenceDocument;
 import ai.first.domain.foundation.agent.SeedProvenance;
 import ai.first.domain.foundation.agent.SkillDocument;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 import ai.first.domain.foundation.identity.AuthContext;
 import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.identity.ScopeType;
@@ -67,7 +68,7 @@ public final class AgentRuntimeService {
 
   public PromptAssemblyResult assemblePrompt(PromptAssemblyRequest request) {
     try {
-      authContextResolver.requireTenant(request.authContext(), request.tenantId());
+      requireRuntimeGovernanceScope(request.authContext(), request.tenantId());
       authContextResolver.requireCapability(request.authContext(), request.capabilityId());
       var agent = activeAgent(request.tenantId(), request.agentDefinitionId(), request.mode());
       var prompt = activePrompt(request.tenantId(), agent.promptDocumentId(), request.mode());
@@ -99,7 +100,7 @@ public final class AgentRuntimeService {
   }
 
   public RuntimeInvocationPreparation prepareWorkstreamAgentInvocation(RuntimeInvocationRequest request) {
-    var invocationCapability = invocationCapability(request.agentDefinitionId());
+    var invocationCapability = invocationCapability(request.agentDefinitionId(), request.authContext());
     var promptRequest = new PromptAssemblyRequest(request.tenantId(), request.agentDefinitionId(), request.authContext(), "runtime", invocationCapability, request.correlationId(), request.userInput());
     var prompt = assemblePrompt(promptRequest);
     if (prompt.decision() != AgentRuntimeTrace.Decision.ALLOWED) {
@@ -128,7 +129,7 @@ public final class AgentRuntimeService {
   }
 
   public RuntimeInvocationResult completeWorkstreamAgentInvocation(RuntimeInvocationRequest request, RuntimeInvocationPreparation preparation, WorkstreamRuntimeAgent.MarkdownResponse response) {
-    var invocationCapability = invocationCapability(request.agentDefinitionId());
+    var invocationCapability = invocationCapability(request.agentDefinitionId(), request.authContext());
     var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, response.producingAgentId(), safe(response.trace()), checksum(response.markdown()));
     var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, request.agentDefinitionId(), "Akka Agent component produced model-backed markdown_response; modelConfigRef=" + preparation.modelConfigRefId(), checksum(response.markdown() + preparation.promptChecksum()));
     var traceIds = new ArrayList<>(preparation.traceIds());
@@ -143,7 +144,7 @@ public final class AgentRuntimeService {
         ? providerFailure.failure().safeCode()
         : "AKKA_AGENT_INVOCATION_FAILED";
     var traceIds = new ArrayList<>(preparation.traceIds());
-    var invocationCapability = invocationCapability(request.agentDefinitionId());
+    var invocationCapability = invocationCapability(request.agentDefinitionId(), request.authContext());
     var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, preparation.modelConfigRefId(), safeSummary, null);
     var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, request.agentDefinitionId(), "Akka Agent component invocation failed closed: " + safeErrorCode + "; " + safeSummary, null);
     traceIds.add(modelTrace.traceId());
@@ -175,7 +176,7 @@ public final class AgentRuntimeService {
 
   public SkillReadResult readSkill(SkillReadRequest request) {
     try {
-      authContextResolver.requireTenant(request.authContext(), request.tenantId());
+      requireRuntimeGovernanceScope(request.authContext(), request.tenantId());
       authContextResolver.requireCapability(request.authContext(), request.capabilityId());
       var agent = activeAgent(request.tenantId(), request.agentDefinitionId(), request.mode());
       var manifest = activeManifest(request.tenantId(), agent.skillManifestId());
@@ -204,7 +205,7 @@ public final class AgentRuntimeService {
 
   public ReferenceReadResult readReferenceDoc(ReferenceReadRequest request) {
     try {
-      authContextResolver.requireTenant(request.authContext(), request.tenantId());
+      requireRuntimeGovernanceScope(request.authContext(), request.tenantId());
       authContextResolver.requireCapability(request.authContext(), request.capabilityId());
       var agent = activeAgent(request.tenantId(), request.agentDefinitionId(), request.mode());
       var manifest = activeReferenceManifest(request.tenantId(), agent.referenceManifestId());
@@ -370,11 +371,20 @@ public final class AgentRuntimeService {
     return List.copyOf(proposals);
   }
 
-  private String invocationCapability(String agentDefinitionId) {
+  private String invocationCapability(String agentDefinitionId, AuthContext authContext) {
     if (AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID.equals(agentDefinitionId)) return MY_ACCOUNT_INVOKE_CAPABILITY;
     if (AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentDefinitionId)) return AGENT_ADMIN_INVOKE_CAPABILITY;
     if (AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID.equals(agentDefinitionId)) return AUDIT_TRACE_INVOKE_CAPABILITY;
     if (AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID.equals(agentDefinitionId)) return GOVERNANCE_POLICY_INVOKE_CAPABILITY;
+    if (AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID.equals(agentDefinitionId)) {
+      if (authContext.hasCapability(INVOKE_CAPABILITY)) return INVOKE_CAPABILITY;
+      if (authContext.hasCapability("user_admin.view_overview")) return "user_admin.view_overview";
+      if (authContext.hasCapability("saas_owner.admin.manage")) return "saas_owner.admin.manage";
+      if (authContext.hasCapability("tenant.user.manage")) return "tenant.user.manage";
+      if (authContext.hasCapability("tenant.user.read")) return "tenant.user.read";
+      if (authContext.hasCapability("customer.user.manage")) return "customer.user.manage";
+      if (authContext.hasCapability("customer.user.read")) return "customer.user.read";
+    }
     return INVOKE_CAPABILITY;
   }
 
@@ -387,6 +397,16 @@ public final class AgentRuntimeService {
     if (authContext.scopeType() != ScopeType.TENANT || !authContext.roles().contains(FoundationRole.TENANT_ADMIN)) {
       throw new AuthorizationException(403, "agent-admin-requires-tenant-admin");
     }
+  }
+
+  private void requireRuntimeGovernanceScope(AuthContext authContext, String runtimeGovernanceScopeId) {
+    if (authContext.scopeType() == ScopeType.SAAS_OWNER) {
+      if (!WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID.equals(runtimeGovernanceScopeId)) {
+        throw new AuthorizationException(403, "platform-scope-mismatch");
+      }
+      return;
+    }
+    authContextResolver.requireTenant(authContext, runtimeGovernanceScopeId);
   }
 
   private BehaviorChangeProposal proposal(String tenantId, String proposalId) {

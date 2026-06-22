@@ -198,7 +198,7 @@ public final class AgentBehaviorSeedLoader {
   }
 
   private ModelConfigRef createModelConfigRef(String tenantId, ModelPolicy policy, String actor, String correlationId, Instant now, SeedImportResult result) {
-    return createNamedModelConfigRef(tenantId, STARTER_DEFAULT_MODEL_CONFIG_ID, "Starter default low-temperature model", policy, CORE_V0_AGENT_IDS, List.of(AgentRuntimeService.INVOKE_CAPABILITY, AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY, AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY, AgentRuntimeService.AUDIT_TRACE_INVOKE_CAPABILITY, AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY, AgentRuntimeService.AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY), "model-configs/starter-default-model", actor, correlationId, now, result);
+    return createNamedModelConfigRef(tenantId, STARTER_DEFAULT_MODEL_CONFIG_ID, "Starter default low-temperature model", policy, CORE_V0_AGENT_IDS, List.of(AgentRuntimeService.INVOKE_CAPABILITY, "user_admin.view_overview", "saas_owner.admin.manage", "tenant.user.manage", "tenant.user.read", "customer.user.manage", "customer.user.read", AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY, AgentRuntimeService.AGENT_ADMIN_INVOKE_CAPABILITY, AgentRuntimeService.AUDIT_TRACE_INVOKE_CAPABILITY, AgentRuntimeService.GOVERNANCE_POLICY_INVOKE_CAPABILITY, AgentRuntimeService.AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY), "model-configs/starter-default-model", actor, correlationId, now, result);
   }
 
   private ModelConfigRef createNamedModelConfigRef(String tenantId, String modelConfigId, String displayName, ModelPolicy policy, List<String> agentIds, List<String> capabilityIds, String provenanceId, String actor, String correlationId, Instant now, SeedImportResult result) {

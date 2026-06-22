@@ -189,6 +189,7 @@ public final class StarterSecurityComponents {
     agentBehaviorRepository = durableAgentBehavior;
     agentBehaviorSeedLoader = new AgentBehaviorSeedLoader(durableAgentBehavior, CLOCK);
     agentBehaviorSeedLoader.importStarterDefaults("tenant-starter", "starter-bootstrap", "corr-starter-agent-seed");
+    agentBehaviorSeedLoader.importStarterDefaults(ai.first.application.foundation.workstream.WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, "starter-platform-bootstrap", "corr-starter-platform-agent-seed");
     agentRuntimeService = durableRuntime;
     agentRuntimeToolResolver = new AgentRuntimeToolResolver(durableAgentBehavior, durableRuntime);
     accessReviewTaskRepository = durableAccessReviews;

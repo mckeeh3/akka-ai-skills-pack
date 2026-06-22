@@ -1384,14 +1384,16 @@ public final class WorkstreamService {
       persistDeniedFunctionalAgent(actor, request.functionalAgentId(), requestCorrelationId, request.idempotencyKey(), "FUNCTIONAL_AGENT_FORBIDDEN");
       throw new AuthorizationException(403, "FUNCTIONAL_AGENT_FORBIDDEN");
     }
-    var duplicate = workstreamLogRepository.findByIdempotencyKey(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey());
+    var workstreamScopeId = workstreamEventTenantId(actor.selectedContext());
+    var runtimeGovernanceScopeId = agentGovernanceScopeId(actor);
+    var duplicate = workstreamLogRepository.findByIdempotencyKey(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey());
     if (duplicate.isPresent()) {
       var existing = duplicate.orElseThrow();
       return new WorkstreamMessageResponse(existing.correlationId(), existing.idempotencyKey(), existing.userItem(), existing.agentItem(), existing.surface());
     }
 
     var runtime = workstreamAgentRuntimeInvoker.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest(
-        actor.selectedContext().tenantId(), runtimeAgentDefinitionId(request.functionalAgentId()), actor.selectedContext(), requestCorrelationId, request.prompt()));
+        runtimeGovernanceScopeId, runtimeAgentDefinitionId(request.functionalAgentId()), actor.selectedContext(), requestCorrelationId, request.prompt()));
     var responseSeed = firstNonBlank(request.idempotencyKey(), requestCorrelationId, request.functionalAgentId());
     var userItemId = "item-message-user-" + stableSuffix(responseSeed + ":user");
     var agentItemId = "item-message-agent-" + stableSuffix(responseSeed + ":agent");
@@ -1405,7 +1407,7 @@ public final class WorkstreamService {
     var agentItemBody = runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED ? null : "Model-backed workstream response blocked by governed runtime/provider boundary. Open the system_message for safe recovery steps.";
     var agentItemKind = runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED ? "markdown_response" : "system_message";
     var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), agentItemKind, now, requestCorrelationId, traceIds, surface.surfaceId(), functionalAgent.label(), agentItemBody, runtime.decision() == AgentRuntimeTrace.Decision.ALLOWED ? "ready" : "blocked");
-    var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), requestCorrelationId, userItem, agentItem, surface));
+    var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), requestCorrelationId, userItem, agentItem, surface));
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
 
@@ -5744,7 +5746,7 @@ public final class WorkstreamService {
 
   private ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationActionResult runOrganizationLifecycleAction(AuthContextResolver.ResolvedMe actor, String actionId, Object input, String idempotencyKey, String correlationId) {
     var service = StarterSecurityComponents.saasOwnerOrganizationAdminService();
-    return switch (actionId) {
+    var result = switch (actionId) {
       case "action-submit-organization-create", "action-organization-create" -> service.createOrganization(actor, stringInput(input, "organizationName", ""), idempotencyKey, stringInput(input, "reason", "organization-created"), correlationId);
       case "action-submit-organization-rename", "action-organization-rename" -> service.renameOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), stringInput(input, "organizationName", ""), idempotencyKey, stringInput(input, "reason", "organization-renamed"), correlationId);
       case "action-organization-suspend" -> service.suspendOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), rawStringInput(input, "reason", ""), stringInput(input, "confirmationPhrase", stringInput(input, "confirmation", "")), idempotencyKey, correlationId);
@@ -5752,6 +5754,10 @@ public final class WorkstreamService {
       case "action-organization-reactivate" -> service.reactivateOrganization(actor, stringInput(input, "organizationId", stringInput(input, "recordId", "")), rawStringInput(input, "reason", ""), stringInput(input, "confirmationPhrase", stringInput(input, "confirmation", "")), idempotencyKey, correlationId);
       default -> throw new AuthorizationException(404, "target-not-found-or-forbidden");
     };
+    if (("action-submit-organization-create".equals(actionId) || "action-organization-create".equals(actionId)) && result.organization() != null) {
+      new AgentBehaviorSeedLoader(agentBehaviorRepository, Clock.systemUTC()).importStarterDefaults(result.organization().organization().organizationId(), actor.account().accountId(), correlationId);
+    }
+    return result;
   }
 
   private void requireOrganizationLifecycleAction(ai.first.application.coreapp.useradmin.SaasOwnerOrganizationAdminService.OrganizationDetail detail, String action, String correlationId) {

@@ -96,7 +96,9 @@ class WorkstreamServiceTest {
     var userAdminService = new UserAdminService(identityRepository, Clock.systemUTC());
     invitationService = new InvitationService(identityRepository, invitationRepository, Clock.systemUTC(), attentionProducerService, workstreamEventPublisher);
     agentRepository = new InMemoryTestAgentBehaviorRepository();
-    new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed");
+    var seedLoader = new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC());
+    seedLoader.importStarterDefaults("tenant-1", "bootstrap", "corr-agent-seed");
+    seedLoader.importStarterDefaults(ai.first.application.foundation.workstream.WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, "bootstrap-platform", "corr-agent-seed-platform");
     var agentRuntimeService = new AgentRuntimeService(agentRepository, resolver, Clock.systemUTC(), request -> new ModelProviderClient.ModelProviderResponse("## " + request.functionalAgentId() + " model response\n\nProvider-backed test markdown.", "test-fake-provider", "test-fake-model", "fake-response-id", "stop", "unit-test fake model invocation"), new InMemoryTestAgentRuntimeTraceSink());
     trackingRuntimeInvoker = new TrackingWorkstreamAgentRuntimeTestAdapter(agentRuntimeService);
     var workstreamLogRepository = new InMemoryTestWorkstreamLogRepository();
@@ -104,6 +106,7 @@ class WorkstreamServiceTest {
     service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, workstreamLogRepository, new InMemoryTestAccessReviewTaskRepository(), new InMemoryTestAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new InMemoryTestGovernancePolicyRepository(), attentionService, attentionProducerService, workstreamEventPublisher, eventRepository, new FailClosedAccessReviewAutonomousAgentRuntime(), notificationService);
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
+    identityRepository.putCustomer(new Customer("tenant-1", "customer-1", "Customer One", true));
     identityRepository.putTenant(new Tenant("tenant-starter", "Starter Organization", true));
     identityRepository.putTenant(new Tenant("tenant-suspended", "Suspended Organization", false));
     identityRepository.saveAccount(new Account("admin@example.test", null, "admin@example.test", "admin@example.test", AccountStatus.ACTIVE, "LINKED"));
@@ -118,6 +121,10 @@ class WorkstreamServiceTest {
     identityRepository.putProfile(new UserProfile("owner@example.test", "owner@example.test", "SaaS Owner", "SaaS", "Owner", null));
     identityRepository.putSettings(new UserSettings("owner@example.test", UserSettings.ThemeId.AURORA_LIGHT));
     identityRepository.putMembership(new Membership("membership-owner", "owner@example.test", ScopeType.SAAS_OWNER, null, null, List.of(FoundationRole.SAAS_OWNER_ADMIN), MembershipStatus.ACTIVE, false, null));
+    identityRepository.saveAccount(new Account("customer@example.test", null, "customer@example.test", "customer@example.test", AccountStatus.ACTIVE, "LINKED"));
+    identityRepository.putProfile(new UserProfile("customer@example.test", "customer@example.test", "Customer Admin", "Customer", "Admin", null));
+    identityRepository.putSettings(new UserSettings("customer@example.test", UserSettings.ThemeId.AURORA_LIGHT));
+    identityRepository.putMembership(new Membership("membership-customer", "customer@example.test", ScopeType.CUSTOMER, "tenant-1", "customer-1", List.of(FoundationRole.CUSTOMER_ADMIN), MembershipStatus.ACTIVE, false, null));
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
   }
 
@@ -595,6 +602,12 @@ class WorkstreamServiceTest {
         "action-open-organization-create", "action-open-organization-create", "saas_owner.tenant.manage", "saas_owner.tenant.manage", null, null, "membership-owner", "surface-user-admin-organization-directory", "corr-open-create"));
     assertEquals("accepted", create.status());
     assertEquals("surface-user-admin-organization-create", create.resultSurface().surfaceId());
+
+    var createdOrganization = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-submit-organization-create", "user-admin.submit-organization-create", "manage-organizations", "saas_owner.tenant.manage", Map.of("organizationName", "Runtime Prompt Ready Org", "reason", "seed tenant agent defaults"), "idem-runtime-prompt-ready-org", "membership-owner", create.resultSurface().surfaceId(), "corr-create-runtime-ready-org"));
+    var createdOrganizationMap = (Map<?, ?>) createdOrganization.resultSurface().data().get("organizationDetail");
+    var createdOrganizationId = String.valueOf(createdOrganizationMap.get("organizationId"));
+    assertTrue(agentRepository.agentDefinition(createdOrganizationId, AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).isPresent(), "New Organizations need tenant-scoped governed agent defaults so tenant/customer workstream prompts can run after bootstrap.");
 
     var activeDetail = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
         "action-organization-read", "action-organization-read", "saas_owner.organization.read", "saas_owner.organization.read", Map.of("organizationId", "tenant-starter"), null, "membership-owner", "surface-user-admin-organization-directory", "corr-read-active"));
@@ -1705,6 +1718,28 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void submitMessageSupportsSaasOwnerTenantAndCustomerRuntimeScopes() {
+    var ownerResponse = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-owner", "user-admin-agent", "create organization \"Org 1\" and invite user mckee.hugh@gmail.com as an org admin", "corr-owner-message", "idem-owner-message"), "corr-owner-header");
+    assertEquals("markdown_response", ownerResponse.surface().surfaceType());
+    assertEquals("membership-owner", ownerResponse.surface().authContext().get("selectedContextId"));
+    assertEquals(ai.first.application.foundation.workstream.WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, trackingRuntimeInvoker.lastRequest().tenantId(), "SaaS Owner workstream prompts must use the platform governance scope instead of requiring a tenant.");
+    assertEquals("user-admin-agent", trackingRuntimeInvoker.lastRequest().agentDefinitionId());
+
+    var tenantResponse = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "user-admin-agent", "Summarize tenant users", "corr-tenant-message", "idem-tenant-message"), "corr-tenant-header");
+    assertEquals("markdown_response", tenantResponse.surface().surfaceType());
+    assertEquals("tenant-1", trackingRuntimeInvoker.lastRequest().tenantId());
+
+    var customerResponse = service.submitMessage(customerIdentity(), "membership-customer", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-customer", "user-admin-agent", "Summarize customer users", "corr-customer-message", "idem-customer-message"), "corr-customer-header");
+    assertEquals("markdown_response", customerResponse.surface().surfaceType());
+    assertEquals("membership-customer", customerResponse.surface().authContext().get("selectedContextId"));
+    assertEquals("tenant-1", trackingRuntimeInvoker.lastRequest().tenantId(), "Customer workstream prompts use the owning tenant governance scope while preserving the selected customer AuthContext.");
+    assertEquals("customer-1", trackingRuntimeInvoker.lastRequest().authContext().customerId());
+  }
+
+  @Test
   void myAccountSurfacesAreBackendRetrievedWithAuthorityTraceAndContextData() {
     var dashboard = service.surface(identity(), "membership-admin", "surface-my-account-dashboard", "corr-my-account-dashboard");
     var profile = service.surface(identity(), "membership-admin", "surface-my-profile", "corr-my-account-profile");
@@ -2474,5 +2509,9 @@ class WorkstreamServiceTest {
 
   private WorkosIdentity ownerIdentity() {
     return new WorkosIdentity("workos-owner", "owner@example.test", "SaaS Owner");
+  }
+
+  private WorkosIdentity customerIdentity() {
+    return new WorkosIdentity("workos-customer", "customer@example.test", "Customer Admin");
   }
 }
