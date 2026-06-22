@@ -44,7 +44,7 @@ test('decision and governance actions preserve approval, proposal, trace, and id
   assert.match(surfaces, /DecisionApproved/);
   assert.match(surfaces, /action-propose-policy/);
   assert.match(surfaces, /PolicyProposalCreated/);
-  assert.match(surfaces, /action-simulate-policy/);
+  assert.match(surfaces, /action-governance-policy-simulate/);
   assert.match(surfaces, /PolicySimulationRequested/);
   assert.match(surfaces, /action-open-trace/);
   assert.match(surfaces, /traceRequired: true/);

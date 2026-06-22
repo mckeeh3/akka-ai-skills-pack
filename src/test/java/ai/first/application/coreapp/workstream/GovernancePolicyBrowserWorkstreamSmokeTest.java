@@ -229,7 +229,7 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke();
     assertTrue(bootstrap.status().isSuccess());
     assertEquals(ADMIN_CONTEXT_ID, bootstrap.body().me().selectedAuthContext().selectedContextId());
-    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-governance-policy") && agent.availability().equals("visible")));
+    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("governance-policy-agent") && agent.availability().equals("visible")));
     assertBrowserSafe(bootstrap.body());
 
     assertThrows(IllegalArgumentException.class, () -> httpClient
@@ -482,7 +482,7 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke();
     assertTrue(bootstrap.status().isSuccess());
     assertEquals(simulationAdminContextId, bootstrap.body().me().selectedAuthContext().selectedContextId());
-    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-governance-policy") && agent.availability().equals("visible")));
+    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("governance-policy-agent") && agent.availability().equals("visible")));
     assertBrowserSafe(bootstrap.body());
 
     assertThrows(IllegalArgumentException.class, () -> httpClient
@@ -712,7 +712,7 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke();
     assertTrue(bootstrap.status().isSuccess());
     assertEquals(ADMIN_CONTEXT_ID, bootstrap.body().me().selectedAuthContext().selectedContextId());
-    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-governance-policy") && agent.availability().equals("visible")));
+    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("governance-policy-agent") && agent.availability().equals("visible")));
     assertBrowserSafe(bootstrap.body());
 
     var dashboard = getSurface("surface-governance-policy-dashboard", "corr-governance-dashboard-direct");
@@ -1525,7 +1525,7 @@ class GovernancePolicyBrowserWorkstreamSmokeTest extends TestKitSupport {
         .invoke();
     assertTrue(bootstrap.status().isSuccess());
     assertEquals(outcomeAdminContextId, bootstrap.body().me().selectedAuthContext().selectedContextId());
-    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("agent-governance-policy") && agent.availability().equals("visible")));
+    assertTrue(bootstrap.body().functionalAgents().stream().anyMatch(agent -> agent.functionalAgentId().equals("governance-policy-agent") && agent.availability().equals("visible")));
     assertBrowserSafe(bootstrap.body());
 
     assertThrows(IllegalArgumentException.class, () -> httpClient

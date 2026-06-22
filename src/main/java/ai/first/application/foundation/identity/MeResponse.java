@@ -235,14 +235,14 @@ public record MeResponse(
               auditVisible ? "visible" : "hidden",
               null),
           new FunctionalAgentSummary(
-              "agent-governance-policy",
+              "governance-policy-agent",
               "Governance/Policy",
               "Review policy guardrails, improvement proposals, approval requirements, activation denials, traces, and outcome evidence.",
               "shield",
               icon("workstream-governance-policy", "Governance/Policy", "shield-checklist", "shield checklist", "accent-governance", "Open Governance/Policy workstream"),
-              "markdown_response",
-              null,
-              List.of("governance.policy.read", "improvements.review"),
+              "dashboard",
+              "surface-governance-policy-dashboard",
+              List.of("governance.policy.read"),
               null,
               governanceVisible ? "visible" : "denied",
               governanceVisible ? null : "Governance policy capabilities are not assigned in this context."));

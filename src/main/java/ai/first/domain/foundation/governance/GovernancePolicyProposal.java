@@ -34,12 +34,16 @@ public record GovernancePolicyProposal(
     Instant updatedAt) {
   public enum Status {
     DRAFT,
+    SUBMITTED,
+    SIMULATION_REQUIRED,
     IN_REVIEW,
     APPROVED,
     REJECTED,
     CHANGES_REQUESTED,
     ACTIVATED,
+    ROLLBACK_CANDIDATE,
     ROLLED_BACK,
+    SUPERSEDED,
     BLOCKED
   }
 
@@ -62,26 +66,31 @@ public record GovernancePolicyProposal(
   }
 
   public GovernancePolicyProposal submitted(String correlationId, Instant now) {
-    if (status == Status.IN_REVIEW) return this;
-    if (status != Status.DRAFT) return blocked(correlationId, now);
-    return copy(Status.IN_REVIEW, submittedCorrelationId == null ? correlationId : submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
+    if (status == Status.SUBMITTED || status == Status.SIMULATION_REQUIRED || status == Status.IN_REVIEW) return this;
+    if (status != Status.DRAFT && status != Status.CHANGES_REQUESTED) return blocked(correlationId, now);
+    return copy(Status.SIMULATION_REQUIRED, submittedCorrelationId == null ? correlationId : submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
+  }
+
+  public GovernancePolicyProposal withSimulationEvidence(String correlationId, Instant now) {
+    if (status == Status.SIMULATION_REQUIRED || status == Status.SUBMITTED) return copy(Status.IN_REVIEW, submittedCorrelationId == null ? correlationId : submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
+    return this;
   }
 
   public GovernancePolicyProposal approved(String rationale, String correlationId, Instant now) {
     if (status == Status.APPROVED) return this;
-    if (status != Status.IN_REVIEW) return blocked(correlationId, now);
+    if (status != Status.SUBMITTED && status != Status.IN_REVIEW) return blocked(correlationId, now);
     return copy(Status.APPROVED, submittedCorrelationId, "approve", rationale, correlationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
   }
 
   public GovernancePolicyProposal rejected(String rationale, String correlationId, Instant now) {
     if (status == Status.REJECTED) return this;
-    if (status != Status.IN_REVIEW) return blocked(correlationId, now);
+    if (status != Status.SUBMITTED && status != Status.SIMULATION_REQUIRED && status != Status.IN_REVIEW && status != Status.CHANGES_REQUESTED) return blocked(correlationId, now);
     return copy(Status.REJECTED, submittedCorrelationId, "reject", rationale, correlationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
   }
 
   public GovernancePolicyProposal changesRequested(String rationale, String correlationId, Instant now) {
     if (status == Status.CHANGES_REQUESTED) return this;
-    if (status != Status.IN_REVIEW) return blocked(correlationId, now);
+    if (status != Status.SUBMITTED && status != Status.IN_REVIEW) return blocked(correlationId, now);
     return copy(Status.CHANGES_REQUESTED, submittedCorrelationId, "request_changes", rationale, correlationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
   }
 
@@ -99,7 +108,7 @@ public record GovernancePolicyProposal(
 
   public GovernancePolicyProposal rolledBack(String correlationId, Instant now) {
     if (status == Status.ROLLED_BACK) return this;
-    if (status != Status.ACTIVATED || rollbackReference == null || rollbackReference.isBlank()) return blocked(correlationId, now);
+    if ((status != Status.ACTIVATED && status != Status.ROLLBACK_CANDIDATE) || rollbackReference == null || rollbackReference.isBlank()) return blocked(correlationId, now);
     return copy(Status.ROLLED_BACK, submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, correlationId, outcomeNotes, now);
   }
 

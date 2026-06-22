@@ -77,7 +77,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
     availability: 'visible'
   },
   {
-    functionalAgentId: 'agent-governance-policy',
+    functionalAgentId: 'governance-policy-agent',
     label: 'Governance/Policy',
     purpose: 'Review policy proposals, approval gates, simulations, and diffs.',
     icon: 'shield',

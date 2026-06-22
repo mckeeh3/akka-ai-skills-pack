@@ -56,7 +56,7 @@ class MeServiceTest {
     assertTrue(response.visibleCapabilityIds().contains("tenant.user.manage"));
     assertTrue(response.visibleCapabilityIds().contains("user_admin.view_overview"));
     assertEquals(
-        List.of("my-account-agent", "user-admin-agent", "agent-admin-agent", "agent-audit-trace", "agent-governance-policy"),
+        List.of("my-account-agent", "user-admin-agent", "agent-admin-agent", "agent-audit-trace", "governance-policy-agent"),
         response.functionalAgents().stream().map(MeResponse.FunctionalAgentSummary::functionalAgentId).toList());
     assertTrue(response.functionalAgents().stream().allMatch(agent -> agent.availability().equals("visible")));
     var userAdminAgent = response.functionalAgents().stream().filter(agent -> agent.functionalAgentId().equals("user-admin-agent")).findFirst().orElseThrow();

@@ -153,9 +153,9 @@ class AttentionProducerServiceTest {
     assertTrue(item.sourceRefs().stream().anyMatch(ref -> ref.refId().equals(proposalId)));
 
     var member = resolver.resolveMe(new WorkosIdentity("workos-member@example.test", "member@example.test", "Member"), "membership-member", "corr-member");
-    assertTrue(attention.listWorkstreamItems(member, "agent-governance-policy", "corr-member-list").isEmpty());
+    assertTrue(attention.listWorkstreamItems(member, "governance-policy-agent", "corr-member-list").isEmpty());
     var other = resolver.resolveMe(new WorkosIdentity("workos-other@example.test", "other@example.test", "Other"), "membership-other", "corr-other");
-    assertTrue(attention.listWorkstreamItems(other, "agent-governance-policy", "corr-other-list").isEmpty());
+    assertTrue(attention.listWorkstreamItems(other, "governance-policy-agent", "corr-other-list").isEmpty());
 
     var decision = governance.decideProposal(tenantAdmin, Map.of("proposalId", proposalId, "decision", "approve", "rationale", "bounded approval"), "idem-decision", "corr-decision");
     assertEquals("accepted", decision.status());

@@ -51,7 +51,7 @@ test('functional agent fixtures expose the core workstreams while My Account is 
   for (const label of ['My Account', 'User Admin', 'Agent Admin', 'Audit/Trace', 'Governance/Policy']) {
     assert.match(agentFixtures, new RegExp(label.replace('/', '\\/')));
   }
-  for (const agentId of ['my-account-agent', 'user-admin-agent', 'agent-admin-agent', 'agent-audit-trace', 'agent-governance-policy']) {
+  for (const agentId of ['my-account-agent', 'user-admin-agent', 'agent-admin-agent', 'agent-audit-trace', 'governance-policy-agent']) {
     assert.match(agentFixtures, new RegExp(`functionalAgentId: '${agentId}'[\\s\\S]*?availability: 'visible'`));
   }
   assert.doesNotMatch(agentFixtures, /agent-access-profile/);

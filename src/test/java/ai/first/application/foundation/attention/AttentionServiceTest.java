@@ -93,7 +93,7 @@ class AttentionServiceTest {
   @Test
   void lifecycleOperationsAreAuthorizedIdempotentAndAudited() {
     var actor = actor("admin@example.test", "membership-admin", "corr-lifecycle");
-    service.upsertItem(actor, item("attention-governance", "tenant-1", "agent-governance-policy", "governance.policy.read", AttentionCategory.GOVERNANCE_APPROVAL, AttentionSeverity.URGENT), "corr-upsert-governance");
+    service.upsertItem(actor, item("attention-governance", "tenant-1", "governance-policy-agent", "governance.policy.read", AttentionCategory.GOVERNANCE_APPROVAL, AttentionSeverity.URGENT), "corr-upsert-governance");
 
     var acknowledged = service.acknowledge(actor, "attention-governance", "corr-ack");
     var acknowledgedAgain = service.acknowledge(actor, "attention-governance", "corr-ack-duplicate");

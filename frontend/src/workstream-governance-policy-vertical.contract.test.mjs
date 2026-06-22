@@ -70,7 +70,7 @@ test('Governance/Policy UI states preserve backend authority, denials, approval 
     'surface.governance.proposal_queue.v1',
     'surface.governance.decision_card.v1',
     'surface.governance.activation_status.v1',
-    'action-govpol-add-outcome-note'
+    'action-governance-policy-outcome-note'
   ]) {
     assert.match(fixtures, new RegExp(marker.replace(/[()]/g, '\\$&')));
   }
@@ -217,10 +217,10 @@ test('Governance/Policy fixture client returns structured results for dashboard,
   assert.match(apiClient, /displayGovernancePolicySimulationActionResult/);
   assert.match(apiClient, /displayGovernancePolicyImpactTaskActionResult/);
   assert.match(apiClient, /displayGovernancePolicyImpactResultActionResult/);
-  for (const actionId of ['action-govpol-show-dashboard', 'action-govpol-show-policy-inventory', 'action-govpol-simulate-proposal', 'action-govpol-start-impact-analysis', 'action-govpol-accept-impact-result', 'action-govpol-request-impact-changes', 'action-govpol-add-outcome-note']) {
+  for (const actionId of ['action-governance-policy-dashboard', 'action-governance-policy-list', 'action-governance-policy-simulate', 'action-governance-policy-start-impact-analysis', 'action-governance-policy-accept-impact-result', 'action-governance-policy-request-impact-changes', 'action-governance-policy-outcome-note']) {
     assert.match(fixtures, new RegExp(actionId));
   }
-  for (const routedActionId of ['action-govpol-show-dashboard', 'action-govpol-show-policy-inventory', 'action-govpol-simulate-proposal', 'action-govpol-start-impact-analysis']) {
+  for (const routedActionId of ['action-governance-policy-dashboard', 'action-governance-policy-list', 'action-governance-policy-simulate', 'action-governance-policy-start-impact-analysis']) {
     assert.match(apiClient, new RegExp(routedActionId));
   }
 });

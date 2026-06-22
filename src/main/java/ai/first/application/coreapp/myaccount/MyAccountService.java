@@ -73,7 +73,7 @@ public final class MyAccountService {
       case "action-open-user-admin" -> target("user-admin-agent", "User Admin", List.of("user_admin.view_overview", "saas_owner.admin.manage", "tenant.user.read", "tenant.user.manage", "customer.user.read", "customer.user.manage"), "surface-user-admin-dashboard");
       case "action-open-agent-admin" -> target("agent-admin-agent", "Agent Admin", List.of("agent_admin.list_definitions"), "surface-agent-admin-dashboard");
       case "action-open-audit-trace" -> target("agent-audit-trace", "Audit/Trace", List.of("audit.trace.read", "saas_owner.audit.read", "tenant.audit.read", "customer.audit.read"), "surface-audit-trace-dashboard");
-      case "action-open-governance-policy" -> target("agent-governance-policy", "Governance/Policy", List.of("governance.policy.read"), "surface-governance-policy-dashboard");
+      case "action-open-governance-policy" -> target("governance-policy-agent", "Governance/Policy", List.of("governance.policy.read"), "surface-governance-policy-dashboard");
       default -> null;
     };
     if (target == null) {
@@ -115,7 +115,7 @@ public final class MyAccountService {
       attentionService.upsertItem(actor, attentionItem(actor, "attention-agent-admin-readiness", "agent-admin-agent", "Agent Admin provider readiness is blocked", "Model/runtime provider readiness is blocked until governed provider configuration is available.", AttentionCategory.PROVIDER_READINESS, AttentionSeverity.BLOCKED, "agent_admin.list_definitions", "surface-agent-admin-catalog", "agent-admin-provider-readiness", correlationId), correlationId);
     }
     if (actor.selectedContext().capabilities().contains("governance.policy.read")) {
-      attentionService.upsertItem(actor, attentionItem(actor, "attention-governance-policy-approval", "agent-governance-policy", "Governance policy decision awaits authorized review", "Governance/Policy has reviewable policy approval evidence for this selected context.", AttentionCategory.GOVERNANCE_APPROVAL, AttentionSeverity.URGENT, "governance.policy.read", "surface-governance-policy-dashboard", "governance-policy-approval", correlationId), correlationId);
+      attentionService.upsertItem(actor, attentionItem(actor, "attention-governance-policy-approval", "governance-policy-agent", "Governance policy decision awaits authorized review", "Governance/Policy has reviewable policy approval evidence for this selected context.", AttentionCategory.GOVERNANCE_APPROVAL, AttentionSeverity.URGENT, "governance.policy.read", "surface-governance-policy-dashboard", "governance-policy-approval", correlationId), correlationId);
     }
     if (actor.selectedContext().capabilities().contains("audit.trace.read")) {
       attentionService.upsertItem(actor, attentionItem(actor, "attention-audit-trace-failure-evidence", "agent-audit-trace", "Audit/Trace has provider failure evidence available", "Audit/Trace has provider failure or denial evidence available for authorized investigation.", AttentionCategory.AUDIT_FAILURE_EVIDENCE, AttentionSeverity.WARNING, "audit.trace.read", "surface-audit-trace-dashboard", "audit-trace-failure-evidence", correlationId), correlationId);
@@ -192,7 +192,7 @@ public final class MyAccountService {
       case "user-admin-agent" -> "action-open-user-admin";
       case "agent-admin-agent" -> "action-open-agent-admin";
       case "agent-audit-trace" -> "action-open-audit-trace";
-      case "agent-governance-policy" -> "action-open-governance-policy";
+      case "governance-policy-agent" -> "action-open-governance-policy";
       default -> "action-show-my-account-dashboard";
     };
   }
@@ -201,7 +201,7 @@ public final class MyAccountService {
     return switch (functionalAgentId) {
       case "agent-admin-agent" -> "surface-agent-admin-catalog";
       case "agent-audit-trace" -> "surface-audit-trace-dashboard";
-      case "agent-governance-policy" -> "surface-governance-policy-dashboard";
+      case "governance-policy-agent" -> "surface-governance-policy-dashboard";
       case "user-admin-agent" -> "surface-user-admin-dashboard";
       default -> "surface-my-account-dashboard";
     };

@@ -42,7 +42,7 @@ import {
   meTenantAdmin
 } from '../workstream';
 
-const fixtureMessageCapableAgentIds = ['my-account-agent', 'user-admin-agent', 'agent-admin-agent', 'agent-audit-trace', 'agent-governance-policy'];
+const fixtureMessageCapableAgentIds = ['my-account-agent', 'user-admin-agent', 'agent-admin-agent', 'agent-audit-trace', 'governance-policy-agent'];
 
 export class FixtureWorkstreamApiClient implements WorkstreamClient {
   private items: WorkstreamItem[] = [...initialWorkstreamItems];
@@ -222,14 +222,14 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
                         ? displayAgentPromptRiskReviewActionResult
                       : request.actionId === 'action-open-agent-trace'
                         ? displayAgentAdminTraceActionResult
-        : request.actionId === 'action-govpol-show-dashboard' || request.capabilityId === 'governance.policy.read'
+        : request.actionId === 'action-governance-policy-dashboard' || request.capabilityId === 'governance.policy.read'
           ? displayGovernancePolicyDashboardActionResult
-          : request.actionId === 'action-govpol-show-policy-inventory'
+          : request.actionId === 'action-governance-policy-list'
             ? displayGovernancePolicyInventoryActionResult
-            : request.actionId === 'action-govpol-simulate-proposal' || request.capabilityId === 'governance.policy.simulate'
+            : request.actionId === 'action-governance-policy-simulate' || request.capabilityId === 'governance.policy.simulate'
               ? displayGovernancePolicySimulationActionResult
-              : ['action-govpol-start-impact-analysis', 'action-govpol-read-impact-analysis', 'action-govpol-cancel-impact-analysis'].includes(request.actionId) || request.capabilityId?.startsWith('governance.policy.impact_analysis.')
-                ? (['action-govpol-accept-impact-result', 'action-govpol-reject-impact-result', 'action-govpol-request-impact-changes'].includes(request.actionId) ? displayGovernancePolicyImpactResultActionResult : displayGovernancePolicyImpactTaskActionResult)
+              : ['action-governance-policy-start-impact-analysis', 'action-governance-policy-read-impact-analysis', 'action-governance-policy-cancel-impact-analysis'].includes(request.actionId) || request.capabilityId?.startsWith('governance.policy.impact_analysis.')
+                ? (['action-governance-policy-accept-impact-result', 'action-governance-policy-reject-impact-result', 'action-governance-policy-request-impact-changes'].includes(request.actionId) ? displayGovernancePolicyImpactResultActionResult : displayGovernancePolicyImpactTaskActionResult)
               : request.actionId === 'action-display-agent-catalog' || request.capabilityId === 'agent_admin.list_definitions'
           ? displayAgentCatalogActionResult
           : request.actionId === 'action-display-user-list' || request.actionId === 'action-search-users'

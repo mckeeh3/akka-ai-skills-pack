@@ -526,7 +526,7 @@ public final class WorkstreamEventPublisher {
         idempotencyKey,
         task.idempotencyKey(),
         List.of(traceId),
-        "agent-governance-policy",
+        "governance-policy-agent",
         task.status() == GovernancePolicyImpactTask.Status.COMPLETED_REVIEW_REQUIRED ? "surface-governance-policy-impact-analysis-result" : "surface-governance-policy-impact-analysis-task",
         PAYLOAD_GOVERNANCE_POLICY_IMPACT_LIFECYCLE,
         Map.ofEntries(

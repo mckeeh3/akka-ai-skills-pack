@@ -1909,7 +1909,7 @@ class WorkstreamServiceTest {
     assertEquals("surface-agent-admin-catalog", agentCatalog.resultSurface().surfaceId());
 
     var governancePolicies = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
-        "show_surface", "user_prompt", "show governance policies", null, "agent-governance-policy", null, null, "agent-governance-policy", null, null, "current_workstream", "corr-shell-governance-policies", "membership-admin"));
+        "show_surface", "user_prompt", "show governance policies", null, "governance-policy-agent", null, null, "governance-policy-agent", null, null, "current_workstream", "corr-shell-governance-policies", "membership-admin"));
     assertEquals("accepted", governancePolicies.status());
     assertEquals("surface-governance-policy-inventory", governancePolicies.resultSurface().surfaceId());
   }
@@ -1997,7 +1997,7 @@ class WorkstreamServiceTest {
 
   @Test
   void submitMessageSupportsEveryFiveCoreV0FunctionalAgent() {
-    for (var agentId : List.of("my-account-agent", "user-admin-agent", "agent-admin-agent", "agent-audit-trace", "agent-governance-policy")) {
+    for (var agentId : List.of("my-account-agent", "user-admin-agent", "agent-admin-agent", "agent-audit-trace", "governance-policy-agent")) {
       var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
           "membership-admin", agentId, "Show five core v0 readiness", "corr-" + agentId, "idem-" + agentId), "corr-header");
 
@@ -2335,13 +2335,13 @@ class WorkstreamServiceTest {
   @Test
   void governancePolicyMessageUsesGovernanceCapabilityForRuntimeTraces() {
     var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
-        "membership-admin", "agent-governance-policy", "Explain policy approval gates", "corr-governance-message", "idem-governance-message"), "corr-header");
+        "membership-admin", "governance-policy-agent", "Explain policy approval gates", "corr-governance-message", "idem-governance-message"), "corr-header");
 
-    assertEquals("agent-governance-policy", response.surface().ownerFunctionalAgentId());
+    assertEquals("governance-policy-agent", response.surface().ownerFunctionalAgentId());
     assertEquals("markdown_response", response.surface().surfaceType());
-    assertEquals("agent-governance-policy", trackingRuntimeInvoker.lastRequest().agentDefinitionId());
+    assertEquals("governance-policy-agent", trackingRuntimeInvoker.lastRequest().agentDefinitionId());
     assertTrue(service.bootstrap(identity(), "membership-admin", "corr-governance-trace-read").functionalAgents().stream()
-        .filter(agent -> agent.functionalAgentId().equals("agent-governance-policy"))
+        .filter(agent -> agent.functionalAgentId().equals("governance-policy-agent"))
         .findFirst()
         .orElseThrow()
         .requiredCapabilityIds()
