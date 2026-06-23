@@ -89,7 +89,7 @@
 
 ### TASK-WTUA-02-001: Update canonical workstream tool-use doctrine
 
-- status: pending
+- status: done
 - source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
 - task brief: specs/workstream-tool-use-alignment/tasks/02-canonical-doctrine/01-update-canonical-tool-use-doctrine.md
 - depends on:
@@ -129,6 +129,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs-only skills-pack maintenance; no runtime code; expected readiness level is described/canonical-doctrine aligned
+  - commit message: `workstream-tool-use: update canonical tool-use doctrine`
+  - checks passed: `git diff --check`; targeted canonical-doc search found `human_chat_tool_plan`, confirmed human chat tool-plan guidance, explicit confirmation, per-tool idempotency/transaction, partial-failure/result surfaces, and "AI model is not the security boundary" language across the edited canonical docs.
+  - targeted prohibition search found remaining `must not submit`/`no-mutation` language only in deterministic surface-router guidance, with adjacent reconciliation stating it is not a global prohibition and that confirmed human chat tool plans are separately modeled governed-tool exposure channels.
 
 ### TASK-WTUA-03-001: Align app-description and intent skills with workstream tool catalogs
 

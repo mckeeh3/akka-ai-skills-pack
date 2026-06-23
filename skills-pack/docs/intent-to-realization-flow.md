@@ -29,14 +29,14 @@ Feature-bearing implementation tasks should inherit or state a vertical contract
 - role-specific dashboard or non-UI trigger;
 - human surface graph node and action edge, when user-facing;
 - governed tool id for the shared capability-backed operation;
-- actor adapter and exposure channel, such as `human-backed` + `surface_action`, `ai-backed` + `agent_tool_call`, `service` + `workflow`, or timer/consumer/API/MCP exposure;
+- actor adapter and exposure channel, such as `human-backed` + `surface_action`, `human-backed` + `human_chat_tool_plan`, `ai-backed` + `agent_tool_call`, `service` + `workflow`, or timer/consumer/API/MCP exposure;
 - whether the operation is exposed to human-backed actors, AI-backed actors, both, or neither in this workstream;
 - capability id/API exposure;
 - selected Akka substrate and package path;
 - functional-agent delegation/result surface, when agent-backed;
 - autonomous task/result/notification mapping, when AutonomousAgent-backed;
 - `AuthContext`, authorization denial behavior, and tenant/customer scoping;
-- audit/work trace obligations, including trace source and `requestedBy` relationship for AI-mediated human requests;
+- audit/work trace obligations, including trace source, `requestedBy` relationship for AI-mediated human requests, and `confirmedBy`/confirmation id for confirmed human chat tool plans;
 - local validation path.
 
 If the contract is missing and cannot be inherited from current intent/specs, repair the task brief or block with a pending question.
@@ -55,7 +55,7 @@ Current intent should drive implementation choices:
 
 ## Actor-adapter realization rule
 
-Do not realize the same business operation twice because it is reachable through both a surface and an AI agent. Compile one governed workstream tool and then realize each declared actor adapter against it. Human surface availability does not automatically grant AI tool availability; an AI-backed workstream agent may perform or propose the operation only when the governed tool is explicitly included in its tool boundary and approval policy. Tests should cover direct human surface action, AI-mediated tool call when allowed, AI denial when not allowed, shared capability authorization, idempotency, result/system-message surfaces, and trace differences.
+Do not realize the same business operation twice because it is reachable through a surface, confirmed human chat plan, and/or AI agent. Compile one governed workstream tool and then realize each declared actor adapter against it. Human surface availability does not automatically grant AI tool availability; an AI-backed workstream agent may perform or propose the operation only when the governed tool is explicitly included in its tool boundary and approval policy. Confirmed human chat execution is a human-backed adapter: the model may propose a plan, but execution requires explicit confirmation bound to that plan and deterministic backend authorization. Tests should cover direct human surface action, confirmed chat plan execution/denial/partial failure when allowed, AI-mediated tool call when allowed, AI denial when not allowed, shared capability authorization, idempotency, result/system-message surfaces, and trace differences.
 
 ## Runtime validation doctrine
 

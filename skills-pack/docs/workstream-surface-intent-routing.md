@@ -4,7 +4,7 @@
 
 This document defines the default generated-app guidance for routing natural-language workstream composer requests to structured surfaces before model-backed chat. Use it with `./agent-workstream-application-architecture.md`, `./structured-surface-contracts.md`, `./workstream-contract.md`, `./workstream-expertise-model.md`, and `./web-ui-api-contract-patterns.md` whenever a new workstream, surface graph, functional agent, or browser composer is planned or implemented.
 
-Surface intent routing is a fast, deterministic, no-mutation request path. It lets users type requests such as `create customer "Acme"`, `invite user jane@example.com`, `show policies`, or `open audit trace abc` and receive the relevant authorized surface, often prefilled, without waiting for a model response and without granting the workstream agent direct command authority.
+Surface intent routing is a fast, deterministic, no-mutation request path. It lets users type requests such as `create customer "Acme"`, `invite user jane@example.com`, `show policies`, or `open audit trace abc` and receive the relevant authorized surface, often prefilled, without waiting for a model response and without treating prompt text as authority. This router is one human-backed actor adapter; it is not a global prohibition on separately modeled confirmed human chat tool plans.
 
 ## Core rule
 
@@ -19,7 +19,7 @@ composer prompt
 → fallback to governed model-backed chat only when no safe route matches
 ```
 
-The router may open, refresh, or prepopulate surfaces. It must not submit side-effecting commands, approve decisions, change policy, mutate records, send emails, activate behavior, or bypass confirmation. Consequential operations still occur only through backend-authorized surface actions, APIs, workflows, or future separately-governed agent tools.
+The router may open, refresh, or prepopulate surfaces. It must not submit side-effecting commands, approve decisions, change policy, mutate records, send emails, activate behavior, or bypass confirmation. Consequential operations still occur only through modeled governed-tool exposure channels such as backend-authorized surface actions/browser-tools, confirmed human chat tool plans, APIs, workflows, or agent-tools.
 
 ## Why this is mandatory
 
@@ -87,6 +87,23 @@ Prefill: { organizationName: "Org 1", reasonHint: "Requested from User Admin com
 Forbidden effects: no organization is created until the human submits the Create Organization action
 ```
 
+## Boundary with confirmed human chat tool plans
+
+Deterministic routing remains the default first response for high-confidence create/edit/task prompts because it keeps the human in a visible review/submit flow. Separately, a workstream may define a `human_chat_tool_plan` adapter for consequential chat-mediated execution. That adapter is outside this router and must be modeled in the workstream's capability/governed-tool map, workstream expertise bundle, and trace contract.
+
+A confirmed human chat tool-plan path follows this pattern:
+
+```text
+human prompt in selected workstream
+→ model-backed workstream agent interprets only within that workstream's governed tool catalog
+→ agent returns a sufficiently detailed plan with tool ids/actions, inputs, consequences, approval needs, idempotency/rollback notes, and expected result surfaces
+→ human explicitly confirms that exact plan
+→ backend executes each governed-tool invocation as its own authorized, idempotent, traced transaction boundary
+→ workstream returns success, denial, approval-required, or partial-failure result surfaces
+```
+
+If the proposed plan changes materially, ask for confirmation again. If a requested operation is outside the selected workstream's tool catalog or the user's AuthContext/role/capability grants, return a safe denial or guidance surface rather than inventing a tool. The AI model may interpret and explain, but tool catalog membership, AuthContext, schemas, policy/approval, idempotency, and backend authorization remain the security boundary.
+
 ## Agent familiarity guidance
 
 Every LLM-backed functional agent should know its workstream's surface catalog. Prompt, skill, or reference material should teach the agent to:
@@ -94,11 +111,11 @@ Every LLM-backed functional agent should know its workstream's surface catalog. 
 - answer how to use the workstream's surfaces;
 - recommend specific surfaces and actions by user-facing name;
 - explain that the router may open/prepopulate surfaces for review;
-- avoid claiming that it directly mutated state unless a separately-governed agent tool actually performed a backend-authorized operation;
-- preserve selected AuthContext, capability, approval, idempotency, and audit boundaries in explanations;
-- direct users to structured surfaces for consequential work.
+- avoid claiming that it directly mutated state unless a modeled confirmed human chat tool plan or separately governed agent-tool actually performed a backend-authorized operation;
+- preserve selected AuthContext, capability, approval, idempotency, confirmation, and audit boundaries in explanations;
+- direct users to structured surfaces for consequential work when no confirmed chat tool-plan adapter is modeled.
 
-This familiarity does not grant tool access. Human surface availability does not imply AI tool availability. If later work exposes direct agent tools, model those tools separately through `ToolPermissionBoundary`, schemas, approvals, idempotency, and traces.
+This familiarity does not grant tool access. Human surface availability does not imply AI tool availability. Confirmed human chat execution and AI agent-tool execution are separate adapters: model each through the governed tool catalog, `ToolPermissionBoundary` where AI-backed, schemas, confirmations/approvals, idempotency, and traces.
 
 ## Frontend implementation guidance
 

@@ -19,7 +19,7 @@ product intent
 
 Use `./requirements-to-workstream-development-process.md` for broad input, PRD, app-description, planning, backlog, and implementation-readiness work. It discovers capabilities through workstream workforce, attention, dashboard, surface, and action semantics before selecting APIs or Akka components.
 
-A capability is the product-level backend ability or grouping. A capability owns one or more governed-tools: semantic executable operations or queries with actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. Agent workstream actions, Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, browser UI actions, and agent-tools are implementation or exposure choices for those governed-tools.
+A capability is the product-level backend ability or grouping. A capability owns one or more governed-tools: semantic executable operations or queries with actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. Agent workstream actions, structured surface/browser actions, confirmed human chat tool plans, Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, and agent-tools are implementation or exposure choices for those governed-tools.
 
 ## Non-negotiable foundation
 
@@ -57,7 +57,7 @@ A capability definition should include:
 | Idempotency | Duplicate command behavior, retry safety, dedupe keys, and no-op semantics. |
 | Policy/approval | Autonomy level, approval gates, exception/escalation rules, risk/confidence thresholds, and human authority. |
 | Audit/trace | Audit event type, work-trace fields, policy citations, tool/data references, and retention/redaction expectations. |
-| Exposure channels | Selected workstream action, browser-tool, agent-tool, API, workflow-tool, MCP-tool, timer-tool, consumer-tool, internal-tool, view/query, or explicit non-exposure for each governed-tool. |
+| Exposure channels | Selected workstream action, browser-tool, confirmed human chat tool-plan adapter, agent-tool, API, workflow-tool, MCP-tool, timer-tool, consumer-tool, internal-tool, view/query, or explicit non-exposure for each governed-tool. |
 | Tests | Success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and exposure-channel tests. |
 
 ## Capability, governed-tool, and exposure terms
@@ -67,7 +67,7 @@ Use this hierarchy consistently:
 ```text
 capability = product ability or grouping
 → governed-tool = semantic executable operation/query inside the capability
-→ exposure channel = browser-tool, agent-tool, workflow-tool, timer-tool, consumer-tool, MCP-tool, internal-tool, API, view/query, or component method
+→ exposure channel = browser-tool, human_chat_tool_plan, agent-tool, workflow-tool, timer-tool, consumer-tool, MCP-tool, internal-tool, API, view/query, or component method
 → Akka substrate = entity, view, workflow, Agent, AutonomousAgent, consumer, timer, endpoint, or service code
 ```
 
@@ -76,6 +76,7 @@ A capability can contain one governed-tool when the operation is simple, or mult
 Use qualified exposure terms in architecture guidance:
 
 - **browser-tool:** governed-tool exposed to humans through structured surface actions and browser APIs.
+- **human_chat_tool_plan:** governed-tool exposed to a human-backed actor through a selected workstream agent's natural-language plan/confirmation adapter. The model may interpret and propose, but execution waits for explicit confirmation and deterministic backend authorization.
 - **agent-tool:** governed-tool exposed to request-based or internal agents through Akka `@FunctionTool`, component-tool exposure, MCP, or an equivalent model-facing facade.
 - **internal-tool:** governed-tool used by workflows, timers, consumers, internal services, or internal worker agents without direct browser exposure.
 - **workflow-tool**, **timer-tool**, **consumer-tool**, and **MCP-tool:** qualified forms when the exposure boundary matters.
@@ -106,6 +107,7 @@ Select governed-tool exposure after capability semantics are clear. Use `structu
 | Channel | Use when | Capability rules |
 |---|---|---|
 | Browser UI action | Humans directly initiate or supervise work, including prompt/action/deep-link shell requests such as `show_surface` and `open_workstream`. | Backend still enforces auth; UI shows allowed actions from `/api/me`/capabilities but never decides authorization alone. Shell request resolution must scope targets, audit origin metadata, and return safe denial/system-message surfaces for unauthorized workstreams or surfaces. |
+| Human chat tool plan | A signed-in human asks the selected workstream agent to perform consequential work in natural language. | The selected workstream agent may propose a detailed tool plan, but execution requires explicit confirmation bound to that plan. Each governed-tool invocation is separately authorized, idempotent, traced with `source=human_chat_tool_plan` and `confirmedBy`, and returns result or partial-failure surfaces. The AI model is not the security boundary. |
 | HTTP/gRPC API | External clients, browser APIs, or services need a stable contract. | Validate tokens/context, scope every command/query, return safe denial/errors, audit protected access. |
 | Agent-tool | A bounded agent may choose to read evidence, draft recommendations, or request/perform allowed work. | Agent-tool receives or resolves AuthContext, enforces permission/scope, limits side effects, records governed-tool/data/work traces. |
 | MCP-tool/resource/prompt | Capabilities are shared with remote AI clients or other services. | Expose only selected MCP-tools/resources/prompts, use ACL/JWT/service identity, filter allowed MCP-tools, audit remote access. |
@@ -115,7 +117,7 @@ Select governed-tool exposure after capability semantics are clear. Use `structu
 | Consumer | Capability reacts to events/topics/service streams. | Preserve provenance/correlation, enforce allowed side effects, handle duplicate/retry semantics. |
 | Internal component method | Operation is not directly exposed outside the backend. | Still validate invariants; apply auth at the caller boundary and audit where consequential. |
 
-A capability may have multiple exposure channels, but the same authority, validation, idempotency, audit, and approval semantics must hold across all of them.
+A capability may have multiple exposure channels, but the same authority, validation, idempotency, audit, and approval semantics must hold across all of them. Multi-step human chat plans execute as a sequence of independently authorized governed-tool invocations; failure of one step must report partial results safely and must not rely on the model to repair consistency without backend transaction, retry, or compensation rules.
 
 ## Akka realization rules
 
@@ -171,6 +173,7 @@ Use these classes to decompose a product safely:
 Use conservative defaults unless accepted product specs say otherwise:
 
 - Read-only scoped evidence may be agent-accessible when it is redacted and audited appropriately.
+- Side-effecting human chat tool plans require explicit confirmation bound to the proposed plan, plus any separate approval gates required by policy.
 - Side-effecting agent-tools require explicit permission and should prefer proposal/approval flows.
 - `readSkill(skillId)` is a governed guidance-loading capability, not an authorization grant; it must check tenant, active governed managed-agent `AgentDefinition`, AgentSkillManifest assignment, skill version/status, mode, AuthContext, and trace allowed or denied loads. Do not confuse that managed-agent domain record with Akka autonomous `AgentDefinition`, the SDK definition returned by `AutonomousAgent.definition()` or dynamic `AgentSetup`.
 - High-impact, irreversible, cross-tenant, billing, security, policy, governance, data-export, email-send, or external-side-effect capabilities require human approval or a documented autonomous policy boundary. Generated app email capabilities use Resend through the shared email service; agent access must be a governed `@FunctionTool` or equivalent capability exposure channel with tool-boundary enforcement and traces.
@@ -189,6 +192,7 @@ Capability tests should verify behavior, not just component mechanics:
 - audit/work-trace creation for denials, data access, approvals, and side effects;
 - approval/escalation behavior for consequential actions;
 - exposure-specific behavior for UI/API/tool/MCP/workflow/timer/consumer paths;
+- confirmed human chat tool-plan tests cover proposed-plan detail, explicit confirmation binding, denial before confirmation, per-tool idempotency/transaction behavior, partial-failure reporting, and trace source;
 - agent tool tests use deterministic model/tool invocation and do not rely on prompt-only security.
 
 ## Routing implications
