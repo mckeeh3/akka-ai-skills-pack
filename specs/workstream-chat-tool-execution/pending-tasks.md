@@ -1,0 +1,512 @@
+# Pending Tasks: Workstream Chat Tool Execution
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, conversation capture, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
+- Commit message format: `workstream-chat-tools: <short task title>`.
+- Do not commit unrelated changes while executing this root app-realization queue.
+- Preserve deterministic surface intent routing, selected `AuthContext`, tenant/customer scoping, backend authorization, idempotency, provider fail-closed behavior, audit/work traces, and frontend secret boundaries.
+- The terminal verification task must append bounded follow-up tasks plus a new terminal verification task if the README done state is not fully achieved.
+
+## Tasks
+
+### TASK-WCTE-00-001: Create Workstream Chat Tool Execution planning scaffold
+
+- status: done
+- source: user requested `specs/workstream-chat-tool-execution/` mini-project and asked whether to use one project or one per foundation workstream
+- task brief: specs/workstream-chat-tool-execution/tasks/00-planning/00-create-workstream-chat-tool-execution-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - current conversation context
+  - specs/workstream-tool-use-alignment/verification-notes.md
+  - specs/workstream-surface-intent-routing/verification-notes.md
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/conversation-capture.md
+  - specs/workstream-chat-tool-execution/pending-tasks.md
+  - specs/workstream-chat-tool-execution/sprints/*.md
+  - specs/workstream-chat-tool-execution/backlog/*.md
+  - specs/workstream-chat-tool-execution/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - mini-project answers why this is one queue with per-workstream slices
+  - scope, done state, non-goals, implementation order, and verification loop are explicit
+  - first non-done task is runnable without guessing
+  - changes and queue update are committed
+- notes:
+  - decision: use one mini-project for all five foundation workstreams, with shared substrate first and per-workstream slices later
+  - commit message: `workstream-chat-tools: add planning queue`
+
+### TASK-WCTE-01-001: Audit and design confirmed chat tool execution
+
+- status: pending
+- source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
+- task brief: specs/workstream-chat-tool-execution/tasks/01-audit-contract/01-audit-and-design-chat-tool-execution.md
+- depends on:
+  - TASK-WCTE-00-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/conversation-capture.md
+  - specs/workstream-chat-tool-execution/sprints/01-contract-and-design.md
+  - specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
+  - specs/workstream-chat-tool-execution/tasks/01-audit-contract/01-audit-and-design-chat-tool-execution.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - src/main/java/ai/first/application/coreapp/workstream/SurfaceIntentRouter.java
+  - src/main/java/ai/first/application/coreapp/workstream/DefaultSurfaceIntentRouter.java
+  - src/main/java/ai/first/application/foundation/agent/WorkstreamRuntimeAgent.java
+  - src/main/java/ai/first/application/foundation/agent/DefaultWorkstreamAgentRuntimeInvoker.java
+  - frontend/src/workstream/**
+  - app-description/domains/core-starter/workstreams/**
+- skills:
+  - agent-workstream-apps
+  - capability-first-backend
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+- expected outputs:
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - queue update
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - design map identifies exact backend/frontend/app-description files and first-pass representative tool-plan paths
+  - design map names initial governed tool ids, capability ids, action ids, plan DTOs/surfaces, trace fields, and tests
+  - deterministic surface routing remains first before chat tool planning
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs/spec design only; root app runtime planning; no runtime feature completed
+
+### TASK-WCTE-02-001: Update app-description current intent for chat tool plans
+
+- status: pending
+- source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
+- task brief: specs/workstream-chat-tool-execution/tasks/02-app-description/01-update-chat-tool-plan-current-intent.md
+- depends on:
+  - TASK-WCTE-01-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/tasks/02-app-description/01-update-chat-tool-plan-current-intent.md
+  - app-description/domains/core-starter/workstreams/**
+  - app-description/domains/core-starter/workstreams/surface-catalog.md
+- skills:
+  - app-description-functional-agent-modeling
+  - app-description-surface-modeling
+  - app-description-capability-modeling
+  - app-description-auth-security
+  - app-description-test-specification
+- expected outputs:
+  - app-description workstream/tool/surface/test updates for all five foundation workstreams
+  - shared governed tool ids for surface actions and chat tool-plan adapters
+  - explicit plan proposal, confirmation, transaction/idempotency, denial, trace, and validation expectations
+  - queue update
+- required checks:
+  - `git diff --check`
+  - focused search proving all five workstreams mention `human_chat_tool_plan` or equivalent accepted adapter terminology
+- done criteria:
+  - current intent says chat plan execution is allowed only after explicit confirmation and backend authorization
+  - no app-description wording grants unrestricted chat mutation or AI autonomous authority
+  - changes and queue update are committed
+- notes:
+  - vertical contract: app-description/current-intent only; no runtime code
+
+### TASK-WCTE-03-001: Add chat tool plan records and surfaces
+
+- status: pending
+- source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
+- task brief: specs/workstream-chat-tool-execution/tasks/03-backend-model/01-add-chat-tool-plan-records-and-surfaces.md
+- depends on:
+  - TASK-WCTE-02-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/tasks/03-backend-model/01-add-chat-tool-plan-records-and-surfaces.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - src/main/java/ai/first/application/foundation/workstream/**
+  - related backend workstream tests named in the design map
+- skills:
+  - capability-first-backend
+  - akka-agent-work-trace
+  - akka-http-endpoint-component-client
+- expected outputs:
+  - backend records/DTOs for chat tool plan proposal, step, confirmation snapshot, execution result, and partial failure
+  - typed SurfaceEnvelope support for proposal/confirmation/result/system-message surfaces
+  - workstream log persistence for plan proposal items
+  - tests proving proposal creation is side-effect free and idempotent where applicable
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend tests for new plan record/surface behavior
+- done criteria:
+  - initial chat tool plan proposal records cannot execute tools
+  - plan snapshots include selected workstream, selected AuthContext, requestedBy, governed tool ids, capabilities, inputs, idempotency, and trace refs
+  - changes and queue update are committed
+- notes:
+  - vertical contract: workstream chat tool-plan substrate; no model-backed execution yet; readiness target backend-ready for proposal records only
+
+### TASK-WCTE-04-001: Add governed plan proposal runtime path
+
+- status: pending
+- source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
+- task brief: specs/workstream-chat-tool-execution/tasks/04-runtime-agent/01-add-governed-plan-proposal-runtime.md
+- depends on:
+  - TASK-WCTE-03-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/tasks/04-runtime-agent/01-add-governed-plan-proposal-runtime.md
+  - src/main/java/ai/first/application/foundation/agent/WorkstreamRuntimeAgent.java
+  - src/main/java/ai/first/application/foundation/agent/DefaultWorkstreamAgentRuntimeInvoker.java
+  - src/main/java/ai/first/application/foundation/agent/AgentRuntimeService.java
+  - src/main/java/ai/first/application/foundation/agent/AgentRuntimeToolResolver.java
+  - related agent runtime tests named in the design map
+- skills:
+  - akka-agent-component
+  - akka-agent-structured-responses
+  - akka-agent-tools
+  - akka-agent-tool-boundaries
+  - akka-agent-testing
+- expected outputs:
+  - structured plan proposal method or mode on the governed workstream agent runtime
+  - runtime preparation that resolves active AgentDefinition, prompt assembly, model provider alias, tool boundary, runtime tools, and traces
+  - fail-closed typed system-message/plan-unavailable result when provider/runtime/tool-boundary is missing
+  - deterministic tests using test provider/model support only in tests
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted agent runtime tests
+- done criteria:
+  - normal runtime does not fake model-backed planning success without configured provider/runtime
+  - prompt/skill/reference text cannot grant extra tools
+  - changes and queue update are committed
+- notes:
+  - vertical contract: model-backed planning substrate; provider fail-closed required; no chat execution yet
+
+### TASK-WCTE-05-001: Add chat tool catalog and dispatcher
+
+- status: pending
+- source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
+- task brief: specs/workstream-chat-tool-execution/tasks/05-tool-catalog-dispatch/01-add-chat-tool-catalog-and-dispatcher.md
+- depends on:
+  - TASK-WCTE-04-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/tasks/05-tool-catalog-dispatch/01-add-chat-tool-catalog-and-dispatcher.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - app-description/domains/core-starter/workstreams/surface-catalog.md
+  - related backend tests named in the design map
+- skills:
+  - capability-first-backend
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+- expected outputs:
+  - chat tool catalog entries with workstream id, governed tool id, capability id, exposure channel, input schema, idempotency, policy/approval, and trace requirements
+  - dispatcher that rejects tools outside the selected workstream catalog
+  - dispatcher step execution through existing authorized action/service paths where possible
+  - per-step result model with completed/failed/skipped/recovery status
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend dispatcher tests
+- done criteria:
+  - execution uses the intersection of human authority, selected workstream catalog, tool boundary, and tool policy
+  - each step is a transaction boundary with its own authorization and idempotency
+  - changes and queue update are committed
+- notes:
+  - vertical contract: governed tool catalog/dispatcher; execution substrate only until specific workstream tasks bind plans
+
+### TASK-WCTE-06-001: Implement User Admin chat tool plan proposal
+
+- status: pending
+- source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
+- task brief: specs/workstream-chat-tool-execution/tasks/06-user-admin-proposal/01-implement-user-admin-chat-tool-plan-proposal.md
+- depends on:
+  - TASK-WCTE-05-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/tasks/06-user-admin-proposal/01-implement-user-admin-chat-tool-plan-proposal.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - User Admin app-description files updated by prior tasks
+  - related User Admin backend tests named in the design map
+- skills:
+  - capability-first-backend
+  - akka-agent-structured-responses
+  - akka-agent-testing
+  - akka-agent-work-trace
+- expected outputs:
+  - User Admin route from chat prompt to plan proposal/confirmation surface
+  - plan steps for Organization creation and Organization Admin invitation with shared governed tool ids/capabilities
+  - no pre-confirmation Organization or invitation mutation
+  - safe denial/plan-unavailable behavior when auth/provider/runtime/tool-boundary checks fail
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend User Admin proposal tests
+- done criteria:
+  - the plan is detailed enough for human confirmation and does not execute
+  - the plan is bound to selected AuthContext, workstream, step inputs, idempotency, and trace refs
+  - changes and queue update are committed
+- notes:
+  - vertical contract: User Admin workstream; `human_chat_tool_plan`; no mutation until confirmation; readiness target backend-ready proposal path
+
+### TASK-WCTE-07-001: Execute confirmed User Admin chat tool plan
+
+- status: pending
+- source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
+- task brief: specs/workstream-chat-tool-execution/tasks/07-user-admin-execution/01-execute-confirmed-user-admin-chat-tool-plan.md
+- depends on:
+  - TASK-WCTE-06-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/tasks/07-user-admin-execution/01-execute-confirmed-user-admin-chat-tool-plan.md
+  - User Admin proposal implementation from TASK-WCTE-06-001
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - src/main/java/ai/first/application/coreapp/useradmin/**
+  - src/main/java/ai/first/application/foundation/invitation/**
+  - related tests named in the design map
+- skills:
+  - capability-first-backend
+  - akka-saas-invitation-onboarding
+  - akka-resend-email-service
+  - akka-agent-work-trace
+- expected outputs:
+  - confirmation command/path that validates the exact plan snapshot and human confirmation
+  - Step 1 Organization creation using existing governed backend path
+  - Step 2 Organization Admin invitation using existing governed backend path and created organization output
+  - per-step result, partial failure, retry/idempotency, and recovery surfaces
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend execution tests
+- done criteria:
+  - no execution happens without confirmation
+  - confirmed execution is idempotent and reauthorizes every step
+  - partial failure reports completed/failed/skipped steps and recovery guidance
+  - changes and queue update are committed
+- notes:
+  - vertical contract: User Admin workstream; Organization create + Organization Admin invitation; readiness target backend-ready execution path
+
+### TASK-WCTE-08-001: Render chat tool plan confirmation and result surfaces
+
+- status: pending
+- source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
+- task brief: specs/workstream-chat-tool-execution/tasks/08-frontend-confirmation/01-render-chat-tool-plan-confirmation.md
+- depends on:
+  - TASK-WCTE-07-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/tasks/08-frontend-confirmation/01-render-chat-tool-plan-confirmation.md
+  - frontend/src/workstream/composer/**
+  - frontend/src/workstream/surfaces/**
+  - frontend/src/workstream/types/**
+  - frontend/src/api/**
+  - backend surface contracts from prior tasks
+- skills:
+  - akka-web-ui-api-client
+  - akka-web-ui-state-rendering
+  - akka-web-ui-forms-validation
+  - akka-web-ui-accessibility-responsive
+- expected outputs:
+  - typed frontend surface/data contracts for chat tool plans
+  - confirmation UI summarizing plan, steps, inputs, effects, idempotency, approvals, traces, and confirmation action
+  - result UI for completed, failed, skipped, and recovery states
+  - contract/component tests
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - UI never auto-confirms or auto-submits tool execution
+  - confirmation is plan-bound, accessible, and editable only through appropriate repair/reproposal flows
+  - no secrets/hidden capabilities/provider payloads are exposed
+  - changes and queue update are committed
+- notes:
+  - vertical contract: frontend-rendered confirmation/result surfaces for chat tool plans
+
+### TASK-WCTE-09-001: Add User Admin chat tool execution tests
+
+- status: pending
+- source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
+- task brief: specs/workstream-chat-tool-execution/tasks/09-user-admin-tests/01-add-user-admin-chat-tool-execution-tests.md
+- depends on:
+  - TASK-WCTE-08-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/tasks/09-user-admin-tests/01-add-user-admin-chat-tool-execution-tests.md
+  - completed User Admin backend/frontend implementation files
+  - relevant existing WorkstreamService and frontend contract tests
+- skills:
+  - akka-agent-testing
+  - akka-http-endpoint-testing
+  - akka-web-ui-testing
+  - akka-runtime-feature-verification
+- expected outputs:
+  - backend tests proving proposal without mutation, confirmation execution, auth denial, idempotency, partial failure, and traces
+  - frontend/contract tests proving proposal/confirmation/result rendering and no auto-submit
+  - endpoint/API tests where feasible
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend tests
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - tests fail if initial chat request mutates Organization or invitation state
+  - tests fail if confirmation executes a modified/unconfirmed/out-of-catalog plan
+  - tests cover provider fail-closed or test-provider distinction
+  - changes and queue update are committed
+- notes:
+  - vertical contract: verification task for User Admin proof; target API/UI-source evidence plus backend/contract tests
+
+### TASK-WCTE-10-001: Expand representative chat tool plans to all five foundation workstreams
+
+- status: pending
+- source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
+- task brief: specs/workstream-chat-tool-execution/tasks/10-all-workstreams/01-expand-representative-chat-tool-plans.md
+- depends on:
+  - TASK-WCTE-09-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/tasks/10-all-workstreams/01-expand-representative-chat-tool-plans.md
+  - completed shared/User Admin implementation files
+  - app-description/domains/core-starter/workstreams/**
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - related backend/frontend tests
+- skills:
+  - agent-workstream-apps
+  - capability-first-backend
+  - ai-first-saas-ui-surfaces
+  - akka-agent-tool-boundaries
+- expected outputs:
+  - representative confirmed chat tool-plan path for My Account
+  - representative confirmed chat tool-plan path for Agent Admin
+  - representative confirmed chat tool-plan path for Audit/Trace
+  - representative confirmed chat tool-plan path for Governance/Policy
+  - User Admin path remains covered
+  - tests for all five workstreams
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend all-workstream tests
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - each foundation workstream has a bounded plan path with governed tool id, capability id, confirmation behavior, and trace semantics
+  - high-impact tools remain approval-gated or blocked when safe execution is not fully modeled
+  - changes and queue update are committed
+- notes:
+  - vertical contract: all five foundation workstreams; first-pass representative coverage, not every tool
+
+### TASK-WCTE-11-001: Update agent seeds and traceability for chat tool execution
+
+- status: pending
+- source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
+- task brief: specs/workstream-chat-tool-execution/tasks/11-seeds-docs/01-update-agent-seeds-and-traceability.md
+- depends on:
+  - TASK-WCTE-10-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/tasks/11-seeds-docs/01-update-agent-seeds-and-traceability.md
+  - src/main/java/ai/first/application/foundation/agent/AgentBehaviorSeedLoader.java
+  - src/main/resources/agent-behavior-seeds/starter-v1/**
+  - app-description/domains/core-starter/workstreams/**
+  - completed implementation files
+- skills:
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-reference-governance
+  - akka-agent-work-trace
+- expected outputs:
+  - seed prompts/skills/references updated for all five workstream agents
+  - seed checksums/import tests updated as needed
+  - traceability docs/specs updated for new surfaces/actions/tool ids
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted seed/import tests
+  - targeted search proving seed material does not claim unrestricted mutation authority
+- done criteria:
+  - agents can explain deterministic surface routing versus confirmed chat tool execution
+  - seed text does not grant authority or bypass confirmation
+  - changes and queue update are committed
+- notes:
+  - vertical contract: managed-agent seed/traceability update; no new runtime behavior beyond prior tasks
+
+### TASK-WCTE-99-001: Verify Workstream Chat Tool Execution completion
+
+- status: pending
+- source: specs/workstream-chat-tool-execution/README.md done state
+- task brief: specs/workstream-chat-tool-execution/tasks/99-verification/01-verify-workstream-chat-tool-execution.md
+- depends on:
+  - TASK-WCTE-11-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/conversation-capture.md
+  - specs/workstream-chat-tool-execution/pending-tasks.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/tasks/99-verification/01-verify-workstream-chat-tool-execution.md
+  - completed task notes and changed files
+  - related backend/frontend/app-description files
+- skills:
+  - akka-runtime-feature-verification
+  - akka-agent-testing
+  - akka-web-ui-testing
+  - akka-agent-work-trace
+- expected outputs:
+  - specs/workstream-chat-tool-execution/verification-notes.md
+  - queue update marking verification done only when README done state is achieved
+  - new bounded follow-up tasks plus a new terminal verification task if material gaps remain
+  - commit for verification notes and queue updates
+- required checks:
+  - `git diff --check`
+  - targeted backend chat tool execution tests
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build` if frontend runtime output changed materially
+  - `mvn test` if shared backend workstream/agent behavior changed materially
+  - local API/UI/manual smoke for the User Admin example when provider/auth/runtime configuration allows it
+- done criteria:
+  - verification notes compare completed work against every README done-state bullet
+  - User Admin example is proven no-mutation before confirmation and executed after confirmation when authorized
+  - all five foundation workstreams have representative confirmed chat tool-plan coverage
+  - provider missing config fails closed and is not counted as successful model-backed planning
+  - audit/work trace evidence is recorded
+  - if gaps remain, new bounded tasks plus a new terminal verification task are appended
+  - changes and queue update are committed
+- notes:
+  - vertical contract: terminal runtime verification for root app feature; readiness target runtime-ready where local provider/auth config allows, otherwise precise fail-closed/manual-ready evidence and follow-up tasks
