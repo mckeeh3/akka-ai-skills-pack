@@ -35,7 +35,7 @@ The workstream agent must handle:
 - `sign out`
 - help/how-to questions about account, context, settings, capabilities, denials, and recovery
 
-Side effects require explicit surface actions; the agent may guide but not silently change account state.
+Side effects require explicit backend-authorized surface actions or modeled `human_chat_tool_plan` confirmation; the agent may guide or prepare inputs but must not silently change account state.
 
 ## Required surfaces
 
@@ -50,9 +50,9 @@ Side effects require explicit surface actions; the agent may guide but not silen
 
 ## Capability inventory and exposure channels
 
-A capability is the governed backend contract. It may be exposed through one or more channels: surface action, browser API, workstream-agent tool, internal-agent tool, workflow step, timer, consumer, MCP tool, view, or internal method. Browser APIs and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, idempotency, side effects, audit, or denial behavior.
+A capability is the governed backend contract. It may be exposed through one or more channels: surface action/browser-tool, confirmed `human_chat_tool_plan`, AI-backed `agent_tool_call`/workstream-agent tool, browser API, internal-agent tool, workflow step, timer, consumer, MCP tool, view, or internal method. Browser APIs, confirmed chat plans, and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, idempotency, side effects, audit, or denial behavior.
 
-For this workstream, read/evidence capabilities may be exposed to the My Account workstream agent as tools for conversational requests such as “what can I do?” or “why can’t I access User Admin?”. Command capabilities require explicit user confirmation or surface action; the agent may guide or prepare inputs but must not silently mutate account state.
+For this workstream, read/evidence capabilities may be exposed to the My Account workstream agent through confirmed `human_chat_tool_plan` or AI-backed `agent_tool_call` adapters for conversational requests such as “what can I do?” or “why can’t I access User Admin?”. Command capabilities require explicit surface action or plan-bound human confirmation; the agent may guide or prepare inputs but must not silently mutate account state.
 
 | Capability id | Class | Purpose | Actors | Side effects | Result surface |
 |---|---|---|---|---|---|

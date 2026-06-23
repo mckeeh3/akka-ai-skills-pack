@@ -63,9 +63,9 @@ These surfaces inherit `ai-first-workstream-enterprise` from `../../../web-ui-st
 
 ## Capability inventory and exposure channels
 
-A capability is the governed backend contract. It may be exposed through one or more channels: surface action, browser API, workstream-agent tool, internal-agent tool, workflow step, timer, consumer, MCP tool, view, or internal method. Browser APIs and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, redaction, idempotency, side effects, audit, approval, or denial behavior.
+A capability is the governed backend contract. It may be exposed through one or more channels: surface action/browser-tool, confirmed `human_chat_tool_plan`, AI-backed `agent_tool_call`/workstream-agent tool, browser API, internal-agent tool, workflow step, timer, consumer, MCP tool, view, or internal method. Browser APIs, confirmed chat plans, and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, redaction, idempotency, side effects, audit, approval, or denial behavior.
 
-For this workstream, scoped read/evidence and trace/audit capabilities may be exposed as workstream-agent tools so the Audit/Trace agent can answer conversational requests such as “why was this action denied?” or “summarize role changes yesterday”. Export and broad sensitive reads require approval/redaction policy and must return traceable result surfaces or system-message surfaces.
+For this workstream, scoped read/evidence and trace/audit capabilities may be exposed as confirmed `human_chat_tool_plan` or AI-backed `agent_tool_call` adapters so the Audit/Trace agent can answer conversational requests such as “why was this action denied?” or “summarize role changes yesterday”. Export and broad sensitive reads require approval/redaction policy, plan-bound confirmation when chat-mediated, and traceable result surfaces or system-message surfaces.
 
 | Capability id | Class | Purpose | Side effects |
 |---|---|---|---|

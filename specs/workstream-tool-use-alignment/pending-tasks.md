@@ -311,7 +311,7 @@
 
 ### TASK-WTUA-07-001: Run tool-use consistency repair pass
 
-- status: pending
+- status: done
 - source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
 - task brief: specs/workstream-tool-use-alignment/tasks/07-consistency-repair/01-run-tool-use-consistency-repair.md
 - depends on:
@@ -343,6 +343,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: skills-pack consistency repair; no generated-app runtime feature
+  - commit message: `workstream-tool-use: repair consistency gaps`
+  - checks passed: `git diff --check`; targeted residual searches for stale global prohibitions, surface-only/chat-forbidden wording, `human-confirmed agent-tool`, and surface/agent-only example drift; `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run`; `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune`; `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check` (initial check before prune failed because the existing temp target differed from current source docs; prune refreshed the temp target and check passed).
+  - wrote `specs/workstream-tool-use-alignment/consistency-repair-notes.md` with repairs and residual lower-confidence endpoint-family wording/out-of-scope code-comment findings.
 
 ### TASK-WTUA-99-001: Verify Workstream Tool Use Alignment completion
 
