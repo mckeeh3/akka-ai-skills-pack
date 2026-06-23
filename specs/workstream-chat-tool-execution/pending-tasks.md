@@ -412,7 +412,7 @@
 
 ### TASK-WCTE-10-001: Expand representative chat tool plans to all five foundation workstreams
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
 - task brief: specs/workstream-chat-tool-execution/tasks/10-all-workstreams/01-expand-representative-chat-tool-plans.md
 - depends on:
@@ -450,6 +450,10 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: all five foundation workstreams; first-pass representative coverage, not every tool
+  - added representative chat prompt classifiers, canonical proposal steps, and confirmed execution/result handling for My Account settings, Agent Admin prompt-risk review, Audit/Trace investigation notes, and Governance/Policy policy proposal drafts while preserving User Admin Organization-create plus Organization Admin invite coverage
+  - Agent Admin prompt-risk review remains approval-gated at dispatcher confirmation; high-impact policy activation/rollback, managed-agent activation/rollback, account disabling, role grants, trace export delivery, and support-access grants remain outside the executable chat catalog
+  - checks: `mvn -q -Dtest=WorkstreamServiceTest#representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics+submitMessageRoutesUserAdminMotivatingPromptToModelBackedPlanProposalWithoutMutation+confirmedUserAdminChatToolPlanExecutesOrganizationAndInvitationIdempotently+chatToolCatalogListsBoundedHumanChatPlanEntries test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `git diff --check`
+  - commit message: `workstream-chat-tools: expand all workstream plans`
 
 ### TASK-WCTE-11-001: Update agent seeds and traceability for chat tool execution
 

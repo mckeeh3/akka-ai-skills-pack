@@ -3,7 +3,10 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
+const readBackend = (path) => read(`../../${path}`);
 
+const backendWorkstreamService = readBackend('src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
+const backendWorkstreamTest = readBackend('src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java');
 const fixtures = read('./__tests__/fixtures/workstream/surfaces.ts');
 const types = read('./workstream/types/surfaces.ts');
 const timeline = read('./workstream/surfaces/AuditTimelineSurface.tsx');
@@ -55,6 +58,21 @@ test('Audit/Trace surfaces preserve trace links, denial/provider evidence, redac
   assert.match(dashboard, /Request redacted export/);
   assert.match(dashboard, /Backend capabilities/);
   assert.match(traceLinks, /surface-audit-trace-detail/);
+});
+
+test('Audit/Trace representative chat tool plan path appends only browser-safe investigation notes after confirmation', () => {
+  for (const marker of [
+    'auditTraceInvestigationNotePlanSteps',
+    'Append browser-safe investigation note',
+    'action-audit-trace-append-investigation-note',
+    'draft-investigation-note',
+    'audit.trace.investigation_note.append',
+    'schema.audit-trace.investigation-note.v1',
+    'surface-audit-trace-investigation-note',
+    'audit.trace.note'
+  ]) assert.match(backendWorkstreamService, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(backendWorkstreamTest, /provider blocked; retry after config/);
+  assert.match(backendWorkstreamTest, /representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics/);
 });
 
 test('Audit/Trace bootstrap starts empty while trace surfaces do not claim frontend authorization', () => {

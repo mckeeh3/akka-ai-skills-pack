@@ -3,8 +3,11 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
+const readBackend = (path) => read(`../../${path}`);
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+const backendWorkstreamService = readBackend('src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
+const backendWorkstreamTest = readBackend('src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java');
 const fixtures = read('./__tests__/fixtures/workstream/surfaces.ts');
 const me = read('./__tests__/fixtures/workstream/me.ts');
 const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
@@ -209,6 +212,21 @@ test('Governance/Policy system-message renderer keeps recovery backend-authorize
     assert.match(systemMessage, new RegExp(escapeRegExp(marker)));
   }
   assert.doesNotMatch(systemMessage, /localStorage\.getItem\(['"](?:token|jwt|apiKey)|Authorization\s*=|dangerouslySetInnerHTML|innerHTML\s*=/);
+});
+
+test('Governance/Policy representative chat tool plan path drafts inert policy proposals only', () => {
+  for (const marker of [
+    'governancePolicyDraftProposalPlanSteps',
+    'action-governance-policy-draft-proposal',
+    'governance.policy.propose',
+    'schema.governance-policy.proposal.draft.v1',
+    'surface-governance-policy-proposal',
+    'policy.proposal_trace',
+    'No policy authority changes'
+  ]) assert.match(backendWorkstreamService, new RegExp(escapeRegExp(marker)));
+  assert.match(backendWorkstreamTest, /draft a policy proposal to require approval before redacted exports/);
+  assert.match(backendWorkstreamTest, /redacted exports/);
+  assert.match(backendWorkstreamTest, /representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics/);
 });
 
 test('Governance/Policy fixture client returns structured results for dashboard, inventory, and simulation actions', () => {

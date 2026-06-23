@@ -146,6 +146,21 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.match(actionState, /denied/);
 });
 
+test('My Account representative chat tool plan path is catalog-bound and confirmation rendered by shared surface', () => {
+  for (const marker of [
+    'myAccountThemePlanSteps',
+    'action-update-my-settings',
+    'my_account.update_profile_settings',
+    'schema.my-account.settings.update.v1',
+    'preferredThemeId',
+    'obsidian-dark',
+    'surface-my-settings',
+    'human_chat_tool_plan.step_completed'
+  ]) assert.match(backendWorkstreamService, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(backendWorkstreamTest, /change my theme to Obsidian Dark/);
+  assert.match(backendWorkstreamTest, /representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics/);
+});
+
 test('My Account launches from signed-in user tile and uses backend shell requests rather than frontend-only authority', () => {
   assert.match(rail, /const myAccountFunctionalAgentId = 'my-account-agent'/);
   assert.match(rail, /Open My Account workstream/);

@@ -3,7 +3,10 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
+const readBackend = (path) => read(`../../${path}`);
 
+const backendWorkstreamService = readBackend('src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
+const backendWorkstreamTest = readBackend('src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java');
 const agents = read('./__tests__/fixtures/workstream/agents.ts');
 const me = read('./__tests__/fixtures/workstream/me.ts');
 const surfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
@@ -157,6 +160,21 @@ test('Agent Admin surfaces preserve required UI states, approval gates, validati
   assert.match(workflowStatusSurface, /noDirectMutation/);
   assert.match(workflowStatusSurface, /cannot activate or mutate behavior artifacts/);
   assert.doesNotMatch(dashboardSurface, /Opens \$\{entry\.resultSurfaceId/);
+});
+
+test('Agent Admin representative chat tool plan path remains approval-gated', () => {
+  for (const marker of [
+    'agentAdminPromptRiskReviewPlanSteps',
+    'action-agent-prompt-risk-review-start',
+    'AgentAdminPromptRiskReviewService.START_CAPABILITY',
+    'schema.agent-admin.prompt-risk-review.start.v1',
+    'surface-agent-admin-prompt-risk-review',
+    'human_chat_tool_plan.step_failed',
+    'approval-gated-command'
+  ]) assert.match(backendWorkstreamService, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(backendWorkstreamTest, /start prompt risk review for the Agent Admin prompt proposal/);
+  assert.match(backendWorkstreamTest, /approval_required/);
+  assert.match(backendWorkstreamTest, /representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics/);
 });
 
 test('Agent Admin actions and fixture client return structured surfaces instead of page routes', () => {

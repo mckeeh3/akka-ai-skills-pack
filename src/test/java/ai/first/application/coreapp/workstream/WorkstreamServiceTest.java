@@ -4,6 +4,7 @@ import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentReferenceManifest;
 import ai.first.domain.foundation.agent.AgentSkillManifest;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import ai.first.application.coreapp.agentadmin.AgentAdminPromptRiskReviewService;
 import ai.first.domain.foundation.identity.AuthContext;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -1985,6 +1986,80 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics() {
+    assertEquals(UserSettings.ThemeId.AURORA_LIGHT, identityRepository.settings("admin@example.test").themeId());
+
+    var myAccount = submitRepresentativePlan(identity(), "membership-admin", "my-account-agent", "change my theme to Obsidian Dark", "idem-all-my-account", List.of(runtimeStep(
+        "step-update-my-settings", 1, "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", "schema.my-account.settings.update.v1", false)));
+    var myAccountProposal = (WorkstreamService.ChatToolPlanProposal) myAccount.surface().data().get("proposal");
+    var myAccountSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) myAccount.surface().data().get("confirmationSnapshot");
+    assertEquals("obsidian-dark", myAccountProposal.steps().get(0).input().get("preferredThemeId"));
+    assertEquals(UserSettings.ThemeId.AURORA_LIGHT, identityRepository.settings("admin@example.test").themeId(), "My Account chat proposal must not mutate settings before confirmation.");
+    var confirmedMyAccount = confirmRepresentativePlan(identity(), "membership-admin", myAccountProposal, myAccountSnapshot, "idem-all-my-account-confirm");
+    var myAccountResult = (WorkstreamService.ChatToolPlanExecutionResult) confirmedMyAccount.surface().data().get("result");
+    assertEquals("completed", myAccountResult.status(), myAccountResult.toString());
+    assertTrue(myAccountResult.completedSteps().stream().anyMatch(step -> step.governedToolId().equals("my_account.update_profile_settings") && step.capabilityId().equals("my_account.update_profile_settings") && step.resultSurfaceId().equals("surface-my-settings")));
+    assertTrue(myAccountResult.traceIds().stream().anyMatch(trace -> trace.contains("trace-human-chat-tool-plan-step-started")));
+    assertEquals(UserSettings.ThemeId.OBSIDIAN_DARK, identityRepository.settings("admin@example.test").themeId());
+
+    var agentAdmin = submitRepresentativePlan(identity(), "membership-admin", "agent-admin-agent", "start prompt risk review for the Agent Admin prompt proposal", "idem-all-agent-admin", List.of(runtimeStep(
+        "step-start-prompt-risk-review", 1, "action-agent-prompt-risk-review-start", "action-agent-prompt-risk-review-start", AgentAdminPromptRiskReviewService.START_CAPABILITY, AgentAdminPromptRiskReviewService.START_CAPABILITY, "schema.agent-admin.prompt-risk-review.start.v1", true)));
+    var agentAdminProposal = (WorkstreamService.ChatToolPlanProposal) agentAdmin.surface().data().get("proposal");
+    var agentAdminSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) agentAdmin.surface().data().get("confirmationSnapshot");
+    assertTrue(agentAdminProposal.steps().get(0).requiresApproval(), "Agent Admin prompt-risk review remains approval-gated in the chat catalog.");
+    var confirmedAgentAdmin = confirmRepresentativePlan(identity(), "membership-admin", agentAdminProposal, agentAdminSnapshot, "idem-all-agent-admin-confirm");
+    var agentAdminResult = (WorkstreamService.ChatToolPlanExecutionResult) confirmedAgentAdmin.surface().data().get("result");
+    assertEquals("failed", agentAdminResult.status(), agentAdminResult.toString());
+    assertEquals("approval_required", agentAdminResult.failedSteps().get(0).errorCode());
+    assertTrue(agentAdminResult.failedSteps().get(0).traceIds().stream().anyMatch(trace -> trace.contains("trace-human-chat-tool-plan-step-approval-required")));
+
+    var auditTrace = submitRepresentativePlan(identity(), "membership-admin", "audit-trace-agent", "append investigation note \"provider blocked; retry after config\" to this trace", "idem-all-audit-trace", List.of(runtimeStep(
+        "step-append-investigation-note", 1, "action-audit-trace-append-investigation-note", "action-audit-trace-append-investigation-note", "draft-investigation-note", "audit.trace.investigation_note.append", "schema.audit-trace.investigation-note.v1", false)));
+    var auditProposal = (WorkstreamService.ChatToolPlanProposal) auditTrace.surface().data().get("proposal");
+    var auditSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) auditTrace.surface().data().get("confirmationSnapshot");
+    assertEquals("provider blocked; retry after config", auditProposal.steps().get(0).input().get("note"));
+    var confirmedAudit = confirmRepresentativePlan(identity(), "membership-admin", auditProposal, auditSnapshot, "idem-all-audit-trace-confirm");
+    var auditResult = (WorkstreamService.ChatToolPlanExecutionResult) confirmedAudit.surface().data().get("result");
+    assertEquals("completed", auditResult.status(), auditResult.toString());
+    assertTrue(auditResult.completedSteps().stream().anyMatch(step -> step.governedToolId().equals("draft-investigation-note") && step.capabilityId().equals("audit.trace.investigation_note.append") && step.resultSurfaceId().equals("surface-audit-trace-investigation-note")));
+
+    var governance = submitRepresentativePlan(identity(), "membership-admin", "governance-policy-agent", "draft a policy proposal to require approval before redacted exports", "idem-all-governance-policy", List.of(runtimeStep(
+        "step-draft-policy-proposal", 1, "action-governance-policy-draft-proposal", "action-governance-policy-draft-proposal", "governance.policy.propose", "governance.policy.propose", "schema.governance-policy.proposal.draft.v1", false)));
+    var governanceProposal = (WorkstreamService.ChatToolPlanProposal) governance.surface().data().get("proposal");
+    var governanceSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) governance.surface().data().get("confirmationSnapshot");
+    assertTrue(governanceProposal.approvalSummary().contains("No mutation"));
+    var confirmedGovernance = confirmRepresentativePlan(identity(), "membership-admin", governanceProposal, governanceSnapshot, "idem-all-governance-policy-confirm");
+    var governanceResult = (WorkstreamService.ChatToolPlanExecutionResult) confirmedGovernance.surface().data().get("result");
+    assertEquals("completed", governanceResult.status(), governanceResult.toString());
+    assertTrue(governanceResult.completedSteps().stream().anyMatch(step -> step.governedToolId().equals("governance.policy.propose") && step.capabilityId().equals("governance.policy.propose") && step.resultSurfaceId().equals("surface-governance-policy-proposal")));
+    assertTrue(governanceProposal.steps().get(0).input().get("proposedContent").toString().contains("approval"));
+
+    trackingRuntimeInvoker.nextPlanResponse(new WorkstreamRuntimeAgent.ChatToolPlanProposalResponse(
+        "proposed",
+        "user-admin-agent",
+        "corr-all-user-admin",
+        "membership-owner",
+        "Create Organization and invite Organization Admin after confirmation.",
+        List.of(
+            runtimeStep("step-create-organization", 1, "action-submit-organization-create", "user-admin.submit-organization-create", "manage-organizations", "saas_owner.tenant.manage", "schema.organization-admin.create.submit.v1", false),
+            runtimeStep("step-invite-organization-admin", 2, "action-submit-organization-admin-invitation", "user-admin.invite-organization-admin", "manage-organization-admins", "saas_owner.organization_admin.invite", "schema.organization-admin.invitation-create.v1", false)),
+        List.of("saas_owner.tenant.manage", "saas_owner.organization_admin.invite"),
+        "No mutation occurs until exact plan snapshot confirmation.",
+        "Catalog-bound, no-mutation proposal only.",
+        "trace-human-chat-tool-plan-all-user-admin",
+        null,
+        true,
+        false));
+    var userAdmin = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-owner", "user-admin-agent", "create org \"Org All Workstreams\", and invite mckee.hugh+allworkstreams@gmail.com as an org admin", "corr-all-user-admin", "idem-all-user-admin"), "corr-all-user-admin-header");
+    assertEquals("chat_tool_plan_proposal", userAdmin.surface().surfaceType());
+    var userAdminProposal = (WorkstreamService.ChatToolPlanProposal) userAdmin.surface().data().get("proposal");
+    assertEquals(List.of("saas_owner.tenant.manage", "saas_owner.organization_admin.invite"), userAdminProposal.requiredCapabilities());
+    assertEquals(2, userAdminProposal.steps().size());
+    assertBrowserPayloadSafe(userAdmin.surface());
+  }
+
+  @Test
   void confirmedChatToolPlanRequiresExactSnapshotAndExplicitHumanConfirmationBeforeExecution() {
     var tenantCountBefore = identityRepository.tenantRows().size();
     var invitationCountBefore = invitationRepository.invitations().size();
@@ -3068,6 +3143,68 @@ class WorkstreamServiceTest {
     assertTrue(response.surface().data().get("message").toString().contains("blocked before a response was produced"));
     assertTrue(response.surface().toString().contains("model-provider-config-missing"));
     assertFalse(response.surface().toString().contains("should not be used"));
+  }
+
+  private WorkstreamService.WorkstreamMessageResponse submitRepresentativePlan(WorkosIdentity actorIdentity, String selectedContextId, String functionalAgentId, String prompt, String idempotencyKey, List<WorkstreamRuntimeAgent.ChatToolPlanStepProposal> runtimeSteps) {
+    var requiredCapabilities = runtimeSteps.stream().map(WorkstreamRuntimeAgent.ChatToolPlanStepProposal::capabilityId).distinct().toList();
+    trackingRuntimeInvoker.nextPlanResponse(new WorkstreamRuntimeAgent.ChatToolPlanProposalResponse(
+        "proposed",
+        functionalAgentId,
+        "corr-" + idempotencyKey,
+        selectedContextId,
+        "Representative " + functionalAgentId + " confirmed chat tool plan; no mutation before confirmation.",
+        runtimeSteps,
+        requiredCapabilities,
+        "No mutation occurs until exact plan snapshot confirmation; each step reuses selected AuthContext, idempotency, backend authorization, and traces.",
+        "Catalog-bound, no-mutation proposal only.",
+        "trace-human-chat-tool-plan-" + idempotencyKey,
+        null,
+        true,
+        false));
+    var response = service.submitMessage(actorIdentity, selectedContextId, new WorkstreamService.WorkstreamMessageRequest(
+        selectedContextId, functionalAgentId, prompt, "corr-" + idempotencyKey, idempotencyKey), "corr-header-" + idempotencyKey);
+    assertEquals("chat_tool_plan_proposal", response.agentItem().kind());
+    assertEquals("waiting-for-human", response.agentItem().status());
+    assertEquals("chat_tool_plan_proposal", response.surface().surfaceType());
+    assertEquals("chat_tool_plan.proposal.v1", response.surface().data().get("surfaceContract"));
+    assertEquals(true, response.surface().data().get("noDirectMutation"));
+    assertEquals(true, response.surface().data().get("noMutation"));
+    assertEquals(false, response.surface().data().get("executionEnabled"));
+    assertTrue(response.surface().actions().stream().anyMatch(action -> action.actionId().equals("action-confirm-chat-tool-plan")));
+    assertBrowserPayloadSafe(response.surface());
+    return response;
+  }
+
+  private WorkstreamService.WorkstreamMessageResponse confirmRepresentativePlan(WorkosIdentity actorIdentity, String selectedContextId, WorkstreamService.ChatToolPlanProposal proposal, WorkstreamService.ChatToolPlanConfirmationSnapshot snapshot, String idempotencyKey) {
+    var confirmed = service.confirmChatToolPlan(actorIdentity, selectedContextId, new WorkstreamService.ChatToolPlanConfirmationRequest(
+        selectedContextId, proposal.planId(), proposal.planSnapshotId(), "CONFIRM " + proposal.planSnapshotId(), snapshot.stepHashes(), idempotencyKey, "corr-" + idempotencyKey));
+    assertEquals("chat_tool_plan_result", confirmed.agentItem().kind());
+    assertEquals("chat_tool_plan_result", confirmed.surface().surfaceType());
+    assertEquals("chat_tool_plan.result.v1", confirmed.surface().data().get("surfaceContract"));
+    assertTrue(confirmed.surface().traceIds().stream().anyMatch(trace -> trace.contains("trace-human-chat-tool-plan-confirmed")));
+    assertBrowserPayloadSafe(confirmed.surface());
+    return confirmed;
+  }
+
+  private WorkstreamRuntimeAgent.ChatToolPlanStepProposal runtimeStep(String stepId, int sequence, String actionId, String browserToolId, String governedToolId, String capabilityId, String inputSchemaRef, boolean requiresApproval) {
+    return new WorkstreamRuntimeAgent.ChatToolPlanStepProposal(
+        stepId,
+        sequence,
+        actionId + " representative step",
+        actionId,
+        browserToolId,
+        governedToolId,
+        capabilityId,
+        inputSchemaRef,
+        "backend canonical inputs are validated and redacted before proposal rendering",
+        List.of(),
+        Map.of(),
+        stepId,
+        requiresApproval ? "approval-gated transaction boundary" : "independent backend transaction boundary",
+        true,
+        requiresApproval,
+        requiresApproval ? "workflow-status" : "inline",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", requiresApproval ? "human_chat_tool_plan.step_failed" : "human_chat_tool_plan.step_completed"));
   }
 
   private List<WorkstreamService.ChatToolPlanStep> userAdminOrganizationInviteSteps(String organizationName, String email, String displayName, String idempotencyRoot, List<String> inviteRoles, boolean includeDependentAfterInvite) {

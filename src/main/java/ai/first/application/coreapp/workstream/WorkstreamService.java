@@ -1437,9 +1437,9 @@ public final class WorkstreamService {
       return routedSurfaceMessageResponse(actor, functionalAgent, workstreamScopeId, request, requestCorrelationId, routed.orElseThrow());
     }
 
-    var userAdminChatToolPlanCandidate = userAdminChatToolPlanCandidate(request.prompt());
-    if (userAdminChatToolPlanCandidate.isPresent() && USER_ADMIN_AGENT_ID.equals(request.functionalAgentId())) {
-      return userAdminChatToolPlanMessageResponse(actor, functionalAgent, workstreamScopeId, request, requestCorrelationId, userAdminChatToolPlanCandidate.orElseThrow());
+    var chatToolPlanCandidate = representativeChatToolPlanCandidate(request.functionalAgentId(), request.prompt(), firstNonBlank(request.idempotencyKey(), requestCorrelationId, request.functionalAgentId()));
+    if (chatToolPlanCandidate.isPresent()) {
+      return representativeChatToolPlanMessageResponse(actor, functionalAgent, workstreamScopeId, request, requestCorrelationId, chatToolPlanCandidate.orElseThrow());
     }
 
     var runtime = workstreamAgentRuntimeInvoker.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest(
@@ -1507,17 +1507,16 @@ public final class WorkstreamService {
     requireExplicitChatToolPlanConfirmation(request);
     var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
     var workstreamScopeId = workstreamEventTenantId(actor.selectedContext());
-    var duplicate = workstreamLogRepository.findByIdempotencyKey(workstreamScopeId, actor.selectedContext().membershipId(), USER_ADMIN_AGENT_ID, request.idempotencyKey());
-    if (duplicate.isPresent()) {
-      var existing = duplicate.orElseThrow();
-      return new WorkstreamMessageResponse(existing.correlationId(), existing.idempotencyKey(), existing.userItem(), existing.agentItem(), existing.surface());
-    }
     var proposalSurfaceId = "surface-chat-tool-plan-" + request.planId();
     var proposalSurface = workstreamLogRepository.surface(workstreamScopeId, actor.selectedContext().membershipId(), proposalSurfaceId)
         .orElseThrow(() -> new AuthorizationException(404, "CHAT_TOOL_PLAN_NOT_FOUND_OR_FORBIDDEN"));
     if (!CHAT_TOOL_PLAN_PROPOSAL_SURFACE_TYPE.equals(proposalSurface.surfaceType())) throw new AuthorizationException(403, "CHAT_TOOL_PLAN_NOT_CONFIRMABLE");
     var proposal = chatToolPlanProposalFromSurface(proposalSurface);
-    if (!USER_ADMIN_AGENT_ID.equals(proposal.functionalAgentId())) throw new AuthorizationException(403, "CHAT_TOOL_PLAN_WORKSTREAM_NOT_SUPPORTED");
+    var duplicate = workstreamLogRepository.findByIdempotencyKey(workstreamScopeId, actor.selectedContext().membershipId(), proposal.functionalAgentId(), request.idempotencyKey());
+    if (duplicate.isPresent()) {
+      var existing = duplicate.orElseThrow();
+      return new WorkstreamMessageResponse(existing.correlationId(), existing.idempotencyKey(), existing.userItem(), existing.agentItem(), existing.surface());
+    }
     var expectedSnapshot = chatToolPlanConfirmationSnapshot(proposal);
     validateChatToolPlanConfirmationSnapshot(actor, request, proposal, expectedSnapshot);
     var result = dispatchConfirmedChatToolPlanSteps(identity, selectedContextId, new ChatToolPlanDispatchRequest(
@@ -1539,7 +1538,7 @@ public final class WorkstreamService {
         result.failedSteps(),
         result.skippedSteps(),
         result.recoverySteps(),
-        "Confirmed User Admin chat tool plan finished with " + result.status() + "; completed steps remain committed and uncompleted steps require recovery or retry.");
+        "Confirmed " + workstreamLabel(proposal.functionalAgentId()) + " chat tool plan finished with " + result.status() + "; completed steps remain committed and uncompleted steps require recovery or retry.");
     var resultSurface = chatToolPlanResultSurface(result, partialFailure, actor, proposal.functionalAgentId(), correlationId, List.copyOf(traceIds), now);
     var userItem = new WorkstreamItem(
         "item-chat-tool-plan-confirm-user-" + stableSuffix(request.idempotencyKey() + ":user"),
@@ -1561,7 +1560,7 @@ public final class WorkstreamService {
         List.copyOf(traceIds),
         resultSurface.surfaceId(),
         "Chat tool plan result",
-        "Confirmed User Admin plan execution status: " + result.status() + ".",
+        "Confirmed " + workstreamLabel(proposal.functionalAgentId()) + " plan execution status: " + result.status() + ".",
         result.status());
     var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), proposal.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, resultSurface));
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
@@ -1631,7 +1630,7 @@ public final class WorkstreamService {
         traceIds.addAll(stepTraceIds);
         var resultSurfaceId = actionResult.resultSurface() == null ? null : actionResult.resultSurface().surfaceId();
         if (resultSurfaceId != null) resultSurfaceIds.add(resultSurfaceId);
-        var completedStatus = List.of("accepted", "no-op").contains(actionResult.status());
+        var completedStatus = List.of("accepted", "no-op", "recorded").contains(actionResult.status());
         var stepResult = new ChatToolPlanStepResult(stepId, completedStatus ? "completed" : "failed", actionResult.message(), step.actionId(), step.governedToolId(), step.capabilityId(), resultSurfaceId, List.copyOf(stepTraceIds), startedAt.toString(), Instant.now().toString(), completedStatus ? null : firstNonBlank(actionResult.status(), "action_failed"));
         if (completedStatus) {
           completed.add(stepResult);
@@ -1760,13 +1759,13 @@ public final class WorkstreamService {
     return result;
   }
 
-  private WorkstreamMessageResponse userAdminChatToolPlanMessageResponse(AuthContextResolver.ResolvedMe actor, MeResponse.FunctionalAgentSummary functionalAgent, String workstreamScopeId, WorkstreamMessageRequest request, String correlationId, UserAdminChatToolPlanCandidate candidate) {
+  private WorkstreamMessageResponse representativeChatToolPlanMessageResponse(AuthContextResolver.ResolvedMe actor, MeResponse.FunctionalAgentSummary functionalAgent, String workstreamScopeId, WorkstreamMessageRequest request, String correlationId, RepresentativeChatToolPlanCandidate candidate) {
     var responseSeed = firstNonBlank(request.idempotencyKey(), correlationId, request.functionalAgentId());
     var now = Instant.now();
     var userItemId = "item-chat-tool-plan-user-" + stableSuffix(responseSeed + ":user");
     var userItem = new WorkstreamItem(userItemId, request.functionalAgentId(), "user-request", now.toString(), correlationId, List.of("trace-human-chat-tool-plan-request-" + stableSuffix(responseSeed)), null, null, request.prompt(), "ready");
     var idempotencyRoot = firstNonBlank(request.idempotencyKey(), "idem-chat-tool-plan-" + stableSuffix(responseSeed));
-    var canonicalSteps = userAdminOrganizationAndAdminInvitePlanSteps(candidate, idempotencyRoot);
+    var canonicalSteps = candidate.steps();
     try {
       var boundary = activeChatToolBoundary(actor, request.functionalAgentId(), correlationId);
       canonicalSteps.forEach(step -> validateChatToolStepAgainstCatalog(actor, boundary, request.functionalAgentId(), step));
@@ -1785,7 +1784,7 @@ public final class WorkstreamService {
         null,
         chatToolCatalogSummary(request.functionalAgentId(), canonicalSteps)));
     var runtimeResponse = runtime.response();
-    var unavailable = chatToolPlanUnavailableMessage(runtime, runtimeResponse, canonicalSteps);
+    var unavailable = chatToolPlanUnavailableMessage(runtime, runtimeResponse, canonicalSteps, workstreamLabel(request.functionalAgentId()));
     if (unavailable != null) {
       return persistChatToolPlanSystemMessage(actor, functionalAgent, workstreamScopeId, request, correlationId, responseSeed, userItem, unavailable.code(), unavailable.message(), unavailable.traceIds());
     }
@@ -1800,14 +1799,14 @@ public final class WorkstreamService {
         correlationId,
         idempotencyRoot,
         null,
-        firstNonBlank(runtimeResponse.summary(), "Create an Organization and invite its Organization Admin after explicit human confirmation."),
+        firstNonBlank(runtimeResponse.summary(), candidate.defaultSummary()),
         canonicalSteps,
-        firstNonBlank(runtimeResponse.approvalSummary(), "No Organization or invitation is created from this proposal. Human confirmation, selected AuthContext authorization, exact plan snapshot validation, per-step idempotency, and trace capture are required before execution."));
+        firstNonBlank(runtimeResponse.approvalSummary(), candidate.defaultApprovalSummary()));
     var proposal = chatToolPlanProposal(actor, proposalRequest, now, traceIds, responseSeed);
     var confirmationSnapshot = chatToolPlanConfirmationSnapshot(proposal);
     var agentItemId = "item-chat-tool-plan-proposal-" + stableSuffix(responseSeed + ":proposal");
     var surface = chatToolPlanProposalSurface(proposal, confirmationSnapshot, actor, agentItemId, correlationId, traceIds, now);
-    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "chat_tool_plan_proposal", now.toString(), correlationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Review the User Admin governed-tool plan. No Organization or invitation has been created; explicit confirmation must echo this exact snapshot before execution.", "waiting-for-human");
+    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "chat_tool_plan_proposal", now.toString(), correlationId, traceIds, surface.surfaceId(), functionalAgent.label(), candidate.proposalItemBody(), "waiting-for-human");
     var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, surface));
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
@@ -1817,12 +1816,12 @@ public final class WorkstreamService {
     var safeTraceIds = traceIds == null || traceIds.isEmpty() ? List.of("trace-human-chat-tool-plan-provider-blocked-" + stableSuffix(responseSeed)) : List.copyOf(traceIds);
     var agentItemId = "item-chat-tool-plan-blocked-" + stableSuffix(responseSeed + ":blocked");
     var surface = chatToolPlanSystemMessageSurface("surface-chat-tool-plan-blocked-" + stableSuffix(responseSeed), request.functionalAgentId(), actor, code, message, correlationId, safeTraceIds, now);
-    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "chat_tool_plan_system_message", now.toString(), correlationId, safeTraceIds, surface.surfaceId(), functionalAgent.label(), "Governed User Admin chat tool planning failed closed. No tools executed and no records were changed.", "blocked");
+    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "chat_tool_plan_system_message", now.toString(), correlationId, safeTraceIds, surface.surfaceId(), functionalAgent.label(), "Governed " + workstreamLabel(request.functionalAgentId()) + " chat tool planning failed closed. No tools executed and no records were changed.", "blocked");
     var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, surface));
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
 
-  private ChatToolPlanSystemMessage chatToolPlanUnavailableMessage(AgentRuntimeService.PlanProposalInvocationResult runtime, WorkstreamRuntimeAgent.ChatToolPlanProposalResponse response, List<ChatToolPlanStep> canonicalSteps) {
+  private ChatToolPlanSystemMessage chatToolPlanUnavailableMessage(AgentRuntimeService.PlanProposalInvocationResult runtime, WorkstreamRuntimeAgent.ChatToolPlanProposalResponse response, List<ChatToolPlanStep> canonicalSteps, String workstreamLabel) {
     if (runtime.decision() != AgentRuntimeTrace.Decision.ALLOWED || response == null) {
       return new ChatToolPlanSystemMessage(firstNonBlank(runtime.safeErrorCode(), "CHAT_TOOL_PLAN_UNAVAILABLE"), firstNonBlank(runtime.safeErrorSummary(), "Governed chat tool plan runtime failed closed before producing a proposal."), List.of("Verify provider/runtime/tool-boundary readiness, then retry the request."), true, runtime.traceIds());
     }
@@ -1837,7 +1836,7 @@ public final class WorkstreamService {
         .map(step -> String.join(":", step.actionId(), step.browserToolId(), step.governedToolId(), step.capabilityId(), step.inputSchemaRef()))
         .collect(Collectors.toCollection(LinkedHashSet::new));
     if (!proposedKeys.containsAll(requiredKeys)) {
-      return new ChatToolPlanSystemMessage("CHAT_TOOL_PLAN_OUT_OF_CATALOG", "Governed chat tool plan runtime proposed steps that did not match the User Admin backend-owned catalog for Organization creation plus Organization Admin invitation.", List.of("Retry with a catalog-bound request or open the structured User Admin surfaces directly."), true, runtime.traceIds());
+      return new ChatToolPlanSystemMessage("CHAT_TOOL_PLAN_OUT_OF_CATALOG", "Governed chat tool plan runtime proposed steps that did not match the " + workstreamLabel + " backend-owned catalog for the representative confirmed plan path.", List.of("Retry with a catalog-bound request or open the structured " + workstreamLabel + " surfaces directly."), true, runtime.traceIds());
     }
     return null;
   }
@@ -1848,6 +1847,52 @@ public final class WorkstreamService {
         .filter(entry -> stepKeys.contains(entry.actionId()))
         .map(entry -> "actionId=" + entry.actionId() + "; browserToolId=" + entry.browserToolId() + "; governedToolId=" + entry.governedToolId() + "; capabilityId=" + entry.capabilityId() + "; inputSchemaRef=" + entry.inputSchemaRef() + "; idempotencyRequired=" + entry.idempotencyRequired() + "; requiresConfirmation=" + entry.requiresConfirmation() + "; requiresApproval=" + entry.requiresApproval() + "; resultSurfaceId=" + entry.expectedResultSurfaceId() + "; traceRequirements=" + entry.traceRequirements())
         .collect(Collectors.joining("\n"));
+  }
+
+  private Optional<RepresentativeChatToolPlanCandidate> representativeChatToolPlanCandidate(String functionalAgentId, String prompt, String idempotencyRoot) {
+    if (prompt == null || prompt.isBlank()) return Optional.empty();
+    if (USER_ADMIN_AGENT_ID.equals(functionalAgentId)) {
+      return userAdminChatToolPlanCandidate(prompt).map(candidate -> new RepresentativeChatToolPlanCandidate(
+          USER_ADMIN_AGENT_ID,
+          "Review the User Admin governed-tool plan. No Organization or invitation has been created; explicit confirmation must echo this exact snapshot before execution.",
+          "Create an Organization and invite its Organization Admin after explicit human confirmation.",
+          "No Organization or invitation is created from this proposal. Human confirmation, selected AuthContext authorization, exact plan snapshot validation, per-step idempotency, and trace capture are required before execution.",
+          userAdminOrganizationAndAdminInvitePlanSteps(candidate, idempotencyRoot)));
+    }
+    var normalized = prompt.toLowerCase(Locale.ROOT);
+    if (MY_ACCOUNT_AGENT_ID.equals(functionalAgentId) && normalized.contains("theme") && (normalized.contains("obsidian dark") || normalized.contains("obsidian-dark")) && (normalized.contains("change") || normalized.contains("set") || normalized.contains("update"))) {
+      return Optional.of(new RepresentativeChatToolPlanCandidate(
+          MY_ACCOUNT_AGENT_ID,
+          "Review the My Account governed-tool plan. No settings have changed; explicit confirmation must echo this exact snapshot before execution.",
+          "Update the signed-in user's preferred theme to Obsidian Dark after explicit human confirmation.",
+          "No personal setting changes from this proposal. Human confirmation, selected AuthContext authorization, exact plan snapshot validation, per-step idempotency, and trace capture are required before execution.",
+          myAccountThemePlanSteps(idempotencyRoot)));
+    }
+    if (AGENT_ADMIN_AGENT_ID.equals(functionalAgentId) && normalized.contains("prompt risk review") && (normalized.contains("start") || normalized.contains("run"))) {
+      return Optional.of(new RepresentativeChatToolPlanCandidate(
+          AGENT_ADMIN_AGENT_ID,
+          "Review the Agent Admin governed-tool plan. Prompt-risk review start remains approval-gated; explicit confirmation cannot bypass policy gates.",
+          "Start an approval-gated prompt-risk review task for the Agent Admin prompt proposal only when backend policy permits it.",
+          "No managed-agent behavior, prompt, skill, reference, model, provider, or lifecycle artifact changes from this proposal. Confirmation rechecks authorization and the dispatcher blocks approval-gated execution until the separate policy gate is modeled.",
+          agentAdminPromptRiskReviewPlanSteps(idempotencyRoot)));
+    }
+    if (AUDIT_TRACE_AGENT_ID.equals(functionalAgentId) && normalized.contains("append") && normalized.contains("investigation note")) {
+      return Optional.of(new RepresentativeChatToolPlanCandidate(
+          AUDIT_TRACE_AGENT_ID,
+          "Review the Audit/Trace governed-tool plan. No note has been appended; explicit confirmation must echo this exact snapshot before execution.",
+          "Append a browser-safe investigation note to an authorized trace reference after explicit human confirmation.",
+          "No trace note is recorded from this proposal. Human confirmation, selected AuthContext authorization, exact plan snapshot validation, per-step idempotency, and trace capture are required before execution; source evidence and policy remain immutable.",
+          auditTraceInvestigationNotePlanSteps(prompt, idempotencyRoot)));
+    }
+    if (GOVERNANCE_POLICY_AGENT_ID.equals(functionalAgentId) && normalized.contains("draft") && normalized.contains("policy proposal") && normalized.contains("redacted export")) {
+      return Optional.of(new RepresentativeChatToolPlanCandidate(
+          GOVERNANCE_POLICY_AGENT_ID,
+          "Review the Governance/Policy governed-tool plan. No policy is approved, activated, rolled back, or weakened by this proposal.",
+          "Draft an inert Governance/Policy proposal requiring approval before redacted exports after explicit human confirmation.",
+          "No policy authority changes from this proposal. Confirmed execution may draft an inert proposal only; approval, activation, rollback, exports, and production authority changes remain separate approval-gated capabilities.",
+          governancePolicyDraftProposalPlanSteps(idempotencyRoot)));
+    }
+    return Optional.empty();
   }
 
   private List<ChatToolPlanStep> userAdminOrganizationAndAdminInvitePlanSteps(UserAdminChatToolPlanCandidate candidate, String idempotencyRoot) {
@@ -1892,6 +1937,101 @@ public final class WorkstreamService {
             List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "invitation.outbox")));
   }
 
+  private List<ChatToolPlanStep> myAccountThemePlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-update-my-settings",
+        1,
+        "Update preferred theme to Obsidian Dark",
+        "action-update-my-settings",
+        "action-update-my-settings",
+        MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY,
+        MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY,
+        "schema.my-account.settings.update.v1",
+        mapOf("preferredThemeId", "obsidian-dark"),
+        List.of(),
+        Map.of(),
+        "idem-" + stableSuffix(idempotencyRoot + ":update-my-settings"),
+        "independent-command: personal settings update is one backend transaction boundary scoped to the signed-in account",
+        true,
+        false,
+        "detail-edit",
+        "surface-my-settings",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed")));
+  }
+
+  private List<ChatToolPlanStep> agentAdminPromptRiskReviewPlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-start-prompt-risk-review",
+        1,
+        "Start Agent Admin prompt-risk review task",
+        "action-agent-prompt-risk-review-start",
+        "action-agent-prompt-risk-review-start",
+        AgentAdminPromptRiskReviewService.START_CAPABILITY,
+        AgentAdminPromptRiskReviewService.START_CAPABILITY,
+        "schema.agent-admin.prompt-risk-review.start.v1",
+        mapOf("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "proposalId", "proposal-agent-admin-prompt-001", "artifactDeltas", "redacted", "reason", "human_chat_tool_plan proposal for Agent Admin prompt-risk review; execution remains approval-gated"),
+        List.of(),
+        Map.of(),
+        "idem-" + stableSuffix(idempotencyRoot + ":agent-admin-prompt-risk-review"),
+        "approval-gated-command: prompt-risk review start is blocked by the chat dispatcher until separate approval policy is fully modeled",
+        true,
+        true,
+        "workflow-status",
+        "surface-agent-admin-prompt-risk-review",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_failed", "agent.work_trace")));
+  }
+
+  private List<ChatToolPlanStep> auditTraceInvestigationNotePlanSteps(String prompt, String idempotencyRoot) {
+    var noteText = quotedText(prompt).orElse("provider blocked; retry after config");
+    return List.of(new ChatToolPlanStep(
+        "step-append-investigation-note",
+        1,
+        "Append browser-safe investigation note",
+        "action-audit-trace-append-investigation-note",
+        "action-audit-trace-append-investigation-note",
+        "draft-investigation-note",
+        AUDIT_TRACE_INVESTIGATION_NOTE_CAPABILITY,
+        "schema.audit-trace.investigation-note.v1",
+        mapOf("traceId", "trace-auth-context-" + stableSuffix(idempotencyRoot), "note", noteText),
+        List.of(),
+        Map.of(),
+        "idem-" + stableSuffix(idempotencyRoot + ":audit-trace-investigation-note"),
+        "independent-command: investigation note append is one backend transaction boundary and does not mutate source evidence",
+        true,
+        false,
+        "system-message",
+        "surface-audit-trace-investigation-note",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.note")));
+  }
+
+  private List<ChatToolPlanStep> governancePolicyDraftProposalPlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-draft-policy-proposal",
+        1,
+        "Draft policy proposal for redacted export approvals",
+        "action-governance-policy-draft-proposal",
+        "action-governance-policy-draft-proposal",
+        GOVERNANCE_POLICY_PROPOSE_CAPABILITY,
+        GOVERNANCE_POLICY_PROPOSE_CAPABILITY,
+        "schema.governance-policy.proposal.draft.v1",
+        mapOf("policyId", "policy-redacted-export-approval", "title", "Require approval before redacted exports", "rationale", "Human chat tool plan requested a browser-safe draft; approval, activation, rollback, and export delivery remain separate governed gates.", "proposedContent", "Require explicit human approval before redacted audit exports are prepared or delivered."),
+        List.of(),
+        Map.of(),
+        "idem-" + stableSuffix(idempotencyRoot + ":governance-policy-draft-proposal"),
+        "independent-proposal-command: draft proposal is inert until separate review, approval, simulation, and activation capabilities run",
+        true,
+        false,
+        "governance-diff",
+        "surface-governance-policy-proposal",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.proposal_trace")));
+  }
+
+  private Optional<String> quotedText(String prompt) {
+    if (prompt == null) return Optional.empty();
+    var matcher = Pattern.compile("[\\\"“]([^\\\"”]+)[\\\"”]").matcher(prompt);
+    return matcher.find() ? Optional.of(matcher.group(1).trim()) : Optional.empty();
+  }
+
   private Optional<UserAdminChatToolPlanCandidate> userAdminChatToolPlanCandidate(String prompt) {
     if (prompt == null || prompt.isBlank()) return Optional.empty();
     var normalized = prompt.toLowerCase(Locale.ROOT);
@@ -1918,6 +2058,17 @@ public final class WorkstreamService {
         .map(part -> part.substring(0, 1).toUpperCase(Locale.ROOT) + part.substring(1).toLowerCase(Locale.ROOT))
         .toList();
     return parts.isEmpty() ? "Organization Admin" : String.join(" ", parts);
+  }
+
+  private String workstreamLabel(String functionalAgentId) {
+    return switch (functionalAgentId) {
+      case MY_ACCOUNT_AGENT_ID -> "My Account";
+      case USER_ADMIN_AGENT_ID -> "User Admin";
+      case AGENT_ADMIN_AGENT_ID -> "Agent Admin";
+      case AUDIT_TRACE_AGENT_ID -> "Audit/Trace";
+      case GOVERNANCE_POLICY_AGENT_ID -> "Governance/Policy";
+      default -> firstNonBlank(functionalAgentId, "selected workstream");
+    };
   }
 
   private WorkstreamMessageResponse routedSurfaceMessageResponse(AuthContextResolver.ResolvedMe actor, MeResponse.FunctionalAgentSummary functionalAgent, String workstreamScopeId, WorkstreamMessageRequest request, String correlationId, SurfaceIntentRouter.Result route) {
@@ -7428,6 +7579,7 @@ public final class WorkstreamService {
   public record ChatToolPlanSystemMessage(String code, String message, List<String> recoverySteps, boolean noFakeSuccess, List<String> traceIds) {}
   public record ChatToolPlanSurfaceData(String surfaceContract, String status, ChatToolPlanProposal proposal, ChatToolPlanConfirmationSnapshot confirmationSnapshot, ChatToolPlanExecutionResult result, ChatToolPlanSystemMessage systemMessage, boolean noDirectMutation, boolean noMutation, boolean executionEnabled, String sideEffect, String workstreamEntryId, List<String> traceRefs) {}
   private record UserAdminChatToolPlanCandidate(String organizationName, String email, String displayName) {}
+  private record RepresentativeChatToolPlanCandidate(String functionalAgentId, String proposalItemBody, String defaultSummary, String defaultApprovalSummary, List<ChatToolPlanStep> steps) {}
   public record WorkstreamEvent(String eventId, String eventType, String tenantId, String customerId, String functionalAgentId, String surfaceId, String surfaceType, String surfaceVersion, String correlationId, List<String> traceIds, String occurredAt, Integer sequence, Map<String, Object> patch) {}
 
   private static final class EmptyWorkstreamEventRepository implements WorkstreamEventRepository {
