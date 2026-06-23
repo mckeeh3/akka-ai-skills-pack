@@ -2005,7 +2005,40 @@ class WorkstreamServiceTest {
         && entry.actionId().equals("action-submit-organization-admin-invitation")
         && entry.governedToolId().equals("manage-organization-admins")
         && entry.capabilityId().equals("saas_owner.organization_admin.invite")
+        && entry.guardrails().contains("role-pinned:TENANT_ADMIN")
         && entry.traceRequirements().contains("invitation.outbox")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("user-admin-agent")
+        && entry.actionId().equals("action-submit-user-admin-invitation")
+        && entry.governedToolId().equals("create-or-resend-invitation")
+        && entry.capabilityId().equals("user_admin.invite_user")
+        && entry.classification().equals("chat-executable-now")
+        && entry.guardrails().contains("role-pinned:TENANT_EMPLOYEE-or-CUSTOMER_USER")
+        && entry.traceRequirements().contains("invitation.outbox")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("user-admin-agent")
+        && entry.actionId().equals("action-submit-saas-owner-admin-invitation")
+        && entry.governedToolId().equals("manage-saas-owner-admins")
+        && entry.capabilityId().equals("saas_owner.admin.invite")
+        && entry.guardrails().contains("role-pinned:SAAS_OWNER_ADMIN")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("user-admin-agent")
+        && entry.actionId().equals("action-customer-admin-invite")
+        && entry.governedToolId().equals("manage-customer-admins")
+        && entry.capabilityId().equals("tenant.customer_admin.invite")
+        && entry.guardrails().contains("visible-customer-binding")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("user-admin-agent")
+        && entry.actionId().equals("action-submit-customer-create")
+        && entry.governedToolId().equals("manage-customers")
+        && entry.capabilityId().equals("tenant.customer.create")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("user-admin-agent")
+        && entry.actionId().equals("action-submit-customer-rename")
+        && entry.guardrails().contains("visible-customer-id")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("user-admin-agent")
+        && entry.actionId().equals("action-submit-organization-rename")
+        && entry.guardrails().contains("visible-organization-id")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("user-admin-agent")
+        && entry.actionId().equals("action-confirm-user-admin-invitation-revoke")
+        && entry.classification().equals("approval-gated")
+        && entry.requiresApproval()
+        && entry.guardrails().contains("approval-gate")));
     assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("agent-admin-agent")
         && entry.actionId().equals("action-agent-prompt-risk-review-start")
         && entry.classification().equals("approval-gated")
@@ -2327,6 +2360,232 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void expandedUserAdminInvitationChatToolPlansExecuteOnlyPinnedScopedRoles() {
+    var invitationCountBefore = invitationRepository.invitations().size();
+    var response = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "user-admin-agent",
+        "send a tenant employee invitation to tenant.chat@example.test after confirmation",
+        "corr-user-admin-tenant-invite-proposal",
+        "idem-user-admin-tenant-invite-proposal",
+        null,
+        "Invite a tenant employee through the selected User Admin scope after exact confirmation.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-invite-tenant-user",
+            1,
+            "Invite tenant employee tenant.chat@example.test",
+            "action-submit-user-admin-invitation",
+            "action-submit-user-admin-invitation",
+            "create-or-resend-invitation",
+            "user_admin.invite_user",
+            "schema.user-admin.invitation-create.submit.v1",
+            Map.of("email", "tenant.chat@example.test", "displayName", "Tenant Chat", "roles", List.of("TENANT_EMPLOYEE"), "reason", "human_chat_tool_plan tenant employee invite"),
+            List.of(),
+            Map.of(),
+            "idem-user-admin-tenant-invite-step",
+            "independent-command",
+            true,
+            false,
+            "show-inspection",
+            "surface-user-admin-invitation-detail",
+            List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "invitation.outbox"))),
+        "Human confirmation, selected AuthContext scope, pinned non-admin role, outbox fail-closed behavior, and traces are required."));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
+    assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "User Admin invitation proposal must not create an invitation before confirmation.");
+
+    var confirmed = confirmRepresentativePlan(identity(), "membership-admin", proposal, snapshot, "idem-user-admin-tenant-invite-confirm");
+    var result = (WorkstreamService.ChatToolPlanExecutionResult) confirmed.surface().data().get("result");
+    assertEquals("completed", result.status(), result.toString());
+    assertTrue(result.completedSteps().stream().anyMatch(step -> step.actionId().equals("action-submit-user-admin-invitation") && step.governedToolId().equals("create-or-resend-invitation")));
+    assertEquals(invitationCountBefore + 1, invitationRepository.invitations().size());
+    var tenantInvite = invitationRepository.invitations().stream().filter(invitation -> "tenant.chat@example.test".equals(invitation.normalizedEmail())).findFirst().orElseThrow();
+    assertEquals(ScopeType.TENANT, tenantInvite.scopeType());
+    assertEquals("tenant-1", tenantInvite.tenantId());
+    assertEquals(List.of(FoundationRole.TENANT_EMPLOYEE), tenantInvite.requestedRoles());
+    assertBrowserPayloadSafe(confirmed.surface());
+
+    var unsafeRole = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "user-admin-agent",
+        "try to invite an admin role through the generic User Admin invite",
+        "corr-user-admin-tenant-invite-role-denied",
+        "idem-user-admin-tenant-invite-role-denied",
+        null,
+        "Unsafe role proposal must fail closed before proposal persistence.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-invite-tenant-admin-unsafe",
+            1,
+            "Attempt generic Tenant Admin invitation",
+            "action-submit-user-admin-invitation",
+            "action-submit-user-admin-invitation",
+            "create-or-resend-invitation",
+            "user_admin.invite_user",
+            "schema.user-admin.invitation-create.submit.v1",
+            Map.of("email", "tenant.admin.unsafe@example.test", "displayName", "Unsafe Admin", "roles", List.of("TENANT_ADMIN")),
+            List.of(),
+            Map.of(),
+            "idem-user-admin-tenant-invite-role-denied-step",
+            "independent-command",
+            true,
+            false,
+            "show-inspection",
+            "surface-user-admin-invitation-detail",
+            List.of("human_chat_tool_plan.step_started"))),
+        "Generic User Admin invitations cannot grant admin roles.")));
+    assertTrue(unsafeRole.reasonCode().contains("CHAT_TOOL_USER_ADMIN_ROLE_NOT_PINNED"), unsafeRole.reasonCode());
+    assertFalse(invitationRepository.invitations().stream().anyMatch(invitation -> "tenant.admin.unsafe@example.test".equals(invitation.normalizedEmail())));
+  }
+
+  @Test
+  void expandedUserAdminCustomerAndOrganizationRenameChatPlansStayScopedAndIdempotent() {
+    var customerRowsBefore = identityRepository.customerRows().size();
+    var customerResponse = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "user-admin-agent",
+        "create customer Acme Chat and rename it Acme Chat North after confirmation",
+        "corr-user-admin-customer-chat-proposal",
+        "idem-user-admin-customer-chat-proposal",
+        null,
+        "Create and rename a Customer inside the selected Organization/Tenant after exact confirmation.",
+        List.of(
+            new WorkstreamService.ChatToolPlanStep(
+                "step-create-customer",
+                1,
+                "Create Customer Acme Chat",
+                "action-submit-customer-create",
+                "user-admin.create-customer",
+                "manage-customers",
+                "tenant.customer.create",
+                "schema.customer-admin.create.v1",
+                Map.of("customerName", "Acme Chat", "reason", "human_chat_tool_plan customer create"),
+                List.of(),
+                Map.of("customerId", "recordId"),
+                "idem-user-admin-customer-create-step",
+                "independent-command",
+                true,
+                false,
+                "show-inspection",
+                "surface-user-admin-customer-detail",
+                List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed")),
+            new WorkstreamService.ChatToolPlanStep(
+                "step-rename-customer",
+                2,
+                "Rename Customer Acme Chat North",
+                "action-submit-customer-rename",
+                "user-admin.submit-customer-rename",
+                "manage-customers",
+                "tenant.customer.rename",
+                "schema.customer-admin.rename.submit.v1",
+                Map.of("customerId", "${step-create-customer.recordId}", "customerName", "Acme Chat North", "reason", "human_chat_tool_plan customer rename"),
+                List.of("step-create-customer"),
+                Map.of(),
+                "idem-user-admin-customer-rename-step",
+                "independent-command-after-dependency",
+                true,
+                false,
+                "show-inspection",
+                "surface-user-admin-customer-detail",
+                List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed"))),
+        "Selected Organization/Tenant authority, visible Customer binding, idempotency, and traces are required."));
+    var customerProposal = (WorkstreamService.ChatToolPlanProposal) customerResponse.surface().data().get("proposal");
+    var customerSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) customerResponse.surface().data().get("confirmationSnapshot");
+    assertEquals(customerRowsBefore, identityRepository.customerRows().size(), "Customer proposal must not mutate before confirmation.");
+
+    var confirmedCustomer = confirmRepresentativePlan(identity(), "membership-admin", customerProposal, customerSnapshot, "idem-user-admin-customer-chat-confirm");
+    var customerResult = (WorkstreamService.ChatToolPlanExecutionResult) confirmedCustomer.surface().data().get("result");
+    assertEquals("completed", customerResult.status(), customerResult.toString());
+    assertEquals(customerRowsBefore + 1, identityRepository.customerRows().size());
+    assertTrue(identityRepository.customerRows().stream().anyMatch(customer -> "tenant-1".equals(customer.tenantId()) && "Acme Chat North".equals(customer.displayName())));
+    assertBrowserPayloadSafe(confirmedCustomer.surface());
+
+    var organizationResponse = service.createChatToolPlanProposal(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-owner",
+        "user-admin-agent",
+        "rename organization tenant-starter to Starter Organization Chat after confirmation",
+        "corr-user-admin-organization-rename-proposal",
+        "idem-user-admin-organization-rename-proposal",
+        null,
+        "Rename a visible Organization display label after exact confirmation.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-rename-organization",
+            1,
+            "Rename Organization Starter Organization Chat",
+            "action-submit-organization-rename",
+            "user-admin.submit-organization-rename",
+            "manage-organizations",
+            "saas_owner.organization.rename",
+            "schema.organization-admin.rename.submit.v1",
+            Map.of("organizationId", "tenant-starter", "organizationName", "Starter Organization Chat", "reason", "human_chat_tool_plan organization rename"),
+            List.of(),
+            Map.of(),
+            "idem-user-admin-organization-rename-step",
+            "independent-command",
+            true,
+            false,
+            "show-inspection",
+            "surface-user-admin-organization-detail",
+            List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed"))),
+        "Selected SaaS Owner AuthContext, visible Organization binding, idempotency, and traces are required."));
+    var organizationProposal = (WorkstreamService.ChatToolPlanProposal) organizationResponse.surface().data().get("proposal");
+    var organizationSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) organizationResponse.surface().data().get("confirmationSnapshot");
+    assertEquals("Starter Organization", identityRepository.tenant("tenant-starter").orElseThrow().displayName());
+
+    var confirmedOrganization = confirmRepresentativePlan(ownerIdentity(), "membership-owner", organizationProposal, organizationSnapshot, "idem-user-admin-organization-rename-confirm");
+    var organizationResult = (WorkstreamService.ChatToolPlanExecutionResult) confirmedOrganization.surface().data().get("result");
+    assertEquals("completed", organizationResult.status(), organizationResult.toString());
+    assertEquals("Starter Organization Chat", identityRepository.tenant("tenant-starter").orElseThrow().displayName());
+    assertBrowserPayloadSafe(confirmedOrganization.surface());
+  }
+
+  @Test
+  void highRiskUserAdminRevokeChatPlanRemainsApprovalGatedAndDoesNotExecute() {
+    var tenantInvite = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-submit-user-admin-invitation", "action-submit-user-admin-invitation", "create-or-resend-invitation", "user_admin.invite_user", Map.of("email", "revoke.chat@example.test", "displayName", "Revoke Chat", "roles", "TENANT_EMPLOYEE"), "idem-revoke-chat-invite", "membership-admin", "surface-user-admin-invitation-create", "corr-revoke-chat-invite"));
+    assertEquals("accepted", tenantInvite.status());
+    var invitation = invitationRepository.invitations().stream().filter(invite -> "revoke.chat@example.test".equals(invite.normalizedEmail())).findFirst().orElseThrow();
+
+    var response = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "user-admin-agent",
+        "revoke invitation " + invitation.invitationId() + " because it was sent to the wrong address",
+        "corr-user-admin-revoke-chat-proposal",
+        "idem-user-admin-revoke-chat-proposal",
+        null,
+        "Revoke remains approval-gated and must not execute from chat confirmation alone.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-revoke-invitation",
+            1,
+            "Approval-gated invitation revoke",
+            "action-confirm-user-admin-invitation-revoke",
+            "action-confirm-user-admin-invitation-revoke",
+            "create-or-resend-invitation",
+            "user_admin.revoke_invitation",
+            "schema.user-admin.invitation-revoke.confirm.v1",
+            Map.of("invitationId", invitation.invitationId(), "reason", "sent to the wrong address", "consequenceAcknowledgement", "Revoking prevents future acceptance only."),
+            List.of(),
+            Map.of(),
+            "idem-user-admin-revoke-chat-step",
+            "approval-gated-command",
+            true,
+            true,
+            "show-inspection",
+            "surface-user-admin-invitation-detail",
+            List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_failed", "invitation.revoke_trace"))),
+        "Revoke requires separate approval; confirmation alone cannot mutate invitation lifecycle."));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
+    assertTrue(proposal.steps().get(0).requiresApproval());
+
+    var confirmed = confirmRepresentativePlan(identity(), "membership-admin", proposal, snapshot, "idem-user-admin-revoke-chat-confirm");
+    var result = (WorkstreamService.ChatToolPlanExecutionResult) confirmed.surface().data().get("result");
+    assertEquals("failed", result.status(), result.toString());
+    assertEquals("approval_required", result.failedSteps().get(0).errorCode());
+    assertFalse(ai.first.domain.foundation.invitation.InvitationStatus.REVOKED.equals(invitationRepository.invitation(invitation.invitationId()).orElseThrow().status()), "Approval-gated revoke step must not execute from chat confirmation alone.");
+    assertBrowserPayloadSafe(confirmed.surface());
+  }
+
+  @Test
   void confirmedUserAdminChatToolPlanReportsPartialFailureAndRecoveryWithoutRollingBackCompletedStep() {
     var tenantCountBefore = identityRepository.tenantRows().size();
     var invitationCountBefore = invitationRepository.invitations().size();
@@ -2338,8 +2597,8 @@ class WorkstreamServiceTest {
         "idem-chat-confirm-partial-proposal",
         null,
         "Create an Organization and invite its Organization Admin after confirmation.",
-        userAdminOrganizationInviteSteps("Org Confirm Partial", "mckee.hugh+partial@gmail.com", "Hugh Partial", "idem-chat-confirm-partial", List.of("TENANT_EMPLOYEE"), true),
-        "Human confirmation is required; invalid role requests fail closed."));
+        userAdminOrganizationInviteSteps("Org Confirm Partial", "mckee.hugh+partial@gmail.com", "Hugh Partial", "idem-chat-confirm-partial", List.of("TENANT_ADMIN"), true),
+        "Human confirmation is required; unsafe output bindings fail closed."));
     var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
     var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
 
@@ -2351,7 +2610,7 @@ class WorkstreamServiceTest {
     assertEquals(1, result.completedSteps().size());
     assertEquals(1, result.failedSteps().size());
     assertEquals(1, result.skippedSteps().size());
-    assertEquals("validation-error", result.failedSteps().get(0).errorCode(), result.toString());
+    assertEquals("denied", result.failedSteps().get(0).errorCode(), result.toString());
     assertEquals("skipped", result.skippedSteps().get(0).status());
     assertFalse(result.recoverySteps().isEmpty());
     assertNotNull(confirmed.surface().data().get("systemMessage"));
@@ -2387,25 +2646,20 @@ class WorkstreamServiceTest {
         "decision-card",
         "surface-agent-admin-activation-confirmation",
         List.of("human_chat_tool_plan.step_started"));
-    var response = service.createChatToolPlanProposal(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanProposalRequest(
+    var denied = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanProposalRequest(
         "membership-owner",
         "user-admin-agent",
         "create org \"Org Out Of Catalog\", then activate a managed agent",
         "corr-chat-out-of-catalog-proposal",
         "idem-chat-out-of-catalog-proposal",
         null,
-        "Unsafe proposal fixture used to prove confirmation rejects out-of-catalog steps before mutation.",
+        "Unsafe proposal fixture used to prove proposal validation rejects out-of-catalog steps before mutation.",
         List.of(outOfCatalogStep),
-        "Out-of-catalog steps must never execute."));
-    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
-    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
-
-    var denied = assertThrows(AuthorizationException.class, () -> service.confirmChatToolPlan(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanConfirmationRequest(
-        "membership-owner", proposal.planId(), proposal.planSnapshotId(), "CONFIRM " + proposal.planSnapshotId(), snapshot.stepHashes(), "idem-chat-out-of-catalog-execute", "corr-chat-out-of-catalog-execute")));
+        "Out-of-catalog steps must never execute.")));
 
     assertTrue(denied.reasonCode().contains("CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG"), denied.reasonCode());
-    assertEquals(tenantCountBefore, identityRepository.tenantRows().size(), "Out-of-catalog confirmed snapshots must be rejected before Organization creation.");
-    assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Out-of-catalog confirmed snapshots must be rejected before invitation creation.");
+    assertEquals(tenantCountBefore, identityRepository.tenantRows().size(), "Out-of-catalog proposal snapshots must be rejected before Organization creation.");
+    assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Out-of-catalog proposal snapshots must be rejected before invitation creation.");
   }
 
   @Test
@@ -3445,7 +3699,7 @@ class WorkstreamServiceTest {
         "manage-organization-admins",
         "saas_owner.organization_admin.invite",
         "schema.organization-admin.invitation-create.v1",
-        Map.of("organizationId", "${step-create-organization.organizationId}", "email", email, "displayName", displayName, "roles", inviteRoles, "reason", "human_chat_tool_plan confirmed execution test"),
+        Map.of("organizationId", includeDependentAfterInvite ? "${step-create-organization.missingOrganizationId}" : "${step-create-organization.organizationId}", "email", email, "displayName", displayName, "roles", inviteRoles, "reason", "human_chat_tool_plan confirmed execution test"),
         List.of("step-create-organization"),
         Map.of(),
         idempotencyRoot + "-org-admin-invite",

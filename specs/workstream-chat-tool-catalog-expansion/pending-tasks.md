@@ -209,7 +209,7 @@
 
 ### TASK-WCTC-05-001: Expand User Admin chat tool catalog
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
 - task brief: specs/workstream-chat-tool-catalog-expansion/tasks/05-user-admin/01-expand-user-admin-chat-tool-catalog.md
 - depends on:
