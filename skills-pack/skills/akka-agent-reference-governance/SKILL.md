@@ -241,14 +241,14 @@ Prefer:
 - `SkillDocument` = procedural model guidance; `ReferenceDocument` = durable factual/process knowledge.
 - `AgentSkillManifest` and `AgentReferenceManifest` are separate sections of one workstream expertise manifest.
 - `readSkill` and `readReferenceDoc` require separate tool-boundary grants. A skill grant never implies reference access.
-- Reference text cannot grant backend capabilities, data access, roles, tenant/customer scope, tool access, approval authority, or autonomous side effects.
-- Capability contracts and `ToolPermissionBoundary` remain authoritative even if a reference says an action is allowed.
+- Reference text cannot grant backend capabilities, data access, roles, tenant/customer scope, tool access, approval authority, confirmed human chat execution, or autonomous side effects.
+- Capability contracts and `ToolPermissionBoundary` remain authoritative even if a reference says an action is allowed; a reference may explain a `human_chat_tool_plan` or AI-backed `agent_tool_call` only when the workstream tool catalog and adapter contract already allow it.
 - Reference assignment in a manifest means the model may consult or cite that reference; it does not mean the user may view every underlying source field outside authorized surfaces.
 
 ## Admin UI, tests, and review checklist
 
 Keep protected surfaces compact: catalog, editor/validation/redaction classification, review/approve/reject with rationale, version diff/history, per-agent or expert-bundle manifest management, compact expertise manifest preview, reference-loading test console, evidence/trace/denied-load links, usage counts, and editing-agent proposal queue.
 
-Plan tests for compact-manifest-only prompt assembly, allowed assigned loads, unassigned/inactive/cross-tenant/wrong-customer/missing-boundary/redaction/oversized denials without existence leakage, load trace linkage to `AgentWorkTrace`, reference text not granting authority, protected admin/evidence surfaces, and interim `documentKind: reference` separation when used.
+Plan tests for compact-manifest-only prompt assembly, allowed assigned loads, unassigned/inactive/cross-tenant/wrong-customer/missing-boundary/redaction/oversized denials without existence leakage, load trace linkage to `AgentWorkTrace`, reference text not granting authority, protected admin/evidence surfaces, and interim `documentKind: reference` separation when used. Include denial/trace coverage when reference content attempts to expand a governed tool catalog, bypass human chat confirmation, or authorize an AI-backed tool outside `ToolPermissionBoundary`.
 
 Before finishing, verify the document/version representation, tenant/customer-scoped `AgentReferenceManifest`, compact skill/reference prompt sections, full `readReferenceDoc` authorization/status/version/mode/redaction/token/boundary checks, safe audited denials, trace fields, skill/reference separation, protected UI, tenant isolation tests, and no authority grants from reference text.

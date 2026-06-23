@@ -48,6 +48,12 @@ For model-backed workstream behavior, normal runtime must use a concrete Akka `A
 
 Do not replace this with direct provider calls, deterministic canned responses, prompt-only security, frontend-only decisions, or fixture/model-less normal runtime.
 
+## Workstream tool interpretation
+
+For user-facing workstream agents, distinguish the governed workstream tool from the Akka tool mechanism. A governed workstream tool is the capability-backed operation with AuthContext, tenant/customer scope, schemas, idempotency, policy/approval, audit/work trace, and tests. Akka `@FunctionTool`, component tools, MCP tools, and loader tools are only model-facing exposure adapters for the subset of governed tools assigned to the AI-backed actor through the active workstream tool catalog and `ToolPermissionBoundary`.
+
+Human-requested chat execution is a separate human-backed adapter: the selected workstream agent may interpret a natural-language request, propose a detailed tool plan, bind explicit human confirmation to that exact plan, and then execute each governed-tool invocation through backend authorization and per-tool transaction/idempotency rules. That path does not grant the AI-backed agent extra authority, and prompt, skill, or reference text cannot expand the catalog. Trace records must distinguish `surface_action`, `human_chat_tool_plan`, and `agent_tool_call` sources and preserve `requestedBy`, `confirmedBy`, denials, partial failures, and result surfaces.
+
 ## Design checklist
 
 Before implementation, decide:

@@ -69,8 +69,9 @@ which AgentDefinition and lifecycle state?
 which prompt version was assembled?
 which skill/reference manifests and versions were available/loaded?
 which model config was used?
-which tools/data were used or denied?
-which permission, policy, approval, or guardrail allowed/denied it?
+which governed tool ids and adapter tool ids were used or denied?
+was the source a human surface action, confirmed human chat tool plan, AI-backed agent-tool call, workflow, timer, consumer, API, or MCP call?
+which permission, policy, confirmation, approval, or guardrail allowed/denied it?
 what was the safe input/output/evidence summary?
 which workflow/goal/task/session caused it?
 what outcome, decision, exception, or rollback followed?
@@ -106,10 +107,16 @@ AuditTraceEvent
 - referenceManifestId / referenceManifestVersion when applicable
 - referenceDocumentId / referenceVersion when applicable
 - modelConfigRef when applicable
-- toolName / toolCategory when applicable
+- governedToolId / capabilityId when applicable
+- toolName / toolCategory / adapterToolId when applicable
+- actorAdapterSource: surface_action | human_chat_tool_plan | agent_tool_call | workflow | timer | consumer | api | mcp when applicable
+- requestedByAccountId when an AI-backed or model-mediated action originates from a human request
+- confirmedByAccountId / confirmationId when a consequential human chat tool plan was confirmed
 - dataAccessSummary when applicable
 - policyRefs / approvalRefs / guardrailRefs when applicable
 - inputSummary / outputSummary when safe
+- resultSurfaceRef or systemMessageRef when a tool result is user-visible
+- partialFailureSummary when a multi-step plan or tool sequence only partially succeeds
 - safeMetadata
 - redactionClassification
 ```
@@ -127,7 +134,8 @@ Plan trace emission for:
 - AgentSkillManifest and AgentReferenceManifest changes.
 - `readSkill(skillId)` allowed and denied calls, including unassigned, inactive, cross-tenant, disabled-agent, unauthorized-mode, oversized, and missing-boundary denials.
 - `readReferenceDoc(referenceId)` allowed and denied calls, including unassigned, inactive/deprecated/unapproved, cross-tenant, wrong-customer, unauthorized-use, redaction/access, token-limit, secret-like-content, and missing-boundary denials.
-- Tool invocation allowed and denied calls.
+- Tool invocation allowed, denied, approval-required, unconfirmed, failed, and partial-failure calls.
+- Human-requested confirmed chat tool-plan lifecycle: plan proposed, plan confirmation bound, per-tool execution, denial before confirmation, approval-required result, and result/partial-failure surfaces.
 - Data access by agent tools or component tools.
 - Workflow steps that call agents.
 - Agent response summaries when consequential.
@@ -151,7 +159,7 @@ Route to:
 
 - Generate or propagate a correlation id at the edge endpoint or workflow start.
 - Include causation/parent ids when an event follows another event.
-- Preserve correlation across prompt assembly, skill load, tool calls, component commands, view reads, workflow steps, consumers, and timers where practical.
+- Preserve correlation across prompt assembly, skill load, reference load, human chat plan proposal/confirmation, tool calls, component commands, view reads, workflow steps, consumers, and timers where practical.
 - Use stable ids for `AgentDefinition`, prompt versions, skill versions, manifests, model configs, and workflows.
 - Do not expose cross-tenant correlation results; query filters must include authorized tenant/customer context.
 
@@ -180,6 +188,7 @@ Provide protected UI for:
 Plan tests for:
 - trace emission for allowed agent actions;
 - trace emission for denied agent/prompt/skill/reference/tool/data actions;
+- trace emission for confirmed human chat tool plans, including `requestedBy`, `confirmedBy`, confirmation id, source `human_chat_tool_plan`, governed tool ids, denials before confirmation, and partial-failure/result-surface refs;
 - assigned skill and assigned reference load traces include manifest version, document/version ids, mode/use, authorization decision, caller, and correlation id;
 - unassigned skill and unassigned reference denials return safe model-visible text and emit protected denial trace facts;
 - missing `read_skill` and `read_reference` ToolPermissionBoundary grants fail closed and trace the boundary decision;
@@ -195,7 +204,7 @@ Plan tests for:
 
 Before finishing, verify:
 - consequential agent actions emit durable trace facts
-- prompt, skill, reference, model, tool, data, authorization, and policy references are represented
+- prompt, skill, reference, model, governed tool id, adapter tool id, data, authorization, confirmation, approval, and policy references are represented
 - assigned and denied skill/reference loads emit trace facts and link to the agent work trace
 - correlation ids link related events into a useful timeline
 - sensitive content is summarized, redacted, or not stored

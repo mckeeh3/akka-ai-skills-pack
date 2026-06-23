@@ -9,7 +9,7 @@ Use this skill when agent behavior profiles include runtime model selection or m
 
 This skill governs model configuration. It does not replace `akka-agent-component` for Java `Agent` class structure or `akka-agent-behavior-profiles` for durable `AgentDefinition` lifecycle.
 
-Use this skill only for model-selection authority, policy, fallback, secret-boundary, and model-use trace concerns. Use `akka-agent-behavior-profiles` for which agent references a model config, `app-description-functional-agent-modeling` / `../docs/workstream-expertise-model.md` for the per-workstream expert bundle contract, `akka-agent-tool-boundaries` for tool/data/side-effect authority, and prompt/skill governance skills for model-visible behavior guidance. Prompt text, skill text, or evaluator recommendations cannot select an unapproved provider or bypass model policy.
+Use this skill only for model-selection authority, policy, fallback, secret-boundary, and model-use trace concerns. Use `akka-agent-behavior-profiles` for which agent references a model config, `app-description-functional-agent-modeling` / `../docs/workstream-expertise-model.md` for the per-workstream expert bundle contract, `akka-agent-tool-boundaries` for tool/data/side-effect authority, and prompt/skill governance skills for model-visible behavior guidance. Prompt text, skill text, reference text, model output, or evaluator recommendations cannot select an unapproved provider, grant governed tool access, bypass human chat confirmation, or bypass model policy.
 
 ## Required reading
 
@@ -114,7 +114,7 @@ Plan tests for:
 - fallback model policy success and `noFallback` denial behavior;
 - provider secret boundary: no API key/secret in frontend API responses, traces, prompts, skills, or model-visible context;
 - model config change audit and runtime `AgentWorkTrace` model reference;
-- prompt/skill attempts to request unauthorized model/provider do not change backend selection;
+- prompt/skill/reference attempts to request unauthorized model/provider, expand the workstream tool catalog, or bypass confirmed `human_chat_tool_plan` checks do not change backend selection or tool authority;
 - deterministic static model-alias tests with `TestModelProvider`, covering the configured alias path without exposing provider secrets.
 
 ## Review checklist

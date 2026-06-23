@@ -176,7 +176,7 @@
 
 ### TASK-WTUA-04-001: Align agent, tool-boundary, and trace skills
 
-- status: pending
+- status: done
 - source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
 - task brief: specs/workstream-tool-use-alignment/tasks/04-agent-tool-skills/01-align-agent-tool-and-trace-skills.md
 - depends on:
@@ -215,6 +215,8 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: skills-pack documentation-only alignment; no runtime code
+  - commit message: `workstream-tool-use: align agent tool skills`
+  - checks passed: `git diff --check`; targeted agent-skill search found human chat-mediated and AI-backed tool-call guidance across edited skills, including `human_chat_tool_plan`, `agent_tool_call`, governed tool ids, `ToolPermissionBoundary`, `requestedBy`, `confirmedBy`, partial-failure/result-surface trace guidance, provider/runtime fail-closed preservation, and prompt/skill/reference text not granting authority.
 
 ### TASK-WTUA-05-001: Align workstream, SaaS, and UI skills
 

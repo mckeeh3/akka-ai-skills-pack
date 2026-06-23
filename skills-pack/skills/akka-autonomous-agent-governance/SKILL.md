@@ -58,7 +58,7 @@ Before task start or assignment:
 
 For worker tasks, missing `ComponentClient`, provider/model configuration, governed profile, tool grants, evidence access, or runtime binding must fail closed with blocked/denied state, trace refs, typed workstream events/attention when appropriate, and actionable recovery text. Do not fabricate successful findings or use deterministic/demo/model-less runtime substitutes.
 
-For tool calls, use `akka-agent-tool-boundaries`: prompt text, task instructions, skill/reference text, and tool descriptions never grant authority.
+For tool calls, use `akka-agent-tool-boundaries`: prompt text, task instructions, skill/reference text, and tool descriptions never grant authority. Autonomous task tools are AI-backed `agent_tool_call` adapters for governed tools; if a human requested the task, preserve `requestedBy`, but do not treat that request as extra authority. Human chat tool-plan confirmation is a separate human-backed adapter and does not automatically grant autonomous agent tool access.
 
 For side effects:
 - default to proposal or approval-required;
@@ -86,4 +86,4 @@ Notification streams are progress surfaces, not business source of truth. Use ta
 - model policy and provider-secret boundaries are enforced before model invocation;
 - tool registration follows active `ToolPermissionBoundary` and registry entries;
 - approval gates exist for authority expansion, high-impact side effects, and higher-authority handoff;
-- tests cover allowed, denied, cross-tenant, approval-required, trace, and fail-closed paths.
+- tests cover allowed, denied, cross-tenant, approval-required, trace, partial-failure, and fail-closed paths, including prompt/skill/reference attempts to expand tool authority.
