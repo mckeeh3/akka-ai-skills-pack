@@ -349,7 +349,7 @@
 
 ### TASK-WTUA-99-001: Verify Workstream Tool Use Alignment completion
 
-- status: pending
+- status: done
 - source: specs/workstream-tool-use-alignment/README.md done state
 - task brief: specs/workstream-tool-use-alignment/tasks/99-verification/01-verify-workstream-tool-use-alignment.md
 - depends on:
@@ -390,4 +390,9 @@
   - if no material gaps remain, the mini-project is recorded complete
   - changes and queue update are committed
 - notes:
-  - vertical contract: terminal skills-pack verification; no generated-app runtime feature; must run multi-pass loop if gaps remain
+  - vertical contract: terminal skills-pack verification; no generated-app runtime feature; multi-pass loop not needed because no material WTUA alignment gaps remain
+  - verification notes: `specs/workstream-tool-use-alignment/verification-notes.md`
+  - README done state: achieved for skills-pack alignment; mini-project closed with no new WTUA follow-up tasks
+  - checks passed: `git diff --check`; `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run`; `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune`; `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check`; targeted searches for shared governed tools, surfaces as human tool adapters, human chat confirmation, agent tools as adapters, and reconciled direct-chat guidance
+  - required maintainer check failed: `bash skills-pack/pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh` reports root `app-description` missing `AgentBehaviorEditorAgent|editing-agent`; documented in verification notes as out-of-scope for this skills-pack WTUA mini-project and recommended for separate root app/app-description follow-up
+  - commit message: `workstream-tool-use: verify alignment completion`
